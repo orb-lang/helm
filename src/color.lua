@@ -19,6 +19,7 @@ C.color.field  = a.fg(111)
 
 C.color.alert = a.fg24(250, 0, 40)
 
+local c = C.color
 
 
 
@@ -38,7 +39,64 @@ for k, v in pairs(_G) do
    anti_G [v] = k
 end
 
-function C.ts(value, hint)
+
+
+
+
+local ts
+local function tabulate(tab, depth)
+   if type(tab) ~= "table" then
+      return ts(tab)
+   end
+   if type(depth) == 'nil' then
+      depth = 0
+   end
+   if depth > 2 then
+      return c.table(tostring(tab))
+   end
+   local indent = ("  "):rep(depth)
+   -- Check to see if this is an array
+   local is_array = true
+   local i = 1
+   for k,v in pairs(tab) do
+      if not (k == i) then
+         is_array = false
+      end
+      i = i + 1
+   end
+
+   local first = true
+   local lines = {}
+   i = 1
+   local estimated = 0
+   for k,v in (is_array and ipairs or pairs)(tab) do
+      local s
+      if is_array then
+         s = ""
+      else
+         if type(k) == "string" and k:find("^[%a_][%a%d_]*$") then
+            s = ts(k) .. c.table(' = ')
+         else
+            s = c.table('[') .. tabulate(k, 100) .. c.table('] = ')
+         end
+      end
+      s = s .. tabulate(v, depth + 1)
+      lines[i] = s
+      estimated = estimated + #s
+      i = i + 1
+   end
+   if estimated > 200 then
+      return "{\n  " .. indent
+         .. table.concat(lines, ",\n  " .. indent)
+         .. "\n" .. indent .. "}"
+   else
+      return c.table("{ ") .. table.concat(lines, ", ") .. c.table(" }")
+   end
+end
+
+
+
+ts = function (value, hint)
    local c = C.color
    local str = tostring(value)
    if hint == "" then
@@ -52,7 +110,7 @@ function C.ts(value, hint)
    if typica == 'number' then
       str = c.number(str)
    elseif typica == 'table' then
-      str = c.table(str)
+      str = tabulate(value)
    elseif typica == 'function' then
       if anti_G[value] then
          -- we have a global name for this function
@@ -70,6 +128,7 @@ function C.ts(value, hint)
    end
    return str
 end
+C.ts = ts
 
 
 

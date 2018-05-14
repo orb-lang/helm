@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 77"]
+doc_0 [label="doc - 136"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-24"]
+section_1 [label="section: 1-25"]
 
 
 // END RANK doc_0
@@ -21,9 +21,9 @@ header_2 [label="0 : "]
 
 prose_3 [label="prose"]
 
-codeblock_4 [label="code block 6-22"]
+codeblock_4 [label="code block 6-23"]
 
-section_5 [label="section: 25-77"]
+section_5 [label="section: 26-42"]
 
 
 // END RANK section_1
@@ -61,11 +61,12 @@ C.color.nilness   = a.fg(93)
 C.color.field  = a.fg(111)
 
 C.color.alert = a.fg24(250, 0, 40)
-"]
+
+local c = C.color"]
 // END RANK codeblock_4
 
-section_5 -> { header_10 prose_11 prose_12 codeblock_13 codeblock_14}
-{rank=same; header_10 prose_11 prose_12 codeblock_13 codeblock_14}
+section_5 -> { header_10 prose_11 prose_12 codeblock_13 section_14}
+{rank=same; header_10 prose_11 prose_12 codeblock_13 section_14}
 
 header_10 [label="2 : ts(value)"]
 
@@ -73,9 +74,9 @@ prose_11 [label="prose"]
 
 prose_12 [label="prose"]
 
-codeblock_13 [label="code block 31-73"]
+codeblock_13 [label="code block 32-41"]
 
-codeblock_14 [label="code block 75-77"]
+section_14 [label="section: 43-136"]
 
 
 // END RANK section_5
@@ -121,9 +122,97 @@ local anti_G = {}
 
 for k, v in pairs(_G) do
    anti_G [v] = k
-end
+end"]
+// END RANK codeblock_13
 
-function C.ts(value, hint)
+section_14 -> { header_21 prose_22 codeblock_23 codeblock_24 codeblock_25}
+{rank=same; header_21 prose_22 codeblock_23 codeblock_24 codeblock_25}
+
+header_21 [label="3 : tabulator"]
+
+prose_22 [label="prose"]
+
+codeblock_23 [label="code block 45-96"]
+
+codeblock_24 [label="code block 98-132"]
+
+codeblock_25 [label="code block 134-136"]
+
+
+// END RANK section_14
+
+header_21 -> leaf_26
+leaf_26  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** tabulator"]
+// END RANK header_21
+
+prose_22 -> { raw_27}
+{rank=same; raw_27}
+
+raw_27 [label="raw"]
+
+
+// END RANK prose_22
+
+raw_27 -> leaf_28
+leaf_28  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+"]
+// END RANK raw_27
+
+codeblock_23 -> leaf_29
+leaf_29  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local ts
+local function tabulate(tab, depth)
+   if type(tab) ~= \"table\" then
+      return ts(tab)
+   end
+   if type(depth) == 'nil' then
+      depth = 0
+   end
+   if depth > 2 then
+      return c.table(tostring(tab))
+   end
+   local indent = (\"  \"):rep(depth)
+   -- Check to see if this is an array
+   local is_array = true
+   local i = 1
+   for k,v in pairs(tab) do
+      if not (k == i) then
+         is_array = false
+      end
+      i = i + 1
+   end
+
+   local first = true
+   local lines = {}
+   i = 1
+   local estimated = 0
+   for k,v in (is_array and ipairs or pairs)(tab) do
+      local s
+      if is_array then
+         s = \"\"
+      else
+         if type(k) == \"string\" and k:find(\"^[%a_][%a%d_]*$\") then
+            s = ts(k) .. c.table(' = ')
+         else
+            s = c.table('[') .. tabulate(k, 100) .. c.table('] = ')
+         end
+      end
+      s = s .. tabulate(v, depth + 1)
+      lines[i] = s
+      estimated = estimated + #s
+      i = i + 1
+   end
+   if estimated > 200 then
+      return \"{\\n  \" .. indent
+         .. table.concat(lines, \",\\n  \" .. indent)
+         .. \"\\n\" .. indent .. \"}\"
+   else
+      return c.table(\"{ \") .. table.concat(lines, \", \") .. c.table(\" }\")
+   end
+end"]
+// END RANK codeblock_23
+
+codeblock_24 -> leaf_30
+leaf_30  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ts = function (value, hint)
    local c = C.color
    local str = tostring(value)
    if hint == \"\" then
@@ -137,7 +226,7 @@ function C.ts(value, hint)
    if typica == 'number' then
       str = c.number(str)
    elseif typica == 'table' then
-      str = c.table(str)
+      str = tabulate(value)
    elseif typica == 'function' then
       if anti_G[value] then
          -- we have a global name for this function
@@ -154,12 +243,13 @@ function C.ts(value, hint)
       str = c.nilness(str)
    end
    return str
-end"]
-// END RANK codeblock_13
+end
+C.ts = ts"]
+// END RANK codeblock_24
 
-codeblock_14 -> leaf_21
-leaf_21  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return C"]
-// END RANK codeblock_14
+codeblock_25 -> leaf_31
+leaf_31  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return C"]
+// END RANK codeblock_25
 
 
 }
