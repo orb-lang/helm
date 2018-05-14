@@ -1,0 +1,435 @@
+digraph lpegNode {
+
+node [fontname=Helvetica]
+edge [style=dashed]
+
+doc_0 [label="doc - 46"]
+
+
+doc_0 -> { section_1}
+{rank=same; section_1}
+
+section_1 [label="section: 1-40"]
+
+
+// END RANK doc_0
+
+section_1 -> { header_2 prose_3 prose_4 prose_5 prose_6 prose_7 codeblock_8 prose_9 prose_10 prose_11 prose_12 section_13}
+{rank=same; header_2 prose_3 prose_4 prose_5 prose_6 prose_7 codeblock_8 prose_9 prose_10 prose_11 prose_12 section_13}
+
+header_2 [label="1 : Use"]
+
+prose_3 [label="prose"]
+
+prose_4 [label="prose"]
+
+prose_5 [label="prose"]
+
+prose_6 [label="prose"]
+
+prose_7 [label="prose"]
+
+codeblock_8 [label="code block 21-24"]
+
+prose_9 [label="prose"]
+
+prose_10 [label="prose"]
+
+prose_11 [label="prose"]
+
+prose_12 [label="prose"]
+
+section_13 [label="section: 41-46"]
+
+
+// END RANK section_1
+
+header_2 -> leaf_14
+leaf_14  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Use"]
+// END RANK header_2
+
+prose_3 -> { raw_15 prespace_16 literal_17 raw_18}
+{rank=same; raw_15 prespace_16 literal_17 raw_18}
+
+raw_15 [label="raw"]
+
+prespace_16 [label="prespace"]
+
+literal_17 [label="literal"]
+
+raw_18 [label="raw"]
+
+
+// END RANK prose_3
+
+raw_15 -> leaf_19
+leaf_19  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+This is our superset of"]
+// END RANK raw_15
+
+prespace_16 -> leaf_20
+leaf_20  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_16
+
+literal_17 -> leaf_21
+leaf_21  [color=Gray,shape=rectangle,fontname=Inconsolata,label="require"]
+// END RANK literal_17
+
+raw_18 -> leaf_22
+leaf_22  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", which can function as a drop-in
+replacement for it.
+"]
+// END RANK raw_18
+
+prose_4 -> { raw_23}
+{rank=same; raw_23}
+
+raw_23 [label="raw"]
+
+
+// END RANK prose_4
+
+raw_23 -> leaf_24
+leaf_24  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+That means it fulfils the interface: given a single string, it will search
+package.path, ignore singletons which have instances, and load the rest,
+returning a single value.
+"]
+// END RANK raw_23
+
+prose_5 -> { raw_25 prespace_26 literal_27 raw_28 prespace_29 literal_30 raw_31}
+{rank=same; raw_25 prespace_26 literal_27 raw_28 prespace_29 literal_30 raw_31}
+
+raw_25 [label="raw"]
+
+prespace_26 [label="prespace"]
+
+literal_27 [label="literal"]
+
+raw_28 [label="raw"]
+
+prespace_29 [label="prespace"]
+
+literal_30 [label="literal"]
+
+raw_31 [label="raw"]
+
+
+// END RANK prose_5
+
+raw_25 -> leaf_32
+leaf_32  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+However,"]
+// END RANK raw_25
+
+prespace_26 -> leaf_33
+leaf_33  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_26
+
+literal_27 -> leaf_34
+leaf_34  [color=Gray,shape=rectangle,fontname=Inconsolata,label="use"]
+// END RANK literal_27
+
+raw_28 -> leaf_35
+leaf_35  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", on entry into the global namespace, slaps a metatable on it."]
+// END RANK raw_28
+
+prespace_29 -> leaf_36
+leaf_36  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK prespace_29
+
+literal_30 -> leaf_37
+leaf_37  [color=Gray,shape=rectangle,fontname=Inconsolata,label="use"]
+// END RANK literal_30
+
+raw_31 -> leaf_38
+leaf_38  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" clones the current global context and gives it a catch-all __newindex,
+sets the fenv, calls the chunk, and returns all values.
+"]
+// END RANK raw_31
+
+prose_6 -> { raw_39 prespace_40 literal_41 raw_42 prespace_43 literal_44 raw_45}
+{rank=same; raw_39 prespace_40 literal_41 raw_42 prespace_43 literal_44 raw_45}
+
+raw_39 [label="raw"]
+
+prespace_40 [label="prespace"]
+
+literal_41 [label="literal"]
+
+raw_42 [label="raw"]
+
+prespace_43 [label="prespace"]
+
+literal_44 [label="literal"]
+
+raw_45 [label="raw"]
+
+
+// END RANK prose_6
+
+raw_39 -> leaf_46
+leaf_46  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Since"]
+// END RANK raw_39
+
+prespace_40 -> leaf_47
+leaf_47  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_40
+
+literal_41 -> leaf_48
+leaf_48  [color=Gray,shape=rectangle,fontname=Inconsolata,label="require"]
+// END RANK literal_41
+
+raw_42 -> leaf_49
+leaf_49  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" only returns one, this can only break code which absorbs a
+predicatble"]
+// END RANK raw_42
+
+prespace_43 -> leaf_50
+leaf_50  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_43
+
+literal_44 -> leaf_51
+leaf_51  [color=Gray,shape=rectangle,fontname=Inconsolata,label="nil"]
+// END RANK literal_44
+
+raw_45 -> leaf_52
+leaf_52  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" into a variable and then relies on it.
+"]
+// END RANK raw_45
+
+prose_7 -> { prespace_53 literal_54 raw_55}
+{rank=same; prespace_53 literal_54 raw_55}
+
+prespace_53 [label="prespace"]
+
+literal_54 [label="literal"]
+
+raw_55 [label="raw"]
+
+
+// END RANK prose_7
+
+prespace_53 -> leaf_56
+leaf_56  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK prespace_53
+
+literal_54 -> leaf_57
+leaf_57  [color=Gray,shape=rectangle,fontname=Inconsolata,label="use"]
+// END RANK literal_54
+
+raw_55 -> leaf_58
+leaf_58  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" will also accept additional arguments.  First we'll implement is a
+table, where the [0] (Djikstra) element should be the package string, and
+other constraints may be explicitly applied:
+"]
+// END RANK raw_55
+
+codeblock_8 -> leaf_59
+leaf_59  [color=Gray,shape=rectangle,fontname=Inconsolata,label="c, c_lib = use { \"lib/clib\",
+                 version = \"<=0.3.*\"}"]
+// END RANK codeblock_8
+
+prose_9 -> { raw_60 prespace_61 literal_62 raw_63}
+{rank=same; raw_60 prespace_61 literal_62 raw_63}
+
+raw_60 [label="raw"]
+
+prespace_61 [label="prespace"]
+
+literal_62 [label="literal"]
+
+raw_63 [label="raw"]
+
+
+// END RANK prose_9
+
+raw_60 -> leaf_64
+leaf_64  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Note that we didn't use"]
+// END RANK raw_60
+
+prespace_61 -> leaf_65
+leaf_65  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_61
+
+literal_62 -> leaf_66
+leaf_66  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local"]
+// END RANK literal_62
+
+raw_63 -> leaf_67
+leaf_67  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".  We hack the global metatable so that all
+globals are registered locally, so we don't have to except inside functions.
+"]
+// END RANK raw_63
+
+prose_10 -> { raw_68}
+{rank=same; raw_68}
+
+raw_68 [label="raw"]
+
+
+// END RANK prose_10
+
+raw_68 -> leaf_69
+leaf_69  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+This will aid migration to Lun semantics.  It's also just a lot cleaner, and
+unlike a strict mode, it fixes the problem at load time, rather than just
+pointing them out.
+"]
+// END RANK raw_68
+
+prose_11 -> { raw_70 prespace_71 literal_72 raw_73}
+{rank=same; raw_70 prespace_71 literal_72 raw_73}
+
+raw_70 [label="raw"]
+
+prespace_71 [label="prespace"]
+
+literal_72 [label="literal"]
+
+raw_73 [label="raw"]
+
+
+// END RANK prose_11
+
+raw_70 -> leaf_74
+leaf_74  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+This makes it impossible to tamper with the global namespace, because each
+file receives its own custom _G. "]
+// END RANK raw_70
+
+prespace_71 -> leaf_75
+leaf_75  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_71
+
+literal_72 -> leaf_76
+leaf_76  [color=Gray,shape=rectangle,fontname=Inconsolata,label="use"]
+// END RANK literal_72
+
+raw_73 -> leaf_77
+leaf_77  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" can return as many values as you would
+like, so this in no way restricts elaboration of the outer context.
+"]
+// END RANK raw_73
+
+prose_12 -> { raw_78 prespace_79 literal_80 raw_81}
+{rank=same; raw_78 prespace_79 literal_80 raw_81}
+
+raw_78 [label="raw"]
+
+prespace_79 [label="prespace"]
+
+literal_80 [label="literal"]
+
+raw_81 [label="raw"]
+
+
+// END RANK prose_12
+
+raw_78 -> leaf_82
+leaf_82  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+It provides a consistent interface.  You can read the last line of a"]
+// END RANK raw_78
+
+prespace_79 -> leaf_83
+leaf_83  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_79
+
+literal_80 -> leaf_84
+leaf_84  [color=Gray,shape=rectangle,fontname=Inconsolata,label="use"]
+// END RANK literal_80
+
+raw_81 -> leaf_85
+leaf_85  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+module and know what values are available for assignment.
+
+"]
+// END RANK raw_81
+
+section_13 -> { header_86 prose_87}
+{rank=same; header_86 prose_87}
+
+header_86 [label="3 : call graph"]
+
+prose_87 [label="prose"]
+
+
+// END RANK section_13
+
+header_86 -> leaf_88
+leaf_88  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** call graph"]
+// END RANK header_86
+
+prose_87 -> { raw_89 prespace_90 literal_91 raw_92 prespace_93 literal_94 raw_95 prespace_96 literal_97 raw_98}
+{rank=same; raw_89 prespace_90 literal_91 raw_92 prespace_93 literal_94 raw_95 prespace_96 literal_97 raw_98}
+
+raw_89 [label="raw"]
+
+prespace_90 [label="prespace"]
+
+literal_91 [label="literal"]
+
+raw_92 [label="raw"]
+
+prespace_93 [label="prespace"]
+
+literal_94 [label="literal"]
+
+raw_95 [label="raw"]
+
+prespace_96 [label="prespace"]
+
+literal_97 [label="literal"]
+
+raw_98 [label="raw"]
+
+
+// END RANK prose_87
+
+raw_89 -> leaf_99
+leaf_99  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK raw_89
+
+prespace_90 -> leaf_100
+leaf_100  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK prespace_90
+
+literal_91 -> leaf_101
+leaf_101  [color=Gray,shape=rectangle,fontname=Inconsolata,label="use"]
+// END RANK literal_91
+
+raw_92 -> leaf_102
+leaf_102  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" will also retain an ordered call graph when"]
+// END RANK raw_92
+
+prespace_93 -> leaf_103
+leaf_103  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_93
+
+literal_94 -> leaf_104
+leaf_104  [color=Gray,shape=rectangle,fontname=Inconsolata,label="br"]
+// END RANK literal_94
+
+raw_95 -> leaf_105
+leaf_105  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is called with the"]
+// END RANK raw_95
+
+prespace_96 -> leaf_106
+leaf_106  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK prespace_96
+
+literal_97 -> leaf_107
+leaf_107  [color=Gray,shape=rectangle,fontname=Inconsolata,label="-i"]
+// END RANK literal_97
+
+raw_98 -> leaf_108
+leaf_108  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" flag.  This allows the loop to respond to reloads by reloading anything
+which could be changed by the library and re-executing the entry point into
+a fresh global context."]
+// END RANK raw_98
+
+
+}

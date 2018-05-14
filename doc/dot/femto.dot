@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 290"]
+doc_0 [label="doc - 293"]
 
 
 doc_0 -> { section_1}
@@ -23,7 +23,7 @@ prose_3 [label="prose"]
 
 prose_4 [label="prose"]
 
-section_5 [label="section: 8-290"]
+section_5 [label="section: 8-293"]
 
 
 // END RANK section_1
@@ -69,7 +69,7 @@ header_11 [label="2 : includes"]
 
 prose_12 [label="prose"]
 
-codeblock_13 [label="code block 10-290"]
+codeblock_13 [label="code block 10-293"]
 
 
 // END RANK section_5
@@ -102,6 +102,10 @@ local femto = assert(femto)
 local uv = require \"luv\"
 
 local L = require \"lpeg\"
+
+local a = require \"src/anterm\"
+
+local c = require \"src/color\"
 
 --  **** utils
 --
@@ -269,16 +273,16 @@ local function dump(o, depth)
       i = i + 1
     end
     if estimated > 200 then
-      return \"{\\n  \" .. indent .. table.concat(lines, \",\\n  \" .. indent) .. \"\\n\" .. indent .. \"}\"
+      return \"{\\n  \" .. indent
+         .. table.concat(lines, \",\\n  \" .. indent)
+         .. \"\\n\" .. indent .. \"}\"
     else
       return \"{ \" .. table.concat(lines, \", \") .. \" }\"
     end
   end
-  -- This doesn't happen right?
-  return tostring(o)
 end
 
-local c = color
+local clr = color
 
 
 --  *** utilities
@@ -290,7 +294,7 @@ end
 
 local function printResults(results)
   for i = 1, results.n do
-    results[i] = dump(results[i])
+    results[i] = c.ts(results[i])
   end
   print(table.concat(results, '\\t'))
 end
@@ -299,7 +303,7 @@ local buffer = ''
 
 local function evaluateLine(line)
   if line == \"<3\\n\" then
-    print(\"I \" .. c(\"Bred\") .. \"♥\" .. c() .. \" you too!\")
+    print(\"I \" .. clr(\"Bred\") .. \"♥\" .. clr() .. \" you too!\")
     return '>'
   end
   local chunk  = buffer .. line
@@ -353,7 +357,6 @@ end
 
 -- Alternate screen
 
-
 coroutine.wrap(function()
    -- This switches screens and does a wipe,
    -- then puts the cursor at 1,1.
@@ -363,7 +366,7 @@ coroutine.wrap(function()
    uv.read_start(stdin, onread)
 end)()
 
-uv.run()
+uv.run('default')
 
 -- Restore
 

@@ -20,6 +20,10 @@ local uv = require "luv"
 
 local L = require "lpeg"
 
+local a = require "src/anterm"
+
+local c = require "src/color"
+
 --  **** utils
 --
 --  Copypasta from luvland from here down
@@ -186,16 +190,16 @@ local function dump(o, depth)
       i = i + 1
     end
     if estimated > 200 then
-      return "{\n  " .. indent .. table.concat(lines, ",\n  " .. indent) .. "\n" .. indent .. "}"
+      return "{\n  " .. indent
+         .. table.concat(lines, ",\n  " .. indent)
+         .. "\n" .. indent .. "}"
     else
       return "{ " .. table.concat(lines, ", ") .. " }"
     end
   end
-  -- This doesn't happen right?
-  return tostring(o)
 end
 
-local c = color
+local clr = color
 
 
 --  *** utilities
@@ -207,7 +211,7 @@ end
 
 local function printResults(results)
   for i = 1, results.n do
-    results[i] = dump(results[i])
+    results[i] = c.ts(results[i])
   end
   print(table.concat(results, '\t'))
 end
@@ -216,7 +220,7 @@ local buffer = ''
 
 local function evaluateLine(line)
   if line == "<3\n" then
-    print("I " .. c("Bred") .. "♥" .. c() .. " you too!")
+    print("I " .. clr("Bred") .. "♥" .. clr() .. " you too!")
     return '>'
   end
   local chunk  = buffer .. line
@@ -270,7 +274,6 @@ end
 
 -- Alternate screen
 
-
 coroutine.wrap(function()
    -- This switches screens and does a wipe,
    -- then puts the cursor at 1,1.
@@ -280,7 +283,7 @@ coroutine.wrap(function()
    uv.read_start(stdin, onread)
 end)()
 
-uv.run()
+uv.run('default')
 
 -- Restore
 
