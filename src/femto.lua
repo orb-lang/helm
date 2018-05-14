@@ -25,6 +25,8 @@ a = require "src/anterm"
 
 c = require "src/color"
 
+watch = require "src/watcher"
+
 
 
 
@@ -43,8 +45,11 @@ else
   usecolors = false
 end
 
--- Print replacement that goes through libuv.  This is useful on windows
--- to use libuv's code to translate ansi escape codes to windows API calls.
+if not usecolors then
+   c.ts = tostring
+   -- #todo make this properly black and white ts
+end
+
 function print(...)
   local n = select('#', ...)
   local arguments = {...}

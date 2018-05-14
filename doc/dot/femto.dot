@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 169"]
+doc_0 [label="doc - 174"]
 
 
 doc_0 -> { section_1}
@@ -23,7 +23,7 @@ prose_3 [label="prose"]
 
 prose_4 [label="prose"]
 
-section_5 [label="section: 9-29"]
+section_5 [label="section: 9-31"]
 
 
 // END RANK section_1
@@ -70,9 +70,9 @@ header_11 [label="2 : includes"]
 
 prose_12 [label="prose"]
 
-codeblock_13 [label="code block 14-27"]
+codeblock_13 [label="code block 14-29"]
 
-section_14 [label="section: 30-169"]
+section_14 [label="section: 32-174"]
 
 
 // END RANK section_5
@@ -109,7 +109,9 @@ L = require \"lpeg\"
 
 a = require \"src/anterm\"
 
-c = require \"src/color\""]
+c = require \"src/color\"
+
+watch = require \"src/watcher\""]
 // END RANK codeblock_13
 
 section_14 -> { header_19 prose_20 codeblock_21}
@@ -119,7 +121,7 @@ header_19 [label="4 : utils"]
 
 prose_20 [label="prose"]
 
-codeblock_21 [label="code block 32-169"]
+codeblock_21 [label="code block 34-174"]
 
 
 // END RANK section_14
@@ -155,8 +157,11 @@ else
   usecolors = false
 end
 
--- Print replacement that goes through libuv.  This is useful on windows
--- to use libuv's code to translate ansi escape codes to windows API calls.
+if not usecolors then
+   c.ts = tostring
+   -- #todo make this properly black and white ts
+end
+
 function print(...)
   local n = select('#', ...)
   local arguments = {...}
