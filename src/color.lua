@@ -43,6 +43,7 @@ C.color.nilness    = a.fg(93)
 C.color.thread     = thread_color
 C.color.field    = a.fg(111)
 C.color.userdata = a.fg24(230, 145, 23)
+C.color.cdata    = a.fg24(200, 115, 0)
 C.color.alert    = a.fg24(250, 0, 40)
 C.color.base     = a.fg24(200, 200, 200)
 
@@ -62,6 +63,19 @@ local anti_G = {}
 
 local sort = table.sort
 
+
+
+
+
+
+
+
+
+
+local function tie_break(old, new)
+   return #old > #new
+end
+
 function C.allNames()
    anti_G[_G] = "_G"
    local function allN(t, aG, pre)
@@ -79,9 +93,8 @@ function C.allNames()
                   allN(v, aG, key)
                end
             else
-               -- tiebreaker on length
                local kv = aG[v]
-               if #kv > #key then
+               if tie_break(kv, key) then
                   -- quadradic lol
                   aG[v] = key
                   allN(v, aG, key)
@@ -95,7 +108,7 @@ function C.allNames()
                   aG[_M] = _M_id
                else
                   local aG_M_id = aG[_M]
-                  if #aG_M_id > #_M_id then
+                  if tie_break(aG_M_id, _M_id) then
                      allN(_M, aG, _M_id)
                      aG[_M] = _M_id
                   end
@@ -103,7 +116,8 @@ function C.allNames()
             end
          elseif T == "function" or
             T == "thread" or
-            T == "userdata" then
+            T == "userdata" or
+            T == "cdata" then
             aG[v] = pre .. k
          end
       end
@@ -132,7 +146,7 @@ local function tabulate(tab, depth)
    if type(depth) == "nil" then
       depth = 0
    end
-   if depth > 2 then
+   if depth > 3 then
       return ts(tab, "tab_name")
    end
    local indent = ("  "):rep(depth)
@@ -267,6 +281,12 @@ ts = function (value, hint)
          else
             str = c.userdata(str)
          end
+      end
+   elseif typica == "cdata" then
+      if anti_G[value] then
+         str = c.cdata(anti_G[value])
+      else
+         str = c.cdata(str)
       end
    end
    return str

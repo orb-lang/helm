@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 279"]
+doc_0 [label="doc - 299"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-51"]
+section_1 [label="section: 1-52"]
 
 
 // END RANK doc_0
@@ -29,9 +29,9 @@ prose_6 [label="prose"]
 
 prose_7 [label="prose"]
 
-codeblock_8 [label="code block 19-48"]
+codeblock_8 [label="code block 19-49"]
 
-section_9 [label="section: 52-212"]
+section_9 [label="section: 53-226"]
 
 
 // END RANK section_1
@@ -245,46 +245,49 @@ C.color.nilness    = a.fg(93)
 C.color.thread     = thread_color
 C.color.field    = a.fg(111)
 C.color.userdata = a.fg24(230, 145, 23)
+C.color.cdata    = a.fg24(200, 115, 0)
 C.color.alert    = a.fg24(250, 0, 40)
 C.color.base     = a.fg24(200, 200, 200)"]
 // END RANK codeblock_8
 
-section_9 -> { header_56 prose_57 codeblock_58 section_59 section_60}
-{rank=same; header_56 prose_57 codeblock_58 section_59 section_60}
+section_9 -> { header_56 prose_57 codeblock_58 section_59 section_60 section_61}
+{rank=same; header_56 prose_57 codeblock_58 section_59 section_60 section_61}
 
 header_56 [label="2 : ts(value)"]
 
 prose_57 [label="prose"]
 
-codeblock_58 [label="code block 55-119"]
+codeblock_58 [label="code block 56-66"]
 
-section_59 [label="section: 122-212"]
+section_59 [label="section: 68-135"]
 
-section_60 [label="section: 213-279"]
+section_60 [label="section: 136-226"]
+
+section_61 [label="section: 227-299"]
 
 
 // END RANK section_9
 
-header_56 -> leaf_61
-leaf_61  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** ts(value)"]
+header_56 -> leaf_62
+leaf_62  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** ts(value)"]
 // END RANK header_56
 
-prose_57 -> { raw_62}
-{rank=same; raw_62}
+prose_57 -> { raw_63}
+{rank=same; raw_63}
 
-raw_62 [label="raw"]
+raw_63 [label="raw"]
 
 
 // END RANK prose_57
 
-raw_62 -> leaf_63
-leaf_63  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_63 -> leaf_64
+leaf_64  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 "]
-// END RANK raw_62
+// END RANK raw_63
 
-codeblock_58 -> leaf_64
-leaf_64  [color=Gray,shape=rectangle,fontname=Inconsolata,label="C.color.hints = { field = C.color.field,
+codeblock_58 -> leaf_65
+leaf_65  [color=Gray,shape=rectangle,fontname=Inconsolata,label="C.color.hints = { field = C.color.field,
                   fn  = C.color.func }
 local hints = C.color.hints
 
@@ -292,6 +295,60 @@ local c = C.color
 local anti_G = {}
 
 local sort = table.sort
+"]
+// END RANK codeblock_58
+
+section_59 -> { header_66 prose_67 prose_68 codeblock_69}
+{rank=same; header_66 prose_67 prose_68 codeblock_69}
+
+header_66 [label="4 : tie_break(old, new)"]
+
+prose_67 [label="prose"]
+
+prose_68 [label="prose"]
+
+codeblock_69 [label="code block 74-133"]
+
+
+// END RANK section_59
+
+header_66 -> leaf_70
+leaf_70  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** tie_break(old, new)"]
+// END RANK header_66
+
+prose_67 -> { raw_71}
+{rank=same; raw_71}
+
+raw_71 [label="raw"]
+
+
+// END RANK prose_67
+
+raw_71 -> leaf_72
+leaf_72  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+A helper function to decide which name is better.
+"]
+// END RANK raw_71
+
+prose_68 -> { raw_73}
+{rank=same; raw_73}
+
+raw_73 [label="raw"]
+
+
+// END RANK prose_68
+
+raw_73 -> leaf_74
+leaf_74  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Eventually we want to favor Capital names.
+"]
+// END RANK raw_73
+
+codeblock_69 -> leaf_75
+leaf_75  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function tie_break(old, new)
+   return #old > #new
+end
 
 function C.allNames()
    anti_G[_G] = \"_G\"
@@ -310,9 +367,8 @@ function C.allNames()
                   allN(v, aG, key)
                end
             else
-               -- tiebreaker on length
                local kv = aG[v]
-               if #kv > #key then
+               if tie_break(kv, key) then
                   -- quadradic lol
                   aG[v] = key
                   allN(v, aG, key)
@@ -326,7 +382,7 @@ function C.allNames()
                   aG[_M] = _M_id
                else
                   local aG_M_id = aG[_M]
-                  if #aG_M_id > #_M_id then
+                  if tie_break(aG_M_id, _M_id) then
                      allN(_M, aG, _M_id)
                      aG[_M] = _M_id
                   end
@@ -334,7 +390,8 @@ function C.allNames()
             end
          elseif T == \"function\" or
             T == \"thread\" or
-            T == \"userdata\" then
+            T == \"userdata\" or
+            T == \"cdata\" then
             aG[v] = pre .. k
          end
       end
@@ -347,45 +404,45 @@ function C.clearNames()
    anti_G = {}
    return anti_G
 end"]
-// END RANK codeblock_58
+// END RANK codeblock_69
 
-section_59 -> { header_65 prose_66 codeblock_67 prose_68 codeblock_69}
-{rank=same; header_65 prose_66 codeblock_67 prose_68 codeblock_69}
+section_60 -> { header_76 prose_77 codeblock_78 prose_79 codeblock_80}
+{rank=same; header_76 prose_77 codeblock_78 prose_79 codeblock_80}
 
-header_65 [label="3 : tabulator"]
+header_76 [label="3 : tabulator"]
 
-prose_66 [label="prose"]
+prose_77 [label="prose"]
 
-codeblock_67 [label="code block 126-185"]
+codeblock_78 [label="code block 140-199"]
 
-prose_68 [label="prose"]
+prose_79 [label="prose"]
 
-codeblock_69 [label="code block 190-210"]
-
-
-// END RANK section_59
-
-header_65 -> leaf_70
-leaf_70  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** tabulator"]
-// END RANK header_65
-
-prose_66 -> { raw_71}
-{rank=same; raw_71}
-
-raw_71 [label="raw"]
+codeblock_80 [label="code block 204-224"]
 
 
-// END RANK prose_66
+// END RANK section_60
 
-raw_71 -> leaf_72
-leaf_72  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_76 -> leaf_81
+leaf_81  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** tabulator"]
+// END RANK header_76
+
+prose_77 -> { raw_82}
+{rank=same; raw_82}
+
+raw_82 [label="raw"]
+
+
+// END RANK prose_77
+
+raw_82 -> leaf_83
+leaf_83  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 This is mostly [[Tim Caswell's][https://github.com/creationix]] code.
 "]
-// END RANK raw_71
+// END RANK raw_82
 
-codeblock_67 -> leaf_73
-leaf_73  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local ts
+codeblock_78 -> leaf_84
+leaf_84  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local ts
 local function tabulate(tab, depth)
    if type(tab) ~= \"table\" then
       return ts(tab)
@@ -393,7 +450,7 @@ local function tabulate(tab, depth)
    if type(depth) == \"nil\" then
       depth = 0
    end
-   if depth > 2 then
+   if depth > 3 then
       return ts(tab, \"tab_name\")
    end
    local indent = (\"  \"):rep(depth)
@@ -443,25 +500,25 @@ local function tabulate(tab, depth)
       return c.base(\"{ \") .. table.concat(lines, c.base(\", \")) .. c.base(\" }\")
    end
 end"]
-// END RANK codeblock_67
+// END RANK codeblock_78
 
-prose_68 -> { raw_74}
-{rank=same; raw_74}
+prose_79 -> { raw_85}
+{rank=same; raw_85}
 
-raw_74 [label="raw"]
+raw_85 [label="raw"]
 
 
-// END RANK prose_68
+// END RANK prose_79
 
-raw_74 -> leaf_75
-leaf_75  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_85 -> leaf_86
+leaf_86  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 We make a small wrapper function which resets string color in between
 escapes, then gsub the daylights out of it.
 "]
-// END RANK raw_74
+// END RANK raw_85
 
-codeblock_69 -> leaf_76
-leaf_76  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local find, sub, gsub, byte = string.find, string.sub,
+codeblock_80 -> leaf_87
+leaf_87  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local find, sub, gsub, byte = string.find, string.sub,
                               string.gsub, string.byte
 
 local e = function(str)
@@ -480,43 +537,43 @@ scrub = function (str)
              :gsub(\"\\t\", e(\"\\\\t\"))
              :gsub(\"%c\", e(ctrl_pr(str)))
 end"]
-// END RANK codeblock_69
+// END RANK codeblock_80
 
-section_60 -> { header_77 prose_78 codeblock_79 codeblock_80}
-{rank=same; header_77 prose_78 codeblock_79 codeblock_80}
+section_61 -> { header_88 prose_89 codeblock_90 codeblock_91}
+{rank=same; header_88 prose_89 codeblock_90 codeblock_91}
 
-header_77 [label="3 : ts"]
+header_88 [label="3 : ts"]
 
-prose_78 [label="prose"]
+prose_89 [label="prose"]
 
-codeblock_79 [label="code block 217-275"]
+codeblock_90 [label="code block 231-295"]
 
-codeblock_80 [label="code block 277-279"]
-
-
-// END RANK section_60
-
-header_77 -> leaf_81
-leaf_81  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** ts"]
-// END RANK header_77
-
-prose_78 -> { raw_82}
-{rank=same; raw_82}
-
-raw_82 [label="raw"]
+codeblock_91 [label="code block 297-299"]
 
 
-// END RANK prose_78
+// END RANK section_61
 
-raw_82 -> leaf_83
-leaf_83  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_88 -> leaf_92
+leaf_92  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** ts"]
+// END RANK header_88
+
+prose_89 -> { raw_93}
+{rank=same; raw_93}
+
+raw_93 [label="raw"]
+
+
+// END RANK prose_89
+
+raw_93 -> leaf_94
+leaf_94  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 Lots of small, nice things in this one.
 "]
-// END RANK raw_82
+// END RANK raw_93
 
-codeblock_79 -> leaf_84
-leaf_84  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ts = function (value, hint)
+codeblock_90 -> leaf_95
+leaf_95  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ts = function (value, hint)
    local str = scrub(tostring(value))
    -- For cases more specific than mere type,
    -- we have hints:
@@ -569,15 +626,21 @@ leaf_84  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ts = function (
             str = c.userdata(str)
          end
       end
+   elseif typica == \"cdata\" then
+      if anti_G[value] then
+         str = c.cdata(anti_G[value])
+      else
+         str = c.cdata(str)
+      end
    end
    return str
 end
 C.ts = ts"]
-// END RANK codeblock_79
+// END RANK codeblock_90
 
-codeblock_80 -> leaf_85
-leaf_85  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return C"]
-// END RANK codeblock_80
+codeblock_91 -> leaf_96
+leaf_96  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return C"]
+// END RANK codeblock_91
 
 
 }
