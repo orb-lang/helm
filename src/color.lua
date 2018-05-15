@@ -10,6 +10,7 @@ local C = {}
 C.color = {}
 C.color.number = a.fg(42)
 C.color.string = a.fg(222)
+C.color.stresc = a.fg(225)
 C.color.table  = a.fg(64)
 C.color.func   = a.fg24(210,12,120)
 C.color.truth  = a.fg(231)
@@ -114,13 +115,26 @@ end
 
 
 
-scrub = function (str)
-   return string.gsub(str, "\27", "\\27")
+
+
+
+local find, sub, gsub = string.find, string.sub
+local e = function(str)
+   return c.stresc(str) .. c.string
 end
 
-local find, sub = string.find, string.sub
+scrub = function (str)
+   return string.gsub(str, "\27", e("\\27"))
+          :gsub("\\", e("\\")):gsub("%z", e("\\0"))
+          :gsub("\n", e("\\n")):gsub("\r", e("\\r")):gsub("\t", e("\\t"))
+end
+
+
+
 ts = function (value, hint)
    local str = scrub(tostring(value))
+   -- For cases more specific than mere type,
+   -- we have hints:
    if hint == "" then
       return str -- or just use tostring()?
    end
@@ -130,7 +144,7 @@ ts = function (value, hint)
       if anti_G[value] then
          return c.table(anti_G[value])
       else
-         return c.table(str)
+         return c.table("t:" .. string.sub(str, -6))
       end
    end
 

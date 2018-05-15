@@ -1,0 +1,271 @@
+digraph lpegNode {
+
+node [fontname=Helvetica]
+edge [style=dashed]
+
+doc_0 [label="doc - 83"]
+
+
+doc_0 -> { section_1}
+{rank=same; section_1}
+
+section_1 [label="section: 1-83"]
+
+
+// END RANK doc_0
+
+section_1 -> { header_2 prose_3 prose_4 prose_5 prose_6 prose_7 prose_8 prose_9 codeblock_10 codeblock_11 codeblock_12 codeblock_13}
+{rank=same; header_2 prose_3 prose_4 prose_5 prose_6 prose_7 prose_8 prose_9 codeblock_10 codeblock_11 codeblock_12 codeblock_13}
+
+header_2 [label="1 : Watcher"]
+
+prose_3 [label="prose"]
+
+prose_4 [label="prose"]
+
+prose_5 [label="prose"]
+
+prose_6 [label="prose"]
+
+prose_7 [label="prose"]
+
+prose_8 [label="prose"]
+
+prose_9 [label="prose"]
+
+codeblock_10 [label="code block 21-56"]
+
+codeblock_11 [label="code block 58-62"]
+
+codeblock_12 [label="code block 64-78"]
+
+codeblock_13 [label="code block 80-82"]
+
+
+// END RANK section_1
+
+header_2 -> leaf_14
+leaf_14  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Watcher"]
+// END RANK header_2
+
+prose_3 -> { raw_15}
+{rank=same; raw_15}
+
+raw_15 [label="raw"]
+
+
+// END RANK prose_3
+
+raw_15 -> leaf_16
+leaf_16  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+
+Actual, re-entrant event response is inherently similar to callbacks.
+"]
+// END RANK raw_15
+
+prose_4 -> { raw_17}
+{rank=same; raw_17}
+
+raw_17 [label="raw"]
+
+
+// END RANK prose_4
+
+raw_17 -> leaf_18
+leaf_18  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+First-class continuations are arguably the best way to model this.
+"]
+// END RANK raw_17
+
+prose_5 -> { raw_19}
+{rank=same; raw_19}
+
+raw_19 [label="raw"]
+
+
+// END RANK prose_5
+
+raw_19 -> leaf_20
+leaf_20  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Registered callbacks are a) usable from stock LuaJIT and b) more dynamic than
+continuations.  If you want that dynamicism with continuations, you can of
+course have it, but you still have to write it.
+"]
+// END RANK raw_19
+
+prose_6 -> { raw_21}
+{rank=same; raw_21}
+
+raw_21 [label="raw"]
+
+
+// END RANK prose_6
+
+raw_21 -> leaf_22
+leaf_22  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Since we do want to be able to update handlers, we don't need the extra layer.
+"]
+// END RANK raw_21
+
+prose_7 -> { raw_23 prespace_24 literal_25 raw_26 prespace_27 literal_28 raw_29}
+{rank=same; raw_23 prespace_24 literal_25 raw_26 prespace_27 literal_28 raw_29}
+
+raw_23 [label="raw"]
+
+prespace_24 [label="prespace"]
+
+literal_25 [label="literal"]
+
+raw_26 [label="raw"]
+
+prespace_27 [label="prespace"]
+
+literal_28 [label="literal"]
+
+raw_29 [label="raw"]
+
+
+// END RANK prose_7
+
+raw_23 -> leaf_30
+leaf_30  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+To set up a watcher, register"]
+// END RANK raw_23
+
+prespace_24 -> leaf_31
+leaf_31  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_24
+
+literal_25 -> leaf_32
+leaf_32  [color=Gray,shape=rectangle,fontname=Inconsolata,label="watcher:onchange(fname)"]
+// END RANK literal_25
+
+raw_26 -> leaf_33
+leaf_33  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" and/or"]
+// END RANK raw_26
+
+prespace_27 -> leaf_34
+leaf_34  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK prespace_27
+
+literal_28 -> leaf_35
+leaf_35  [color=Gray,shape=rectangle,fontname=Inconsolata,label="watcher:onrename(fname)"]
+// END RANK literal_28
+
+raw_29 -> leaf_36
+leaf_36  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
+"]
+// END RANK raw_29
+
+prose_8 -> { raw_37}
+{rank=same; raw_37}
+
+raw_37 [label="raw"]
+
+
+// END RANK prose_8
+
+raw_37 -> leaf_38
+leaf_38  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+This can be done on creation, after creation, or after setting the watch.
+"]
+// END RANK raw_37
+
+prose_9 -> { raw_39 prespace_40 literal_41 raw_42}
+{rank=same; raw_39 prespace_40 literal_41 raw_42}
+
+raw_39 [label="raw"]
+
+prespace_40 [label="prespace"]
+
+literal_41 [label="literal"]
+
+raw_42 [label="raw"]
+
+
+// END RANK prose_9
+
+raw_39 -> leaf_43
+leaf_43  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+To stop watching, call"]
+// END RANK raw_39
+
+prespace_40 -> leaf_44
+leaf_44  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_40
+
+literal_41 -> leaf_45
+leaf_45  [color=Gray,shape=rectangle,fontname=Inconsolata,label="watcher:stop()"]
+// END RANK literal_41
+
+raw_42 -> leaf_46
+leaf_46  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
+"]
+// END RANK raw_42
+
+codeblock_10 -> leaf_47
+leaf_47  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local uv = require \"luv\"
+
+local function __gc(fse)
+   print \"Collected, stopping event\"
+   uv.fs_event_stop(fse)
+end
+fse_MT = {__gc = __gc}
+
+local function watch(watcher, dir, recur)
+    watcher.dir = dir
+    if recur == nil then
+        recur = true
+    end
+    local fse = uv.new_fs_event()
+    setmetatable(fse, fse_MT)
+    watcher.fse = fse
+    uv.fs_event_start(fse, dir,{recursive = recur},function (err,fname,status)
+        if(err) then
+            print(\"Error \"..err)
+        else
+            local ev = nil
+            for k,v in pairs(status) do
+                ev = k
+            end
+            if ev == \"change\" then
+               watcher:onchange(fname)
+            elseif ev == \"rename\" then
+               watcher:onrename(fname)
+            else
+               print(\"Unrecognized event in watch(\" .. dir .. \"): \" ..ev)
+            end
+        end
+    end)
+end"]
+// END RANK codeblock_10
+
+codeblock_11 -> leaf_48
+leaf_48  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function stop(watcher)
+   uv.fs_event_stop(watcher.fse)
+end"]
+// END RANK codeblock_11
+
+codeblock_12 -> leaf_49
+leaf_49  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local _W = {__call = watch}
+_W.__index = _W
+
+local function Watcher(handlers)
+   handlers = handlers or {}
+   local watcher = {}
+   watcher.onchange = handlers.onchange or function() end
+   watcher.onrename = handlers.onrename or function() end
+   watcher.stop = stop
+   return setmetatable(watcher, _W)
+end
+
+_W.idEst = _W"]
+// END RANK codeblock_12
+
+codeblock_13 -> leaf_50
+leaf_50  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return Watcher"]
+// END RANK codeblock_13
+
+
+}
