@@ -36,22 +36,20 @@ local hints = { field = C.color.field,
 local anti_G = {}
 anti_G[_G] = "_G"
 
+local scrub -- this takes escapes out
 function C.allNames()
    local function allN(t, aG, pre)
       if pre ~= "" then
          pre = pre .. "."
       end
-      if pre == "io." then print(type(t)) end
       for k, v in pairs(t) do
-         if (type(v) == "table") then
+         T = type(v)
+         if (T == "table") then
             if not aG[v] then
-               if pre == "io." then
-                  print("adding " .. pre .. k)
-               end
                aG[v] = pre .. k
                allN(v, aG, k)
             end
-         else
+         elseif T == "function" then
             aG[v] = pre .. k
          end
       end
@@ -73,7 +71,7 @@ local function tabulate(tab, depth)
       depth = 0
    end
    if depth > 2 then
-      return c.table(tostring(tab))
+      return ts(tab, "tab_name")
    end
    local indent = ("  "):rep(depth)
    -- Check to see if this is an array
@@ -85,7 +83,6 @@ local function tabulate(tab, depth)
       end
       i = i + 1
    end
-
    local first = true
    local lines = {}
    i = 1
@@ -117,14 +114,24 @@ end
 
 
 
+scrub = function (str)
+   return string.gsub(str, "\27", "\\27")
+end
+
 local find, sub = string.find, string.sub
 ts = function (value, hint)
-   local str = tostring(value)
+   local str = scrub(tostring(value))
    if hint == "" then
       return str -- or just use tostring()?
    end
-   if hint then
+   if hint and hint ~= "tab_name" then
       return hints[hint](str)
+   elseif hint == "tab_name" then
+      if anti_G[value] then
+         return c.table(anti_G[value])
+      else
+         return c.table(str)
+      end
    end
 
    local typica = type(value)
