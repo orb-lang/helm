@@ -155,15 +155,17 @@ local e = function(str)
    return c.stresc(str) .. c.string
 end
 
-C.e = e --remove
-
-local escPat = core.spatToLit(e("\\").."27")
+local function ctrl_pr(str)
+   return "\\" .. string.byte(str)
+end
 
 scrub = function (str)
    return str:gsub("\\", e("\\"))
-          :gsub("\27", e("\\27"))
-          :gsub("%z", e("\\0"))
-          :gsub("\n", e("\\n")):gsub("\r", e("\\r")):gsub("\t", e("\\t"))
+             :gsub("%z", e("\\0"))
+             :gsub("\n", e("\\n"))
+             :gsub("\r", e("\\r"))
+             :gsub("\t", e("\\t"))
+             :gsub("%c", e(ctrl_pr(str)))
 end
 ```
 ### ts

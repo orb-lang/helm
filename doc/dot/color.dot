@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 238"]
+doc_0 [label="doc - 240"]
 
 
 doc_0 -> { section_1}
@@ -31,7 +31,7 @@ prose_7 [label="prose"]
 
 codeblock_8 [label="code block 19-48"]
 
-section_9 [label="section: 52-171"]
+section_9 [label="section: 52-173"]
 
 
 // END RANK section_1
@@ -258,9 +258,9 @@ prose_57 [label="prose"]
 
 codeblock_58 [label="code block 55-91"]
 
-section_59 [label="section: 94-171"]
+section_59 [label="section: 94-173"]
 
-section_60 [label="section: 172-238"]
+section_60 [label="section: 174-240"]
 
 
 // END RANK section_9
@@ -332,7 +332,7 @@ codeblock_67 [label="code block 98-148"]
 
 prose_68 [label="prose"]
 
-codeblock_69 [label="code block 153-169"]
+codeblock_69 [label="code block 153-171"]
 
 
 // END RANK section_59
@@ -429,15 +429,17 @@ local e = function(str)
    return c.stresc(str) .. c.string
 end
 
-C.e = e --remove
-
-local escPat = core.spatToLit(e(\"\\\\\")..\"27\")
+local function ctrl_pr(str)
+   return \"\\\\\" .. string.byte(str)
+end
 
 scrub = function (str)
    return str:gsub(\"\\\\\", e(\"\\\\\"))
-          :gsub(\"\\27\", e(\"\\\\27\"))
-          :gsub(\"%z\", e(\"\\\\0\"))
-          :gsub(\"\\n\", e(\"\\\\n\")):gsub(\"\\r\", e(\"\\\\r\")):gsub(\"\\t\", e(\"\\\\t\"))
+             :gsub(\"%z\", e(\"\\\\0\"))
+             :gsub(\"\\n\", e(\"\\\\n\"))
+             :gsub(\"\\r\", e(\"\\\\r\"))
+             :gsub(\"\\t\", e(\"\\\\t\"))
+             :gsub(\"%c\", e(ctrl_pr(str)))
 end"]
 // END RANK codeblock_69
 
@@ -448,9 +450,9 @@ header_77 [label="3 : ts"]
 
 prose_78 [label="prose"]
 
-codeblock_79 [label="code block 176-234"]
+codeblock_79 [label="code block 178-236"]
 
-codeblock_80 [label="code block 236-238"]
+codeblock_80 [label="code block 238-240"]
 
 
 // END RANK section_60
