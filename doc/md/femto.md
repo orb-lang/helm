@@ -18,6 +18,8 @@ sql = require "sqlite"
 lfs = require "lfs"
 ffi = require "ffi"
 
+ffi.reflect = require "reflect"
+
 uv = require "luv"
 
 L = require "lpeg"
@@ -25,6 +27,8 @@ L = require "lpeg"
 a = require "anterm"
 
 c = require "color"
+
+core = require "core"
 
 watch = require "watcher"
 ```

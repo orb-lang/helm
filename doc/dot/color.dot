@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 231"]
+doc_0 [label="doc - 238"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-49"]
+section_1 [label="section: 1-51"]
 
 
 // END RANK doc_0
@@ -29,9 +29,9 @@ prose_6 [label="prose"]
 
 prose_7 [label="prose"]
 
-codeblock_8 [label="code block 19-46"]
+codeblock_8 [label="code block 19-48"]
 
-section_9 [label="section: 50-164"]
+section_9 [label="section: 52-171"]
 
 
 // END RANK section_1
@@ -221,6 +221,8 @@ leaf_54  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
 codeblock_8 -> leaf_55
 leaf_55  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local a = require \"anterm\"
 
+local core = require \"core\"
+
 local WIDE_TABLE = 200 -- should be tty-specific
 
 local C = {}
@@ -254,11 +256,11 @@ header_56 [label="2 : ts(value)"]
 
 prose_57 [label="prose"]
 
-codeblock_58 [label="code block 53-89"]
+codeblock_58 [label="code block 55-91"]
 
-section_59 [label="section: 92-164"]
+section_59 [label="section: 94-171"]
 
-section_60 [label="section: 165-231"]
+section_60 [label="section: 172-238"]
 
 
 // END RANK section_9
@@ -300,7 +302,7 @@ function C.allNames()
          if (T == \"table\") then
             if not aG[v] then
                aG[v] = pre .. k
-               allN(v, aG, k)
+               allN(v, aG, pre .. k)
             end
          elseif T == \"function\" or
             T == \"thread\" or
@@ -326,11 +328,11 @@ header_65 [label="3 : tabulator"]
 
 prose_66 [label="prose"]
 
-codeblock_67 [label="code block 96-146"]
+codeblock_67 [label="code block 98-148"]
 
 prose_68 [label="prose"]
 
-codeblock_69 [label="code block 151-162"]
+codeblock_69 [label="code block 153-169"]
 
 
 // END RANK section_59
@@ -427,9 +429,14 @@ local e = function(str)
    return c.stresc(str) .. c.string
 end
 
+C.e = e --remove
+
+local escPat = core.spatToLit(e(\"\\\\\")..\"27\")
+
 scrub = function (str)
-   return string.gsub(str, \"\\27\", e(\"\\\\27\"))
-          :gsub(\"\\\\\", e(\"\\\\\")):gsub(\"%z\", e(\"\\\\0\"))
+   return str:gsub(\"\\\\\", e(\"\\\\\"))
+          :gsub(\"\\27\", e(\"\\\\27\"))
+          :gsub(\"%z\", e(\"\\\\0\"))
           :gsub(\"\\n\", e(\"\\\\n\")):gsub(\"\\r\", e(\"\\\\r\")):gsub(\"\\t\", e(\"\\\\t\"))
 end"]
 // END RANK codeblock_69
@@ -441,9 +448,9 @@ header_77 [label="3 : ts"]
 
 prose_78 [label="prose"]
 
-codeblock_79 [label="code block 169-227"]
+codeblock_79 [label="code block 176-234"]
 
-codeblock_80 [label="code block 229-231"]
+codeblock_80 [label="code block 236-238"]
 
 
 // END RANK section_60

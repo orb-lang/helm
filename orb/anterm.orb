@@ -123,36 +123,36 @@ local function byte_panic(byte_p)
     end
 end
 
+local x256_store = {}
+
 local function ansi_fg(byte)
-    local store = {} -- repeated allocation is a sin.
     local function make (byte)
         byte_panic(byte)
         local color = { value = schar(27).."[38;5;"..byte.."m",
                         kind = "fg" }
         return setmetatable(color, colormt)
     end
-    if store[byte] then
-        return store[byte]
+    if x256_store[byte] then
+        return x256_store[byte]
     else
         local color = make(byte)
-        store[byte] = color
+        x256_store[byte] = color
         return color
     end
 end
 
 local function ansi_bg(byte)
-    local store = {}
     local function make (byte)
         byte_panic(byte)
         local color = { value = schar(27).."[48;5;"..byte.."m",
                         kind = "bg" }
         return setmetatable(color, colormt)
     end
-    if store[byte] then
-        return store[byte]
+    if x256_store[byte] then
+        return x256_store[byte]
     else
         local color = make(byte)
-        store[byte] = color
+        x256_store[byte] = color
         return color
     end
 end

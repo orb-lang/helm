@@ -19,6 +19,8 @@
 
 local a = require "anterm"
 
+local core = require "core"
+
 local WIDE_TABLE = 200 -- should be tty-specific
 
 local C = {}
@@ -69,7 +71,7 @@ function C.allNames()
          if (T == "table") then
             if not aG[v] then
                aG[v] = pre .. k
-               allN(v, aG, k)
+               allN(v, aG, pre .. k)
             end
          elseif T == "function" or
             T == "thread" or
@@ -154,9 +156,14 @@ local e = function(str)
    return c.stresc(str) .. c.string
 end
 
+C.e = e --remove
+
+local escPat = core.spatToLit(e("\\").."27")
+
 scrub = function (str)
-   return string.gsub(str, "\27", e("\\27"))
-          :gsub("\\", e("\\")):gsub("%z", e("\\0"))
+   return str:gsub("\\", e("\\"))
+          :gsub("\27", e("\\27"))
+          :gsub("%z", e("\\0"))
           :gsub("\n", e("\\n")):gsub("\r", e("\\r")):gsub("\t", e("\\t"))
 end
 

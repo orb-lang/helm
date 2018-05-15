@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 179"]
+doc_0 [label="doc - 183"]
 
 
 doc_0 -> { section_1}
@@ -23,7 +23,7 @@ prose_3 [label="prose"]
 
 prose_4 [label="prose"]
 
-section_5 [label="section: 9-31"]
+section_5 [label="section: 9-35"]
 
 
 // END RANK section_1
@@ -70,9 +70,9 @@ header_11 [label="2 : includes"]
 
 prose_12 [label="prose"]
 
-codeblock_13 [label="code block 14-29"]
+codeblock_13 [label="code block 14-33"]
 
-section_14 [label="section: 32-179"]
+section_14 [label="section: 36-183"]
 
 
 // END RANK section_5
@@ -103,6 +103,8 @@ leaf_18  [color=Gray,shape=rectangle,fontname=Inconsolata,label="sql = require \
 lfs = require \"lfs\"
 ffi = require \"ffi\"
 
+ffi.reflect = require \"reflect\"
+
 uv = require \"luv\"
 
 L = require \"lpeg\"
@@ -110,6 +112,8 @@ L = require \"lpeg\"
 a = require \"anterm\"
 
 c = require \"color\"
+
+core = require \"core\"
 
 watch = require \"watcher\""]
 // END RANK codeblock_13
@@ -121,7 +125,7 @@ header_19 [label="4 : utils"]
 
 prose_20 [label="prose"]
 
-codeblock_21 [label="code block 34-179"]
+codeblock_21 [label="code block 38-183"]
 
 
 // END RANK section_14
