@@ -46,6 +46,7 @@ C.color.userdata = a.fg24(230, 145, 23)
 C.color.cdata    = a.fg24(200, 115, 0)
 C.color.alert    = a.fg24(250, 0, 40)
 C.color.base     = a.fg24(200, 200, 200)
+C.color.mt       = a.fg24(242, 0, 234)
 #/lua
 
 
@@ -55,7 +56,9 @@ C.color.base     = a.fg24(200, 200, 200)
 
 #!lua
 C.color.hints = { field = C.color.field,
-                  fn  = C.color.func }
+                  fn    = C.color.func,
+                  mt    = C.color.mt }
+
 local hints = C.color.hints
 
 local c = C.color
@@ -165,7 +168,7 @@ local function tabulate(tab, depth)
    local mt = ""
    local _M = getmetatable(tab)
    if _M then
-      mt = ts(_M, "tab_name") .. c.base(" = ") .. tabulate(_M, depth + 1)
+      mt = ts(_M, "mt") .. c.base(" = ") .. tabulate(_M, depth + 1)
       lines[1] = mt
       i = 2
    else
