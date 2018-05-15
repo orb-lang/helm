@@ -115,8 +115,6 @@ function colormt:__call(s)
     end
 end
 
-colormt.__metatable = {}
-
 local function byte_panic(byte_p)
        if not byte_p or not (0 <= byte_p and byte_p <= 255) then
         error "xterm value must be 8 bit unsigned"

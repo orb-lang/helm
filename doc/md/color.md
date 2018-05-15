@@ -61,27 +61,46 @@ local hints = C.color.hints
 local c = C.color
 local anti_G = {}
 
+local sort = table.sort
+
 function C.allNames()
    anti_G[_G] = "_G"
    local function allN(t, aG, pre)
       if pre ~= "" then
          pre = pre .. "."
       end
+      sort(t)
       for k, v in pairs(t) do
          T = type(v)
          if (T == "table") then
+            key = pre .. k
             if not aG[v] then
-               aG[v] = pre .. k
+               aG[v] = key
                if not (pre == "" and k == "package") then
-                  allN(v, aG, pre .. k)
+                  allN(v, aG, key)
+               end
+            else
+               -- tiebreaker on length
+               local kv = aG[v]
+               if #kv > #key then
+                  -- quadradic lol
+                  aG[v] = key
+                  allN(v, aG, key)
                end
             end
             local _M = getmetatable(v)
-            if _M and not aG[_M] then
-               print("metatable  for " .. pre .. k)
-               local _M_id = "⟨" .. pre .. k .. "⟩"
-               aG[_M] = _M_id
-               allN(_M, aG, _M_id)
+            local _M_id = _M and "⟨" .. pre .. k .. "⟩" or ""
+            if _M then
+               if not aG[_M] then
+                  allN(_M, aG, _M_id)
+                  aG[_M] = _M_id
+               else
+                  local aG_M_id = aG[_M]
+                  if #aG_M_id > #_M_id then
+                     allN(_M, aG, _M_id)
+                     aG[_M] = _M_id
+                  end
+               end
             end
          elseif T == "function" or
             T == "thread" or
@@ -91,7 +110,7 @@ function C.allNames()
       end
    end
    allN(_G, anti_G, "")
-   --return anti_G
+   return anti_G
 end
 
 function C.clearNames()
@@ -127,7 +146,16 @@ local function tabulate(tab, depth)
    end
    local first = true
    local lines = {}
-   i = 1
+   -- if we have a metatable, get it first
+   local mt = ""
+   local _M = getmetatable(tab)
+   if _M then
+      mt = ts(_M, "tab_name") .. c.base(" = ") .. tabulate(_M, depth + 1)
+      lines[1] = mt
+      i = 2
+   else
+      i = 1
+   end
    local estimated = 0
    for k,v in (is_array and ipairs or pairs)(tab) do
       local s

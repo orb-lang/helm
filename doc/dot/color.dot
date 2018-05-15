@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 251"]
+doc_0 [label="doc - 279"]
 
 
 doc_0 -> { section_1}
@@ -31,7 +31,7 @@ prose_7 [label="prose"]
 
 codeblock_8 [label="code block 19-48"]
 
-section_9 [label="section: 52-184"]
+section_9 [label="section: 52-212"]
 
 
 // END RANK section_1
@@ -256,11 +256,11 @@ header_56 [label="2 : ts(value)"]
 
 prose_57 [label="prose"]
 
-codeblock_58 [label="code block 55-100"]
+codeblock_58 [label="code block 55-119"]
 
-section_59 [label="section: 103-184"]
+section_59 [label="section: 122-212"]
 
-section_60 [label="section: 185-251"]
+section_60 [label="section: 213-279"]
 
 
 // END RANK section_9
@@ -291,27 +291,46 @@ local hints = C.color.hints
 local c = C.color
 local anti_G = {}
 
+local sort = table.sort
+
 function C.allNames()
    anti_G[_G] = \"_G\"
    local function allN(t, aG, pre)
       if pre ~= \"\" then
          pre = pre .. \".\"
       end
+      sort(t)
       for k, v in pairs(t) do
          T = type(v)
          if (T == \"table\") then
+            key = pre .. k
             if not aG[v] then
-               aG[v] = pre .. k
+               aG[v] = key
                if not (pre == \"\" and k == \"package\") then
-                  allN(v, aG, pre .. k)
+                  allN(v, aG, key)
+               end
+            else
+               -- tiebreaker on length
+               local kv = aG[v]
+               if #kv > #key then
+                  -- quadradic lol
+                  aG[v] = key
+                  allN(v, aG, key)
                end
             end
             local _M = getmetatable(v)
-            if _M and not aG[_M] then
-               print(\"metatable  for \" .. pre .. k)
-               local _M_id = \"⟨\" .. pre .. k .. \"⟩\"
-               aG[_M] = _M_id
-               allN(_M, aG, _M_id)
+            local _M_id = _M and \"⟨\" .. pre .. k .. \"⟩\" or \"\"
+            if _M then
+               if not aG[_M] then
+                  allN(_M, aG, _M_id)
+                  aG[_M] = _M_id
+               else
+                  local aG_M_id = aG[_M]
+                  if #aG_M_id > #_M_id then
+                     allN(_M, aG, _M_id)
+                     aG[_M] = _M_id
+                  end
+               end
             end
          elseif T == \"function\" or
             T == \"thread\" or
@@ -321,7 +340,7 @@ function C.allNames()
       end
    end
    allN(_G, anti_G, \"\")
-   --return anti_G
+   return anti_G
 end
 
 function C.clearNames()
@@ -337,11 +356,11 @@ header_65 [label="3 : tabulator"]
 
 prose_66 [label="prose"]
 
-codeblock_67 [label="code block 107-157"]
+codeblock_67 [label="code block 126-185"]
 
 prose_68 [label="prose"]
 
-codeblock_69 [label="code block 162-182"]
+codeblock_69 [label="code block 190-210"]
 
 
 // END RANK section_59
@@ -389,7 +408,16 @@ local function tabulate(tab, depth)
    end
    local first = true
    local lines = {}
-   i = 1
+   -- if we have a metatable, get it first
+   local mt = \"\"
+   local _M = getmetatable(tab)
+   if _M then
+      mt = ts(_M, \"tab_name\") .. c.base(\" = \") .. tabulate(_M, depth + 1)
+      lines[1] = mt
+      i = 2
+   else
+      i = 1
+   end
    local estimated = 0
    for k,v in (is_array and ipairs or pairs)(tab) do
       local s
@@ -461,9 +489,9 @@ header_77 [label="3 : ts"]
 
 prose_78 [label="prose"]
 
-codeblock_79 [label="code block 189-247"]
+codeblock_79 [label="code block 217-275"]
 
-codeblock_80 [label="code block 249-251"]
+codeblock_80 [label="code block 277-279"]
 
 
 // END RANK section_60

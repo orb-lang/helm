@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 221"]
+doc_0 [label="doc - 219"]
 
 
 doc_0 -> { section_1}
@@ -25,7 +25,7 @@ prose_4 [label="prose"]
 
 prose_5 [label="prose"]
 
-section_6 [label="section: 12-221"]
+section_6 [label="section: 12-219"]
 
 
 // END RANK section_1
@@ -152,7 +152,7 @@ prose_37 [label="prose"]
 
 codeblock_38 [label="code block 16-18"]
 
-codeblock_39 [label="code block 20-221"]
+codeblock_39 [label="code block 20-219"]
 
 
 // END RANK section_6
@@ -277,8 +277,6 @@ function colormt:__call(s)
         return tostring(self)
     end
 end
-
-colormt.__metatable = {}
 
 local function byte_panic(byte_p)
        if not byte_p or not (0 <= byte_p and byte_p <= 255) then
