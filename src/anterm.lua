@@ -115,6 +115,15 @@ function colormt:__call(s)
     end
 end
 
+
+
+
+
+
+
+
+
+
 local function byte_panic(byte_p)
        if not byte_p or not (0 <= byte_p and byte_p <= 255) then
         error "xterm value must be 8 bit unsigned"
@@ -155,23 +164,54 @@ local function ansi_bg(byte)
     end
 end
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local x24k = setmetatable({}, {__mode = "v"})
+
+local fg24pre = schar(27) .. "[38;2;"
+
 local function fg24(r,g,b)
    byte_panic(r)
    byte_panic(g)
    byte_panic(b)
-   local color = { value = schar(27) .. "[38;2;"
+   local color = { value = fg24pre
                            .. r .. ";" .. g .. ";" .. b .. "m",
                    kind = "fg" }
+   if x24k[color] then
+      return x24k[color]
+   end
+   x24k[color] = color
    return setmetatable(color, colormt)
 end
+
+local bg24pre = schar(27) .. "[48;2;"
 
 local function bg24(r,g,b)
    byte_panic(r)
    byte_panic(g)
    byte_panic(b)
-   local color = { value = schar(27) .. "[48;2;"
+   local color = { value = bg24pre
                            .. r .. ";" .. g .. ";" .. b .. "m",
                    kind = "bg" }
+   if x24k[color] then
+      return x24k[color]
+   end
+   x24k[color] = color
    return setmetatable(color, colormt)
 end
 

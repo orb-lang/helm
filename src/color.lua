@@ -17,6 +17,7 @@
 
 
 
+
 local a = require "anterm"
 
 local core = require "core"
@@ -27,8 +28,8 @@ local C = {}
 
 local thread_shade = a.fg24(240, 50, 100)
 
-local function thread_color(string)
-   return a.italic .. thread_shade .. string .. a.clear
+local function thread_color(str)
+   return a.italic .. thread_shade .. str .. a.clear
 end
 
 C.color = {}
@@ -41,11 +42,16 @@ C.color.truth  = a.fg(231)
 C.color.falsehood  = a.fg(94)
 C.color.nilness    = a.fg(93)
 C.color.thread     = thread_color
-C.color.field    = a.fg(111)
-C.color.userdata = a.fg24(230, 145, 23)
-C.color.cdata    = a.fg24(200, 115, 0)
-C.color.alert    = a.fg24(250, 0, 40)
-C.color.base     = a.fg24(200, 200, 200)
+C.color.field      = a.fg(111)
+C.color.userdata   = a.fg24(230, 145, 23)
+C.color.cdata      = a.fg24(200, 115, 0)
+C.color.alert      = a.fg24(250, 0, 40)
+C.color.base       = a.fg24(200, 200, 200)
+C.color.metatable  = a.fg24(242, 0, 234)
+
+
+
+
 
 
 
@@ -55,13 +61,14 @@ C.color.base     = a.fg24(200, 200, 200)
 
 
 C.color.hints = { field = C.color.field,
-                  fn  = C.color.func }
+                  fn    = C.color.func,
+                  mt    = C.color.mt }
+
 local hints = C.color.hints
 
 local c = C.color
-local anti_G = {}
+local anti_G = { _G = "_G" }
 
-local sort = table.sort
 
 
 
@@ -76,58 +83,67 @@ local function tie_break(old, new)
    return #old > #new
 end
 
-function C.allNames()
-   anti_G[_G] = "_G"
-   local function allN(t, aG, pre)
-      if pre ~= "" then
-         pre = pre .. "."
-      end
-      sort(t)
-      for k, v in pairs(t) do
-         T = type(v)
-         if (T == "table") then
-            key = pre .. k
-            if not aG[v] then
+
+
+
+
+
+
+
+
+local function addName(t, aG, pre)
+   pre = pre or ""
+   aG = aG or anti_G
+   if pre ~= "" then
+      pre = pre .. "."
+   end
+   for k, v in pairs(t) do
+      T = type(v)
+      if (T == "table") then
+         key = pre .. k
+         if not aG[v] then
+            aG[v] = key
+            if not (pre == "" and k == "package") then
+               addName(v, aG, key)
+            end
+         else
+            local kv = aG[v]
+            if tie_break(kv, key) then
+               -- quadradic lol
                aG[v] = key
-               if not (pre == "" and k == "package") then
-                  allN(v, aG, key)
-               end
-            else
-               local kv = aG[v]
-               if tie_break(kv, key) then
-                  -- quadradic lol
-                  aG[v] = key
-                  allN(v, aG, key)
-               end
+               addName(v, aG, key)
             end
-            local _M = getmetatable(v)
-            local _M_id = _M and "⟨" .. pre .. k .. "⟩" or ""
-            if _M then
-               if not aG[_M] then
-                  allN(_M, aG, _M_id)
-                  aG[_M] = _M_id
-               else
-                  local aG_M_id = aG[_M]
-                  if tie_break(aG_M_id, _M_id) then
-                     allN(_M, aG, _M_id)
-                     aG[_M] = _M_id
-                  end
-               end
-            end
-         elseif T == "function" or
-            T == "thread" or
-            T == "userdata" or
-            T == "cdata" then
-            aG[v] = pre .. k
          end
+         local _M = getmetatable(v)
+         local _M_id = _M and "⟨" .. pre .. k .. "⟩" or ""
+         if _M then
+            if not aG[_M] then
+               addName(_M, aG, _M_id)
+               aG[_M] = _M_id
+            else
+               local aG_M_id = aG[_M]
+               if tie_break(aG_M_id, _M_id) then
+                  addName(_M, aG, _M_id)
+                  aG[_M] = _M_id
+               end
+            end
+         end
+      elseif T == "function" or
+         T == "thread" or
+         T == "userdata" or
+         T == "cdata" then
+         aG[v] = pre .. k
       end
    end
-   allN(_G, anti_G, "")
-   return anti_G
+   return aG
+end
+
+function C.allNames()
+   return addName(_G)
 end
 
 function C.clearNames()
-   anti_G = {}
+   anti_G = {_G = "_G"}
    return anti_G
 end
 
@@ -165,7 +181,7 @@ local function tabulate(tab, depth)
    local mt = ""
    local _M = getmetatable(tab)
    if _M then
-      mt = ts(_M, "tab_name") .. c.base(" = ") .. tabulate(_M, depth + 1)
+      mt = ts(tab, "mt") .. c.base(" = ") .. tabulate(_M, depth + 1)
       lines[1] = mt
       i = 2
    else
@@ -236,13 +252,15 @@ ts = function (value, hint)
    if hint == "" then
       return str -- or just use tostring()?
    end
-   if hint and hint ~= "tab_name" then
-      return hints[hint](str)
-   elseif hint == "tab_name" then
-      if anti_G[value] then
-         return c.table(anti_G[value])
+   if hint then
+      if hint == "tab_name" then
+         local tab_name = anti_G[value] or "t:" .. sub(str, -6)
+         return c.table(tab_name)
+      elseif hint == "mt" then
+         local mt_name = anti_G[value] or "mt:" .. sub(str, -6)
+         return c.metatable("⟨" .. mt_name .. "⟩")
       else
-         return c.table("t:" .. sub(str, -6))
+         return hints[hint](str)
       end
    end
 

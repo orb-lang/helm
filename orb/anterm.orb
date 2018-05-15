@@ -114,7 +114,16 @@ function colormt:__call(s)
         return tostring(self)
     end
 end
+#/lua
 
+
+*** 256 color
+
+There are 512 =xterm= colors available.
+
+We memoize their creation, giving reference equality between these colors.
+
+#!lua
 local function byte_panic(byte_p)
        if not byte_p or not (0 <= byte_p and byte_p <= 255) then
         error "xterm value must be 8 bit unsigned"
@@ -154,24 +163,55 @@ local function ansi_bg(byte)
         return color
     end
 end
+#/lua
+
+
+*** fg24(r,g,b), bg24(r,g,b)
+
+This state space is far too large to retain pointers to all colorizers.
+
+One might want to write a smooth transition, and would expect the colors to be
+garbage collected after.
+
+Hence we memoize with a weak table.  The only reliable way to achieve
+reference equality between instances of a 24 bit color is to retain a pointer
+to it.
+
+Happily, this is a requirement for any comparsion.
+
+#!lua
+
+local x24k = setmetatable({}, {__mode = "v"})
+
+local fg24pre = schar(27) .. "[38;2;"
 
 local function fg24(r,g,b)
    byte_panic(r)
    byte_panic(g)
    byte_panic(b)
-   local color = { value = schar(27) .. "[38;2;"
+   local color = { value = fg24pre
                            .. r .. ";" .. g .. ";" .. b .. "m",
                    kind = "fg" }
+   if x24k[color] then
+      return x24k[color]
+   end
+   x24k[color] = color
    return setmetatable(color, colormt)
 end
+
+local bg24pre = schar(27) .. "[48;2;"
 
 local function bg24(r,g,b)
    byte_panic(r)
    byte_panic(g)
    byte_panic(b)
-   local color = { value = schar(27) .. "[48;2;"
+   local color = { value = bg24pre
                            .. r .. ";" .. g .. ";" .. b .. "m",
                    kind = "bg" }
+   if x24k[color] then
+      return x24k[color]
+   end
+   x24k[color] = color
    return setmetatable(color, colormt)
 end
 
