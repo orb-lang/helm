@@ -3,53 +3,234 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 185"]
+doc_0 [label="doc - 227"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-26"]
+section_1 [label="section: 1-49"]
 
 
 // END RANK doc_0
 
-section_1 -> { header_2 prose_3 codeblock_4 section_5}
-{rank=same; header_2 prose_3 codeblock_4 section_5}
+section_1 -> { header_2 prose_3 prose_4 prose_5 prose_6 prose_7 codeblock_8 section_9}
+{rank=same; header_2 prose_3 prose_4 prose_5 prose_6 prose_7 codeblock_8 section_9}
 
-header_2 [label="0 : "]
+header_2 [label="1 : Color"]
 
 prose_3 [label="prose"]
 
-codeblock_4 [label="code block 6-24"]
+prose_4 [label="prose"]
 
-section_5 [label="section: 27-62"]
+prose_5 [label="prose"]
+
+prose_6 [label="prose"]
+
+prose_7 [label="prose"]
+
+codeblock_8 [label="code block 19-46"]
+
+section_9 [label="section: 50-164"]
 
 
 // END RANK section_1
 
-header_2 -> leaf_6
-leaf_6  [color=Gray,shape=rectangle,fontname=Inconsolata,label="color.orb* Color"]
+header_2 -> leaf_10
+leaf_10  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Color"]
 // END RANK header_2
 
-prose_3 -> { raw_7}
-{rank=same; raw_7}
+prose_3 -> { raw_11}
+{rank=same; raw_11}
 
-raw_7 [label="raw"]
+raw_11 [label="raw"]
 
 
 // END RANK prose_3
 
-raw_7 -> leaf_8
-leaf_8  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-color.orb* Color
-"]
-// END RANK raw_7
+raw_11 -> leaf_12
+leaf_12  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
-codeblock_4 -> leaf_9
-leaf_9  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local a = require \"anterm\"
+
+Colorizer and all-purpose pretty printer.
+"]
+// END RANK raw_11
+
+prose_4 -> { raw_13 prespace_14 literal_15 raw_16}
+{rank=same; raw_13 prespace_14 literal_15 raw_16}
+
+raw_13 [label="raw"]
+
+prespace_14 [label="prespace"]
+
+literal_15 [label="literal"]
+
+raw_16 [label="raw"]
+
+
+// END RANK prose_4
+
+raw_13 -> leaf_17
+leaf_17  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+The main event is"]
+// END RANK raw_13
+
+prespace_14 -> leaf_18
+leaf_18  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_14
+
+literal_15 -> leaf_19
+leaf_19  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ts(value)"]
+// END RANK literal_15
+
+raw_16 -> leaf_20
+leaf_20  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", which unwraps tables, looks up
+names for things, and otherwise makes itself useful.
+"]
+// END RANK raw_16
+
+prose_5 -> { raw_21 prespace_22 literal_23 raw_24}
+{rank=same; raw_21 prespace_22 literal_23 raw_24}
+
+raw_21 [label="raw"]
+
+prespace_22 [label="prespace"]
+
+literal_23 [label="literal"]
+
+raw_24 [label="raw"]
+
+
+// END RANK prose_5
+
+raw_21 -> leaf_25
+leaf_25  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+The"]
+// END RANK raw_21
+
+prespace_22 -> leaf_26
+leaf_26  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_22
+
+literal_23 -> leaf_27
+leaf_27  [color=Gray,shape=rectangle,fontname=Inconsolata,label="color"]
+// END RANK literal_23
+
+raw_24 -> leaf_28
+leaf_28  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" table can be overridden by the user, but this must
+be on the field level.  A local pointer to the table is retained
+for efficiency of coding and execution.
+"]
+// END RANK raw_24
+
+prose_6 -> { raw_29 prespace_30 literal_31 raw_32 prespace_33 literal_34 raw_35}
+{rank=same; raw_29 prespace_30 literal_31 raw_32 prespace_33 literal_34 raw_35}
+
+raw_29 [label="raw"]
+
+prespace_30 [label="prespace"]
+
+literal_31 [label="literal"]
+
+raw_32 [label="raw"]
+
+prespace_33 [label="prespace"]
+
+literal_34 [label="literal"]
+
+raw_35 [label="raw"]
+
+
+// END RANK prose_6
+
+raw_29 -> leaf_36
+leaf_36  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+The third relevant field is a method,"]
+// END RANK raw_29
+
+prespace_30 -> leaf_37
+leaf_37  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_30
+
+literal_31 -> leaf_38
+leaf_38  [color=Gray,shape=rectangle,fontname=Inconsolata,label="C.allNames()"]
+// END RANK literal_31
+
+raw_32 -> leaf_39
+leaf_39  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".  There is an"]
+// END RANK raw_32
+
+prespace_33 -> leaf_40
+leaf_40  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_33
+
+literal_34 -> leaf_41
+leaf_41  [color=Gray,shape=rectangle,fontname=Inconsolata,label="anti_G"]
+// END RANK literal_34
+
+raw_35 -> leaf_42
+leaf_42  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+object, this method populates it with every reachable name for an object,
+keyed with the value itself.
+"]
+// END RANK raw_35
+
+prose_7 -> { prespace_43 literal_44 raw_45 prespace_46 literal_47 raw_48}
+{rank=same; prespace_43 literal_44 raw_45 prespace_46 literal_47 raw_48}
+
+prespace_43 [label="prespace"]
+
+literal_44 [label="literal"]
+
+raw_45 [label="raw"]
+
+prespace_46 [label="prespace"]
+
+literal_47 [label="literal"]
+
+raw_48 [label="raw"]
+
+
+// END RANK prose_7
+
+prespace_43 -> leaf_49
+leaf_49  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK prespace_43
+
+literal_44 -> leaf_50
+leaf_50  [color=Gray,shape=rectangle,fontname=Inconsolata,label="C.clearNames()"]
+// END RANK literal_44
+
+raw_45 -> leaf_51
+leaf_51  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" sets this table to"]
+// END RANK raw_45
+
+prespace_46 -> leaf_52
+leaf_52  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_46
+
+literal_47 -> leaf_53
+leaf_53  [color=Gray,shape=rectangle,fontname=Inconsolata,label="{}"]
+// END RANK literal_47
+
+raw_48 -> leaf_54
+leaf_54  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
+"]
+// END RANK raw_48
+
+codeblock_8 -> leaf_55
+leaf_55  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local a = require \"anterm\"
+
+local WIDE_TABLE = 200 -- should be tty-specific
 
 local C = {}
+
+local thread_shade = a.fg24(240, 50, 100)
+
+local function thread_color(string)
+   return a.italic .. thread_shade .. string .. a.clear
+end
+
 C.color = {}
 C.color.number = a.fg(42)
 C.color.string = a.fg(222)
@@ -58,72 +239,58 @@ C.color.table  = a.fg(64)
 C.color.func   = a.fg24(210,12,120)
 C.color.truth  = a.fg(231)
 C.color.falsehood  = a.fg(94)
-C.color.nilness   = a.fg(93)
-C.color.field  = a.fg(111)
+C.color.nilness    = a.fg(93)
+C.color.thread     = thread_color
+C.color.field    = a.fg(111)
 C.color.userdata = a.fg24(230, 145, 23)
-C.color.alert = a.fg24(250, 0, 40)
+C.color.alert    = a.fg24(250, 0, 40)
+C.color.base     = a.fg24(200, 200, 200)"]
+// END RANK codeblock_8
 
-local c = C.color"]
-// END RANK codeblock_4
+section_9 -> { header_56 prose_57 codeblock_58 section_59 section_60}
+{rank=same; header_56 prose_57 codeblock_58 section_59 section_60}
 
-section_5 -> { header_10 prose_11 prose_12 codeblock_13 section_14}
-{rank=same; header_10 prose_11 prose_12 codeblock_13 section_14}
+header_56 [label="2 : ts(value)"]
 
-header_10 [label="2 : ts(value)"]
+prose_57 [label="prose"]
 
-prose_11 [label="prose"]
+codeblock_58 [label="code block 53-89"]
 
-prose_12 [label="prose"]
+section_59 [label="section: 92-164"]
 
-codeblock_13 [label="code block 33-61"]
-
-section_14 [label="section: 63-185"]
-
-
-// END RANK section_5
-
-header_10 -> leaf_15
-leaf_15  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** ts(value)"]
-// END RANK header_10
-
-prose_11 -> { raw_16}
-{rank=same; raw_16}
-
-raw_16 [label="raw"]
+section_60 [label="section: 165-227"]
 
 
-// END RANK prose_11
+// END RANK section_9
 
-raw_16 -> leaf_17
-leaf_17  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_56 -> leaf_61
+leaf_61  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** ts(value)"]
+// END RANK header_56
 
-This is rapidly becoming something I'll move to core.
+prose_57 -> { raw_62}
+{rank=same; raw_62}
+
+raw_62 [label="raw"]
+
+
+// END RANK prose_57
+
+raw_62 -> leaf_63
+leaf_63  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
 "]
-// END RANK raw_16
+// END RANK raw_62
 
-prose_12 -> { raw_18}
-{rank=same; raw_18}
-
-raw_18 [label="raw"]
-
-
-// END RANK prose_12
-
-raw_18 -> leaf_19
-leaf_19  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-Some other part of core.
-"]
-// END RANK raw_18
-
-codeblock_13 -> leaf_20
-leaf_20  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local hints = { field = C.color.field,
+codeblock_58 -> leaf_64
+leaf_64  [color=Gray,shape=rectangle,fontname=Inconsolata,label="C.color.hints = { field = C.color.field,
                   fn  = C.color.func }
+local hints = C.color.hints
 
+local c = C.color
 local anti_G = {}
-anti_G[_G] = \"_G\"
 
-local scrub -- this takes escapes out
 function C.allNames()
+   anti_G[_G] = \"_G\"
    local function allN(t, aG, pre)
       if pre ~= \"\" then
          pre = pre .. \".\"
@@ -135,53 +302,60 @@ function C.allNames()
                aG[v] = pre .. k
                allN(v, aG, k)
             end
-         elseif T == \"function\" then
+         elseif T == \"function\" or
+            T == \"thread\" or
+            T == \"userdata\" then
             aG[v] = pre .. k
          end
       end
    end
    allN(_G, anti_G, \"\")
    return anti_G
+end
+
+function C.clearNames()
+   anti_G = {}
+   return anti_G
 end"]
-// END RANK codeblock_13
+// END RANK codeblock_58
 
-section_14 -> { header_21 prose_22 codeblock_23 codeblock_24 codeblock_25 codeblock_26}
-{rank=same; header_21 prose_22 codeblock_23 codeblock_24 codeblock_25 codeblock_26}
+section_59 -> { header_65 prose_66 codeblock_67 prose_68 codeblock_69}
+{rank=same; header_65 prose_66 codeblock_67 prose_68 codeblock_69}
 
-header_21 [label="3 : tabulator"]
+header_65 [label="3 : tabulator"]
 
-prose_22 [label="prose"]
+prose_66 [label="prose"]
 
-codeblock_23 [label="code block 65-115"]
+codeblock_67 [label="code block 96-146"]
 
-codeblock_24 [label="code block 120-131"]
+prose_68 [label="prose"]
 
-codeblock_25 [label="code block 133-181"]
-
-codeblock_26 [label="code block 183-185"]
+codeblock_69 [label="code block 151-162"]
 
 
-// END RANK section_14
+// END RANK section_59
 
-header_21 -> leaf_27
-leaf_27  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** tabulator"]
-// END RANK header_21
+header_65 -> leaf_70
+leaf_70  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** tabulator"]
+// END RANK header_65
 
-prose_22 -> { raw_28}
-{rank=same; raw_28}
+prose_66 -> { raw_71}
+{rank=same; raw_71}
 
-raw_28 [label="raw"]
+raw_71 [label="raw"]
 
 
-// END RANK prose_22
+// END RANK prose_66
 
-raw_28 -> leaf_29
-leaf_29  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_71 -> leaf_72
+leaf_72  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+This is mostly [[Tim Caswell's][https://github.com/creationix]] code.
 "]
-// END RANK raw_28
+// END RANK raw_71
 
-codeblock_23 -> leaf_30
-leaf_30  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local ts
+codeblock_67 -> leaf_73
+leaf_73  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local ts
 local function tabulate(tab, depth)
    if type(tab) ~= \"table\" then
       return ts(tab)
@@ -212,9 +386,9 @@ local function tabulate(tab, depth)
          s = \"\"
       else
          if type(k) == \"string\" and k:find(\"^[%a_][%a%d_]*$\") then
-            s = ts(k) .. c.table(\" = \")
+            s = ts(k) .. c.base(\" = \")
          else
-            s = c.table(\"[\") .. tabulate(k, 100) .. c.table(\"] = \")
+            s = c.base(\"[\") .. tabulate(k, 100) .. c.base(\"] = \")
          end
       end
       s = s .. tabulate(v, depth + 1)
@@ -222,18 +396,33 @@ local function tabulate(tab, depth)
       estimated = estimated + #s
       i = i + 1
    end
-   if estimated > 200 then
-      return \"{\\n  \" .. indent
+   if estimated > WIDE_TABLE then
+      return c.base(\"{\\n  \") .. indent
          .. table.concat(lines, \",\\n  \" .. indent)
-         .. \"\\n\" .. indent .. \"}\"
+         .. \"\\n\" .. indent .. c.base(\"}\")
    else
-      return c.table(\"{ \") .. table.concat(lines, \", \") .. c.table(\" }\")
+      return c.base(\"{ \") .. table.concat(lines, c.base(\", \")) .. c.base(\" }\")
    end
 end"]
-// END RANK codeblock_23
+// END RANK codeblock_67
 
-codeblock_24 -> leaf_31
-leaf_31  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local find, sub, gsub = string.find, string.sub
+prose_68 -> { raw_74}
+{rank=same; raw_74}
+
+raw_74 [label="raw"]
+
+
+// END RANK prose_68
+
+raw_74 -> leaf_75
+leaf_75  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+We make a small wrapper function which resets string color in between
+escapes, then gsub the daylights out of it.
+"]
+// END RANK raw_74
+
+codeblock_69 -> leaf_76
+leaf_76  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local find, sub, gsub = string.find, string.sub
 local e = function(str)
    return c.stresc(str) .. c.string
 end
@@ -243,10 +432,43 @@ scrub = function (str)
           :gsub(\"\\\\\", e(\"\\\\\")):gsub(\"%z\", e(\"\\\\0\"))
           :gsub(\"\\n\", e(\"\\\\n\")):gsub(\"\\r\", e(\"\\\\r\")):gsub(\"\\t\", e(\"\\\\t\"))
 end"]
-// END RANK codeblock_24
+// END RANK codeblock_69
 
-codeblock_25 -> leaf_32
-leaf_32  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ts = function (value, hint)
+section_60 -> { header_77 prose_78 codeblock_79 codeblock_80}
+{rank=same; header_77 prose_78 codeblock_79 codeblock_80}
+
+header_77 [label="3 : ts"]
+
+prose_78 [label="prose"]
+
+codeblock_79 [label="code block 169-223"]
+
+codeblock_80 [label="code block 225-227"]
+
+
+// END RANK section_60
+
+header_77 -> leaf_81
+leaf_81  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** ts"]
+// END RANK header_77
+
+prose_78 -> { raw_82}
+{rank=same; raw_82}
+
+raw_82 [label="raw"]
+
+
+// END RANK prose_78
+
+raw_82 -> leaf_83
+leaf_83  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+Lots of small, nice things in this one.
+"]
+// END RANK raw_82
+
+codeblock_79 -> leaf_84
+leaf_84  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ts = function (value, hint)
    local str = scrub(tostring(value))
    -- For cases more specific than mere type,
    -- we have hints:
@@ -259,7 +481,7 @@ leaf_32  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ts = function (
       if anti_G[value] then
          return c.table(anti_G[value])
       else
-         return c.table(\"t:\" .. string.sub(str, -6))
+         return c.table(\"t:\" .. sub(str, -6))
       end
    end
 
@@ -273,7 +495,7 @@ leaf_32  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ts = function (
          -- we have a global name for this function
          str = c.func(anti_G[value])
       else
-         local func_handle = \"f:\" .. string.sub(str, -6)
+         local func_handle = \"f:\" .. sub(str, -6)
          str = c.func(func_handle)
       end
    elseif typica == \"boolean\" then
@@ -282,6 +504,12 @@ leaf_32  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ts = function (
       str = c.string(str)
    elseif typica == \"nil\" then
       str = c.nilness(str)
+   elseif typica == \"thread\" then
+      if anti_G[value] then
+         str = c.thread(\"coro:\" .. anti_G[value])
+      else
+         str = c.thread(\"coro:\" .. sub(str, -6))
+      end
    elseif typica == \"userdata\" then
       local name = find(str, \":\")
       if name then
@@ -293,11 +521,11 @@ leaf_32  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ts = function (
    return str
 end
 C.ts = ts"]
-// END RANK codeblock_25
+// END RANK codeblock_79
 
-codeblock_26 -> leaf_33
-leaf_33  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return C"]
-// END RANK codeblock_26
+codeblock_80 -> leaf_85
+leaf_85  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return C"]
+// END RANK codeblock_80
 
 
 }

@@ -1,10 +1,38 @@
- 
-color.orb* Color
+# Color
+
+
+Colorizer and all-purpose pretty printer.
+
+
+The main event is ``ts(value)``, which unwraps tables, looks up
+names for things, and otherwise makes itself useful.
+
+
+The ``color`` table can be overridden by the user, but this must
+be on the field level.  A local pointer to the table is retained
+for efficiency of coding and execution.
+
+
+The third relevant field is a method, ``C.allNames()``.  There is an ``anti_G``
+object, this method populates it with every reachable name for an object,
+keyed with the value itself.
+
+
+``C.clearNames()`` sets this table to ``{}``.
 
 ```lua
 local a = require "anterm"
 
+local WIDE_TABLE = 200 -- should be tty-specific
+
 local C = {}
+
+local thread_shade = a.fg24(240, 50, 100)
+
+local function thread_color(string)
+   return a.italic .. thread_shade .. string .. a.clear
+end
+
 C.color = {}
 C.color.number = a.fg(42)
 C.color.string = a.fg(222)
@@ -13,29 +41,26 @@ C.color.table  = a.fg(64)
 C.color.func   = a.fg24(210,12,120)
 C.color.truth  = a.fg(231)
 C.color.falsehood  = a.fg(94)
-C.color.nilness   = a.fg(93)
-C.color.field  = a.fg(111)
+C.color.nilness    = a.fg(93)
+C.color.thread     = thread_color
+C.color.field    = a.fg(111)
 C.color.userdata = a.fg24(230, 145, 23)
-C.color.alert = a.fg24(250, 0, 40)
-
-local c = C.color
+C.color.alert    = a.fg24(250, 0, 40)
+C.color.base     = a.fg24(200, 200, 200)
 ```
 ## ts(value)
 
-This is rapidly becoming something I'll move to core.
-
-
-Some other part of core.
 
 ```lua
-local hints = { field = C.color.field,
+C.color.hints = { field = C.color.field,
                   fn  = C.color.func }
+local hints = C.color.hints
 
+local c = C.color
 local anti_G = {}
-anti_G[_G] = "_G"
 
-local scrub -- this takes escapes out
 function C.allNames()
+   anti_G[_G] = "_G"
    local function allN(t, aG, pre)
       if pre ~= "" then
          pre = pre .. "."
@@ -47,7 +72,9 @@ function C.allNames()
                aG[v] = pre .. k
                allN(v, aG, k)
             end
-         elseif T == "function" then
+         elseif T == "function" or
+            T == "thread" or
+            T == "userdata" then
             aG[v] = pre .. k
          end
       end
@@ -55,8 +82,15 @@ function C.allNames()
    allN(_G, anti_G, "")
    return anti_G
 end
+
+function C.clearNames()
+   anti_G = {}
+   return anti_G
+end
 ```
 ### tabulator
+
+This is mostly [[Tim Caswell's][https://github.com/creationix]] code.
 
 ```lua
 local ts
@@ -90,9 +124,9 @@ local function tabulate(tab, depth)
          s = ""
       else
          if type(k) == "string" and k:find("^[%a_][%a%d_]*$") then
-            s = ts(k) .. c.table(" = ")
+            s = ts(k) .. c.base(" = ")
          else
-            s = c.table("[") .. tabulate(k, 100) .. c.table("] = ")
+            s = c.base("[") .. tabulate(k, 100) .. c.base("] = ")
          end
       end
       s = s .. tabulate(v, depth + 1)
@@ -100,15 +134,19 @@ local function tabulate(tab, depth)
       estimated = estimated + #s
       i = i + 1
    end
-   if estimated > 200 then
-      return "{\n  " .. indent
+   if estimated > WIDE_TABLE then
+      return c.base("{\n  ") .. indent
          .. table.concat(lines, ",\n  " .. indent)
-         .. "\n" .. indent .. "}"
+         .. "\n" .. indent .. c.base("}")
    else
-      return c.table("{ ") .. table.concat(lines, ", ") .. c.table(" }")
+      return c.base("{ ") .. table.concat(lines, c.base(", ")) .. c.base(" }")
    end
 end
 ```
+
+We make a small wrapper function which resets string color in between
+escapes, then gsub the daylights out of it.
+
 ```lua
 local find, sub, gsub = string.find, string.sub
 local e = function(str)
@@ -121,6 +159,10 @@ scrub = function (str)
           :gsub("\n", e("\\n")):gsub("\r", e("\\r")):gsub("\t", e("\\t"))
 end
 ```
+### ts
+
+Lots of small, nice things in this one.
+
 ```lua
 ts = function (value, hint)
    local str = scrub(tostring(value))
@@ -135,7 +177,7 @@ ts = function (value, hint)
       if anti_G[value] then
          return c.table(anti_G[value])
       else
-         return c.table("t:" .. string.sub(str, -6))
+         return c.table("t:" .. sub(str, -6))
       end
    end
 
@@ -149,7 +191,7 @@ ts = function (value, hint)
          -- we have a global name for this function
          str = c.func(anti_G[value])
       else
-         local func_handle = "f:" .. string.sub(str, -6)
+         local func_handle = "f:" .. sub(str, -6)
          str = c.func(func_handle)
       end
    elseif typica == "boolean" then
@@ -158,6 +200,12 @@ ts = function (value, hint)
       str = c.string(str)
    elseif typica == "nil" then
       str = c.nilness(str)
+   elseif typica == "thread" then
+      if anti_G[value] then
+         str = c.thread("coro:" .. anti_G[value])
+      else
+         str = c.thread("coro:" .. sub(str, -6))
+      end
    elseif typica == "userdata" then
       local name = find(str, ":")
       if name then
