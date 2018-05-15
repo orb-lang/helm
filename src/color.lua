@@ -71,7 +71,16 @@ function C.allNames()
          if (T == "table") then
             if not aG[v] then
                aG[v] = pre .. k
-               allN(v, aG, pre .. k)
+               if not (pre == "" and k == "package") then
+                  allN(v, aG, pre .. k)
+               end
+            end
+            local _M = getmetatable(v)
+            if _M and not aG[_M] then
+               print("metatable  for " .. pre .. k)
+               local _M_id = "⟨" .. pre .. k .. "⟩"
+               aG[_M] = _M_id
+               allN(_M, aG, _M_id)
             end
          elseif T == "function" or
             T == "thread" or
@@ -81,7 +90,7 @@ function C.allNames()
       end
    end
    allN(_G, anti_G, "")
-   return anti_G
+   --return anti_G
 end
 
 function C.clearNames()
@@ -151,18 +160,20 @@ end
 
 
 
-local find, sub, gsub = string.find, string.sub
+local find, sub, gsub, byte = string.find, string.sub,
+                              string.gsub, string.byte
+
 local e = function(str)
    return c.stresc(str) .. c.string
 end
 
+-- Turn control characters into their byte rep
 local function ctrl_pr(str)
-   return "\\" .. string.byte(str)
+   return "\\" .. byte(str)
 end
 
 scrub = function (str)
    return str:gsub("\\", e("\\"))
-             :gsub("%z", e("\\0"))
              :gsub("\n", e("\\n"))
              :gsub("\r", e("\\r"))
              :gsub("\t", e("\\t"))

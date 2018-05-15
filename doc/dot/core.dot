@@ -1,0 +1,96 @@
+digraph lpegNode {
+
+node [fontname=Helvetica]
+edge [style=dashed]
+
+doc_0 [label="doc - 32"]
+
+
+doc_0 -> { section_1}
+{rank=same; section_1}
+
+section_1 [label="section: 1-32"]
+
+
+// END RANK doc_0
+
+section_1 -> { header_2 prose_3 codeblock_4}
+{rank=same; header_2 prose_3 codeblock_4}
+
+header_2 [label="1 : Core"]
+
+prose_3 [label="prose"]
+
+codeblock_4 [label="code block 6-32"]
+
+
+// END RANK section_1
+
+header_2 -> leaf_5
+leaf_5  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Core"]
+// END RANK header_2
+
+prose_3 -> { raw_6 prespace_7 literal_8 raw_9}
+{rank=same; raw_6 prespace_7 literal_8 raw_9}
+
+raw_6 [label="raw"]
+
+prespace_7 [label="prespace"]
+
+literal_8 [label="literal"]
+
+raw_9 [label="raw"]
+
+
+// END RANK prose_3
+
+raw_6 -> leaf_10
+leaf_10  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+
+All"]
+// END RANK raw_6
+
+prespace_7 -> leaf_11
+leaf_11  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_7
+
+literal_8 -> leaf_12
+leaf_12  [color=Gray,shape=rectangle,fontname=Inconsolata,label="core"]
+// END RANK literal_8
+
+raw_9 -> leaf_13
+leaf_13  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" modules are supposed to end up in one consistent namespace.
+"]
+// END RANK raw_9
+
+codeblock_4 -> leaf_14
+leaf_14  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local escape_lua_pattern
+do
+  local matches =
+  {
+    [\"^\"] = \"%^\";
+    [\"$\"] = \"%$\";
+    [\"(\"] = \"%(\";
+    [\")\"] = \"%)\";
+    [\"%\"] = \"%%\";
+    [\".\"] = \"%.\";
+    [\"[\"] = \"%[\";
+    [\"]\"] = \"%]\";
+    [\"*\"] = \"%*\";
+    [\"+\"] = \"%+\";
+    [\"-\"] = \"%-\";
+    [\"?\"] = \"%?\";
+    [\"\\0\"] = \"%z\";
+  }
+
+  spatToLit = function(s)
+    return (s:gsub(\".\", matches))
+  end
+end
+
+return { spatToLit = spatToLit}"]
+// END RANK codeblock_4
+
+
+}

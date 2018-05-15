@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 240"]
+doc_0 [label="doc - 251"]
 
 
 doc_0 -> { section_1}
@@ -31,7 +31,7 @@ prose_7 [label="prose"]
 
 codeblock_8 [label="code block 19-48"]
 
-section_9 [label="section: 52-173"]
+section_9 [label="section: 52-184"]
 
 
 // END RANK section_1
@@ -256,11 +256,11 @@ header_56 [label="2 : ts(value)"]
 
 prose_57 [label="prose"]
 
-codeblock_58 [label="code block 55-91"]
+codeblock_58 [label="code block 55-100"]
 
-section_59 [label="section: 94-173"]
+section_59 [label="section: 103-184"]
 
-section_60 [label="section: 174-240"]
+section_60 [label="section: 185-251"]
 
 
 // END RANK section_9
@@ -302,7 +302,16 @@ function C.allNames()
          if (T == \"table\") then
             if not aG[v] then
                aG[v] = pre .. k
-               allN(v, aG, pre .. k)
+               if not (pre == \"\" and k == \"package\") then
+                  allN(v, aG, pre .. k)
+               end
+            end
+            local _M = getmetatable(v)
+            if _M and not aG[_M] then
+               print(\"metatable  for \" .. pre .. k)
+               local _M_id = \"⟨\" .. pre .. k .. \"⟩\"
+               aG[_M] = _M_id
+               allN(_M, aG, _M_id)
             end
          elseif T == \"function\" or
             T == \"thread\" or
@@ -312,7 +321,7 @@ function C.allNames()
       end
    end
    allN(_G, anti_G, \"\")
-   return anti_G
+   --return anti_G
 end
 
 function C.clearNames()
@@ -328,11 +337,11 @@ header_65 [label="3 : tabulator"]
 
 prose_66 [label="prose"]
 
-codeblock_67 [label="code block 98-148"]
+codeblock_67 [label="code block 107-157"]
 
 prose_68 [label="prose"]
 
-codeblock_69 [label="code block 153-171"]
+codeblock_69 [label="code block 162-182"]
 
 
 // END RANK section_59
@@ -424,18 +433,20 @@ escapes, then gsub the daylights out of it.
 // END RANK raw_74
 
 codeblock_69 -> leaf_76
-leaf_76  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local find, sub, gsub = string.find, string.sub
+leaf_76  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local find, sub, gsub, byte = string.find, string.sub,
+                              string.gsub, string.byte
+
 local e = function(str)
    return c.stresc(str) .. c.string
 end
 
+-- Turn control characters into their byte rep
 local function ctrl_pr(str)
-   return \"\\\\\" .. string.byte(str)
+   return \"\\\\\" .. byte(str)
 end
 
 scrub = function (str)
    return str:gsub(\"\\\\\", e(\"\\\\\"))
-             :gsub(\"%z\", e(\"\\\\0\"))
              :gsub(\"\\n\", e(\"\\\\n\"))
              :gsub(\"\\r\", e(\"\\\\r\"))
              :gsub(\"\\t\", e(\"\\\\t\"))
@@ -450,9 +461,9 @@ header_77 [label="3 : ts"]
 
 prose_78 [label="prose"]
 
-codeblock_79 [label="code block 178-236"]
+codeblock_79 [label="code block 189-247"]
 
-codeblock_80 [label="code block 238-240"]
+codeblock_80 [label="code block 249-251"]
 
 
 // END RANK section_60
