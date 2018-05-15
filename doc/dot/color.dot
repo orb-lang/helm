@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 136"]
+doc_0 [label="doc - 164"]
 
 
 doc_0 -> { section_1}
@@ -23,7 +23,7 @@ prose_3 [label="prose"]
 
 codeblock_4 [label="code block 6-23"]
 
-section_5 [label="section: 26-42"]
+section_5 [label="section: 26-63"]
 
 
 // END RANK section_1
@@ -47,7 +47,7 @@ color.orb* Color
 // END RANK raw_7
 
 codeblock_4 -> leaf_9
-leaf_9  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local a = require \"src/anterm\"
+leaf_9  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local a = require \"anterm\"
 
 local C = {}
 C.color = {}
@@ -59,7 +59,7 @@ C.color.truth  = a.fg(231)
 C.color.falsehood  = a.fg(94)
 C.color.nilness   = a.fg(93)
 C.color.field  = a.fg(111)
-
+C.color.userdata = a.fg24(230, 145, 23)
 C.color.alert = a.fg24(250, 0, 40)
 
 local c = C.color"]
@@ -74,9 +74,9 @@ prose_11 [label="prose"]
 
 prose_12 [label="prose"]
 
-codeblock_13 [label="code block 32-41"]
+codeblock_13 [label="code block 32-62"]
 
-section_14 [label="section: 43-136"]
+section_14 [label="section: 64-164"]
 
 
 // END RANK section_5
@@ -119,9 +119,30 @@ leaf_20  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local hints = {
                   fn  = C.color.func }
 
 local anti_G = {}
+anti_G[_G] = \"_G\"
 
-for k, v in pairs(_G) do
-   anti_G [v] = k
+function C.allNames()
+   local function allN(t, aG, pre)
+      if pre ~= \"\" then
+         pre = pre .. \".\"
+      end
+      if pre == \"io.\" then print(type(t)) end
+      for k, v in pairs(t) do
+         if (type(v) == \"table\") then
+            if not aG[v] then
+               if pre == \"io.\" then
+                  print(\"adding \" .. pre .. k)
+               end
+               aG[v] = pre .. k
+               allN(v, aG, k)
+            end
+         else
+            aG[v] = pre .. k
+         end
+      end
+   end
+   allN(_G, anti_G, \"\")
+   return anti_G
 end"]
 // END RANK codeblock_13
 
@@ -132,11 +153,11 @@ header_21 [label="3 : tabulator"]
 
 prose_22 [label="prose"]
 
-codeblock_23 [label="code block 45-96"]
+codeblock_23 [label="code block 66-117"]
 
-codeblock_24 [label="code block 98-132"]
+codeblock_24 [label="code block 119-160"]
 
-codeblock_25 [label="code block 134-136"]
+codeblock_25 [label="code block 162-164"]
 
 
 // END RANK section_14
@@ -164,7 +185,7 @@ local function tabulate(tab, depth)
    if type(tab) ~= \"table\" then
       return ts(tab)
    end
-   if type(depth) == 'nil' then
+   if type(depth) == \"nil\" then
       depth = 0
    end
    if depth > 2 then
@@ -191,9 +212,9 @@ local function tabulate(tab, depth)
          s = \"\"
       else
          if type(k) == \"string\" and k:find(\"^[%a_][%a%d_]*$\") then
-            s = ts(k) .. c.table(' = ')
+            s = ts(k) .. c.table(\" = \")
          else
-            s = c.table('[') .. tabulate(k, 100) .. c.table('] = ')
+            s = c.table(\"[\") .. tabulate(k, 100) .. c.table(\"] = \")
          end
       end
       s = s .. tabulate(v, depth + 1)
@@ -212,8 +233,8 @@ end"]
 // END RANK codeblock_23
 
 codeblock_24 -> leaf_30
-leaf_30  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ts = function (value, hint)
-   local c = C.color
+leaf_30  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local find, sub = string.find, string.sub
+ts = function (value, hint)
    local str = tostring(value)
    if hint == \"\" then
       return str -- or just use tostring()?
@@ -223,24 +244,31 @@ leaf_30  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ts = function (
    end
 
    local typica = type(value)
-   if typica == 'number' then
+   if typica == \"number\" then
       str = c.number(str)
-   elseif typica == 'table' then
+   elseif typica == \"table\" then
       str = tabulate(value)
-   elseif typica == 'function' then
+   elseif typica == \"function\" then
       if anti_G[value] then
          -- we have a global name for this function
          str = c.func(anti_G[value])
       else
-         local func_handle = \"func:\" .. string.sub(str, -6)
+         local func_handle = \"f:\" .. string.sub(str, -6)
          str = c.func(func_handle)
       end
-   elseif typica == 'boolean' then
+   elseif typica == \"boolean\" then
       str = value and c.truth(str) or c.falsehood(str)
-   elseif typica == 'string' then
+   elseif typica == \"string\" then
       str = c.string(str)
-   elseif typica == 'nil' then
+   elseif typica == \"nil\" then
       str = c.nilness(str)
+   elseif typica == \"userdata\" then
+      local name = find(str, \":\")
+      if name then
+         str = c.userdata(sub(str, 1, name - 1))
+      else
+         str = c.userdata(str)
+      end
    end
    return str
 end

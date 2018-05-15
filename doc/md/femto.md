@@ -22,11 +22,11 @@ uv = require "luv"
 
 L = require "lpeg"
 
-a = require "src/anterm"
+a = require "anterm"
 
-c = require "src/color"
+c = require "color"
 
-watch = require "src/watcher"
+watch = require "watcher"
 ```
 #### utils
 
@@ -154,6 +154,9 @@ end
 -- Alternate screen
 
 coroutine.wrap(function()
+   -- Get names for as many values as possible
+   -- into the colorizer
+   c.allNames()
    -- This switches screens and does a wipe,
    -- then puts the cursor at 1,1.
    write '\27[?47h\27[2J\27[H'
@@ -161,6 +164,8 @@ coroutine.wrap(function()
    displayPrompt '👉 '
    uv.read_start(stdin, onread)
 end)()
+
+
 
 uv.run('default')
 

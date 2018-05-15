@@ -2,7 +2,7 @@
 color.orb* Color
 
 ```lua
-local a = require "src/anterm"
+local a = require "anterm"
 
 local C = {}
 C.color = {}
@@ -14,7 +14,7 @@ C.color.truth  = a.fg(231)
 C.color.falsehood  = a.fg(94)
 C.color.nilness   = a.fg(93)
 C.color.field  = a.fg(111)
-
+C.color.userdata = a.fg24(230, 145, 23)
 C.color.alert = a.fg24(250, 0, 40)
 
 local c = C.color
@@ -31,9 +31,30 @@ local hints = { field = C.color.field,
                   fn  = C.color.func }
 
 local anti_G = {}
+anti_G[_G] = "_G"
 
-for k, v in pairs(_G) do
-   anti_G [v] = k
+function C.allNames()
+   local function allN(t, aG, pre)
+      if pre ~= "" then
+         pre = pre .. "."
+      end
+      if pre == "io." then print(type(t)) end
+      for k, v in pairs(t) do
+         if (type(v) == "table") then
+            if not aG[v] then
+               if pre == "io." then
+                  print("adding " .. pre .. k)
+               end
+               aG[v] = pre .. k
+               allN(v, aG, k)
+            end
+         else
+            aG[v] = pre .. k
+         end
+      end
+   end
+   allN(_G, anti_G, "")
+   return anti_G
 end
 ```
 ### tabulator
@@ -44,7 +65,7 @@ local function tabulate(tab, depth)
    if type(tab) ~= "table" then
       return ts(tab)
    end
-   if type(depth) == 'nil' then
+   if type(depth) == "nil" then
       depth = 0
    end
    if depth > 2 then
@@ -71,9 +92,9 @@ local function tabulate(tab, depth)
          s = ""
       else
          if type(k) == "string" and k:find("^[%a_][%a%d_]*$") then
-            s = ts(k) .. c.table(' = ')
+            s = ts(k) .. c.table(" = ")
          else
-            s = c.table('[') .. tabulate(k, 100) .. c.table('] = ')
+            s = c.table("[") .. tabulate(k, 100) .. c.table("] = ")
          end
       end
       s = s .. tabulate(v, depth + 1)
@@ -91,8 +112,8 @@ local function tabulate(tab, depth)
 end
 ```
 ```lua
+local find, sub = string.find, string.sub
 ts = function (value, hint)
-   local c = C.color
    local str = tostring(value)
    if hint == "" then
       return str -- or just use tostring()?
@@ -102,24 +123,31 @@ ts = function (value, hint)
    end
 
    local typica = type(value)
-   if typica == 'number' then
+   if typica == "number" then
       str = c.number(str)
-   elseif typica == 'table' then
+   elseif typica == "table" then
       str = tabulate(value)
-   elseif typica == 'function' then
+   elseif typica == "function" then
       if anti_G[value] then
          -- we have a global name for this function
          str = c.func(anti_G[value])
       else
-         local func_handle = "func:" .. string.sub(str, -6)
+         local func_handle = "f:" .. string.sub(str, -6)
          str = c.func(func_handle)
       end
-   elseif typica == 'boolean' then
+   elseif typica == "boolean" then
       str = value and c.truth(str) or c.falsehood(str)
-   elseif typica == 'string' then
+   elseif typica == "string" then
       str = c.string(str)
-   elseif typica == 'nil' then
+   elseif typica == "nil" then
       str = c.nilness(str)
+   elseif typica == "userdata" then
+      local name = find(str, ":")
+      if name then
+         str = c.userdata(sub(str, 1, name - 1))
+      else
+         str = c.userdata(str)
+      end
    end
    return str
 end

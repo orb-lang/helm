@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 174"]
+doc_0 [label="doc - 179"]
 
 
 doc_0 -> { section_1}
@@ -72,7 +72,7 @@ prose_12 [label="prose"]
 
 codeblock_13 [label="code block 14-29"]
 
-section_14 [label="section: 32-174"]
+section_14 [label="section: 32-179"]
 
 
 // END RANK section_5
@@ -107,11 +107,11 @@ uv = require \"luv\"
 
 L = require \"lpeg\"
 
-a = require \"src/anterm\"
+a = require \"anterm\"
 
-c = require \"src/color\"
+c = require \"color\"
 
-watch = require \"src/watcher\""]
+watch = require \"watcher\""]
 // END RANK codeblock_13
 
 section_14 -> { header_19 prose_20 codeblock_21}
@@ -121,7 +121,7 @@ header_19 [label="4 : utils"]
 
 prose_20 [label="prose"]
 
-codeblock_21 [label="code block 34-174"]
+codeblock_21 [label="code block 34-179"]
 
 
 // END RANK section_14
@@ -267,6 +267,9 @@ end
 -- Alternate screen
 
 coroutine.wrap(function()
+   -- Get names for as many values as possible
+   -- into the colorizer
+   c.allNames()
    -- This switches screens and does a wipe,
    -- then puts the cursor at 1,1.
    write '\\27[?47h\\27[2J\\27[H'
@@ -274,6 +277,8 @@ coroutine.wrap(function()
    displayPrompt '👉 '
    uv.read_start(stdin, onread)
 end)()
+
+
 
 uv.run('default')
 
