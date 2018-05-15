@@ -102,43 +102,42 @@ end
 local buffer = ''
 
 local function evaluateLine(line)
-  if line == "<3\n" then
-    print("I " .. a.red("♥") .. " you too!")
-    return '>'
-  end
-  local chunk  = buffer .. line
-  local f, err = loadstring('return ' .. chunk, 'REPL') -- first we prefix return
+   if string.byte(line) == 17 then -- ^Q
+      uv.stop()
+      return 0
+   end
+   local chunk  = buffer .. line
+   local f, err = loadstring('return ' .. chunk, 'REPL') -- first we prefix return
 
-  if not f then
-    f, err = loadstring(chunk, 'REPL') -- try again without return
-  end
+   if not f then
+      f, err = loadstring(chunk, 'REPL') -- try again without return
+   end
 
-  if f then
-    buffer = ''
-    local success, results = gatherResults(xpcall(f, debug.traceback))
-
-    if success then
-      -- successful call
-      if results.n > 0 then
-        printResults(results)
-      end
-    else
-      -- error
-      print(results[1])
-    end
-  else
-
-    if err:match "'<eof>'$" then
-      -- Lua expects some more input; stow it away for next time
-      buffer = chunk .. '\n'
-      return '...'
-    else
-      print(err)
+   if f then
       buffer = ''
-    end
-  end
+      local success, results = gatherResults(xpcall(f, debug.traceback))
 
-  return '👉 '
+      if success then
+      -- successful call
+         if results.n > 0 then
+            printResults(results)
+         end
+      else
+      -- error
+         print(results[1])
+      end
+   else
+      if err:match "'<eof>'$" then
+         -- Lua expects some more input; stow it away for next time
+         buffer = chunk .. '\n'
+         return '...'
+      else
+         print(err)
+         buffer = ''
+      end
+   end
+
+   return '👉  '
 end
 
 local function displayPrompt(prompt)
@@ -154,7 +153,52 @@ local function onread(err, line)
     uv.close(stdin)
   end
 end
+```
+## onkey(err, key)
 
+We buffer escape sequences, which terminate in an alphabetic value.
+
+
+No special effort to detect "^[[" (as opposed to just "^[") is made, that is
+handled at the recognizer layer.
+
+```lua
+local keybuf = {}
+local byte = string.byte
+local concat = table.concat
+
+local function recognize(seq)
+   uv.write(stdout, seq)
+end
+
+local function onkey(err, key)
+   if err then error(err) end
+   if key == "\17" then
+      femto.disableRawMode()
+      uv.stop()
+      return 0
+   end
+   if key == "\27" then
+      keybuf[#keybuf + 1]  = key
+      return
+   end
+   if #keybuf > 0 then
+      local char = byte(key)
+      -- [A-Za-z]
+      if (char >= 65 and char <= 90)
+         or (char >= 97 and char <= 122) then
+         local esc_val = concat(keybuf) .. key
+         for i, _ in ipairs(keybuf) do keybuf[i] = nil end
+         return recognize(esc_val)
+      else
+         keybuf[#keybuf + 1] = key
+         return
+      end
+   end
+   return recognize(key)
+end
+```
+```lua
 -- Alternate screen
 
 coroutine.wrap(function()
@@ -165,18 +209,19 @@ coroutine.wrap(function()
    -- then puts the cursor at 1,1.
    write '\27[?47h\27[2J\27[H'
    print "an repl, plz reply uwu 👀"
-   displayPrompt '👉 '
-   uv.read_start(stdin, onread)
+   displayPrompt '👉  '
+   femto.enableRawMode()
+   uv.read_start(stdin, onkey)
+   --uv.read_start(stdin, onread)
 end)()
 
 
 
-uv.run('default')
-
+local retcode = uv.run('default')
 -- Restore
 
 print '\27[?47l'
 
 print("kthxbye")
-return 0
+return retcode
 ```

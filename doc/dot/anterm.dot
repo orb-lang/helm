@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 259"]
+doc_0 [label="doc - 257"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-168"]
+section_1 [label="section: 1-166"]
 
 
 // END RANK doc_0
@@ -25,11 +25,11 @@ prose_4 [label="prose"]
 
 prose_5 [label="prose"]
 
-section_6 [label="section: 12-119"]
+section_6 [label="section: 12-117"]
 
-section_7 [label="section: 120-168"]
+section_7 [label="section: 118-166"]
 
-section_8 [label="section: 169-259"]
+section_8 [label="section: 167-257"]
 
 
 // END RANK section_1
@@ -156,7 +156,7 @@ prose_39 [label="prose"]
 
 codeblock_40 [label="code block 16-18"]
 
-codeblock_41 [label="code block 20-117"]
+codeblock_41 [label="code block 20-115"]
 
 
 // END RANK section_6
@@ -263,13 +263,11 @@ end
 local function reset(color)
     -- given a color, reset its action.
     -- simple for fg and bg
-    -- complex but tractable for attributes
     if color.kind == \"fg\" then
         return _M.clear_fg
     elseif color.kind == \"bg\" then
         return _M.clear_bg
     elseif color.kind == \"attribute\" then
-        --error \"attribute reset NYI\"
         return _M.clear
     end
 end
@@ -292,7 +290,7 @@ prose_48 [label="prose"]
 
 prose_49 [label="prose"]
 
-codeblock_50 [label="code block 126-166"]
+codeblock_50 [label="code block 124-164"]
 
 
 // END RANK section_7
@@ -403,7 +401,7 @@ prose_66 [label="prose"]
 
 prose_67 [label="prose"]
 
-codeblock_68 [label="code block 182-259"]
+codeblock_68 [label="code block 180-257"]
 
 
 // END RANK section_8

@@ -97,13 +97,11 @@ end
 local function reset(color)
     -- given a color, reset its action.
     -- simple for fg and bg
-    -- complex but tractable for attributes
     if color.kind == "fg" then
         return _M.clear_fg
     elseif color.kind == "bg" then
         return _M.clear_bg
     elseif color.kind == "attribute" then
-        --error "attribute reset NYI"
         return _M.clear
     end
 end

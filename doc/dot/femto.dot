@@ -3,19 +3,19 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 183"]
+doc_0 [label="doc - 230"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-8"]
+section_1 [label="section: 1-159"]
 
 
 // END RANK doc_0
 
-section_1 -> { header_2 prose_3 prose_4 section_5}
-{rank=same; header_2 prose_3 prose_4 section_5}
+section_1 -> { header_2 prose_3 prose_4 section_5 section_6}
+{rank=same; header_2 prose_3 prose_4 section_5 section_6}
 
 header_2 [label="1 : Femto"]
 
@@ -25,80 +25,82 @@ prose_4 [label="prose"]
 
 section_5 [label="section: 9-35"]
 
+section_6 [label="section: 160-230"]
+
 
 // END RANK section_1
 
-header_2 -> leaf_6
-leaf_6  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*  Femto"]
+header_2 -> leaf_7
+leaf_7  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*  Femto"]
 // END RANK header_2
 
-prose_3 -> { raw_7}
-{rank=same; raw_7}
+prose_3 -> { raw_8}
+{rank=same; raw_8}
 
-raw_7 [label="raw"]
+raw_8 [label="raw"]
 
 
 // END RANK prose_3
 
-raw_7 -> leaf_8
-leaf_8  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_8 -> leaf_9
+leaf_9  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 
 I just got orb stood up in the pylon bootloader distribution.
 "]
-// END RANK raw_7
+// END RANK raw_8
 
-prose_4 -> { raw_9}
-{rank=same; raw_9}
+prose_4 -> { raw_10}
+{rank=same; raw_10}
 
-raw_9 [label="raw"]
+raw_10 [label="raw"]
 
 
 // END RANK prose_4
 
-raw_9 -> leaf_10
-leaf_10  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_10 -> leaf_11
+leaf_11  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 I am excited about this.
 
 "]
-// END RANK raw_9
+// END RANK raw_10
 
-section_5 -> { header_11 prose_12 codeblock_13 section_14}
-{rank=same; header_11 prose_12 codeblock_13 section_14}
+section_5 -> { header_12 prose_13 codeblock_14 section_15}
+{rank=same; header_12 prose_13 codeblock_14 section_15}
 
-header_11 [label="2 : includes"]
+header_12 [label="2 : includes"]
 
-prose_12 [label="prose"]
+prose_13 [label="prose"]
 
-codeblock_13 [label="code block 14-33"]
+codeblock_14 [label="code block 14-33"]
 
-section_14 [label="section: 36-183"]
+section_15 [label="section: 36-159"]
 
 
 // END RANK section_5
 
-header_11 -> leaf_15
-leaf_15  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**  includes"]
-// END RANK header_11
+header_12 -> leaf_16
+leaf_16  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**  includes"]
+// END RANK header_12
 
-prose_12 -> { raw_16}
-{rank=same; raw_16}
+prose_13 -> { raw_17}
+{rank=same; raw_17}
 
-raw_16 [label="raw"]
+raw_17 [label="raw"]
 
 
-// END RANK prose_12
+// END RANK prose_13
 
-raw_16 -> leaf_17
-leaf_17  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_17 -> leaf_18
+leaf_18  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 This all goes into global space for now.  Our more sophisticated loader will
 handle namespace isolation. Meanwhile we're building a repl, so.
 "]
-// END RANK raw_16
+// END RANK raw_17
 
-codeblock_13 -> leaf_18
-leaf_18  [color=Gray,shape=rectangle,fontname=Inconsolata,label="sql = require \"sqlite\"
+codeblock_14 -> leaf_19
+leaf_19  [color=Gray,shape=rectangle,fontname=Inconsolata,label="sql = require \"sqlite\"
 
 lfs = require \"lfs\"
 ffi = require \"ffi\"
@@ -116,39 +118,39 @@ c = require \"color\"
 core = require \"core\"
 
 watch = require \"watcher\""]
-// END RANK codeblock_13
+// END RANK codeblock_14
 
-section_14 -> { header_19 prose_20 codeblock_21}
-{rank=same; header_19 prose_20 codeblock_21}
+section_15 -> { header_20 prose_21 codeblock_22}
+{rank=same; header_20 prose_21 codeblock_22}
 
-header_19 [label="4 : utils"]
+header_20 [label="4 : utils"]
 
-prose_20 [label="prose"]
+prose_21 [label="prose"]
 
-codeblock_21 [label="code block 38-183"]
-
-
-// END RANK section_14
-
-header_19 -> leaf_22
-leaf_22  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** utils"]
-// END RANK header_19
-
-prose_20 -> { raw_23}
-{rank=same; raw_23}
-
-raw_23 [label="raw"]
+codeblock_22 [label="code block 38-157"]
 
 
-// END RANK prose_20
+// END RANK section_15
 
-raw_23 -> leaf_24
-leaf_24  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-"]
-// END RANK raw_23
+header_20 -> leaf_23
+leaf_23  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** utils"]
+// END RANK header_20
 
-codeblock_21 -> leaf_25
+prose_21 -> { raw_24}
+{rank=same; raw_24}
+
+raw_24 [label="raw"]
+
+
+// END RANK prose_21
+
+raw_24 -> leaf_25
 leaf_25  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+"]
+// END RANK raw_24
+
+codeblock_22 -> leaf_26
+leaf_26  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 local usecolors
 stdout = \"\"
 
@@ -215,43 +217,42 @@ end
 local buffer = ''
 
 local function evaluateLine(line)
-  if line == \"<3\\n\" then
-    print(\"I \" .. a.red(\"♥\") .. \" you too!\")
-    return '>'
-  end
-  local chunk  = buffer .. line
-  local f, err = loadstring('return ' .. chunk, 'REPL') -- first we prefix return
+   if string.byte(line) == 17 then -- ^Q
+      uv.stop()
+      return 0
+   end
+   local chunk  = buffer .. line
+   local f, err = loadstring('return ' .. chunk, 'REPL') -- first we prefix return
 
-  if not f then
-    f, err = loadstring(chunk, 'REPL') -- try again without return
-  end
+   if not f then
+      f, err = loadstring(chunk, 'REPL') -- try again without return
+   end
 
-  if f then
-    buffer = ''
-    local success, results = gatherResults(xpcall(f, debug.traceback))
-
-    if success then
-      -- successful call
-      if results.n > 0 then
-        printResults(results)
-      end
-    else
-      -- error
-      print(results[1])
-    end
-  else
-
-    if err:match \"'<eof>'$\" then
-      -- Lua expects some more input; stow it away for next time
-      buffer = chunk .. '\\n'
-      return '...'
-    else
-      print(err)
+   if f then
       buffer = ''
-    end
-  end
+      local success, results = gatherResults(xpcall(f, debug.traceback))
 
-  return '👉 '
+      if success then
+      -- successful call
+         if results.n > 0 then
+            printResults(results)
+         end
+      else
+      -- error
+         print(results[1])
+      end
+   else
+      if err:match \"'<eof>'$\" then
+         -- Lua expects some more input; stow it away for next time
+         buffer = chunk .. '\\n'
+         return '...'
+      else
+         print(err)
+         buffer = ''
+      end
+   end
+
+   return '👉  '
 end
 
 local function displayPrompt(prompt)
@@ -266,9 +267,98 @@ local function onread(err, line)
   else
     uv.close(stdin)
   end
+end"]
+// END RANK codeblock_22
+
+section_6 -> { header_27 prose_28 prose_29 codeblock_30 codeblock_31}
+{rank=same; header_27 prose_28 prose_29 codeblock_30 codeblock_31}
+
+header_27 [label="2 : onkey(err, key)"]
+
+prose_28 [label="prose"]
+
+prose_29 [label="prose"]
+
+codeblock_30 [label="code block 167-202"]
+
+codeblock_31 [label="code block 204-230"]
+
+
+// END RANK section_6
+
+header_27 -> leaf_32
+leaf_32  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** onkey(err, key)"]
+// END RANK header_27
+
+prose_28 -> { raw_33}
+{rank=same; raw_33}
+
+raw_33 [label="raw"]
+
+
+// END RANK prose_28
+
+raw_33 -> leaf_34
+leaf_34  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+We buffer escape sequences, which terminate in an alphabetic value.
+"]
+// END RANK raw_33
+
+prose_29 -> { raw_35}
+{rank=same; raw_35}
+
+raw_35 [label="raw"]
+
+
+// END RANK prose_29
+
+raw_35 -> leaf_36
+leaf_36  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+No special effort to detect \"^[[\" (as opposed to just \"^[\") is made, that is
+handled at the recognizer layer.
+"]
+// END RANK raw_35
+
+codeblock_30 -> leaf_37
+leaf_37  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local keybuf = {}
+local byte = string.byte
+local concat = table.concat
+
+local function recognize(seq)
+   uv.write(stdout, seq)
 end
 
--- Alternate screen
+local function onkey(err, key)
+   if err then error(err) end
+   if key == \"\\17\" then
+      femto.disableRawMode()
+      uv.stop()
+      return 0
+   end
+   if key == \"\\27\" then
+      keybuf[#keybuf + 1]  = key
+      return
+   end
+   if #keybuf > 0 then
+      local char = byte(key)
+      -- [A-Za-z]
+      if (char >= 65 and char <= 90)
+         or (char >= 97 and char <= 122) then
+         local esc_val = concat(keybuf) .. key
+         for i, _ in ipairs(keybuf) do keybuf[i] = nil end
+         return recognize(esc_val)
+      else
+         keybuf[#keybuf + 1] = key
+         return
+      end
+   end
+   return recognize(key)
+end"]
+// END RANK codeblock_30
+
+codeblock_31 -> leaf_38
+leaf_38  [color=Gray,shape=rectangle,fontname=Inconsolata,label="-- Alternate screen
 
 coroutine.wrap(function()
    -- Get names for as many values as possible
@@ -278,21 +368,22 @@ coroutine.wrap(function()
    -- then puts the cursor at 1,1.
    write '\\27[?47h\\27[2J\\27[H'
    print \"an repl, plz reply uwu 👀\"
-   displayPrompt '👉 '
-   uv.read_start(stdin, onread)
+   displayPrompt '👉  '
+   femto.enableRawMode()
+   uv.read_start(stdin, onkey)
+   --uv.read_start(stdin, onread)
 end)()
 
 
 
-uv.run('default')
-
+local retcode = uv.run('default')
 -- Restore
 
 print '\\27[?47l'
 
 print(\"kthxbye\")
-return 0"]
-// END RANK codeblock_21
+return retcode"]
+// END RANK codeblock_31
 
 
 }
