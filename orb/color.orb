@@ -210,11 +210,15 @@ ts = function (value, hint)
          str = c.thread("coro:" .. sub(str, -6))
       end
    elseif typica == "userdata" then
-      local name = find(str, ":")
-      if name then
-         str = c.userdata(sub(str, 1, name - 1))
+      if anti_G[value] then
+         str = c.userdata(anti_G[value])
       else
-         str = c.userdata(str)
+         local name = find(str, ":")
+         if name then
+            str = c.userdata(sub(str, 1, name - 1))
+         else
+            str = c.userdata(str)
+         end
       end
    end
    return str

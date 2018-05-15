@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 227"]
+doc_0 [label="doc - 231"]
 
 
 doc_0 -> { section_1}
@@ -258,7 +258,7 @@ codeblock_58 [label="code block 53-89"]
 
 section_59 [label="section: 92-164"]
 
-section_60 [label="section: 165-227"]
+section_60 [label="section: 165-231"]
 
 
 // END RANK section_9
@@ -441,9 +441,9 @@ header_77 [label="3 : ts"]
 
 prose_78 [label="prose"]
 
-codeblock_79 [label="code block 169-223"]
+codeblock_79 [label="code block 169-227"]
 
-codeblock_80 [label="code block 225-227"]
+codeblock_80 [label="code block 229-231"]
 
 
 // END RANK section_60
@@ -511,11 +511,15 @@ leaf_84  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ts = function (
          str = c.thread(\"coro:\" .. sub(str, -6))
       end
    elseif typica == \"userdata\" then
-      local name = find(str, \":\")
-      if name then
-         str = c.userdata(sub(str, 1, name - 1))
+      if anti_G[value] then
+         str = c.userdata(anti_G[value])
       else
-         str = c.userdata(str)
+         local name = find(str, \":\")
+         if name then
+            str = c.userdata(sub(str, 1, name - 1))
+         else
+            str = c.userdata(str)
+         end
       end
    end
    return str
