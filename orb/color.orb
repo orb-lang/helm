@@ -270,13 +270,8 @@ ts = function (value, hint)
    elseif typica == "table" then
       str = tabulate(value)
    elseif typica == "function" then
-      if anti_G[value] then
-         -- we have a global name for this function
-         str = c.func(anti_G[value])
-      else
-         local func_handle = "f:" .. sub(str, -6)
-         str = c.func(func_handle)
-      end
+      local func_name = anti_G[value] or "f:" .. sub(str, -6)
+      str = c.func(func_name)
    elseif typica == "boolean" then
       str = value and c.truth(str) or c.falsehood(str)
    elseif typica == "string" then
@@ -284,11 +279,9 @@ ts = function (value, hint)
    elseif typica == "nil" then
       str = c.nilness(str)
    elseif typica == "thread" then
-      if anti_G[value] then
-         str = c.thread("coro:" .. anti_G[value])
-      else
-         str = c.thread("coro:" .. sub(str, -6))
-      end
+      local coro_name = anti_G[value] and "coro:" .. anti_G[value]
+                                      or  "coro:" .. sub(str, -6)
+      str = c.thread(coro_name)
    elseif typica == "userdata" then
       if anti_G[value] then
          str = c.userdata(anti_G[value])

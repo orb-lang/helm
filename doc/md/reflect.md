@@ -11,6 +11,10 @@ signature and the Lua type signature of a function, and likewise for all the
 other primitive and compound C types.
 
 
+"Note that typedefs are resolved by the parser, and are therefore not visible
+when reflected".  [Indeed](http://corsix.github.io/ffi-reflect/).
+
+
 #### License (MIT)
 
 LuaJIT FFI reflection Library
@@ -36,6 +40,9 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+
+
+### reflect
 
 ```lua
 local ffi = require "ffi"

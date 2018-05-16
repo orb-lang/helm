@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 317"]
+doc_0 [label="doc - 310"]
 
 
 doc_0 -> { section_1}
@@ -285,7 +285,7 @@ section_66 [label="section: 88-151"]
 
 section_67 [label="section: 152-242"]
 
-section_68 [label="section: 243-317"]
+section_68 [label="section: 243-310"]
 
 
 // END RANK section_9
@@ -687,9 +687,9 @@ header_126 [label="3 : ts"]
 
 prose_127 [label="prose"]
 
-codeblock_128 [label="code block 247-313"]
+codeblock_128 [label="code block 247-306"]
 
-codeblock_129 [label="code block 315-317"]
+codeblock_129 [label="code block 308-310"]
 
 
 // END RANK section_68
@@ -739,13 +739,8 @@ leaf_133  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ts = function 
    elseif typica == \"table\" then
       str = tabulate(value)
    elseif typica == \"function\" then
-      if anti_G[value] then
-         -- we have a global name for this function
-         str = c.func(anti_G[value])
-      else
-         local func_handle = \"f:\" .. sub(str, -6)
-         str = c.func(func_handle)
-      end
+      local func_name = anti_G[value] or \"f:\" .. sub(str, -6)
+      str = c.func(func_name)
    elseif typica == \"boolean\" then
       str = value and c.truth(str) or c.falsehood(str)
    elseif typica == \"string\" then
@@ -753,11 +748,9 @@ leaf_133  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ts = function 
    elseif typica == \"nil\" then
       str = c.nilness(str)
    elseif typica == \"thread\" then
-      if anti_G[value] then
-         str = c.thread(\"coro:\" .. anti_G[value])
-      else
-         str = c.thread(\"coro:\" .. sub(str, -6))
-      end
+      local coro_name = anti_G[value] and \"coro:\" .. anti_G[value]
+                                      or  \"coro:\" .. sub(str, -6)
+      str = c.thread(coro_name)
    elseif typica == \"userdata\" then
       if anti_G[value] then
          str = c.userdata(anti_G[value])
