@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 230"]
+doc_0 [label="doc - 303"]
 
 
 doc_0 -> { section_1}
@@ -25,7 +25,7 @@ prose_4 [label="prose"]
 
 section_5 [label="section: 9-35"]
 
-section_6 [label="section: 160-230"]
+section_6 [label="section: 160-167"]
 
 
 // END RANK section_1
@@ -270,8 +270,8 @@ local function onread(err, line)
 end"]
 // END RANK codeblock_22
 
-section_6 -> { header_27 prose_28 prose_29 codeblock_30 codeblock_31}
-{rank=same; header_27 prose_28 prose_29 codeblock_30 codeblock_31}
+section_6 -> { header_27 prose_28 prose_29 section_30}
+{rank=same; header_27 prose_28 prose_29 section_30}
 
 header_27 [label="2 : onkey(err, key)"]
 
@@ -279,58 +279,154 @@ prose_28 [label="prose"]
 
 prose_29 [label="prose"]
 
-codeblock_30 [label="code block 167-202"]
-
-codeblock_31 [label="code block 204-230"]
+section_30 [label="section: 168-303"]
 
 
 // END RANK section_6
 
-header_27 -> leaf_32
-leaf_32  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** onkey(err, key)"]
+header_27 -> leaf_31
+leaf_31  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** onkey(err, key)"]
 // END RANK header_27
 
-prose_28 -> { raw_33}
-{rank=same; raw_33}
+prose_28 -> { raw_32}
+{rank=same; raw_32}
 
-raw_33 [label="raw"]
+raw_32 [label="raw"]
 
 
 // END RANK prose_28
 
-raw_33 -> leaf_34
-leaf_34  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_32 -> leaf_33
+leaf_33  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 We buffer escape sequences, which terminate in an alphabetic value.
 "]
-// END RANK raw_33
+// END RANK raw_32
 
-prose_29 -> { raw_35}
-{rank=same; raw_35}
+prose_29 -> { raw_34}
+{rank=same; raw_34}
 
-raw_35 [label="raw"]
+raw_34 [label="raw"]
 
 
 // END RANK prose_29
 
-raw_35 -> leaf_36
-leaf_36  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_34 -> leaf_35
+leaf_35  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 No special effort to detect \"^[[\" (as opposed to just \"^[\") is made, that is
 handled at the recognizer layer.
-"]
-// END RANK raw_35
 
-codeblock_30 -> leaf_37
-leaf_37  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local keybuf = {}
-local byte = string.byte
+"]
+// END RANK raw_34
+
+section_30 -> { header_36 prose_37 prose_38 codeblock_39 codeblock_40 codeblock_41}
+{rank=same; header_36 prose_37 prose_38 codeblock_39 codeblock_40 codeblock_41}
+
+header_36 [label="4 : onkey state"]
+
+prose_37 [label="prose"]
+
+prose_38 [label="prose"]
+
+codeblock_39 [label="code block 174-225"]
+
+codeblock_40 [label="code block 227-262"]
+
+codeblock_41 [label="code block 264-303"]
+
+
+// END RANK section_30
+
+header_36 -> leaf_42
+leaf_42  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** onkey state"]
+// END RANK header_36
+
+prose_37 -> { raw_43}
+{rank=same; raw_43}
+
+raw_43 [label="raw"]
+
+
+// END RANK prose_37
+
+raw_43 -> leaf_44
+leaf_44  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+This is a stateful event loop, no way around it.
+"]
+// END RANK raw_43
+
+prose_38 -> { raw_45}
+{rank=same; raw_45}
+
+raw_45 [label="raw"]
+
+
+// END RANK prose_38
+
+raw_45 -> leaf_46
+leaf_46  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+State is maintained in the following upvalues.
+"]
+// END RANK raw_45
+
+codeblock_39 -> leaf_47
+leaf_47  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local keybuf = {}
+local sub, byte = string.sub, string.byte
 local concat = table.concat
 
-local function recognize(seq)
-   uv.write(stdout, seq)
+local linebuf = { line = \"\",
+                  ndx  = 0 }
+
+local max_row, mac_col = 0, 0
+local finding_max = false
+
+local function cursor_pos(str)
+   str = sub(str, 3, -2)
+   local row, col = core.cleave(str, \";\")
+   return tonumber(row), tonumber(col)
 end
 
-local function onkey(err, key)
+local _row = 1
+local function colwrite(str)
+   local dash = a.stash() .. a.jump(_row, 80) .. str .. a.pop()
+   write(dash)
+   _row = _row + 1
+end
+
+local function process_escapes(seq)
+   local term = sub(seq, -1)
+   if term == \"R\" and finding_max then
+      max_row, max_col = cursor_pos(seq)
+      write(a.pop())
+      finding_max = false
+   elseif term == \"A\" then
+      -- up
+   elseif term == \"B\" then
+      -- down
+   elseif term == \"C\" then
+      -- left
+   elseif term == \"D\" then
+      -- right
+   else
+      return write(seq)
+   end
+end
+
+local function recognize(seq)
+   -- This front matter belongs in the escape handling code.
+   if byte(seq) == 27 then
+      process_escapes(seq)
+      return
+   end
+   write(seq)
+end"]
+// END RANK codeblock_39
+
+codeblock_40 -> leaf_48
+leaf_48  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function onkey(err, key)
    if err then error(err) end
+   -- ^Q to quit
    if key == \"\\17\" then
       femto.disableRawMode()
       uv.stop()
@@ -342,6 +438,13 @@ local function onkey(err, key)
    end
    if #keybuf > 0 then
       local char = byte(key)
+      -- esc [0-9]
+      if #keybuf == 1 and
+         char >= 48 and char <= 57 then
+         local esc_val = \"\\27\" .. key
+         keybuf[1] = nil
+         return recognize(esc_val)
+      end
       -- [A-Za-z]
       if (char >= 65 and char <= 90)
          or (char >= 97 and char <= 122) then
@@ -355,10 +458,10 @@ local function onkey(err, key)
    end
    return recognize(key)
 end"]
-// END RANK codeblock_30
+// END RANK codeblock_40
 
-codeblock_31 -> leaf_38
-leaf_38  [color=Gray,shape=rectangle,fontname=Inconsolata,label="-- Alternate screen
+codeblock_41 -> leaf_49
+leaf_49  [color=Gray,shape=rectangle,fontname=Inconsolata,label="-- Alternate screen
 
 coroutine.wrap(function()
    -- Get names for as many values as possible
@@ -369,21 +472,34 @@ coroutine.wrap(function()
    write '\\27[?47h\\27[2J\\27[H'
    print \"an repl, plz reply uwu 👀\"
    displayPrompt '👉  '
-   femto.enableRawMode()
-   uv.read_start(stdin, onkey)
-   --uv.read_start(stdin, onread)
+   -- Crude hack to choose raw mode at runtime
+   if arg[1] == \"-r\" then
+      femto.enableRawMode()
+      uv.read_start(stdin, onkey)
+      finding_max = true
+      -- stash cursor
+      write(a.stash())
+      -- Jump to bottom right and report position.
+      write(\"\\27[999C\\27[999B\\27[6n\")
+      -- the story continues in onkey...
+   else
+      uv.read_start(stdin, onread)
+   end
 end)()
 
 
 
 local retcode = uv.run('default')
 -- Restore
-
 print '\\27[?47l'
+
+if retcode ~= 0 then
+   error(retcode)
+end
 
 print(\"kthxbye\")
 return retcode"]
-// END RANK codeblock_31
+// END RANK codeblock_41
 
 
 }

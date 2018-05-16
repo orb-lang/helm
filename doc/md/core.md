@@ -23,10 +23,16 @@ do
     ["\0"] = "%z";
   }
 
-  spatToLit = function(s)
+local spatToLit = function(s)
     return (s:gsub(".", matches))
   end
 end
 
-return { spatToLit = spatToLit}
+local function cleave(str, pat)
+   local at = string.find(str, pat)
+   return string.sub(str, 1, at - 1), string.sub(str, at + 1)
+end
+
+return { spatToLit = spatToLit,
+         cleave = cleave}
 ```

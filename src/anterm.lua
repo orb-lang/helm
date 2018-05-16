@@ -27,7 +27,7 @@ local rawget = rawget
 local io = io
 local schar = string.char
 
-local _M = {}
+local anterm = {}
 
 local CSI = schar(27)..'['
 
@@ -80,7 +80,7 @@ end
 
 for kind, val in pairs(colors) do
     for c, v in pairs(val) do
-        _M[c] = makecolor(v, c, kind)
+        anterm[c] = makecolor(v, c, kind)
     end
 end
 
@@ -92,24 +92,28 @@ function colormt:__concat(other)
     return tostring(self) .. tostring(other)
 end
 
+local clear_fg, clear_bg, clear = anterm.clear_fg, anterm.clear_bg,
+                                  anterm.clear
 
 local function reset(color)
     -- given a color, reset its action.
     -- simple for fg and bg
     if color.kind == "fg" then
-        return _M.clear_fg
+        return clear_fg
     elseif color.kind == "bg" then
-        return _M.clear_bg
+        return clear_bg
     elseif color.kind == "attribute" then
-        return _M.clear
+        return clear
     end
 end
 
+local __ts = colormt.__tostring
+
 function colormt:__call(s)
     if s then
-        return tostring(self) .. s .. reset(self)
+        return __ts(self) .. s .. reset(self)
     else
-        return tostring(self)
+        return __ts(self)
     end
 end
 
@@ -213,9 +217,9 @@ local function bg24(r,g,b)
    return setmetatable(color, colormt)
 end
 
-_M["fg"], _M["bg"] = ansi_fg, ansi_bg
+anterm["fg"], anterm["bg"] = ansi_fg, ansi_bg
 
-_M["fg24"], _M["bg24"] = fg24, bg24
+anterm["fg24"], anterm["bg24"] = fg24, bg24
 
 --- Jumps
 
@@ -248,9 +252,25 @@ end
 local J = { __call = Jump}
 setmetatable(jump,J)
 
-_M["jump"] = jump
+anterm["jump"] = jump
+
+function anterm.rc (row, column)
+   return CSI .. row .. ";" .. column .. "H"
+end
 
 
-return _M
+
+
+
+
+function anterm.stash()
+   return "\0277"
+end
+
+function anterm.pop()
+   return "\0278"
+end
+
+return anterm
 
 
