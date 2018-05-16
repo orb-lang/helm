@@ -321,6 +321,10 @@ The following second characters are recognized into token classes. A token
 name refers to the two-byte sequence concatenating =0x1b= and the indicated
 value.
 
+Ok. Time to eviscerate this. ESC-printable is keyboard code for alt-anything.
+
+We just pass this though and interpret it as alts.
+
 - "[" :  Token =CSI=.  Most common seq[1].
          If encountered, there exists a seq[2].
 
@@ -571,6 +575,7 @@ local function onkey(err, key)
       -- detect CSI
       elseif key == "[" then
          csi = true
+         colwrite(2, "detected [")
          assert(keybuf[2] == nil, "[ was not in CSI position")
          keybuf[2] = key
          return
