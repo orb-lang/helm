@@ -187,24 +187,32 @@ local max_row, mac_col = uv.tty_get_winsize(stdin)
 
 
 
+-- This will be called parse_digits and be substantially more complex.
+--
 local function cursor_pos(str)
    local row, col = core.cleave(str, ";")
    return tonumber(row), tonumber(col)
 end
 
 -- this is exploratory code
-local _row = 1
-local function colwrite(str)
-   local dash = a.stash() .. a.jump(_row, 80) .. str .. a.pop()
+local function colwrite(str, col)
+   col = col or 81
+   local dash = a.stash()
+             .. a.jump(1, col)
+             .. a.erase.right()
+             .. str
+             .. a.pop()
+
    write(dash)
-   _row = _row + 1
 end
+
+local STAT_ICON = "◉"
 
 local function process_escapes(seq)
    local term = sub(seq, -1)
-   local CSI  = sub(seq, 2, 2) == "[" and true or false
+   local csi  = sub(seq, 2, 2) == "[" and true or false
    local payload
-   local ltrim = CSI and 3 or 2
+   local ltrim = csi and 3 or 2
    if #seq > ltrim then
       payload = sub(seq, ltrim, -1)
    end
@@ -227,9 +235,11 @@ end
 local function lexer(seq)
    -- This front matter belongs in the escape handling code.
    if byte(seq) == 27 then
+      colwrite(a.magenta(STAT_ICON) .. " : " .. c.ts(seq))
       process_escapes(seq)
       return
    end
+   colwrite(a.green(STAT_ICON) .. " : " .. seq)
    write(seq)
 end
 

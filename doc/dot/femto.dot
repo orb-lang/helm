@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 620"]
+doc_0 [label="doc - 630"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-237"]
+section_1 [label="section: 1-247"]
 
 
 // END RANK doc_0
@@ -27,7 +27,7 @@ section_5 [label="section: 9-35"]
 
 section_6 [label="section: 154-183"]
 
-section_7 [label="section: 238-449"]
+section_7 [label="section: 248-459"]
 
 
 // END RANK section_1
@@ -275,7 +275,7 @@ prose_29 [label="prose"]
 
 section_30 [label="section: 160-183"]
 
-section_31 [label="section: 184-237"]
+section_31 [label="section: 184-247"]
 
 
 // END RANK section_6
@@ -421,7 +421,7 @@ header_60 [label="3 : helper functions"]
 
 prose_61 [label="prose"]
 
-codeblock_62 [label="code block 189-235"]
+codeblock_62 [label="code block 189-245"]
 
 
 // END RANK section_31
@@ -447,24 +447,32 @@ the minimum viable loop.
 // END RANK raw_64
 
 codeblock_62 -> leaf_66
-leaf_66  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function cursor_pos(str)
+leaf_66  [color=Gray,shape=rectangle,fontname=Inconsolata,label="-- This will be called parse_digits and be substantially more complex.
+--
+local function cursor_pos(str)
    local row, col = core.cleave(str, \";\")
    return tonumber(row), tonumber(col)
 end
 
 -- this is exploratory code
-local _row = 1
-local function colwrite(str)
-   local dash = a.stash() .. a.jump(_row, 80) .. str .. a.pop()
+local function colwrite(str, col)
+   col = col or 81
+   local dash = a.stash()
+             .. a.jump(1, col)
+             .. a.erase.right()
+             .. str
+             .. a.pop()
+
    write(dash)
-   _row = _row + 1
 end
+
+local STAT_ICON = \"◉\"
 
 local function process_escapes(seq)
    local term = sub(seq, -1)
-   local CSI  = sub(seq, 2, 2) == \"[\" and true or false
+   local csi  = sub(seq, 2, 2) == \"[\" and true or false
    local payload
-   local ltrim = CSI and 3 or 2
+   local ltrim = csi and 3 or 2
    if #seq > ltrim then
       payload = sub(seq, ltrim, -1)
    end
@@ -487,9 +495,11 @@ end
 local function lexer(seq)
    -- This front matter belongs in the escape handling code.
    if byte(seq) == 27 then
+      colwrite(a.magenta(STAT_ICON) .. \" : \" .. c.ts(seq))
       process_escapes(seq)
       return
    end
+   colwrite(a.green(STAT_ICON) .. \" : \" .. seq)
    write(seq)
 end"]
 // END RANK codeblock_62
@@ -511,11 +521,11 @@ prose_72 [label="prose"]
 
 prose_73 [label="prose"]
 
-section_74 [label="section: 265-398"]
+section_74 [label="section: 275-408"]
 
-section_75 [label="section: 409-419"]
+section_75 [label="section: 419-429"]
 
-section_76 [label="section: 450-458"]
+section_76 [label="section: 460-468"]
 
 
 // END RANK section_7
@@ -805,9 +815,9 @@ prose_150 [label="prose"]
 
 prose_151 [label="prose"]
 
-section_152 [label="section: 277-304"]
+section_152 [label="section: 287-314"]
 
-section_153 [label="section: 399-408"]
+section_153 [label="section: 409-418"]
 
 
 // END RANK section_74
@@ -901,9 +911,9 @@ prose_172 [label="prose"]
 
 prose_173 [label="prose"]
 
-section_174 [label="section: 285-304"]
+section_174 [label="section: 295-314"]
 
-section_175 [label="section: 305-398"]
+section_175 [label="section: 315-408"]
 
 
 // END RANK section_152
@@ -980,7 +990,7 @@ prose_190 [label="prose"]
 
 prose_191 [label="prose"]
 
-codeblock_192 [label="code block 296-299"]
+codeblock_192 [label="code block 306-309"]
 
 prose_193 [label="prose"]
 
@@ -2401,7 +2411,7 @@ prose_553 [label="prose"]
 
 prose_554 [label="prose"]
 
-section_555 [label="section: 420-449"]
+section_555 [label="section: 430-459"]
 
 
 // END RANK section_75
@@ -2833,7 +2843,7 @@ prose_661 [label="prose"]
 
 prose_662 [label="prose"]
 
-section_663 [label="section: 459-620"]
+section_663 [label="section: 469-630"]
 
 
 // END RANK section_76
@@ -2891,9 +2901,9 @@ prose_674 [label="prose"]
 
 prose_675 [label="prose"]
 
-codeblock_676 [label="code block 478-588"]
+codeblock_676 [label="code block 488-598"]
 
-codeblock_677 [label="code block 590-620"]
+codeblock_677 [label="code block 600-630"]
 
 
 // END RANK section_663

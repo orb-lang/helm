@@ -221,7 +221,12 @@ anterm["fg"], anterm["bg"] = ansi_fg, ansi_bg
 
 anterm["fg24"], anterm["bg24"] = fg24, bg24
 
---- Jumps
+
+
+
+
+
+
 
 local jump = {}
 
@@ -258,6 +263,35 @@ function anterm.rc (row, column)
    return CSI .. row .. ";" .. column .. "H"
 end
 
+anterm.rowcol = anterm.rc
+
+
+
+
+
+
+local erase = {}
+anterm.erase = erase
+
+local e__below = CSI .. "0J"
+local e__above = CSI .. "1J"
+local e__all   = CSI .. "2J"
+local e__right = CSI .. "0K"
+local e__left  = CSI .. "1K"
+local e__line  = CSI .. "2K"
+
+function erase.below() return e__below end
+
+function erase.above() return e__above end
+
+function erase.all()   return e__all   end
+
+function erase.right() return e__right end
+
+function erase.left()  return e__left  end
+
+function erase.line()  return e__line  end
+
 
 
 
@@ -272,5 +306,3 @@ function anterm.pop()
 end
 
 return anterm
-
-
