@@ -194,9 +194,10 @@ local function cursor_pos(str)
    return tonumber(row), tonumber(col)
 end
 
--- this is exploratory code
-local function colwrite(str, col)
+-- more like jumpwrite at this point but w/
+local function colwrite(str, col, row)
    col = col or 81
+   row = row or 1
    local dash = a.stash()
              .. a.jump(1, col)
              .. a.erase.right()
@@ -207,6 +208,15 @@ local function colwrite(str, col)
 end
 
 local STAT_ICON = "◉"
+
+local function isnum(char)
+   return char >= "0" and char <= "9"
+end
+
+local function isalpha(char)
+   return (char >= "A" and char <= "z")
+      or  (char >= "a" and char <= "z")
+end
 
 local function process_escapes(seq)
    local term = sub(seq, -1)
@@ -232,8 +242,9 @@ local function process_escapes(seq)
    end
 end
 
-local function lexer(seq)
-   -- This front matter belongs in the escape handling code.
+local function onseq(err,seq)
+   if err then error(err) end
+
    if byte(seq) == 27 then
       colwrite(a.magenta(STAT_ICON) .. " : " .. c.ts(seq))
       process_escapes(seq)
@@ -241,359 +252,6 @@ local function lexer(seq)
    end
    colwrite(a.green(STAT_ICON) .. " : " .. seq)
    write(seq)
-end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-local function isnum(char)
-   return char >= "0" and char <= "9"
-end
-
-local function isalpha(char)
-   return (char >= "A" and char <= "z")
-      or  (char >= "a" and char <= "z")
-end
-
-local _C1terms = {"D","E","H","M","N","O","V","W","X","Z","]","^"}
-
-local C1Termset = {}
-
-for i = 1, #_C1terms do
-   C1Termset[ _C1terms[i]] = true
-end
-
-_C1terms = nil
-
-
-local function C1Terminal(char)
-   return C1Termset[char]
-end
-
-local function CSIPrequel(char)
-   if char == "?" or char == ">" or char == "!" then
-      return true
-   end
-end
-
-
-
--- These state flags should be closed over to make
--- onkey re-entrant.
-
--- This will allow our parser to be re-used by user
--- programs without interfering with the repl.
---
-
-local escaping = false
-local csi      = false
-local wchar    = false
-
-local function onkey(err, key)
-   if err then error(err) end
-   -- ^Q to quit
-   if key == "\17" then
-      femto.cooked()
-      uv.stop()
-      return 0
-   end
-   if key == "\27" then
-      escaping = true
-      keybuf[#keybuf + 1]  = key
-      return
-   end
-   if escaping then
-      if csi then
-         -- All CSI parsing
-         assert(#keybuf >= 2, "keybuf too small for CSI")
-         assert(keybuf[1] == "\27", "keybuf[1] ~= ^[")
-         assert(keybuf[2] == "[", "keybuf ~= ^[[")
-         if CSIPrequel(key) then
-            assert(#keybuf == 2, "CSIPrequel must be keybuf[3]")
-            keybuf[3] = key
-            return
-         end
-
-         if isnum(key) or key == ";" then
-            keybuf[#keybuf + 1] = key
-            return
-         end
-
-         if isalpha(key) or key == "~" then
-            escaping, csi = false, false
-            local esc_val = concat(keybuf) .. key
-            for i = 1, #keybuff do keybuf[i] = nil end
-            return lexer(esc_val)
-         else
-            error("possible invalid during csi parsing: " .. key)
-            return
-         end
-      -- detect CSI
-      elseif key == "[" then
-         csi = true
-         assert(keybuf[2] == nil, "[ was not in CSI position")
-         keybuf[2] = key
-         return
-      elseif C1Terminal(key) then
-         -- seq[2]
-         assert(keybuf[2] == nil, "CSITerminal with non-nil keybuf[2]")
-         escaping = false
-         keybuf[1] = nil
-         return lexer("\27" .. key)
-      else
-         -- This is not yet correct!
-         keybuf[#keybuf + 1] = key
-         return
-      end
-   elseif not wchar then
-      -- if not escaping or wchar then check ASCIIness
-      if key <= "~" then
-         return lexer(key) -- add some kind of mode parameter
-      else
-         -- backspace, wchars etc
-      end
-   end
-   return lexer(key)
 end
 
 
@@ -609,7 +267,7 @@ displayPrompt '👉  '
 -- Crude hack to choose raw mode at runtime
 if arg[1] == "-r" then
    femto.raw()
-   uv.read_start(stdin, onkey)
+   uv.read_start(stdin, onseq)
 else
    uv.read_start(stdin, onread)
 end
