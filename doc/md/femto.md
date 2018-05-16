@@ -227,7 +227,7 @@ local function onkey(err, key)
    if err then error(err) end
    -- ^Q to quit
    if key == "\17" then
-      femto.disableRawMode()
+      femto.cooked()
       uv.stop()
       return 0
    end
@@ -272,7 +272,7 @@ coroutine.wrap(function()
    displayPrompt '👉  '
    -- Crude hack to choose raw mode at runtime
    if arg[1] == "-r" then
-      femto.enableRawMode()
+      femto.raw()
       uv.read_start(stdin, onkey)
       finding_max = true
       -- stash cursor

@@ -708,7 +708,7 @@
 <text text-anchor="middle" x="3931.5" y="-1251.1163" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if err then error(err) end</text>
 <text text-anchor="middle" x="3931.5" y="-1235.7163" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#45;&#45; ^Q to quit</text>
 <text text-anchor="middle" x="3931.5" y="-1220.3163" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if key == &quot;\17&quot; then</text>
-<text text-anchor="middle" x="3931.5" y="-1204.9162" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;femto.disableRawMode()</text>
+<text text-anchor="middle" x="3931.5" y="-1204.9162" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;femto.cooked()</text>
 <text text-anchor="middle" x="3931.5" y="-1189.5162" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;uv.stop()</text>
 <text text-anchor="middle" x="3931.5" y="-1174.1162" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return 0</text>
 <text text-anchor="middle" x="3931.5" y="-1158.7162" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
@@ -761,7 +761,7 @@
 <text text-anchor="middle" x="4343.5" y="-1144.5161" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;displayPrompt &#39;👉 &#160;&#39;</text>
 <text text-anchor="middle" x="4343.5" y="-1120.2873" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#45;&#45; Crude hack to choose raw mode at runtime</text>
 <text text-anchor="middle" x="4343.5" y="-1104.8873" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if arg[1] == &quot;&#45;r&quot; then</text>
-<text text-anchor="middle" x="4343.5" y="-1089.4872" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;femto.enableRawMode()</text>
+<text text-anchor="middle" x="4343.5" y="-1089.4872" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;femto.raw()</text>
 <text text-anchor="middle" x="4343.5" y="-1074.0872" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;uv.read_start(stdin, onkey)</text>
 <text text-anchor="middle" x="4343.5" y="-1058.6872" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;finding_max = true</text>
 <text text-anchor="middle" x="4343.5" y="-1043.2872" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; stash cursor</text>
