@@ -194,9 +194,10 @@ local function cursor_pos(str)
    return tonumber(row), tonumber(col)
 end
 
--- this is exploratory code
-local function colwrite(str, col)
+-- more like jumpwrite at this point but w/
+local function colwrite(str, col, row)
    col = col or 81
+   row = row or 1
    local dash = a.stash()
              .. a.jump(1, col)
              .. a.erase.right()
@@ -575,7 +576,7 @@ local function onkey(err, key)
       -- detect CSI
       elseif key == "[" then
          csi = true
-         colwrite(2, "detected [")
+         colwrite("detected [", nil, 2)
          assert(keybuf[2] == nil, "[ was not in CSI position")
          keybuf[2] = key
          return
