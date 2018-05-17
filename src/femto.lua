@@ -294,10 +294,14 @@ local __navigation = {  UP       = "\x1b[A",
                         ALT_TAB    = "\x1b\t",
                         NEWLINE    = "\n",
                         RETURN     = "\r",
-                        TAB        = "\t"
+                        TAB        = "\t",
+                        BACKSPACE  = "\127",
+                        DELETE     = "\x1b[3~",
                      }
 
--- it is possible to coerce a terminal into sending these, apparently:
+
+
+
 
 local __alt_nav = {  UP       = "\x1bOA",
                      DOWN     = "\x1bOB",
@@ -305,10 +309,19 @@ local __alt_nav = {  UP       = "\x1bOA",
                      LEFT     = "\x1bOD",
                   }
 
--- still don't know how that happened
 
-local __control = {  ZERO = "\0",
-                   }
+
+
+
+
+
+
+
+
+
+local __control = { HT = "\t",
+                    LF = "\n",
+                    CR = "\r" }
 
 local navigation = {}
 local control = {}
@@ -422,11 +435,11 @@ local function onseq(err,seq)
       return act("CTRL", ctrl)
    elseif navigation[seq] then
       colwrite(a.green(STAT_ICON))
-      return act("NAV", seq)
+      return act("NAV", navigation[seq])
    end
 
    colwrite(a.green(STAT_ICON) .. " : " .. seq)
-   return act("INSERT", seq)
+   return act("INSERT", byte(seq))
 
 end
 

@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 467"]
+doc_0 [label="doc - 480"]
 
 
 doc_0 -> { section_1}
@@ -526,7 +526,7 @@ section_92 [label="section: 190-213"]
 
 section_93 [label="section: 214-253"]
 
-section_94 [label="section: 254-467"]
+section_94 [label="section: 254-480"]
 
 
 // END RANK section_7
@@ -731,8 +731,8 @@ local function isalpha(char)
 end"]
 // END RANK codeblock_125
 
-section_94 -> { header_130 prose_131 prose_132 prose_133 prose_134 prose_135 codeblock_136 codeblock_137}
-{rank=same; header_130 prose_131 prose_132 prose_133 prose_134 prose_135 codeblock_136 codeblock_137}
+section_94 -> { header_130 prose_131 prose_132 prose_133 prose_134 prose_135 codeblock_136 prose_137 codeblock_138 prose_139 prose_140 prose_141 codeblock_142 codeblock_143}
+{rank=same; header_130 prose_131 prose_132 prose_133 prose_134 prose_135 codeblock_136 prose_137 codeblock_138 prose_139 prose_140 prose_141 codeblock_142 codeblock_143}
 
 header_130 [label="3 : process_escapes(seq)"]
 
@@ -746,147 +746,159 @@ prose_134 [label="prose"]
 
 prose_135 [label="prose"]
 
-codeblock_136 [label="code block 269-432"]
+codeblock_136 [label="code block 269-301"]
 
-codeblock_137 [label="code block 434-467"]
+prose_137 [label="prose"]
+
+codeblock_138 [label="code block 305-311"]
+
+prose_139 [label="prose"]
+
+prose_140 [label="prose"]
+
+prose_141 [label="prose"]
+
+codeblock_142 [label="code block 321-445"]
+
+codeblock_143 [label="code block 447-480"]
 
 
 // END RANK section_94
 
-header_130 -> leaf_138
-leaf_138  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** process_escapes(seq)"]
+header_130 -> leaf_144
+leaf_144  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** process_escapes(seq)"]
 // END RANK header_130
 
-prose_131 -> { raw_139 prespace_140 literal_141 raw_142}
-{rank=same; raw_139 prespace_140 literal_141 raw_142}
+prose_131 -> { raw_145 prespace_146 literal_147 raw_148}
+{rank=same; raw_145 prespace_146 literal_147 raw_148}
 
-raw_139 [label="raw"]
+raw_145 [label="raw"]
 
-prespace_140 [label="prespace"]
+prespace_146 [label="prespace"]
 
-literal_141 [label="literal"]
+literal_147 [label="literal"]
 
-raw_142 [label="raw"]
+raw_148 [label="raw"]
 
 
 // END RANK prose_131
 
-raw_139 -> leaf_143
-leaf_143  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_145 -> leaf_149
+leaf_149  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 After flailing about and writing what was no doubt a good parser for
 individual byte sequences, I discovered that"]
-// END RANK raw_139
+// END RANK raw_145
 
-prespace_140 -> leaf_144
-leaf_144  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_140
+prespace_146 -> leaf_150
+leaf_150  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_146
 
-literal_141 -> leaf_145
-leaf_145  [color=Gray,shape=rectangle,fontname=Inconsolata,label="uv"]
-// END RANK literal_141
+literal_147 -> leaf_151
+leaf_151  [color=Gray,shape=rectangle,fontname=Inconsolata,label="uv"]
+// END RANK literal_147
 
-raw_142 -> leaf_146
-leaf_146  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" gives them to me a seq at a
+raw_148 -> leaf_152
+leaf_152  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" gives them to me a seq at a
 time.
 "]
-// END RANK raw_142
+// END RANK raw_148
 
-prose_132 -> { raw_147}
-{rank=same; raw_147}
+prose_132 -> { raw_153}
+{rank=same; raw_153}
 
-raw_147 [label="raw"]
+raw_153 [label="raw"]
 
 
 // END RANK prose_132
 
-raw_147 -> leaf_148
-leaf_148  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_153 -> leaf_154
+leaf_154  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 Because of course it does.
 "]
-// END RANK raw_147
+// END RANK raw_153
 
-prose_133 -> { raw_149 prespace_150 literal_151 raw_152}
-{rank=same; raw_149 prespace_150 literal_151 raw_152}
+prose_133 -> { raw_155 prespace_156 literal_157 raw_158}
+{rank=same; raw_155 prespace_156 literal_157 raw_158}
 
-raw_149 [label="raw"]
+raw_155 [label="raw"]
 
-prespace_150 [label="prespace"]
+prespace_156 [label="prespace"]
 
-literal_151 [label="literal"]
+literal_157 [label="literal"]
 
-raw_152 [label="raw"]
+raw_158 [label="raw"]
 
 
 // END RANK prose_133
 
-raw_149 -> leaf_153
-leaf_153  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_155 -> leaf_159
+leaf_159  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 So we're just going to make this a jump table that translates"]
-// END RANK raw_149
+// END RANK raw_155
 
-prespace_150 -> leaf_154
-leaf_154  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_150
+prespace_156 -> leaf_160
+leaf_160  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_156
 
-literal_151 -> leaf_155
-leaf_155  [color=Gray,shape=rectangle,fontname=Inconsolata,label="xterm"]
-// END RANK literal_151
+literal_157 -> leaf_161
+leaf_161  [color=Gray,shape=rectangle,fontname=Inconsolata,label="xterm"]
+// END RANK literal_157
 
-raw_152 -> leaf_156
-leaf_156  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" directly
+raw_158 -> leaf_162
+leaf_162  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" directly
 to english.
 "]
-// END RANK raw_152
+// END RANK raw_158
 
-prose_134 -> { raw_157 prespace_158 literal_159 raw_160}
-{rank=same; raw_157 prespace_158 literal_159 raw_160}
+prose_134 -> { raw_163 prespace_164 literal_165 raw_166}
+{rank=same; raw_163 prespace_164 literal_165 raw_166}
 
-raw_157 [label="raw"]
+raw_163 [label="raw"]
 
-prespace_158 [label="prespace"]
+prespace_164 [label="prespace"]
 
-literal_159 [label="literal"]
+literal_165 [label="literal"]
 
-raw_160 [label="raw"]
+raw_166 [label="raw"]
 
 
 // END RANK prose_134
 
-raw_157 -> leaf_161
-leaf_161  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_163 -> leaf_167
+leaf_167  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 I'm also going to switch to"]
-// END RANK raw_157
+// END RANK raw_163
 
-prespace_158 -> leaf_162
-leaf_162  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_158
+prespace_164 -> leaf_168
+leaf_168  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_164
 
-literal_159 -> leaf_163
-leaf_163  [color=Gray,shape=rectangle,fontname=Inconsolata,label="x1b"]
-// END RANK literal_159
+literal_165 -> leaf_169
+leaf_169  [color=Gray,shape=rectangle,fontname=Inconsolata,label="x1b"]
+// END RANK literal_165
 
-raw_160 -> leaf_164
-leaf_164  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", which is more visually distinguished.
+raw_166 -> leaf_170
+leaf_170  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", which is more visually distinguished.
 "]
-// END RANK raw_160
+// END RANK raw_166
 
-prose_135 -> { raw_165}
-{rank=same; raw_165}
+prose_135 -> { raw_171}
+{rank=same; raw_171}
 
-raw_165 [label="raw"]
+raw_171 [label="raw"]
 
 
 // END RANK prose_135
 
-raw_165 -> leaf_166
-leaf_166  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_171 -> leaf_172
+leaf_172  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 To avoid extraneous quoting, we define the tokens as keys, and their escape
 strings as values."]
-// END RANK raw_165
+// END RANK raw_171
 
-codeblock_136 -> leaf_167
-leaf_167  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+codeblock_136 -> leaf_173
+leaf_173  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 --
 
 local __navigation = {  UP       = \"\\x1b[A\",
@@ -913,21 +925,81 @@ local __navigation = {  UP       = \"\\x1b[A\",
                         ALT_TAB    = \"\\x1b\\t\",
                         NEWLINE    = \"\\n\",
                         RETURN     = \"\\r\",
-                        TAB        = \"\\t\"
-                     }
+                        TAB        = \"\\t\",
+                        BACKSPACE  = \"\\127\",
+                        DELETE     = \"\\x1b[3~\",
+                     }"]
+// END RANK codeblock_136
 
--- it is possible to coerce a terminal into sending these, apparently:
+prose_137 -> { raw_174}
+{rank=same; raw_174}
 
-local __alt_nav = {  UP       = \"\\x1bOA\",
+raw_174 [label="raw"]
+
+
+// END RANK prose_137
+
+raw_174 -> leaf_175
+leaf_175  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+It's possible to coerce a terminal into sending these, apparently:
+"]
+// END RANK raw_174
+
+codeblock_138 -> leaf_176
+leaf_176  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local __alt_nav = {  UP       = \"\\x1bOA\",
                      DOWN     = \"\\x1bOB\",
                      RIGHT    = \"\\x1bOC\",
                      LEFT     = \"\\x1bOD\",
-                  }
+                  }"]
+// END RANK codeblock_138
 
--- still don't know how that happened
+prose_139 -> { raw_177}
+{rank=same; raw_177}
 
-local __control = {  ZERO = \"\\0\",
-                   }
+raw_177 [label="raw"]
+
+
+// END RANK prose_139
+
+raw_177 -> leaf_178
+leaf_178  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+I don't know why, and if anyone does, please let me know.
+"]
+// END RANK raw_177
+
+prose_140 -> { raw_179}
+{rank=same; raw_179}
+
+raw_179 [label="raw"]
+
+
+// END RANK prose_140
+
+raw_179 -> leaf_180
+leaf_180  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+I'm fairly sure those are the only valid meanings for the above escape
+strings.
+"]
+// END RANK raw_179
+
+prose_141 -> { raw_181}
+{rank=same; raw_181}
+
+raw_181 [label="raw"]
+
+
+// END RANK prose_141
+
+raw_181 -> leaf_182
+leaf_182  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Annnnyway, printable control characters:
+"]
+// END RANK raw_181
+
+codeblock_142 -> leaf_183
+leaf_183  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local __control = { HT = \"\\t\",
+                    LF = \"\\n\",
+                    CR = \"\\r\" }
 
 local navigation = {}
 local control = {}
@@ -1041,17 +1113,17 @@ local function onseq(err,seq)
       return act(\"CTRL\", ctrl)
    elseif navigation[seq] then
       colwrite(a.green(STAT_ICON))
-      return act(\"NAV\", seq)
+      return act(\"NAV\", navigation[seq])
    end
 
    colwrite(a.green(STAT_ICON) .. \" : \" .. seq)
-   return act(\"INSERT\", seq)
+   return act(\"INSERT\", byte(seq))
 
 end"]
-// END RANK codeblock_136
+// END RANK codeblock_142
 
-codeblock_137 -> leaf_168
-leaf_168  [color=Gray,shape=rectangle,fontname=Inconsolata,label="-- Get names for as many values as possible
+codeblock_143 -> leaf_184
+leaf_184  [color=Gray,shape=rectangle,fontname=Inconsolata,label="-- Get names for as many values as possible
 -- into the colorizer
 c.allNames()
 -- This switches screens and does a wipe,
@@ -1083,7 +1155,7 @@ end
 
 print(\"kthxbye\")
 return retcode"]
-// END RANK codeblock_137
+// END RANK codeblock_143
 
 
 }
