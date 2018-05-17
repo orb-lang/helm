@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 323"]
+doc_0 [label="doc - 321"]
 
 
 doc_0 -> { section_1}
@@ -31,7 +31,7 @@ prose_7 [label="prose"]
 
 codeblock_8 [label="code block 20-51"]
 
-section_9 [label="section: 55-255"]
+section_9 [label="section: 55-253"]
 
 
 // END RANK section_1
@@ -283,9 +283,9 @@ section_65 [label="section: 74-87"]
 
 section_66 [label="section: 88-151"]
 
-section_67 [label="section: 152-255"]
+section_67 [label="section: 152-253"]
 
-section_68 [label="section: 256-323"]
+section_68 [label="section: 254-321"]
 
 
 // END RANK section_9
@@ -558,7 +558,7 @@ codeblock_116 [label="code block 156-215"]
 
 prose_117 [label="prose"]
 
-codeblock_118 [label="code block 220-253"]
+codeblock_118 [label="code block 220-251"]
 
 
 // END RANK section_67
@@ -663,7 +663,7 @@ leaf_125  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local find, su
                               string.gsub, string.byte
 
 local e = function(str)
-   return c.stresc(str) .. c.string
+   return c.stresc .. str .. c.string
 end
 
 -- Turn control characters into their byte rep,
@@ -677,8 +677,7 @@ local function ctrl_pr(str)
 end
 
 scrub = function (str)
-   return str:gsub(\"\\\\\", e \"\\\\\")
-             :gsub(\"\\27\", e \"\\\\x1b\")
+   return str:gsub(\"\\27\", e \"\\\\x1b\")
              :gsub('\"',  e '\\\\\"')
              :gsub(\"'\",  e \"\\\\'\")
              :gsub(\"\\a\", e \"\\\\a\")
@@ -688,7 +687,6 @@ scrub = function (str)
              :gsub(\"\\r\", e \"\\\\r\")
              :gsub(\"\\t\", e \"\\\\t\")
              :gsub(\"\\v\", e \"\\\\v\")
-
              :gsub(\"%c\", ctrl_pr)
 end"]
 // END RANK codeblock_118
@@ -700,9 +698,9 @@ header_126 [label="3 : ts"]
 
 prose_127 [label="prose"]
 
-codeblock_128 [label="code block 260-319"]
+codeblock_128 [label="code block 258-317"]
 
-codeblock_129 [label="code block 321-323"]
+codeblock_129 [label="code block 319-321"]
 
 
 // END RANK section_68

@@ -297,6 +297,23 @@ function erase.line()  return e__line  end
 
 
 
+
+local mouse = {}
+anterm.mouse = mouse
+
+function mouse.track(on)
+   if on then
+      return "\x1b[?1003h"
+   else
+      return "\x1b[?1003l"
+   end
+end
+
+
+
+
+
+
 function anterm.stash()
    return "\0277"
 end

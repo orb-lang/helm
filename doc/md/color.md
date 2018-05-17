@@ -218,7 +218,7 @@ local find, sub, gsub, byte = string.find, string.sub,
                               string.gsub, string.byte
 
 local e = function(str)
-   return c.stresc(str) .. c.string
+   return c.stresc .. str .. c.string
 end
 
 -- Turn control characters into their byte rep,
@@ -232,8 +232,7 @@ local function ctrl_pr(str)
 end
 
 scrub = function (str)
-   return str:gsub("\\", e "\\")
-             :gsub("\27", e "\\x1b")
+   return str:gsub("\27", e "\\x1b")
              :gsub('"',  e '\\"')
              :gsub("'",  e "\\'")
              :gsub("\a", e "\\a")
@@ -243,7 +242,6 @@ scrub = function (str)
              :gsub("\r", e "\\r")
              :gsub("\t", e "\\t")
              :gsub("\v", e "\\v")
-
              :gsub("%c", ctrl_pr)
 end
 ```

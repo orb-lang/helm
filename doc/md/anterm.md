@@ -290,6 +290,21 @@ function erase.left()  return e__left  end
 function erase.line()  return e__line  end
 
 ```
+## Mouse
+
+```lua
+local mouse = {}
+anterm.mouse = mouse
+
+function mouse.track(on)
+   if on then
+      return "\x1b[?1003h"
+   else
+      return "\x1b[?1003l"
+   end
+end
+
+```
 ### Miscellaneous term handling
 
 ```lua

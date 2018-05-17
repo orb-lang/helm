@@ -17,6 +17,7 @@ sql = require "sqlite"
 
 lfs = require "lfs"
 ffi = require "ffi"
+bit = require "bit"
 
 ffi.reflect = require "reflect"
 
@@ -192,7 +193,7 @@ local function cursor_pos(str)
    return tonumber(row), tonumber(col)
 end
 
--- more like jumpwrite at this point but w/
+-- more like jumpwrite at this point but w/e
 local function colwrite(str, col, row)
    col = col or 81
    row = row or 1
@@ -239,7 +240,7 @@ strings as values.
 
 --
 
-local __navigation = { UP       = "\x1b[A",
+local __navigation = {  UP       = "\x1b[A",
                         DOWN     = "\x1b[B",
                         RIGHT    = "\x1b[C",
                         LEFT     = "\x1b[D",
@@ -258,13 +259,21 @@ local __navigation = { UP       = "\x1b[A",
                         SHIFT_ALT_UP = "\x1b[1;10A",
                         SHIFT_ALT_DOWN = "\x1b[1;10B",
                         SHIFT_ALT_RIGHT = "\x1b[1;10C",
-                        SHIFT_ALT_LEFT  = "\x1b[1;10A",
+                        SHIFT_ALT_LEFT  = "\x1b[1;10D",
                         SHIFT_TAB  = "\x1b[Z",
                         ALT_TAB    = "\x1b\t",
                         NEWLINE    = "\n",
                         RETURN     = "\r",
                         TAB        = "\t"
                      }
+
+-- it is possible to coerce a terminal into sending these, apparently:
+
+local __alt_nav = {  UP       = "\x1bOA",
+                     DOWN     = "\x1bOB",
+                     RIGHT    = "\x1bOC",
+                     LEFT     = "\x1bOD",
+                  }
 
 local __control = {  ZERO = "\0",
                    }
@@ -277,11 +286,14 @@ local control = {}
 for k,v in pairs(__navigation) do
    navigation[v] = k
 end
+for k,v in pairs(__alt_nav) do
+   navigation[v] = k
+end
 for k,v in pairs(__control) do
    control[v] = k
 end
 
-__navigation, __control = nil, nil
+__navigation, __control, __alt_nav = nil, nil, nil
 
 local function act(action, category)
    colwrite(a.yellow(action), 81, 2)
@@ -295,13 +307,46 @@ local function litprint(seq)
    return phrase
 end
 
+local function ismousemove(seq)
+   if sub(seq, 1, 3) == "\x1b[M" then
+      return true
+   end
+end
+
+local buttons = {[0] ="MB0", "MB1", "MB2", "MBRELEASE"}
+
 local function process_escapes(seq)
    if navigation[seq] then
       act(navigation[seq], "navigation")
    elseif #seq == 1 then
       act("ESC", "control")
-   else
-      act(litprint(seq))
+   end
+   if ismousemove(seq) then
+      local kind, col, row = byte(seq,4), byte(seq, 5), byte(seq, 6)
+      col = col - 32
+      row = row - 32
+      kind = kind - 32
+      -- Get button
+      local button = buttons[kind % 4]
+      -- Get modifiers
+      kind = bit.rshift(kind, 2)
+      local shift = kind % 2 == 1 and true or false
+      kind = bit.rshift(kind, 1)
+      local meta = kind % 2 == 1 and true or false
+      kind = bit.rshift(kind, 1)
+      local ctrl = kind % 2 == 1 and true or false
+      kind = bit.rshift(kind, 1)
+      local moving = kind % 2 == 1 and true or false
+      -- we skip a bit that seems to just mirror the motion
+      -- it may be pixel level, I can't tell and idk
+      local scrolling = kind == 2 and true or false
+      local phrase = a.magenta(button) .. ": "
+                     .. a.bright(kind) .. " " .. ts(shift) .. " " .. ts(meta)
+                     .. " " .. ts(ctrl) .. " " .. ts(moving) .. " "
+                     .. ts(scrolling) .. " "
+                     .. a.cyan(col) .. "," .. a.cyan(row)
+
+      act(phrase)
    end
 end
 
@@ -311,6 +356,7 @@ local function onseq(err,seq)
    -- ^Q hard coded as quit, for now
    if head == 17 then
       femto.cooked()
+      write(a.mouse.track(false))
       uv.stop()
       return 0
    end
@@ -346,12 +392,15 @@ end
 c.allNames()
 -- This switches screens and does a wipe,
 -- then puts the cursor at 1,1.
-write '\x1b[?47h\x1b[2J\x1b[H'
+write "\x1b[?47h\x1b[2J\x1b[H"
 print "an repl, plz reply uwu 👀"
 displayPrompt '👉  '
 -- Crude hack to choose raw mode at runtime
 if arg[1] == "-r" then
    femto.raw()
+   --uv.tty_set_mode(stdin, 2)
+   -- mouse mode
+   write(a.mouse.track(true))
    uv.read_start(stdin, onseq)
 else
    uv.read_start(stdin, onread)
@@ -360,11 +409,11 @@ end
 
 
 -- main loop
-local retcode = uv.run('default')
+local retcode =  uv.run('default')
 -- Restore main screen
 print '\x1b[?47l'
 
-if retcode ~= 0 then
+if retcode ~= true then
    error(retcode)
 end
 

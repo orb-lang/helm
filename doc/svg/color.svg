@@ -13,7 +13,7 @@
 <g id="node1" class="node">
 <title>doc_0</title>
 <ellipse fill="none" stroke="#000000" cx="2195.5" cy="-1825.2386" rx="46.9581" ry="18"/>
-<text text-anchor="middle" x="2195.5" y="-1821.0386" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">doc &#45; 323</text>
+<text text-anchor="middle" x="2195.5" y="-1821.0386" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">doc &#45; 321</text>
 </g>
 <!-- section_1 -->
 <g id="node2" class="node">
@@ -115,7 +115,7 @@
 <g id="node10" class="node">
 <title>section_9</title>
 <ellipse fill="none" stroke="#000000" cx="4899.5" cy="-1681.2386" rx="70.655" ry="18"/>
-<text text-anchor="middle" x="4899.5" y="-1677.0386" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 55&#45;255</text>
+<text text-anchor="middle" x="4899.5" y="-1677.0386" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 55&#45;253</text>
 </g>
 <!-- section_1&#45;&gt;section_9 -->
 <g id="edge9" class="edge">
@@ -534,7 +534,7 @@
 <g id="node68" class="node">
 <title>section_67</title>
 <ellipse fill="none" stroke="#000000" cx="7047.5" cy="-1390.4382" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="7047.5" y="-1386.2382" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 152&#45;255</text>
+<text text-anchor="middle" x="7047.5" y="-1386.2382" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 152&#45;253</text>
 </g>
 <!-- section_9&#45;&gt;section_67 -->
 <g id="edge67" class="edge">
@@ -546,7 +546,7 @@
 <g id="node69" class="node">
 <title>section_68</title>
 <ellipse fill="none" stroke="#000000" cx="8031.5" cy="-1390.4382" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="8031.5" y="-1386.2382" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 256&#45;323</text>
+<text text-anchor="middle" x="8031.5" y="-1386.2382" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 254&#45;321</text>
 </g>
 <!-- section_9&#45;&gt;section_68 -->
 <g id="edge68" class="edge">
@@ -1054,7 +1054,7 @@
 <g id="node119" class="node">
 <title>codeblock_118</title>
 <ellipse fill="none" stroke="#000000" cx="7603.5" cy="-1081.9378" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="7603.5" y="-1077.7378" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 220&#45;253</text>
+<text text-anchor="middle" x="7603.5" y="-1077.7378" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 220&#45;251</text>
 </g>
 <!-- section_67&#45;&gt;codeblock_118 -->
 <g id="edge118" class="edge">
@@ -1090,7 +1090,7 @@
 <g id="node129" class="node">
 <title>codeblock_128</title>
 <ellipse fill="none" stroke="#000000" cx="8239.5" cy="-1081.9378" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="8239.5" y="-1077.7378" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 260&#45;319</text>
+<text text-anchor="middle" x="8239.5" y="-1077.7378" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 258&#45;317</text>
 </g>
 <!-- section_68&#45;&gt;codeblock_128 -->
 <g id="edge128" class="edge">
@@ -1102,7 +1102,7 @@
 <g id="node130" class="node">
 <title>codeblock_129</title>
 <ellipse fill="none" stroke="#000000" cx="8552.5" cy="-1081.9378" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="8552.5" y="-1077.7378" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 321&#45;323</text>
+<text text-anchor="middle" x="8552.5" y="-1077.7378" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 319&#45;321</text>
 </g>
 <!-- section_68&#45;&gt;codeblock_129 -->
 <g id="edge129" class="edge">
@@ -1671,41 +1671,40 @@
 <!-- leaf_125 -->
 <g id="node126" class="node">
 <title>leaf_125</title>
-<polygon fill="none" stroke="#c0c0c0" points="7904.5,-810.5198 7510.5,-810.5198 7510.5,-307.118 7904.5,-307.118 7904.5,-810.5198"/>
-<text text-anchor="middle" x="7707.5" y="-795.2194" font-family="Inconsolata" font-size="14.00" fill="#000000">local find, sub, gsub, byte = string.find, string.sub,</text>
-<text text-anchor="middle" x="7707.5" y="-779.8193" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;string.gsub, string.byte</text>
-<text text-anchor="middle" x="7707.5" y="-748.4193" font-family="Inconsolata" font-size="14.00" fill="#000000">local e = function(str)</text>
-<text text-anchor="middle" x="7707.5" y="-733.0193" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return c.stresc(str) .. c.string</text>
-<text text-anchor="middle" x="7707.5" y="-717.6192" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
-<text text-anchor="middle" x="7707.5" y="-686.2192" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; Turn control characters into their byte rep,</text>
-<text text-anchor="middle" x="7707.5" y="-670.8192" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; preserving escapes</text>
-<text text-anchor="middle" x="7707.5" y="-655.4191" font-family="Inconsolata" font-size="14.00" fill="#000000">local function ctrl_pr(str)</text>
-<text text-anchor="middle" x="7707.5" y="-640.0191" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if byte(str) ~= 27 then</text>
-<text text-anchor="middle" x="7707.5" y="-624.6191" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return e(&quot;\\&quot; .. byte(str))</text>
-<text text-anchor="middle" x="7707.5" y="-609.219" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;else</text>
-<text text-anchor="middle" x="7707.5" y="-593.819" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return str</text>
-<text text-anchor="middle" x="7707.5" y="-578.419" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
-<text text-anchor="middle" x="7707.5" y="-563.0189" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
-<text text-anchor="middle" x="7707.5" y="-531.6189" font-family="Inconsolata" font-size="14.00" fill="#000000">scrub = function (str)</text>
-<text text-anchor="middle" x="7707.5" y="-516.2189" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return str:gsub(&quot;\\&quot;, e &quot;\\&quot;)</text>
-<text text-anchor="middle" x="7707.5" y="-500.8189" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;:gsub(&quot;\27&quot;, e &quot;\\x1b&quot;)</text>
-<text text-anchor="middle" x="7707.5" y="-485.4188" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;:gsub(&#39;&quot;&#39;, &#160;e &#39;\\&quot;&#39;)</text>
-<text text-anchor="middle" x="7707.5" y="-470.0188" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;:gsub(&quot;&#39;&quot;, &#160;e &quot;\\&#39;&quot;)</text>
-<text text-anchor="middle" x="7707.5" y="-454.6188" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;:gsub(&quot;\a&quot;, e &quot;\\a&quot;)</text>
-<text text-anchor="middle" x="7707.5" y="-439.2187" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;:gsub(&quot;\b&quot;, e &quot;\\b&quot;)</text>
-<text text-anchor="middle" x="7707.5" y="-423.8187" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;:gsub(&quot;\f&quot;, e &quot;\\f&quot;)</text>
-<text text-anchor="middle" x="7707.5" y="-408.4187" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;:gsub(&quot;\n&quot;, e &quot;\\n&quot;)</text>
-<text text-anchor="middle" x="7707.5" y="-393.0186" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;:gsub(&quot;\r&quot;, e &quot;\\r&quot;)</text>
-<text text-anchor="middle" x="7707.5" y="-377.6186" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;:gsub(&quot;\t&quot;, e &quot;\\t&quot;)</text>
-<text text-anchor="middle" x="7707.5" y="-362.2186" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;:gsub(&quot;\v&quot;, e &quot;\\v&quot;)</text>
-<text text-anchor="middle" x="7707.5" y="-330.8185" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;:gsub(&quot;%c&quot;, ctrl_pr)</text>
-<text text-anchor="middle" x="7707.5" y="-315.4185" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
+<polygon fill="none" stroke="#c0c0c0" points="7904.5,-794.6198 7510.5,-794.6198 7510.5,-323.018 7904.5,-323.018 7904.5,-794.6198"/>
+<text text-anchor="middle" x="7707.5" y="-779.5193" font-family="Inconsolata" font-size="14.00" fill="#000000">local find, sub, gsub, byte = string.find, string.sub,</text>
+<text text-anchor="middle" x="7707.5" y="-764.1193" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;string.gsub, string.byte</text>
+<text text-anchor="middle" x="7707.5" y="-732.7193" font-family="Inconsolata" font-size="14.00" fill="#000000">local e = function(str)</text>
+<text text-anchor="middle" x="7707.5" y="-717.3192" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return c.stresc .. str .. c.string</text>
+<text text-anchor="middle" x="7707.5" y="-701.9192" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
+<text text-anchor="middle" x="7707.5" y="-670.5192" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; Turn control characters into their byte rep,</text>
+<text text-anchor="middle" x="7707.5" y="-655.1192" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; preserving escapes</text>
+<text text-anchor="middle" x="7707.5" y="-639.7191" font-family="Inconsolata" font-size="14.00" fill="#000000">local function ctrl_pr(str)</text>
+<text text-anchor="middle" x="7707.5" y="-624.3191" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if byte(str) ~= 27 then</text>
+<text text-anchor="middle" x="7707.5" y="-608.9191" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return e(&quot;\\&quot; .. byte(str))</text>
+<text text-anchor="middle" x="7707.5" y="-593.519" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;else</text>
+<text text-anchor="middle" x="7707.5" y="-578.119" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return str</text>
+<text text-anchor="middle" x="7707.5" y="-562.719" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
+<text text-anchor="middle" x="7707.5" y="-547.3189" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
+<text text-anchor="middle" x="7707.5" y="-515.9189" font-family="Inconsolata" font-size="14.00" fill="#000000">scrub = function (str)</text>
+<text text-anchor="middle" x="7707.5" y="-500.5189" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return str:gsub(&quot;\27&quot;, e &quot;\\x1b&quot;)</text>
+<text text-anchor="middle" x="7707.5" y="-485.1188" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;:gsub(&#39;&quot;&#39;, &#160;e &#39;\\&quot;&#39;)</text>
+<text text-anchor="middle" x="7707.5" y="-469.7188" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;:gsub(&quot;&#39;&quot;, &#160;e &quot;\\&#39;&quot;)</text>
+<text text-anchor="middle" x="7707.5" y="-454.3188" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;:gsub(&quot;\a&quot;, e &quot;\\a&quot;)</text>
+<text text-anchor="middle" x="7707.5" y="-438.9187" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;:gsub(&quot;\b&quot;, e &quot;\\b&quot;)</text>
+<text text-anchor="middle" x="7707.5" y="-423.5187" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;:gsub(&quot;\f&quot;, e &quot;\\f&quot;)</text>
+<text text-anchor="middle" x="7707.5" y="-408.1187" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;:gsub(&quot;\n&quot;, e &quot;\\n&quot;)</text>
+<text text-anchor="middle" x="7707.5" y="-392.7187" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;:gsub(&quot;\r&quot;, e &quot;\\r&quot;)</text>
+<text text-anchor="middle" x="7707.5" y="-377.3186" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;:gsub(&quot;\t&quot;, e &quot;\\t&quot;)</text>
+<text text-anchor="middle" x="7707.5" y="-361.9186" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;:gsub(&quot;\v&quot;, e &quot;\\v&quot;)</text>
+<text text-anchor="middle" x="7707.5" y="-346.5186" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;:gsub(&quot;%c&quot;, ctrl_pr)</text>
+<text text-anchor="middle" x="7707.5" y="-331.1185" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
 </g>
 <!-- codeblock_118&#45;&gt;leaf_125 -->
 <g id="edge125" class="edge">
 <title>codeblock_118&#45;&gt;leaf_125</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M7607.0799,-1063.9309C7615.0728,-1023.7266 7635.2623,-922.1739 7655.4598,-820.5805"/>
-<polygon fill="#000000" stroke="#000000" points="7658.8969,-821.2414 7657.414,-810.7508 7652.0312,-819.8764 7658.8969,-821.2414"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M7607.0799,-1063.9309C7615.4879,-1021.639 7637.3918,-911.4622 7658.6045,-804.763"/>
+<polygon fill="#000000" stroke="#000000" points="7662.0715,-805.2729 7660.5887,-794.7824 7655.2059,-803.9079 7662.0715,-805.2729"/>
 </g>
 <!-- leaf_121 -->
 <g id="node122" class="node">
