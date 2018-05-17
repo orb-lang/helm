@@ -42,12 +42,21 @@ C.color.truth  = a.fg(231)
 C.color.falsehood  = a.fg(94)
 C.color.nilness    = a.fg(93)
 C.color.thread     = thread_color
+C.color.coro       = thread_color
 C.color.field      = a.fg(111)
 C.color.userdata   = a.fg24(230, 145, 23)
 C.color.cdata      = a.fg24(200, 115, 0)
 C.color.alert      = a.fg24(250, 0, 40)
 C.color.base       = a.fg24(200, 200, 200)
 C.color.metatable  = a.fg24(242, 0, 234)
+C.color.meta       = C.color.metatable
+
+
+C.color["function"] = C.color.func
+C.color["true"]     = C.color.truth
+C.color["false"]    = C.color.falsehood
+C.color["nil"]      = C.color.nilness
+
 #/lua
 
 

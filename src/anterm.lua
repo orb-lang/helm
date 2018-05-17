@@ -12,20 +12,20 @@
 
 
 
+local pairs = assert (pairs)
+local tostring = assert (tostring)
+local setmeta = assert (setmetatable)
+local error = assert (error)
+local require = assert (require)
+local rawget = assert (rawget)
+
+local schar = assert(string.char)
+local sub   = assert(string.sub)
+local byte  = assert(string.byte)
+local bit   = assert(bit, "anterm requires Luajit 'bit' or compatible in _G")
+local rshift = assert(bit.rshift)
 
 
-local L = require "lpeg"
-
-
-
-local pairs = pairs
-local tostring = tostring
-local setmetatable = setmetatable
-local error = error
-local require = require
-local rawget = rawget
-local io = io
-local schar = string.char
 
 local anterm = {}
 
@@ -43,6 +43,7 @@ local colors = {
         dim = 2,
         italic = 3,
         underscore = 4,
+        underline = 4,
         reverse = 7,
         hidden = 8},
     -- foreground
@@ -299,12 +300,60 @@ function erase.line()  return e__line  end
 local mouse = {}
 anterm.mouse = mouse
 
+local buttons = {[0] ="MB0", "MB1", "MB2", "MBNONE"}
+
+
+
+
+
+
+
+
+
+
 function mouse.track(on)
-   if on then
+   if on == true then
       return "\x1b[?1003h"
-   else
-      return "\x1b[?1003l"
    end
+
+   return "\x1b[?1003l"
+end
+
+
+
+function mouse.ismousemove(seq)
+   if sub(seq, 1, 3) == "\x1b[M" then
+      return true
+   end
+end
+
+
+
+
+
+
+
+
+
+
+function mouse.parse_fast(seq)
+   local kind, col, row = byte(seq,4), byte(seq, 5), byte(seq, 6)
+   kind = rshift(kind, 32)
+   local m = {row = rshift(row, 5), col = rshift(col, 5)}
+   -- Get button
+   m.button = buttons[kind % 4]
+   -- Get modifiers
+   kind = rshift(kind, 2)
+   m.shift = kind % 2 == 1
+   kind = rshift(kind, 1)
+   m.meta = kind % 2 == 1
+   kind = rshift(kind, 1)
+   m.ctrl = kind % 2 == 1
+   kind = rshift(kind, 1)
+   m.moving = kind % 2 == 1
+   -- we skip a bit that seems to just mirror .moving
+   m.scrolling = kind == 2
+   return m
 end
 
 
@@ -331,6 +380,8 @@ end
 function cursor.show()
    return "\x1b[?25h"
 end
+
+
 
 
 

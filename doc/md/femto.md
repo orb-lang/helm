@@ -225,10 +225,14 @@ local function cursor_pos(str)
    return tonumber(row), tonumber(col)
 end
 
+local STATCOL = 81
+local STAT_TOP = 1
+local STAT_RUN = 2
+
 -- more like jumpwrite at this point but w/e
 local function colwrite(str, col, row)
-   col = col or 81
-   row = row or 1
+   col = col or STATCOL
+   row = row or STAT_TOP
    local dash = a.stash()
              .. a.cursor.hide()
              .. a.jump(row, col)
@@ -270,9 +274,6 @@ I'm also going to switch to ``x1b``, which is more visually distinguished.
 To avoid extraneous quoting, we define the tokens as keys, and their escape
 strings as values.
 ```lua
-
---
-
 local __navigation = {  UP       = "\x1b[A",
                         DOWN     = "\x1b[B",
                         RIGHT    = "\x1b[C",
@@ -320,17 +321,19 @@ I'm fairly sure those are the only valid meanings for the above escape
 strings.
 
 
-Annnnyway, printable control characters:
+### #todo function keys
+
+Don't really use them, should parse them, goes here:
 
 ```lua
-local __control = { HT = "\t",
-                    LF = "\n",
-                    CR = "\r" }
 
+```
+#### flip
+
+We need the inverse of this map, so flip and forget:
+
+```lua
 local navigation = {}
-local control = {}
-
---  Then invert
 
 for k,v in pairs(__navigation) do
    navigation[v] = k
@@ -341,6 +344,14 @@ end
 
 __navigation, __alt_nav = nil, nil, nil
 
+```
+
+This is a handy dandy mouse printer.
+
+
+I'm going to keep it around.
+
+```lua
 function pr_mouse(m)
    local phrase = a.magenta(m.button) .. ": "
                      .. a.bright(kind) .. " " .. ts(m.shift)
@@ -350,14 +361,32 @@ function pr_mouse(m)
                      .. a.cyan(m.col) .. "," .. a.cyan(m.row)
    return phrase
 end
+```
+### act
 
-local act_map = { MOUSE = pr_mouse}
+This will be phased out and replaced with ``modeselektor``.
+
+```lua
+
+local function mk_paint(label, shade)
+   return function(action)
+      return shade(label .. " " .. action)
+   end
+end
+
+local act_map = { MOUSE = pr_mouse,
+                  NAV   = mk_paint("NAV:", a.italic),
+                  CTRL  = mk_paint("CTRL:", a.underscore),
+                  ALT   = mk_paint("ALT:", c.coro)}
+                  -- Device reports, function keys...
+
+-- I believe the kids call that 'currying'
 
 local function act(category, action)
    if act_map[category] then
-      colwrite(act_map[category](action), 81, 2)
+      colwrite(act_map[category](action), STATCOL, STAT_RUN)
    else
-      colwrite(action, 81, 2)
+      colwrite(category .. ":" ..action, STATCOL, STAT_RUN)
    end
 end
 
@@ -369,45 +398,25 @@ local function litprint(seq)
    return phrase
 end
 
-local function ismousemove(seq)
-   if sub(seq, 1, 3) == "\x1b[M" then
-      return true
-   end
-end
 
 local buttons = {[0] ="MB0", "MB1", "MB2", "MBNONE"}
 
 local rshift = bit.rshift
+local m_parse, is_mouse = a.mouse.parse_fast, a.mouse.ismousemove
+
 local function process_escapes(seq)
    if navigation[seq] then
       act("NAV", navigation[seq] )
    elseif #seq == 1 then
       act("CTRL", "ESC")
    end
-   if ismousemove(seq) then
-      local kind, col, row = byte(seq,4), byte(seq, 5), byte(seq, 6)
-      kind = rshift(kind, 32)
-      local m = {row = rshift(row, 5), col = rshift(col, 5)}
-      -- Get button
-      m.button = buttons[kind % 4]
-      -- Get modifiers
-      kind = rshift(kind, 2)
-      m.shift = kind % 2 == 1
-      kind = rshift(kind, 1)
-      m.meta = kind % 2 == 1
-      kind = rshift(kind, 1)
-      m.ctrl = kind % 2 == 1
-      kind = rshift(kind, 1)
-      m.moving = kind % 2 == 1
-      -- we skip a bit that seems to just mirror the motion
-      -- it may be pixel level, I can't tell and idk
-      m.scrolling = kind == 2
-
-
+   if is_mouse(seq) then
+      local m = m_parse(seq)
       act("MOUSE", m)
-   elseif #seq == 2 and byte(seq[2]) < 128 then
-
+   elseif #seq == 2 and byte(sub(seq,2,2)) < 128 then
       -- Meta
+      local key = "M-" .. sub(seq(2,2))
+      act("ALT", key)
    end
 end
 

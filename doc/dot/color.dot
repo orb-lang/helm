@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 321"]
+doc_0 [label="doc - 330"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-54"]
+section_1 [label="section: 1-63"]
 
 
 // END RANK doc_0
@@ -29,9 +29,9 @@ prose_6 [label="prose"]
 
 prose_7 [label="prose"]
 
-codeblock_8 [label="code block 20-51"]
+codeblock_8 [label="code block 20-60"]
 
-section_9 [label="section: 55-253"]
+section_9 [label="section: 64-262"]
 
 
 // END RANK section_1
@@ -262,12 +262,21 @@ C.color.truth  = a.fg(231)
 C.color.falsehood  = a.fg(94)
 C.color.nilness    = a.fg(93)
 C.color.thread     = thread_color
+C.color.coro       = thread_color
 C.color.field      = a.fg(111)
 C.color.userdata   = a.fg24(230, 145, 23)
 C.color.cdata      = a.fg24(200, 115, 0)
 C.color.alert      = a.fg24(250, 0, 40)
 C.color.base       = a.fg24(200, 200, 200)
-C.color.metatable  = a.fg24(242, 0, 234)"]
+C.color.metatable  = a.fg24(242, 0, 234)
+C.color.meta       = C.color.metatable
+
+
+C.color[\"function\"] = C.color.func
+C.color[\"true\"]     = C.color.truth
+C.color[\"false\"]    = C.color.falsehood
+C.color[\"nil\"]      = C.color.nilness
+"]
 // END RANK codeblock_8
 
 section_9 -> { header_62 prose_63 section_64 section_65 section_66 section_67 section_68}
@@ -277,15 +286,15 @@ header_62 [label="2 : ts(value)"]
 
 prose_63 [label="prose"]
 
-section_64 [label="section: 58-73"]
+section_64 [label="section: 67-82"]
 
-section_65 [label="section: 74-87"]
+section_65 [label="section: 83-96"]
 
-section_66 [label="section: 88-151"]
+section_66 [label="section: 97-160"]
 
-section_67 [label="section: 152-253"]
+section_67 [label="section: 161-262"]
 
-section_68 [label="section: 254-321"]
+section_68 [label="section: 263-330"]
 
 
 // END RANK section_9
@@ -315,7 +324,7 @@ header_72 [label="4 : setup"]
 
 prose_73 [label="prose"]
 
-codeblock_74 [label="code block 62-71"]
+codeblock_74 [label="code block 71-80"]
 
 
 // END RANK section_64
@@ -377,7 +386,7 @@ prose_86 [label="prose"]
 
 prose_87 [label="prose"]
 
-codeblock_88 [label="code block 81-85"]
+codeblock_88 [label="code block 90-94"]
 
 
 // END RANK section_65
@@ -446,7 +455,7 @@ header_101 [label="3 : C.allNames()"]
 
 prose_102 [label="prose"]
 
-codeblock_103 [label="code block 93-149"]
+codeblock_103 [label="code block 102-158"]
 
 
 // END RANK section_66
@@ -554,11 +563,11 @@ header_114 [label="3 : tabulator"]
 
 prose_115 [label="prose"]
 
-codeblock_116 [label="code block 156-215"]
+codeblock_116 [label="code block 165-224"]
 
 prose_117 [label="prose"]
 
-codeblock_118 [label="code block 220-251"]
+codeblock_118 [label="code block 229-260"]
 
 
 // END RANK section_67
@@ -698,9 +707,9 @@ header_126 [label="3 : ts"]
 
 prose_127 [label="prose"]
 
-codeblock_128 [label="code block 258-317"]
+codeblock_128 [label="code block 267-326"]
 
-codeblock_129 [label="code block 319-321"]
+codeblock_129 [label="code block 328-330"]
 
 
 // END RANK section_68

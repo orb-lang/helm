@@ -224,10 +224,14 @@ local function cursor_pos(str)
    return tonumber(row), tonumber(col)
 end
 
+local STATCOL = 81
+local STAT_TOP = 1
+local STAT_RUN = 2
+
 -- more like jumpwrite at this point but w/e
 local function colwrite(str, col, row)
-   col = col or 81
-   row = row or 1
+   col = col or STATCOL
+   row = row or STAT_TOP
    local dash = a.stash()
              .. a.cursor.hide()
              .. a.jump(row, col)
@@ -266,9 +270,6 @@ end
 
 
 
-
-
---
 
 local __navigation = {  UP       = "\x1b[A",
                         DOWN     = "\x1b[B",
@@ -319,14 +320,19 @@ local __alt_nav = {  UP       = "\x1bOA",
 
 
 
-local __control = { HT = "\t",
-                    LF = "\n",
-                    CR = "\r" }
+
+
+
+
+
+
+
+
+
+
+
 
 local navigation = {}
-local control = {}
-
---  Then invert
 
 for k,v in pairs(__navigation) do
    navigation[v] = k
@@ -336,6 +342,13 @@ for k,v in pairs(__alt_nav) do
 end
 
 __navigation, __alt_nav = nil, nil, nil
+
+
+
+
+
+
+
 
 function pr_mouse(m)
    local phrase = a.magenta(m.button) .. ": "
@@ -347,13 +360,32 @@ function pr_mouse(m)
    return phrase
 end
 
-local act_map = { MOUSE = pr_mouse}
+
+
+
+
+
+
+
+local function mk_paint(label, shade)
+   return function(action)
+      return shade(label .. " " .. action)
+   end
+end
+
+local act_map = { MOUSE = pr_mouse,
+                  NAV   = mk_paint("NAV:", a.italic),
+                  CTRL  = mk_paint("CTRL:", a.underscore),
+                  ALT   = mk_paint("ALT:", c.coro)}
+                  -- Device reports, function keys...
+
+-- I believe the kids call that 'currying'
 
 local function act(category, action)
    if act_map[category] then
-      colwrite(act_map[category](action), 81, 2)
+      colwrite(act_map[category](action), STATCOL, STAT_RUN)
    else
-      colwrite(action, 81, 2)
+      colwrite(category .. ":" ..action, STATCOL, STAT_RUN)
    end
 end
 
@@ -365,45 +397,25 @@ local function litprint(seq)
    return phrase
 end
 
-local function ismousemove(seq)
-   if sub(seq, 1, 3) == "\x1b[M" then
-      return true
-   end
-end
 
 local buttons = {[0] ="MB0", "MB1", "MB2", "MBNONE"}
 
 local rshift = bit.rshift
+local m_parse, is_mouse = a.mouse.parse_fast, a.mouse.ismousemove
+
 local function process_escapes(seq)
    if navigation[seq] then
       act("NAV", navigation[seq] )
    elseif #seq == 1 then
       act("CTRL", "ESC")
    end
-   if ismousemove(seq) then
-      local kind, col, row = byte(seq,4), byte(seq, 5), byte(seq, 6)
-      kind = rshift(kind, 32)
-      local m = {row = rshift(row, 5), col = rshift(col, 5)}
-      -- Get button
-      m.button = buttons[kind % 4]
-      -- Get modifiers
-      kind = rshift(kind, 2)
-      m.shift = kind % 2 == 1
-      kind = rshift(kind, 1)
-      m.meta = kind % 2 == 1
-      kind = rshift(kind, 1)
-      m.ctrl = kind % 2 == 1
-      kind = rshift(kind, 1)
-      m.moving = kind % 2 == 1
-      -- we skip a bit that seems to just mirror the motion
-      -- it may be pixel level, I can't tell and idk
-      m.scrolling = kind == 2
-
-
+   if is_mouse(seq) then
+      local m = m_parse(seq)
       act("MOUSE", m)
-   elseif #seq == 2 and byte(seq[2]) < 128 then
-
+   elseif #seq == 2 and byte(sub(seq,2,2)) < 128 then
       -- Meta
+      local key = "M-" .. sub(seq(2,2))
+      act("ALT", key)
    end
 end
 

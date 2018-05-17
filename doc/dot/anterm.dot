@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 339"]
+doc_0 [label="doc - 421"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-295"]
+section_1 [label="section: 1-296"]
 
 
 // END RANK doc_0
@@ -25,17 +25,17 @@ prose_4 [label="prose"]
 
 prose_5 [label="prose"]
 
-section_6 [label="section: 12-120"]
+section_6 [label="section: 12-121"]
 
-section_7 [label="section: 121-169"]
+section_7 [label="section: 122-170"]
 
-section_8 [label="section: 170-225"]
+section_8 [label="section: 171-226"]
 
-section_9 [label="section: 226-268"]
+section_9 [label="section: 227-269"]
 
-section_10 [label="section: 269-295"]
+section_10 [label="section: 270-296"]
 
-section_11 [label="section: 296-312"]
+section_11 [label="section: 297-361"]
 
 
 // END RANK section_1
@@ -160,9 +160,9 @@ header_41 [label="3 : includes"]
 
 prose_42 [label="prose"]
 
-codeblock_43 [label="code block 16-18"]
+codeblock_43 [label="code block 14-27"]
 
-codeblock_44 [label="code block 20-118"]
+codeblock_44 [label="code block 29-119"]
 
 
 // END RANK section_6
@@ -181,26 +181,26 @@ raw_46 [label="raw"]
 
 raw_46 -> leaf_47
 leaf_47  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-
-We'll want lpeg for fuzzy matching.
 "]
 // END RANK raw_46
 
 codeblock_43 -> leaf_48
-leaf_48  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local L = require \"lpeg\""]
+leaf_48  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local pairs = assert (pairs)
+local tostring = assert (tostring)
+local setmeta = assert (setmetatable)
+local error = assert (error)
+local require = assert (require)
+local rawget = assert (rawget)
+
+local schar = assert(string.char)
+local sub   = assert(string.sub)
+local byte  = assert(string.byte)
+local bit   = assert(bit, \"anterm requires Luajit 'bit' or compatible in _G\")
+local rshift = assert(bit.rshift)"]
 // END RANK codeblock_43
 
 codeblock_44 -> leaf_49
-leaf_49  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local pairs = pairs
-local tostring = tostring
-local setmetatable = setmetatable
-local error = error
-local require = require
-local rawget = rawget
-local io = io
-local schar = string.char
-
-local anterm = {}
+leaf_49  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local anterm = {}
 
 local CSI = schar(27)..'['
 
@@ -216,6 +216,7 @@ local colors = {
         dim = 2,
         italic = 3,
         underscore = 4,
+        underline = 4,
         reverse = 7,
         hidden = 8},
     -- foreground
@@ -299,7 +300,7 @@ prose_51 [label="prose"]
 
 prose_52 [label="prose"]
 
-codeblock_53 [label="code block 127-167"]
+codeblock_53 [label="code block 128-168"]
 
 
 // END RANK section_7
@@ -410,7 +411,7 @@ prose_69 [label="prose"]
 
 prose_70 [label="prose"]
 
-codeblock_71 [label="code block 183-223"]
+codeblock_71 [label="code block 184-224"]
 
 
 // END RANK section_8
@@ -528,7 +529,7 @@ header_82 [label="2 : Jumps"]
 
 prose_83 [label="prose"]
 
-codeblock_84 [label="code block 228-266"]
+codeblock_84 [label="code block 229-267"]
 
 
 // END RANK section_9
@@ -597,7 +598,7 @@ header_89 [label="2 : Erasure"]
 
 prose_90 [label="prose"]
 
-codeblock_91 [label="code block 271-293"]
+codeblock_91 [label="code block 272-294"]
 
 
 // END RANK section_10
@@ -643,83 +644,235 @@ function erase.left()  return e__left  end
 function erase.line()  return e__line  end"]
 // END RANK codeblock_91
 
-section_11 -> { header_96 prose_97 codeblock_98 section_99}
-{rank=same; header_96 prose_97 codeblock_98 section_99}
+section_11 -> { header_96 prose_97 codeblock_98 section_99 section_100}
+{rank=same; header_96 prose_97 codeblock_98 section_99 section_100}
 
 header_96 [label="2 : Mouse"]
 
 prose_97 [label="prose"]
 
-codeblock_98 [label="code block 298-309"]
+codeblock_98 [label="code block 299-304"]
 
-section_99 [label="section: 313-339"]
+section_99 [label="section: 307-331"]
+
+section_100 [label="section: 362-421"]
 
 
 // END RANK section_11
 
-header_96 -> leaf_100
-leaf_100  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Mouse"]
+header_96 -> leaf_101
+leaf_101  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Mouse"]
 // END RANK header_96
 
-prose_97 -> { raw_101}
-{rank=same; raw_101}
+prose_97 -> { raw_102}
+{rank=same; raw_102}
 
-raw_101 [label="raw"]
+raw_102 [label="raw"]
 
 
 // END RANK prose_97
 
-raw_101 -> leaf_102
-leaf_102  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_102 -> leaf_103
+leaf_103  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 "]
-// END RANK raw_101
+// END RANK raw_102
 
-codeblock_98 -> leaf_103
-leaf_103  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local mouse = {}
+codeblock_98 -> leaf_104
+leaf_104  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local mouse = {}
 anterm.mouse = mouse
 
-function mouse.track(on)
-   if on then
-      return \"\\x1b[?1003h\"
-   else
-      return \"\\x1b[?1003l\"
-   end
-end"]
+local buttons = {[0] =\"MB0\", \"MB1\", \"MB2\", \"MBNONE\"}"]
 // END RANK codeblock_98
 
-section_99 -> { header_104 prose_105 codeblock_106 codeblock_107}
-{rank=same; header_104 prose_105 codeblock_106 codeblock_107}
+section_99 -> { header_105 prose_106 prose_107 codeblock_108 codeblock_109 section_110}
+{rank=same; header_105 prose_106 prose_107 codeblock_108 codeblock_109 section_110}
 
-header_104 [label="3 : Cursor handling"]
+header_105 [label="3 : mouse.track(on)"]
 
-prose_105 [label="prose"]
+prose_106 [label="prose"]
 
-codeblock_106 [label="code block 315-334"]
+prose_107 [label="prose"]
 
-codeblock_107 [label="code block 337-339"]
+codeblock_108 [label="code block 313-321"]
+
+codeblock_109 [label="code block 323-329"]
+
+section_110 [label="section: 332-361"]
 
 
 // END RANK section_99
 
-header_104 -> leaf_108
-leaf_108  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Cursor handling"]
-// END RANK header_104
+header_105 -> leaf_111
+leaf_111  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** mouse.track(on)"]
+// END RANK header_105
 
-prose_105 -> { raw_109}
-{rank=same; raw_109}
+prose_106 -> { raw_112 prespace_113 literal_114 raw_115}
+{rank=same; raw_112 prespace_113 literal_114 raw_115}
 
-raw_109 [label="raw"]
+raw_112 [label="raw"]
+
+prespace_113 [label="prespace"]
+
+literal_114 [label="literal"]
+
+raw_115 [label="raw"]
 
 
-// END RANK prose_105
+// END RANK prose_106
 
-raw_109 -> leaf_110
-leaf_110  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_112 -> leaf_116
+leaf_116  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+If"]
+// END RANK raw_112
+
+prespace_113 -> leaf_117
+leaf_117  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_113
+
+literal_114 -> leaf_118
+leaf_118  [color=Gray,shape=rectangle,fontname=Inconsolata,label="on == true"]
+// END RANK literal_114
+
+raw_115 -> leaf_119
+leaf_119  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", turn mouse mode on.
 "]
-// END RANK raw_109
+// END RANK raw_115
 
-codeblock_106 -> leaf_111
-leaf_111  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function anterm.stash()
+prose_107 -> { raw_120}
+{rank=same; raw_120}
+
+raw_120 [label="raw"]
+
+
+// END RANK prose_107
+
+raw_120 -> leaf_121
+leaf_121  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Off otherwise.
+"]
+// END RANK raw_120
+
+codeblock_108 -> leaf_122
+leaf_122  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function mouse.track(on)
+   if on == true then
+      return \"\\x1b[?1003h\"
+   end
+
+   return \"\\x1b[?1003l\"
+end"]
+// END RANK codeblock_108
+
+codeblock_109 -> leaf_123
+leaf_123  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function mouse.ismousemove(seq)
+   if sub(seq, 1, 3) == \"\\x1b[M\" then
+      return true
+   end
+end"]
+// END RANK codeblock_109
+
+section_110 -> { header_124 prose_125 prose_126 codeblock_127}
+{rank=same; header_124 prose_125 prose_126 codeblock_127}
+
+header_124 [label="4 : mouse.parser_fast(seq)"]
+
+prose_125 [label="prose"]
+
+prose_126 [label="prose"]
+
+codeblock_127 [label="code block 338-358"]
+
+
+// END RANK section_110
+
+header_124 -> leaf_128
+leaf_128  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** mouse.parser_fast(seq)"]
+// END RANK header_124
+
+prose_125 -> { raw_129}
+{rank=same; raw_129}
+
+raw_129 [label="raw"]
+
+
+// END RANK prose_125
+
+raw_129 -> leaf_130
+leaf_130  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+Performs no checks and may silently fail.
+"]
+// END RANK raw_129
+
+prose_126 -> { raw_131}
+{rank=same; raw_131}
+
+raw_131 [label="raw"]
+
+
+// END RANK prose_126
+
+raw_131 -> leaf_132
+leaf_132  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Returns a mouse action.
+"]
+// END RANK raw_131
+
+codeblock_127 -> leaf_133
+leaf_133  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function mouse.parse_fast(seq)
+   local kind, col, row = byte(seq,4), byte(seq, 5), byte(seq, 6)
+   kind = rshift(kind, 32)
+   local m = {row = rshift(row, 5), col = rshift(col, 5)}
+   -- Get button
+   m.button = buttons[kind % 4]
+   -- Get modifiers
+   kind = rshift(kind, 2)
+   m.shift = kind % 2 == 1
+   kind = rshift(kind, 1)
+   m.meta = kind % 2 == 1
+   kind = rshift(kind, 1)
+   m.ctrl = kind % 2 == 1
+   kind = rshift(kind, 1)
+   m.moving = kind % 2 == 1
+   -- we skip a bit that seems to just mirror .moving
+   m.scrolling = kind == 2
+   return m
+end"]
+// END RANK codeblock_127
+
+section_100 -> { header_134 prose_135 codeblock_136 codeblock_137}
+{rank=same; header_134 prose_135 codeblock_136 codeblock_137}
+
+header_134 [label="3 : Cursor handling"]
+
+prose_135 [label="prose"]
+
+codeblock_136 [label="code block 364-383"]
+
+codeblock_137 [label="code block 388-390"]
+
+
+// END RANK section_100
+
+header_134 -> leaf_138
+leaf_138  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Cursor handling"]
+// END RANK header_134
+
+prose_135 -> { raw_139}
+{rank=same; raw_139}
+
+raw_139 [label="raw"]
+
+
+// END RANK prose_135
+
+raw_139 -> leaf_140
+leaf_140  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+"]
+// END RANK raw_139
+
+codeblock_136 -> leaf_141
+leaf_141  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function anterm.stash()
    return \"\\x1b7\"
 end
 
@@ -737,11 +890,11 @@ end
 function cursor.show()
    return \"\\x1b[?25h\"
 end"]
-// END RANK codeblock_106
+// END RANK codeblock_136
 
-codeblock_107 -> leaf_112
-leaf_112  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return anterm"]
-// END RANK codeblock_107
+codeblock_137 -> leaf_142
+leaf_142  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return anterm"]
+// END RANK codeblock_137
 
 
 }
