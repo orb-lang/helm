@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 310"]
+doc_0 [label="doc - 323"]
 
 
 doc_0 -> { section_1}
@@ -31,7 +31,7 @@ prose_7 [label="prose"]
 
 codeblock_8 [label="code block 20-51"]
 
-section_9 [label="section: 55-242"]
+section_9 [label="section: 55-255"]
 
 
 // END RANK section_1
@@ -283,9 +283,9 @@ section_65 [label="section: 74-87"]
 
 section_66 [label="section: 88-151"]
 
-section_67 [label="section: 152-242"]
+section_67 [label="section: 152-255"]
 
-section_68 [label="section: 243-310"]
+section_68 [label="section: 256-323"]
 
 
 // END RANK section_9
@@ -558,7 +558,7 @@ codeblock_116 [label="code block 156-215"]
 
 prose_117 [label="prose"]
 
-codeblock_118 [label="code block 220-240"]
+codeblock_118 [label="code block 220-253"]
 
 
 // END RANK section_67
@@ -666,17 +666,30 @@ local e = function(str)
    return c.stresc(str) .. c.string
 end
 
--- Turn control characters into their byte rep
+-- Turn control characters into their byte rep,
+-- preserving escapes
 local function ctrl_pr(str)
-   return \"\\\\\" .. byte(str)
+   if byte(str) ~= 27 then
+      return e(\"\\\\\" .. byte(str))
+   else
+      return str
+   end
 end
 
 scrub = function (str)
-   return str:gsub(\"\\\\\", e(\"\\\\\"))
-             :gsub(\"\\n\", e(\"\\\\n\"))
-             :gsub(\"\\r\", e(\"\\\\r\"))
-             :gsub(\"\\t\", e(\"\\\\t\"))
-             :gsub(\"%c\", e(ctrl_pr(str)))
+   return str:gsub(\"\\\\\", e \"\\\\\")
+             :gsub(\"\\27\", e \"\\\\x1b\")
+             :gsub('\"',  e '\\\\\"')
+             :gsub(\"'\",  e \"\\\\'\")
+             :gsub(\"\\a\", e \"\\\\a\")
+             :gsub(\"\\b\", e \"\\\\b\")
+             :gsub(\"\\f\", e \"\\\\f\")
+             :gsub(\"\\n\", e \"\\\\n\")
+             :gsub(\"\\r\", e \"\\\\r\")
+             :gsub(\"\\t\", e \"\\\\t\")
+             :gsub(\"\\v\", e \"\\\\v\")
+
+             :gsub(\"%c\", ctrl_pr)
 end"]
 // END RANK codeblock_118
 
@@ -687,9 +700,9 @@ header_126 [label="3 : ts"]
 
 prose_127 [label="prose"]
 
-codeblock_128 [label="code block 247-306"]
+codeblock_128 [label="code block 260-319"]
 
-codeblock_129 [label="code block 308-310"]
+codeblock_129 [label="code block 321-323"]
 
 
 // END RANK section_68

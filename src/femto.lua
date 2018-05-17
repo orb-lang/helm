@@ -26,6 +26,7 @@ L = require "lpeg"
 a = require "anterm"
 
 c = require "color"
+ts = c.ts
 
 core = require "core"
 
@@ -199,7 +200,7 @@ local function colwrite(str, col, row)
    col = col or 81
    row = row or 1
    local dash = a.stash()
-             .. a.jump(1, col)
+             .. a.jump(row, col)
              .. a.erase.right()
              .. str
              .. a.pop()
@@ -218,40 +219,126 @@ local function isalpha(char)
       or  (char >= "a" and char <= "z")
 end
 
-local function process_escapes(seq)
-   local term = sub(seq, -1)
-   local csi  = sub(seq, 2, 2) == "[" and true or false
-   local payload
-   local ltrim = csi and 3 or 2
-   if #seq > ltrim then
-      payload = sub(seq, ltrim, -1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--
+
+local __navigation = { UP       = "\x1b[A",
+                        DOWN     = "\x1b[B",
+                        RIGHT    = "\x1b[C",
+                        LEFT     = "\x1b[D",
+                        SHIFT_UP = "\x1b[1;2A",
+                        SHIFT_DOWN = "\x1b[1;2B",
+                        SHIFT_RIGHT = "\x1b[1;2C",
+                        SHIFT_LEFT  = "\x1b[1;2D",
+                        HYPER_UP    = "\x1b[5~",
+                        HYPER_DOWN  = "\x1b[6~",
+                        HYPER_RIGHT = "\x1b[F",
+                        HYPER_LEFT  = "\x1b[H",
+                        ALT_UP    = "\x1b\x1b[A",
+                        ALT_DOWN  = "\x1b\x1b[B",
+                        ALT_RIGHT = "\x1bf", -- heh
+                        ALT_LEFT  = "\x1bb",
+                        SHIFT_ALT_UP = "\x1b[1;10A",
+                        SHIFT_ALT_DOWN = "\x1b[1;10B",
+                        SHIFT_ALT_RIGHT = "\x1b[1;10C",
+                        SHIFT_ALT_LEFT  = "\x1b[1;10A",
+                        SHIFT_TAB  = "\x1b[Z",
+                        ALT_TAB    = "\x1b\t",
+                        NEWLINE    = "\n",
+                        RETURN     = "\r",
+                        TAB        = "\t"
+                     }
+
+local __control = {  ZERO = "\0",
+                   }
+
+local navigation = {}
+local control = {}
+
+--  Then invert
+
+for k,v in pairs(__navigation) do
+   navigation[v] = k
+end
+for k,v in pairs(__control) do
+   control[v] = k
+end
+
+__navigation, __control = nil, nil
+
+local function act(action, category)
+   colwrite(a.yellow(action), 81, 2)
+end
+
+local function litprint(seq)
+   local phrase = ""
+   for i = 1, #seq do
+      phrase = phrase .. ":" .. byte(seq, i)
    end
-   if term == "R" then
-      local row, col = cursor_pos(payload)
-      -- send them along
-   elseif term == "A" then
-      -- up
-   elseif term == "B" then
-      -- down
-   elseif term == "C" then
-      -- left
-   elseif term == "D" then
-      -- right
+   return phrase
+end
+
+local function process_escapes(seq)
+   if navigation[seq] then
+      act(navigation[seq], "navigation")
+   elseif #seq == 1 then
+      act("ESC", "control")
    else
-      return write(seq)
+      act(litprint(seq))
    end
 end
 
 local function onseq(err,seq)
    if err then error(err) end
-
-   if byte(seq) == 27 then
-      colwrite(a.magenta(STAT_ICON) .. " : " .. c.ts(seq))
-      process_escapes(seq)
-      return
+   local head = byte(seq)
+   -- ^Q hard coded as quit, for now
+   if head == 17 then
+      femto.cooked()
+      uv.stop()
+      return 0
    end
+   -- Escape sequences
+   if head == 27 then
+      local color
+      if navigation[seq] or #seq == 1 then
+         color = a.magenta
+      else
+         color = a.red
+      end
+      colwrite(color(STAT_ICON) .. " : " .. c.ts(seq))
+      return process_escapes(seq)
+   end
+   -- Control sequences
+   if head <= 31 and not navigation[seq] then
+      local ctrl = "^" .. string.char(head + 64)
+      colwrite(a.blue(STAT_ICON) .. " : " .. ctrl)
+      return act(ts(seq), "control")
+   elseif navigation[seq] then
+      colwrite(a.green(STAT_ICON))
+      return act(seq, "navigation")
+   end
+
    colwrite(a.green(STAT_ICON) .. " : " .. seq)
-   write(seq)
+   return act(seq, "entry")
+
 end
 
 
@@ -261,7 +348,7 @@ end
 c.allNames()
 -- This switches screens and does a wipe,
 -- then puts the cursor at 1,1.
-write '\27[?47h\27[2J\27[H'
+write '\x1b[?47h\x1b[2J\x1b[H'
 print "an repl, plz reply uwu 👀"
 displayPrompt '👉  '
 -- Crude hack to choose raw mode at runtime
@@ -276,8 +363,8 @@ end
 
 -- main loop
 local retcode = uv.run('default')
--- Restore
-print '\27[?47l'
+-- Restore main screen
+print '\x1b[?47l'
 
 if retcode ~= 0 then
    error(retcode)

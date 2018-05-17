@@ -225,17 +225,30 @@ local e = function(str)
    return c.stresc(str) .. c.string
 end
 
--- Turn control characters into their byte rep
+-- Turn control characters into their byte rep,
+-- preserving escapes
 local function ctrl_pr(str)
-   return "\\" .. byte(str)
+   if byte(str) ~= 27 then
+      return e("\\" .. byte(str))
+   else
+      return str
+   end
 end
 
 scrub = function (str)
-   return str:gsub("\\", e("\\"))
-             :gsub("\n", e("\\n"))
-             :gsub("\r", e("\\r"))
-             :gsub("\t", e("\\t"))
-             :gsub("%c", e(ctrl_pr(str)))
+   return str:gsub("\\", e "\\")
+             :gsub("\27", e "\\x1b")
+             :gsub('"',  e '\\"')
+             :gsub("'",  e "\\'")
+             :gsub("\a", e "\\a")
+             :gsub("\b", e "\\b")
+             :gsub("\f", e "\\f")
+             :gsub("\n", e "\\n")
+             :gsub("\r", e "\\r")
+             :gsub("\t", e "\\t")
+             :gsub("\v", e "\\v")
+
+             :gsub("%c", ctrl_pr)
 end
 #/lua
 
