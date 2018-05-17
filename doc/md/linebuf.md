@@ -1,0 +1,96 @@
+# Linebuf
+
+
+Rather than derive this from [[espalier's Phrase class][@/espalier/phrase]],
+I'm going to port it.
+
+
+The concepts are close, but different.
+
+
+The main notes on where I'm going with this are under [rainbuf](rainbuf),
+which will build from this class and is a generalization of it to support
+complex text types.
+
+
+I'm realizing that for clarity, a ``linebuf`` needs to be a line, period.  The
+recursive container class is a ``txtbuf``, and ``rainbuf`` enhances that and
+also makes a ``rainline`` out of each ``linebuf``.
+
+
+linebufs are pretty dumb.  Smart enough to understand utf-8, smart enough to
+do a bit of tokenizing on the side.
+
+## Instance fields
+
+- lines :  An array of string fragments
+- dsps  :  An array of uint, each corresponds to the number of **bytes**
+          in line[i].
+
+
+- cursor :  An uint representing the number of codepoints to be skipped over
+            before executing ``insert()``.  Not 1-1 the same as the column
+            index of the tty cursor.
+
+
+- len  : sum of dsps.
+
+```lua
+local Linebuf = meta()
+```
+```lua
+
+local function sum(dsps)
+   local summa = 0
+   for i = 1, #dsps do
+      summa = summa + #dsps[i]
+   end
+   return summa
+end
+
+local concat = table.concat
+function Linebuf.__tostring(linebuf)
+   assert(linebuf.depth
+          and type(linebuf.depth) == "number"
+          and linebuf.depth > 0,
+          "linebuf.depth must be a positive integer")
+   if linebuf.depth == 1 then
+      return concat(linebuf)
+   else
+      error("tostring on linebuf.depth > 1 NYI")
+   end
+end
+
+```
+## Linebuf.insert(linebuf, frag)
+
+``insert`` takes a fragment and carefully places it at the cursor point.
+
+
+A ``frag`` is any kind of string that we won't want to break into pieces.
+
+
+At first that means pasting long strings will cause syntax highlighting to
+fall over. Harmlessly.
+
+```lua
+function Linebuf.insert(linebuf, frag)
+
+end
+
+```
+```lua
+local function new(cursor)
+   local linebuf = meta(Linebuf)
+   linebuf.back  =  false
+   -- disps = #str for str in line
+   linebuf.dsps = {0}
+   linebuf.line  = {""}
+   -- Cursor may be nil
+   linebuf.cursor = cursor
+   return linebuf
+end
+```
+```lua
+return new
+```

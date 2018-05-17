@@ -1,0 +1,63 @@
+# Modeselektor
+
+``femto`` will hold all state for an terminal session.  Soon, we will
+encapsulate that, making the library re-entrant.
+
+
+``modeselektor`` is the modal interpreter for the repl language, which becomes
+the core of ``ed``.  This is a glorified lookup table with a state switch and
+a pointer to the ``femto``cell we're operating on.
+
+
+``femto`` passes keystrokes as messages to ``modeselektor``.  In final boss form,
+it does no writes to stdout at all.  It is smart enough to categorize and
+parse various device reports, but has no knowledge of why those reports were
+requested.
+
+
+``femto`` runs the event loop, so all other members are pulled in as modules.
+
+
+``modeselektor`` takes care of system-level housekeeping: opening files and
+sockets, keeping command history, fuzzy completion, and has its own eval loop
+off the main track.  For evaluating lines, it will call a small executor, so
+that in a little while we can put the user program in its own ``LuaL_state``.
+
+
+This is both good practice, and absolutely necessary if we are to REPL other
+``bridge`` programs, each of which has its own event loop.
+
+
+``modeselektor`` passes any edit or movement commands to a ``linebuf``, which
+keeps all modeling of the line.  ``modeselektor`` decides when to repaint the
+screen, calling ``rainbuf`` with a region of ``linebuf`` and instructions as to
+how to paint it.
+
+
+There is one ``deck`` instance member per screen, which tiles the available
+space.  ``modeselektor`` is the writer, and ``rainbuf`` holds a pointer to the
+table for read access.
+
+
+When we have our fancy parse engine and quipu structure, linebuf will call
+``comb`` to redecorate the syntax tree before passing it to ``rainbuf`` for
+markup.  At the moment I'm just going to write some crude lexers, which
+will be more than enough for Clu and Lua, which have straightforward syntax.
+
+
+An intermediate step could just squeeze the linebuf into a string, parse it
+with ``esplalier`` and emit a ``rainbuf`` through the usual recursive method
+lookup.  The problem isn't speed, not for a REPL, it's not having error
+recovery parsing available.
+
+
+I will likely content myself with a grammar that kicks in when the user
+presses return.  I'll want that to perform rewrites (such as removing
+outer-level ``local``s to facilicate copy-pasting) and keep the readline
+grammar from becoming too ad-hoc.
+
+```lua
+local ModeS = {}
+
+
+```

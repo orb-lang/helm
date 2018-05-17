@@ -1,0 +1,229 @@
+digraph lpegNode {
+
+node [fontname=Helvetica]
+edge [style=dashed]
+
+doc_0 [label="doc - 28"]
+
+
+doc_0 -> { section_1}
+{rank=same; section_1}
+
+section_1 [label="section: 1-28"]
+
+
+// END RANK doc_0
+
+section_1 -> { header_2 prose_3 prose_4 prose_5 prose_6 prose_7 prose_8 prose_9 prose_10 prose_11 prose_12 prose_13}
+{rank=same; header_2 prose_3 prose_4 prose_5 prose_6 prose_7 prose_8 prose_9 prose_10 prose_11 prose_12 prose_13}
+
+header_2 [label="1 : Concurrency notes"]
+
+prose_3 [label="prose"]
+
+prose_4 [label="prose"]
+
+prose_5 [label="prose"]
+
+prose_6 [label="prose"]
+
+prose_7 [label="prose"]
+
+prose_8 [label="prose"]
+
+prose_9 [label="prose"]
+
+prose_10 [label="prose"]
+
+prose_11 [label="prose"]
+
+prose_12 [label="prose"]
+
+prose_13 [label="prose"]
+
+
+// END RANK section_1
+
+header_2 -> leaf_14
+leaf_14  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Concurrency notes"]
+// END RANK header_2
+
+prose_3 -> { raw_15}
+{rank=same; raw_15}
+
+raw_15 [label="raw"]
+
+
+// END RANK prose_3
+
+raw_15 -> leaf_16
+leaf_16  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+
+I think I have the tools I need to get a simple REPL stood up.
+"]
+// END RANK raw_15
+
+prose_4 -> { raw_17}
+{rank=same; raw_17}
+
+raw_17 [label="raw"]
+
+
+// END RANK prose_4
+
+raw_17 -> leaf_18
+leaf_18  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Setting up a simple filewatch to manage Orb transitions should also be
+tractable.
+"]
+// END RANK raw_17
+
+prose_5 -> { raw_19 prespace_20 literal_21 raw_22}
+{rank=same; raw_19 prespace_20 literal_21 raw_22}
+
+raw_19 [label="raw"]
+
+prespace_20 [label="prespace"]
+
+literal_21 [label="literal"]
+
+raw_22 [label="raw"]
+
+
+// END RANK prose_5
+
+raw_19 -> leaf_23
+leaf_23  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+To really get"]
+// END RANK raw_19
+
+prespace_20 -> leaf_24
+leaf_24  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_20
+
+literal_21 -> leaf_25
+leaf_25  [color=Gray,shape=rectangle,fontname=Inconsolata,label="bridge"]
+// END RANK literal_21
+
+raw_22 -> leaf_26
+leaf_26  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" going is going to take engineering.
+"]
+// END RANK raw_22
+
+prose_6 -> { raw_27}
+{rank=same; raw_27}
+
+raw_27 [label="raw"]
+
+
+// END RANK prose_6
+
+raw_27 -> leaf_28
+leaf_28  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Here's a few places to start.
+"]
+// END RANK raw_27
+
+prose_7 -> { raw_29}
+{rank=same; raw_29}
+
+raw_29 [label="raw"]
+
+
+// END RANK prose_7
+
+raw_29 -> leaf_30
+leaf_30  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+http://wingolog.org/archives/2018/05/16/lightweight-concurrency-in-lua
+"]
+// END RANK raw_29
+
+prose_8 -> { raw_31}
+{rank=same; raw_31}
+
+raw_31 [label="raw"]
+
+
+// END RANK prose_8
+
+raw_31 -> leaf_32
+leaf_32  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+source code from above:
+https://gitlab.com/snippets/1715966
+"]
+// END RANK raw_31
+
+prose_9 -> { raw_33}
+{rank=same; raw_33}
+
+raw_33 [label="raw"]
+
+
+// END RANK prose_9
+
+raw_33 -> leaf_34
+leaf_34  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+https://www.youtube.com/watch?v=iskjbi0lNQY <- Same guy, Guile Scheme
+"]
+// END RANK raw_33
+
+prose_10 -> { raw_35}
+{rank=same; raw_35}
+
+raw_35 [label="raw"]
+
+
+// END RANK prose_10
+
+raw_35 -> leaf_36
+leaf_36  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Coroutines course, pythonic:
+"]
+// END RANK raw_35
+
+prose_11 -> { raw_37}
+{rank=same; raw_37}
+
+raw_37 [label="raw"]
+
+
+// END RANK prose_11
+
+raw_37 -> leaf_38
+leaf_38  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+http://www.dabeaz.com/coroutines/
+"]
+// END RANK raw_37
+
+prose_12 -> { raw_39}
+{rank=same; raw_39}
+
+raw_39 [label="raw"]
+
+
+// END RANK prose_12
+
+raw_39 -> leaf_40
+leaf_40  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Video tutorial of same:
+"]
+// END RANK raw_39
+
+prose_13 -> { raw_41}
+{rank=same; raw_41}
+
+raw_41 [label="raw"]
+
+
+// END RANK prose_13
+
+raw_41 -> leaf_42
+leaf_42  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+https://www.youtube.com/watch?v=Z_OAlIhXziw
+
+"]
+// END RANK raw_41
+
+
+}
