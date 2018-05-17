@@ -12,32 +12,63 @@ I am excited about this.
 This all goes into global space for now.  Our more sophisticated loader will
 handle namespace isolation. Meanwhile we're building a repl, so.
 
+
+First we load everything that might reasonable expect a stock namespace.
+
+
+All of these are exceedingly well-behaved.
+
 ```lua
 sql = require "sqlite"
-
+L = require "lpeg"
 lfs = require "lfs"
 ffi = require "ffi"
 bit = require "bit"
-
 ffi.reflect = require "reflect"
-
 uv = require "luv"
-
-L = require "lpeg"
-
-a = require "anterm"
-
-c = require "color"
-ts = c.ts
-
-core = require "core"
-
-watch = require "watcher"
 ```
-#### utils
+### Djikstra Insertion Point
+
+Although we're not doing so yet, this is where we will set up Djikstra mode
+for participating code.  We then push that up through the layers, and it lands
+as close to C level as practical.
+
+## core
+
+The ``core`` library is shaping up as a place to keep alterations to the global
+namespace and standard library.
+
+
+This prelude belongs in ``pylon``; it, and ``core``, will eventually end up there.
 
 ```lua
+local core = require "core"
+string.cleave, string.litpat = core.cleave, core.litpat
+meta = core.meta
+getmeta, setmeta = getmetatable, setmetatable
+coro = coroutine
+```
 
+Primitives for terminal manipulation.
+
+
+Arguably don't belong here. ``watch`` is unused at present, it will be useful
+in Orb relatively soon.
+
+```lua
+a = require "anterm"
+c = require "color"
+ts = c.ts
+watch = require "watcher"
+```
+
+This is all from the ``luv`` repl example, which has been an excellent launching
+off point.  Thanks Tim Caswell!
+
+
+It's getting phased out bit by bit.
+
+```lua
 local usecolors
 stdout = ""
 
@@ -138,7 +169,8 @@ end
 local function displayPrompt(prompt)
   uv.write(stdout, prompt)
 end
-
+```
+```lua
 -- Deprecated, but useful if I want, y'know, a REPL
 local function onread(err, line)
   if err then error(err) end
@@ -198,11 +230,12 @@ local function colwrite(str, col, row)
    col = col or 81
    row = row or 1
    local dash = a.stash()
+             .. a.cursor.hide()
              .. a.jump(row, col)
              .. a.erase.right()
              .. str
              .. a.pop()
-
+             .. a.cursor.show()
    write(dash)
 end
 
@@ -275,6 +308,8 @@ local __alt_nav = {  UP       = "\x1bOA",
                      LEFT     = "\x1bOD",
                   }
 
+-- still don't know how that happened
+
 local __control = {  ZERO = "\0",
                    }
 
@@ -289,14 +324,27 @@ end
 for k,v in pairs(__alt_nav) do
    navigation[v] = k
 end
-for k,v in pairs(__control) do
-   control[v] = k
+
+__navigation, __alt_nav = nil, nil, nil
+
+function pr_mouse(m)
+   local phrase = a.magenta(m.button) .. ": "
+                     .. a.bright(kind) .. " " .. ts(m.shift)
+                     .. " " .. ts(m.meta)
+                     .. " " .. ts(m.ctrl) .. " " .. ts(m.moving) .. " "
+                     .. ts(m.scrolling) .. " "
+                     .. a.cyan(m.col) .. "," .. a.cyan(m.row)
+   return phrase
 end
 
-__navigation, __control, __alt_nav = nil, nil, nil
+local act_map = { MOUSE = pr_mouse}
 
-local function act(action, category)
-   colwrite(a.yellow(action), 81, 2)
+local function act(category, action)
+   if act_map[category] then
+      colwrite(act_map[category](action), 81, 2)
+   else
+      colwrite(action, 81, 2)
+   end
 end
 
 local function litprint(seq)
@@ -313,40 +361,39 @@ local function ismousemove(seq)
    end
 end
 
-local buttons = {[0] ="MB0", "MB1", "MB2", "MBRELEASE"}
+local buttons = {[0] ="MB0", "MB1", "MB2", "MBNONE"}
 
+local rshift = bit.rshift
 local function process_escapes(seq)
    if navigation[seq] then
-      act(navigation[seq], "navigation")
+      act("NAV", navigation[seq] )
    elseif #seq == 1 then
-      act("ESC", "control")
+      act("CTRL", "ESC")
    end
    if ismousemove(seq) then
       local kind, col, row = byte(seq,4), byte(seq, 5), byte(seq, 6)
-      col = col - 32
-      row = row - 32
-      kind = kind - 32
+      kind = rshift(kind, 32)
+      local m = {row = rshift(row, 5), col = rshift(col, 5)}
       -- Get button
-      local button = buttons[kind % 4]
+      m.button = buttons[kind % 4]
       -- Get modifiers
-      kind = bit.rshift(kind, 2)
-      local shift = kind % 2 == 1 and true or false
-      kind = bit.rshift(kind, 1)
-      local meta = kind % 2 == 1 and true or false
-      kind = bit.rshift(kind, 1)
-      local ctrl = kind % 2 == 1 and true or false
-      kind = bit.rshift(kind, 1)
-      local moving = kind % 2 == 1 and true or false
+      kind = rshift(kind, 2)
+      m.shift = kind % 2 == 1
+      kind = rshift(kind, 1)
+      m.meta = kind % 2 == 1
+      kind = rshift(kind, 1)
+      m.ctrl = kind % 2 == 1
+      kind = rshift(kind, 1)
+      m.moving = kind % 2 == 1
       -- we skip a bit that seems to just mirror the motion
       -- it may be pixel level, I can't tell and idk
-      local scrolling = kind == 2 and true or false
-      local phrase = a.magenta(button) .. ": "
-                     .. a.bright(kind) .. " " .. ts(shift) .. " " .. ts(meta)
-                     .. " " .. ts(ctrl) .. " " .. ts(moving) .. " "
-                     .. ts(scrolling) .. " "
-                     .. a.cyan(col) .. "," .. a.cyan(row)
+      m.scrolling = kind == 2
 
-      act(phrase)
+
+      act("MOUSE", m)
+   elseif #seq == 2 and byte(seq[2]) < 128 then
+
+      -- Meta
    end
 end
 
@@ -375,14 +422,14 @@ local function onseq(err,seq)
    if head <= 31 and not navigation[seq] then
       local ctrl = "^" .. string.char(head + 64)
       colwrite(a.blue(STAT_ICON) .. " : " .. ctrl)
-      return act(ts(seq), "control")
+      return act("CTRL", ctrl)
    elseif navigation[seq] then
       colwrite(a.green(STAT_ICON))
-      return act(seq, "navigation")
+      return act("NAV", seq)
    end
 
    colwrite(a.green(STAT_ICON) .. " : " .. seq)
-   return act(seq, "entry")
+   return act("INSERT", seq)
 
 end
 ```

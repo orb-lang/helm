@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 326"]
+doc_0 [label="doc - 339"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-297"]
+section_1 [label="section: 1-295"]
 
 
 // END RANK doc_0
@@ -25,17 +25,17 @@ prose_4 [label="prose"]
 
 prose_5 [label="prose"]
 
-section_6 [label="section: 12-121"]
+section_6 [label="section: 12-120"]
 
-section_7 [label="section: 122-170"]
+section_7 [label="section: 121-169"]
 
-section_8 [label="section: 171-226"]
+section_8 [label="section: 170-225"]
 
-section_9 [label="section: 227-269"]
+section_9 [label="section: 226-268"]
 
-section_10 [label="section: 270-297"]
+section_10 [label="section: 269-295"]
 
-section_11 [label="section: 298-313"]
+section_11 [label="section: 296-312"]
 
 
 // END RANK section_1
@@ -162,7 +162,7 @@ prose_42 [label="prose"]
 
 codeblock_43 [label="code block 16-18"]
 
-codeblock_44 [label="code block 20-119"]
+codeblock_44 [label="code block 20-118"]
 
 
 // END RANK section_6
@@ -216,7 +216,6 @@ local colors = {
         dim = 2,
         italic = 3,
         underscore = 4,
-        blink = 5,
         reverse = 7,
         hidden = 8},
     -- foreground
@@ -300,7 +299,7 @@ prose_51 [label="prose"]
 
 prose_52 [label="prose"]
 
-codeblock_53 [label="code block 128-168"]
+codeblock_53 [label="code block 127-167"]
 
 
 // END RANK section_7
@@ -358,12 +357,12 @@ We memoize their creation, giving reference equality between these colors.
 
 codeblock_53 -> leaf_65
 leaf_65  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function byte_panic(byte_p)
-       if not byte_p or not (0 <= byte_p and byte_p <= 255) then
-        error \"xterm value must be 8 bit unsigned\"
-    end
+   if not byte_p or not (0 <= byte_p and byte_p <= 255) then
+      error \"xterm value must be 8 bit unsigned\"
+   end
 end
 
-local x256_store = {}
+local x256_store = setmetatable({}, {__mode = \"v\"})
 
 local function ansi_fg(byte)
     local function make (byte)
@@ -411,7 +410,7 @@ prose_69 [label="prose"]
 
 prose_70 [label="prose"]
 
-codeblock_71 [label="code block 184-224"]
+codeblock_71 [label="code block 183-223"]
 
 
 // END RANK section_8
@@ -529,7 +528,7 @@ header_82 [label="2 : Jumps"]
 
 prose_83 [label="prose"]
 
-codeblock_84 [label="code block 229-267"]
+codeblock_84 [label="code block 228-266"]
 
 
 // END RANK section_9
@@ -598,7 +597,7 @@ header_89 [label="2 : Erasure"]
 
 prose_90 [label="prose"]
 
-codeblock_91 [label="code block 272-295"]
+codeblock_91 [label="code block 271-293"]
 
 
 // END RANK section_10
@@ -641,8 +640,7 @@ function erase.right() return e__right end
 
 function erase.left()  return e__left  end
 
-function erase.line()  return e__line  end
-"]
+function erase.line()  return e__line  end"]
 // END RANK codeblock_91
 
 section_11 -> { header_96 prose_97 codeblock_98 section_99}
@@ -652,9 +650,9 @@ header_96 [label="2 : Mouse"]
 
 prose_97 [label="prose"]
 
-codeblock_98 [label="code block 300-312"]
+codeblock_98 [label="code block 298-309"]
 
-section_99 [label="section: 314-326"]
+section_99 [label="section: 313-339"]
 
 
 // END RANK section_11
@@ -686,50 +684,64 @@ function mouse.track(on)
    else
       return \"\\x1b[?1003l\"
    end
-end
-"]
+end"]
 // END RANK codeblock_98
 
-section_99 -> { header_104 prose_105 codeblock_106}
-{rank=same; header_104 prose_105 codeblock_106}
+section_99 -> { header_104 prose_105 codeblock_106 codeblock_107}
+{rank=same; header_104 prose_105 codeblock_106 codeblock_107}
 
-header_104 [label="3 : Miscellaneous term handling"]
+header_104 [label="3 : Cursor handling"]
 
 prose_105 [label="prose"]
 
-codeblock_106 [label="code block 316-326"]
+codeblock_106 [label="code block 315-334"]
+
+codeblock_107 [label="code block 337-339"]
 
 
 // END RANK section_99
 
-header_104 -> leaf_107
-leaf_107  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Miscellaneous term handling"]
+header_104 -> leaf_108
+leaf_108  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Cursor handling"]
 // END RANK header_104
 
-prose_105 -> { raw_108}
-{rank=same; raw_108}
+prose_105 -> { raw_109}
+{rank=same; raw_109}
 
-raw_108 [label="raw"]
+raw_109 [label="raw"]
 
 
 // END RANK prose_105
 
-raw_108 -> leaf_109
-leaf_109  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_109 -> leaf_110
+leaf_110  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 "]
-// END RANK raw_108
+// END RANK raw_109
 
-codeblock_106 -> leaf_110
-leaf_110  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function anterm.stash()
-   return \"\\0277\"
+codeblock_106 -> leaf_111
+leaf_111  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function anterm.stash()
+   return \"\\x1b7\"
 end
 
 function anterm.pop()
-   return \"\\0278\"
+   return \"\\x1b8\"
 end
 
-return anterm"]
+local cursor = {}
+anterm.cursor = cursor
+
+function cursor.hide()
+   return \"\\x1b[?25l\"
+end
+
+function cursor.show()
+   return \"\\x1b[?25h\"
+end"]
 // END RANK codeblock_106
+
+codeblock_107 -> leaf_112
+leaf_112  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return anterm"]
+// END RANK codeblock_107
 
 
 }

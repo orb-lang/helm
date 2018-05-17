@@ -43,7 +43,6 @@ local colors = {
         dim = 2,
         italic = 3,
         underscore = 4,
-        blink = 5,
         reverse = 7,
         hidden = 8},
     -- foreground
@@ -127,12 +126,12 @@ end
 
 
 local function byte_panic(byte_p)
-       if not byte_p or not (0 <= byte_p and byte_p <= 255) then
-        error "xterm value must be 8 bit unsigned"
-    end
+   if not byte_p or not (0 <= byte_p and byte_p <= 255) then
+      error "xterm value must be 8 bit unsigned"
+   end
 end
 
-local x256_store = {}
+local x256_store = setmetatable({}, {__mode = "v"})
 
 local function ansi_fg(byte)
     local function make (byte)
@@ -297,7 +296,6 @@ function erase.line()  return e__line  end
 
 
 
-
 local mouse = {}
 anterm.mouse = mouse
 
@@ -314,12 +312,27 @@ end
 
 
 
+
 function anterm.stash()
-   return "\0277"
+   return "\x1b7"
 end
 
 function anterm.pop()
-   return "\0278"
+   return "\x1b8"
 end
+
+local cursor = {}
+anterm.cursor = cursor
+
+function cursor.hide()
+   return "\x1b[?25l"
+end
+
+function cursor.show()
+   return "\x1b[?25h"
+end
+
+
+
 
 return anterm
