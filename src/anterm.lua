@@ -12,6 +12,8 @@
 
 
 
+
+
 local pairs = assert (pairs)
 local tostring = assert (tostring)
 local setmeta = assert (setmetatable)
@@ -24,6 +26,24 @@ local sub   = assert(string.sub)
 local byte  = assert(string.byte)
 local bit   = assert(bit, "anterm requires Luajit 'bit' or compatible in _G")
 local rshift = assert(bit.rshift)
+bit = nil
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -31,7 +51,26 @@ local anterm = {}
 
 local CSI = schar(27)..'['
 
+
+
+
+
+
+
+
+
+
+
 local colormt = {}
+
+
+
+
+
+
+
+
+
 
 local colors = {
     -- attributes
@@ -182,7 +221,6 @@ end
 
 
 
-
 local x24k = setmetatable({}, {__mode = "v"})
 
 local fg24pre = schar(27) .. "[38;2;"
@@ -220,8 +258,6 @@ end
 anterm["fg"], anterm["bg"] = ansi_fg, ansi_bg
 
 anterm["fg24"], anterm["bg24"] = fg24, bg24
-
-
 
 
 
@@ -362,6 +398,20 @@ end
 
 
 
+
+function mouse.parse(seq)
+   if mouse.ismousemove(seq) then
+      return mouse.parsefast(seq)
+   else
+      return nil, "sequence was not a mouse move", seq
+   end
+end
+
+
+
+
+
+
 function anterm.stash()
    return "\x1b7"
 end
@@ -381,6 +431,8 @@ function cursor.show()
    return "\x1b[?25h"
 end
 
+cursor.stash = anterm.stash
+cursor.pop = anterm.pop
 
 
 

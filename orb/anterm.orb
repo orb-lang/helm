@@ -5,10 +5,12 @@
 
 =anterm.orb= is properly called "anterm's monster".
 
-This is actually our raw =xterm= handler.  =anterm= protocol requires a few
+This is in fact our raw =xterm= handler.  =anterm= protocol requires a few
 platforms which run it.
 
+In the meantime, here's a handy dandy Lua library for raw terminal handling.
 
+It is largely free of dependencies:
 *** includes
 
 #!lua
@@ -24,15 +26,52 @@ local sub   = assert(string.sub)
 local byte  = assert(string.byte)
 local bit   = assert(bit, "anterm requires Luajit 'bit' or compatible in _G")
 local rshift = assert(bit.rshift)
+bit = nil
 #/lua
+
+And a suitable =rshift= may readily be obtained if your environment happens
+to lack one.
+
+I believe the 5.3 idiom is ==bit = { rshift = ==
+==function(byte, off) return byte >> off end }==.
+
+This code is otherwise 5.1 and upward compatible.
+
+*** Principles
+
+As a rule, fields are either functions returning strings,
+or callable tables which return strings when called or concatenated, or
+tables with fields which, called, return strings.
+
+This presents a consistent interface. It is easy to cache strings you might
+use several times.
 
 #!lua
 local anterm = {}
 
 local CSI = schar(27)..'['
+#/lua
 
+
+** color
+
+The color tables concatenate as the color code, or return it when
+called with no arguments.
+
+Called on a string, they will cleanup the color in a way which composes.
+
+#!lua
 local colormt = {}
+#/lua
 
+
+*** OG xterm color
+
+Aka the angry fruit salad tier.
+
+The attributes are broadly useful.  Note the absence of =5=.
+
+#!lua
 local colors = {
     -- attributes
     attribute = {
@@ -123,7 +162,7 @@ end
 
 There are 512 =xterm= colors available.
 
-We memoize their creation, giving reference equality between these colors.
+We memoize their creation in a weak table.
 
 #!lua
 local function byte_panic(byte_p)
@@ -179,10 +218,9 @@ Hence we memoize with a weak table.  The only reliable way to achieve
 reference equality between instances of a 24 bit color is to retain a pointer
 to it.
 
-Happily, this is a requirement for any comparsion.
+Happily, this is a requirement for any comparison.
 
 #!lua
-
 local x24k = setmetatable({}, {__mode = "v"})
 
 local fg24pre = schar(27) .. "[38;2;"
@@ -220,14 +258,12 @@ end
 anterm["fg"], anterm["bg"] = ansi_fg, ansi_bg
 
 anterm["fg24"], anterm["bg24"] = fg24, bg24
-
 #/lua
 
 
 ** Jumps
 
 #!lua
-
 local jump = {}
 
 jump.up = function(num)
@@ -358,6 +394,20 @@ end
 #/lua
 
 
+*** mouse.parse(seq)
+
+Checks first.
+
+#!lua
+function mouse.parse(seq)
+   if mouse.ismousemove(seq) then
+      return mouse.parsefast(seq)
+   else
+      return nil, "sequence was not a mouse move", seq
+   end
+end
+#/lua
+
 
 *** Cursor handling
 
@@ -380,8 +430,10 @@ end
 function cursor.show()
    return "\x1b[?25h"
 end
-#/lua
 
+cursor.stash = anterm.stash
+cursor.pop = anterm.pop
+#/lua
 
 
 
