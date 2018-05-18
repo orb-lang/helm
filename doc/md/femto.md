@@ -313,9 +313,9 @@ local navigation, is_nav = a.navigation, a.is_nav
 
 local function process_escapes(seq)
    if is_nav(seq) then
-      act("NAV", navigation[seq] )
+      modeS("NAV", navigation[seq] )
    elseif #seq == 1 then
-      act("NAV", "ESC") -- I think of escape as navigation in modal systems
+      modeS("NAV", "ESC") -- I think of escape as navigation in modal systems
    end
    if is_mouse(seq) then
       local m = m_parse(seq)
@@ -323,8 +323,7 @@ local function process_escapes(seq)
    elseif #seq == 2 and byte(sub(seq,2,2)) < 128 then
       -- Meta
       local key = "M-" .. sub(seq,2,2)
-      colwrite(a.bold(STAT_ICON) .. " : " .. key)
-      act("ALT", key)
+      modeS("ALT", key)
    end
 end
 
@@ -348,21 +347,16 @@ local function onseq(err,seq)
       else
          color = a.red
       end
-      colwrite(color(STAT_ICON) .. " : " .. ts(seq))
       return process_escapes(seq)
    end
    -- Control sequences
    if head <= 31 and not navigation[seq] then
       local ctrl = "^" .. string.char(head + 64)
-      colwrite(c.field(STAT_ICON) .. " : " .. ctrl)
-      return act("CTRL", ctrl)
+      return modeS("CTRL", ctrl)
    elseif navigation[seq] then
-      colwrite(a.green(STAT_ICON))
-      return act("NAV", navigation[seq])
+      return modeS("NAV", navigation[seq])
    end
-
-   colwrite(a.green(STAT_ICON) .. " : " .. seq)
-   return act("INSERT", byte(seq))
+   return modeS("INSERT", seq)
 end
 ```
 ```lua
