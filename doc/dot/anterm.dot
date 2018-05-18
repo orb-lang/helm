@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 565"]
+doc_0 [label="doc - 574"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-332"]
+section_1 [label="section: 1-341"]
 
 
 // END RANK doc_0
@@ -35,11 +35,11 @@ section_9 [label="section: 40-55"]
 
 section_10 [label="section: 56-209"]
 
-section_11 [label="section: 264-305"]
+section_11 [label="section: 264-314"]
 
-section_12 [label="section: 306-332"]
+section_12 [label="section: 315-341"]
 
-section_13 [label="section: 333-495"]
+section_13 [label="section: 342-504"]
 
 
 // END RANK section_1
@@ -791,7 +791,7 @@ header_141 [label="2 : Jumps"]
 
 prose_142 [label="prose"]
 
-codeblock_143 [label="code block 266-303"]
+codeblock_143 [label="code block 266-312"]
 
 
 // END RANK section_11
@@ -831,10 +831,14 @@ jump.forward = function(num)
     return CSI..num..\"C\"
 end
 
+jump.right = jump.forward
+
 jump.back = function(num)
     if not num then num = \"\" end
     return CSI..num..\"D\"
 end
+
+jump.left = jump.back
 
 local function Jump(_,row,column)
     return CSI..row..\";\"..column..\"H\"
@@ -849,7 +853,12 @@ function anterm.rc (row, column)
    return CSI .. row .. \";\" .. column .. \"H\"
 end
 
-anterm.rowcol = anterm.rc"]
+anterm.rowcol = anterm.rc
+
+function anterm.col(col)
+   col = col or 1
+   return CSI .. col .. \"G\"
+end"]
 // END RANK codeblock_143
 
 section_12 -> { header_148 prose_149 codeblock_150}
@@ -859,7 +868,7 @@ header_148 [label="2 : Erasure"]
 
 prose_149 [label="prose"]
 
-codeblock_150 [label="code block 308-330"]
+codeblock_150 [label="code block 317-339"]
 
 
 // END RANK section_12
@@ -912,17 +921,17 @@ header_155 [label="2 : Mouse"]
 
 prose_156 [label="prose"]
 
-codeblock_157 [label="code block 335-340"]
+codeblock_157 [label="code block 344-349"]
 
-section_158 [label="section: 343-367"]
+section_158 [label="section: 352-376"]
 
-section_159 [label="section: 397-411"]
+section_159 [label="section: 406-420"]
 
-section_160 [label="section: 412-438"]
+section_160 [label="section: 421-447"]
 
-section_161 [label="section: 439-495"]
+section_161 [label="section: 448-504"]
 
-section_162 [label="section: 496-504"]
+section_162 [label="section: 505-513"]
 
 
 // END RANK section_13
@@ -960,11 +969,11 @@ prose_168 [label="prose"]
 
 prose_169 [label="prose"]
 
-codeblock_170 [label="code block 349-357"]
+codeblock_170 [label="code block 358-366"]
 
-codeblock_171 [label="code block 359-365"]
+codeblock_171 [label="code block 368-374"]
 
-section_172 [label="section: 368-396"]
+section_172 [label="section: 377-405"]
 
 
 // END RANK section_158
@@ -1047,7 +1056,7 @@ prose_187 [label="prose"]
 
 prose_188 [label="prose"]
 
-codeblock_189 [label="code block 374-394"]
+codeblock_189 [label="code block 383-403"]
 
 
 // END RANK section_172
@@ -1114,7 +1123,7 @@ header_196 [label="3 : mouse.parse(seq)"]
 
 prose_197 [label="prose"]
 
-codeblock_198 [label="code block 401-409"]
+codeblock_198 [label="code block 410-418"]
 
 
 // END RANK section_159
@@ -1155,7 +1164,7 @@ header_203 [label="3 : Cursor handling"]
 
 prose_204 [label="prose"]
 
-codeblock_205 [label="code block 414-436"]
+codeblock_205 [label="code block 423-445"]
 
 
 // END RANK section_160
@@ -1212,11 +1221,11 @@ prose_212 [label="prose"]
 
 prose_213 [label="prose"]
 
-codeblock_214 [label="code block 448-477"]
+codeblock_214 [label="code block 457-486"]
 
 prose_215 [label="prose"]
 
-codeblock_216 [label="code block 481-487"]
+codeblock_216 [label="code block 490-496"]
 
 prose_217 [label="prose"]
 
@@ -1379,9 +1388,9 @@ header_240 [label="3 : #todo function keys"]
 
 prose_241 [label="prose"]
 
-codeblock_242 [label="code block 500-502"]
+codeblock_242 [label="code block 509-511"]
 
-section_243 [label="section: 505-565"]
+section_243 [label="section: 514-574"]
 
 
 // END RANK section_162
@@ -1416,9 +1425,9 @@ header_248 [label="4 : flip"]
 
 prose_249 [label="prose"]
 
-codeblock_250 [label="code block 509-530"]
+codeblock_250 [label="code block 518-539"]
 
-codeblock_251 [label="code block 532-534"]
+codeblock_251 [label="code block 541-543"]
 
 
 // END RANK section_243

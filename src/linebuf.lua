@@ -32,6 +32,9 @@
 
 
 
+local sub = assert(string.sub)
+
+
 
 local Linebuf = meta()
 
@@ -48,7 +51,13 @@ end
 
 local concat = table.concat
 function Linebuf.__tostring(linebuf)
-   return concat(linebuf.line)
+   -- return concat(linebuf.line)
+   -- patch to see tok boundaries
+   local phrase = ""
+   for _, tok in ipairs(linebuf.line) do
+      phrase = phrase .. tok .. a.red("|")
+   end
+   return phrase
 end
 
 
@@ -66,7 +75,11 @@ end
 
 -- a pass through for now
 local function join(token, frag)
-   return token, frag
+   if sub(token, -1) == " " and sub(frag, 1,1) ~= " " then
+      return token, frag
+   else
+      return token .. frag, nil
+   end
 end
 
 function Linebuf.insert(linebuf, frag)
@@ -75,7 +88,7 @@ function Linebuf.insert(linebuf, frag)
    -- end of line
    if cursor == len then
       local token, new_tok = join(line[#line], frag)
-      line[#line + 1] = token
+      line[#line] = token
       if new_tok then
          line[#line + 1] = new_tok
       end

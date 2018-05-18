@@ -281,10 +281,14 @@ jump.forward = function(num)
     return CSI..num.."C"
 end
 
+jump.right = jump.forward
+
 jump.back = function(num)
     if not num then num = "" end
     return CSI..num.."D"
 end
+
+jump.left = jump.back
 
 local function Jump(_,row,column)
     return CSI..row..";"..column.."H"
@@ -300,6 +304,11 @@ function anterm.rc (row, column)
 end
 
 anterm.rowcol = anterm.rc
+
+function anterm.col(col)
+   col = col or 1
+   return CSI .. col .. "G"
+end
 
 
 

@@ -172,7 +172,6 @@ local STATCOL = 81
 local STAT_TOP = 1
 local STAT_RUN = 2
 
--- more like jumpwrite at this point but w/e
 local function colwrite(str, col, row)
    col = col or STATCOL
    row = row or STAT_TOP
@@ -239,8 +238,6 @@ log anything unexpected.
 
 ```lua
 function ModeS.act(modeS, category, value)
-  assert(modeS.modes, "modeS must have a modes table")
-  assert(modeS.special, "modeS must have a special table")
   assert(modeS.modes[category], "no category " .. category .. " in modeS")
    if modeS.special[value] then
       return modeS.special[value](modeS, category, value)
@@ -249,8 +246,10 @@ function ModeS.act(modeS, category, value)
       if category == "INSERT" then
          -- hard coded for now
          self_insert(modeS, category, value)
+      elseif category == "NAV" and value == "RETURN" then
+        write(a.col() .. a.jump.down(1)
+              .. tostring(modeS.linebuf) .. a.col() .. a.jump.down(1))
       end
-      --colwrite(category .. ts(value), 1,2)
    else
       icon_paint(category, value)
       --colwrite("!! " .. category .. " " .. value, 1, 2)

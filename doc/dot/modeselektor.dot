@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 300"]
+doc_0 [label="doc - 299"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-221"]
+section_1 [label="section: 1-220"]
 
 
 // END RANK doc_0
@@ -25,7 +25,7 @@ prose_4 [label="prose"]
 
 section_5 [label="section: 11-157"]
 
-section_6 [label="section: 222-300"]
+section_6 [label="section: 221-299"]
 
 
 // END RANK section_1
@@ -163,7 +163,7 @@ section_47 [label="section: 86-142"]
 
 section_48 [label="section: 143-157"]
 
-section_49 [label="section: 158-221"]
+section_49 [label="section: 158-220"]
 
 
 // END RANK section_5
@@ -1233,7 +1233,7 @@ header_320 [label="3 : status painter (colwrite)"]
 
 prose_321 [label="prose"]
 
-codeblock_322 [label="code block 162-220"]
+codeblock_322 [label="code block 162-219"]
 
 
 // END RANK section_49
@@ -1262,7 +1262,6 @@ leaf_326  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local STATCOL 
 local STAT_TOP = 1
 local STAT_RUN = 2
 
--- more like jumpwrite at this point but w/e
 local function colwrite(str, col, row)
    col = col or STATCOL
    row = row or STAT_TOP
@@ -1326,17 +1325,17 @@ prose_328 [label="prose"]
 
 prose_329 [label="prose"]
 
-codeblock_330 [label="code block 232-252"]
+codeblock_330 [label="code block 231-251"]
 
 prose_331 [label="prose"]
 
-codeblock_332 [label="code block 256-260"]
+codeblock_332 [label="code block 255-259"]
 
 prose_333 [label="prose"]
 
-codeblock_334 [label="code block 264-272"]
+codeblock_334 [label="code block 263-271"]
 
-codeblock_335 [label="code block 274-276"]
+codeblock_335 [label="code block 273-275"]
 
 
 // END RANK section_6
@@ -1458,8 +1457,6 @@ log anything unexpected.
 
 codeblock_330 -> leaf_369
 leaf_369  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS.act(modeS, category, value)
-  assert(modeS.modes, \"modeS must have a modes table\")
-  assert(modeS.special, \"modeS must have a special table\")
   assert(modeS.modes[category], \"no category \" .. category .. \" in modeS\")
    if modeS.special[value] then
       return modeS.special[value](modeS, category, value)
@@ -1468,8 +1465,10 @@ leaf_369  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS
       if category == \"INSERT\" then
          -- hard coded for now
          self_insert(modeS, category, value)
+      elseif category == \"NAV\" and value == \"RETURN\" then
+        write(a.col() .. a.jump.down(1)
+              .. tostring(modeS.linebuf) .. a.col() .. a.jump.down(1))
       end
-      --colwrite(category .. ts(value), 1,2)
    else
       icon_paint(category, value)
       --colwrite(\"!! \" .. category .. \" \" .. value, 1, 2)
