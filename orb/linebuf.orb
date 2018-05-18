@@ -23,9 +23,12 @@ do a bit of tokenizing on the side.
 - dsps  :  An array of uint, each corresponds to the number of *bytes*
           in line[i].
 
-- cursor :  An uint representing the number of codepoints to be skipped over
+- cursor :  An uint representing the number of bytes to be skipped over
             before executing =insert()=.  Not 1-1 the same as the column
             index of the tty cursor.
+
+            cursor is moved by linebuf, ensuring we stay on codepoint
+            boundaries.
 
 - len  : sum of dsps.
 
@@ -45,17 +48,8 @@ end
 
 local concat = table.concat
 function Linebuf.__tostring(linebuf)
-   assert(linebuf.depth
-          and type(linebuf.depth) == "number"
-          and linebuf.depth > 0,
-          "linebuf.depth must be a positive integer")
-   if linebuf.depth == 1 then
-      return concat(linebuf)
-   else
-      error("tostring on linebuf.depth > 1 NYI")
-   end
+   return concat(linebuf.line)
 end
-
 #/lua
 
 
@@ -66,13 +60,31 @@ end
 A =frag= is any kind of string that we won't want to break into pieces.
 
 At first that means pasting long strings will cause syntax highlighting to
-fall over. Harmlessly.
+fall over. Harmlessly.  Once lexing is working we can trip an interrupt on
+long input.
 
 #!lua
-function Linebuf.insert(linebuf, frag)
-
+-- a pass through for now
+local function join(token, frag)
+   return token, frag
 end
 
+function Linebuf.insert(linebuf, frag)
+   assert(linebuf.cursor, "linebuf must have cursor to insert")
+   local line = linebuf.line
+   -- end of line
+   if cursor == len then
+      local token, new_tok = join(line[#line], frag)
+      line[#line + 1] = token
+      if new_tok then
+         line[#line + 1] = new_tok
+      end
+      linebuf.len = sum(line)
+      linebuf.cursor = linebuf.cursor + #frag
+      return true
+   end
+   return false
+end
 #/lua
 
 
@@ -80,8 +92,7 @@ end
 local function new(cursor)
    local linebuf = meta(Linebuf)
    linebuf.back  =  false
-   -- disps = #str for str in line
-   linebuf.dsps = {0}
+   linebuf.len = 0 -- in bytes
    linebuf.line  = {""}
    -- Cursor may be nil
    linebuf.cursor = cursor

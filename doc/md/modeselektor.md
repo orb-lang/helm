@@ -11,29 +11,33 @@ a pointer to the ``femto``cell we're operating on.
 
 ## Design
 
-``femto`` passes keystrokes as messages to ``modeselektor``.  In final boss form,
-it does no writes to stdout at all.  It is smart enough to categorize and
-parse various device reports, but has no knowledge of why those reports were
-requested.
+  ``femto`` passes keystrokes as messages to ``modeselektor``.  It does no writes
+to stdout at all.  It is smart enough to categorize and parse various device
+reports, but has no knowledge of why those reports were requested.
 
 
 ``femto`` runs the event loop, so all other members are pulled in as modules.
 
 
-``modeselektor`` takes care of system-level housekeeping: opening files and
-sockets, keeping command history, fuzzy completion, and has its own eval loop
-off the main track.  For evaluating lines, it will call a small executor, so
-that in a little while we can put the user program in its own ``LuaL_state``.
+``modeselektor`` takes care of system-level housekeeping: opening files
+and sockets, keeping command history, fuzzy completion, and has its own eval
+loop off the main track.  For evaluating lines, it will call a small executor,
+so that in a little while we can put the user program in its own ``LuaL_state``.
 
 
 This is both good practice, and absolutely necessary if we are to REPL other
 ``bridge`` programs, each of which has its own event loop.
 
 
-``modeselektor`` passes any edit or movement commands to a ``linebuf``, which
-keeps all modeling of the line.  ``modeselektor`` decides when to repaint the
-screen, calling ``rainbuf`` with a region of ``linebuf`` and instructions as to
-how to paint it.
+The implementation is essentially a VM.  Category and value are
+successively looked up in jump tables and the method applied with the ``modeS``
+instance as the first argument.
+
+
+``modeselektor`` passes any edit or movement commands to an internally-owned
+``linebuf``, which keeps all modeling of the line.  ``modeselektor`` decides when
+to repaint the screen, calling ``rainbuf`` with a region of ``linebuf`` and
+instructions as to how to paint it.
 
 
 There is one ``deck`` instance member per screen, which tiles the available
@@ -61,13 +65,27 @@ grammar from becoming too ad-hoc.
 
 #### asserts
 
-There is little sense running ``modeselektor`` outside of the ``bridge``
+  There is little sense running ``modeselektor`` outside of the ``bridge``
 environment.
 
 ```lua
 assert(meta, "must have meta in _G")
 assert(write, "must have write in _G")
 assert(ts, "must have ts in _G")
+```
+#### includes
+
+The easiest way to go mad in concurrent environments is to share memory.
+
+
+``modeselektor`` will own linebuf, and eventually txtbuf, unless I come up with
+a better idea.
+
+
+``rainbuf`` should be built inside ``femto`` and passed in as an argument.
+
+```lua
+local Linebuf = require "linebuf"
 ```
 ```lua
 local ModeS = meta()
@@ -77,7 +95,7 @@ local ModeS = meta()
 These are the types of event recognized by ``femto``.
 
 ```lua
-local INSERT = {}
+local INSERT = meta()
 local NAV    = {}
 local CTRL   = {}
 local ALT    = {}
@@ -113,7 +131,8 @@ ModeS.modes = { INSERT = INSERT,
                 NAV    = NAV,
                 CTRL   = CTRL,
                 ALT    = ALT,
-                MOUSE  = MOUSE }
+                MOUSE  = MOUSE,
+                NYI    = true }
 ```
 
 Sometimes its useful to briefly override handlers, so we check values
@@ -128,6 +147,20 @@ A simple pass-through so we can see what we're missing.
 ```lua
 function ModeS.default(modeS, category, value)
     return write(ts(value))
+end
+```
+### self-insert(modeS, category, value)
+
+Inserts the value into the linebuf at cursor.
+
+```lua
+local function self_insert(modeS, category, value)
+    local success =  modeS.linebuf:insert(value)
+    if not success then
+      write("no insert: " .. value)
+    else
+      write(value)
+    end
 end
 ```
 ### status painter (colwrite)
@@ -155,6 +188,16 @@ end
 
 local STAT_ICON = "◉ "
 
+function pr_mouse(m)
+   local phrase = a.magenta(m.button) .. ": "
+                     .. a.bright(kind) .. " " .. ts(m.shift)
+                     .. " " .. ts(m.meta)
+                     .. " " .. ts(m.ctrl) .. " " .. ts(m.moving) .. " "
+                     .. ts(m.scrolling) .. " "
+                     .. a.cyan(m.col) .. "," .. a.cyan(m.row)
+   return phrase
+end
+
 local function mk_paint(fragment, shade)
    return function(category, action)
       return shade(category .. fragment .. action)
@@ -165,16 +208,21 @@ local act_map = { MOUSE  = pr_mouse,
                   NAV    = mk_paint(": ", a.italic),
                   CTRL   = mk_paint(": ", c.field),
                   ALT    = mk_paint(": ", a.underscore),
-                  INSERT = mk_paint(": ", c.field)}
+                  INSERT = mk_paint(": ", c.field),
+                  NYI    = mk_paint(": ", a.red)}
 
 local icon_map = { MOUSE = mk_paint(STAT_ICON, c.userdata),
                    NAV   = mk_paint(STAT_ICON, a.magenta),
                    CTRL  = mk_paint(STAT_ICON, a.blue),
                    ALT   = mk_paint(STAT_ICON, c["function"]),
-                   INSERT = mk_paint(STAT_ICON, a.green) }
+                   INSERT = mk_paint(STAT_ICON, a.green),
+                   NYI   = mk_paint(STAT_ICON .. "! ", a.red) }
 
 local function icon_paint(category, value)
    assert(icon_map[category], "icon_paint NYI:" .. category)
+   if category == "MOUSE" then
+      return colwrite(icon_map[category]("", pr_mouse(value)))
+    end
    return colwrite(icon_map[category]("", ts(value)))
 end
 ```
@@ -196,11 +244,16 @@ function ModeS.act(modeS, category, value)
   assert(modeS.modes[category], "no category " .. category .. " in modeS")
    if modeS.special[value] then
       return modeS.special[value](modeS, category, value)
-   elseif modeS.modes[category][value] then
+   elseif modeS.modes[category] then
       icon_paint(category, value)
-      return modeS.modes[category][value](modeS, category, value)
+      if category == "INSERT" then
+         -- hard coded for now
+         self_insert(modeS, category, value)
+      end
+      --colwrite(category .. ts(value), 1,2)
    else
       icon_paint(category, value)
+      --colwrite("!! " .. category .. " " .. value, 1, 2)
       return modeS:default(category, value)
    end
 end
@@ -219,6 +272,7 @@ This will need to take a complete config table at some point.
 ```lua
 function new()
   local modeS = meta(ModeS)
+  modeS.linebuf = Linebuf(1)
   return modeS
 end
 

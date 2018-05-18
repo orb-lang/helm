@@ -13,9 +13,6 @@
 
 
 
-
-
-
 sql = require "sqlite"
 L = require "lpeg"
 lfs = require "lfs"
@@ -128,7 +125,7 @@ local function printResults(results)
   for i = 1, results.n do
     results[i] = ts(results[i])
   end
-  print(table.concat(results, '\t'))
+  print(concat(results, '\t'))
 end
 
 local buffer = ''
@@ -213,8 +210,6 @@ local keybuf = {}
 local sub, byte = string.sub, string.byte
 local concat = table.concat
 
-local linebuf = { line = "",
-                  ndx  = 0 }
 
 local max_row, mac_col = uv.tty_get_winsize(stdin)
 
@@ -226,106 +221,24 @@ local max_row, mac_col = uv.tty_get_winsize(stdin)
 
 
 
-
--- device report parsing goes in anterm
---
-local function cursor_pos(str)
-   local row, col = core.cleave(str, ";")
-   return tonumber(row), tonumber(col)
-end
-
-local STATCOL = 81
-local STAT_TOP = 1
-local STAT_RUN = 2
-
--- more like jumpwrite at this point but w/e
-local function colwrite(str, col, row)
-   col = col or STATCOL
-   row = row or STAT_TOP
-   local dash = a.stash()
-             .. a.cursor.hide()
-             .. a.jump(row, col)
-             .. a.erase.right()
-             .. str
-             .. a.pop()
-             .. a.cursor.show()
-   write(dash)
-end
-
-local STAT_ICON = "◉"
-
-local function isnum(char)
-   return char >= "0" and char <= "9"
-end
-
-local function isalpha(char)
-   return (char >= "A" and char <= "z")
-      or  (char >= "a" and char <= "z")
-end
-
-
-
-
-
-function pr_mouse(m)
-   local phrase = a.magenta(m.button) .. ": "
-                     .. a.bright(kind) .. " " .. ts(m.shift)
-                     .. " " .. ts(m.meta)
-                     .. " " .. ts(m.ctrl) .. " " .. ts(m.moving) .. " "
-                     .. ts(m.scrolling) .. " "
-                     .. a.cyan(m.col) .. "," .. a.cyan(m.row)
-   return phrase
-end
-
-
-
-
-
-
-
-
-
-
-
-local function mk_paint(label, shade)
-   return function(action)
-      return shade(label .. " " .. action)
-   end
-end
-
-local act_map = { MOUSE  = pr_mouse,
-                  NAV    = mk_paint("NAV:", a.italic),
-                  CTRL   = mk_paint("CTRL:", c.field),
-                  ALT    = mk_paint("ALT:", a.underscore),
-                  INSERT = mk_paint("INS:", c.field)}
-                  -- Device reports, function keys...
-
--- I believe the kids call that 'currying'
-
-local function act(category, action)
-   if act_map[category] then
-      colwrite(act_map[category](action), STATCOL, STAT_RUN)
-   else
-      colwrite(category .. ":" ..action, STATCOL, STAT_RUN)
-   end
-end
-
 local m_parse, is_mouse = a.mouse.parse_fast, a.mouse.ismousemove
 local navigation, is_nav = a.navigation, a.is_nav
 
 local function process_escapes(seq)
    if is_nav(seq) then
-      modeS("NAV", navigation[seq] )
+      return modeS("NAV", navigation[seq] )
    elseif #seq == 1 then
       modeS("NAV", "ESC") -- I think of escape as navigation in modal systems
    end
    if is_mouse(seq) then
       local m = m_parse(seq)
-      act("MOUSE", m)
+      return modeS("MOUSE", m)
    elseif #seq == 2 and byte(sub(seq,2,2)) < 128 then
       -- Meta
       local key = "M-" .. sub(seq,2,2)
-      modeS("ALT", key)
+      return modeS("ALT", key)
+   else
+      return modeS("NYI", seq)
    end
 end
 
@@ -343,12 +256,6 @@ local function onseq(err,seq)
    end
    -- Escape sequences
    if head == 27 then
-      local color
-      if navigation[seq] or #seq == 1 then
-         color = c.userdata
-      else
-         color = a.red
-      end
       return process_escapes(seq)
    end
    -- Control sequences
@@ -358,7 +265,13 @@ local function onseq(err,seq)
    elseif navigation[seq] then
       return modeS("NAV", navigation[seq])
    end
-   return modeS("INSERT", seq)
+   -- Printables
+   if head > 31 and head < 127 then
+      return modeS("INSERT", seq)
+   else
+      -- wchars go here
+      return modeS("NYI", seq)
+   end
 end
 
 

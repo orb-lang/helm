@@ -30,6 +30,9 @@
 
 
 
+
+
+
 local Linebuf = meta()
 
 
@@ -45,15 +48,7 @@ end
 
 local concat = table.concat
 function Linebuf.__tostring(linebuf)
-   assert(linebuf.depth
-          and type(linebuf.depth) == "number"
-          and linebuf.depth > 0,
-          "linebuf.depth must be a positive integer")
-   if linebuf.depth == 1 then
-      return concat(linebuf)
-   else
-      error("tostring on linebuf.depth > 1 NYI")
-   end
+   return concat(linebuf.line)
 end
 
 
@@ -68,11 +63,28 @@ end
 
 
 
+
+-- a pass through for now
+local function join(token, frag)
+   return token, frag
+end
 
 function Linebuf.insert(linebuf, frag)
-
+   assert(linebuf.cursor, "linebuf must have cursor to insert")
+   local line = linebuf.line
+   -- end of line
+   if cursor == len then
+      local token, new_tok = join(line[#line], frag)
+      line[#line + 1] = token
+      if new_tok then
+         line[#line + 1] = new_tok
+      end
+      linebuf.len = sum(line)
+      linebuf.cursor = linebuf.cursor + #frag
+      return true
+   end
+   return false
 end
-
 
 
 
@@ -80,8 +92,7 @@ end
 local function new(cursor)
    local linebuf = meta(Linebuf)
    linebuf.back  =  false
-   -- disps = #str for str in line
-   linebuf.dsps = {0}
+   linebuf.len = 0 -- in bytes
    linebuf.line  = {""}
    -- Cursor may be nil
    linebuf.cursor = cursor
