@@ -241,8 +241,9 @@ function ModeS.act(modeS, category, value)
       if category == "INSERT" then
          -- hard coded for now
          self_insert(modeS, category, value)
+      elseif category == "NAV" and value == "RETURN" then
+        write(tostring(modeS.linebuf))
       end
-      --colwrite(category .. ts(value), 1,2)
    else
       icon_paint(category, value)
       --colwrite("!! " .. category .. " " .. value, 1, 2)
