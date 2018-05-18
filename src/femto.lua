@@ -54,9 +54,11 @@ coro = coroutine
 
 
 a = require "anterm"
-c = require "color"
-ts = c.ts
+color = require "color"
+ts = color.ts
+c = color.color
 watch = require "watcher"
+
 
 
 
@@ -78,9 +80,21 @@ else
 end
 
 if not usecolors then
-   c.ts = tostring
+   ts = tostring
    -- #todo make this properly black and white ts
 end
+
+function write(str)
+   uv.write(stdout, str)
+end
+
+
+
+
+
+local modeS = require "modeselektor" ()
+
+
 
 function print(...)
   local n = select('#', ...)
@@ -89,10 +103,6 @@ function print(...)
     arguments[i] = tostring(arguments[i])
   end
   uv.write(stdout, table.concat(arguments, "\t") .. "\n")
-end
-
-function write(str)
-   uv.write(stdout, str)
 end
 
 
@@ -116,7 +126,7 @@ end
 
 local function printResults(results)
   for i = 1, results.n do
-    results[i] = c.ts(results[i])
+    results[i] = ts(results[i])
   end
   print(table.concat(results, '\t'))
 end
@@ -217,7 +227,7 @@ local max_row, mac_col = uv.tty_get_winsize(stdin)
 
 
 
--- This will be called parse_digits and be substantially more complex.
+-- device report parsing goes in anterm
 --
 local function cursor_pos(str)
    local row, col = core.cleave(str, ";")
@@ -257,99 +267,6 @@ end
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-local __navigation = {  UP       = "\x1b[A",
-                        DOWN     = "\x1b[B",
-                        RIGHT    = "\x1b[C",
-                        LEFT     = "\x1b[D",
-                        SHIFT_UP = "\x1b[1;2A",
-                        SHIFT_DOWN = "\x1b[1;2B",
-                        SHIFT_RIGHT = "\x1b[1;2C",
-                        SHIFT_LEFT  = "\x1b[1;2D",
-                        HYPER_UP    = "\x1b[5~",
-                        HYPER_DOWN  = "\x1b[6~",
-                        HYPER_RIGHT = "\x1b[F",
-                        HYPER_LEFT  = "\x1b[H",
-                        ALT_UP    = "\x1b\x1b[A",
-                        ALT_DOWN  = "\x1b\x1b[B",
-                        ALT_RIGHT = "\x1bf", -- heh
-                        ALT_LEFT  = "\x1bb",
-                        SHIFT_ALT_UP = "\x1b[1;10A",
-                        SHIFT_ALT_DOWN = "\x1b[1;10B",
-                        SHIFT_ALT_RIGHT = "\x1b[1;10C",
-                        SHIFT_ALT_LEFT  = "\x1b[1;10D",
-                        SHIFT_TAB  = "\x1b[Z",
-                        ALT_TAB    = "\x1b\t",
-                        NEWLINE    = "\n",
-                        RETURN     = "\r",
-                        TAB        = "\t",
-                        BACKSPACE  = "\127",
-                        DELETE     = "\x1b[3~",
-                     }
-
-
-
-
-
-local __alt_nav = {  UP       = "\x1bOA",
-                     DOWN     = "\x1bOB",
-                     RIGHT    = "\x1bOC",
-                     LEFT     = "\x1bOD",
-                  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-local navigation = {}
-
-for k,v in pairs(__navigation) do
-   navigation[v] = k
-end
-for k,v in pairs(__alt_nav) do
-   navigation[v] = k
-end
-
-__navigation, __alt_nav = nil, nil, nil
-
-
-
-
-
-
-
-
 function pr_mouse(m)
    local phrase = a.magenta(m.button) .. ": "
                      .. a.bright(kind) .. " " .. ts(m.shift)
@@ -367,16 +284,20 @@ end
 
 
 
+
+
+
 local function mk_paint(label, shade)
    return function(action)
       return shade(label .. " " .. action)
    end
 end
 
-local act_map = { MOUSE = pr_mouse,
-                  NAV   = mk_paint("NAV:", a.italic),
-                  CTRL  = mk_paint("CTRL:", a.underscore),
-                  ALT   = mk_paint("ALT:", c.coro)}
+local act_map = { MOUSE  = pr_mouse,
+                  NAV    = mk_paint("NAV:", a.italic),
+                  CTRL   = mk_paint("CTRL:", c.field),
+                  ALT    = mk_paint("ALT:", a.underscore),
+                  INSERT = mk_paint("INS:", c.field)}
                   -- Device reports, function keys...
 
 -- I believe the kids call that 'currying'
@@ -389,35 +310,27 @@ local function act(category, action)
    end
 end
 
-local function litprint(seq)
-   local phrase = ""
-   for i = 1, #seq do
-      phrase = phrase .. ":" .. byte(seq, i)
-   end
-   return phrase
-end
-
-
-local buttons = {[0] ="MB0", "MB1", "MB2", "MBNONE"}
-
-local rshift = bit.rshift
 local m_parse, is_mouse = a.mouse.parse_fast, a.mouse.ismousemove
+local navigation, is_nav = a.navigation, a.is_nav
 
 local function process_escapes(seq)
-   if navigation[seq] then
+   if is_nav(seq) then
       act("NAV", navigation[seq] )
    elseif #seq == 1 then
-      act("CTRL", "ESC")
+      act("NAV", "ESC") -- I think of escape as navigation in modal systems
    end
    if is_mouse(seq) then
       local m = m_parse(seq)
       act("MOUSE", m)
    elseif #seq == 2 and byte(sub(seq,2,2)) < 128 then
       -- Meta
-      local key = "M-" .. sub(seq(2,2))
+      local key = "M-" .. sub(seq,2,2)
+      colwrite(a.bold(STAT_ICON) .. " : " .. key)
       act("ALT", key)
    end
 end
+
+local navigation = a.navigation
 
 local function onseq(err,seq)
    if err then error(err) end
@@ -433,17 +346,17 @@ local function onseq(err,seq)
    if head == 27 then
       local color
       if navigation[seq] or #seq == 1 then
-         color = a.magenta
+         color = c.userdata
       else
          color = a.red
       end
-      colwrite(color(STAT_ICON) .. " : " .. c.ts(seq))
+      colwrite(color(STAT_ICON) .. " : " .. ts(seq))
       return process_escapes(seq)
    end
    -- Control sequences
    if head <= 31 and not navigation[seq] then
       local ctrl = "^" .. string.char(head + 64)
-      colwrite(a.blue(STAT_ICON) .. " : " .. ctrl)
+      colwrite(c.field(STAT_ICON) .. " : " .. ctrl)
       return act("CTRL", ctrl)
    elseif navigation[seq] then
       colwrite(a.green(STAT_ICON))
@@ -452,14 +365,13 @@ local function onseq(err,seq)
 
    colwrite(a.green(STAT_ICON) .. " : " .. seq)
    return act("INSERT", byte(seq))
-
 end
 
 
 
 -- Get names for as many values as possible
 -- into the colorizer
-c.allNames()
+color.allNames()
 -- This switches screens and does a wipe,
 -- then puts the cursor at 1,1.
 write "\x1b[?47h\x1b[2J\x1b[H"

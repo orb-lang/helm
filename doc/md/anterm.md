@@ -422,6 +422,98 @@ end
 cursor.stash = anterm.stash
 cursor.pop = anterm.pop
 ```
+### Input handling
+
+``xterm`` informally specifies a variety of input signals.
+
+
+We collate those here.
+
+
+To avoid extraneous quoting, we define the tokens as keys, and their escape
+strings as values.
+
+```lua
+local __navigation = {  UP       = "\x1b[A",
+                        DOWN     = "\x1b[B",
+                        RIGHT    = "\x1b[C",
+                        LEFT     = "\x1b[D",
+                        SHIFT_UP = "\x1b[1;2A",
+                        SHIFT_DOWN = "\x1b[1;2B",
+                        SHIFT_RIGHT = "\x1b[1;2C",
+                        SHIFT_LEFT  = "\x1b[1;2D",
+                        HYPER_UP    = "\x1b[5~",
+                        HYPER_DOWN  = "\x1b[6~",
+                        HYPER_RIGHT = "\x1b[F",
+                        HYPER_LEFT  = "\x1b[H",
+                        ALT_UP    = "\x1b\x1b[A",
+                        ALT_DOWN  = "\x1b\x1b[B",
+                        ALT_RIGHT = "\x1bf", -- heh
+                        ALT_LEFT  = "\x1bb",
+                        SHIFT_ALT_UP = "\x1b[1;10A",
+                        SHIFT_ALT_DOWN = "\x1b[1;10B",
+                        SHIFT_ALT_RIGHT = "\x1b[1;10C",
+                        SHIFT_ALT_LEFT  = "\x1b[1;10D",
+                        SHIFT_TAB  = "\x1b[Z",
+                        ALT_TAB    = "\x1b\t",
+                        NEWLINE    = "\n",
+                        RETURN     = "\r",
+                        TAB        = "\t",
+                        BACKSPACE  = "\127",
+                        DELETE     = "\x1b[3~",
+                     }
+```
+
+It's possible to coerce a terminal into sending these, apparently:
+
+```lua
+local __alt_nav = {  UP       = "\x1bOA",
+                     DOWN     = "\x1bOB",
+                     RIGHT    = "\x1bOC",
+                     LEFT     = "\x1bOD",
+                  }
+```
+
+I don't know why, and if anyone does, please let me know.
+
+
+I'm fairly sure those are the only valid meanings for the above escape
+strings.
+
+
+### #todo function keys
+
+Don't really use them, should parse them, goes here:
+
+```lua
+
+```
+#### flip
+
+We need the inverse of this map, so flip and forget:
+
+```lua
+local navigation = {}
+
+for k,v in pairs(__navigation) do
+   navigation[v] = k
+end
+for k,v in pairs(__alt_nav) do
+   navigation[v] = k
+end
+
+__navigation, __alt_nav = nil, nil, nil
+
+anterm.navigation = navigation
+
+function anterm.is_nav(seq)
+   if navigation[seq] then
+      return navigation[seq]
+   else
+      return false, "not a recognized NAV token", seq
+   end
+end
+```
 ```lua
 return anterm
 ```

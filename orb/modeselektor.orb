@@ -47,16 +47,104 @@ outer-level =local=s to facilicate copy-pasting) and keep the readline
 grammar from becoming too ad-hoc.
 
 #!lua
-local ModeS = {}
+assert(meta, "must have meta in _G")
+local ModeS = meta()
+assert(write, "must have write in G")
+local unpack = assert(unpack)
+#/lua
 
 
+*** Categories
+
+These are the types of event recognized by =femto=.
+
+#!lua
+local INSERT = {}
+local NAV    = {}
+local CTRL   = {}
+local ALT    = {}
+local FN     = {}
+local MOUSE  = {}
+#/lua
+
+Color schemes are supposed to be one-and-done, and I strongly suspect we
+have a =__concat= dominated workflow, although I have yet to turn on the
+profiler.
+
+Therefore we use reference equality for the =color= and =hints= tables.
+Switching themes is a matter of repopulating those tables.  I intend to
+isolate this within an instance so that multiple terminals can each run their
+own theme, through a simple 'fat inheritance' method.
+
+=modeselektor= is what you might call hypermodal. Everything is isolated in
+its own lookup, that is, we use /value/ equality.  This lets us pass strings
+as messages and use jump tables to resolve most things.
+
+It typically runs at the speed of human fingers and can afford to be much less
+efficient than it will be, even before the JIT gets involved.
+
+Note also that everything is a method, our dispatch pattern will always
+include the =modeS= instance as the first argument.
+
+#!lua
+ModeS.modes = { INSERT = INSERT,
+                NAV    = NAV,
+                CTRL   = CTRL,
+                ALT    = ALT,
+                MOUSE  = MOUSE }
+#/lua
+
+Sometimes its useful to briefly override handlers, so we check values
+against =special= first:
+
+#!lua
+ModeS.special = {}
 #/lua
 
 
 
+** act
 
+=act= simply dispatches. Note that our common interfaces is
+=method(modeS, category, value)=, we need to distinguish betwen the tuple
+=("INSERT", "SHIFT-LEFT")= (which could arrive from copy-paste) and
+=("NAV", "SHIFT-LEFT")= and preserve information for our fall-through method.
 
+=act= always succeeds, meaning we need some metatable action to absorb and
+log anything unexpected.
 
+#!lua
+function ModeS.act(modeS, category, value)
+   if modeS.special[value] then
+      return modeS.special[value](modeS, category, value)
+   elseif modeS.modes[category][value] then
+      return modeS.modes[category][value](modeS, category, value)
+   else
+      return modeS:default(category, value)
+   end
+end
+#/lua
+
+#!lua
+function ModeS.default(modeS, category, value)
+    return write(value)
+end
+#/lua
+
+This will need to take a complete config table at some point.
+
+#!lua
+function new()
+  local modeS = meta(ModeS)
+  return modeS
+end
+
+ModeS.idEst = new
+#/lua
+
+#!lua
+return new
+#/lua
 
 
 

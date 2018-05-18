@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 492"]
+doc_0 [label="doc - 404"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-183"]
+section_1 [label="section: 1-193"]
 
 
 // END RANK doc_0
@@ -25,9 +25,9 @@ prose_4 [label="prose"]
 
 section_5 [label="section: 9-28"]
 
-section_6 [label="section: 35-183"]
+section_6 [label="section: 35-193"]
 
-section_7 [label="section: 184-363"]
+section_7 [label="section: 194-284"]
 
 
 // END RANK section_1
@@ -174,8 +174,8 @@ as close to C level as practical.
 "]
 // END RANK raw_30
 
-section_6 -> { header_32 prose_33 prose_34 codeblock_35 prose_36 prose_37 codeblock_38 prose_39 prose_40 codeblock_41 codeblock_42}
-{rank=same; header_32 prose_33 prose_34 codeblock_35 prose_36 prose_37 codeblock_38 prose_39 prose_40 codeblock_41 codeblock_42}
+section_6 -> { header_32 prose_33 prose_34 codeblock_35 prose_36 prose_37 codeblock_38 prose_39 prose_40 codeblock_41 prose_42 codeblock_43 codeblock_44 codeblock_45}
+{rank=same; header_32 prose_33 prose_34 codeblock_35 prose_36 prose_37 codeblock_38 prose_39 prose_40 codeblock_41 prose_42 codeblock_43 codeblock_44 codeblock_45}
 
 header_32 [label="2 : core"]
 
@@ -189,65 +189,65 @@ prose_36 [label="prose"]
 
 prose_37 [label="prose"]
 
-codeblock_38 [label="code block 55-60"]
+codeblock_38 [label="code block 55-62"]
 
 prose_39 [label="prose"]
 
 prose_40 [label="prose"]
 
-codeblock_41 [label="code block 67-168"]
+codeblock_41 [label="code block 69-90"]
 
-codeblock_42 [label="code block 170-181"]
+prose_42 [label="prose"]
+
+codeblock_43 [label="code block 94-96"]
+
+codeblock_44 [label="code block 98-178"]
+
+codeblock_45 [label="code block 180-191"]
 
 
 // END RANK section_6
 
-header_32 -> leaf_43
-leaf_43  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** core"]
+header_32 -> leaf_46
+leaf_46  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** core"]
 // END RANK header_32
 
-prose_33 -> { raw_44 prespace_45 literal_46 raw_47}
-{rank=same; raw_44 prespace_45 literal_46 raw_47}
-
-raw_44 [label="raw"]
-
-prespace_45 [label="prespace"]
-
-literal_46 [label="literal"]
+prose_33 -> { raw_47 prespace_48 literal_49 raw_50}
+{rank=same; raw_47 prespace_48 literal_49 raw_50}
 
 raw_47 [label="raw"]
+
+prespace_48 [label="prespace"]
+
+literal_49 [label="literal"]
+
+raw_50 [label="raw"]
 
 
 // END RANK prose_33
 
-raw_44 -> leaf_48
-leaf_48  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_47 -> leaf_51
+leaf_51  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 The"]
-// END RANK raw_44
-
-prespace_45 -> leaf_49
-leaf_49  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_45
-
-literal_46 -> leaf_50
-leaf_50  [color=Gray,shape=rectangle,fontname=Inconsolata,label="core"]
-// END RANK literal_46
-
-raw_47 -> leaf_51
-leaf_51  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" library is shaping up as a place to keep alterations to the global
-namespace and standard library.
-"]
 // END RANK raw_47
 
-prose_34 -> { raw_52 prespace_53 literal_54 raw_55 prespace_56 literal_57 raw_58}
-{rank=same; raw_52 prespace_53 literal_54 raw_55 prespace_56 literal_57 raw_58}
+prespace_48 -> leaf_52
+leaf_52  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_48
 
-raw_52 [label="raw"]
+literal_49 -> leaf_53
+leaf_53  [color=Gray,shape=rectangle,fontname=Inconsolata,label="core"]
+// END RANK literal_49
 
-prespace_53 [label="prespace"]
+raw_50 -> leaf_54
+leaf_54  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" library is shaping up as a place to keep alterations to the global
+namespace and standard library.
+"]
+// END RANK raw_50
 
-literal_54 [label="literal"]
+prose_34 -> { raw_55 prespace_56 literal_57 raw_58 prespace_59 literal_60 raw_61}
+{rank=same; raw_55 prespace_56 literal_57 raw_58 prespace_59 literal_60 raw_61}
 
 raw_55 [label="raw"]
 
@@ -257,24 +257,18 @@ literal_57 [label="literal"]
 
 raw_58 [label="raw"]
 
+prespace_59 [label="prespace"]
+
+literal_60 [label="literal"]
+
+raw_61 [label="raw"]
+
 
 // END RANK prose_34
 
-raw_52 -> leaf_59
-leaf_59  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-This prelude belongs in"]
-// END RANK raw_52
-
-prespace_53 -> leaf_60
-leaf_60  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_53
-
-literal_54 -> leaf_61
-leaf_61  [color=Gray,shape=rectangle,fontname=Inconsolata,label="pylon"]
-// END RANK literal_54
-
 raw_55 -> leaf_62
-leaf_62  [color=Gray,shape=rectangle,fontname=Inconsolata,label="; it, and"]
+leaf_62  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+This prelude belongs in"]
 // END RANK raw_55
 
 prespace_56 -> leaf_63
@@ -282,125 +276,139 @@ leaf_63  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
 // END RANK prespace_56
 
 literal_57 -> leaf_64
-leaf_64  [color=Gray,shape=rectangle,fontname=Inconsolata,label="core"]
+leaf_64  [color=Gray,shape=rectangle,fontname=Inconsolata,label="pylon"]
 // END RANK literal_57
 
 raw_58 -> leaf_65
-leaf_65  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", will eventually end up there.
-"]
+leaf_65  [color=Gray,shape=rectangle,fontname=Inconsolata,label="; it, and"]
 // END RANK raw_58
 
-codeblock_35 -> leaf_66
-leaf_66  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local core = require \"core\"
+prespace_59 -> leaf_66
+leaf_66  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_59
+
+literal_60 -> leaf_67
+leaf_67  [color=Gray,shape=rectangle,fontname=Inconsolata,label="core"]
+// END RANK literal_60
+
+raw_61 -> leaf_68
+leaf_68  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", will eventually end up there.
+"]
+// END RANK raw_61
+
+codeblock_35 -> leaf_69
+leaf_69  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local core = require \"core\"
 string.cleave, string.litpat = core.cleave, core.litpat
 meta = core.meta
 getmeta, setmeta = getmetatable, setmetatable
 coro = coroutine"]
 // END RANK codeblock_35
 
-prose_36 -> { raw_67}
-{rank=same; raw_67}
+prose_36 -> { raw_70}
+{rank=same; raw_70}
 
-raw_67 [label="raw"]
+raw_70 [label="raw"]
 
 
 // END RANK prose_36
 
-raw_67 -> leaf_68
-leaf_68  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_70 -> leaf_71
+leaf_71  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 Primitives for terminal manipulation.
 "]
-// END RANK raw_67
+// END RANK raw_70
 
-prose_37 -> { raw_69 prespace_70 literal_71 raw_72}
-{rank=same; raw_69 prespace_70 literal_71 raw_72}
-
-raw_69 [label="raw"]
-
-prespace_70 [label="prespace"]
-
-literal_71 [label="literal"]
+prose_37 -> { raw_72 prespace_73 literal_74 raw_75}
+{rank=same; raw_72 prespace_73 literal_74 raw_75}
 
 raw_72 [label="raw"]
+
+prespace_73 [label="prespace"]
+
+literal_74 [label="literal"]
+
+raw_75 [label="raw"]
 
 
 // END RANK prose_37
 
-raw_69 -> leaf_73
-leaf_73  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-Arguably don't belong here."]
-// END RANK raw_69
-
-prespace_70 -> leaf_74
-leaf_74  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_70
-
-literal_71 -> leaf_75
-leaf_75  [color=Gray,shape=rectangle,fontname=Inconsolata,label="watch"]
-// END RANK literal_71
-
 raw_72 -> leaf_76
-leaf_76  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is unused at present, it will be useful
-in Orb relatively soon.
-"]
+leaf_76  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Arguably don't belong here."]
 // END RANK raw_72
 
-codeblock_38 -> leaf_77
-leaf_77  [color=Gray,shape=rectangle,fontname=Inconsolata,label="a = require \"anterm\"
-c = require \"color\"
-ts = c.ts
-watch = require \"watcher\""]
+prespace_73 -> leaf_77
+leaf_77  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_73
+
+literal_74 -> leaf_78
+leaf_78  [color=Gray,shape=rectangle,fontname=Inconsolata,label="watch"]
+// END RANK literal_74
+
+raw_75 -> leaf_79
+leaf_79  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is unused at present, it will be useful
+in Orb relatively soon.
+"]
+// END RANK raw_75
+
+codeblock_38 -> leaf_80
+leaf_80  [color=Gray,shape=rectangle,fontname=Inconsolata,label="a = require \"anterm\"
+color = require \"color\"
+ts = color.ts
+c = color.color
+watch = require \"watcher\"
+"]
 // END RANK codeblock_38
 
-prose_39 -> { raw_78 prespace_79 literal_80 raw_81}
-{rank=same; raw_78 prespace_79 literal_80 raw_81}
-
-raw_78 [label="raw"]
-
-prespace_79 [label="prespace"]
-
-literal_80 [label="literal"]
+prose_39 -> { raw_81 prespace_82 literal_83 raw_84}
+{rank=same; raw_81 prespace_82 literal_83 raw_84}
 
 raw_81 [label="raw"]
+
+prespace_82 [label="prespace"]
+
+literal_83 [label="literal"]
+
+raw_84 [label="raw"]
 
 
 // END RANK prose_39
 
-raw_78 -> leaf_82
-leaf_82  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-This is all from the"]
-// END RANK raw_78
-
-prespace_79 -> leaf_83
-leaf_83  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_79
-
-literal_80 -> leaf_84
-leaf_84  [color=Gray,shape=rectangle,fontname=Inconsolata,label="luv"]
-// END RANK literal_80
-
 raw_81 -> leaf_85
-leaf_85  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" repl example, which has been an excellent launching
-off point.  Thanks Tim Caswell!
-"]
+leaf_85  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+This is all from the"]
 // END RANK raw_81
 
-prose_40 -> { raw_86}
-{rank=same; raw_86}
+prespace_82 -> leaf_86
+leaf_86  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_82
 
-raw_86 [label="raw"]
+literal_83 -> leaf_87
+leaf_87  [color=Gray,shape=rectangle,fontname=Inconsolata,label="luv"]
+// END RANK literal_83
+
+raw_84 -> leaf_88
+leaf_88  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" repl example, which has been an excellent launching
+off point.  Thanks Tim Caswell!
+"]
+// END RANK raw_84
+
+prose_40 -> { raw_89}
+{rank=same; raw_89}
+
+raw_89 [label="raw"]
 
 
 // END RANK prose_40
 
-raw_86 -> leaf_87
-leaf_87  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_89 -> leaf_90
+leaf_90  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 It's getting phased out bit by bit.
 "]
-// END RANK raw_86
+// END RANK raw_89
 
-codeblock_41 -> leaf_88
-leaf_88  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local usecolors
+codeblock_41 -> leaf_91
+leaf_91  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local usecolors
 stdout = \"\"
 
 if uv.guess_handle(1) == \"tty\" then
@@ -413,21 +421,41 @@ else
 end
 
 if not usecolors then
-   c.ts = tostring
+   ts = tostring
    -- #todo make this properly black and white ts
 end
 
-function print(...)
+function write(str)
+   uv.write(stdout, str)
+end"]
+// END RANK codeblock_41
+
+prose_42 -> { raw_92}
+{rank=same; raw_92}
+
+raw_92 [label="raw"]
+
+
+// END RANK prose_42
+
+raw_92 -> leaf_93
+leaf_93  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Modeselektor
+"]
+// END RANK raw_92
+
+codeblock_43 -> leaf_94
+leaf_94  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local modeS = require \"modeselektor\" ()"]
+// END RANK codeblock_43
+
+codeblock_44 -> leaf_95
+leaf_95  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function print(...)
   local n = select('#', ...)
   local arguments = {...}
   for i = 1, n do
     arguments[i] = tostring(arguments[i])
   end
   uv.write(stdout, table.concat(arguments, \"\\t\") .. \"\\n\")
-end
-
-function write(str)
-   uv.write(stdout, str)
 end
 
 
@@ -451,7 +479,7 @@ end
 
 local function printResults(results)
   for i = 1, results.n do
-    results[i] = c.ts(results[i])
+    results[i] = ts(results[i])
   end
   print(table.concat(results, '\\t'))
 end
@@ -500,10 +528,10 @@ end
 local function displayPrompt(prompt)
   uv.write(stdout, prompt)
 end"]
-// END RANK codeblock_41
+// END RANK codeblock_44
 
-codeblock_42 -> leaf_89
-leaf_89  [color=Gray,shape=rectangle,fontname=Inconsolata,label="-- Deprecated, but useful if I want, y'know, a REPL
+codeblock_45 -> leaf_96
+leaf_96  [color=Gray,shape=rectangle,fontname=Inconsolata,label="-- Deprecated, but useful if I want, y'know, a REPL
 local function onread(err, line)
   if err then error(err) end
   if line then
@@ -513,152 +541,150 @@ local function onread(err, line)
     uv.close(stdin)
   end
 end"]
-// END RANK codeblock_42
+// END RANK codeblock_45
 
-section_7 -> { header_90 prose_91 section_92 section_93 section_94 section_95 section_96}
-{rank=same; header_90 prose_91 section_92 section_93 section_94 section_95 section_96}
+section_7 -> { header_97 prose_98 section_99 section_100 section_101 section_102}
+{rank=same; header_97 prose_98 section_99 section_100 section_101 section_102}
 
-header_90 [label="2 : Reader"]
+header_97 [label="2 : Reader"]
 
-prose_91 [label="prose"]
+prose_98 [label="prose"]
 
-section_92 [label="section: 190-213"]
+section_99 [label="section: 200-223"]
 
-section_93 [label="section: 214-257"]
+section_100 [label="section: 224-281"]
 
-section_94 [label="section: 258-320"]
+section_101 [label="section: 282-284"]
 
-section_95 [label="section: 321-329"]
-
-section_96 [label="section: 364-492"]
+section_102 [label="section: 285-404"]
 
 
 // END RANK section_7
 
-header_90 -> leaf_97
-leaf_97  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Reader"]
-// END RANK header_90
+header_97 -> leaf_103
+leaf_103  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Reader"]
+// END RANK header_97
 
-prose_91 -> { raw_98 prespace_99 literal_100 raw_101}
-{rank=same; raw_98 prespace_99 literal_100 raw_101}
+prose_98 -> { raw_104 prespace_105 literal_106 raw_107}
+{rank=same; raw_104 prespace_105 literal_106 raw_107}
 
-raw_98 [label="raw"]
+raw_104 [label="raw"]
 
-prespace_99 [label="prespace"]
+prespace_105 [label="prespace"]
 
-literal_100 [label="literal"]
+literal_106 [label="literal"]
 
-raw_101 [label="raw"]
+raw_107 [label="raw"]
 
 
-// END RANK prose_91
+// END RANK prose_98
 
-raw_98 -> leaf_102
-leaf_102  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_104 -> leaf_108
+leaf_108  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 The reader takes a stream of data from"]
-// END RANK raw_98
+// END RANK raw_104
 
-prespace_99 -> leaf_103
-leaf_103  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_99
+prespace_105 -> leaf_109
+leaf_109  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_105
 
-literal_100 -> leaf_104
-leaf_104  [color=Gray,shape=rectangle,fontname=Inconsolata,label="stdin"]
-// END RANK literal_100
+literal_106 -> leaf_110
+leaf_110  [color=Gray,shape=rectangle,fontname=Inconsolata,label="stdin"]
+// END RANK literal_106
 
-raw_101 -> leaf_105
-leaf_105  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", asynchronously, and
+raw_107 -> leaf_111
+leaf_111  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", asynchronously, and
 processes it into tokens, which stream to the recognizer.
 
 "]
-// END RANK raw_101
+// END RANK raw_107
 
-section_92 -> { header_106 prose_107 prose_108 prose_109 codeblock_110}
-{rank=same; header_106 prose_107 prose_108 prose_109 codeblock_110}
+section_99 -> { header_112 prose_113 prose_114 prose_115 codeblock_116}
+{rank=same; header_112 prose_113 prose_114 prose_115 codeblock_116}
 
-header_106 [label="4 : keybuf"]
+header_112 [label="4 : keybuf"]
 
-prose_107 [label="prose"]
+prose_113 [label="prose"]
 
-prose_108 [label="prose"]
+prose_114 [label="prose"]
 
-prose_109 [label="prose"]
+prose_115 [label="prose"]
 
-codeblock_110 [label="code block 201-211"]
-
-
-// END RANK section_92
-
-header_106 -> leaf_111
-leaf_111  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** keybuf"]
-// END RANK header_106
-
-prose_107 -> { raw_112}
-{rank=same; raw_112}
-
-raw_112 [label="raw"]
+codeblock_116 [label="code block 211-221"]
 
 
-// END RANK prose_107
+// END RANK section_99
 
-raw_112 -> leaf_113
-leaf_113  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_112 -> leaf_117
+leaf_117  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** keybuf"]
+// END RANK header_112
+
+prose_113 -> { raw_118}
+{rank=same; raw_118}
+
+raw_118 [label="raw"]
+
+
+// END RANK prose_113
+
+raw_118 -> leaf_119
+leaf_119  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
  Currently the keybuf is a simple array that holds bytes until we have
 enough for the lexer.
 "]
-// END RANK raw_112
+// END RANK raw_118
 
-prose_108 -> { raw_114}
-{rank=same; raw_114}
+prose_114 -> { raw_120}
+{rank=same; raw_120}
 
-raw_114 [label="raw"]
+raw_120 [label="raw"]
 
 
-// END RANK prose_108
+// END RANK prose_114
 
-raw_114 -> leaf_115
-leaf_115  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_120 -> leaf_121
+leaf_121  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 It is cleared and reused, to avoid a glut of allocations and allow the tracer
 to follow it.
 "]
-// END RANK raw_114
+// END RANK raw_120
 
-prose_109 -> { raw_116 prespace_117 literal_118 raw_119}
-{rank=same; raw_116 prespace_117 literal_118 raw_119}
+prose_115 -> { raw_122 prespace_123 literal_124 raw_125}
+{rank=same; raw_122 prespace_123 literal_124 raw_125}
 
-raw_116 [label="raw"]
+raw_122 [label="raw"]
 
-prespace_117 [label="prespace"]
+prespace_123 [label="prespace"]
 
-literal_118 [label="literal"]
+literal_124 [label="literal"]
 
-raw_119 [label="raw"]
+raw_125 [label="raw"]
 
 
-// END RANK prose_109
+// END RANK prose_115
 
-raw_116 -> leaf_120
-leaf_120  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_122 -> leaf_126
+leaf_126  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 Soon I'll move the remaining local state into an instance table, to make"]
-// END RANK raw_116
+// END RANK raw_122
 
-prespace_117 -> leaf_121
-leaf_121  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
-// END RANK prespace_117
+prespace_123 -> leaf_127
+leaf_127  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK prespace_123
 
-literal_118 -> leaf_122
-leaf_122  [color=Gray,shape=rectangle,fontname=Inconsolata,label="femto"]
-// END RANK literal_118
+literal_124 -> leaf_128
+leaf_128  [color=Gray,shape=rectangle,fontname=Inconsolata,label="femto"]
+// END RANK literal_124
 
-raw_119 -> leaf_123
-leaf_123  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" re-entrant.
+raw_125 -> leaf_129
+leaf_129  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" re-entrant.
 "]
-// END RANK raw_119
+// END RANK raw_125
 
-codeblock_110 -> leaf_124
-leaf_124  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local keybuf = {}
+codeblock_116 -> leaf_130
+leaf_130  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local keybuf = {}
 local sub, byte = string.sub, string.byte
 local concat = table.concat
 
@@ -667,42 +693,46 @@ local linebuf = { line = \"\",
 
 local max_row, mac_col = uv.tty_get_winsize(stdin)
 "]
-// END RANK codeblock_110
+// END RANK codeblock_116
 
-section_93 -> { header_125 prose_126 codeblock_127}
-{rank=same; header_125 prose_126 codeblock_127}
+section_100 -> { header_131 prose_132 codeblock_133 prose_134 codeblock_135}
+{rank=same; header_131 prose_132 codeblock_133 prose_134 codeblock_135}
 
-header_125 [label="3 : helper functions"]
+header_131 [label="3 : helper functions"]
 
-prose_126 [label="prose"]
+prose_132 [label="prose"]
 
-codeblock_127 [label="code block 219-255"]
+codeblock_133 [label="code block 229-265"]
 
+prose_134 [label="prose"]
 
-// END RANK section_93
-
-header_125 -> leaf_128
-leaf_128  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** helper functions"]
-// END RANK header_125
-
-prose_126 -> { raw_129}
-{rank=same; raw_129}
-
-raw_129 [label="raw"]
+codeblock_135 [label="code block 269-279"]
 
 
-// END RANK prose_126
+// END RANK section_100
 
-raw_129 -> leaf_130
-leaf_130  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_131 -> leaf_136
+leaf_136  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** helper functions"]
+// END RANK header_131
+
+prose_132 -> { raw_137}
+{rank=same; raw_137}
+
+raw_137 [label="raw"]
+
+
+// END RANK prose_132
+
+raw_137 -> leaf_138
+leaf_138  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 Writes will eventually happen in their own library.  Right now we're building
 the minimum viable loop.
 "]
-// END RANK raw_129
+// END RANK raw_137
 
-codeblock_127 -> leaf_131
-leaf_131  [color=Gray,shape=rectangle,fontname=Inconsolata,label="-- This will be called parse_digits and be substantially more complex.
+codeblock_133 -> leaf_139
+leaf_139  [color=Gray,shape=rectangle,fontname=Inconsolata,label="-- device report parsing goes in anterm
 --
 local function cursor_pos(str)
    local row, col = core.cleave(str, \";\")
@@ -737,369 +767,24 @@ local function isalpha(char)
    return (char >= \"A\" and char <= \"z\")
       or  (char >= \"a\" and char <= \"z\")
 end"]
-// END RANK codeblock_127
+// END RANK codeblock_133
 
-section_94 -> { header_132 prose_133 prose_134 prose_135 prose_136 prose_137 codeblock_138 prose_139 codeblock_140 prose_141 prose_142}
-{rank=same; header_132 prose_133 prose_134 prose_135 prose_136 prose_137 codeblock_138 prose_139 codeblock_140 prose_141 prose_142}
+prose_134 -> { raw_140}
+{rank=same; raw_140}
 
-header_132 [label="3 : process_escapes(seq)"]
-
-prose_133 [label="prose"]
-
-prose_134 [label="prose"]
-
-prose_135 [label="prose"]
-
-prose_136 [label="prose"]
-
-prose_137 [label="prose"]
-
-codeblock_138 [label="code block 273-302"]
-
-prose_139 [label="prose"]
-
-codeblock_140 [label="code block 306-312"]
-
-prose_141 [label="prose"]
-
-prose_142 [label="prose"]
-
-
-// END RANK section_94
-
-header_132 -> leaf_143
-leaf_143  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** process_escapes(seq)"]
-// END RANK header_132
-
-prose_133 -> { raw_144 prespace_145 literal_146 raw_147}
-{rank=same; raw_144 prespace_145 literal_146 raw_147}
-
-raw_144 [label="raw"]
-
-prespace_145 [label="prespace"]
-
-literal_146 [label="literal"]
-
-raw_147 [label="raw"]
-
-
-// END RANK prose_133
-
-raw_144 -> leaf_148
-leaf_148  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-
-After flailing about and writing what was no doubt a good parser for
-individual byte sequences, I discovered that"]
-// END RANK raw_144
-
-prespace_145 -> leaf_149
-leaf_149  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_145
-
-literal_146 -> leaf_150
-leaf_150  [color=Gray,shape=rectangle,fontname=Inconsolata,label="uv"]
-// END RANK literal_146
-
-raw_147 -> leaf_151
-leaf_151  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" gives them to me a seq at a
-time.
-"]
-// END RANK raw_147
-
-prose_134 -> { raw_152}
-{rank=same; raw_152}
-
-raw_152 [label="raw"]
+raw_140 [label="raw"]
 
 
 // END RANK prose_134
 
-raw_152 -> leaf_153
-leaf_153  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-Because of course it does.
-"]
-// END RANK raw_152
-
-prose_135 -> { raw_154 prespace_155 literal_156 raw_157}
-{rank=same; raw_154 prespace_155 literal_156 raw_157}
-
-raw_154 [label="raw"]
-
-prespace_155 [label="prespace"]
-
-literal_156 [label="literal"]
-
-raw_157 [label="raw"]
-
-
-// END RANK prose_135
-
-raw_154 -> leaf_158
-leaf_158  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-So we're just going to make this a jump table that translates"]
-// END RANK raw_154
-
-prespace_155 -> leaf_159
-leaf_159  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_155
-
-literal_156 -> leaf_160
-leaf_160  [color=Gray,shape=rectangle,fontname=Inconsolata,label="xterm"]
-// END RANK literal_156
-
-raw_157 -> leaf_161
-leaf_161  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" directly
-to english.
-"]
-// END RANK raw_157
-
-prose_136 -> { raw_162 prespace_163 literal_164 raw_165}
-{rank=same; raw_162 prespace_163 literal_164 raw_165}
-
-raw_162 [label="raw"]
-
-prespace_163 [label="prespace"]
-
-literal_164 [label="literal"]
-
-raw_165 [label="raw"]
-
-
-// END RANK prose_136
-
-raw_162 -> leaf_166
-leaf_166  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-I'm also going to switch to"]
-// END RANK raw_162
-
-prespace_163 -> leaf_167
-leaf_167  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_163
-
-literal_164 -> leaf_168
-leaf_168  [color=Gray,shape=rectangle,fontname=Inconsolata,label="x1b"]
-// END RANK literal_164
-
-raw_165 -> leaf_169
-leaf_169  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", which is more visually distinguished.
-"]
-// END RANK raw_165
-
-prose_137 -> { raw_170}
-{rank=same; raw_170}
-
-raw_170 [label="raw"]
-
-
-// END RANK prose_137
-
-raw_170 -> leaf_171
-leaf_171  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-To avoid extraneous quoting, we define the tokens as keys, and their escape
-strings as values."]
-// END RANK raw_170
-
-codeblock_138 -> leaf_172
-leaf_172  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local __navigation = {  UP       = \"\\x1b[A\",
-                        DOWN     = \"\\x1b[B\",
-                        RIGHT    = \"\\x1b[C\",
-                        LEFT     = \"\\x1b[D\",
-                        SHIFT_UP = \"\\x1b[1;2A\",
-                        SHIFT_DOWN = \"\\x1b[1;2B\",
-                        SHIFT_RIGHT = \"\\x1b[1;2C\",
-                        SHIFT_LEFT  = \"\\x1b[1;2D\",
-                        HYPER_UP    = \"\\x1b[5~\",
-                        HYPER_DOWN  = \"\\x1b[6~\",
-                        HYPER_RIGHT = \"\\x1b[F\",
-                        HYPER_LEFT  = \"\\x1b[H\",
-                        ALT_UP    = \"\\x1b\\x1b[A\",
-                        ALT_DOWN  = \"\\x1b\\x1b[B\",
-                        ALT_RIGHT = \"\\x1bf\", -- heh
-                        ALT_LEFT  = \"\\x1bb\",
-                        SHIFT_ALT_UP = \"\\x1b[1;10A\",
-                        SHIFT_ALT_DOWN = \"\\x1b[1;10B\",
-                        SHIFT_ALT_RIGHT = \"\\x1b[1;10C\",
-                        SHIFT_ALT_LEFT  = \"\\x1b[1;10D\",
-                        SHIFT_TAB  = \"\\x1b[Z\",
-                        ALT_TAB    = \"\\x1b\\t\",
-                        NEWLINE    = \"\\n\",
-                        RETURN     = \"\\r\",
-                        TAB        = \"\\t\",
-                        BACKSPACE  = \"\\127\",
-                        DELETE     = \"\\x1b[3~\",
-                     }"]
-// END RANK codeblock_138
-
-prose_139 -> { raw_173}
-{rank=same; raw_173}
-
-raw_173 [label="raw"]
-
-
-// END RANK prose_139
-
-raw_173 -> leaf_174
-leaf_174  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-It's possible to coerce a terminal into sending these, apparently:
-"]
-// END RANK raw_173
-
-codeblock_140 -> leaf_175
-leaf_175  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local __alt_nav = {  UP       = \"\\x1bOA\",
-                     DOWN     = \"\\x1bOB\",
-                     RIGHT    = \"\\x1bOC\",
-                     LEFT     = \"\\x1bOD\",
-                  }"]
-// END RANK codeblock_140
-
-prose_141 -> { raw_176}
-{rank=same; raw_176}
-
-raw_176 [label="raw"]
-
-
-// END RANK prose_141
-
-raw_176 -> leaf_177
-leaf_177  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-I don't know why, and if anyone does, please let me know.
-"]
-// END RANK raw_176
-
-prose_142 -> { raw_178}
-{rank=same; raw_178}
-
-raw_178 [label="raw"]
-
-
-// END RANK prose_142
-
-raw_178 -> leaf_179
-leaf_179  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-I'm fairly sure those are the only valid meanings for the above escape
-strings.
-
-"]
-// END RANK raw_178
-
-section_95 -> { header_180 prose_181 codeblock_182 section_183}
-{rank=same; header_180 prose_181 codeblock_182 section_183}
-
-header_180 [label="3 : #todo function keys"]
-
-prose_181 [label="prose"]
-
-codeblock_182 [label="code block 325-327"]
-
-section_183 [label="section: 330-363"]
-
-
-// END RANK section_95
-
-header_180 -> leaf_184
-leaf_184  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** #todo function keys"]
-// END RANK header_180
-
-prose_181 -> { raw_185}
-{rank=same; raw_185}
-
-raw_185 [label="raw"]
-
-
-// END RANK prose_181
-
-raw_185 -> leaf_186
-leaf_186  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-
-Don't really use them, should parse them, goes here:
-"]
-// END RANK raw_185
-
-codeblock_182 -> leaf_187
-leaf_187  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
-// END RANK codeblock_182
-
-section_183 -> { header_188 prose_189 codeblock_190 prose_191 prose_192 codeblock_193}
-{rank=same; header_188 prose_189 codeblock_190 prose_191 prose_192 codeblock_193}
-
-header_188 [label="4 : flip"]
-
-prose_189 [label="prose"]
-
-codeblock_190 [label="code block 334-346"]
-
-prose_191 [label="prose"]
-
-prose_192 [label="prose"]
-
-codeblock_193 [label="code block 352-362"]
-
-
-// END RANK section_183
-
-header_188 -> leaf_194
-leaf_194  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** flip"]
-// END RANK header_188
-
-prose_189 -> { raw_195}
-{rank=same; raw_195}
-
-raw_195 [label="raw"]
-
-
-// END RANK prose_189
-
-raw_195 -> leaf_196
-leaf_196  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-
-We need the inverse of this map, so flip and forget:
-"]
-// END RANK raw_195
-
-codeblock_190 -> leaf_197
-leaf_197  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local navigation = {}
-
-for k,v in pairs(__navigation) do
-   navigation[v] = k
-end
-for k,v in pairs(__alt_nav) do
-   navigation[v] = k
-end
-
-__navigation, __alt_nav = nil, nil, nil
-"]
-// END RANK codeblock_190
-
-prose_191 -> { raw_198}
-{rank=same; raw_198}
-
-raw_198 [label="raw"]
-
-
-// END RANK prose_191
-
-raw_198 -> leaf_199
-leaf_199  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_140 -> leaf_141
+leaf_141  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 This is a handy dandy mouse printer.
 "]
-// END RANK raw_198
+// END RANK raw_140
 
-prose_192 -> { raw_200}
-{rank=same; raw_200}
-
-raw_200 [label="raw"]
-
-
-// END RANK prose_192
-
-raw_200 -> leaf_201
-leaf_201  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-I'm going to keep it around.
-"]
-// END RANK raw_200
-
-codeblock_193 -> leaf_202
-leaf_202  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function pr_mouse(m)
+codeblock_135 -> leaf_142
+leaf_142  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function pr_mouse(m)
    local phrase = a.magenta(m.button) .. \": \"
                      .. a.bright(kind) .. \" \" .. ts(m.shift)
                      .. \" \" .. ts(m.meta)
@@ -1108,71 +793,99 @@ leaf_202  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function pr_mo
                      .. a.cyan(m.col) .. \",\" .. a.cyan(m.row)
    return phrase
 end"]
-// END RANK codeblock_193
+// END RANK codeblock_135
 
-section_96 -> { header_203 prose_204 codeblock_205 codeblock_206}
-{rank=same; header_203 prose_204 codeblock_205 codeblock_206}
+section_101 -> { header_143 prose_144}
+{rank=same; header_143 prose_144}
 
-header_203 [label="3 : act"]
+header_143 [label="3 : process_escapes(seq)"]
 
-prose_204 [label="prose"]
-
-codeblock_205 [label="code block 368-457"]
-
-codeblock_206 [label="code block 459-492"]
+prose_144 [label="prose"]
 
 
-// END RANK section_96
+// END RANK section_101
 
-header_203 -> leaf_207
-leaf_207  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** act"]
-// END RANK header_203
+header_143 -> leaf_145
+leaf_145  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** process_escapes(seq)"]
+// END RANK header_143
 
-prose_204 -> { raw_208 prespace_209 literal_210 raw_211}
-{rank=same; raw_208 prespace_209 literal_210 raw_211}
+prose_144 -> { raw_146}
+{rank=same; raw_146}
 
-raw_208 [label="raw"]
-
-prespace_209 [label="prespace"]
-
-literal_210 [label="literal"]
-
-raw_211 [label="raw"]
+raw_146 [label="raw"]
 
 
-// END RANK prose_204
+// END RANK prose_144
 
-raw_208 -> leaf_212
-leaf_212  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_146 -> leaf_147
+leaf_147  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+"]
+// END RANK raw_146
+
+section_102 -> { header_148 prose_149 codeblock_150 codeblock_151}
+{rank=same; header_148 prose_149 codeblock_150 codeblock_151}
+
+header_148 [label="3 : act"]
+
+prose_149 [label="prose"]
+
+codeblock_150 [label="code block 289-369"]
+
+codeblock_151 [label="code block 371-404"]
+
+
+// END RANK section_102
+
+header_148 -> leaf_152
+leaf_152  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** act"]
+// END RANK header_148
+
+prose_149 -> { raw_153 prespace_154 literal_155 raw_156}
+{rank=same; raw_153 prespace_154 literal_155 raw_156}
+
+raw_153 [label="raw"]
+
+prespace_154 [label="prespace"]
+
+literal_155 [label="literal"]
+
+raw_156 [label="raw"]
+
+
+// END RANK prose_149
+
+raw_153 -> leaf_157
+leaf_157  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 This will be phased out and replaced with"]
-// END RANK raw_208
+// END RANK raw_153
 
-prespace_209 -> leaf_213
-leaf_213  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_209
+prespace_154 -> leaf_158
+leaf_158  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_154
 
-literal_210 -> leaf_214
-leaf_214  [color=Gray,shape=rectangle,fontname=Inconsolata,label="modeselektor"]
-// END RANK literal_210
+literal_155 -> leaf_159
+leaf_159  [color=Gray,shape=rectangle,fontname=Inconsolata,label="modeselektor"]
+// END RANK literal_155
 
-raw_211 -> leaf_215
-leaf_215  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
+raw_156 -> leaf_160
+leaf_160  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
 "]
-// END RANK raw_211
+// END RANK raw_156
 
-codeblock_205 -> leaf_216
-leaf_216  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-local function mk_paint(label, shade)
+codeblock_150 -> leaf_161
+leaf_161  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function mk_paint(label, shade)
    return function(action)
       return shade(label .. \" \" .. action)
    end
 end
 
-local act_map = { MOUSE = pr_mouse,
-                  NAV   = mk_paint(\"NAV:\", a.italic),
-                  CTRL  = mk_paint(\"CTRL:\", a.underscore),
-                  ALT   = mk_paint(\"ALT:\", c.coro)}
+local act_map = { MOUSE  = pr_mouse,
+                  NAV    = mk_paint(\"NAV:\", a.italic),
+                  CTRL   = mk_paint(\"CTRL:\", c.field),
+                  ALT    = mk_paint(\"ALT:\", a.underscore),
+                  INSERT = mk_paint(\"INS:\", c.field)}
                   -- Device reports, function keys...
 
 -- I believe the kids call that 'currying'
@@ -1185,35 +898,27 @@ local function act(category, action)
    end
 end
 
-local function litprint(seq)
-   local phrase = \"\"
-   for i = 1, #seq do
-      phrase = phrase .. \":\" .. byte(seq, i)
-   end
-   return phrase
-end
-
-
-local buttons = {[0] =\"MB0\", \"MB1\", \"MB2\", \"MBNONE\"}
-
-local rshift = bit.rshift
 local m_parse, is_mouse = a.mouse.parse_fast, a.mouse.ismousemove
+local navigation, is_nav = a.navigation, a.is_nav
 
 local function process_escapes(seq)
-   if navigation[seq] then
+   if is_nav(seq) then
       act(\"NAV\", navigation[seq] )
    elseif #seq == 1 then
-      act(\"CTRL\", \"ESC\")
+      act(\"NAV\", \"ESC\") -- I think of escape as navigation in modal systems
    end
    if is_mouse(seq) then
       local m = m_parse(seq)
       act(\"MOUSE\", m)
    elseif #seq == 2 and byte(sub(seq,2,2)) < 128 then
       -- Meta
-      local key = \"M-\" .. sub(seq(2,2))
+      local key = \"M-\" .. sub(seq,2,2)
+      colwrite(a.bold(STAT_ICON) .. \" : \" .. key)
       act(\"ALT\", key)
    end
 end
+
+local navigation = a.navigation
 
 local function onseq(err,seq)
    if err then error(err) end
@@ -1229,17 +934,17 @@ local function onseq(err,seq)
    if head == 27 then
       local color
       if navigation[seq] or #seq == 1 then
-         color = a.magenta
+         color = c.userdata
       else
          color = a.red
       end
-      colwrite(color(STAT_ICON) .. \" : \" .. c.ts(seq))
+      colwrite(color(STAT_ICON) .. \" : \" .. ts(seq))
       return process_escapes(seq)
    end
    -- Control sequences
    if head <= 31 and not navigation[seq] then
       local ctrl = \"^\" .. string.char(head + 64)
-      colwrite(a.blue(STAT_ICON) .. \" : \" .. ctrl)
+      colwrite(c.field(STAT_ICON) .. \" : \" .. ctrl)
       return act(\"CTRL\", ctrl)
    elseif navigation[seq] then
       colwrite(a.green(STAT_ICON))
@@ -1248,14 +953,13 @@ local function onseq(err,seq)
 
    colwrite(a.green(STAT_ICON) .. \" : \" .. seq)
    return act(\"INSERT\", byte(seq))
-
 end"]
-// END RANK codeblock_205
+// END RANK codeblock_150
 
-codeblock_206 -> leaf_217
-leaf_217  [color=Gray,shape=rectangle,fontname=Inconsolata,label="-- Get names for as many values as possible
+codeblock_151 -> leaf_162
+leaf_162  [color=Gray,shape=rectangle,fontname=Inconsolata,label="-- Get names for as many values as possible
 -- into the colorizer
-c.allNames()
+color.allNames()
 -- This switches screens and does a wipe,
 -- then puts the cursor at 1,1.
 write \"\\x1b[?47h\\x1b[2J\\x1b[H\"
@@ -1285,7 +989,7 @@ end
 
 print(\"kthxbye\")
 return retcode"]
-// END RANK codeblock_206
+// END RANK codeblock_151
 
 
 }
