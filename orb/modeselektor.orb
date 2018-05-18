@@ -263,7 +263,7 @@ This will need to take a complete config table at some point.
 #!lua
 function new()
   local modeS = meta(ModeS)
-  modeS.linebuf = Linebuf(1)
+  modeS.linebuf = Linebuf(0)
   return modeS
 end
 
