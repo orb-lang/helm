@@ -278,37 +278,37 @@ function ModeS.act(modeS, category, value)
          repaint(modeS)
       elseif category == "NAV" then
          if value == "RETURN" then
-         -- eval etc.
-         modeS:nl()
-         write(tostring(modeS.linebuf))
-         modeS:nl()
-         modeS.history[#modeS.history + 1] = modeS.linebuf:suspend()
-         modeS.hist_mark = modeS.hist_mark + 1
-         modeS.linebuf = Linebuf(1)
-      elseif value == "LEFT" then
-          modeS.linebuf:left()
-          write(a.col(modeS:cur_col()))
-          colwrite(ts(move),nil,3)
-      elseif value == "RIGHT" then
-          modeS.linebuf:right()
-          write(a.col(modeS:cur_col()))
-          colwrite(ts(move),nil,3)
-      elseif value == "UP" then
-          if modeS.hist_mark > 0 then
-             if modeS.hist_mark == #modeS.history then
-                modeS.history[modeS.hist_mark + 1] = modeS.linebuf:suspend()
-                modeS.linebuf = modeS.history[modeS.hist_mark]:resume()
-                modeS.hist_mark = modeS.hist_mark - 1
-                repaint(modeS)
-             end
-          end
-      elseif value == "BACKSPACE" then
-          modeS.linebuf:d_back()
-          repaint(modeS)
-      elseif value == "DELETE" then
-          modeS.linebuf:d_fwd()
-          repaint(modeS)
-        end
+            -- eval etc.
+            modeS:nl()
+            write(tostring(modeS.linebuf))
+            modeS:nl()
+            modeS.history[#modeS.history + 1] = modeS.linebuf:suspend()
+            modeS.hist_mark = #modeS.history
+            modeS.linebuf = Linebuf(1)
+         elseif value == "LEFT" then
+            modeS.linebuf:left()
+            write(a.col(modeS:cur_col()))
+            colwrite(ts(move),nil,3)
+         elseif value == "RIGHT" then
+            modeS.linebuf:right()
+            write(a.col(modeS:cur_col()))
+            colwrite(ts(move),nil,3)
+         elseif value == "UP" then
+            if modeS.hist_mark > 0 then
+               if modeS.hist_mark == #modeS.history then
+                  modeS.history[modeS.hist_mark + 1] = modeS.linebuf:suspend()
+                  modeS.linebuf = modeS.history[modeS.hist_mark]:resume()
+                  modeS.hist_mark = modeS.hist_mark - 1
+                  repaint(modeS)
+               end
+            end
+         elseif value == "BACKSPACE" then
+            modeS.linebuf:d_back()
+            repaint(modeS)
+         elseif value == "DELETE" then
+            modeS.linebuf:d_fwd()
+            repaint(modeS)
+         end
       end
    else
       icon_paint(category, value)
