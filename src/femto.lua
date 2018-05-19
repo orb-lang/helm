@@ -42,6 +42,7 @@ string.cleave, string.litpat = core.cleave, core.litpat
 string.utf8 = core.utf8
 string.codepoints = core.codepoints
 table.splice = core.splice
+table.clone = core.clone
 utf8 = core.utf8
 codepoints = core.codepoints
 meta = core.meta

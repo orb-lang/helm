@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 300"]
+doc_0 [label="doc - 301"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-202"]
+section_1 [label="section: 1-203"]
 
 
 // END RANK doc_0
@@ -23,11 +23,11 @@ prose_3 [label="prose"]
 
 section_4 [label="section: 6-25"]
 
-section_5 [label="section: 32-106"]
+section_5 [label="section: 32-107"]
 
-section_6 [label="section: 120-202"]
+section_6 [label="section: 121-203"]
 
-section_7 [label="section: 203-207"]
+section_7 [label="section: 204-208"]
 
 
 // END RANK section_1
@@ -168,23 +168,23 @@ prose_31 [label="prose"]
 
 prose_32 [label="prose"]
 
-codeblock_33 [label="code block 39-50"]
+codeblock_33 [label="code block 39-51"]
 
 prose_34 [label="prose"]
 
 prose_35 [label="prose"]
 
-codeblock_36 [label="code block 57-65"]
+codeblock_36 [label="code block 58-66"]
 
 prose_37 [label="prose"]
 
 prose_38 [label="prose"]
 
-codeblock_39 [label="code block 72-93"]
+codeblock_39 [label="code block 73-94"]
 
-codeblock_40 [label="code block 95-104"]
+codeblock_40 [label="code block 96-105"]
 
-section_41 [label="section: 107-119"]
+section_41 [label="section: 108-120"]
 
 
 // END RANK section_5
@@ -283,6 +283,7 @@ string.cleave, string.litpat = core.cleave, core.litpat
 string.utf8 = core.utf8
 string.codepoints = core.codepoints
 table.splice = core.splice
+table.clone = core.clone
 utf8 = core.utf8
 codepoints = core.codepoints
 meta = core.meta
@@ -435,7 +436,7 @@ header_89 [label="3 : tty setup"]
 
 prose_90 [label="prose"]
 
-codeblock_91 [label="code block 109-117"]
+codeblock_91 [label="code block 110-118"]
 
 
 // END RANK section_41
@@ -474,11 +475,11 @@ header_96 [label="2 : Modeselektor"]
 
 prose_97 [label="prose"]
 
-codeblock_98 [label="code block 122-125"]
+codeblock_98 [label="code block 123-126"]
 
-codeblock_99 [label="code block 127-187"]
+codeblock_99 [label="code block 128-188"]
 
-codeblock_100 [label="code block 189-200"]
+codeblock_100 [label="code block 190-201"]
 
 
 // END RANK section_6
@@ -587,7 +588,7 @@ header_107 [label="2 : Reader"]
 
 prose_108 [label="prose"]
 
-section_109 [label="section: 208-300"]
+section_109 [label="section: 209-301"]
 
 
 // END RANK section_7
@@ -655,9 +656,9 @@ header_125 [label="3 : process_escapes(seq)"]
 
 prose_126 [label="prose"]
 
-codeblock_127 [label="code block 210-265"]
+codeblock_127 [label="code block 211-266"]
 
-codeblock_128 [label="code block 267-300"]
+codeblock_128 [label="code block 268-301"]
 
 
 // END RANK section_109
