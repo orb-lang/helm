@@ -250,7 +250,7 @@ local function onseq(err,seq)
    end
    -- Printables
    if head > 31 and head < 127 then
-      return modeS("INSERT", seq)
+      return modeS("ASCII", seq)
    else
       -- wchars go here
       return modeS("NYI", seq)

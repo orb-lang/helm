@@ -49,9 +49,9 @@ function core.meta(MT)
       -- inherit
       return setmetatable({}, MT)
    elseif MT then
-      -- instantiate
+      -- decorate
       MT.__index = MT
-      return setmetatable({}, MT)
+      return MT
    else
       -- new metatable
       local _M = {}

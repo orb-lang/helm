@@ -42,7 +42,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 
-### reflect
+#NB the luajit beta has caused sporadic segfaults, so I can't use the full### reflect
 
 ```lua-nk
 local ffi = require "ffi"

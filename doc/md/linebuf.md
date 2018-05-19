@@ -45,7 +45,7 @@ I don't think this approach generalizes to a ``txtbuf``. It'll get us there.
 local sub, byte = assert(string.sub), assert(string.byte)
 ```
 ```lua
-local Linebuf = meta()
+local Linebuf = meta {}
 ```
 ```lua
 

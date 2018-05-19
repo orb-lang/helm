@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 449"]
+doc_0 [label="doc - 441"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-402"]
+section_1 [label="section: 1-393"]
 
 
 // END RANK doc_0
@@ -23,11 +23,11 @@ prose_3 [label="prose"]
 
 prose_4 [label="prose"]
 
-section_5 [label="section: 12-257"]
+section_5 [label="section: 12-258"]
 
-section_6 [label="section: 286-346"]
+section_6 [label="section: 287-349"]
 
-section_7 [label="section: 403-449"]
+section_7 [label="section: 394-441"]
 
 
 // END RANK section_1
@@ -174,15 +174,15 @@ prose_52 [label="prose"]
 
 section_53 [label="section: 85-96"]
 
-section_54 [label="section: 97-112"]
+section_54 [label="section: 97-113"]
 
-section_55 [label="section: 113-169"]
+section_55 [label="section: 114-170"]
 
-section_56 [label="section: 170-185"]
+section_56 [label="section: 171-186"]
 
-section_57 [label="section: 186-257"]
+section_57 [label="section: 187-258"]
 
-section_58 [label="section: 258-285"]
+section_58 [label="section: 259-286"]
 
 
 // END RANK section_5
@@ -1082,9 +1082,9 @@ prose_294 [label="prose"]
 
 prose_295 [label="prose"]
 
-codeblock_296 [label="code block 104-106"]
+codeblock_296 [label="code block 104-107"]
 
-codeblock_297 [label="code block 108-110"]
+codeblock_297 [label="code block 109-111"]
 
 
 // END RANK section_54
@@ -1135,7 +1135,8 @@ a better idea.
 // END RANK raw_303
 
 codeblock_296 -> leaf_307
-leaf_307  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Linebuf = require \"linebuf\""]
+leaf_307  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Linebuf = require \"linebuf\"
+local Historian = require \"historian\""]
 // END RANK codeblock_296
 
 codeblock_297 -> leaf_308
@@ -1149,7 +1150,7 @@ header_309 [label="3 : Categories"]
 
 prose_310 [label="prose"]
 
-codeblock_311 [label="code block 117-124"]
+codeblock_311 [label="code block 118-125"]
 
 prose_312 [label="prose"]
 
@@ -1161,15 +1162,15 @@ prose_315 [label="prose"]
 
 prose_316 [label="prose"]
 
-codeblock_317 [label="code block 145-152"]
+codeblock_317 [label="code block 146-153"]
 
 prose_318 [label="prose"]
 
-codeblock_319 [label="code block 157-159"]
+codeblock_319 [label="code block 158-160"]
 
 prose_320 [label="prose"]
 
-codeblock_321 [label="code block 163-167"]
+codeblock_321 [label="code block 164-168"]
 
 
 // END RANK section_55
@@ -1194,7 +1195,7 @@ These are the broad types of event.
 // END RANK raw_323
 
 codeblock_311 -> leaf_325
-leaf_325  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local INSERT = meta()
+leaf_325  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local ASCII = meta()
 local NAV    = {}
 local CTRL   = {}
 local ALT    = {}
@@ -1383,7 +1384,7 @@ leaf_369  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" instance as t
 // END RANK raw_365
 
 codeblock_317 -> leaf_370
-leaf_370  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ModeS.modes = { INSERT = INSERT,
+leaf_370  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ModeS.modes = { ASCII  = ASCII,
                 NAV    = NAV,
                 CTRL   = CTRL,
                 ALT    = ALT,
@@ -1455,7 +1456,7 @@ header_383 [label="3 : self-insert(modeS, category, value)"]
 
 prose_384 [label="prose"]
 
-codeblock_385 [label="code block 174-183"]
+codeblock_385 [label="code block 175-184"]
 
 
 // END RANK section_56
@@ -1497,7 +1498,7 @@ header_390 [label="3 : status painter (colwrite)"]
 
 prose_391 [label="prose"]
 
-codeblock_392 [label="code block 190-255"]
+codeblock_392 [label="code block 191-256"]
 
 
 // END RANK section_57
@@ -1569,14 +1570,14 @@ local act_map = { MOUSE  = pr_mouse,
                   NAV    = mk_paint(\": \", a.italic),
                   CTRL   = mk_paint(\": \", c.field),
                   ALT    = mk_paint(\": \", a.underscore),
-                  INSERT = mk_paint(\": \", c.field),
+                  ASCII  = mk_paint(\": \", c.field),
                   NYI    = mk_paint(\": \", a.red)}
 
 local icon_map = { MOUSE = mk_paint(STAT_ICON, c.userdata),
                    NAV   = mk_paint(STAT_ICON, a.magenta),
                    CTRL  = mk_paint(STAT_ICON, a.blue),
                    ALT   = mk_paint(STAT_ICON, c[\"function\"]),
-                   INSERT = mk_paint(STAT_ICON, a.green),
+                   ASCII = mk_paint(STAT_ICON, a.green),
                    NYI   = mk_paint(STAT_ICON .. \"! \", a.red) }
 
 local function icon_paint(category, value)
@@ -1595,7 +1596,7 @@ header_397 [label="3 : ModeS:paint()"]
 
 prose_398 [label="prose"]
 
-codeblock_399 [label="code block 262-283"]
+codeblock_399 [label="code block 263-284"]
 
 
 // END RANK section_58
@@ -1653,15 +1654,15 @@ prose_406 [label="prose"]
 
 prose_407 [label="prose"]
 
-codeblock_408 [label="code block 299-328"]
+codeblock_408 [label="code block 300-331"]
 
 prose_409 [label="prose"]
 
-codeblock_410 [label="code block 333-337"]
+codeblock_410 [label="code block 336-340"]
 
-section_411 [label="section: 340-346"]
+section_411 [label="section: 343-349"]
 
-section_412 [label="section: 347-402"]
+section_412 [label="section: 350-393"]
 
 
 // END RANK section_6
@@ -1798,31 +1799,33 @@ migrate them into the jump table and fill out from there.
 
 codeblock_408 -> leaf_448
 leaf_448  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS.act(modeS, category, value)
-  assert(modeS.modes[category], \"no category \" .. category .. \" in modeS\")
+   assert(modeS.modes[category], \"no category \" .. category .. \" in modeS\")
+   -- catch special handlers first
    if modeS.special[value] then
       return modeS.special[value](modeS, category, value)
-   elseif modeS.modes[category] then
-      icon_paint(category, value)
-      if category == \"INSERT\" then
-         -- hard coded for now
-         modeS:insert(category, value)
-      elseif category == \"NAV\" then
-         if modeS.modes.NAV[value] then
-            modeS.modes.NAV[value](modeS, category, value)
-         else
-            icon_paint(\"NYI\", \"NAV:\" .. value)
-         end
-      elseif category == \"MOUSE\" then
-         colwrite(pr_mouse(value), STATCOL, STAT_RUN)
-      else
-         icon_paint(\"NYI\", category .. \":\" .. value)
-      end
-   else
-      icon_paint(category, value)
-      --colwrite(\"!! \" .. category .. \" \" .. value, 1, 2)
-      modeS:default(category, value)
    end
+   icon_paint(category, value)
 
+   -- Dispatch on value if possible
+   if modeS.modes[category][value] then
+      modeS.modes[category][value](modeS, category, value)
+
+   -- otherwise fall back:
+   elseif category == \"ASCII\" then
+      -- hard coded for now
+      modeS:insert(category, value)
+   elseif category == \"NAV\" then
+      if modeS.modes.NAV[value] then
+         modeS.modes.NAV[value](modeS, category, value)
+      else
+         icon_paint(\"NYI\", \"NAV::\" .. value)
+      end
+   elseif category == \"MOUSE\" then
+      colwrite(pr_mouse(value), STATCOL, STAT_RUN)
+   else
+      icon_paint(\"NYI\", category .. \":\" .. value)
+   end
+   colwrite(modeS.hist.cursor, STATCOL, 3)
    return modeS:paint()
 end"]
 // END RANK codeblock_408
@@ -1918,7 +1921,7 @@ header_466 [label="3 : NAV"]
 
 prose_467 [label="prose"]
 
-codeblock_468 [label="code block 349-400"]
+codeblock_468 [label="code block 352-391"]
 
 
 // END RANK section_412
@@ -1941,29 +1944,18 @@ leaf_471  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 // END RANK raw_470
 
 codeblock_468 -> leaf_472
-leaf_472  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-function NAV.UP(modeS, category, value)
-   if modeS.hist_mark > 1 then
-      if modeS.hist_mark == #modeS.history then
-         if tostring(modeS.linebuf) ~= \"\" then
-            modeS.history[modeS.hist_mark + 1] = modeS.linebuf:suspend()
-         end
-         modeS.linebuf = modeS.history[modeS.hist_mark]:resume()
-      else
-         modeS.linebuf:suspend()
-         modeS.hist_mark = modeS.hist_mark - 1
-         modeS.linebuf = modeS.history[modeS.hist_mark]:resume()
-      end
-   end
+leaf_472  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function NAV.UP(modeS, category, value)
+   modeS.linebuf = modeS.hist:prev()
+   return modeS
 end
 
 function NAV.DOWN(modeS, category, value)
-   if modeS.hist_mark < #modeS.history then
-      -- not correct but no far (mutation should be handled)
-      modeS.linebuf:suspend()
-      modeS.hist_mark = modeS.hist_mark + 1
-      modeS.linebuf = modeS.history[modeS.hist_mark]:resume()
+   local next_p
+   modeS.linebuf, next_p = modeS.hist:next()
+   if next_p then
+      modeS.linebuf = Linebuf(1)
    end
+   return modeS
 end
 
 function NAV.LEFT(modeS, category, value)
@@ -1979,8 +1971,7 @@ function NAV.RETURN(modeS, category, value)
    modeS:nl()
    write(tostring(modeS.linebuf))
    modeS:nl()
-   modeS.history[#modeS.history + 1] = modeS.linebuf:suspend()
-   modeS.hist_mark = #modeS.history
+   modeS.hist:append(modeS.linebuf)
    modeS.linebuf = Linebuf(1)
 end
 
@@ -2000,9 +1991,9 @@ header_473 [label="2 : new"]
 
 prose_474 [label="prose"]
 
-codeblock_475 [label="code block 407-421"]
+codeblock_475 [label="code block 398-413"]
 
-codeblock_476 [label="code block 423-425"]
+codeblock_476 [label="code block 415-417"]
 
 
 // END RANK section_7
@@ -2048,6 +2039,7 @@ codeblock_475 -> leaf_486
 leaf_486  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function new(cfg)
   local modeS = meta(ModeS)
   modeS.linebuf = Linebuf(1)
+  modeS.hist  = Historian()
   -- this will be more complex but
   modeS.l_margin = 4
   modeS.r_margin = 83

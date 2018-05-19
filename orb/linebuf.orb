@@ -38,7 +38,7 @@ local sub, byte = assert(string.sub), assert(string.byte)
 #/lua
 
 #!lua
-local Linebuf = meta()
+local Linebuf = meta {}
 #/lua
 
 #!lua

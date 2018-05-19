@@ -1733,7 +1733,7 @@
 <text text-anchor="middle" x="8823" y="-253.6004" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
 <text text-anchor="middle" x="8823" y="-238.2003" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#45;&#45; Printables</text>
 <text text-anchor="middle" x="8823" y="-222.8003" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if head &gt; 31 and head &lt; 127 then</text>
-<text text-anchor="middle" x="8823" y="-207.4003" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return modeS(&quot;INSERT&quot;, seq)</text>
+<text text-anchor="middle" x="8823" y="-207.4003" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return modeS(&quot;ASCII&quot;, seq)</text>
 <text text-anchor="middle" x="8823" y="-192.0002" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;else</text>
 <text text-anchor="middle" x="8823" y="-176.6002" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; wchars go here</text>
 <text text-anchor="middle" x="8823" y="-161.2002" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return modeS(&quot;NYI&quot;, seq)</text>

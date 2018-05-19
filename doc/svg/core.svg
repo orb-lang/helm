@@ -801,9 +801,9 @@
 <text text-anchor="middle" x="3621" y="-485.5008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; inherit</text>
 <text text-anchor="middle" x="3621" y="-470.1008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return setmetatable({}, MT)</text>
 <text text-anchor="middle" x="3621" y="-454.7007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;elseif MT then</text>
-<text text-anchor="middle" x="3621" y="-439.3007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; instantiate</text>
+<text text-anchor="middle" x="3621" y="-439.3007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; decorate</text>
 <text text-anchor="middle" x="3621" y="-423.9007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;MT.__index = MT</text>
-<text text-anchor="middle" x="3621" y="-408.5006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return setmetatable({}, MT)</text>
+<text text-anchor="middle" x="3621" y="-408.5006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return MT</text>
 <text text-anchor="middle" x="3621" y="-393.1006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;else</text>
 <text text-anchor="middle" x="3621" y="-377.7006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; new metatable</text>
 <text text-anchor="middle" x="3621" y="-362.3005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local _M = {}</text>

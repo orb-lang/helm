@@ -38,7 +38,7 @@ local sub, byte = assert(string.sub), assert(string.byte)
 
 
 
-local Linebuf = meta()
+local Linebuf = meta {}
 
 
 

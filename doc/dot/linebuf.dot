@@ -396,7 +396,7 @@ leaf_96  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local sub, byte
 // END RANK codeblock_72
 
 codeblock_73 -> leaf_97
-leaf_97  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Linebuf = meta()"]
+leaf_97  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Linebuf = meta {}"]
 // END RANK codeblock_73
 
 codeblock_74 -> leaf_98

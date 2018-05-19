@@ -37,6 +37,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 
+#NB the luajit beta has caused sporadic segfaults, so I can't use the full
+suite here for now.
+
 *** reflect
 
 #!lua-nk #noknit
