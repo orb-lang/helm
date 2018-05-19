@@ -249,6 +249,12 @@ function ModeS.cur_col(modeS)
    return modeS.linebuf.cursor + modeS.l_margin - 1
 end
 
+```
+
+It's easier to get the core actions down as conditionals, then
+migrate them into the jump table and fill out from there.
+
+```lua
 function ModeS.act(modeS, category, value)
   assert(modeS.modes[category], "no category " .. category .. " in modeS")
    if modeS.special[value] then
@@ -271,7 +277,13 @@ function ModeS.act(modeS, category, value)
           modeS.linebuf:right()
           write(a.col(modeS:cur_col()))
           colwrite(ts(move),nil,3)
-        end -- etc, jump table
+        elseif value == "BACKSPACE" then
+          modeS.linebuf:d_back()
+          repaint(modeS)
+        elseif value == "DELETE" then
+          modeS.linebuf:d_fwd()
+          repaint(modeS)
+        end
       end
    else
       icon_paint(category, value)

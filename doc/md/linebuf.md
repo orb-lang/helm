@@ -89,11 +89,10 @@ local function join(token, frag)
    end
 end
 
-local t_insert, splice = table.insert, assert(table.splice)
+local t_insert, splice = assert(table.insert), assert(table.splice)
 local utf8, codepoints = string.utf8, string.codepoints
 
 function Linebuf.insert(linebuf, frag)
-   assert(linebuf.cursor, "linebuf must have cursor to insert")
    local line = linebuf.line
    local wide_frag = utf8(frag)
    if wide_frag < #frag then -- a paste
@@ -112,6 +111,18 @@ function Linebuf.insert(linebuf, frag)
    end
 
    return false
+end
+
+local remove = table.remove
+
+function Linebuf.d_back(linebuf)
+   remove(linebuf.line, linebuf.cursor - 1)
+   linebuf.cursor = linebuf.cursor > 1 and linebuf.cursor - 1 or 1
+end
+
+
+function Linebuf.d_fwd(linebuf)
+   remove(linebuf.line, linebuf.cursor)
 end
 
 function Linebuf.left(linebuf, disp)
