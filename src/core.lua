@@ -67,6 +67,21 @@ end
 
 
 
+function core.clone(tab)
+   local _M = getmetatable(tab)
+   local clone = _M and setmetatable({}, _M) or {}
+   for k,v in pairs(tab) do
+      clone[k] = v
+   end
+   return clone
+end
+
+
+
+
+
+
+
 
 
 
@@ -125,6 +140,10 @@ end
 function core.codepoints(str)
    local utf8 = core.utf8
    local codes = {}
+   -- propagate nil
+   if not str then return nil end
+   -- break on bad type
+   assert(type(str) == "string", "codepoints must be given a string")
    while #str > 0 do
       local width, err = utf8(str)
       if width then

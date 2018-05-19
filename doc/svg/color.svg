@@ -1468,9 +1468,9 @@
 <text text-anchor="middle" x="6433.5" y="-918.3376" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;pre = pre .. &quot;.&quot;</text>
 <text text-anchor="middle" x="6433.5" y="-902.9376" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
 <text text-anchor="middle" x="6433.5" y="-887.5376" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;for k, v in pairs(t) do</text>
-<text text-anchor="middle" x="6433.5" y="-872.1375" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;T = type(v)</text>
+<text text-anchor="middle" x="6433.5" y="-872.1375" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local T = type(v)</text>
 <text text-anchor="middle" x="6433.5" y="-856.7375" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;if (T == &quot;table&quot;) then</text>
-<text text-anchor="middle" x="6433.5" y="-841.3375" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;key = pre .. k</text>
+<text text-anchor="middle" x="6433.5" y="-841.3375" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;local key = pre .. k</text>
 <text text-anchor="middle" x="6433.5" y="-825.9374" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;if not aG[v] then</text>
 <text text-anchor="middle" x="6433.5" y="-810.5374" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;aG[v] = key</text>
 <text text-anchor="middle" x="6433.5" y="-795.1374" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;if not (pre == &quot;&quot; and k == &quot;package&quot;) then</text>

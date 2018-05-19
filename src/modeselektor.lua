@@ -60,6 +60,34 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 assert(meta, "must have meta in _G")
 assert(write, "must have write in _G")
 assert(ts, "must have ts in _G")
@@ -144,7 +172,7 @@ end
 
 
 
-local function self_insert(modeS, category, value)
+function ModeS.insert(modeS, category, value)
     local success =  modeS.linebuf:insert(value)
     if not success then
       write("no insert: " .. value)
@@ -189,7 +217,7 @@ end
 
 function pr_mouse(m)
    local phrase = a.magenta(m.button) .. ": "
-                     .. a.bright(kind) .. " " .. tf(m.shift)
+                     .. a.bright(m.kind) .. " " .. tf(m.shift)
                      .. " " .. tf(m.meta)
                      .. " " .. tf(m.ctrl) .. " " .. tf(m.moving) .. " "
                      .. tf(m.scrolling) .. " "
@@ -232,13 +260,7 @@ end
 
 
 
-
-
-
-
-
-
-function repaint(modeS)
+function ModeS.paint(modeS)
   write(a.col(modeS.l_margin))
   write(a.erase.right())
   write(tostring(modeS.linebuf))
@@ -267,6 +289,14 @@ end
 
 
 
+
+
+
+
+
+
+
+
 function ModeS.act(modeS, category, value)
   assert(modeS.modes[category], "no category " .. category .. " in modeS")
    if modeS.special[value] then
@@ -275,47 +305,44 @@ function ModeS.act(modeS, category, value)
       icon_paint(category, value)
       if category == "INSERT" then
          -- hard coded for now
-         self_insert(modeS, category, value)
-         repaint(modeS)
+         modeS:insert(category, value)
       elseif category == "NAV" then
-         if value == "RETURN" then
-            -- eval etc.
-            modeS:nl()
-            write(tostring(modeS.linebuf))
-            modeS:nl()
-            modeS.history[#modeS.history + 1] = modeS.linebuf:suspend()
-            modeS.hist_mark = #modeS.history
-            modeS.linebuf = Linebuf(1)
-         elseif value == "LEFT" then
-            modeS.linebuf:left()
-            write(a.col(modeS:cur_col()))
-            colwrite(ts(move),nil,3)
-         elseif value == "RIGHT" then
-            modeS.linebuf:right()
-            write(a.col(modeS:cur_col()))
-            colwrite(ts(move),nil,3)
-         elseif value == "UP" then
-            if modeS.hist_mark > 0 then
+         if modeS.modes.NAV[value] then
+            modeS.modes.NAV[value](modeS, category, value)
+         end
+         if value == "UP" then
+            if modeS.hist_mark > 1 then
                if modeS.hist_mark == #modeS.history then
-                  modeS.history[modeS.hist_mark + 1] = modeS.linebuf:suspend()
+                  if tostring(modeS.linebuf) ~= "" then
+                     modeS.history[modeS.hist_mark + 1] = modeS.linebuf:suspend()
+                  end
                   modeS.linebuf = modeS.history[modeS.hist_mark]:resume()
+               else
+                  modeS.linebuf:suspend()
                   modeS.hist_mark = modeS.hist_mark - 1
-                  repaint(modeS)
+                  modeS.linebuf = modeS.history[modeS.hist_mark]:resume()
                end
+            end
+         elseif value == "DOWN" then
+            if modeS.hist_mark < #modeS.history then
+               -- not correct but no far (mutation should be handled)
+               modeS.linebuf:suspend()
+               modeS.hist_mark = modeS.hist_mark + 1
+               modeS.linebuf = modeS.history[modeS.hist_mark]:resume()
             end
          elseif value == "BACKSPACE" then
             modeS.linebuf:d_back()
-            repaint(modeS)
          elseif value == "DELETE" then
             modeS.linebuf:d_fwd()
-            repaint(modeS)
          end
       end
    else
       icon_paint(category, value)
       --colwrite("!! " .. category .. " " .. value, 1, 2)
-      return modeS:default(category, value)
+      modeS:default(category, value)
    end
+
+   return modeS:paint()
 end
 
 
@@ -330,7 +357,43 @@ end
 
 
 
-function new()
+
+
+
+
+
+
+
+
+
+function NAV.LEFT(modeS, category, value)
+   return modeS.linebuf:left()
+end
+
+function NAV.RIGHT(modeS, category, value)
+   return modeS.linebuf:right()
+end
+
+function NAV.RETURN(modeS, category, value)
+   -- eval etc.
+   modeS:nl()
+   write(tostring(modeS.linebuf))
+   modeS:nl()
+   modeS.history[#modeS.history + 1] = modeS.linebuf:suspend()
+   modeS.hist_mark = #modeS.history
+   modeS.linebuf = Linebuf(1)
+end
+
+
+
+
+
+
+
+
+
+
+function new(cfg)
   local modeS = meta(ModeS)
   modeS.linebuf = Linebuf(1)
   -- this will be more complex but

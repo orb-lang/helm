@@ -105,9 +105,9 @@ local function addName(t, aG, pre)
       pre = pre .. "."
    end
    for k, v in pairs(t) do
-      T = type(v)
+      local T = type(v)
       if (T == "table") then
-         key = pre .. k
+         local key = pre .. k
          if not aG[v] then
             aG[v] = key
             if not (pre == "" and k == "package") then

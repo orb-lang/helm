@@ -35,6 +35,41 @@ successively looked up in jump tables and the method applied with the ``modeS``
 instance as the first argument.
 
 
+The state machine has to represent two sorts of state: the mode we're
+operating in, and a buffer of commands.  Our mode engine is modeled after
+emacs: rather than have some kind of flag that can be set to "insert",
+"navigate", "command", or "visual", these will be modeled as swiching the
+pointer to jump tables.  If a command needs to know which mode it's in, this
+can be done with pointer comparison.
+
+
+We're starting with ``vi`` mode and ``nerf`` mode, which is a lightweight
+``readline`` implementation that won't use the command buffer.  Issuing a
+command like ``d3w`` requires a simple command buffer.
+
+
+The syntax can't be tied to the semantics in any tighly-coupled way. I intend
+to support ``kakoune`` syntax as soon as possible; there you would say ``w3d``.
+
+
+This implies that the commands can't be aware of the buffer; because ``d3w``
+and ``w3d`` are two ways of saying the same thing, they should end in an
+identical method call.
+
+
+This means when the time comes we handle it with a secondary dispatch layer.
+
+
+There really are effectively arbitrary levels of indirection possible in an
+editor.  This is why we must be absolutely consistent about everything
+receiving the same tuple (modeS, category, value).
+
+
+They must also have the same return type, with is either ``true`` or
+``false, err``  where ``err`` is an error object which may be a primitive string.
+
+
+
 ``modeselektor`` passes any edit or movement commands to an internally-owned
 ``linebuf``, which keeps all modeling of the line.  ``modeselektor`` decides when
 to repaint the screen, calling ``rainbuf`` with a region of ``linebuf`` and
@@ -90,7 +125,7 @@ local ModeS = meta()
 ```
 ### Categories
 
-These are the types of event recognized by ``femto``.
+These are the broad types of event.
 
 ```lua
 local INSERT = meta()
@@ -152,7 +187,7 @@ end
 Inserts the value into the linebuf at cursor.
 
 ```lua
-local function self_insert(modeS, category, value)
+function ModeS.insert(modeS, category, value)
     local success =  modeS.linebuf:insert(value)
     if not success then
       write("no insert: " .. value)
@@ -195,7 +230,7 @@ end
 
 function pr_mouse(m)
    local phrase = a.magenta(m.button) .. ": "
-                     .. a.bright(kind) .. " " .. tf(m.shift)
+                     .. a.bright(m.kind) .. " " .. tf(m.shift)
                      .. " " .. tf(m.meta)
                      .. " " .. tf(m.ctrl) .. " " .. tf(m.moving) .. " "
                      .. tf(m.scrolling) .. " "
@@ -231,20 +266,12 @@ local function icon_paint(category, value)
    return colwrite(icon_map[category]("", ts(value)))
 end
 ```
-## act
+### ModeS:paint()
 
-``act`` simply dispatches. Note that our common interfaces is
-``method(modeS, category, value)``, we need to distinguish betwen the tuple
-``("INSERT", "SHIFT-LEFT")`` (which could arrive from copy-paste) and
-``("NAV", "SHIFT-LEFT")`` and preserve information for our fall-through method.
-
-
-``act`` always succeeds, meaning we need some metatable action to absorb and
-log anything unexpected.
+This will refresh the entire screen.
 
 ```lua
-
-function repaint(modeS)
+function ModeS.paint(modeS)
   write(a.col(modeS.l_margin))
   write(a.erase.right())
   write(tostring(modeS.linebuf))
@@ -264,9 +291,18 @@ function ModeS.nl(modeS)
       -- this gets complicated
    end
 end
-
-
 ```
+## act
+
+``act`` simply dispatches. Note that our common interfaces is
+``method(modeS, category, value)``, we need to distinguish betwen the tuple
+``("INSERT", "SHIFT-LEFT")`` (which could arrive from copy-paste) and
+``("NAV", "SHIFT-LEFT")`` and preserve information for our fall-through method.
+
+
+``act`` always succeeds, meaning we need some metatable action to absorb and
+log anything unexpected.
+
 
 It's easier to get the core actions down as conditionals, then
 migrate them into the jump table and fill out from there.
@@ -280,62 +316,92 @@ function ModeS.act(modeS, category, value)
       icon_paint(category, value)
       if category == "INSERT" then
          -- hard coded for now
-         self_insert(modeS, category, value)
-         repaint(modeS)
+         modeS:insert(category, value)
       elseif category == "NAV" then
-         if value == "RETURN" then
-            -- eval etc.
-            modeS:nl()
-            write(tostring(modeS.linebuf))
-            modeS:nl()
-            modeS.history[#modeS.history + 1] = modeS.linebuf:suspend()
-            modeS.hist_mark = #modeS.history
-            modeS.linebuf = Linebuf(1)
-         elseif value == "LEFT" then
-            modeS.linebuf:left()
-            write(a.col(modeS:cur_col()))
-            colwrite(ts(move),nil,3)
-         elseif value == "RIGHT" then
-            modeS.linebuf:right()
-            write(a.col(modeS:cur_col()))
-            colwrite(ts(move),nil,3)
-         elseif value == "UP" then
-            if modeS.hist_mark > 0 then
+         if modeS.modes.NAV[value] then
+            modeS.modes.NAV[value](modeS, category, value)
+         end
+         if value == "UP" then
+            if modeS.hist_mark > 1 then
                if modeS.hist_mark == #modeS.history then
-                  modeS.history[modeS.hist_mark + 1] = modeS.linebuf:suspend()
+                  if tostring(modeS.linebuf) ~= "" then
+                     modeS.history[modeS.hist_mark + 1] = modeS.linebuf:suspend()
+                  end
                   modeS.linebuf = modeS.history[modeS.hist_mark]:resume()
+               else
+                  modeS.linebuf:suspend()
                   modeS.hist_mark = modeS.hist_mark - 1
-                  repaint(modeS)
+                  modeS.linebuf = modeS.history[modeS.hist_mark]:resume()
                end
+            end
+         elseif value == "DOWN" then
+            if modeS.hist_mark < #modeS.history then
+               -- not correct but no far (mutation should be handled)
+               modeS.linebuf:suspend()
+               modeS.hist_mark = modeS.hist_mark + 1
+               modeS.linebuf = modeS.history[modeS.hist_mark]:resume()
             end
          elseif value == "BACKSPACE" then
             modeS.linebuf:d_back()
-            repaint(modeS)
          elseif value == "DELETE" then
             modeS.linebuf:d_fwd()
-            repaint(modeS)
          end
       end
    else
       icon_paint(category, value)
       --colwrite("!! " .. category .. " " .. value, 1, 2)
-      return modeS:default(category, value)
+      modeS:default(category, value)
    end
+
+   return modeS:paint()
 end
 ```
 
-We include indirection in ``act`` itself, looking it up on each call:
+To keep ``act`` replaceable, we look it up on each call:
 
 ```lua
 function ModeS.__call(modeS, category, value)
   return modeS:act(category, value)
 end
 ```
+### INSERT
 
-This will need to take a complete config table at some point.
+INSERT is currently both a category and an action table.
+
+
+That's confusing, and I'll fix it when it's time to add modal editing.
+
+
+### NAV
 
 ```lua
-function new()
+
+function NAV.LEFT(modeS, category, value)
+   return modeS.linebuf:left()
+end
+
+function NAV.RIGHT(modeS, category, value)
+   return modeS.linebuf:right()
+end
+
+function NAV.RETURN(modeS, category, value)
+   -- eval etc.
+   modeS:nl()
+   write(tostring(modeS.linebuf))
+   modeS:nl()
+   modeS.history[#modeS.history + 1] = modeS.linebuf:suspend()
+   modeS.hist_mark = #modeS.history
+   modeS.linebuf = Linebuf(1)
+end
+
+
+```
+## new
+
+This should be configurable via ``cfg``.
+
+```lua
+function new(cfg)
   local modeS = meta(ModeS)
   modeS.linebuf = Linebuf(1)
   -- this will be more complex but
