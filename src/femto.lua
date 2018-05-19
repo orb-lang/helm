@@ -209,7 +209,7 @@ end
 
 
 
-local byte = string.byte
+local byte, sub = string.byte, string.sub
 local m_parse, is_mouse = a.mouse.parse_fast, a.mouse.ismousemove
 local navigation, is_nav = a.navigation, a.is_nav
 

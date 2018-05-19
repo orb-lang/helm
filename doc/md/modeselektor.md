@@ -320,32 +320,13 @@ function ModeS.act(modeS, category, value)
       elseif category == "NAV" then
          if modeS.modes.NAV[value] then
             modeS.modes.NAV[value](modeS, category, value)
+         else
+            icon_paint("NYI", "NAV:" .. value)
          end
-         if value == "UP" then
-            if modeS.hist_mark > 1 then
-               if modeS.hist_mark == #modeS.history then
-                  if tostring(modeS.linebuf) ~= "" then
-                     modeS.history[modeS.hist_mark + 1] = modeS.linebuf:suspend()
-                  end
-                  modeS.linebuf = modeS.history[modeS.hist_mark]:resume()
-               else
-                  modeS.linebuf:suspend()
-                  modeS.hist_mark = modeS.hist_mark - 1
-                  modeS.linebuf = modeS.history[modeS.hist_mark]:resume()
-               end
-            end
-         elseif value == "DOWN" then
-            if modeS.hist_mark < #modeS.history then
-               -- not correct but no far (mutation should be handled)
-               modeS.linebuf:suspend()
-               modeS.hist_mark = modeS.hist_mark + 1
-               modeS.linebuf = modeS.history[modeS.hist_mark]:resume()
-            end
-         elseif value == "BACKSPACE" then
-            modeS.linebuf:d_back()
-         elseif value == "DELETE" then
-            modeS.linebuf:d_fwd()
-         end
+      elseif category == "MOUSE" then
+         colwrite(pr_mouse(value), STATCOL, STAT_RUN)
+      else
+         icon_paint("NYI", category .. ":" .. value)
       end
    else
       icon_paint(category, value)
@@ -376,6 +357,30 @@ That's confusing, and I'll fix it when it's time to add modal editing.
 
 ```lua
 
+function NAV.UP(modeS, category, value)
+   if modeS.hist_mark > 1 then
+      if modeS.hist_mark == #modeS.history then
+         if tostring(modeS.linebuf) ~= "" then
+            modeS.history[modeS.hist_mark + 1] = modeS.linebuf:suspend()
+         end
+         modeS.linebuf = modeS.history[modeS.hist_mark]:resume()
+      else
+         modeS.linebuf:suspend()
+         modeS.hist_mark = modeS.hist_mark - 1
+         modeS.linebuf = modeS.history[modeS.hist_mark]:resume()
+      end
+   end
+end
+
+function NAV.DOWN(modeS, category, value)
+   if modeS.hist_mark < #modeS.history then
+      -- not correct but no far (mutation should be handled)
+      modeS.linebuf:suspend()
+      modeS.hist_mark = modeS.hist_mark + 1
+      modeS.linebuf = modeS.history[modeS.hist_mark]:resume()
+   end
+end
+
 function NAV.LEFT(modeS, category, value)
    return modeS.linebuf:left()
 end
@@ -394,7 +399,13 @@ function NAV.RETURN(modeS, category, value)
    modeS.linebuf = Linebuf(1)
 end
 
+function NAV.BACKSPACE(modeS, category, value)
+   return modeS.linebuf:d_back()
+end
 
+function NAV.DELETE(modeS, category, value)
+   return modeS.linebuf:d_fwd()
+end
 ```
 ## new
 

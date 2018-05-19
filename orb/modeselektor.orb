@@ -309,12 +309,13 @@ function ModeS.act(modeS, category, value)
       elseif category == "NAV" then
          if modeS.modes.NAV[value] then
             modeS.modes.NAV[value](modeS, category, value)
+         else
+            icon_paint("NYI", "NAV:" .. value)
          end
-         if value == "BACKSPACE" then
-            modeS.linebuf:d_back()
-         elseif value == "DELETE" then
-            modeS.linebuf:d_fwd()
-         end
+      elseif category == "MOUSE" then
+         colwrite(pr_mouse(value), STATCOL, STAT_RUN)
+      else
+         icon_paint("NYI", category .. ":" .. value)
       end
    else
       icon_paint(category, value)
@@ -325,6 +326,7 @@ function ModeS.act(modeS, category, value)
    return modeS:paint()
 end
 #/lua
+
 
 To keep =act= replaceable, we look it up on each call:
 
@@ -386,6 +388,14 @@ function NAV.RETURN(modeS, category, value)
    modeS.history[#modeS.history + 1] = modeS.linebuf:suspend()
    modeS.hist_mark = #modeS.history
    modeS.linebuf = Linebuf(1)
+end
+
+function NAV.BACKSPACE(modeS, category, value)
+   return modeS.linebuf:d_back()
+end
+
+function NAV.DELETE(modeS, category, value)
+   return modeS.linebuf:d_fwd()
 end
 #/lua
 

@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 437"]
+doc_0 [label="doc - 449"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-390"]
+section_1 [label="section: 1-402"]
 
 
 // END RANK doc_0
@@ -25,9 +25,9 @@ prose_4 [label="prose"]
 
 section_5 [label="section: 12-257"]
 
-section_6 [label="section: 286-364"]
+section_6 [label="section: 286-346"]
 
-section_7 [label="section: 391-437"]
+section_7 [label="section: 403-449"]
 
 
 // END RANK section_1
@@ -1653,15 +1653,15 @@ prose_406 [label="prose"]
 
 prose_407 [label="prose"]
 
-codeblock_408 [label="code block 299-347"]
+codeblock_408 [label="code block 299-328"]
 
 prose_409 [label="prose"]
 
-codeblock_410 [label="code block 351-355"]
+codeblock_410 [label="code block 333-337"]
 
-section_411 [label="section: 358-364"]
+section_411 [label="section: 340-346"]
 
-section_412 [label="section: 365-390"]
+section_412 [label="section: 347-402"]
 
 
 // END RANK section_6
@@ -1809,32 +1809,13 @@ leaf_448  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS
       elseif category == \"NAV\" then
          if modeS.modes.NAV[value] then
             modeS.modes.NAV[value](modeS, category, value)
+         else
+            icon_paint(\"NYI\", \"NAV:\" .. value)
          end
-         if value == \"UP\" then
-            if modeS.hist_mark > 1 then
-               if modeS.hist_mark == #modeS.history then
-                  if tostring(modeS.linebuf) ~= \"\" then
-                     modeS.history[modeS.hist_mark + 1] = modeS.linebuf:suspend()
-                  end
-                  modeS.linebuf = modeS.history[modeS.hist_mark]:resume()
-               else
-                  modeS.linebuf:suspend()
-                  modeS.hist_mark = modeS.hist_mark - 1
-                  modeS.linebuf = modeS.history[modeS.hist_mark]:resume()
-               end
-            end
-         elseif value == \"DOWN\" then
-            if modeS.hist_mark < #modeS.history then
-               -- not correct but no far (mutation should be handled)
-               modeS.linebuf:suspend()
-               modeS.hist_mark = modeS.hist_mark + 1
-               modeS.linebuf = modeS.history[modeS.hist_mark]:resume()
-            end
-         elseif value == \"BACKSPACE\" then
-            modeS.linebuf:d_back()
-         elseif value == \"DELETE\" then
-            modeS.linebuf:d_fwd()
-         end
+      elseif category == \"MOUSE\" then
+         colwrite(pr_mouse(value), STATCOL, STAT_RUN)
+      else
+         icon_paint(\"NYI\", category .. \":\" .. value)
       end
    else
       icon_paint(category, value)
@@ -1937,7 +1918,7 @@ header_466 [label="3 : NAV"]
 
 prose_467 [label="prose"]
 
-codeblock_468 [label="code block 367-388"]
+codeblock_468 [label="code block 349-400"]
 
 
 // END RANK section_412
@@ -1961,6 +1942,30 @@ leaf_471  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 codeblock_468 -> leaf_472
 leaf_472  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+function NAV.UP(modeS, category, value)
+   if modeS.hist_mark > 1 then
+      if modeS.hist_mark == #modeS.history then
+         if tostring(modeS.linebuf) ~= \"\" then
+            modeS.history[modeS.hist_mark + 1] = modeS.linebuf:suspend()
+         end
+         modeS.linebuf = modeS.history[modeS.hist_mark]:resume()
+      else
+         modeS.linebuf:suspend()
+         modeS.hist_mark = modeS.hist_mark - 1
+         modeS.linebuf = modeS.history[modeS.hist_mark]:resume()
+      end
+   end
+end
+
+function NAV.DOWN(modeS, category, value)
+   if modeS.hist_mark < #modeS.history then
+      -- not correct but no far (mutation should be handled)
+      modeS.linebuf:suspend()
+      modeS.hist_mark = modeS.hist_mark + 1
+      modeS.linebuf = modeS.history[modeS.hist_mark]:resume()
+   end
+end
+
 function NAV.LEFT(modeS, category, value)
    return modeS.linebuf:left()
 end
@@ -1979,7 +1984,13 @@ function NAV.RETURN(modeS, category, value)
    modeS.linebuf = Linebuf(1)
 end
 
-"]
+function NAV.BACKSPACE(modeS, category, value)
+   return modeS.linebuf:d_back()
+end
+
+function NAV.DELETE(modeS, category, value)
+   return modeS.linebuf:d_fwd()
+end"]
 // END RANK codeblock_468
 
 section_7 -> { header_473 prose_474 codeblock_475 codeblock_476}
@@ -1989,9 +2000,9 @@ header_473 [label="2 : new"]
 
 prose_474 [label="prose"]
 
-codeblock_475 [label="code block 395-409"]
+codeblock_475 [label="code block 407-421"]
 
-codeblock_476 [label="code block 411-413"]
+codeblock_476 [label="code block 423-425"]
 
 
 // END RANK section_7

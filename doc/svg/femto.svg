@@ -1689,7 +1689,7 @@
 <g id="node133" class="node">
 <title>leaf_132</title>
 <polygon fill="none" stroke="#c0c0c0" points="9100.5,-964.2024 8545.5,-964.2024 8545.5,-122.1993 9100.5,-122.1993 9100.5,-964.2024"/>
-<text text-anchor="middle" x="8823" y="-933.0017" font-family="Inconsolata" font-size="14.00" fill="#000000">local byte = string.byte</text>
+<text text-anchor="middle" x="8823" y="-933.0017" font-family="Inconsolata" font-size="14.00" fill="#000000">local byte, sub = string.byte, string.sub</text>
 <text text-anchor="middle" x="8823" y="-917.6016" font-family="Inconsolata" font-size="14.00" fill="#000000">local m_parse, is_mouse = a.mouse.parse_fast, a.mouse.ismousemove</text>
 <text text-anchor="middle" x="8823" y="-902.2016" font-family="Inconsolata" font-size="14.00" fill="#000000">local navigation, is_nav = a.navigation, a.is_nav</text>
 <text text-anchor="middle" x="8823" y="-870.8016" font-family="Inconsolata" font-size="14.00" fill="#000000">local function process_escapes(seq)</text>
