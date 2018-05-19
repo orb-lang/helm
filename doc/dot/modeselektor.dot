@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 299"]
+doc_0 [label="doc - 325"]
 
 
 doc_0 -> { section_1}
@@ -25,7 +25,7 @@ prose_4 [label="prose"]
 
 section_5 [label="section: 11-157"]
 
-section_6 [label="section: 221-299"]
+section_6 [label="section: 221-325"]
 
 
 // END RANK section_1
@@ -1325,17 +1325,17 @@ prose_328 [label="prose"]
 
 prose_329 [label="prose"]
 
-codeblock_330 [label="code block 231-251"]
+codeblock_330 [label="code block 231-274"]
 
 prose_331 [label="prose"]
 
-codeblock_332 [label="code block 255-259"]
+codeblock_332 [label="code block 278-282"]
 
 prose_333 [label="prose"]
 
-codeblock_334 [label="code block 263-271"]
+codeblock_334 [label="code block 286-297"]
 
-codeblock_335 [label="code block 273-275"]
+codeblock_335 [label="code block 299-301"]
 
 
 // END RANK section_6
@@ -1456,7 +1456,19 @@ log anything unexpected.
 // END RANK raw_365
 
 codeblock_330 -> leaf_369
-leaf_369  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS.act(modeS, category, value)
+leaf_369  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+function repaint(modeS)
+  write(a.col(modeS.l_margin))
+  write(a.erase.right())
+  write(tostring(modeS.linebuf))
+  write(a.col(modeS:cur_col()))
+end
+
+function ModeS.cur_col(modeS)
+   return modeS.linebuf.cursor + modeS.l_margin - 1
+end
+
+function ModeS.act(modeS, category, value)
   assert(modeS.modes[category], \"no category \" .. category .. \" in modeS\")
    if modeS.special[value] then
       return modeS.special[value](modeS, category, value)
@@ -1465,9 +1477,20 @@ leaf_369  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS
       if category == \"INSERT\" then
          -- hard coded for now
          self_insert(modeS, category, value)
-      elseif category == \"NAV\" and value == \"RETURN\" then
-        write(a.col() .. a.jump.down(1)
-              .. tostring(modeS.linebuf) .. a.col() .. a.jump.down(1))
+         repaint(modeS)
+      elseif category == \"NAV\" then
+        if value == \"RETURN\" then
+          write(a.col() .. a.jump.down(1)
+                .. tostring(modeS.linebuf) .. a.col() .. a.jump.down(1))
+        elseif value == \"LEFT\" then
+          modeS.linebuf:left()
+          write(a.col(modeS:cur_col()))
+          colwrite(ts(move),nil,3)
+        elseif value == \"RIGHT\" then
+          modeS.linebuf:right()
+          write(a.col(modeS:cur_col()))
+          colwrite(ts(move),nil,3)
+        end -- etc, jump table
       end
    else
       icon_paint(category, value)
@@ -1533,6 +1556,9 @@ codeblock_334 -> leaf_381
 leaf_381  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function new()
   local modeS = meta(ModeS)
   modeS.linebuf = Linebuf(1)
+  -- this will be more complex but
+  modeS.l_margin = 4
+  modeS.r_margin = 83
   return modeS
 end
 

@@ -39,6 +39,11 @@ uv = require "luv"
 
 local core = require "core"
 string.cleave, string.litpat = core.cleave, core.litpat
+string.utf8 = core.utf8
+string.codepoints = core.codepoints
+table.splice = core.splice
+utf8 = core.utf8
+codepoints = core.codepoints
 meta = core.meta
 getmeta, setmeta = getmetatable, setmetatable
 coro = coroutine
@@ -50,6 +55,7 @@ coro = coroutine
 
 
 
+local concat = table.concat
 a = require "anterm"
 color = require "color"
 ts = color.ts
@@ -99,7 +105,7 @@ function print(...)
   for i = 1, n do
     arguments[i] = tostring(arguments[i])
   end
-  uv.write(stdout, table.concat(arguments, "\t") .. "\n")
+  uv.write(stdout, concat(arguments, "\t") .. "\n")
 end
 
 

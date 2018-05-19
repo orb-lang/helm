@@ -18,8 +18,11 @@ recursive container class is a ``txtbuf``, and ``rainbuf`` enhances that and
 also makes a ``rainline`` out of each ``linebuf``.
 
 
-linebufs are pretty dumb.  Smart enough to understand utf-8, smart enough to
-do a bit of tokenizing on the side.
+I'm making this the dumbest thing that can work. The dumbest thing that can
+work, has one string per char, period.
+
+
+I don't think this approach generalizes to a ``txtbuf``. It'll get us there.
 
 ## Instance fields
 
@@ -39,7 +42,7 @@ do a bit of tokenizing on the side.
 
 - len  : sum of dsps.
 ```lua
-local sub = assert(string.sub)
+local sub, byte = assert(string.sub), assert(string.byte)
 ```
 ```lua
 local Linebuf = meta()
@@ -54,15 +57,10 @@ local function sum(dsps)
    return summa
 end
 
+
 local concat = table.concat
 function Linebuf.__tostring(linebuf)
-   -- return concat(linebuf.line)
-   -- patch to see tok boundaries
-   local phrase = ""
-   for _, tok in ipairs(linebuf.line) do
-      phrase = phrase .. tok .. a.red("|")
-   end
-   return phrase
+   return concat(linebuf.line)
 end
 ```
 ## Linebuf.insert(linebuf, frag)
@@ -77,8 +75,12 @@ At first that means pasting long strings will cause syntax highlighting to
 fall over. Harmlessly.  Once lexing is working we can trip an interrupt on
 long input.
 
+
+### join(token, frag)
+
+Decides when to emit a new token.
+
 ```lua
--- a pass through for now
 local function join(token, frag)
    if sub(token, -1) == " " and sub(frag, 1,1) ~= " " then
       return token, frag
@@ -87,30 +89,59 @@ local function join(token, frag)
    end
 end
 
+local t_insert, splice = table.insert, assert(table.splice)
+local utf8, codepoints = string.utf8, string.codepoints
+
 function Linebuf.insert(linebuf, frag)
    assert(linebuf.cursor, "linebuf must have cursor to insert")
    local line = linebuf.line
-   -- end of line
-   if cursor == len then
-      local token, new_tok = join(line[#line], frag)
-      line[#line] = token
-      if new_tok then
-         line[#line + 1] = new_tok
-      end
-      linebuf.len = sum(line)
-      linebuf.cursor = linebuf.cursor + #frag
+   local wide_frag = utf8(frag)
+   if wide_frag < #frag then -- a paste
+      wide_frag = codepoints(frag)
+   else
+      wide_frag = false
+   end
+   if not wide_frag then
+      t_insert(line, linebuf.cursor, frag)
+      linebuf.cursor = linebuf.cursor + 1
+      return true
+   else
+      splice(line, linebuf.cursor, wide_frag)
+      linebuf.cursor = linebuf.cursor + #wide_frag
       return true
    end
+
    return false
 end
+
+function Linebuf.left(linebuf, disp)
+   local disp = disp or 1
+   if linebuf.cursor - disp >= 1 then
+      linebuf.cursor = linebuf.cursor - disp
+      return linebuf.cursor
+   else
+      linebuf.cursor = 1
+      return linebuf.cursor
+   end
+end
+
+function Linebuf.right(linebuf, disp)
+   disp = disp or 1
+   if linebuf.cursor + disp <= #linebuf.line + 1 then
+      linebuf.cursor = linebuf.cursor + disp
+   else
+      linebuf.cursor = #linebuf.line + 1
+   end
+   return linebuf.cursor
+end
+
 ```
 ```lua
 local function new(cursor)
    local linebuf = meta(Linebuf)
    linebuf.back  =  false
-   linebuf.len = 0 -- in bytes
-   linebuf.line  = {""}
-   -- Cursor may be nil
+   linebuf.line  = {}
+   -- Cursor may be nil, for multi-line
    linebuf.cursor = cursor
    return linebuf
 end

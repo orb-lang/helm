@@ -237,6 +237,18 @@ end
 log anything unexpected.
 
 ```lua
+
+function repaint(modeS)
+  write(a.col(modeS.l_margin))
+  write(a.erase.right())
+  write(tostring(modeS.linebuf))
+  write(a.col(modeS:cur_col()))
+end
+
+function ModeS.cur_col(modeS)
+   return modeS.linebuf.cursor + modeS.l_margin - 1
+end
+
 function ModeS.act(modeS, category, value)
   assert(modeS.modes[category], "no category " .. category .. " in modeS")
    if modeS.special[value] then
@@ -246,9 +258,20 @@ function ModeS.act(modeS, category, value)
       if category == "INSERT" then
          -- hard coded for now
          self_insert(modeS, category, value)
-      elseif category == "NAV" and value == "RETURN" then
-        write(a.col() .. a.jump.down(1)
-              .. tostring(modeS.linebuf) .. a.col() .. a.jump.down(1))
+         repaint(modeS)
+      elseif category == "NAV" then
+        if value == "RETURN" then
+          write(a.col() .. a.jump.down(1)
+                .. tostring(modeS.linebuf) .. a.col() .. a.jump.down(1))
+        elseif value == "LEFT" then
+          modeS.linebuf:left()
+          write(a.col(modeS:cur_col()))
+          colwrite(ts(move),nil,3)
+        elseif value == "RIGHT" then
+          modeS.linebuf:right()
+          write(a.col(modeS:cur_col()))
+          colwrite(ts(move),nil,3)
+        end -- etc, jump table
       end
    else
       icon_paint(category, value)
@@ -272,6 +295,9 @@ This will need to take a complete config table at some point.
 function new()
   local modeS = meta(ModeS)
   modeS.linebuf = Linebuf(1)
+  -- this will be more complex but
+  modeS.l_margin = 4
+  modeS.r_margin = 83
   return modeS
 end
 

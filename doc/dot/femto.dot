@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 311"]
+doc_0 [label="doc - 317"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-190"]
+section_1 [label="section: 1-196"]
 
 
 // END RANK doc_0
@@ -23,9 +23,9 @@ prose_3 [label="prose"]
 
 section_4 [label="section: 6-25"]
 
-section_5 [label="section: 32-190"]
+section_5 [label="section: 32-196"]
 
-section_6 [label="section: 191-218"]
+section_6 [label="section: 197-224"]
 
 
 // END RANK section_1
@@ -166,27 +166,27 @@ prose_30 [label="prose"]
 
 prose_31 [label="prose"]
 
-codeblock_32 [label="code block 39-45"]
+codeblock_32 [label="code block 39-50"]
 
 prose_33 [label="prose"]
 
 prose_34 [label="prose"]
 
-codeblock_35 [label="code block 52-59"]
+codeblock_35 [label="code block 57-65"]
 
 prose_36 [label="prose"]
 
 prose_37 [label="prose"]
 
-codeblock_38 [label="code block 66-87"]
+codeblock_38 [label="code block 72-93"]
 
 prose_39 [label="prose"]
 
-codeblock_40 [label="code block 91-93"]
+codeblock_40 [label="code block 97-99"]
 
-codeblock_41 [label="code block 95-175"]
+codeblock_41 [label="code block 101-181"]
 
-codeblock_42 [label="code block 177-188"]
+codeblock_42 [label="code block 183-194"]
 
 
 // END RANK section_5
@@ -282,6 +282,11 @@ leaf_65  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", will eventual
 codeblock_32 -> leaf_66
 leaf_66  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local core = require \"core\"
 string.cleave, string.litpat = core.cleave, core.litpat
+string.utf8 = core.utf8
+string.codepoints = core.codepoints
+table.splice = core.splice
+utf8 = core.utf8
+codepoints = core.codepoints
 meta = core.meta
 getmeta, setmeta = getmetatable, setmetatable
 coro = coroutine"]
@@ -335,7 +340,8 @@ in Orb relatively soon.
 // END RANK raw_72
 
 codeblock_35 -> leaf_77
-leaf_77  [color=Gray,shape=rectangle,fontname=Inconsolata,label="a = require \"anterm\"
+leaf_77  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local concat = table.concat
+a = require \"anterm\"
 color = require \"color\"
 ts = color.ts
 c = color.color
@@ -438,7 +444,7 @@ leaf_92  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function print(
   for i = 1, n do
     arguments[i] = tostring(arguments[i])
   end
-  uv.write(stdout, table.concat(arguments, \"\\t\") .. \"\\n\")
+  uv.write(stdout, concat(arguments, \"\\t\") .. \"\\n\")
 end
 
 
@@ -533,9 +539,9 @@ header_94 [label="2 : Reader"]
 
 prose_95 [label="prose"]
 
-section_96 [label="section: 197-218"]
+section_96 [label="section: 203-224"]
 
-section_97 [label="section: 219-311"]
+section_97 [label="section: 225-317"]
 
 
 // END RANK section_6
@@ -590,7 +596,7 @@ prose_109 [label="prose"]
 
 prose_110 [label="prose"]
 
-codeblock_111 [label="code block 208-216"]
+codeblock_111 [label="code block 214-222"]
 
 
 // END RANK section_96
@@ -679,9 +685,9 @@ header_126 [label="3 : process_escapes(seq)"]
 
 prose_127 [label="prose"]
 
-codeblock_128 [label="code block 221-276"]
+codeblock_128 [label="code block 227-282"]
 
-codeblock_129 [label="code block 278-311"]
+codeblock_129 [label="code block 284-317"]
 
 
 // END RANK section_97

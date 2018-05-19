@@ -32,7 +32,9 @@
 
 
 
-local sub = assert(string.sub)
+
+
+local sub, byte = assert(string.sub), assert(string.byte)
 
 
 
@@ -49,15 +51,10 @@ local function sum(dsps)
    return summa
 end
 
+
 local concat = table.concat
 function Linebuf.__tostring(linebuf)
-   -- return concat(linebuf.line)
-   -- patch to see tok boundaries
-   local phrase = ""
-   for _, tok in ipairs(linebuf.line) do
-      phrase = phrase .. tok .. a.red("|")
-   end
-   return phrase
+   return concat(linebuf.line)
 end
 
 
@@ -73,7 +70,11 @@ end
 
 
 
--- a pass through for now
+
+
+
+
+
 local function join(token, frag)
    if sub(token, -1) == " " and sub(frag, 1,1) ~= " " then
       return token, frag
@@ -82,22 +83,52 @@ local function join(token, frag)
    end
 end
 
+local t_insert, splice = table.insert, assert(table.splice)
+local utf8, codepoints = string.utf8, string.codepoints
+
 function Linebuf.insert(linebuf, frag)
    assert(linebuf.cursor, "linebuf must have cursor to insert")
    local line = linebuf.line
-   -- end of line
-   if cursor == len then
-      local token, new_tok = join(line[#line], frag)
-      line[#line] = token
-      if new_tok then
-         line[#line + 1] = new_tok
-      end
-      linebuf.len = sum(line)
-      linebuf.cursor = linebuf.cursor + #frag
+   local wide_frag = utf8(frag)
+   if wide_frag < #frag then -- a paste
+      wide_frag = codepoints(frag)
+   else
+      wide_frag = false
+   end
+   if not wide_frag then
+      t_insert(line, linebuf.cursor, frag)
+      linebuf.cursor = linebuf.cursor + 1
+      return true
+   else
+      splice(line, linebuf.cursor, wide_frag)
+      linebuf.cursor = linebuf.cursor + #wide_frag
       return true
    end
+
    return false
 end
+
+function Linebuf.left(linebuf, disp)
+   local disp = disp or 1
+   if linebuf.cursor - disp >= 1 then
+      linebuf.cursor = linebuf.cursor - disp
+      return linebuf.cursor
+   else
+      linebuf.cursor = 1
+      return linebuf.cursor
+   end
+end
+
+function Linebuf.right(linebuf, disp)
+   disp = disp or 1
+   if linebuf.cursor + disp <= #linebuf.line + 1 then
+      linebuf.cursor = linebuf.cursor + disp
+   else
+      linebuf.cursor = #linebuf.line + 1
+   end
+   return linebuf.cursor
+end
+
 
 
 
@@ -105,9 +136,8 @@ end
 local function new(cursor)
    local linebuf = meta(Linebuf)
    linebuf.back  =  false
-   linebuf.len = 0 -- in bytes
-   linebuf.line  = {""}
-   -- Cursor may be nil
+   linebuf.line  = {}
+   -- Cursor may be nil, for multi-line
    linebuf.cursor = cursor
    return linebuf
 end
