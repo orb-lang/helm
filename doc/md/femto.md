@@ -94,12 +94,6 @@ function write(str)
    uv.write(stdout, str)
 end
 ```
-
-Modeselektor
-
-```lua
-local modeS = require "modeselektor" ()
-```
 ```lua
 function print(...)
   local n = select('#', ...)
@@ -109,10 +103,10 @@ function print(...)
   end
   uv.write(stdout, concat(arguments, "\t") .. "\n")
 end
+```
+### tty setup
 
-
---  *** tty setup
-
+```lua
 if uv.guess_handle(0) ~= "tty" or
    uv.guess_handle(1) ~= "tty" then
   -- Entry point for other consumers!
@@ -120,7 +114,14 @@ if uv.guess_handle(0) ~= "tty" or
 end
 
 local stdin = uv.new_tty(0, true)
+```
+## Modeselektor
 
+```lua
+local modeS = require "modeselektor" ()
+modeS.max_row, modeS.max_col = uv.tty_get_winsize(stdin)
+```
+```lua
 
 --  *** utilities
 
@@ -196,36 +197,13 @@ end
 ## Reader
 
 The reader takes a stream of data from ``stdin``, asynchronously, and
-processes it into tokens, which stream to the recognizer.
+processes it into tokens, which stream to the ``modeselektor``.
 
-
-#### keybuf
-
- Currently the keybuf is a simple array that holds bytes until we have
-enough for the lexer.
-
-
-It is cleared and reused, to avoid a glut of allocations and allow the tracer
-to follow it.
-
-
-Soon I'll move the remaining local state into an instance table, to make
-``femto`` re-entrant.
-
-```lua
-local keybuf = {}
-local sub, byte = string.sub, string.byte
-local concat = table.concat
-
-
-local max_row, mac_col = uv.tty_get_winsize(stdin)
-
-```
 ### process_escapes(seq)
 
 ```lua
 
-
+local byte = string.byte
 local m_parse, is_mouse = a.mouse.parse_fast, a.mouse.ismousemove
 local navigation, is_nav = a.navigation, a.is_nav
 

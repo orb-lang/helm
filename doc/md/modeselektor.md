@@ -249,6 +249,17 @@ function ModeS.cur_col(modeS)
    return modeS.linebuf.cursor + modeS.l_margin - 1
 end
 
+function ModeS.nl(modeS)
+   write(a.col(modeS.l_margin))
+   if modeS.row + 1 <= modeS.max_row then
+      write(a.jump.down())
+      modeS.row  = modeS.row + 1
+   else
+      -- this gets complicated
+   end
+end
+
+
 ```
 
 It's easier to get the core actions down as conditionals, then
@@ -266,21 +277,35 @@ function ModeS.act(modeS, category, value)
          self_insert(modeS, category, value)
          repaint(modeS)
       elseif category == "NAV" then
-        if value == "RETURN" then
-          write(a.col() .. a.jump.down(1)
-                .. tostring(modeS.linebuf) .. a.col() .. a.jump.down(1))
-        elseif value == "LEFT" then
+         if value == "RETURN" then
+         -- eval etc.
+         modeS:nl()
+         write(tostring(modeS.linebuf))
+         modeS:nl()
+         modeS.history[#modeS.history + 1] = modeS.linebuf:suspend()
+         modeS.hist_mark = modeS.hist_mark + 1
+         modeS.linebuf = Linebuf(1)
+      elseif value == "LEFT" then
           modeS.linebuf:left()
           write(a.col(modeS:cur_col()))
           colwrite(ts(move),nil,3)
-        elseif value == "RIGHT" then
+      elseif value == "RIGHT" then
           modeS.linebuf:right()
           write(a.col(modeS:cur_col()))
           colwrite(ts(move),nil,3)
-        elseif value == "BACKSPACE" then
+      elseif value == "UP" then
+          if modeS.hist_mark > 0 then
+             if modeS.hist_mark == #modeS.history then
+                modeS.history[modeS.hist_mark + 1] = modeS.linebuf:suspend()
+                modeS.linebuf = modeS.history[modeS.hist_mark]:resume()
+                modeS.hist_mark = modeS.hist_mark - 1
+                repaint(modeS)
+             end
+          end
+      elseif value == "BACKSPACE" then
           modeS.linebuf:d_back()
           repaint(modeS)
-        elseif value == "DELETE" then
+      elseif value == "DELETE" then
           modeS.linebuf:d_fwd()
           repaint(modeS)
         end
@@ -310,6 +335,9 @@ function new()
   -- this will be more complex but
   modeS.l_margin = 4
   modeS.r_margin = 83
+  modeS.row = 2
+  modeS.history = {} -- make 3-d!
+  modeS.hist_mark = 0
   return modeS
 end
 

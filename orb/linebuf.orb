@@ -51,8 +51,8 @@ local function sum(dsps)
    return summa
 end
 
-
 local concat = table.concat
+
 function Linebuf.__tostring(linebuf)
    return concat(linebuf.line)
 end
@@ -139,14 +139,29 @@ function Linebuf.right(linebuf, disp)
    end
    return linebuf.cursor
 end
-
 #/lua
 
+
+
+#!lua
+function Linebuf.suspend(linebuf)
+   linebuf.__line = tostring(linebuf)
+   linebuf.line = nil
+   linebuf.cursor = nil
+   return linebuf
+end
+
+function Linebuf.resume(linebuf)
+   linebuf.line = codepoints(linebuf.__line)
+   linebuf.__line = nil
+   linebuf.cursor = #linebuf.line + 1
+   return linebuf
+end
+#/lua
 
 #!lua
 local function new(cursor)
    local linebuf = meta(Linebuf)
-   linebuf.back  =  false
    linebuf.line  = {}
    -- Cursor may be nil, for multi-line
    linebuf.cursor = cursor

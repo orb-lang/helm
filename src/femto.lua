@@ -93,12 +93,6 @@ end
 
 
 
-
-
-local modeS = require "modeselektor" ()
-
-
-
 function print(...)
   local n = select('#', ...)
   local arguments = {...}
@@ -109,7 +103,9 @@ function print(...)
 end
 
 
---  *** tty setup
+
+
+
 
 if uv.guess_handle(0) ~= "tty" or
    uv.guess_handle(1) ~= "tty" then
@@ -118,6 +114,16 @@ if uv.guess_handle(0) ~= "tty" or
 end
 
 local stdin = uv.new_tty(0, true)
+
+
+
+
+
+
+local modeS = require "modeselektor" ()
+modeS.max_row, modeS.max_col = uv.tty_get_winsize(stdin)
+
+
 
 
 --  *** utilities
@@ -203,30 +209,7 @@ end
 
 
 
-
-
-
-
-
-
-
-
-
-local keybuf = {}
-local sub, byte = string.sub, string.byte
-local concat = table.concat
-
-
-local max_row, mac_col = uv.tty_get_winsize(stdin)
-
-
-
-
-
-
-
-
-
+local byte = string.byte
 local m_parse, is_mouse = a.mouse.parse_fast, a.mouse.ismousemove
 local navigation, is_nav = a.navigation, a.is_nav
 

@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 159"]
+doc_0 [label="doc - 174"]
 
 
 doc_0 -> { section_1}
@@ -409,8 +409,8 @@ local function sum(dsps)
    return summa
 end
 
-
 local concat = table.concat
+
 function Linebuf.__tostring(linebuf)
    return concat(linebuf.line)
 end"]
@@ -427,7 +427,7 @@ prose_101 [label="prose"]
 
 prose_102 [label="prose"]
 
-section_103 [label="section: 73-159"]
+section_103 [label="section: 73-174"]
 
 
 // END RANK section_10
@@ -516,43 +516,45 @@ long input.
 "]
 // END RANK raw_121
 
-section_103 -> { header_123 prose_124 codeblock_125 codeblock_126 codeblock_127}
-{rank=same; header_123 prose_124 codeblock_125 codeblock_126 codeblock_127}
+section_103 -> { header_123 prose_124 codeblock_125 codeblock_126 codeblock_127 codeblock_128}
+{rank=same; header_123 prose_124 codeblock_125 codeblock_126 codeblock_127 codeblock_128}
 
 header_123 [label="3 : join(token, frag)"]
 
 prose_124 [label="prose"]
 
-codeblock_125 [label="code block 77-143"]
+codeblock_125 [label="code block 77-142"]
 
-codeblock_126 [label="code block 146-155"]
+codeblock_126 [label="code block 146-160"]
 
-codeblock_127 [label="code block 157-159"]
+codeblock_127 [label="code block 162-170"]
+
+codeblock_128 [label="code block 172-174"]
 
 
 // END RANK section_103
 
-header_123 -> leaf_128
-leaf_128  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** join(token, frag)"]
+header_123 -> leaf_129
+leaf_129  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** join(token, frag)"]
 // END RANK header_123
 
-prose_124 -> { raw_129}
-{rank=same; raw_129}
+prose_124 -> { raw_130}
+{rank=same; raw_130}
 
-raw_129 [label="raw"]
+raw_130 [label="raw"]
 
 
 // END RANK prose_124
 
-raw_129 -> leaf_130
-leaf_130  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_130 -> leaf_131
+leaf_131  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 Decides when to emit a new token.
 "]
-// END RANK raw_129
+// END RANK raw_130
 
-codeblock_125 -> leaf_131
-leaf_131  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function join(token, frag)
+codeblock_125 -> leaf_132
+leaf_132  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function join(token, frag)
    if sub(token, -1) == \" \" and sub(frag, 1,1) ~= \" \" then
       return token, frag
    else
@@ -615,24 +617,38 @@ function Linebuf.right(linebuf, disp)
       linebuf.cursor = #linebuf.line + 1
    end
    return linebuf.cursor
-end
-"]
+end"]
 // END RANK codeblock_125
 
-codeblock_126 -> leaf_132
-leaf_132  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new(cursor)
+codeblock_126 -> leaf_133
+leaf_133  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Linebuf.suspend(linebuf)
+   linebuf.__line = tostring(linebuf)
+   linebuf.line = nil
+   linebuf.cursor = nil
+   return linebuf
+end
+
+function Linebuf.resume(linebuf)
+   linebuf.line = codepoints(linebuf.__line)
+   linebuf.__line = nil
+   linebuf.cursor = #linebuf.line + 1
+   return linebuf
+end"]
+// END RANK codeblock_126
+
+codeblock_127 -> leaf_134
+leaf_134  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new(cursor)
    local linebuf = meta(Linebuf)
-   linebuf.back  =  false
    linebuf.line  = {}
    -- Cursor may be nil, for multi-line
    linebuf.cursor = cursor
    return linebuf
 end"]
-// END RANK codeblock_126
-
-codeblock_127 -> leaf_133
-leaf_133  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return new"]
 // END RANK codeblock_127
+
+codeblock_128 -> leaf_135
+leaf_135  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return new"]
+// END RANK codeblock_128
 
 
 }
