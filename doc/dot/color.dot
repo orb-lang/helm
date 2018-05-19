@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 330"]
+doc_0 [label="doc - 331"]
 
 
 doc_0 -> { section_1}
@@ -294,7 +294,7 @@ section_66 [label="section: 97-160"]
 
 section_67 [label="section: 161-262"]
 
-section_68 [label="section: 263-330"]
+section_68 [label="section: 263-331"]
 
 
 // END RANK section_9
@@ -707,9 +707,9 @@ header_126 [label="3 : ts"]
 
 prose_127 [label="prose"]
 
-codeblock_128 [label="code block 267-326"]
+codeblock_128 [label="code block 267-327"]
 
-codeblock_129 [label="code block 328-330"]
+codeblock_129 [label="code block 329-331"]
 
 
 // END RANK section_68
@@ -738,9 +738,6 @@ leaf_133  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ts = function 
    local str = scrub(tostring(value))
    -- For cases more specific than mere type,
    -- we have hints:
-   if hint == \"\" then
-      return str -- or just use tostring()?
-   end
    if hint then
       if hint == \"tab_name\" then
          local tab_name = anti_G[value] or \"t:\" .. sub(str, -6)
@@ -748,8 +745,12 @@ leaf_133  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ts = function 
       elseif hint == \"mt\" then
          local mt_name = anti_G[value] or \"mt:\" .. sub(str, -6)
          return c.metatable(\"⟨\" .. mt_name .. \"⟩\")
-      else
+      elseif hints[hint] then
          return hints[hint](str)
+      elseif c[hint] then
+         return c[hint](str)
+      else
+         return str
       end
    end
 

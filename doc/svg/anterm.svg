@@ -2760,8 +2760,8 @@
 <polygon fill="none" stroke="#c0c0c0" points="12502.5,-400.7011 12031.5,-400.7011 12031.5,-100.4994 12502.5,-100.4994 12502.5,-400.7011"/>
 <text text-anchor="middle" x="12267" y="-385.7006" font-family="Inconsolata" font-size="14.00" fill="#000000">function mouse.parse_fast(seq)</text>
 <text text-anchor="middle" x="12267" y="-370.3005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local kind, col, row = byte(seq,4), byte(seq, 5), byte(seq, 6)</text>
-<text text-anchor="middle" x="12267" y="-354.9005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;kind = rshift(kind, 32)</text>
-<text text-anchor="middle" x="12267" y="-339.5005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local m = {row = rshift(row, 5), col = rshift(col, 5)}</text>
+<text text-anchor="middle" x="12267" y="-354.9005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;kind = kind &#45; 32</text>
+<text text-anchor="middle" x="12267" y="-339.5005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local m = {row = row &#45; 32, col = col &#45; 32}</text>
 <text text-anchor="middle" x="12267" y="-324.1005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#45;&#45; Get button</text>
 <text text-anchor="middle" x="12267" y="-308.7004" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;m.button = buttons[kind % 4]</text>
 <text text-anchor="middle" x="12267" y="-293.3004" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#45;&#45; Get modifiers</text>

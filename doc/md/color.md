@@ -263,9 +263,6 @@ ts = function (value, hint)
    local str = scrub(tostring(value))
    -- For cases more specific than mere type,
    -- we have hints:
-   if hint == "" then
-      return str -- or just use tostring()?
-   end
    if hint then
       if hint == "tab_name" then
          local tab_name = anti_G[value] or "t:" .. sub(str, -6)
@@ -273,8 +270,12 @@ ts = function (value, hint)
       elseif hint == "mt" then
          local mt_name = anti_G[value] or "mt:" .. sub(str, -6)
          return c.metatable("⟨" .. mt_name .. "⟩")
-      else
+      elseif hints[hint] then
          return hints[hint](str)
+      elseif c[hint] then
+         return c[hint](str)
+      else
+         return str
       end
    end
 

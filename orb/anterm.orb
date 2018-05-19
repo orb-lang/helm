@@ -383,8 +383,8 @@ Returns a mouse action.
 #!lua
 function mouse.parse_fast(seq)
    local kind, col, row = byte(seq,4), byte(seq, 5), byte(seq, 6)
-   kind = rshift(kind, 32)
-   local m = {row = rshift(row, 5), col = rshift(col, 5)}
+   kind = kind - 32
+   local m = {row = row - 32, col = col - 32}
    -- Get button
    m.button = buttons[kind % 4]
    -- Get modifiers

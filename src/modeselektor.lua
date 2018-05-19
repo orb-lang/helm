@@ -59,11 +59,10 @@
 
 
 
+
 assert(meta, "must have meta in _G")
 assert(write, "must have write in _G")
 assert(ts, "must have ts in _G")
-
-
 
 
 
@@ -160,6 +159,7 @@ end
 
 
 
+
 local STATCOL = 81
 local STAT_TOP = 1
 local STAT_RUN = 2
@@ -179,12 +179,20 @@ end
 
 local STAT_ICON = "◉ "
 
+local function tf(bool)
+   if bool then
+      return ts("t", "true")
+   else
+      return ts("f", "false")
+   end
+end
+
 function pr_mouse(m)
    local phrase = a.magenta(m.button) .. ": "
-                     .. a.bright(kind) .. " " .. ts(m.shift)
-                     .. " " .. ts(m.meta)
-                     .. " " .. ts(m.ctrl) .. " " .. ts(m.moving) .. " "
-                     .. ts(m.scrolling) .. " "
+                     .. a.bright(kind) .. " " .. tf(m.shift)
+                     .. " " .. tf(m.meta)
+                     .. " " .. tf(m.ctrl) .. " " .. tf(m.moving) .. " "
+                     .. tf(m.scrolling) .. " "
                      .. a.cyan(m.col) .. "," .. a.cyan(m.row)
    return phrase
 end
