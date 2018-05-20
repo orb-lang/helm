@@ -49,6 +49,8 @@ codepoints = core.codepoints
 meta = core.meta
 getmeta, setmeta = getmetatable, setmetatable
 coro = coroutine
+
+local concat = table.concat
 ```
 
 Primitives for terminal manipulation.
@@ -58,7 +60,6 @@ Arguably don't belong here. ``watch`` is unused at present, it will be useful
 in Orb relatively soon.
 
 ```lua
-local concat = table.concat
 a = require "anterm"
 color = require "color"
 ts = color.ts

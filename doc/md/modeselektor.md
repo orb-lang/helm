@@ -120,6 +120,9 @@ a better idea.
 ```lua
 local Linebuf = require "linebuf"
 local Historian = require "historian"
+
+local concat = assert(table.concat)
+local sub, gsub = assert(string.sub), assert(string.gsub)
 ```
 ```lua
 local ModeS = meta()
@@ -267,12 +270,27 @@ local function icon_paint(category, value)
    return colwrite(icon_map[category]("", ts(value)))
 end
 ```
-### ModeS:paint()
+### ModeS:write(str)
 
-This will refresh the entire screen.
+This will let us phase out the colwrite business in favor of actual tiles in
+the terminal.
+
 
 ```lua
-function ModeS.paint(modeS)
+function ModeS.write(modeS, str)
+   local nl = a.col(modeS.l_margin) .. a.jump.down()
+   local phrase, num_subs = gsub(str, "\n", nl)
+   write(phrase)
+   modeS.row = modeS.row + 1
+end
+
+```
+### ModeS:paint_row()
+
+Does what it says on the label.
+
+```lua
+function ModeS.paint_row(modeS)
   write(a.col(modeS.l_margin))
   write(a.erase.right())
   write(tostring(modeS.linebuf))
@@ -284,13 +302,14 @@ function ModeS.cur_col(modeS)
 end
 
 function ModeS.nl(modeS)
-   write(a.col(modeS.l_margin))
+   local phrase = a.col(modeS.l_margin)
    if modeS.row + 1 <= modeS.max_row then
-      write(a.jump.down())
+      phrase = phrase .. a.jump.down()
       modeS.row  = modeS.row + 1
    else
       -- this gets complicated
    end
+   write(phrase)
 end
 ```
 ## act
@@ -337,7 +356,7 @@ function ModeS.act(modeS, category, value)
       icon_paint("NYI", category .. ":" .. value)
    end
    colwrite(modeS.hist.cursor, STATCOL, 3)
-   return modeS:paint()
+   return modeS:paint_row()
 end
 ```
 
@@ -384,7 +403,7 @@ end
 function NAV.RETURN(modeS, category, value)
    -- eval etc.
    modeS:nl()
-   write(tostring(modeS.linebuf))
+   write(modeS:eval())
    modeS:nl()
    modeS.hist:append(modeS.linebuf)
    modeS.linebuf = Linebuf(1)
@@ -398,6 +417,64 @@ function NAV.DELETE(modeS, category, value)
    return modeS.linebuf:d_fwd()
 end
 ```
+### ModeS:eval()
+
+```lua
+local function gatherResults(success, ...)
+  local n = select('#', ...)
+  return success, { n = n, ... }
+end
+```
+```lua
+function ModeS.printResults(modeS, results)
+  for i = 1, results.n do
+    results[i] = ts(results[i])
+  end
+  modeS:write(concat(results, '   '))
+end
+```
+```lua
+function ModeS.eval(modeS)
+   local line = tostring(modeS.linebuf)
+   local chunk  = modeS.buffer .. line
+   local f, err = loadstring('return ' .. chunk, 'REPL') -- first we prefix return
+
+   if not f then
+      f, err = loadstring(chunk, 'REPL') -- try again without return
+   end
+   if not f then
+      local head = sub(chunk, 1, 1)
+      if head == "=" then -- take pity on old-school Lua hackers
+         f, err = loadstring('return ' .. sub(chunk,2), 'REPL')
+      end -- more special REPL prefix soon
+   end
+   if f then
+      modeS.buffer = ""
+      local success, results = gatherResults(xpcall(f, debug.traceback))
+
+      if success then
+      -- successful call
+         if results.n > 0 then
+            modeS:printResults(results)
+         end
+      else
+      -- error
+         print(results[1])
+      end
+   else
+      if err:match "'<eof>'$" then
+         -- Lua expects some more input; stow it away for next time
+         modeS.buffer = chunk .. '\n'
+         return '...'
+      else
+         print(err)
+         modeS.buffer = ''
+      end
+   end
+
+   return '👉  '
+end
+```
 ## new
 
 This should be configurable via ``cfg``.
@@ -406,13 +483,12 @@ This should be configurable via ``cfg``.
 function new(cfg)
   local modeS = meta(ModeS)
   modeS.linebuf = Linebuf(1)
+  modeS.buffer = ""
   modeS.hist  = Historian()
   -- this will be more complex but
   modeS.l_margin = 4
   modeS.r_margin = 83
   modeS.row = 2
-  modeS.history = {} -- make 3-d!
-  modeS.hist_mark = 0
   return modeS
 end
 

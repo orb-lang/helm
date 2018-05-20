@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 301"]
+doc_0 [label="doc - 302"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-203"]
+section_1 [label="section: 1-204"]
 
 
 // END RANK doc_0
@@ -23,11 +23,11 @@ prose_3 [label="prose"]
 
 section_4 [label="section: 6-25"]
 
-section_5 [label="section: 32-107"]
+section_5 [label="section: 32-108"]
 
-section_6 [label="section: 121-203"]
+section_6 [label="section: 122-204"]
 
-section_7 [label="section: 204-208"]
+section_7 [label="section: 205-209"]
 
 
 // END RANK section_1
@@ -168,23 +168,23 @@ prose_31 [label="prose"]
 
 prose_32 [label="prose"]
 
-codeblock_33 [label="code block 39-51"]
+codeblock_33 [label="code block 39-53"]
 
 prose_34 [label="prose"]
 
 prose_35 [label="prose"]
 
-codeblock_36 [label="code block 58-66"]
+codeblock_36 [label="code block 60-67"]
 
 prose_37 [label="prose"]
 
 prose_38 [label="prose"]
 
-codeblock_39 [label="code block 73-94"]
+codeblock_39 [label="code block 74-95"]
 
-codeblock_40 [label="code block 96-105"]
+codeblock_40 [label="code block 97-106"]
 
-section_41 [label="section: 108-120"]
+section_41 [label="section: 109-121"]
 
 
 // END RANK section_5
@@ -288,7 +288,9 @@ utf8 = core.utf8
 codepoints = core.codepoints
 meta = core.meta
 getmeta, setmeta = getmetatable, setmetatable
-coro = coroutine"]
+coro = coroutine
+
+local concat = table.concat"]
 // END RANK codeblock_33
 
 prose_34 -> { raw_66}
@@ -339,8 +341,7 @@ in Orb relatively soon.
 // END RANK raw_71
 
 codeblock_36 -> leaf_76
-leaf_76  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local concat = table.concat
-a = require \"anterm\"
+leaf_76  [color=Gray,shape=rectangle,fontname=Inconsolata,label="a = require \"anterm\"
 color = require \"color\"
 ts = color.ts
 c = color.color
@@ -436,7 +437,7 @@ header_89 [label="3 : tty setup"]
 
 prose_90 [label="prose"]
 
-codeblock_91 [label="code block 110-118"]
+codeblock_91 [label="code block 111-119"]
 
 
 // END RANK section_41
@@ -475,11 +476,11 @@ header_96 [label="2 : Modeselektor"]
 
 prose_97 [label="prose"]
 
-codeblock_98 [label="code block 123-126"]
+codeblock_98 [label="code block 124-127"]
 
-codeblock_99 [label="code block 128-188"]
+codeblock_99 [label="code block 129-189"]
 
-codeblock_100 [label="code block 190-201"]
+codeblock_100 [label="code block 191-202"]
 
 
 // END RANK section_6
@@ -588,7 +589,7 @@ header_107 [label="2 : Reader"]
 
 prose_108 [label="prose"]
 
-section_109 [label="section: 209-301"]
+section_109 [label="section: 210-302"]
 
 
 // END RANK section_7
@@ -656,9 +657,9 @@ header_125 [label="3 : process_escapes(seq)"]
 
 prose_126 [label="prose"]
 
-codeblock_127 [label="code block 211-266"]
+codeblock_127 [label="code block 212-267"]
 
-codeblock_128 [label="code block 268-301"]
+codeblock_128 [label="code block 269-302"]
 
 
 // END RANK section_109
