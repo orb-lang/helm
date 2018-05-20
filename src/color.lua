@@ -22,6 +22,8 @@ local a = require "anterm"
 
 local core = require "core"
 
+local reflect = require "reflect"
+
 local WIDE_TABLE = 200 -- should be tty-specific
 
 local C = {}
@@ -57,6 +59,8 @@ C.color["true"]     = C.color.truth
 C.color["false"]    = C.color.falsehood
 C.color["nil"]      = C.color.nilness
 
+
+C.depth = 3 -- table print depth
 
 
 
@@ -163,6 +167,10 @@ end
 
 
 
+
+
+
+
 local ts
 local function tabulate(tab, depth)
    if type(tab) ~= "table" then
@@ -171,7 +179,7 @@ local function tabulate(tab, depth)
    if type(depth) == "nil" then
       depth = 0
    end
-   if depth > 3 then
+   if depth > C.depth then
       return ts(tab, "tab_name")
    end
    local indent = ("  "):rep(depth)
@@ -216,7 +224,7 @@ local function tabulate(tab, depth)
    if estimated > WIDE_TABLE then
       return c.base("{\n  ") .. indent
          .. table.concat(lines, ",\n  " .. indent)
-         .. "\n" .. indent .. c.base("}")
+         ..  c.base("}")
    else
       return c.base("{ ") .. table.concat(lines, c.base(", ")) .. c.base(" }")
    end
@@ -258,6 +266,13 @@ scrub = function (str)
              :gsub("%c", ctrl_pr)
 end
 
+
+
+local function c_data(value, str)
+   local meta = reflect.getmetatable(value)
+   local mt_str = ts(meta)
+   return str .. " = " .. mt_str
+end
 
 
 
@@ -320,6 +335,7 @@ ts = function (value, hint)
       else
          str = c.cdata(str)
       end
+      str = c_data(value, str)
    end
    return str
 end

@@ -436,7 +436,8 @@ end
 function ModeS.eval(modeS)
    local line = tostring(modeS.linebuf)
    local chunk  = modeS.buffer .. line
-   local f, err = loadstring('return ' .. chunk, 'REPL') -- first we prefix return
+   -- first we prefix return
+   local f, err = loadstring('return ' .. chunk, 'REPL')
 
    if not f then
       f, err = loadstring(chunk, 'REPL') -- try again without return
@@ -453,7 +454,6 @@ function ModeS.eval(modeS)
 
       if success then
       -- successful call
-
          modeS:clearResult()
          if results.n > 0 then
             modeS:printResults(results)

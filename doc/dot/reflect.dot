@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 376"]
+doc_0 [label="doc - 385"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-42"]
+section_1 [label="section: 1-39"]
 
 
 // END RANK doc_0
@@ -25,9 +25,9 @@ prose_4 [label="prose"]
 
 prose_5 [label="prose"]
 
-section_6 [label="section: 16-42"]
+section_6 [label="section: 16-39"]
 
-section_7 [label="section: 43-376"]
+section_7 [label="section: 40-385"]
 
 
 // END RANK section_1
@@ -138,8 +138,8 @@ leaf_28  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
 "]
 // END RANK raw_22
 
-section_6 -> { header_29 prose_30 prose_31 prose_32 prose_33 structure_34}
-{rank=same; header_29 prose_30 prose_31 prose_32 prose_33 structure_34}
+section_6 -> { header_29 prose_30 prose_31 prose_32 prose_33}
+{rank=same; header_29 prose_30 prose_31 prose_32 prose_33}
 
 header_29 [label="4 : License (MIT)"]
 
@@ -151,41 +151,39 @@ prose_32 [label="prose"]
 
 prose_33 [label="prose"]
 
-structure_34 [label="structure"]
-
 
 // END RANK section_6
 
-header_29 -> leaf_35
-leaf_35  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** License (MIT)"]
+header_29 -> leaf_34
+leaf_34  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** License (MIT)"]
 // END RANK header_29
 
-prose_30 -> { raw_36}
-{rank=same; raw_36}
+prose_30 -> { raw_35}
+{rank=same; raw_35}
 
-raw_36 [label="raw"]
+raw_35 [label="raw"]
 
 
 // END RANK prose_30
 
-raw_36 -> leaf_37
-leaf_37  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_35 -> leaf_36
+leaf_36  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 LuaJIT FFI reflection Library
 Copyright (C) 2014 Peter Cawley [[mailto:lua@corsix.org]]. All rights reserved.
 "]
-// END RANK raw_36
+// END RANK raw_35
 
-prose_31 -> { raw_38}
-{rank=same; raw_38}
+prose_31 -> { raw_37}
+{rank=same; raw_37}
 
-raw_38 [label="raw"]
+raw_37 [label="raw"]
 
 
 // END RANK prose_31
 
-raw_38 -> leaf_39
-leaf_39  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_37 -> leaf_38
+leaf_38  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the \"Software\"), to deal
 in the Software without restriction, including without limitation the rights
@@ -193,33 +191,33 @@ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
 "]
-// END RANK raw_38
+// END RANK raw_37
 
-prose_32 -> { raw_40}
-{rank=same; raw_40}
+prose_32 -> { raw_39}
+{rank=same; raw_39}
 
-raw_40 [label="raw"]
+raw_39 [label="raw"]
 
 
 // END RANK prose_32
 
-raw_40 -> leaf_41
-leaf_41  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_39 -> leaf_40
+leaf_40  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
 "]
-// END RANK raw_40
+// END RANK raw_39
 
-prose_33 -> { raw_42}
-{rank=same; raw_42}
+prose_33 -> { raw_41}
+{rank=same; raw_41}
 
-raw_42 [label="raw"]
+raw_41 [label="raw"]
 
 
 // END RANK prose_33
 
-raw_42 -> leaf_43
-leaf_43  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_41 -> leaf_42
+leaf_42  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
@@ -229,59 +227,39 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 "]
-// END RANK raw_42
+// END RANK raw_41
 
-structure_34 -> { hashline_44}
-{rank=same; hashline_44}
+section_7 -> { header_43 prose_44 codeblock_45}
+{rank=same; header_43 prose_44 codeblock_45}
 
-hashline_44 [label="hashline"]
+header_43 [label="3 : reflect"]
 
+prose_44 [label="prose"]
 
-// END RANK structure_34
-
-hashline_44 -> { hashtag_45}
-{rank=same; hashtag_45}
-
-hashtag_45 [label="hashtag"]
-
-
-// END RANK hashline_44
-
-hashtag_45 -> leaf_46
-leaf_46  [color=Gray,shape=rectangle,fontname=Inconsolata,label="NB"]
-// END RANK hashtag_45
-
-section_7 -> { header_47 prose_48 codeblock_49}
-{rank=same; header_47 prose_48 codeblock_49}
-
-header_47 [label="3 : reflect"]
-
-prose_48 [label="prose"]
-
-codeblock_49 [label="code block 45-376"]
+codeblock_45 [label="code block 42-385"]
 
 
 // END RANK section_7
 
-header_47 -> leaf_50
-leaf_50  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** reflect"]
-// END RANK header_47
+header_43 -> leaf_46
+leaf_46  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** reflect"]
+// END RANK header_43
 
-prose_48 -> { raw_51}
-{rank=same; raw_51}
+prose_44 -> { raw_47}
+{rank=same; raw_47}
 
-raw_51 [label="raw"]
+raw_47 [label="raw"]
 
 
-// END RANK prose_48
+// END RANK prose_44
 
-raw_51 -> leaf_52
-leaf_52  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_47 -> leaf_48
+leaf_48  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 "]
-// END RANK raw_51
+// END RANK raw_47
 
-codeblock_49 -> leaf_53
-leaf_53  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local ffi = require \"ffi\"
+codeblock_45 -> leaf_49
+leaf_49  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local ffi = require \"ffi\"
 local bit = require \"bit\"
 local reflect = {}
 
@@ -295,7 +273,19 @@ local function gc_str(gcref) -- Convert a GCref (to a GCstr) into a string
   end
 end
 
-local typeinfo = ffi.typeinfo
+local typeinfo = rawget(ffi, \"typeinfo\")
+
+typeinfo = typeinfo or function(id)
+  -- ffi.typeof is present in LuaJIT v2.1 since 8th Oct 2014 (d6ff3afc)
+  -- this is an emulation layer for older versions of LuaJIT
+  local ctype = (CTState or init_CTState()).tab[id]
+  return {
+    info = ctype.info,
+    size = bit.bnot(ctype.size) ~= 0 and ctype.size,
+    sib = ctype.sib ~= 0 and ctype.sib,
+    name = gc_str(ctype.name),
+  }
+end
 
 local function memptr(gcobj)
   return tonumber(tostring(gcobj):match\"%x*$\", 16)
@@ -611,7 +601,7 @@ function reflect.getmetatable(x) -- mt = reflect.getmetatable(ct)
 end
 
 return reflect"]
-// END RANK codeblock_49
+// END RANK codeblock_45
 
 
 }

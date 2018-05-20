@@ -42,9 +42,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 
-#NB the luajit beta has caused sporadic segfaults, so I can't use the full### reflect
+### reflect
 
-```lua-nk
+```lua
 local ffi = require "ffi"
 local bit = require "bit"
 local reflect = {}
@@ -59,7 +59,19 @@ local function gc_str(gcref) -- Convert a GCref (to a GCstr) into a string
   end
 end
 
-local typeinfo = ffi.typeinfo
+local typeinfo = rawget(ffi, "typeinfo")
+
+typeinfo = typeinfo or function(id)
+  -- ffi.typeof is present in LuaJIT v2.1 since 8th Oct 2014 (d6ff3afc)
+  -- this is an emulation layer for older versions of LuaJIT
+  local ctype = (CTState or init_CTState()).tab[id]
+  return {
+    info = ctype.info,
+    size = bit.bnot(ctype.size) ~= 0 and ctype.size,
+    sib = ctype.sib ~= 0 and ctype.sib,
+    name = gc_str(ctype.name),
+  }
+end
 
 local function memptr(gcobj)
   return tonumber(tostring(gcobj):match"%x*$", 16)

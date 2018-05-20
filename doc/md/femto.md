@@ -15,7 +15,7 @@ First we load everything that might reasonable expect a stock namespace.
 All of these are exceedingly well-behaved.
 
 ```lua
-sql = require "sqlite"
+sql = require "sqlayer"
 L = require "lpeg"
 lfs = require "lfs"
 ffi = require "ffi"
@@ -120,7 +120,7 @@ local stdin = uv.new_tty(0, true)
 ## Modeselektor
 
 ```lua
-local modeS = require "modeselektor" ()
+modeS = require "modeselektor" ()
 modeS.max_row, modeS.max_col = uv.tty_get_winsize(stdin)
 ```
 ```lua
@@ -143,6 +143,8 @@ local buffer = ''
 
 local function evaluateLine(line)
    if string.byte(line) == 17 then -- ^Q
+      -- move this to modeselektor asap
+      modeS.hist.conn:close()
       uv.stop()
       return 0
    end
