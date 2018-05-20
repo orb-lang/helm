@@ -264,22 +264,6 @@ end
 
 
 
-
-
-function ModeS.write(modeS, str)
-   local nl = a.col(modeS.l_margin) .. a.jump.down()
-   local phrase, num_subs = gsub(str, "\n", nl)
-   write(phrase)
-   modeS.row = modeS.row + num_subs
-end
-
-
-
-
-
-
-
-
 function ModeS.paint_row(modeS)
   write(a.col(modeS.l_margin))
   write(a.erase.right())
@@ -292,14 +276,7 @@ function ModeS.cur_col(modeS)
 end
 
 function ModeS.nl(modeS)
-   local phrase = a.col(modeS.l_margin)
-   if modeS.row + 1 <= modeS.max_row then
-      phrase = phrase .. a.jump.down()
-      modeS.row  = modeS.row + 1
-   else
-      -- this gets complicated
-   end
-   write(phrase)
+   write(a.col(modeS.l_margin).. a.jump.down(1))
 end
 
 
@@ -413,6 +390,21 @@ end
 
 
 
+
+
+
+
+
+
+function ModeS.write(modeS, str)
+   local nl = a.col(modeS.l_margin) .. a.jump.down()
+   local phrase, num_subs = gsub(str, "\n", nl)
+   write(phrase)
+   -- modeS.row = modeS.row + num_subs
+end
+
+
+
 local function gatherResults(success, ...)
   local n = select('#', ...)
   return success, { n = n, ... }
@@ -431,6 +423,12 @@ end
 
 function ModeS.prompt(modeS)
    write(a.jump(modeS.replLine, 1) .. "👉 ")
+end
+
+
+
+function ModeS.clearResult(modeS)
+   write(a.erase.box(3, 1, modeS.max_row, modeS.r_margin))
 end
 
 
@@ -455,11 +453,14 @@ function ModeS.eval(modeS)
 
       if success then
       -- successful call
+
+         modeS:clearResult()
          if results.n > 0 then
             modeS:printResults(results)
          end
       else
       -- error
+         modeS:clearResult()
          modeS:write(results[1])
       end
    else
@@ -489,7 +490,7 @@ function new(cfg)
   modeS.hist  = Historian()
   -- this will be more complex but
   modeS.l_margin = 4
-  modeS.r_margin = 83
+  modeS.r_margin = 80
   modeS.row = 2
   modeS.replLine = 2
   return modeS

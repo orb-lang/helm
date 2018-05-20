@@ -346,8 +346,9 @@ function erase.box(tr, tc, br, bc)
    br = br + 1
    bc = bc + 1
    local blanks = rep(" ", bc - tc)
+   local nl = anterm.col(tc) .. jump.down(1)
    for i = 1, br - tr do
-      phrase = phrase .. blanks .. anterm.col(tc) .. jump.down(1)
+      phrase = phrase .. blanks .. nl
    end
    return phrase .. anterm.pop() .. cursor.show()
 end

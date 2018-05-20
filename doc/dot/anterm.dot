@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 593"]
+doc_0 [label="doc - 594"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-362"]
+section_1 [label="section: 1-363"]
 
 
 // END RANK doc_0
@@ -37,9 +37,9 @@ section_10 [label="section: 57-210"]
 
 section_11 [label="section: 265-315"]
 
-section_12 [label="section: 316-362"]
+section_12 [label="section: 316-363"]
 
-section_13 [label="section: 363-523"]
+section_13 [label="section: 364-524"]
 
 
 // END RANK section_1
@@ -871,7 +871,7 @@ prose_149 [label="prose"]
 
 codeblock_150 [label="code block 318-341"]
 
-codeblock_151 [label="code block 345-360"]
+codeblock_151 [label="code block 345-361"]
 
 
 // END RANK section_12
@@ -928,8 +928,9 @@ function erase.box(tr, tc, br, bc)
    br = br + 1
    bc = bc + 1
    local blanks = rep(\" \", bc - tc)
+   local nl = anterm.col(tc) .. jump.down(1)
    for i = 1, br - tr do
-      phrase = phrase .. blanks .. anterm.col(tc) .. jump.down(1)
+      phrase = phrase .. blanks .. nl
    end
    return phrase .. anterm.pop() .. cursor.show()
 end"]
@@ -942,17 +943,17 @@ header_157 [label="2 : Mouse"]
 
 prose_158 [label="prose"]
 
-codeblock_159 [label="code block 365-370"]
+codeblock_159 [label="code block 366-371"]
 
-section_160 [label="section: 373-397"]
+section_160 [label="section: 374-398"]
 
-section_161 [label="section: 427-441"]
+section_161 [label="section: 428-442"]
 
-section_162 [label="section: 442-466"]
+section_162 [label="section: 443-467"]
 
-section_163 [label="section: 467-523"]
+section_163 [label="section: 468-524"]
 
-section_164 [label="section: 524-532"]
+section_164 [label="section: 525-533"]
 
 
 // END RANK section_13
@@ -990,11 +991,11 @@ prose_170 [label="prose"]
 
 prose_171 [label="prose"]
 
-codeblock_172 [label="code block 379-387"]
+codeblock_172 [label="code block 380-388"]
 
-codeblock_173 [label="code block 389-395"]
+codeblock_173 [label="code block 390-396"]
 
-section_174 [label="section: 398-426"]
+section_174 [label="section: 399-427"]
 
 
 // END RANK section_160
@@ -1077,7 +1078,7 @@ prose_189 [label="prose"]
 
 prose_190 [label="prose"]
 
-codeblock_191 [label="code block 404-424"]
+codeblock_191 [label="code block 405-425"]
 
 
 // END RANK section_174
@@ -1144,7 +1145,7 @@ header_198 [label="3 : mouse.parse(seq)"]
 
 prose_199 [label="prose"]
 
-codeblock_200 [label="code block 431-439"]
+codeblock_200 [label="code block 432-440"]
 
 
 // END RANK section_161
@@ -1185,7 +1186,7 @@ header_205 [label="3 : Cursor handling"]
 
 prose_206 [label="prose"]
 
-codeblock_207 [label="code block 444-464"]
+codeblock_207 [label="code block 445-465"]
 
 
 // END RANK section_162
@@ -1240,11 +1241,11 @@ prose_214 [label="prose"]
 
 prose_215 [label="prose"]
 
-codeblock_216 [label="code block 476-505"]
+codeblock_216 [label="code block 477-506"]
 
 prose_217 [label="prose"]
 
-codeblock_218 [label="code block 509-515"]
+codeblock_218 [label="code block 510-516"]
 
 prose_219 [label="prose"]
 
@@ -1407,9 +1408,9 @@ header_242 [label="3 : #todo function keys"]
 
 prose_243 [label="prose"]
 
-codeblock_244 [label="code block 528-530"]
+codeblock_244 [label="code block 529-531"]
 
-section_245 [label="section: 533-593"]
+section_245 [label="section: 534-594"]
 
 
 // END RANK section_164
@@ -1444,9 +1445,9 @@ header_250 [label="4 : flip"]
 
 prose_251 [label="prose"]
 
-codeblock_252 [label="code block 537-558"]
+codeblock_252 [label="code block 538-559"]
 
-codeblock_253 [label="code block 560-562"]
+codeblock_253 [label="code block 561-563"]
 
 
 // END RANK section_245

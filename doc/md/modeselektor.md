@@ -270,21 +270,6 @@ local function icon_paint(category, value)
    return colwrite(icon_map[category]("", ts(value)))
 end
 ```
-### ModeS:write(str)
-
-This will let us phase out the colwrite business in favor of actual tiles in
-the terminal.
-
-
-```lua
-function ModeS.write(modeS, str)
-   local nl = a.col(modeS.l_margin) .. a.jump.down()
-   local phrase, num_subs = gsub(str, "\n", nl)
-   write(phrase)
-   modeS.row = modeS.row + num_subs
-end
-
-```
 ### ModeS:paint_row()
 
 Does what it says on the label.
@@ -302,14 +287,7 @@ function ModeS.cur_col(modeS)
 end
 
 function ModeS.nl(modeS)
-   local phrase = a.col(modeS.l_margin)
-   if modeS.row + 1 <= modeS.max_row then
-      phrase = phrase .. a.jump.down()
-      modeS.row  = modeS.row + 1
-   else
-      -- this gets complicated
-   end
-   write(phrase)
+   write(a.col(modeS.l_margin).. a.jump.down(1))
 end
 ```
 ## act
@@ -418,6 +396,20 @@ end
 ```
 ### ModeS:eval()
 
+### ModeS:write(str)
+
+This will let us phase out the colwrite business in favor of actual tiles in
+the terminal.
+
+
+```lua
+function ModeS.write(modeS, str)
+   local nl = a.col(modeS.l_margin) .. a.jump.down()
+   local phrase, num_subs = gsub(str, "\n", nl)
+   write(phrase)
+   -- modeS.row = modeS.row + num_subs
+end
+```
 ```lua
 local function gatherResults(success, ...)
   local n = select('#', ...)
@@ -435,6 +427,11 @@ end
 ```lua
 function ModeS.prompt(modeS)
    write(a.jump(modeS.replLine, 1) .. "👉 ")
+end
+```
+```lua
+function ModeS.clearResult(modeS)
+   write(a.erase.box(3, 1, modeS.max_row, modeS.r_margin))
 end
 ```
 ```lua
@@ -458,11 +455,14 @@ function ModeS.eval(modeS)
 
       if success then
       -- successful call
+
+         modeS:clearResult()
          if results.n > 0 then
             modeS:printResults(results)
          end
       else
       -- error
+         modeS:clearResult()
          modeS:write(results[1])
       end
    else
@@ -490,7 +490,7 @@ function new(cfg)
   modeS.hist  = Historian()
   -- this will be more complex but
   modeS.l_margin = 4
-  modeS.r_margin = 83
+  modeS.r_margin = 80
   modeS.row = 2
   modeS.replLine = 2
   return modeS
