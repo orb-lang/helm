@@ -270,7 +270,7 @@ function ModeS.write(modeS, str)
    local nl = a.col(modeS.l_margin) .. a.jump.down()
    local phrase, num_subs = gsub(str, "\n", nl)
    write(phrase)
-   modeS.row = modeS.row + 1
+   modeS.row = modeS.row + num_subs
 end
 
 #/lua
@@ -395,8 +395,7 @@ end
 function NAV.RETURN(modeS, category, value)
    -- eval etc.
    modeS:nl()
-   write(modeS:eval())
-   modeS:nl()
+   modeS:eval()
    modeS.hist:append(modeS.linebuf)
    modeS.linebuf = Linebuf(1)
 end
@@ -430,6 +429,12 @@ end
 #/lua
 
 #!lua
+function ModeS.prompt(modeS)
+   write(a.jump(modeS.replLine, 1) .. "👉 ")
+end
+#/lua
+
+#!lua
 function ModeS.eval(modeS)
    local line = tostring(modeS.linebuf)
    local chunk  = modeS.buffer .. line
@@ -455,7 +460,7 @@ function ModeS.eval(modeS)
          end
       else
       -- error
-         print(results[1])
+         modeS:write(results[1])
       end
    else
       if err:match "'<eof>'$" then
@@ -463,12 +468,11 @@ function ModeS.eval(modeS)
          modeS.buffer = chunk .. '\n'
          return '...'
       else
-         print(err)
+         modeS:write(err)
          modeS.buffer = ''
       end
    end
-
-   return '👉  '
+   modeS:prompt()
 end
 #/lua
 
@@ -487,6 +491,7 @@ function new(cfg)
   modeS.l_margin = 4
   modeS.r_margin = 83
   modeS.row = 2
+  modeS.replLine = 2
   return modeS
 end
 

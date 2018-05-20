@@ -27,6 +27,7 @@ local rawget = assert (rawget)
 
 local schar = assert(string.char)
 local sub   = assert(string.sub)
+local rep   = assert(string.rep)
 local byte  = assert(string.byte)
 local bit   = assert(bit, "anterm requires Luajit 'bit' or compatible in _G")
 local rshift = assert(bit.rshift)
@@ -333,6 +334,23 @@ function erase.right() return e__right end
 function erase.left()  return e__left  end
 
 function erase.line()  return e__line  end
+
+```
+```lua
+local cursor = {}
+function erase.box(tr, tc, br, bc)
+   assert(tr <= br and tc <= bc, "box must be at least 1 by 1")
+   local phrase = anterm.stash()
+               .. cursor.hide()
+               .. Jump(nil, tr, tc)
+   br = br + 1
+   bc = bc + 1
+   local blanks = rep(" ", bc - tc)
+   for i = 1, br - tr do
+      phrase = phrase .. blanks .. anterm.col(tc) .. jump.down(1)
+   end
+   return phrase .. anterm.pop() .. cursor.show()
+end
 ```
 ## Mouse
 
@@ -416,8 +434,6 @@ end
 function anterm.pop()
    return "\x1b8"
 end
-
-local cursor = {}
 anterm.cursor = cursor
 
 function cursor.hide()
