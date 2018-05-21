@@ -485,7 +485,7 @@ This should be configurable via =cfg=.
 #!lua
 function new(cfg)
   local modeS = meta(ModeS)
-  modeS.linebuf = Linebuf(1)
+  modeS.linebuf = Linebuf()
   modeS.buffer = ""
   modeS.hist  = Historian()
   -- this will be more complex but
