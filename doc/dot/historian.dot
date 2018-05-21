@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 169"]
+doc_0 [label="doc - 178"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-106"]
+section_1 [label="section: 1-107"]
 
 
 // END RANK doc_0
@@ -31,9 +31,9 @@ codeblock_7 [label="code block 16-20"]
 
 codeblock_8 [label="code block 22-24"]
 
-section_9 [label="section: 27-106"]
+section_9 [label="section: 27-107"]
 
-section_10 [label="section: 107-145"]
+section_10 [label="section: 108-154"]
 
 
 // END RANK section_1
@@ -246,11 +246,11 @@ header_35 [label="2 : Historian:prev()"]
 
 prose_36 [label="prose"]
 
-codeblock_37 [label="code block 109-120"]
+codeblock_37 [label="code block 110-127"]
 
-section_38 [label="section: 123-145"]
+section_38 [label="section: 130-154"]
 
-section_39 [label="section: 146-169"]
+section_39 [label="section: 155-178"]
 
 
 // END RANK section_10
@@ -277,10 +277,16 @@ leaf_43  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histor
    if historian.cursor == 0 then
       return Linebuf()
    end
-   local minus = historian.cursor > 1 and 1 or 0
-   local linebuf = historian[historian.cursor]:clone()
-   historian.cursor = historian.cursor - minus
+   local Δ = historian.cursor > 1 and 1 or 0
+   local linebuf
+   if historian.up then
+      linebuf = historian[historian.cursor + Δ]:clone()
+   else
+      linebuf = historian[historian.cursor - Δ]:clone()
+   end
+   historian.cursor = historian.cursor - Δ
    linebuf.cursor = #linebuf.line + 1
+   historian.up = true
    return linebuf
 end"]
 // END RANK codeblock_37
@@ -292,7 +298,7 @@ header_44 [label="3 : Historian:next()"]
 
 prose_45 [label="prose"]
 
-codeblock_46 [label="code block 128-143"]
+codeblock_46 [label="code block 135-152"]
 
 
 // END RANK section_38
@@ -336,18 +342,20 @@ leaf_55  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" it might be ti
 
 codeblock_46 -> leaf_56
 leaf_56  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.next(historian)
-   local plus = historian.cursor < #historian and 1 or 0
+   local Δ = historian.cursor < #historian and 1 or 0
    if historian.cursor == 0 then
       return Linebuf()
    end
-   historian.cursor = historian.cursor + plus
-   local linebuf = historian[historian.cursor]:clone()
-   linebuf.cursor = #linebuf.line + 1
-   if not (plus > 0) and #linebuf.line > 0 then
-      return linebuf, true
+   local linebuf
+   if not historian.up then
+      linebuf = historian[historian.cursor - Δ]:clone()
    else
-      return linebuf, false
+      linebuf = historian[historian.cursor + Δ]:clone()
    end
+   historian.cursor = historian.cursor + Δ
+   linebuf.cursor = #linebuf.line + 1
+   historian.up = false
+   return linebuf
 end"]
 // END RANK codeblock_46
 
@@ -358,11 +366,11 @@ header_57 [label="3 : Historian:append()"]
 
 prose_58 [label="prose"]
 
-codeblock_59 [label="code block 148-155"]
+codeblock_59 [label="code block 157-164"]
 
-codeblock_60 [label="code block 157-165"]
+codeblock_60 [label="code block 166-174"]
 
-codeblock_61 [label="code block 167-169"]
+codeblock_61 [label="code block 176-178"]
 
 
 // END RANK section_39

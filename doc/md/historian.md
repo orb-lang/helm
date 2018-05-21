@@ -110,10 +110,16 @@ function Historian.prev(historian)
    if historian.cursor == 0 then
       return Linebuf()
    end
-   local minus = historian.cursor > 1 and 1 or 0
-   local linebuf = historian[historian.cursor]:clone()
-   historian.cursor = historian.cursor - minus
+   local Δ = historian.cursor > 1 and 1 or 0
+   local linebuf
+   if historian.up then
+      linebuf = historian[historian.cursor + Δ]:clone()
+   else
+      linebuf = historian[historian.cursor - Δ]:clone()
+   end
+   historian.cursor = historian.cursor - Δ
    linebuf.cursor = #linebuf.line + 1
+   historian.up = true
    return linebuf
 end
 ```
@@ -124,18 +130,20 @@ Returns the next linebuf in history, and a second flag to tell the
 
 ```lua
 function Historian.next(historian)
-   local plus = historian.cursor < #historian and 1 or 0
+   local Δ = historian.cursor < #historian and 1 or 0
    if historian.cursor == 0 then
       return Linebuf()
    end
-   historian.cursor = historian.cursor + plus
-   local linebuf = historian[historian.cursor]:clone()
-   linebuf.cursor = #linebuf.line + 1
-   if not (plus > 0) and #linebuf.line > 0 then
-      return linebuf, true
+   local linebuf
+   if not historian.up then
+      linebuf = historian[historian.cursor - Δ]:clone()
    else
-      return linebuf, false
+      linebuf = historian[historian.cursor + Δ]:clone()
    end
+   historian.cursor = historian.cursor + Δ
+   linebuf.cursor = #linebuf.line + 1
+   historian.up = false
+   return linebuf
 end
 ```
 ### Historian:append()

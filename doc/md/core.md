@@ -158,7 +158,7 @@ string escaping but of course it is the Lua/C style of escaping.
 We add ``%t`` and ``%L`` (for λ), which call ``tostring`` on a table or a function
 respectively.  ``%t`` will actually accept all remaining compound types:
 ``userdata``, ``thread``, and ``cdata``.  While we're being thorough, ``%b`` for
-boolean.
+boolean.  Perhaps ``%*`` as a wildcard?
 
 
 Note our ``%L`` is not the C version.
