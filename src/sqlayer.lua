@@ -8,7 +8,18 @@
 
 local sql = require "sqlite"
 local pcall = assert (pcall)
+local gsub = assert(string.gsub)
 
+
+
+
+
+
+
+
+function sql.san(str)
+   return gsub(str, "'", "''")
+end
 
 
 

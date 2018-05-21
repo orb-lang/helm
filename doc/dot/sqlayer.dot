@@ -3,19 +3,19 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 34"]
+doc_0 [label="doc - 45"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-13"]
+section_1 [label="section: 1-24"]
 
 
 // END RANK doc_0
 
-section_1 -> { header_2 prose_3 prose_4 codeblock_5 section_6}
-{rank=same; header_2 prose_3 prose_4 codeblock_5 section_6}
+section_1 -> { header_2 prose_3 prose_4 codeblock_5 section_6 section_7}
+{rank=same; header_2 prose_3 prose_4 codeblock_5 section_6 section_7}
 
 header_2 [label="1 : SQLayer"]
 
@@ -23,139 +23,179 @@ prose_3 [label="prose"]
 
 prose_4 [label="prose"]
 
-codeblock_5 [label="code block 8-11"]
+codeblock_5 [label="code block 8-12"]
 
-section_6 [label="section: 14-34"]
+section_6 [label="section: 15-24"]
+
+section_7 [label="section: 25-45"]
 
 
 // END RANK section_1
 
-header_2 -> leaf_7
-leaf_7  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* SQLayer"]
+header_2 -> leaf_8
+leaf_8  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* SQLayer"]
 // END RANK header_2
 
-prose_3 -> { raw_8}
-{rank=same; raw_8}
+prose_3 -> { raw_9}
+{rank=same; raw_9}
 
-raw_8 [label="raw"]
+raw_9 [label="raw"]
 
 
 // END RANK prose_3
 
-raw_8 -> leaf_9
-leaf_9  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_9 -> leaf_10
+leaf_10  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 This will be in pylon eventually.
 "]
-// END RANK raw_8
+// END RANK raw_9
 
-prose_4 -> { raw_10 prespace_11 literal_12 raw_13}
-{rank=same; raw_10 prespace_11 literal_12 raw_13}
+prose_4 -> { raw_11 prespace_12 literal_13 raw_14}
+{rank=same; raw_11 prespace_12 literal_13 raw_14}
 
-raw_10 [label="raw"]
+raw_11 [label="raw"]
 
-prespace_11 [label="prespace"]
+prespace_12 [label="prespace"]
 
-literal_12 [label="literal"]
+literal_13 [label="literal"]
 
-raw_13 [label="raw"]
+raw_14 [label="raw"]
 
 
 // END RANK prose_4
 
-raw_10 -> leaf_14
-leaf_14  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_11 -> leaf_15
+leaf_15  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 Enhances the existing SQLite bindings, which in turn will be turned into a
 statically-linked part of"]
-// END RANK raw_10
+// END RANK raw_11
 
-prespace_11 -> leaf_15
-leaf_15  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_11
+prespace_12 -> leaf_16
+leaf_16  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_12
 
-literal_12 -> leaf_16
-leaf_16  [color=Gray,shape=rectangle,fontname=Inconsolata,label="pylon"]
-// END RANK literal_12
+literal_13 -> leaf_17
+leaf_17  [color=Gray,shape=rectangle,fontname=Inconsolata,label="pylon"]
+// END RANK literal_13
 
-raw_13 -> leaf_17
-leaf_17  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
+raw_14 -> leaf_18
+leaf_18  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
 "]
-// END RANK raw_13
+// END RANK raw_14
 
-codeblock_5 -> leaf_18
-leaf_18  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local sql = require \"sqlite\"
-local pcall = assert (pcall)"]
+codeblock_5 -> leaf_19
+leaf_19  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local sql = require \"sqlite\"
+local pcall = assert (pcall)
+local gsub = assert(string.gsub)"]
 // END RANK codeblock_5
 
-section_6 -> { header_19 prose_20 prose_21 codeblock_22 codeblock_23}
-{rank=same; header_19 prose_20 prose_21 codeblock_22 codeblock_23}
+section_6 -> { header_20 prose_21 codeblock_22}
+{rank=same; header_20 prose_21 codeblock_22}
 
-header_19 [label="2 : sql.pexec(conn, stmt)"]
-
-prose_20 [label="prose"]
+header_20 [label="2 : sql.san(str)"]
 
 prose_21 [label="prose"]
 
-codeblock_22 [label="code block 20-30"]
-
-codeblock_23 [label="code block 32-34"]
+codeblock_22 [label="code block 19-23"]
 
 
 // END RANK section_6
 
-header_19 -> leaf_24
-leaf_24  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** sql.pexec(conn, stmt)"]
-// END RANK header_19
+header_20 -> leaf_23
+leaf_23  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** sql.san(str)"]
+// END RANK header_20
 
-prose_20 -> { raw_25}
-{rank=same; raw_25}
+prose_21 -> { raw_24}
+{rank=same; raw_24}
 
-raw_25 [label="raw"]
-
-
-// END RANK prose_20
-
-raw_25 -> leaf_26
-leaf_26  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-
-Executes the statement on conn in protected mode.
-"]
-// END RANK raw_25
-
-prose_21 -> { raw_27 prespace_28 literal_29 raw_30}
-{rank=same; raw_27 prespace_28 literal_29 raw_30}
-
-raw_27 [label="raw"]
-
-prespace_28 [label="prespace"]
-
-literal_29 [label="literal"]
-
-raw_30 [label="raw"]
+raw_24 [label="raw"]
 
 
 // END RANK prose_21
 
-raw_27 -> leaf_31
-leaf_31  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-Unwraps and returns success, or"]
-// END RANK raw_27
+raw_24 -> leaf_25
+leaf_25  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
-prespace_28 -> leaf_32
-leaf_32  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_28
-
-literal_29 -> leaf_33
-leaf_33  [color=Gray,shape=rectangle,fontname=Inconsolata,label="false"]
-// END RANK literal_29
-
-raw_30 -> leaf_34
-leaf_34  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" and error.
+Sanitizes a string for SQL(ite) quoting
 "]
-// END RANK raw_30
+// END RANK raw_24
 
-codeblock_22 -> leaf_35
-leaf_35  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function sql.pexec(conn, stmt)
+codeblock_22 -> leaf_26
+leaf_26  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function sql.san(str)
+   return gsub(str, \"'\", \"''\")
+end"]
+// END RANK codeblock_22
+
+section_7 -> { header_27 prose_28 prose_29 codeblock_30 codeblock_31}
+{rank=same; header_27 prose_28 prose_29 codeblock_30 codeblock_31}
+
+header_27 [label="2 : sql.pexec(conn, stmt)"]
+
+prose_28 [label="prose"]
+
+prose_29 [label="prose"]
+
+codeblock_30 [label="code block 31-41"]
+
+codeblock_31 [label="code block 43-45"]
+
+
+// END RANK section_7
+
+header_27 -> leaf_32
+leaf_32  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** sql.pexec(conn, stmt)"]
+// END RANK header_27
+
+prose_28 -> { raw_33}
+{rank=same; raw_33}
+
+raw_33 [label="raw"]
+
+
+// END RANK prose_28
+
+raw_33 -> leaf_34
+leaf_34  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+Executes the statement on conn in protected mode.
+"]
+// END RANK raw_33
+
+prose_29 -> { raw_35 prespace_36 literal_37 raw_38}
+{rank=same; raw_35 prespace_36 literal_37 raw_38}
+
+raw_35 [label="raw"]
+
+prespace_36 [label="prespace"]
+
+literal_37 [label="literal"]
+
+raw_38 [label="raw"]
+
+
+// END RANK prose_29
+
+raw_35 -> leaf_39
+leaf_39  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Unwraps and returns success, or"]
+// END RANK raw_35
+
+prespace_36 -> leaf_40
+leaf_40  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_36
+
+literal_37 -> leaf_41
+leaf_41  [color=Gray,shape=rectangle,fontname=Inconsolata,label="false"]
+// END RANK literal_37
+
+raw_38 -> leaf_42
+leaf_42  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" and error.
+"]
+// END RANK raw_38
+
+codeblock_30 -> leaf_43
+leaf_43  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function sql.pexec(conn, stmt)
    -- conn:exec(stmt)
    local success, value = pcall(conn.exec, conn, stmt)
    if success then
@@ -164,11 +204,11 @@ leaf_35  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function sql.pe
       return false, value
    end
 end"]
-// END RANK codeblock_22
+// END RANK codeblock_30
 
-codeblock_23 -> leaf_36
-leaf_36  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return sql"]
-// END RANK codeblock_23
+codeblock_31 -> leaf_44
+leaf_44  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return sql"]
+// END RANK codeblock_31
 
 
 }

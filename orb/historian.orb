@@ -15,26 +15,12 @@ record.  We should store the line as a string, to facilitate fuzzy matching.
 
 #!lua
 local Linebuf = require "linebuf"
-local sql = require "sqlayer"
+local sql     = require "sqlayer"
+local format  = assert (string.format)
 #/lua
 
 #!lua
 local Historian = meta {}
-#/lua
-
-
-**** clone(linebuf)
-
-Does a slightly less than shallow clone.
-
-#!lua
-local cl = assert(table.clone, "table.clone must be provided")
-
-local function clone(linebuf)
-   local lb = cl(linebuf)
-   lb.line = cl(lb.line)
-   return lb
-end
 #/lua
 
 
@@ -64,9 +50,9 @@ SELECT name FROM sqlite_master WHERE type='table';
 
 local get_recent = [[
 SELECT line FROM repl
-   WHERE project = ?
+   WHERE project = '%s'
    ORDER BY time
-   DESC LIMIT ?;
+   DESC LIMIT %d;
 ]]
 
 Historian.home_dir = io.popen("echo $HOME", "r"):read("*a"):sub(1, -2)
@@ -85,7 +71,7 @@ function Historian.load(historian)
    local conn = sql.open(historian.home_dir .. "/.bridge")
    historian.conn = conn
    local table_names = conn:exec(get_tables)
-   if not table_names or not has(table_names, "repl") then
+   if not table_names or not has(table_names.name, "repl") then
       local success, err = sql.pexec(conn, create_repl_table)
       -- success is nil for creation, false for error
       if success == false then
@@ -93,10 +79,10 @@ function Historian.load(historian)
       end
    end
    historian.insert_stmt = conn:prepare(insert_line_stmt)
-   local pop_stmt = conn:prepare(get_recent)
-   historian.pop_stmt = pop_stmt -- remove
-   pop_stmt:bind(historian.project, historian.HISTORY_LIMIT)
-   local values, err = pop_stmt:step()
+   local pop_stmt = format(get_recent,
+                       sql.san(historian.project),
+                       historian.HISTORY_LIMIT)
+   local values, err = sql.pexec(conn, pop_stmt)
    if values then
       historian.values = values
       return values
@@ -108,6 +94,7 @@ function Historian.load(historian)
          return false, err
       end
    end
+   --]]
 end
 
 function Historian.persist(historian, linebuf)
@@ -133,9 +120,9 @@ function Historian.prev(historian)
    local minus = historian.cursor > 1 and 1 or 0
    local linebuf
    if historian.cursor == #historian then
-      linebuf = clone(historian[#historian])
+      linebuf = historian[#historian]:clone()
    else
-      linebuf = clone(historian[historian.cursor])
+      linebuf = historian[historian.cursor]:clone()
    end
    historian.cursor = historian.cursor - minus
    linebuf.cursor = #linebuf.line + 1
@@ -156,7 +143,7 @@ function Historian.next(historian)
       return Linebuf(1)
    end
    historian.cursor = historian.cursor + plus
-   local linebuf = clone(historian[historian.cursor])
+   local linebuf = historian[historian.cursor]:clone()
    linebuf.cursor = #linebuf.line + 1
    if not (plus > 0) and #linebuf.line > 0 then
       return linebuf, true

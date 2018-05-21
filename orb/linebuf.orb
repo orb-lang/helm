@@ -145,17 +145,30 @@ end
 
 #!lua
 function Linebuf.suspend(linebuf)
-   linebuf.__line = tostring(linebuf)
+   linebuf.line = tostring(linebuf)
    linebuf.line = nil
    linebuf.cursor = nil
    return linebuf
 end
 
 function Linebuf.resume(linebuf)
-   linebuf.line = codepoints(linebuf.__line)
-   linebuf.__line = nil
+   linebuf.line = codepoints(linebuf.line)
    linebuf.cursor = #linebuf.line + 1
    return linebuf
+end
+#/lua
+
+#!lua
+local cl = assert(table.clone, "table.clone must be provided")
+
+function Linebuf.clone(linebuf)
+   local lb = cl(linebuf)
+   if type(lb.line) == "table" then
+      lb.line = cl(lb.line)
+   elseif type(lb.line) == "string" then
+      lb:resume()
+   end
+   return lb
 end
 #/lua
 

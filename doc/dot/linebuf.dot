@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 174"]
+doc_0 [label="doc - 187"]
 
 
 doc_0 -> { section_1}
@@ -427,7 +427,7 @@ prose_101 [label="prose"]
 
 prose_102 [label="prose"]
 
-section_103 [label="section: 73-174"]
+section_103 [label="section: 73-187"]
 
 
 // END RANK section_10
@@ -516,8 +516,8 @@ long input.
 "]
 // END RANK raw_121
 
-section_103 -> { header_123 prose_124 codeblock_125 codeblock_126 codeblock_127 codeblock_128}
-{rank=same; header_123 prose_124 codeblock_125 codeblock_126 codeblock_127 codeblock_128}
+section_103 -> { header_123 prose_124 codeblock_125 codeblock_126 codeblock_127 codeblock_128 codeblock_129}
+{rank=same; header_123 prose_124 codeblock_125 codeblock_126 codeblock_127 codeblock_128 codeblock_129}
 
 header_123 [label="3 : join(token, frag)"]
 
@@ -525,36 +525,38 @@ prose_124 [label="prose"]
 
 codeblock_125 [label="code block 77-142"]
 
-codeblock_126 [label="code block 146-160"]
+codeblock_126 [label="code block 146-159"]
 
-codeblock_127 [label="code block 162-170"]
+codeblock_127 [label="code block 161-173"]
 
-codeblock_128 [label="code block 172-174"]
+codeblock_128 [label="code block 175-183"]
+
+codeblock_129 [label="code block 185-187"]
 
 
 // END RANK section_103
 
-header_123 -> leaf_129
-leaf_129  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** join(token, frag)"]
+header_123 -> leaf_130
+leaf_130  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** join(token, frag)"]
 // END RANK header_123
 
-prose_124 -> { raw_130}
-{rank=same; raw_130}
+prose_124 -> { raw_131}
+{rank=same; raw_131}
 
-raw_130 [label="raw"]
+raw_131 [label="raw"]
 
 
 // END RANK prose_124
 
-raw_130 -> leaf_131
-leaf_131  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_131 -> leaf_132
+leaf_132  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 Decides when to emit a new token.
 "]
-// END RANK raw_130
+// END RANK raw_131
 
-codeblock_125 -> leaf_132
-leaf_132  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function join(token, frag)
+codeblock_125 -> leaf_133
+leaf_133  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function join(token, frag)
    if sub(token, -1) == \" \" and sub(frag, 1,1) ~= \" \" then
       return token, frag
    else
@@ -620,35 +622,48 @@ function Linebuf.right(linebuf, disp)
 end"]
 // END RANK codeblock_125
 
-codeblock_126 -> leaf_133
-leaf_133  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Linebuf.suspend(linebuf)
-   linebuf.__line = tostring(linebuf)
+codeblock_126 -> leaf_134
+leaf_134  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Linebuf.suspend(linebuf)
+   linebuf.line = tostring(linebuf)
    linebuf.line = nil
    linebuf.cursor = nil
    return linebuf
 end
 
 function Linebuf.resume(linebuf)
-   linebuf.line = codepoints(linebuf.__line)
-   linebuf.__line = nil
+   linebuf.line = codepoints(linebuf.line)
    linebuf.cursor = #linebuf.line + 1
    return linebuf
 end"]
 // END RANK codeblock_126
 
-codeblock_127 -> leaf_134
-leaf_134  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new(cursor)
+codeblock_127 -> leaf_135
+leaf_135  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local cl = assert(table.clone, \"table.clone must be provided\")
+
+function Linebuf.clone(linebuf)
+   local lb = cl(linebuf)
+   if type(lb.line) == \"table\" then
+      lb.line = cl(lb.line)
+   elseif type(lb.line) == \"string\" then
+      lb:resume()
+   end
+   return lb
+end"]
+// END RANK codeblock_127
+
+codeblock_128 -> leaf_136
+leaf_136  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new(cursor)
    local linebuf = meta(Linebuf)
    linebuf.line  = {}
    -- Cursor may be nil, for multi-line
    linebuf.cursor = cursor
    return linebuf
 end"]
-// END RANK codeblock_127
-
-codeblock_128 -> leaf_135
-leaf_135  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return new"]
 // END RANK codeblock_128
+
+codeblock_129 -> leaf_137
+leaf_137  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return new"]
+// END RANK codeblock_129
 
 
 }

@@ -9,6 +9,16 @@ statically-linked part of ``pylon``.
 ```lua
 local sql = require "sqlite"
 local pcall = assert (pcall)
+local gsub = assert(string.gsub)
+```
+## sql.san(str)
+
+Sanitizes a string for SQL(ite) quoting
+
+```lua
+function sql.san(str)
+   return gsub(str, "'", "''")
+end
 ```
 ## sql.pexec(conn, stmt)
 
