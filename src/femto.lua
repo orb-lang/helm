@@ -37,12 +37,14 @@ uv = require "luv"
 
 
 
-local core = require "core"
+core = require "core"
 string.cleave, string.litpat = core.cleave, core.litpat
 string.utf8 = core.utf8
 string.codepoints = core.codepoints
 table.splice = core.splice
 table.clone = core.clone
+table.arrayof = core.arrayof
+table.select = core.select
 utf8 = core.utf8
 codepoints = core.codepoints
 _G.meta = core.meta
@@ -122,6 +124,9 @@ local stdin = uv.new_tty(0, true)
 
 
 
+-- This switches screens and does a wipe,
+-- then puts the cursor at 1,1.
+write "\x1b[?47h\x1b[2J\x1b[H"
 modeS = require "modeselektor" ()
 modeS.max_row, modeS.max_col = uv.tty_get_winsize(stdin)
 
@@ -272,9 +277,7 @@ end
 -- Get names for as many values as possible
 -- into the colorizer
 color.allNames()
--- This switches screens and does a wipe,
--- then puts the cursor at 1,1.
-write "\x1b[?47h\x1b[2J\x1b[H"
+
 print "an repl, plz reply uwu 👀"
 displayPrompt '👉  '
 -- Crude hack to choose raw mode at runtime

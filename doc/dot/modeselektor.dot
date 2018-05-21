@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 547"]
+doc_0 [label="doc - 550"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-499"]
+section_1 [label="section: 1-502"]
 
 
 // END RANK doc_0
@@ -25,9 +25,9 @@ prose_4 [label="prose"]
 
 section_5 [label="section: 12-261"]
 
-section_6 [label="section: 284-410"]
+section_6 [label="section: 284-413"]
 
-section_7 [label="section: 500-547"]
+section_7 [label="section: 503-550"]
 
 
 // END RANK section_1
@@ -1392,7 +1392,7 @@ leaf_370  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ModeS.modes = 
                 CTRL   = CTRL,
                 ALT    = ALT,
                 MOUSE  = MOUSE,
-                NYI    = true }"]
+                NYI    = {} }"]
 // END RANK codeblock_317
 
 prose_318 -> { raw_371 prespace_372 literal_373 raw_374}
@@ -1651,21 +1651,21 @@ prose_406 [label="prose"]
 
 prose_407 [label="prose"]
 
-codeblock_408 [label="code block 297-328"]
+codeblock_408 [label="code block 297-331"]
 
 prose_409 [label="prose"]
 
-codeblock_410 [label="code block 333-337"]
+codeblock_410 [label="code block 336-340"]
 
-section_411 [label="section: 340-346"]
+section_411 [label="section: 343-349"]
 
-section_412 [label="section: 347-389"]
+section_412 [label="section: 350-392"]
 
-section_413 [label="section: 390-408"]
+section_413 [label="section: 393-411"]
 
-section_414 [label="section: 409-410"]
+section_414 [label="section: 412-413"]
 
-section_415 [label="section: 411-499"]
+section_415 [label="section: 414-502"]
 
 
 // END RANK section_6
@@ -1828,7 +1828,10 @@ leaf_451  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS
    else
       icon_paint(\"NYI\", category .. \":\" .. value)
    end
-   colwrite(modeS.hist.cursor, STATCOL, 3)
+   colwrite(a.bold(modeS.hist.cursor), STATCOL + 6, 3)
+   for i,v in ipairs(modeS.hist) do
+      colwrite(tostring(v.line), STATCOL, i + 4)
+   end
    return modeS:paint_row()
 end"]
 // END RANK codeblock_408
@@ -1924,7 +1927,7 @@ header_469 [label="3 : NAV"]
 
 prose_470 [label="prose"]
 
-codeblock_471 [label="code block 349-387"]
+codeblock_471 [label="code block 352-390"]
 
 
 // END RANK section_412
@@ -1993,7 +1996,7 @@ header_476 [label="3 : CTRL"]
 
 prose_477 [label="prose"]
 
-codeblock_478 [label="code block 394-406"]
+codeblock_478 [label="code block 397-409"]
 
 
 // END RANK section_413
@@ -2065,17 +2068,17 @@ header_488 [label="3 : ModeS:write(str)"]
 
 prose_489 [label="prose"]
 
-codeblock_490 [label="code block 417-424"]
+codeblock_490 [label="code block 420-427"]
 
-codeblock_491 [label="code block 426-431"]
+codeblock_491 [label="code block 429-434"]
 
-codeblock_492 [label="code block 433-440"]
+codeblock_492 [label="code block 436-443"]
 
-codeblock_493 [label="code block 442-446"]
+codeblock_493 [label="code block 445-449"]
 
-codeblock_494 [label="code block 448-452"]
+codeblock_494 [label="code block 451-455"]
 
-codeblock_495 [label="code block 454-497"]
+codeblock_495 [label="code block 457-500"]
 
 
 // END RANK section_415
@@ -2190,9 +2193,9 @@ header_505 [label="2 : new"]
 
 prose_506 [label="prose"]
 
-codeblock_507 [label="code block 504-519"]
+codeblock_507 [label="code block 507-522"]
 
-codeblock_508 [label="code block 521-523"]
+codeblock_508 [label="code block 524-526"]
 
 
 // END RANK section_7

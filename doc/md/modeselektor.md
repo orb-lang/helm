@@ -169,7 +169,7 @@ ModeS.modes = { ASCII  = ASCII,
                 CTRL   = CTRL,
                 ALT    = ALT,
                 MOUSE  = MOUSE,
-                NYI    = true }
+                NYI    = {} }
 ```
 
 Sometimes its useful to briefly override handlers, so we check values
@@ -333,7 +333,10 @@ function ModeS.act(modeS, category, value)
    else
       icon_paint("NYI", category .. ":" .. value)
    end
-   colwrite(modeS.hist.cursor, STATCOL, 3)
+   colwrite(a.bold(modeS.hist.cursor), STATCOL + 6, 3)
+   for i,v in ipairs(modeS.hist) do
+      colwrite(tostring(v.line), STATCOL, i + 4)
+   end
    return modeS:paint_row()
 end
 ```

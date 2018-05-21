@@ -67,6 +67,28 @@ local function has(table, name)
    return false
 end
 
+
+
+
+local STATCOL = 81
+local STAT_TOP = 1
+local STAT_RUN = 2
+
+local function colwrite(str, col, row)
+   col = col or STATCOL
+   row = row or STAT_TOP
+   local dash = a.stash()
+             .. a.cursor.hide()
+             .. a.jump(row, col)
+             .. a.erase.right()
+             .. str
+             .. a.pop()
+             .. a.cursor.show()
+   write(dash)
+end
+
+
+
 function Historian.load(historian)
    local conn = sql.open(historian.home_dir .. "/.bridge")
    historian.conn = conn
@@ -84,9 +106,12 @@ function Historian.load(historian)
    local values, err = sql.pexec(conn, pop_stmt)
    if values then
       historian.values = values
+      local off = #values[1] + 1
       for i,v in ipairs(values[1]) do
-         historian[i] = Linebuf(v)
+         historian[off - i] = Linebuf(v)
       end
+      historian.cursor = #historian
+      historian.up = false
       return values
    end
 end
@@ -112,16 +137,25 @@ function Historian.prev(historian)
    if historian.cursor == 0 then
       return Linebuf()
    end
-   local Δ = historian.cursor > 1 and 1 or 0
-   local linebuf
+   local delta = historian.cursor > 1 and 1 or 0
+   local linebuf = ""
    if historian.up then
-      linebuf = historian[historian.cursor + Δ]:clone()
+      linebuf = historian[historian.cursor + delta]:clone()
    else
-      linebuf = historian[historian.cursor - Δ]:clone()
+      linebuf = historian[historian.cursor - delta]:clone()
    end
-   historian.cursor = historian.cursor - Δ
+   historian.cursor = historian.cursor - delta
    linebuf.cursor = #linebuf.line + 1
    historian.up = true
+   colwrite(tostring(linebuf) .. " "
+         .. tostring(historian[historian.cursor])
+         .. " " .. historian.cursor
+         .. " " .. delta, nil, 4)
+   if historian.cursor <= #historian.values[1] then
+      colwrite(historian.values[1][historian.cursor], nil, 5)
+   else
+      colwrite("", nil, 5)
+   end
    return linebuf
 end
 
@@ -134,20 +168,25 @@ end
 
 
 function Historian.next(historian)
-   local Δ = historian.cursor < #historian and 1 or 0
+   local delta = historian.cursor < #historian and 1 or 0
    if historian.cursor == 0 then
       return Linebuf()
    end
    local linebuf
    if not historian.up then
-      linebuf = historian[historian.cursor - Δ]:clone()
+      linebuf = historian[historian.cursor - delta]:clone()
    else
-      linebuf = historian[historian.cursor + Δ]:clone()
+      linebuf = historian[historian.cursor + delta]:clone()
    end
-   historian.cursor = historian.cursor + Δ
+   historian.cursor = historian.cursor + delta
+   historian["delta"] = delta
    linebuf.cursor = #linebuf.line + 1
    historian.up = false
-   return linebuf
+   if not (delta > 0) and #linebuf.line > 0 then
+      return linebuf, true
+   else
+      return linebuf, false
+   end
 end
 
 
@@ -158,16 +197,16 @@ end
 function Historian.append(historian, linebuf)
    historian[#historian + 1] = linebuf
    historian.cursor = #historian
+   historian.up = false
    historian:persist(linebuf)
    return true
 end
 
 
 
-local function new(linebuf)
+local function new()
    local historian = meta(Historian)
    historian:load()
-   historian.cursor = #historian
    return historian
 end
 Historian.idEst = new

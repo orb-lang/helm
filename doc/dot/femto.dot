@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 304"]
+doc_0 [label="doc - 307"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-206"]
+section_1 [label="section: 1-211"]
 
 
 // END RANK doc_0
@@ -23,11 +23,11 @@ prose_3 [label="prose"]
 
 section_4 [label="section: 6-25"]
 
-section_5 [label="section: 32-108"]
+section_5 [label="section: 32-110"]
 
-section_6 [label="section: 122-206"]
+section_6 [label="section: 124-211"]
 
-section_7 [label="section: 207-211"]
+section_7 [label="section: 212-216"]
 
 
 // END RANK section_1
@@ -168,23 +168,23 @@ prose_31 [label="prose"]
 
 prose_32 [label="prose"]
 
-codeblock_33 [label="code block 39-53"]
+codeblock_33 [label="code block 39-55"]
 
 prose_34 [label="prose"]
 
 prose_35 [label="prose"]
 
-codeblock_36 [label="code block 60-67"]
+codeblock_36 [label="code block 62-69"]
 
 prose_37 [label="prose"]
 
 prose_38 [label="prose"]
 
-codeblock_39 [label="code block 74-95"]
+codeblock_39 [label="code block 76-97"]
 
-codeblock_40 [label="code block 97-106"]
+codeblock_40 [label="code block 99-108"]
 
-section_41 [label="section: 109-121"]
+section_41 [label="section: 111-123"]
 
 
 // END RANK section_5
@@ -278,12 +278,14 @@ leaf_64  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", will eventual
 // END RANK raw_57
 
 codeblock_33 -> leaf_65
-leaf_65  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local core = require \"core\"
+leaf_65  [color=Gray,shape=rectangle,fontname=Inconsolata,label="core = require \"core\"
 string.cleave, string.litpat = core.cleave, core.litpat
 string.utf8 = core.utf8
 string.codepoints = core.codepoints
 table.splice = core.splice
 table.clone = core.clone
+table.arrayof = core.arrayof
+table.select = core.select
 utf8 = core.utf8
 codepoints = core.codepoints
 _G.meta = core.meta
@@ -437,7 +439,7 @@ header_89 [label="3 : tty setup"]
 
 prose_90 [label="prose"]
 
-codeblock_91 [label="code block 111-119"]
+codeblock_91 [label="code block 113-121"]
 
 
 // END RANK section_41
@@ -476,11 +478,11 @@ header_96 [label="2 : Modeselektor"]
 
 prose_97 [label="prose"]
 
-codeblock_98 [label="code block 124-127"]
+codeblock_98 [label="code block 126-132"]
 
-codeblock_99 [label="code block 129-191"]
+codeblock_99 [label="code block 134-196"]
 
-codeblock_100 [label="code block 193-204"]
+codeblock_100 [label="code block 198-209"]
 
 
 // END RANK section_6
@@ -503,7 +505,10 @@ leaf_103  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 // END RANK raw_102
 
 codeblock_98 -> leaf_104
-leaf_104  [color=Gray,shape=rectangle,fontname=Inconsolata,label="modeS = require \"modeselektor\" ()
+leaf_104  [color=Gray,shape=rectangle,fontname=Inconsolata,label="-- This switches screens and does a wipe,
+-- then puts the cursor at 1,1.
+write \"\\x1b[?47h\\x1b[2J\\x1b[H\"
+modeS = require \"modeselektor\" ()
 modeS.max_row, modeS.max_col = uv.tty_get_winsize(stdin)"]
 // END RANK codeblock_98
 
@@ -591,7 +596,7 @@ header_107 [label="2 : Reader"]
 
 prose_108 [label="prose"]
 
-section_109 [label="section: 212-304"]
+section_109 [label="section: 217-307"]
 
 
 // END RANK section_7
@@ -659,9 +664,9 @@ header_125 [label="3 : process_escapes(seq)"]
 
 prose_126 [label="prose"]
 
-codeblock_127 [label="code block 214-269"]
+codeblock_127 [label="code block 219-274"]
 
-codeblock_128 [label="code block 271-304"]
+codeblock_128 [label="code block 276-307"]
 
 
 // END RANK section_109
@@ -744,9 +749,7 @@ codeblock_128 -> leaf_133
 leaf_133  [color=Gray,shape=rectangle,fontname=Inconsolata,label="-- Get names for as many values as possible
 -- into the colorizer
 color.allNames()
--- This switches screens and does a wipe,
--- then puts the cursor at 1,1.
-write \"\\x1b[?47h\\x1b[2J\\x1b[H\"
+
 print \"an repl, plz reply uwu 👀\"
 displayPrompt '👉  '
 -- Crude hack to choose raw mode at runtime

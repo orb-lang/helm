@@ -60,6 +60,44 @@ end
 
 
 
+function core.arrayof(tab)
+   local arr = {}
+   for i,v in ipairs(tab) do
+      arr[i] = v
+   end
+   return arr
+end
+
+
+
+
+
+
+
+
+local function _select(collection, tab, key, cycle)
+   for k,v in pairs(tab) do
+      if key == k then
+         collection[#collection + 1] = v
+      end
+      if type(v) == "table" and not cycle[v] then
+         cycle[v] = true
+         collection = _select(collection, v, key, cycle)
+      end
+   end
+   return collection
+end
+
+function core.select(tab, key)
+   return _select({}, tab, key, {})
+end
+
+
+
+
+
+
+
 
 local insert = table.insert
 
