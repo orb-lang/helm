@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 181"]
+doc_0 [label="doc - 169"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-112"]
+section_1 [label="section: 1-106"]
 
 
 // END RANK doc_0
@@ -31,9 +31,9 @@ codeblock_7 [label="code block 16-20"]
 
 codeblock_8 [label="code block 22-24"]
 
-section_9 [label="section: 27-112"]
+section_9 [label="section: 27-106"]
 
-section_10 [label="section: 113-156"]
+section_10 [label="section: 107-145"]
 
 
 // END RANK section_1
@@ -121,7 +121,7 @@ header_22 [label="2 : Historian:load()"]
 
 prose_23 [label="prose"]
 
-codeblock_24 [label="code block 32-111"]
+codeblock_24 [label="code block 32-105"]
 
 
 // END RANK section_9
@@ -185,7 +185,7 @@ SELECT name FROM sqlite_master WHERE type='table';
 
 local get_recent = [[
 SELECT line FROM repl
-   WHERE project = '%s'
+   WHERE project = %s
    ORDER BY time
    DESC LIMIT %d;
 ]]
@@ -214,22 +214,16 @@ function Historian.load(historian)
       end
    end
    historian.insert_stmt = conn:prepare(insert_line_stmt)
-   local pop_stmt = format(get_recent,
-                       sql.san(historian.project),
-                       historian.HISTORY_LIMIT)
+   local pop_stmt = sql.format(get_recent, historian.project,
+                        historian.HISTORY_LIMIT)
    local values, err = sql.pexec(conn, pop_stmt)
    if values then
       historian.values = values
-      return values
-   else
-
-      if values then
-         return values
-      else
-         return false, err
+      for i,v in ipairs(values[1]) do
+         historian[i] = Linebuf(v)
       end
+      return values
    end
-   --]]
 end
 
 function Historian.persist(historian, linebuf)
@@ -252,11 +246,11 @@ header_35 [label="2 : Historian:prev()"]
 
 prose_36 [label="prose"]
 
-codeblock_37 [label="code block 115-131"]
+codeblock_37 [label="code block 109-120"]
 
-section_38 [label="section: 134-156"]
+section_38 [label="section: 123-145"]
 
-section_39 [label="section: 157-181"]
+section_39 [label="section: 146-169"]
 
 
 // END RANK section_10
@@ -281,15 +275,10 @@ leaf_42  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 codeblock_37 -> leaf_43
 leaf_43  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.prev(historian)
    if historian.cursor == 0 then
-      return Linebuf(1)
+      return Linebuf()
    end
    local minus = historian.cursor > 1 and 1 or 0
-   local linebuf
-   if historian.cursor == #historian then
-      linebuf = historian[#historian]:clone()
-   else
-      linebuf = historian[historian.cursor]:clone()
-   end
+   local linebuf = historian[historian.cursor]:clone()
    historian.cursor = historian.cursor - minus
    linebuf.cursor = #linebuf.line + 1
    return linebuf
@@ -303,7 +292,7 @@ header_44 [label="3 : Historian:next()"]
 
 prose_45 [label="prose"]
 
-codeblock_46 [label="code block 139-154"]
+codeblock_46 [label="code block 128-143"]
 
 
 // END RANK section_38
@@ -349,7 +338,7 @@ codeblock_46 -> leaf_56
 leaf_56  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.next(historian)
    local plus = historian.cursor < #historian and 1 or 0
    if historian.cursor == 0 then
-      return Linebuf(1)
+      return Linebuf()
    end
    historian.cursor = historian.cursor + plus
    local linebuf = historian[historian.cursor]:clone()
@@ -369,11 +358,11 @@ header_57 [label="3 : Historian:append()"]
 
 prose_58 [label="prose"]
 
-codeblock_59 [label="code block 159-166"]
+codeblock_59 [label="code block 148-155"]
 
-codeblock_60 [label="code block 168-177"]
+codeblock_60 [label="code block 157-165"]
 
-codeblock_61 [label="code block 179-181"]
+codeblock_61 [label="code block 167-169"]
 
 
 // END RANK section_39
@@ -407,9 +396,8 @@ end"]
 codeblock_60 -> leaf_66
 leaf_66  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new(linebuf)
    local historian = meta(Historian)
-   historian[1] = linebuf
-   historian.cursor = linebuf and 1 or 0
    historian:load()
+   historian.cursor = #historian
    return historian
 end
 Historian.idEst = new"]

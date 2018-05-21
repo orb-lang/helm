@@ -50,7 +50,7 @@ SELECT name FROM sqlite_master WHERE type='table';
 
 local get_recent = [[
 SELECT line FROM repl
-   WHERE project = '%s'
+   WHERE project = %s
    ORDER BY time
    DESC LIMIT %d;
 ]]
@@ -79,22 +79,16 @@ function Historian.load(historian)
       end
    end
    historian.insert_stmt = conn:prepare(insert_line_stmt)
-   local pop_stmt = format(get_recent,
-                       sql.san(historian.project),
-                       historian.HISTORY_LIMIT)
+   local pop_stmt = sql.format(get_recent, historian.project,
+                        historian.HISTORY_LIMIT)
    local values, err = sql.pexec(conn, pop_stmt)
    if values then
       historian.values = values
-      return values
-   else
-
-      if values then
-         return values
-      else
-         return false, err
+      for i,v in ipairs(values[1]) do
+         historian[i] = Linebuf(v)
       end
+      return values
    end
-   --]]
 end
 
 function Historian.persist(historian, linebuf)
@@ -114,15 +108,10 @@ end
 ```lua
 function Historian.prev(historian)
    if historian.cursor == 0 then
-      return Linebuf(1)
+      return Linebuf()
    end
    local minus = historian.cursor > 1 and 1 or 0
-   local linebuf
-   if historian.cursor == #historian then
-      linebuf = historian[#historian]:clone()
-   else
-      linebuf = historian[historian.cursor]:clone()
-   end
+   local linebuf = historian[historian.cursor]:clone()
    historian.cursor = historian.cursor - minus
    linebuf.cursor = #linebuf.line + 1
    return linebuf
@@ -137,7 +126,7 @@ Returns the next linebuf in history, and a second flag to tell the
 function Historian.next(historian)
    local plus = historian.cursor < #historian and 1 or 0
    if historian.cursor == 0 then
-      return Linebuf(1)
+      return Linebuf()
    end
    historian.cursor = historian.cursor + plus
    local linebuf = historian[historian.cursor]:clone()
@@ -162,9 +151,8 @@ end
 ```lua
 local function new(linebuf)
    local historian = meta(Historian)
-   historian[1] = linebuf
-   historian.cursor = linebuf and 1 or 0
    historian:load()
+   historian.cursor = #historian
    return historian
 end
 Historian.idEst = new

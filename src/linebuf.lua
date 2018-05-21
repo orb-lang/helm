@@ -34,6 +34,11 @@
 
 
 
+
+
+
+
+
 local sub, byte = assert(string.sub), assert(string.byte)
 
 
@@ -54,7 +59,11 @@ end
 local concat = table.concat
 
 function Linebuf.__tostring(linebuf)
-   return concat(linebuf.line)
+   if type(linebuf.line) == "table" then
+      return concat(linebuf.line)
+   else
+      return linebuf.line
+   end
 end
 
 
@@ -144,10 +153,10 @@ end
 
 
 
+local cl = assert(table.clone, "table.clone must be provided")
+
 function Linebuf.suspend(linebuf)
    linebuf.line = tostring(linebuf)
-   linebuf.line = nil
-   linebuf.cursor = nil
    return linebuf
 end
 
@@ -158,8 +167,6 @@ function Linebuf.resume(linebuf)
 end
 
 
-
-local cl = assert(table.clone, "table.clone must be provided")
 
 function Linebuf.clone(linebuf)
    local lb = cl(linebuf)
@@ -173,11 +180,10 @@ end
 
 
 
-local function new(cursor)
+local function new(line)
    local linebuf = meta(Linebuf)
-   linebuf.line  = {}
-   -- Cursor may be nil, for multi-line
-   linebuf.cursor = cursor
+   linebuf.cursor = line and #line or 1
+   linebuf.line  = line or {}
    return linebuf
 end
 

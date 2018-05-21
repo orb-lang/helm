@@ -365,7 +365,7 @@ function NAV.DOWN(modeS, category, value)
    local next_p
    modeS.linebuf, next_p = modeS.hist:next()
    if next_p then
-      modeS.linebuf = Linebuf(1)
+      modeS.linebuf = Linebuf()
    end
    return modeS
 end
@@ -383,7 +383,7 @@ function NAV.RETURN(modeS, category, value)
    modeS:nl()
    modeS:eval()
    modeS.hist:append(modeS.linebuf)
-   modeS.linebuf = Linebuf(1)
+   modeS.linebuf = Linebuf()
 end
 
 function NAV.BACKSPACE(modeS, category, value)
@@ -485,7 +485,7 @@ This should be configurable via ``cfg``.
 ```lua
 function new(cfg)
   local modeS = meta(ModeS)
-  modeS.linebuf = Linebuf(1)
+  modeS.linebuf = Linebuf()
   modeS.buffer = ""
   modeS.hist  = Historian()
   -- this will be more complex but

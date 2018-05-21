@@ -22,7 +22,13 @@ I'm making this the dumbest thing that can work. The dumbest thing that can
 work, has one string per char, period.
 
 
-I don't think this approach generalizes to a ``txtbuf``. It'll get us there.
+The way I'm doing this, a ``linebuf`` is used as a pointer to history.  When
+it's not in play, ``linebuf.line`` is just a string, exploding into an array
+of codepoints when edited.
+
+
+This lets us load the history without making a bunch of codepoint arrays we
+might not ever use.
 
 ## Instance fields
 
@@ -60,7 +66,11 @@ end
 local concat = table.concat
 
 function Linebuf.__tostring(linebuf)
-   return concat(linebuf.line)
+   if type(linebuf.line) == "table" then
+      return concat(linebuf.line)
+   else
+      return linebuf.line
+   end
 end
 ```
 ## Linebuf.insert(linebuf, frag)
@@ -147,10 +157,10 @@ function Linebuf.right(linebuf, disp)
 end
 ```
 ```lua
+local cl = assert(table.clone, "table.clone must be provided")
+
 function Linebuf.suspend(linebuf)
    linebuf.line = tostring(linebuf)
-   linebuf.line = nil
-   linebuf.cursor = nil
    return linebuf
 end
 
@@ -161,8 +171,6 @@ function Linebuf.resume(linebuf)
 end
 ```
 ```lua
-local cl = assert(table.clone, "table.clone must be provided")
-
 function Linebuf.clone(linebuf)
    local lb = cl(linebuf)
    if type(lb.line) == "table" then
@@ -174,11 +182,10 @@ function Linebuf.clone(linebuf)
 end
 ```
 ```lua
-local function new(cursor)
+local function new(line)
    local linebuf = meta(Linebuf)
-   linebuf.line  = {}
-   -- Cursor may be nil, for multi-line
-   linebuf.cursor = cursor
+   linebuf.cursor = line and #line or 1
+   linebuf.line  = line or {}
    return linebuf
 end
 ```

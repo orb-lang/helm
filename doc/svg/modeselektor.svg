@@ -6003,7 +6003,7 @@
 <text text-anchor="middle" x="37528" y="-807.6933" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local next_p</text>
 <text text-anchor="middle" x="37528" y="-792.2932" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;modeS.linebuf, next_p = modeS.hist:next()</text>
 <text text-anchor="middle" x="37528" y="-776.8932" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if next_p then</text>
-<text text-anchor="middle" x="37528" y="-761.4932" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;modeS.linebuf = Linebuf(1)</text>
+<text text-anchor="middle" x="37528" y="-761.4932" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;modeS.linebuf = Linebuf()</text>
 <text text-anchor="middle" x="37528" y="-746.0931" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
 <text text-anchor="middle" x="37528" y="-730.6931" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return modeS</text>
 <text text-anchor="middle" x="37528" y="-715.2931" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
@@ -6018,7 +6018,7 @@
 <text text-anchor="middle" x="37528" y="-528.6928" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;modeS:nl()</text>
 <text text-anchor="middle" x="37528" y="-513.2928" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;modeS:eval()</text>
 <text text-anchor="middle" x="37528" y="-497.8927" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;modeS.hist:append(modeS.linebuf)</text>
-<text text-anchor="middle" x="37528" y="-482.4927" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;modeS.linebuf = Linebuf(1)</text>
+<text text-anchor="middle" x="37528" y="-482.4927" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;modeS.linebuf = Linebuf()</text>
 <text text-anchor="middle" x="37528" y="-467.0927" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
 <text text-anchor="middle" x="37528" y="-435.6926" font-family="Inconsolata" font-size="14.00" fill="#000000">function NAV.BACKSPACE(modeS, category, value)</text>
 <text text-anchor="middle" x="37528" y="-420.2926" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return modeS.linebuf:d_back()</text>
@@ -6310,7 +6310,7 @@
 <polygon fill="none" stroke="#c0c0c0" points="41290,-1511.3868 41036,-1511.3868 41036,-1286.9858 41290,-1286.9858 41290,-1511.3868"/>
 <text text-anchor="middle" x="41163" y="-1496.0865" font-family="Inconsolata" font-size="14.00" fill="#000000">function new(cfg)</text>
 <text text-anchor="middle" x="41163" y="-1480.6864" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;local modeS = meta(ModeS)</text>
-<text text-anchor="middle" x="41163" y="-1465.2864" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;modeS.linebuf = Linebuf(1)</text>
+<text text-anchor="middle" x="41163" y="-1465.2864" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;modeS.linebuf = Linebuf()</text>
 <text text-anchor="middle" x="41163" y="-1449.8864" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;modeS.buffer = &quot;&quot;</text>
 <text text-anchor="middle" x="41163" y="-1434.4863" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;modeS.hist &#160;= Historian()</text>
 <text text-anchor="middle" x="41163" y="-1419.0863" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#45;&#45; this will be more complex but</text>

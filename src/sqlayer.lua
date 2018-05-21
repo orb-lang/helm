@@ -9,6 +9,7 @@
 local sql = require "sqlite"
 local pcall = assert (pcall)
 local gsub = assert(string.gsub)
+local format = assert(string.format)
 
 
 
@@ -17,8 +18,48 @@ local gsub = assert(string.gsub)
 
 
 
-function sql.san(str)
+local function san(str)
    return gsub(str, "'", "''")
+end
+
+sql.san = san
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function sql.format(str, ...)
+   local argv = {...}
+   str = gsub(str, "%%s", "'%%s'"):gsub("''%%s''", "'%%s'")
+   for i, v in ipairs(argv) do
+      if type(v) == "string" then
+         argv[i] = san(v)
+      else
+         argv[i] = v
+      end
+   end
+   local success, ret = pcall(format, str, unpack(argv))
+   if success then
+      return ret
+   else
+      return success, ret
+   end
 end
 
 
