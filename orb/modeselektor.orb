@@ -510,6 +510,7 @@ function new(cfg)
   modeS.linebuf = Linebuf()
   modeS.buffer = ""
   modeS.hist  = Historian()
+  modeS.hist:append(modeS.linebuf)
   -- this will be more complex but
   modeS.l_margin = 4
   modeS.r_margin = 80

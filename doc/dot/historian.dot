@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 206"]
+doc_0 [label="doc - 193"]
 
 
 doc_0 -> { section_1}
@@ -33,7 +33,7 @@ codeblock_8 [label="code block 22-24"]
 
 section_9 [label="section: 27-131"]
 
-section_10 [label="section: 132-182"]
+section_10 [label="section: 132-170"]
 
 
 // END RANK section_1
@@ -289,11 +289,11 @@ header_42 [label="2 : Historian:prev()"]
 
 prose_43 [label="prose"]
 
-codeblock_44 [label="code block 134-151"]
+codeblock_44 [label="code block 134-145"]
 
-section_45 [label="section: 154-182"]
+section_45 [label="section: 148-170"]
 
-section_46 [label="section: 183-206"]
+section_46 [label="section: 171-193"]
 
 
 // END RANK section_10
@@ -321,15 +321,9 @@ leaf_50  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histor
       return Linebuf()
    end
    local delta = historian.cursor > 1 and 1 or 0
-   local linebuf = \"\"
-   if historian.up then
-      linebuf = historian[historian.cursor + delta]:clone()
-   else
-      linebuf = historian[historian.cursor - delta]:clone()
-   end
+   local linebuf = historian[historian.cursor - delta]:clone()
    historian.cursor = historian.cursor - delta
    linebuf.cursor = #linebuf.line + 1
-   historian.up = true
    return linebuf
 end"]
 // END RANK codeblock_44
@@ -341,7 +335,7 @@ header_51 [label="3 : Historian:next()"]
 
 prose_52 [label="prose"]
 
-codeblock_53 [label="code block 159-180"]
+codeblock_53 [label="code block 153-168"]
 
 
 // END RANK section_45
@@ -389,15 +383,9 @@ leaf_63  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histor
    if historian.cursor == 0 then
       return Linebuf()
    end
-   local linebuf
-   if not historian.up then
-      linebuf = historian[historian.cursor - delta]:clone()
-   else
-      linebuf = historian[historian.cursor + delta]:clone()
-   end
+   local linebuf= historian[historian.cursor + delta]:clone()
    historian.cursor = historian.cursor + delta
    linebuf.cursor = #linebuf.line + 1
-   historian.up = false
    if not (delta > 0) and #linebuf.line > 0 then
       return linebuf, true
    else
@@ -413,11 +401,11 @@ header_64 [label="3 : Historian:append()"]
 
 prose_65 [label="prose"]
 
-codeblock_66 [label="code block 185-193"]
+codeblock_66 [label="code block 173-180"]
 
-codeblock_67 [label="code block 195-202"]
+codeblock_67 [label="code block 182-189"]
 
-codeblock_68 [label="code block 204-206"]
+codeblock_68 [label="code block 191-193"]
 
 
 // END RANK section_46
@@ -443,7 +431,6 @@ codeblock_66 -> leaf_72
 leaf_72  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.append(historian, linebuf)
    historian[#historian + 1] = linebuf
    historian.cursor = #historian
-   historian.up = false
    historian:persist(linebuf)
    return true
 end"]

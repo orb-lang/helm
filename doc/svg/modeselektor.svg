@@ -13,7 +13,7 @@
 <g id="node1" class="node">
 <title>doc_0</title>
 <ellipse fill="none" stroke="#000000" cx="7426" cy="-1950.9868" rx="46.9581" ry="18"/>
-<text text-anchor="middle" x="7426" y="-1946.7868" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">doc &#45; 550</text>
+<text text-anchor="middle" x="7426" y="-1946.7868" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">doc &#45; 551</text>
 </g>
 <!-- section_1 -->
 <g id="node2" class="node">
@@ -91,7 +91,7 @@
 <g id="node8" class="node">
 <title>section_7</title>
 <ellipse fill="none" stroke="#000000" cx="41335" cy="-1806.9868" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="41335" y="-1802.7868" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 503&#45;550</text>
+<text text-anchor="middle" x="41335" y="-1802.7868" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 503&#45;551</text>
 </g>
 <!-- section_1&#45;&gt;section_7 -->
 <g id="edge7" class="edge">
@@ -727,7 +727,7 @@
 <g id="node508" class="node">
 <title>codeblock_507</title>
 <ellipse fill="none" stroke="#000000" cx="41573" cy="-1734.9868" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="41573" y="-1730.7868" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 507&#45;522</text>
+<text text-anchor="middle" x="41573" y="-1730.7868" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 507&#45;523</text>
 </g>
 <!-- section_7&#45;&gt;codeblock_507 -->
 <g id="edge507" class="edge">
@@ -739,7 +739,7 @@
 <g id="node509" class="node">
 <title>codeblock_508</title>
 <ellipse fill="none" stroke="#000000" cx="41816" cy="-1734.9868" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="41816" y="-1730.7868" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 524&#45;526</text>
+<text text-anchor="middle" x="41816" y="-1730.7868" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 525&#45;527</text>
 </g>
 <!-- section_7&#45;&gt;codeblock_508 -->
 <g id="edge508" class="edge">
@@ -6413,26 +6413,27 @@
 <!-- leaf_518 -->
 <g id="node519" class="node">
 <title>leaf_518</title>
-<polygon fill="none" stroke="#c0c0c0" points="41781,-1534.4868 41527,-1534.4868 41527,-1310.0858 41781,-1310.0858 41781,-1534.4868"/>
-<text text-anchor="middle" x="41654" y="-1519.1865" font-family="Inconsolata" font-size="14.00" fill="#000000">function new(cfg)</text>
-<text text-anchor="middle" x="41654" y="-1503.7865" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;local modeS = meta(ModeS)</text>
-<text text-anchor="middle" x="41654" y="-1488.3864" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;modeS.linebuf = Linebuf()</text>
-<text text-anchor="middle" x="41654" y="-1472.9864" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;modeS.buffer = &quot;&quot;</text>
-<text text-anchor="middle" x="41654" y="-1457.5864" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;modeS.hist &#160;= Historian()</text>
-<text text-anchor="middle" x="41654" y="-1442.1864" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#45;&#45; this will be more complex but</text>
-<text text-anchor="middle" x="41654" y="-1426.7863" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;modeS.l_margin = 4</text>
-<text text-anchor="middle" x="41654" y="-1411.3863" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;modeS.r_margin = 80</text>
-<text text-anchor="middle" x="41654" y="-1395.9863" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;modeS.row = 2</text>
-<text text-anchor="middle" x="41654" y="-1380.5862" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;modeS.replLine = 2</text>
-<text text-anchor="middle" x="41654" y="-1365.1862" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;return modeS</text>
-<text text-anchor="middle" x="41654" y="-1349.7862" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
-<text text-anchor="middle" x="41654" y="-1318.3861" font-family="Inconsolata" font-size="14.00" fill="#000000">ModeS.idEst = new</text>
+<polygon fill="none" stroke="#c0c0c0" points="41781,-1541.8871 41527,-1541.8871 41527,-1302.6855 41781,-1302.6855 41781,-1541.8871"/>
+<text text-anchor="middle" x="41654" y="-1526.8865" font-family="Inconsolata" font-size="14.00" fill="#000000">function new(cfg)</text>
+<text text-anchor="middle" x="41654" y="-1511.4865" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;local modeS = meta(ModeS)</text>
+<text text-anchor="middle" x="41654" y="-1496.0865" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;modeS.linebuf = Linebuf()</text>
+<text text-anchor="middle" x="41654" y="-1480.6864" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;modeS.buffer = &quot;&quot;</text>
+<text text-anchor="middle" x="41654" y="-1465.2864" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;modeS.hist &#160;= Historian()</text>
+<text text-anchor="middle" x="41654" y="-1449.8864" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;modeS.hist:append(modeS.linebuf)</text>
+<text text-anchor="middle" x="41654" y="-1434.4863" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#45;&#45; this will be more complex but</text>
+<text text-anchor="middle" x="41654" y="-1419.0863" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;modeS.l_margin = 4</text>
+<text text-anchor="middle" x="41654" y="-1403.6863" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;modeS.r_margin = 80</text>
+<text text-anchor="middle" x="41654" y="-1388.2862" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;modeS.row = 2</text>
+<text text-anchor="middle" x="41654" y="-1372.8862" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;modeS.replLine = 2</text>
+<text text-anchor="middle" x="41654" y="-1357.4862" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;return modeS</text>
+<text text-anchor="middle" x="41654" y="-1342.0862" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
+<text text-anchor="middle" x="41654" y="-1310.6861" font-family="Inconsolata" font-size="14.00" fill="#000000">ModeS.idEst = new</text>
 </g>
 <!-- codeblock_507&#45;&gt;leaf_518 -->
 <g id="edge518" class="edge">
 <title>codeblock_507&#45;&gt;leaf_518</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M41577.705,-1716.8231C41586.3442,-1683.4717 41605.4024,-1609.8974 41622.3086,-1544.6311"/>
-<polygon fill="#000000" stroke="#000000" points="41625.774,-1545.2102 41624.8935,-1534.6521 41618.9976,-1543.4549 41625.774,-1545.2102"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M41577.705,-1716.8231C41586.023,-1684.7115 41603.9998,-1615.3121 41620.4148,-1551.9418"/>
+<polygon fill="#000000" stroke="#000000" points="41623.8095,-1552.7942 41622.929,-1542.2361 41617.0331,-1551.0389 41623.8095,-1552.7942"/>
 </g>
 <!-- leaf_519 -->
 <g id="node520" class="node">

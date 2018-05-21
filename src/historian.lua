@@ -137,15 +137,9 @@ function Historian.prev(historian)
       return Linebuf()
    end
    local delta = historian.cursor > 1 and 1 or 0
-   local linebuf = ""
-   if historian.up then
-      linebuf = historian[historian.cursor + delta]:clone()
-   else
-      linebuf = historian[historian.cursor - delta]:clone()
-   end
+   local linebuf = historian[historian.cursor - delta]:clone()
    historian.cursor = historian.cursor - delta
    linebuf.cursor = #linebuf.line + 1
-   historian.up = true
    return linebuf
 end
 
@@ -162,15 +156,9 @@ function Historian.next(historian)
    if historian.cursor == 0 then
       return Linebuf()
    end
-   local linebuf
-   if not historian.up then
-      linebuf = historian[historian.cursor - delta]:clone()
-   else
-      linebuf = historian[historian.cursor + delta]:clone()
-   end
+   local linebuf= historian[historian.cursor + delta]:clone()
    historian.cursor = historian.cursor + delta
    linebuf.cursor = #linebuf.line + 1
-   historian.up = false
    if not (delta > 0) and #linebuf.line > 0 then
       return linebuf, true
    else
@@ -186,7 +174,6 @@ end
 function Historian.append(historian, linebuf)
    historian[#historian + 1] = linebuf
    historian.cursor = #historian
-   historian.up = false
    historian:persist(linebuf)
    return true
 end

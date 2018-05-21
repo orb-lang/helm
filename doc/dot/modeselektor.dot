@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 550"]
+doc_0 [label="doc - 551"]
 
 
 doc_0 -> { section_1}
@@ -27,7 +27,7 @@ section_5 [label="section: 12-261"]
 
 section_6 [label="section: 284-413"]
 
-section_7 [label="section: 503-550"]
+section_7 [label="section: 503-551"]
 
 
 // END RANK section_1
@@ -2193,9 +2193,9 @@ header_505 [label="2 : new"]
 
 prose_506 [label="prose"]
 
-codeblock_507 [label="code block 507-522"]
+codeblock_507 [label="code block 507-523"]
 
-codeblock_508 [label="code block 524-526"]
+codeblock_508 [label="code block 525-527"]
 
 
 // END RANK section_7
@@ -2243,6 +2243,7 @@ leaf_518  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function new(c
   modeS.linebuf = Linebuf()
   modeS.buffer = \"\"
   modeS.hist  = Historian()
+  modeS.hist:append(modeS.linebuf)
   -- this will be more complex but
   modeS.l_margin = 4
   modeS.r_margin = 80
