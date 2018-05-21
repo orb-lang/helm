@@ -767,7 +767,7 @@
 <text text-anchor="middle" x="3380" y="-1493.5168" font-family="Inconsolata" font-size="14.00" fill="#000000">table.clone = core.clone</text>
 <text text-anchor="middle" x="3380" y="-1478.1168" font-family="Inconsolata" font-size="14.00" fill="#000000">utf8 = core.utf8</text>
 <text text-anchor="middle" x="3380" y="-1462.7168" font-family="Inconsolata" font-size="14.00" fill="#000000">codepoints = core.codepoints</text>
-<text text-anchor="middle" x="3380" y="-1447.3167" font-family="Inconsolata" font-size="14.00" fill="#000000">meta = core.meta</text>
+<text text-anchor="middle" x="3380" y="-1447.3167" font-family="Inconsolata" font-size="14.00" fill="#000000">_G.meta = core.meta</text>
 <text text-anchor="middle" x="3380" y="-1431.9167" font-family="Inconsolata" font-size="14.00" fill="#000000">getmeta, setmeta = getmetatable, setmetatable</text>
 <text text-anchor="middle" x="3380" y="-1416.5167" font-family="Inconsolata" font-size="14.00" fill="#000000">coro = coroutine</text>
 <text text-anchor="middle" x="3380" y="-1385.1167" font-family="Inconsolata" font-size="14.00" fill="#000000">local concat = table.concat</text>

@@ -46,7 +46,7 @@ table.splice = core.splice
 table.clone = core.clone
 utf8 = core.utf8
 codepoints = core.codepoints
-meta = core.meta
+_G.meta = core.meta
 getmeta, setmeta = getmetatable, setmetatable
 coro = coroutine
 

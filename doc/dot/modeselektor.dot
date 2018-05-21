@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 544"]
+doc_0 [label="doc - 547"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-496"]
+section_1 [label="section: 1-499"]
 
 
 // END RANK doc_0
@@ -25,9 +25,9 @@ prose_4 [label="prose"]
 
 section_5 [label="section: 12-261"]
 
-section_6 [label="section: 284-407"]
+section_6 [label="section: 284-410"]
 
-section_7 [label="section: 497-544"]
+section_7 [label="section: 500-547"]
 
 
 // END RANK section_1
@@ -1659,13 +1659,13 @@ codeblock_410 [label="code block 333-337"]
 
 section_411 [label="section: 340-346"]
 
-section_412 [label="section: 347-388"]
+section_412 [label="section: 347-389"]
 
-section_413 [label="section: 389-405"]
+section_413 [label="section: 390-408"]
 
-section_414 [label="section: 406-407"]
+section_414 [label="section: 409-410"]
 
-section_415 [label="section: 408-496"]
+section_415 [label="section: 411-499"]
 
 
 // END RANK section_6
@@ -1993,7 +1993,7 @@ header_476 [label="3 : CTRL"]
 
 prose_477 [label="prose"]
 
-codeblock_478 [label="code block 391-403"]
+codeblock_478 [label="code block 394-406"]
 
 
 // END RANK section_413
@@ -2012,21 +2012,23 @@ raw_480 [label="raw"]
 
 raw_480 -> leaf_481
 leaf_481  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+Many/most of these will be re-used as e.g. \"^\" and \"$\" in vim mode.
 "]
 // END RANK raw_480
 
 codeblock_478 -> leaf_482
-leaf_482  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function CTRL_A(modeS, category, value)
+leaf_482  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function cursor_begin(modeS, category, value)
    modeS.linebuf.cursor = 1
 end
 
-CTRL[\"^A\"] = CTRL_A
+CTRL[\"^A\"] = cursor_begin
 
-local function CTRL_E(modeS, category, value)
+local function cursor_end(modeS, category, value)
    modeS.linebuf.cursor = #modeS.linebuf.line + 1
 end
 
-CTRL[\"^E\"] = CTRL_E"]
+CTRL[\"^E\"] = cursor_end"]
 // END RANK codeblock_478
 
 section_414 -> { header_483 prose_484}
@@ -2063,17 +2065,17 @@ header_488 [label="3 : ModeS:write(str)"]
 
 prose_489 [label="prose"]
 
-codeblock_490 [label="code block 414-421"]
+codeblock_490 [label="code block 417-424"]
 
-codeblock_491 [label="code block 423-428"]
+codeblock_491 [label="code block 426-431"]
 
-codeblock_492 [label="code block 430-437"]
+codeblock_492 [label="code block 433-440"]
 
-codeblock_493 [label="code block 439-443"]
+codeblock_493 [label="code block 442-446"]
 
-codeblock_494 [label="code block 445-449"]
+codeblock_494 [label="code block 448-452"]
 
-codeblock_495 [label="code block 451-494"]
+codeblock_495 [label="code block 454-497"]
 
 
 // END RANK section_415
@@ -2188,9 +2190,9 @@ header_505 [label="2 : new"]
 
 prose_506 [label="prose"]
 
-codeblock_507 [label="code block 501-516"]
+codeblock_507 [label="code block 504-519"]
 
-codeblock_508 [label="code block 518-520"]
+codeblock_508 [label="code block 521-523"]
 
 
 // END RANK section_7

@@ -389,17 +389,20 @@ end
 
 
 
-local function CTRL_A(modeS, category, value)
+
+
+
+local function cursor_begin(modeS, category, value)
    modeS.linebuf.cursor = 1
 end
 
-CTRL["^A"] = CTRL_A
+CTRL["^A"] = cursor_begin
 
-local function CTRL_E(modeS, category, value)
+local function cursor_end(modeS, category, value)
    modeS.linebuf.cursor = #modeS.linebuf.line + 1
 end
 
-CTRL["^E"] = CTRL_E
+CTRL["^E"] = cursor_end
 
 
 

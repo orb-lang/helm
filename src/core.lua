@@ -7,31 +7,6 @@
 
 
 local core = {}
-local matches =
-  {
-    ["^"] = "%^";
-    ["$"] = "%$";
-    ["("] = "%(";
-    [")"] = "%)";
-    ["%"] = "%%";
-    ["."] = "%.";
-    ["["] = "%[";
-    ["]"] = "%]";
-    ["*"] = "%*";
-    ["+"] = "%+";
-    ["-"] = "%-";
-    ["?"] = "%?";
-    ["\0"] = "%z";
-  }
-
-function core.litpat(s)
-    return (s:gsub(".", matches))
-end
-
-function core.cleave(str, pat)
-   local at = string.find(str, pat)
-   return string.sub(str, 1, at - 1), string.sub(str, at + 1)
-end
 
 
 
@@ -67,6 +42,8 @@ end
 
 
 
+
+
 function core.clone(tab)
    local _M = getmetatable(tab)
    local clone = _M and setmetatable({}, _M) or {}
@@ -84,14 +61,49 @@ end
 
 
 
+local insert = table.insert
+
+local sp_er = "table<core>.splice: "
+local _e_1 = sp_er .. "$1 must be a table"
+local _e_2 = sp_er .. "$2 must be a number"
+local _e_3 = sp_er .. "$3 must be a table"
+
+function core.splice(tab, idx, into)
+   assert(type(tab) == "table", _e_1)
+   assert(type(idx) == "number", _e_2)
+   assert(type(into) == "table", _e_3)
+    idx = idx - 1
+    local i = 1
+    for j = 1, #into do
+        insert(tab,i+idx,into[j])
+        i = i + 1
+    end
+    return tab
+end
+
+
+
+
+
+
+local byte = assert(string.byte)
+local find = assert(string.find)
+local sub = assert(string.sub)
+local format = assert(string.format)
+
+
+
+
+
+
+
+
 
 
 
 local function continue(c)
    return c >= 128 and c <= 191
 end
-
-local byte = assert(string.byte)
 
 function core.utf8(c)
    local byte = byte
@@ -130,10 +142,112 @@ end
 
 
 
-local sub = assert(string.sub)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local fmt_set = {"L", "q", "s", "t"}
+
+for i, v in ipairs(fmt_set) do
+   fmt_set[i] = "%%" .. v
+end
+
+--[[
+local function next_fmt(str)
+   local head, tail
+   for _, v in ipairs(fmt_set) do
+      head, tail = 2
+end]]
+
+function core.format_safe(str, ...)
+
+end
+
+
+
+
+
+
+
+
+
+local matches =
+  {
+    ["^"] = "%^";
+    ["$"] = "%$";
+    ["("] = "%(";
+    [")"] = "%)";
+    ["%"] = "%%";
+    ["."] = "%.";
+    ["["] = "%[";
+    ["]"] = "%]";
+    ["*"] = "%*";
+    ["+"] = "%+";
+    ["-"] = "%-";
+    ["?"] = "%?";
+    ["\0"] = "%z";
+  }
+
+function core.litpat(s)
+    return (s:gsub(".", matches))
+end
+
+
+
+
+
+
+
+
+
+
+
+function core.cleave(str, pat)
+   local at = find(str, pat)
+   return sub(str, 1, at - 1), sub(str, at + 1)
+end
+
+
+
+
+
+
+
+
+
 
 local function split(str, at)
-   local sub = sub
    return sub(str,1, at), sub(str, at + 1)
 end
 
@@ -159,18 +273,6 @@ function core.codepoints(str)
    end
    return codes
 end
-
-local insert = table.insert
-function core.splice(tab, idx, into)
-    idx = idx - 1
-    local i = 1
-    for j = 1, #into do
-        insert(tab,i+idx,into[j])
-        i = i + 1
-    end
-    return tab
-end
-
 
 
 
