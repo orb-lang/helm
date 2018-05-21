@@ -45,6 +45,7 @@ table.splice = core.splice
 table.clone = core.clone
 table.arrayof = core.arrayof
 table.select = core.select
+table.reverse = core.reverse
 utf8 = core.utf8
 codepoints = core.codepoints
 _G.meta = core.meta

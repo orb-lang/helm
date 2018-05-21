@@ -89,6 +89,8 @@ local function colwrite(str, col, row)
 end
 ```
 ```lua
+local reverse = assert(table.reverse)
+
 function Historian.load(historian)
    local conn = sql.open(historian.home_dir .. "/.bridge")
    historian.conn = conn
@@ -105,14 +107,11 @@ function Historian.load(historian)
                         historian.HISTORY_LIMIT)
    local values, err = sql.pexec(conn, pop_stmt)
    if values then
-      historian.values = values
-      local off = #values[1] + 1
-      for i,v in ipairs(values[1]) do
-         historian[off - i] = Linebuf(v)
+      for i,v in ipairs(reverse(values[1])) do
+         historian[i] = Linebuf(v)
       end
       historian.cursor = #historian
       historian.up = false
-      return values
    end
 end
 
@@ -145,15 +144,6 @@ function Historian.prev(historian)
    historian.cursor = historian.cursor - delta
    linebuf.cursor = #linebuf.line + 1
    historian.up = true
-   colwrite(tostring(linebuf) .. " "
-         .. tostring(historian[historian.cursor])
-         .. " " .. historian.cursor
-         .. " " .. delta, nil, 4)
-   if historian.cursor <= #historian.values[1] then
-      colwrite(historian.values[1][historian.cursor], nil, 5)
-   else
-      colwrite("", nil, 5)
-   end
    return linebuf
 end
 ```
@@ -175,7 +165,6 @@ function Historian.next(historian)
       linebuf = historian[historian.cursor + delta]:clone()
    end
    historian.cursor = historian.cursor + delta
-   historian["delta"] = delta
    linebuf.cursor = #linebuf.line + 1
    historian.up = false
    if not (delta > 0) and #linebuf.line > 0 then

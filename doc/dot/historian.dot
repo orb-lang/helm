@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 217"]
+doc_0 [label="doc - 206"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-132"]
+section_1 [label="section: 1-131"]
 
 
 // END RANK doc_0
@@ -31,9 +31,9 @@ codeblock_7 [label="code block 16-20"]
 
 codeblock_8 [label="code block 22-24"]
 
-section_9 [label="section: 27-132"]
+section_9 [label="section: 27-131"]
 
-section_10 [label="section: 133-193"]
+section_10 [label="section: 132-182"]
 
 
 // END RANK section_1
@@ -127,7 +127,7 @@ prose_25 [label="prose"]
 
 codeblock_26 [label="code block 72-89"]
 
-codeblock_27 [label="code block 91-130"]
+codeblock_27 [label="code block 91-129"]
 
 
 // END RANK section_9
@@ -243,7 +243,9 @@ end"]
 // END RANK codeblock_26
 
 codeblock_27 -> leaf_41
-leaf_41  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.load(historian)
+leaf_41  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local reverse = assert(table.reverse)
+
+function Historian.load(historian)
    local conn = sql.open(historian.home_dir .. \"/.bridge\")
    historian.conn = conn
    local table_names = conn:exec(get_tables)
@@ -259,14 +261,11 @@ leaf_41  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histor
                         historian.HISTORY_LIMIT)
    local values, err = sql.pexec(conn, pop_stmt)
    if values then
-      historian.values = values
-      local off = #values[1] + 1
-      for i,v in ipairs(values[1]) do
-         historian[off - i] = Linebuf(v)
+      for i,v in ipairs(reverse(values[1])) do
+         historian[i] = Linebuf(v)
       end
       historian.cursor = #historian
       historian.up = false
-      return values
    end
 end
 
@@ -290,11 +289,11 @@ header_42 [label="2 : Historian:prev()"]
 
 prose_43 [label="prose"]
 
-codeblock_44 [label="code block 135-161"]
+codeblock_44 [label="code block 134-151"]
 
-section_45 [label="section: 164-193"]
+section_45 [label="section: 154-182"]
 
-section_46 [label="section: 194-217"]
+section_46 [label="section: 183-206"]
 
 
 // END RANK section_10
@@ -331,15 +330,6 @@ leaf_50  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histor
    historian.cursor = historian.cursor - delta
    linebuf.cursor = #linebuf.line + 1
    historian.up = true
-   colwrite(tostring(linebuf) .. \" \"
-         .. tostring(historian[historian.cursor])
-         .. \" \" .. historian.cursor
-         .. \" \" .. delta, nil, 4)
-   if historian.cursor <= #historian.values[1] then
-      colwrite(historian.values[1][historian.cursor], nil, 5)
-   else
-      colwrite(\"\", nil, 5)
-   end
    return linebuf
 end"]
 // END RANK codeblock_44
@@ -351,7 +341,7 @@ header_51 [label="3 : Historian:next()"]
 
 prose_52 [label="prose"]
 
-codeblock_53 [label="code block 169-191"]
+codeblock_53 [label="code block 159-180"]
 
 
 // END RANK section_45
@@ -406,7 +396,6 @@ leaf_63  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histor
       linebuf = historian[historian.cursor + delta]:clone()
    end
    historian.cursor = historian.cursor + delta
-   historian[\"delta\"] = delta
    linebuf.cursor = #linebuf.line + 1
    historian.up = false
    if not (delta > 0) and #linebuf.line > 0 then
@@ -424,11 +413,11 @@ header_64 [label="3 : Historian:append()"]
 
 prose_65 [label="prose"]
 
-codeblock_66 [label="code block 196-204"]
+codeblock_66 [label="code block 185-193"]
 
-codeblock_67 [label="code block 206-213"]
+codeblock_67 [label="code block 195-202"]
 
-codeblock_68 [label="code block 215-217"]
+codeblock_68 [label="code block 204-206"]
 
 
 // END RANK section_46

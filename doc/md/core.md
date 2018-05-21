@@ -86,6 +86,21 @@ function core.select(tab, key)
    return _select({}, tab, key, {})
 end
 ```
+### reverse(tab)
+
+Reverses (only) the array portion of a table, returning a new table.
+
+```lua
+function core.reverse(tab)
+   local bat = {}
+   for i,v in ipairs(tab) do
+      bat[#tab - i + 1] = v
+   end
+   assert(bat[1])
+   assert(bat[#tab])
+   return bat
+end
+```
 ### splice(tab, index, into)
 
 Puts the full contents of ``into`` into ``tab`` at ``index``.  The argument order is

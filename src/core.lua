@@ -99,6 +99,24 @@ end
 
 
 
+function core.reverse(tab)
+   local bat = {}
+   for i,v in ipairs(tab) do
+      bat[#tab - i + 1] = v
+   end
+   assert(bat[1])
+   assert(bat[#tab])
+   return bat
+end
+
+
+
+
+
+
+
+
+
 local insert = table.insert
 
 local sp_er = "table<core>.splice: "
