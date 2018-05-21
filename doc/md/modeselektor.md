@@ -394,6 +394,21 @@ function NAV.DELETE(modeS, category, value)
    return modeS.linebuf:d_fwd()
 end
 ```
+### CTRL
+
+```lua
+local function CTRL_A(modeS, category, value)
+   modeS.linebuf.cursor = 1
+end
+
+CTRL["^A"] = CTRL_A
+
+local function CTRL_E(modeS, category, value)
+   modeS.linebuf.cursor = #modeS.linebuf.line + 1
+end
+
+CTRL["^E"] = CTRL_E
+```
 ### ModeS:eval()
 
 ### ModeS:write(str)

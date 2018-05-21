@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 528"]
+doc_0 [label="doc - 544"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-480"]
+section_1 [label="section: 1-496"]
 
 
 // END RANK doc_0
@@ -25,9 +25,9 @@ prose_4 [label="prose"]
 
 section_5 [label="section: 12-261"]
 
-section_6 [label="section: 284-391"]
+section_6 [label="section: 284-407"]
 
-section_7 [label="section: 481-528"]
+section_7 [label="section: 497-544"]
 
 
 // END RANK section_1
@@ -1640,8 +1640,8 @@ function ModeS.nl(modeS)
 end"]
 // END RANK codeblock_399
 
-section_6 -> { header_404 prose_405 prose_406 prose_407 codeblock_408 prose_409 codeblock_410 section_411 section_412 section_413 section_414}
-{rank=same; header_404 prose_405 prose_406 prose_407 codeblock_408 prose_409 codeblock_410 section_411 section_412 section_413 section_414}
+section_6 -> { header_404 prose_405 prose_406 prose_407 codeblock_408 prose_409 codeblock_410 section_411 section_412 section_413 section_414 section_415}
+{rank=same; header_404 prose_405 prose_406 prose_407 codeblock_408 prose_409 codeblock_410 section_411 section_412 section_413 section_414 section_415}
 
 header_404 [label="2 : act"]
 
@@ -1659,147 +1659,149 @@ codeblock_410 [label="code block 333-337"]
 
 section_411 [label="section: 340-346"]
 
-section_412 [label="section: 347-389"]
+section_412 [label="section: 347-388"]
 
-section_413 [label="section: 390-391"]
+section_413 [label="section: 389-405"]
 
-section_414 [label="section: 392-480"]
+section_414 [label="section: 406-407"]
+
+section_415 [label="section: 408-496"]
 
 
 // END RANK section_6
 
-header_404 -> leaf_415
-leaf_415  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** act"]
+header_404 -> leaf_416
+leaf_416  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** act"]
 // END RANK header_404
 
-prose_405 -> { raw_416 prespace_417 literal_418 raw_419 prespace_420 literal_421 raw_422 prespace_423 literal_424 raw_425 prespace_426 literal_427 raw_428}
-{rank=same; raw_416 prespace_417 literal_418 raw_419 prespace_420 literal_421 raw_422 prespace_423 literal_424 raw_425 prespace_426 literal_427 raw_428}
+prose_405 -> { raw_417 prespace_418 literal_419 raw_420 prespace_421 literal_422 raw_423 prespace_424 literal_425 raw_426 prespace_427 literal_428 raw_429}
+{rank=same; raw_417 prespace_418 literal_419 raw_420 prespace_421 literal_422 raw_423 prespace_424 literal_425 raw_426 prespace_427 literal_428 raw_429}
 
-raw_416 [label="raw"]
+raw_417 [label="raw"]
 
-prespace_417 [label="prespace"]
+prespace_418 [label="prespace"]
 
-literal_418 [label="literal"]
+literal_419 [label="literal"]
 
-raw_419 [label="raw"]
+raw_420 [label="raw"]
 
-prespace_420 [label="prespace"]
+prespace_421 [label="prespace"]
 
-literal_421 [label="literal"]
+literal_422 [label="literal"]
 
-raw_422 [label="raw"]
+raw_423 [label="raw"]
 
-prespace_423 [label="prespace"]
+prespace_424 [label="prespace"]
 
-literal_424 [label="literal"]
+literal_425 [label="literal"]
 
-raw_425 [label="raw"]
+raw_426 [label="raw"]
 
-prespace_426 [label="prespace"]
+prespace_427 [label="prespace"]
 
-literal_427 [label="literal"]
+literal_428 [label="literal"]
 
-raw_428 [label="raw"]
+raw_429 [label="raw"]
 
 
 // END RANK prose_405
 
-raw_416 -> leaf_429
-leaf_429  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
-// END RANK raw_416
-
-prespace_417 -> leaf_430
+raw_417 -> leaf_430
 leaf_430  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
-// END RANK prespace_417
+// END RANK raw_417
 
-literal_418 -> leaf_431
-leaf_431  [color=Gray,shape=rectangle,fontname=Inconsolata,label="act"]
-// END RANK literal_418
+prespace_418 -> leaf_431
+leaf_431  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK prespace_418
 
-raw_419 -> leaf_432
-leaf_432  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" simply dispatches. Note that our common interfaces is"]
-// END RANK raw_419
+literal_419 -> leaf_432
+leaf_432  [color=Gray,shape=rectangle,fontname=Inconsolata,label="act"]
+// END RANK literal_419
 
-prespace_420 -> leaf_433
-leaf_433  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
-// END RANK prespace_420
+raw_420 -> leaf_433
+leaf_433  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" simply dispatches. Note that our common interfaces is"]
+// END RANK raw_420
 
-literal_421 -> leaf_434
-leaf_434  [color=Gray,shape=rectangle,fontname=Inconsolata,label="method(modeS, category, value)"]
-// END RANK literal_421
+prespace_421 -> leaf_434
+leaf_434  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK prespace_421
 
-raw_422 -> leaf_435
-leaf_435  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", we need to distinguish betwen the tuple"]
-// END RANK raw_422
+literal_422 -> leaf_435
+leaf_435  [color=Gray,shape=rectangle,fontname=Inconsolata,label="method(modeS, category, value)"]
+// END RANK literal_422
 
-prespace_423 -> leaf_436
-leaf_436  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
-// END RANK prespace_423
+raw_423 -> leaf_436
+leaf_436  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", we need to distinguish betwen the tuple"]
+// END RANK raw_423
 
-literal_424 -> leaf_437
-leaf_437  [color=Gray,shape=rectangle,fontname=Inconsolata,label="(\"INSERT\", \"SHIFT-LEFT\")"]
-// END RANK literal_424
+prespace_424 -> leaf_437
+leaf_437  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK prespace_424
 
-raw_425 -> leaf_438
-leaf_438  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" (which could arrive from copy-paste) and"]
-// END RANK raw_425
+literal_425 -> leaf_438
+leaf_438  [color=Gray,shape=rectangle,fontname=Inconsolata,label="(\"INSERT\", \"SHIFT-LEFT\")"]
+// END RANK literal_425
 
-prespace_426 -> leaf_439
-leaf_439  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
-// END RANK prespace_426
+raw_426 -> leaf_439
+leaf_439  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" (which could arrive from copy-paste) and"]
+// END RANK raw_426
 
-literal_427 -> leaf_440
-leaf_440  [color=Gray,shape=rectangle,fontname=Inconsolata,label="(\"NAV\", \"SHIFT-LEFT\")"]
-// END RANK literal_427
+prespace_427 -> leaf_440
+leaf_440  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK prespace_427
 
-raw_428 -> leaf_441
-leaf_441  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" and preserve information for our fall-through method.
+literal_428 -> leaf_441
+leaf_441  [color=Gray,shape=rectangle,fontname=Inconsolata,label="(\"NAV\", \"SHIFT-LEFT\")"]
+// END RANK literal_428
+
+raw_429 -> leaf_442
+leaf_442  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" and preserve information for our fall-through method.
 "]
-// END RANK raw_428
+// END RANK raw_429
 
-prose_406 -> { prespace_442 literal_443 raw_444}
-{rank=same; prespace_442 literal_443 raw_444}
+prose_406 -> { prespace_443 literal_444 raw_445}
+{rank=same; prespace_443 literal_444 raw_445}
 
-prespace_442 [label="prespace"]
+prespace_443 [label="prespace"]
 
-literal_443 [label="literal"]
+literal_444 [label="literal"]
 
-raw_444 [label="raw"]
+raw_445 [label="raw"]
 
 
 // END RANK prose_406
 
-prespace_442 -> leaf_445
-leaf_445  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
-// END RANK prespace_442
+prespace_443 -> leaf_446
+leaf_446  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK prespace_443
 
-literal_443 -> leaf_446
-leaf_446  [color=Gray,shape=rectangle,fontname=Inconsolata,label="act"]
-// END RANK literal_443
+literal_444 -> leaf_447
+leaf_447  [color=Gray,shape=rectangle,fontname=Inconsolata,label="act"]
+// END RANK literal_444
 
-raw_444 -> leaf_447
-leaf_447  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" always succeeds, meaning we need some metatable action to absorb and
+raw_445 -> leaf_448
+leaf_448  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" always succeeds, meaning we need some metatable action to absorb and
 log anything unexpected.
 "]
-// END RANK raw_444
+// END RANK raw_445
 
-prose_407 -> { raw_448}
-{rank=same; raw_448}
+prose_407 -> { raw_449}
+{rank=same; raw_449}
 
-raw_448 [label="raw"]
+raw_449 [label="raw"]
 
 
 // END RANK prose_407
 
-raw_448 -> leaf_449
-leaf_449  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_449 -> leaf_450
+leaf_450  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 It's easier to get the core actions down as conditionals, then
 migrate them into the jump table and fill out from there.
 "]
-// END RANK raw_448
+// END RANK raw_449
 
-codeblock_408 -> leaf_450
-leaf_450  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS.act(modeS, category, value)
+codeblock_408 -> leaf_451
+leaf_451  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS.act(modeS, category, value)
    assert(modeS.modes[category], \"no category \" .. category .. \" in modeS\")
    -- catch special handlers first
    if modeS.special[value] then
@@ -1831,121 +1833,121 @@ leaf_450  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS
 end"]
 // END RANK codeblock_408
 
-prose_409 -> { raw_451 prespace_452 literal_453 raw_454}
-{rank=same; raw_451 prespace_452 literal_453 raw_454}
+prose_409 -> { raw_452 prespace_453 literal_454 raw_455}
+{rank=same; raw_452 prespace_453 literal_454 raw_455}
 
-raw_451 [label="raw"]
+raw_452 [label="raw"]
 
-prespace_452 [label="prespace"]
+prespace_453 [label="prespace"]
 
-literal_453 [label="literal"]
+literal_454 [label="literal"]
 
-raw_454 [label="raw"]
+raw_455 [label="raw"]
 
 
 // END RANK prose_409
 
-raw_451 -> leaf_455
-leaf_455  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_452 -> leaf_456
+leaf_456  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 To keep"]
-// END RANK raw_451
+// END RANK raw_452
 
-prespace_452 -> leaf_456
-leaf_456  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_452
+prespace_453 -> leaf_457
+leaf_457  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_453
 
-literal_453 -> leaf_457
-leaf_457  [color=Gray,shape=rectangle,fontname=Inconsolata,label="act"]
-// END RANK literal_453
+literal_454 -> leaf_458
+leaf_458  [color=Gray,shape=rectangle,fontname=Inconsolata,label="act"]
+// END RANK literal_454
 
-raw_454 -> leaf_458
-leaf_458  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" replaceable, we look it up on each call:
+raw_455 -> leaf_459
+leaf_459  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" replaceable, we look it up on each call:
 "]
-// END RANK raw_454
+// END RANK raw_455
 
-codeblock_410 -> leaf_459
-leaf_459  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS.__call(modeS, category, value)
+codeblock_410 -> leaf_460
+leaf_460  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS.__call(modeS, category, value)
   return modeS:act(category, value)
 end"]
 // END RANK codeblock_410
 
-section_411 -> { header_460 prose_461 prose_462}
-{rank=same; header_460 prose_461 prose_462}
+section_411 -> { header_461 prose_462 prose_463}
+{rank=same; header_461 prose_462 prose_463}
 
-header_460 [label="3 : INSERT"]
-
-prose_461 [label="prose"]
+header_461 [label="3 : INSERT"]
 
 prose_462 [label="prose"]
+
+prose_463 [label="prose"]
 
 
 // END RANK section_411
 
-header_460 -> leaf_463
-leaf_463  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** INSERT"]
-// END RANK header_460
+header_461 -> leaf_464
+leaf_464  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** INSERT"]
+// END RANK header_461
 
-prose_461 -> { raw_464}
-{rank=same; raw_464}
+prose_462 -> { raw_465}
+{rank=same; raw_465}
 
-raw_464 [label="raw"]
-
-
-// END RANK prose_461
-
-raw_464 -> leaf_465
-leaf_465  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-
-INSERT is currently both a category and an action table.
-"]
-// END RANK raw_464
-
-prose_462 -> { raw_466}
-{rank=same; raw_466}
-
-raw_466 [label="raw"]
+raw_465 [label="raw"]
 
 
 // END RANK prose_462
 
-raw_466 -> leaf_467
-leaf_467  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_465 -> leaf_466
+leaf_466  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+INSERT is currently both a category and an action table.
+"]
+// END RANK raw_465
+
+prose_463 -> { raw_467}
+{rank=same; raw_467}
+
+raw_467 [label="raw"]
+
+
+// END RANK prose_463
+
+raw_467 -> leaf_468
+leaf_468  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 That's confusing, and I'll fix it when it's time to add modal editing.
 
 "]
-// END RANK raw_466
+// END RANK raw_467
 
-section_412 -> { header_468 prose_469 codeblock_470}
-{rank=same; header_468 prose_469 codeblock_470}
+section_412 -> { header_469 prose_470 codeblock_471}
+{rank=same; header_469 prose_470 codeblock_471}
 
-header_468 [label="3 : NAV"]
+header_469 [label="3 : NAV"]
 
-prose_469 [label="prose"]
+prose_470 [label="prose"]
 
-codeblock_470 [label="code block 349-387"]
+codeblock_471 [label="code block 349-387"]
 
 
 // END RANK section_412
 
-header_468 -> leaf_471
-leaf_471  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** NAV"]
-// END RANK header_468
+header_469 -> leaf_472
+leaf_472  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** NAV"]
+// END RANK header_469
 
-prose_469 -> { raw_472}
-{rank=same; raw_472}
+prose_470 -> { raw_473}
+{rank=same; raw_473}
 
-raw_472 [label="raw"]
+raw_473 [label="raw"]
 
 
-// END RANK prose_469
+// END RANK prose_470
 
-raw_472 -> leaf_473
-leaf_473  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_473 -> leaf_474
+leaf_474  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 "]
-// END RANK raw_472
+// END RANK raw_473
 
-codeblock_470 -> leaf_474
-leaf_474  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function NAV.UP(modeS, category, value)
+codeblock_471 -> leaf_475
+leaf_475  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function NAV.UP(modeS, category, value)
    modeS.linebuf = modeS.hist:prev()
    return modeS
 end
@@ -1982,117 +1984,160 @@ end
 function NAV.DELETE(modeS, category, value)
    return modeS.linebuf:d_fwd()
 end"]
-// END RANK codeblock_470
+// END RANK codeblock_471
 
-section_413 -> { header_475 prose_476}
-{rank=same; header_475 prose_476}
+section_413 -> { header_476 prose_477 codeblock_478}
+{rank=same; header_476 prose_477 codeblock_478}
 
-header_475 [label="3 : ModeS:eval()"]
+header_476 [label="3 : CTRL"]
 
-prose_476 [label="prose"]
+prose_477 [label="prose"]
+
+codeblock_478 [label="code block 391-403"]
 
 
 // END RANK section_413
 
-header_475 -> leaf_477
-leaf_477  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** ModeS:eval()"]
-// END RANK header_475
+header_476 -> leaf_479
+leaf_479  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** CTRL"]
+// END RANK header_476
 
-prose_476 -> { raw_478}
-{rank=same; raw_478}
+prose_477 -> { raw_480}
+{rank=same; raw_480}
 
-raw_478 [label="raw"]
+raw_480 [label="raw"]
 
 
-// END RANK prose_476
+// END RANK prose_477
 
-raw_478 -> leaf_479
-leaf_479  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_480 -> leaf_481
+leaf_481  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 "]
-// END RANK raw_478
+// END RANK raw_480
 
-section_414 -> { header_480 prose_481 codeblock_482 codeblock_483 codeblock_484 codeblock_485 codeblock_486 codeblock_487}
-{rank=same; header_480 prose_481 codeblock_482 codeblock_483 codeblock_484 codeblock_485 codeblock_486 codeblock_487}
+codeblock_478 -> leaf_482
+leaf_482  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function CTRL_A(modeS, category, value)
+   modeS.linebuf.cursor = 1
+end
 
-header_480 [label="3 : ModeS:write(str)"]
+CTRL[\"^A\"] = CTRL_A
 
-prose_481 [label="prose"]
+local function CTRL_E(modeS, category, value)
+   modeS.linebuf.cursor = #modeS.linebuf.line + 1
+end
 
-codeblock_482 [label="code block 398-405"]
+CTRL[\"^E\"] = CTRL_E"]
+// END RANK codeblock_478
 
-codeblock_483 [label="code block 407-412"]
+section_414 -> { header_483 prose_484}
+{rank=same; header_483 prose_484}
 
-codeblock_484 [label="code block 414-421"]
+header_483 [label="3 : ModeS:eval()"]
 
-codeblock_485 [label="code block 423-427"]
-
-codeblock_486 [label="code block 429-433"]
-
-codeblock_487 [label="code block 435-478"]
+prose_484 [label="prose"]
 
 
 // END RANK section_414
 
-header_480 -> leaf_488
-leaf_488  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** ModeS:write(str)"]
-// END RANK header_480
+header_483 -> leaf_485
+leaf_485  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** ModeS:eval()"]
+// END RANK header_483
 
-prose_481 -> { raw_489}
-{rank=same; raw_489}
+prose_484 -> { raw_486}
+{rank=same; raw_486}
 
-raw_489 [label="raw"]
+raw_486 [label="raw"]
 
 
-// END RANK prose_481
+// END RANK prose_484
 
-raw_489 -> leaf_490
-leaf_490  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_486 -> leaf_487
+leaf_487  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+"]
+// END RANK raw_486
+
+section_415 -> { header_488 prose_489 codeblock_490 codeblock_491 codeblock_492 codeblock_493 codeblock_494 codeblock_495}
+{rank=same; header_488 prose_489 codeblock_490 codeblock_491 codeblock_492 codeblock_493 codeblock_494 codeblock_495}
+
+header_488 [label="3 : ModeS:write(str)"]
+
+prose_489 [label="prose"]
+
+codeblock_490 [label="code block 414-421"]
+
+codeblock_491 [label="code block 423-428"]
+
+codeblock_492 [label="code block 430-437"]
+
+codeblock_493 [label="code block 439-443"]
+
+codeblock_494 [label="code block 445-449"]
+
+codeblock_495 [label="code block 451-494"]
+
+
+// END RANK section_415
+
+header_488 -> leaf_496
+leaf_496  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** ModeS:write(str)"]
+// END RANK header_488
+
+prose_489 -> { raw_497}
+{rank=same; raw_497}
+
+raw_497 [label="raw"]
+
+
+// END RANK prose_489
+
+raw_497 -> leaf_498
+leaf_498  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 This will let us phase out the colwrite business in favor of actual tiles in
 the terminal.
 
 "]
-// END RANK raw_489
+// END RANK raw_497
 
-codeblock_482 -> leaf_491
-leaf_491  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS.write(modeS, str)
+codeblock_490 -> leaf_499
+leaf_499  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS.write(modeS, str)
    local nl = a.col(modeS.l_margin) .. a.jump.down()
    local phrase, num_subs = gsub(str, \"\\n\", nl)
    write(phrase)
    -- modeS.row = modeS.row + num_subs
 end"]
-// END RANK codeblock_482
+// END RANK codeblock_490
 
-codeblock_483 -> leaf_492
-leaf_492  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function gatherResults(success, ...)
+codeblock_491 -> leaf_500
+leaf_500  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function gatherResults(success, ...)
   local n = select('#', ...)
   return success, { n = n, ... }
 end"]
-// END RANK codeblock_483
+// END RANK codeblock_491
 
-codeblock_484 -> leaf_493
-leaf_493  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS.printResults(modeS, results)
+codeblock_492 -> leaf_501
+leaf_501  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS.printResults(modeS, results)
   for i = 1, results.n do
     results[i] = ts(results[i])
   end
   modeS:write(concat(results, '   '))
 end"]
-// END RANK codeblock_484
+// END RANK codeblock_492
 
-codeblock_485 -> leaf_494
-leaf_494  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS.prompt(modeS)
+codeblock_493 -> leaf_502
+leaf_502  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS.prompt(modeS)
    write(a.jump(modeS.replLine, 1) .. \"👉 \")
 end"]
-// END RANK codeblock_485
+// END RANK codeblock_493
 
-codeblock_486 -> leaf_495
-leaf_495  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS.clearResult(modeS)
+codeblock_494 -> leaf_503
+leaf_503  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS.clearResult(modeS)
    write(a.erase.box(3, 1, modeS.max_row, modeS.r_margin))
 end"]
-// END RANK codeblock_486
+// END RANK codeblock_494
 
-codeblock_487 -> leaf_496
-leaf_496  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS.eval(modeS)
+codeblock_495 -> leaf_504
+leaf_504  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS.eval(modeS)
    local line = tostring(modeS.linebuf)
    local chunk  = modeS.buffer .. line
    -- first we prefix return
@@ -2134,61 +2179,61 @@ leaf_496  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS
    end
    modeS:prompt()
 end"]
-// END RANK codeblock_487
+// END RANK codeblock_495
 
-section_7 -> { header_497 prose_498 codeblock_499 codeblock_500}
-{rank=same; header_497 prose_498 codeblock_499 codeblock_500}
+section_7 -> { header_505 prose_506 codeblock_507 codeblock_508}
+{rank=same; header_505 prose_506 codeblock_507 codeblock_508}
 
-header_497 [label="2 : new"]
+header_505 [label="2 : new"]
 
-prose_498 [label="prose"]
+prose_506 [label="prose"]
 
-codeblock_499 [label="code block 485-500"]
+codeblock_507 [label="code block 501-516"]
 
-codeblock_500 [label="code block 502-504"]
+codeblock_508 [label="code block 518-520"]
 
 
 // END RANK section_7
 
-header_497 -> leaf_501
-leaf_501  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** new"]
-// END RANK header_497
+header_505 -> leaf_509
+leaf_509  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** new"]
+// END RANK header_505
 
-prose_498 -> { raw_502 prespace_503 literal_504 raw_505}
-{rank=same; raw_502 prespace_503 literal_504 raw_505}
+prose_506 -> { raw_510 prespace_511 literal_512 raw_513}
+{rank=same; raw_510 prespace_511 literal_512 raw_513}
 
-raw_502 [label="raw"]
+raw_510 [label="raw"]
 
-prespace_503 [label="prespace"]
+prespace_511 [label="prespace"]
 
-literal_504 [label="literal"]
+literal_512 [label="literal"]
 
-raw_505 [label="raw"]
+raw_513 [label="raw"]
 
 
-// END RANK prose_498
+// END RANK prose_506
 
-raw_502 -> leaf_506
-leaf_506  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_510 -> leaf_514
+leaf_514  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 This should be configurable via"]
-// END RANK raw_502
+// END RANK raw_510
 
-prespace_503 -> leaf_507
-leaf_507  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_503
+prespace_511 -> leaf_515
+leaf_515  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_511
 
-literal_504 -> leaf_508
-leaf_508  [color=Gray,shape=rectangle,fontname=Inconsolata,label="cfg"]
-// END RANK literal_504
+literal_512 -> leaf_516
+leaf_516  [color=Gray,shape=rectangle,fontname=Inconsolata,label="cfg"]
+// END RANK literal_512
 
-raw_505 -> leaf_509
-leaf_509  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
+raw_513 -> leaf_517
+leaf_517  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
 "]
-// END RANK raw_505
+// END RANK raw_513
 
-codeblock_499 -> leaf_510
-leaf_510  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function new(cfg)
+codeblock_507 -> leaf_518
+leaf_518  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function new(cfg)
   local modeS = meta(ModeS)
   modeS.linebuf = Linebuf()
   modeS.buffer = \"\"
@@ -2202,11 +2247,11 @@ leaf_510  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function new(c
 end
 
 ModeS.idEst = new"]
-// END RANK codeblock_499
+// END RANK codeblock_507
 
-codeblock_500 -> leaf_511
-leaf_511  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return new"]
-// END RANK codeblock_500
+codeblock_508 -> leaf_519
+leaf_519  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return new"]
+// END RANK codeblock_508
 
 
 }
