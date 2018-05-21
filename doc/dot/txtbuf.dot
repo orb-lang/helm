@@ -1,0 +1,113 @@
+digraph lpegNode {
+
+node [fontname=Helvetica]
+edge [style=dashed]
+
+doc_0 [label="doc - 14"]
+
+
+doc_0 -> { section_1}
+{rank=same; section_1}
+
+section_1 [label="section: 1-14"]
+
+
+// END RANK doc_0
+
+section_1 -> { header_2 prose_3 prose_4 prose_5 prose_6 prose_7}
+{rank=same; header_2 prose_3 prose_4 prose_5 prose_6 prose_7}
+
+header_2 [label="1 : Txtbuf"]
+
+prose_3 [label="prose"]
+
+prose_4 [label="prose"]
+
+prose_5 [label="prose"]
+
+prose_6 [label="prose"]
+
+prose_7 [label="prose"]
+
+
+// END RANK section_1
+
+header_2 -> leaf_8
+leaf_8  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Txtbuf"]
+// END RANK header_2
+
+prose_3 -> { raw_9}
+{rank=same; raw_9}
+
+raw_9 [label="raw"]
+
+
+// END RANK prose_3
+
+raw_9 -> leaf_10
+leaf_10  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+We're not going to have one of these right away.
+"]
+// END RANK raw_9
+
+prose_4 -> { raw_11}
+{rank=same; raw_11}
+
+raw_11 [label="raw"]
+
+
+// END RANK prose_4
+
+raw_11 -> leaf_12
+leaf_12  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+This is not much more than an ordinary array of lines that has a bit of
+awareness, mostly about which lines have cursors and which don't.
+"]
+// END RANK raw_11
+
+prose_5 -> { raw_13}
+{rank=same; raw_13}
+
+raw_13 [label="raw"]
+
+
+// END RANK prose_5
+
+raw_13 -> leaf_14
+leaf_14  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+I'll circle back for quipu but I want a basic editor as soon as possible. The
+interaction dynamics need to be worked out right away, plus I want to use it!
+"]
+// END RANK raw_13
+
+prose_6 -> { raw_15}
+{rank=same; raw_15}
+
+raw_15 [label="raw"]
+
+
+// END RANK prose_6
+
+raw_15 -> leaf_16
+leaf_16  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Plan: A line that has a cursor on it, and there can be many, gets 'opened'
+into a grid of characters.  These in turn get 'closed' when the cursor leaves.
+"]
+// END RANK raw_15
+
+prose_7 -> { raw_17}
+{rank=same; raw_17}
+
+raw_17 [label="raw"]
+
+
+// END RANK prose_7
+
+raw_17 -> leaf_18
+leaf_18  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+A closed line is just a string."]
+// END RANK raw_17
+
+
+}
