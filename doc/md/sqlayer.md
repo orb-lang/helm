@@ -27,8 +27,11 @@ sql.san = san
 ## sql.format(str)
 
 The SQLite bindings I'm using support only an impoverished subset of the
-SQLite binds. In the meantime we're going to use format strings, which at
+SQLite binds.  In the meantime we're going to use format strings, which at
 least typecheck parameters.
+
+
+**Update** I've added ``bindkv`` which helps.
 
 
 This ``format`` command sanitizes string inputs, and also replaces any ``%s``
@@ -83,3 +86,23 @@ end
 ```lua
 return sql
 ```
+### Stretch goals
+
+It would be nice to write a small C wrapper on ``sqlite3_sql()`` that gets the
+address from a statement pointer and returns the resulting string.  The whole
+dataflow layer of ``bridge`` is predicated on abstracting over some pretty
+gnarly SQL introspection.
+
+
+The easy way is just to denormalize the string onto a member of the stmt
+table
+
+
+
+
+
+
+
+
+
+

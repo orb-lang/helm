@@ -1,8 +1,8 @@
 # Rainbuf
 
 
-There is no advantage to doing Lua-side string concatenation on a collection
-of substrings bound for a tty.
+#NB In need of substantial revision in light of new classes.
+``status = uv.write(table.concat(rainbuf))``.
 
 
 Additionally, we want good estimates of size (but see below).  Displacement,

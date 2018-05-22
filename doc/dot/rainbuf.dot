@@ -3,25 +3,25 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 82"]
+doc_0 [label="doc - 87"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-30"]
+section_1 [label="section: 1-35"]
 
 
 // END RANK doc_0
 
-section_1 -> { header_2 prose_3 prose_4 prose_5 prose_6 prose_7 prose_8 prose_9 section_10}
-{rank=same; header_2 prose_3 prose_4 prose_5 prose_6 prose_7 prose_8 prose_9 section_10}
+section_1 -> { header_2 prose_3 structure_4 prose_5 prose_6 prose_7 prose_8 prose_9 prose_10 prose_11 section_12}
+{rank=same; header_2 prose_3 structure_4 prose_5 prose_6 prose_7 prose_8 prose_9 prose_10 prose_11 section_12}
 
 header_2 [label="1 : Rainbuf"]
 
 prose_3 [label="prose"]
 
-prose_4 [label="prose"]
+structure_4 [label="structure"]
 
 prose_5 [label="prose"]
 
@@ -33,274 +33,272 @@ prose_8 [label="prose"]
 
 prose_9 [label="prose"]
 
-section_10 [label="section: 31-82"]
+prose_10 [label="prose"]
+
+prose_11 [label="prose"]
+
+section_12 [label="section: 36-87"]
 
 
 // END RANK section_1
 
-header_2 -> leaf_11
-leaf_11  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Rainbuf"]
+header_2 -> leaf_13
+leaf_13  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Rainbuf"]
 // END RANK header_2
 
-prose_3 -> { raw_12}
-{rank=same; raw_12}
-
-raw_12 [label="raw"]
-
-
-// END RANK prose_3
-
-raw_12 -> leaf_13
-leaf_13  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-
-
-There is no advantage to doing Lua-side string concatenation on a collection
-of substrings bound for a tty.
-"]
-// END RANK raw_12
-
-prose_4 -> { raw_14}
+prose_3 -> { raw_14}
 {rank=same; raw_14}
 
 raw_14 [label="raw"]
 
 
-// END RANK prose_4
+// END RANK prose_3
 
 raw_14 -> leaf_15
 leaf_15  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-Additionally, we want good estimates of size (but see below).  Displacement,
-really, which is why we want to figure those things out as late as possible.
+
 "]
 // END RANK raw_14
 
-prose_5 -> { raw_16}
-{rank=same; raw_16}
+structure_4 -> { hashline_16}
+{rank=same; hashline_16}
 
-raw_16 [label="raw"]
+hashline_16 [label="hashline"]
+
+
+// END RANK structure_4
+
+hashline_16 -> { hashtag_17}
+{rank=same; hashtag_17}
+
+hashtag_17 [label="hashtag"]
+
+
+// END RANK hashline_16
+
+hashtag_17 -> leaf_18
+leaf_18  [color=Gray,shape=rectangle,fontname=Inconsolata,label="NB"]
+// END RANK hashtag_17
+
+prose_5 -> { prespace_19 literal_20 raw_21}
+{rank=same; prespace_19 literal_20 raw_21}
+
+prespace_19 [label="prespace"]
+
+literal_20 [label="literal"]
+
+raw_21 [label="raw"]
 
 
 // END RANK prose_5
 
-raw_16 -> leaf_17
-leaf_17  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-Rainbuf is a Phrase-like class with some awareness of what's an ANSI code and
-what isn't.  Each array is a line, and also includes an array with the
-displacement estimate.
+prespace_19 -> leaf_22
+leaf_22  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK prespace_19
+
+literal_20 -> leaf_23
+leaf_23  [color=Gray,shape=rectangle,fontname=Inconsolata,label="status = uv.write(table.concat(rainbuf))"]
+// END RANK literal_20
+
+raw_21 -> leaf_24
+leaf_24  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
 "]
-// END RANK raw_16
+// END RANK raw_21
 
-prose_6 -> { raw_18}
-{rank=same; raw_18}
+prose_6 -> { raw_25}
+{rank=same; raw_25}
 
-raw_18 [label="raw"]
+raw_25 [label="raw"]
 
 
 // END RANK prose_6
 
-raw_18 -> leaf_19
-leaf_19  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-Which is 0 for an ANSI sequence and otherwise varies.  Here we will pretend
-that it's 1 cell per byte, which is unlikely to get us in trouble right away.
+raw_25 -> leaf_26
+leaf_26  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Additionally, we want good estimates of size (but see below).  Displacement,
+really, which is why we want to figure those things out as late as possible.
 "]
-// END RANK raw_18
+// END RANK raw_25
 
-prose_7 -> { raw_20 prespace_21 literal_22 raw_23}
-{rank=same; raw_20 prespace_21 literal_22 raw_23}
+prose_7 -> { raw_27}
+{rank=same; raw_27}
 
-raw_20 [label="raw"]
-
-prespace_21 [label="prespace"]
-
-literal_22 [label="literal"]
-
-raw_23 [label="raw"]
+raw_27 [label="raw"]
 
 
 // END RANK prose_7
 
-raw_20 -> leaf_24
-leaf_24  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-The utilities to determine displacement will probably go in"]
-// END RANK raw_20
-
-prespace_21 -> leaf_25
-leaf_25  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_21
-
-literal_22 -> leaf_26
-leaf_26  [color=Gray,shape=rectangle,fontname=Inconsolata,label="anterm"]
-// END RANK literal_22
-
-raw_23 -> leaf_27
-leaf_27  [color=Gray,shape=rectangle,fontname=Inconsolata,label=". I have
-a very general solution in mind.
+raw_27 -> leaf_28
+leaf_28  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Rainbuf is a Phrase-like class with some awareness of what's an ANSI code and
+what isn't.  Each array is a line, and also includes an array with the
+displacement estimate.
 "]
-// END RANK raw_23
+// END RANK raw_27
 
-prose_8 -> { raw_28 prespace_29 literal_30 raw_31}
-{rank=same; raw_28 prespace_29 literal_30 raw_31}
+prose_8 -> { raw_29}
+{rank=same; raw_29}
 
-raw_28 [label="raw"]
-
-prespace_29 [label="prespace"]
-
-literal_30 [label="literal"]
-
-raw_31 [label="raw"]
+raw_29 [label="raw"]
 
 
 // END RANK prose_8
 
-raw_28 -> leaf_32
-leaf_32  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-To assist in this, we'll want to patch the"]
-// END RANK raw_28
-
-prespace_29 -> leaf_33
-leaf_33  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_29
-
-literal_30 -> leaf_34
-leaf_34  [color=Gray,shape=rectangle,fontname=Inconsolata,label="anterm"]
-// END RANK literal_30
-
-raw_31 -> leaf_35
-leaf_35  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" color metatable to return
-a rainbuf.  The Phrase class takes whatever shape it's formed into, convenient
-for AST generators.  A rainbuf is for painting an terminal, so concatenating
-them always fills the leftmost.
+raw_29 -> leaf_30
+leaf_30  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Which is 0 for an ANSI sequence and otherwise varies.  Here we will pretend
+that it's 1 cell per byte, which is unlikely to get us in trouble right away.
 "]
-// END RANK raw_31
+// END RANK raw_29
 
-prose_9 -> { raw_36 prespace_37 literal_38 raw_39}
-{rank=same; raw_36 prespace_37 literal_38 raw_39}
+prose_9 -> { raw_31 prespace_32 literal_33 raw_34}
+{rank=same; raw_31 prespace_32 literal_33 raw_34}
 
-raw_36 [label="raw"]
+raw_31 [label="raw"]
 
-prespace_37 [label="prespace"]
+prespace_32 [label="prespace"]
 
-literal_38 [label="literal"]
+literal_33 [label="literal"]
 
-raw_39 [label="raw"]
+raw_34 [label="raw"]
 
 
 // END RANK prose_9
 
-raw_36 -> leaf_40
-leaf_40  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-I suspect I'm going to find, working with"]
-// END RANK raw_36
+raw_31 -> leaf_35
+leaf_35  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+The utilities to determine displacement will probably go in"]
+// END RANK raw_31
 
-prespace_37 -> leaf_41
-leaf_41  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_37
+prespace_32 -> leaf_36
+leaf_36  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_32
 
-literal_38 -> leaf_42
-leaf_42  [color=Gray,shape=rectangle,fontname=Inconsolata,label="uv"]
-// END RANK literal_38
+literal_33 -> leaf_37
+leaf_37  [color=Gray,shape=rectangle,fontname=Inconsolata,label="anterm"]
+// END RANK literal_33
+
+raw_34 -> leaf_38
+leaf_38  [color=Gray,shape=rectangle,fontname=Inconsolata,label=". I have
+a very general solution in mind.
+"]
+// END RANK raw_34
+
+prose_10 -> { raw_39 prespace_40 literal_41 raw_42}
+{rank=same; raw_39 prespace_40 literal_41 raw_42}
+
+raw_39 [label="raw"]
+
+prespace_40 [label="prespace"]
+
+literal_41 [label="literal"]
+
+raw_42 [label="raw"]
+
+
+// END RANK prose_10
 
 raw_39 -> leaf_43
-leaf_43  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", that there's seldom any
+leaf_43  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+To assist in this, we'll want to patch the"]
+// END RANK raw_39
+
+prespace_40 -> leaf_44
+leaf_44  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_40
+
+literal_41 -> leaf_45
+leaf_45  [color=Gray,shape=rectangle,fontname=Inconsolata,label="anterm"]
+// END RANK literal_41
+
+raw_42 -> leaf_46
+leaf_46  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" color metatable to return
+a rainbuf.  The Phrase class takes whatever shape it's formed into, convenient
+for AST generators.  A rainbuf is for painting an terminal, so concatenating
+them always fills the leftmost.
+"]
+// END RANK raw_42
+
+prose_11 -> { raw_47 prespace_48 literal_49 raw_50}
+{rank=same; raw_47 prespace_48 literal_49 raw_50}
+
+raw_47 [label="raw"]
+
+prespace_48 [label="prespace"]
+
+literal_49 [label="literal"]
+
+raw_50 [label="raw"]
+
+
+// END RANK prose_11
+
+raw_47 -> leaf_51
+leaf_51  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+I suspect I'm going to find, working with"]
+// END RANK raw_47
+
+prespace_48 -> leaf_52
+leaf_52  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_48
+
+literal_49 -> leaf_53
+leaf_53  [color=Gray,shape=rectangle,fontname=Inconsolata,label="uv"]
+// END RANK literal_49
+
+raw_50 -> leaf_54
+leaf_54  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", that there's seldom any
 advantage in concatenating strings further out than about tokens.  Downsides,
 really, since any \"blagh \" is the same string but a \"blagh whuppy\" and a
 \"blagh winkedy\" are unique strings.
 
 "]
-// END RANK raw_39
+// END RANK raw_50
 
-section_10 -> { header_44 prose_45 prose_46 prose_47 prose_48 prose_49 prose_50 prose_51 prose_52 prose_53 prose_54 prose_55 prose_56}
-{rank=same; header_44 prose_45 prose_46 prose_47 prose_48 prose_49 prose_50 prose_51 prose_52 prose_53 prose_54 prose_55 prose_56}
+section_12 -> { header_55 prose_56 prose_57 prose_58 prose_59 prose_60 prose_61 prose_62 prose_63 prose_64 prose_65 prose_66 prose_67}
+{rank=same; header_55 prose_56 prose_57 prose_58 prose_59 prose_60 prose_61 prose_62 prose_63 prose_64 prose_65 prose_66 prose_67}
 
-header_44 [label="3 : Structure"]
-
-prose_45 [label="prose"]
-
-prose_46 [label="prose"]
-
-prose_47 [label="prose"]
-
-prose_48 [label="prose"]
-
-prose_49 [label="prose"]
-
-prose_50 [label="prose"]
-
-prose_51 [label="prose"]
-
-prose_52 [label="prose"]
-
-prose_53 [label="prose"]
-
-prose_54 [label="prose"]
-
-prose_55 [label="prose"]
+header_55 [label="3 : Structure"]
 
 prose_56 [label="prose"]
 
+prose_57 [label="prose"]
 
-// END RANK section_10
+prose_58 [label="prose"]
 
-header_44 -> leaf_57
-leaf_57  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Structure"]
-// END RANK header_44
+prose_59 [label="prose"]
 
-prose_45 -> { raw_58 prespace_59 literal_60 raw_61 prespace_62 literal_63 raw_64}
-{rank=same; raw_58 prespace_59 literal_60 raw_61 prespace_62 literal_63 raw_64}
+prose_60 [label="prose"]
 
-raw_58 [label="raw"]
+prose_61 [label="prose"]
 
-prespace_59 [label="prespace"]
+prose_62 [label="prose"]
 
-literal_60 [label="literal"]
+prose_63 [label="prose"]
 
-raw_61 [label="raw"]
+prose_64 [label="prose"]
 
-prespace_62 [label="prespace"]
+prose_65 [label="prose"]
 
-literal_63 [label="literal"]
+prose_66 [label="prose"]
 
-raw_64 [label="raw"]
+prose_67 [label="prose"]
 
 
-// END RANK prose_45
+// END RANK section_12
 
-raw_58 -> leaf_65
-leaf_65  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_55 -> leaf_68
+leaf_68  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Structure"]
+// END RANK header_55
 
-Rainbufs are database-shaped.  The simplest"]
-// END RANK raw_58
+prose_56 -> { raw_69 prespace_70 literal_71 raw_72 prespace_73 literal_74 raw_75}
+{rank=same; raw_69 prespace_70 literal_71 raw_72 prespace_73 literal_74 raw_75}
 
-prespace_59 -> leaf_66
-leaf_66  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_59
+raw_69 [label="raw"]
 
-literal_60 -> leaf_67
-leaf_67  [color=Gray,shape=rectangle,fontname=Inconsolata,label="r.idEst = Rainbuf"]
-// END RANK literal_60
+prespace_70 [label="prespace"]
 
-raw_61 -> leaf_68
-leaf_68  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is an
-array of strings, with a second array, keyed as"]
-// END RANK raw_61
-
-prespace_62 -> leaf_69
-leaf_69  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_62
-
-literal_63 -> leaf_70
-leaf_70  [color=Gray,shape=rectangle,fontname=Inconsolata,label="r.disp"]
-// END RANK literal_63
-
-raw_64 -> leaf_71
-leaf_71  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", showing the expected
-displacement of the string: That is, how far left (positive) or right
-(negative) the cursor is expected to move on a given print.
-"]
-// END RANK raw_64
-
-prose_46 -> { raw_72 prespace_73 literal_74 raw_75}
-{rank=same; raw_72 prespace_73 literal_74 raw_75}
+literal_71 [label="literal"]
 
 raw_72 [label="raw"]
 
@@ -311,35 +309,44 @@ literal_74 [label="literal"]
 raw_75 [label="raw"]
 
 
-// END RANK prose_46
+// END RANK prose_56
 
-raw_72 -> leaf_76
+raw_69 -> leaf_76
 leaf_76  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-This is equivalent to"]
+
+Rainbufs are database-shaped.  The simplest"]
+// END RANK raw_69
+
+prespace_70 -> leaf_77
+leaf_77  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_70
+
+literal_71 -> leaf_78
+leaf_78  [color=Gray,shape=rectangle,fontname=Inconsolata,label="r.idEst = Rainbuf"]
+// END RANK literal_71
+
+raw_72 -> leaf_79
+leaf_79  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is an
+array of strings, with a second array, keyed as"]
 // END RANK raw_72
 
-prespace_73 -> leaf_77
-leaf_77  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+prespace_73 -> leaf_80
+leaf_80  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
 // END RANK prespace_73
 
-literal_74 -> leaf_78
-leaf_78  [color=Gray,shape=rectangle,fontname=Inconsolata,label="#tostring(r)"]
+literal_74 -> leaf_81
+leaf_81  [color=Gray,shape=rectangle,fontname=Inconsolata,label="r.disp"]
 // END RANK literal_74
 
-raw_75 -> leaf_79
-leaf_79  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" for printable ASCII, and then starts to
-diverge wildly.  Notably, any ANSI color sequence is of zero displacement.
+raw_75 -> leaf_82
+leaf_82  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", showing the expected
+displacement of the string: That is, how far left (positive) or right
+(negative) the cursor is expected to move on a given print.
 "]
 // END RANK raw_75
 
-prose_47 -> { raw_80 prespace_81 literal_82 raw_83 prespace_84 literal_85 raw_86 prespace_87 literal_88 raw_89 prespace_90 literal_91 raw_92}
-{rank=same; raw_80 prespace_81 literal_82 raw_83 prespace_84 literal_85 raw_86 prespace_87 literal_88 raw_89 prespace_90 literal_91 raw_92}
-
-raw_80 [label="raw"]
-
-prespace_81 [label="prespace"]
-
-literal_82 [label="literal"]
+prose_57 -> { raw_83 prespace_84 literal_85 raw_86}
+{rank=same; raw_83 prespace_84 literal_85 raw_86}
 
 raw_83 [label="raw"]
 
@@ -349,420 +356,459 @@ literal_85 [label="literal"]
 
 raw_86 [label="raw"]
 
-prespace_87 [label="prespace"]
 
-literal_88 [label="literal"]
+// END RANK prose_57
 
-raw_89 [label="raw"]
-
-prespace_90 [label="prespace"]
-
-literal_91 [label="literal"]
-
-raw_92 [label="raw"]
-
-
-// END RANK prose_47
-
-raw_80 -> leaf_93
-leaf_93  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-Values of"]
-// END RANK raw_80
-
-prespace_81 -> leaf_94
-leaf_94  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_81
-
-literal_82 -> leaf_95
-leaf_95  [color=Gray,shape=rectangle,fontname=Inconsolata,label="disp"]
-// END RANK literal_82
-
-raw_83 -> leaf_96
-leaf_96  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" can either be numbers, in which case it is displacement by
-column, or an array, in which case"]
+raw_83 -> leaf_87
+leaf_87  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+This is equivalent to"]
 // END RANK raw_83
 
-prespace_84 -> leaf_97
-leaf_97  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+prespace_84 -> leaf_88
+leaf_88  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
 // END RANK prespace_84
 
-literal_85 -> leaf_98
-leaf_98  [color=Gray,shape=rectangle,fontname=Inconsolata,label="disp[0]"]
+literal_85 -> leaf_89
+leaf_89  [color=Gray,shape=rectangle,fontname=Inconsolata,label="#tostring(r)"]
 // END RANK literal_85
 
-raw_86 -> leaf_99
-leaf_99  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is by column and"]
+raw_86 -> leaf_90
+leaf_90  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" for printable ASCII, and then starts to
+diverge wildly.  Notably, any ANSI color sequence is of zero displacement.
+"]
 // END RANK raw_86
 
-prespace_87 -> leaf_100
-leaf_100  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_87
+prose_58 -> { raw_91 prespace_92 literal_93 raw_94 prespace_95 literal_96 raw_97 prespace_98 literal_99 raw_100 prespace_101 literal_102 raw_103}
+{rank=same; raw_91 prespace_92 literal_93 raw_94 prespace_95 literal_96 raw_97 prespace_98 literal_99 raw_100 prespace_101 literal_102 raw_103}
 
-literal_88 -> leaf_101
-leaf_101  [color=Gray,shape=rectangle,fontname=Inconsolata,label="disp[1]"]
-// END RANK literal_88
+raw_91 [label="raw"]
 
-raw_89 -> leaf_102
-leaf_102  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is by
+prespace_92 [label="prespace"]
+
+literal_93 [label="literal"]
+
+raw_94 [label="raw"]
+
+prespace_95 [label="prespace"]
+
+literal_96 [label="literal"]
+
+raw_97 [label="raw"]
+
+prespace_98 [label="prespace"]
+
+literal_99 [label="literal"]
+
+raw_100 [label="raw"]
+
+prespace_101 [label="prespace"]
+
+literal_102 [label="literal"]
+
+raw_103 [label="raw"]
+
+
+// END RANK prose_58
+
+raw_91 -> leaf_104
+leaf_104  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Values of"]
+// END RANK raw_91
+
+prespace_92 -> leaf_105
+leaf_105  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_92
+
+literal_93 -> leaf_106
+leaf_106  [color=Gray,shape=rectangle,fontname=Inconsolata,label="disp"]
+// END RANK literal_93
+
+raw_94 -> leaf_107
+leaf_107  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" can either be numbers, in which case it is displacement by
+column, or an array, in which case"]
+// END RANK raw_94
+
+prespace_95 -> leaf_108
+leaf_108  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_95
+
+literal_96 -> leaf_109
+leaf_109  [color=Gray,shape=rectangle,fontname=Inconsolata,label="disp[0]"]
+// END RANK literal_96
+
+raw_97 -> leaf_110
+leaf_110  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is by column and"]
+// END RANK raw_97
+
+prespace_98 -> leaf_111
+leaf_111  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_98
+
+literal_99 -> leaf_112
+leaf_112  [color=Gray,shape=rectangle,fontname=Inconsolata,label="disp[1]"]
+// END RANK literal_99
+
+raw_100 -> leaf_113
+leaf_113  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is by
 row. "]
-// END RANK raw_89
+// END RANK raw_100
 
-prespace_90 -> leaf_103
-leaf_103  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_90
+prespace_101 -> leaf_114
+leaf_114  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_101
 
-literal_91 -> leaf_104
-leaf_104  [color=Gray,shape=rectangle,fontname=Inconsolata,label="disp"]
-// END RANK literal_91
+literal_102 -> leaf_115
+leaf_115  [color=Gray,shape=rectangle,fontname=Inconsolata,label="disp"]
+// END RANK literal_102
 
-raw_92 -> leaf_105
-leaf_105  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" can also be a string. If so it must start with \"?\". If there are
+raw_103 -> leaf_116
+leaf_116  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" can also be a string. If so it must start with \"?\". If there are
 additional characters it must be a signed integer value.
 "]
-// END RANK raw_92
+// END RANK raw_103
 
-prose_48 -> { raw_106 prespace_107 bold_108 raw_109 prespace_110 literal_111 raw_112 prespace_113 literal_114 raw_115}
-{rank=same; raw_106 prespace_107 bold_108 raw_109 prespace_110 literal_111 raw_112 prespace_113 literal_114 raw_115}
+prose_59 -> { raw_117 prespace_118 bold_119 raw_120 prespace_121 literal_122 raw_123 prespace_124 literal_125 raw_126}
+{rank=same; raw_117 prespace_118 bold_119 raw_120 prespace_121 literal_122 raw_123 prespace_124 literal_125 raw_126}
 
-raw_106 [label="raw"]
+raw_117 [label="raw"]
 
-prespace_107 [label="prespace"]
+prespace_118 [label="prespace"]
 
-bold_108 [label="bold"]
+bold_119 [label="bold"]
 
-raw_109 [label="raw"]
+raw_120 [label="raw"]
 
-prespace_110 [label="prespace"]
+prespace_121 [label="prespace"]
 
-literal_111 [label="literal"]
+literal_122 [label="literal"]
 
-raw_112 [label="raw"]
+raw_123 [label="raw"]
 
-prespace_113 [label="prespace"]
+prespace_124 [label="prespace"]
 
-literal_114 [label="literal"]
-
-raw_115 [label="raw"]
-
-
-// END RANK prose_48
-
-raw_106 -> leaf_116
-leaf_116  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-Rainbufs do"]
-// END RANK raw_106
-
-prespace_107 -> leaf_117
-leaf_117  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_107
-
-bold_108 -> leaf_118
-leaf_118  [color=Gray,shape=rectangle,fontname=Inconsolata,label="not"]
-// END RANK bold_108
-
-raw_109 -> leaf_119
-leaf_119  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" contain"]
-// END RANK raw_109
-
-prespace_110 -> leaf_120
-leaf_120  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_110
-
-literal_111 -> leaf_121
-leaf_121  [color=Gray,shape=rectangle,fontname=Inconsolata,label="\\n"]
-// END RANK literal_111
-
-raw_112 -> leaf_122
-leaf_122  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" or"]
-// END RANK raw_112
-
-prespace_113 -> leaf_123
-leaf_123  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_113
-
-literal_114 -> leaf_124
-leaf_124  [color=Gray,shape=rectangle,fontname=Inconsolata,label="\\r"]
-// END RANK literal_114
-
-raw_115 -> leaf_125
-leaf_125  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".  A rainbuf printer is expected to
-perform newlining at the end of each rainbuf, respecting local context.  There
-is no guarantee that the 1 position in a rainbuf is the 1 position on-screen.
-"]
-// END RANK raw_115
-
-prose_49 -> { raw_126 prespace_127 italic_128 raw_129}
-{rank=same; raw_126 prespace_127 italic_128 raw_129}
+literal_125 [label="literal"]
 
 raw_126 [label="raw"]
 
-prespace_127 [label="prespace"]
 
-italic_128 [label="italic"]
+// END RANK prose_59
 
-raw_129 [label="raw"]
+raw_117 -> leaf_127
+leaf_127  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Rainbufs do"]
+// END RANK raw_117
 
+prespace_118 -> leaf_128
+leaf_128  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_118
 
-// END RANK prose_49
+bold_119 -> leaf_129
+leaf_129  [color=Gray,shape=rectangle,fontname=Inconsolata,label="not"]
+// END RANK bold_119
 
-raw_126 -> leaf_130
-leaf_130  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-Rainbufs can contain sequences of unknown displacement.  In such a case, the
-displacement is"]
+raw_120 -> leaf_130
+leaf_130  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" contain"]
+// END RANK raw_120
+
+prespace_121 -> leaf_131
+leaf_131  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_121
+
+literal_122 -> leaf_132
+leaf_132  [color=Gray,shape=rectangle,fontname=Inconsolata,label="\\n"]
+// END RANK literal_122
+
+raw_123 -> leaf_133
+leaf_133  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" or"]
+// END RANK raw_123
+
+prespace_124 -> leaf_134
+leaf_134  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_124
+
+literal_125 -> leaf_135
+leaf_135  [color=Gray,shape=rectangle,fontname=Inconsolata,label="\\r"]
+// END RANK literal_125
+
+raw_126 -> leaf_136
+leaf_136  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".  A rainbuf printer is expected to
+perform newlining at the end of each rainbuf, respecting local context.  There
+is no guarantee that the 1 position in a rainbuf is the 1 position on-screen.
+"]
 // END RANK raw_126
 
-prespace_127 -> leaf_131
-leaf_131  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_127
-
-italic_128 -> leaf_132
-leaf_132  [color=Gray,shape=rectangle,fontname=Inconsolata,label="measured"]
-// END RANK italic_128
-
-raw_129 -> leaf_133
-leaf_133  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" and recorded persistently in a database.
-"]
-// END RANK raw_129
-
-prose_50 -> { raw_134 prespace_135 literal_136 raw_137}
-{rank=same; raw_134 prespace_135 literal_136 raw_137}
-
-raw_134 [label="raw"]
-
-prespace_135 [label="prespace"]
-
-literal_136 [label="literal"]
+prose_60 -> { raw_137 prespace_138 italic_139 raw_140}
+{rank=same; raw_137 prespace_138 italic_139 raw_140}
 
 raw_137 [label="raw"]
 
+prespace_138 [label="prespace"]
 
-// END RANK prose_50
+italic_139 [label="italic"]
 
-raw_134 -> leaf_138
-leaf_138  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-If we get the string \"Hi! 🤪\" it has a"]
-// END RANK raw_134
+raw_140 [label="raw"]
 
-prespace_135 -> leaf_139
-leaf_139  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_135
 
-literal_136 -> leaf_140
-leaf_140  [color=Gray,shape=rectangle,fontname=Inconsolata,label="#"]
-// END RANK literal_136
+// END RANK prose_60
 
 raw_137 -> leaf_141
-leaf_141  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" of 8. So the disp will be \"?8\",
-and the actual displacement turns out to be 6, correctly, and 5 on my tty,
-which will double-print the emoji and the closing string!
-"]
+leaf_141  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Rainbufs can contain sequences of unknown displacement.  In such a case, the
+displacement is"]
 // END RANK raw_137
 
-prose_51 -> { raw_142 prespace_143 literal_144 raw_145}
-{rank=same; raw_142 prespace_143 literal_144 raw_145}
+prespace_138 -> leaf_142
+leaf_142  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_138
 
-raw_142 [label="raw"]
+italic_139 -> leaf_143
+leaf_143  [color=Gray,shape=rectangle,fontname=Inconsolata,label="measured"]
+// END RANK italic_139
 
-prespace_143 [label="prespace"]
+raw_140 -> leaf_144
+leaf_144  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" and recorded persistently in a database.
+"]
+// END RANK raw_140
 
-literal_144 [label="literal"]
+prose_61 -> { raw_145 prespace_146 literal_147 raw_148}
+{rank=same; raw_145 prespace_146 literal_147 raw_148}
 
 raw_145 [label="raw"]
 
+prespace_146 [label="prespace"]
 
-// END RANK prose_51
+literal_147 [label="literal"]
 
-raw_142 -> leaf_146
-leaf_146  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-Solving that quirk is a bit out of scope; the point is that we'll have an
-estimation engine, and that all it needs to do right now is distinguish color
-sequences (0) and text (#str).  Usually the"]
-// END RANK raw_142
+raw_148 [label="raw"]
 
-prespace_143 -> leaf_147
-leaf_147  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_143
 
-literal_144 -> leaf_148
-leaf_148  [color=Gray,shape=rectangle,fontname=Inconsolata,label="wc_width()"]
-// END RANK literal_144
+// END RANK prose_61
 
 raw_145 -> leaf_149
-leaf_149  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" will be correct, and
-measurement will be to compensate for terminals not knowing what they've done.
-"]
+leaf_149  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+If we get the string \"Hi! 🤪\" it has a"]
 // END RANK raw_145
 
-prose_52 -> { raw_150 prespace_151 bold_152 raw_153 prespace_154 bold_155 raw_156}
-{rank=same; raw_150 prespace_151 bold_152 raw_153 prespace_154 bold_155 raw_156}
+prespace_146 -> leaf_150
+leaf_150  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_146
 
-raw_150 [label="raw"]
+literal_147 -> leaf_151
+leaf_151  [color=Gray,shape=rectangle,fontname=Inconsolata,label="#"]
+// END RANK literal_147
 
-prespace_151 [label="prespace"]
+raw_148 -> leaf_152
+leaf_152  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" of 8. So the disp will be \"?8\",
+and the actual displacement turns out to be 6, correctly, and 5 on my tty,
+which will double-print the emoji and the closing string!
+"]
+// END RANK raw_148
 
-bold_152 [label="bold"]
+prose_62 -> { raw_153 prespace_154 literal_155 raw_156}
+{rank=same; raw_153 prespace_154 literal_155 raw_156}
 
 raw_153 [label="raw"]
 
 prespace_154 [label="prespace"]
 
-bold_155 [label="bold"]
+literal_155 [label="literal"]
 
 raw_156 [label="raw"]
 
 
-// END RANK prose_52
+// END RANK prose_62
 
-raw_150 -> leaf_157
+raw_153 -> leaf_157
 leaf_157  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-A rainbuf that contains strings as array members may"]
-// END RANK raw_150
-
-prespace_151 -> leaf_158
-leaf_158  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_151
-
-bold_152 -> leaf_159
-leaf_159  [color=Gray,shape=rectangle,fontname=Inconsolata,label="only"]
-// END RANK bold_152
-
-raw_153 -> leaf_160
-leaf_160  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" have strings as
-array members.  This is called a line, and a rainbuf which contains a line
-as an array member may"]
+Solving that quirk is a bit out of scope; the point is that we'll have an
+estimation engine, and that all it needs to do right now is distinguish color
+sequences (0) and text (#str).  Usually the"]
 // END RANK raw_153
 
-prespace_154 -> leaf_161
-leaf_161  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+prespace_154 -> leaf_158
+leaf_158  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
 // END RANK prespace_154
 
-bold_155 -> leaf_162
-leaf_162  [color=Gray,shape=rectangle,fontname=Inconsolata,label="only"]
-// END RANK bold_155
+literal_155 -> leaf_159
+leaf_159  [color=Gray,shape=rectangle,fontname=Inconsolata,label="wc_width()"]
+// END RANK literal_155
 
-raw_156 -> leaf_163
-leaf_163  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" have lines as members.
+raw_156 -> leaf_160
+leaf_160  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" will be correct, and
+measurement will be to compensate for terminals not knowing what they've done.
 "]
 // END RANK raw_156
 
-prose_53 -> { raw_164}
-{rank=same; raw_164}
+prose_63 -> { raw_161 prespace_162 bold_163 raw_164 prespace_165 bold_166 raw_167}
+{rank=same; raw_161 prespace_162 bold_163 raw_164 prespace_165 bold_166 raw_167}
+
+raw_161 [label="raw"]
+
+prespace_162 [label="prespace"]
+
+bold_163 [label="bold"]
 
 raw_164 [label="raw"]
 
+prespace_165 [label="prespace"]
 
-// END RANK prose_53
+bold_166 [label="bold"]
 
-raw_164 -> leaf_165
-leaf_165  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_167 [label="raw"]
+
+
+// END RANK prose_63
+
+raw_161 -> leaf_168
+leaf_168  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+A rainbuf that contains strings as array members may"]
+// END RANK raw_161
+
+prespace_162 -> leaf_169
+leaf_169  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_162
+
+bold_163 -> leaf_170
+leaf_170  [color=Gray,shape=rectangle,fontname=Inconsolata,label="only"]
+// END RANK bold_163
+
+raw_164 -> leaf_171
+leaf_171  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" have strings as
+array members.  This is called a line, and a rainbuf which contains a line
+as an array member may"]
+// END RANK raw_164
+
+prespace_165 -> leaf_172
+leaf_172  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_165
+
+bold_166 -> leaf_173
+leaf_173  [color=Gray,shape=rectangle,fontname=Inconsolata,label="only"]
+// END RANK bold_166
+
+raw_167 -> leaf_174
+leaf_174  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" have lines as members.
+"]
+// END RANK raw_167
+
+prose_64 -> { raw_175}
+{rank=same; raw_175}
+
+raw_175 [label="raw"]
+
+
+// END RANK prose_64
+
+raw_175 -> leaf_176
+leaf_176  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 These we call blocks. Every aggregate beyond this is also a block, and there
 is no limit on these levels of detail, but every rainbuf member of a block
 must have the same depth, so that in all cases, the same number of lookups
 lead to a string.
 "]
-// END RANK raw_164
-
-prose_54 -> { raw_166 prespace_167 literal_168 raw_169 prespace_170 literal_171 raw_172 prespace_173 literal_174 raw_175}
-{rank=same; raw_166 prespace_167 literal_168 raw_169 prespace_170 literal_171 raw_172 prespace_173 literal_174 raw_175}
-
-raw_166 [label="raw"]
-
-prespace_167 [label="prespace"]
-
-literal_168 [label="literal"]
-
-raw_169 [label="raw"]
-
-prespace_170 [label="prespace"]
-
-literal_171 [label="literal"]
-
-raw_172 [label="raw"]
-
-prespace_173 [label="prespace"]
-
-literal_174 [label="literal"]
-
-raw_175 [label="raw"]
-
-
-// END RANK prose_54
-
-raw_166 -> leaf_176
-leaf_176  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-In code these distinctions are made with a single field"]
-// END RANK raw_166
-
-prespace_167 -> leaf_177
-leaf_177  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_167
-
-literal_168 -> leaf_178
-leaf_178  [color=Gray,shape=rectangle,fontname=Inconsolata,label="d"]
-// END RANK literal_168
-
-raw_169 -> leaf_179
-leaf_179  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", an unsigned
-integer.  Lines have a"]
-// END RANK raw_169
-
-prespace_170 -> leaf_180
-leaf_180  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_170
-
-literal_171 -> leaf_181
-leaf_181  [color=Gray,shape=rectangle,fontname=Inconsolata,label="d"]
-// END RANK literal_171
-
-raw_172 -> leaf_182
-leaf_182  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" of one,"]
-// END RANK raw_172
-
-prespace_173 -> leaf_183
-leaf_183  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_173
-
-literal_174 -> leaf_184
-leaf_184  [color=Gray,shape=rectangle,fontname=Inconsolata,label="d = 0"]
-// END RANK literal_174
-
-raw_175 -> leaf_185
-leaf_185  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is the strings themselves.
-"]
 // END RANK raw_175
 
-prose_55 -> { raw_186}
-{rank=same; raw_186}
+prose_65 -> { raw_177 prespace_178 literal_179 raw_180 prespace_181 literal_182 raw_183 prespace_184 literal_185 raw_186}
+{rank=same; raw_177 prespace_178 literal_179 raw_180 prespace_181 literal_182 raw_183 prespace_184 literal_185 raw_186}
+
+raw_177 [label="raw"]
+
+prespace_178 [label="prespace"]
+
+literal_179 [label="literal"]
+
+raw_180 [label="raw"]
+
+prespace_181 [label="prespace"]
+
+literal_182 [label="literal"]
+
+raw_183 [label="raw"]
+
+prespace_184 [label="prespace"]
+
+literal_185 [label="literal"]
 
 raw_186 [label="raw"]
 
 
-// END RANK prose_55
+// END RANK prose_65
 
-raw_186 -> leaf_187
+raw_177 -> leaf_187
 leaf_187  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+In code these distinctions are made with a single field"]
+// END RANK raw_177
+
+prespace_178 -> leaf_188
+leaf_188  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_178
+
+literal_179 -> leaf_189
+leaf_189  [color=Gray,shape=rectangle,fontname=Inconsolata,label="d"]
+// END RANK literal_179
+
+raw_180 -> leaf_190
+leaf_190  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", an unsigned
+integer.  Lines have a"]
+// END RANK raw_180
+
+prespace_181 -> leaf_191
+leaf_191  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_181
+
+literal_182 -> leaf_192
+leaf_192  [color=Gray,shape=rectangle,fontname=Inconsolata,label="d"]
+// END RANK literal_182
+
+raw_183 -> leaf_193
+leaf_193  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" of one,"]
+// END RANK raw_183
+
+prespace_184 -> leaf_194
+leaf_194  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_184
+
+literal_185 -> leaf_195
+leaf_195  [color=Gray,shape=rectangle,fontname=Inconsolata,label="d = 0"]
+// END RANK literal_185
+
+raw_186 -> leaf_196
+leaf_196  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is the strings themselves.
+"]
+// END RANK raw_186
+
+prose_66 -> { raw_197}
+{rank=same; raw_197}
+
+raw_197 [label="raw"]
+
+
+// END RANK prose_66
+
+raw_197 -> leaf_198
+leaf_198  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 There will be other fields; rainbuf is the last stop before the terminal, and
 needs to convey various hints to the renderer so that e.g. mouse targets line
 up with the correct regions.  It is cleaner for things like elided blocks to
 live in the rainbuf than to be synced by the renderer.
 "]
-// END RANK raw_186
+// END RANK raw_197
 
-prose_56 -> { raw_188}
-{rank=same; raw_188}
+prose_67 -> { raw_199}
+{rank=same; raw_199}
 
-raw_188 [label="raw"]
+raw_199 [label="raw"]
 
 
-// END RANK prose_56
+// END RANK prose_67
 
-raw_188 -> leaf_189
-leaf_189  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_199 -> leaf_200
+leaf_200  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 I think.  Because we're operating on an event loop, the rainbuf has to both
 soley own write access to itself, and only lend out one read pointer after
 an atomic update.  That implies two different views must be separate rainbufs
 fed from the same quipu, and renderers are rainbuf interpreters."]
-// END RANK raw_188
+// END RANK raw_199
 
 
 }

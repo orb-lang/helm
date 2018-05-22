@@ -3,48 +3,268 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 403"]
+doc_0 [label="doc - 443"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-403"]
+section_1 [label="section: 1-443"]
 
 
 // END RANK doc_0
 
-section_1 -> { header_2 prose_3 codeblock_4}
-{rank=same; header_2 prose_3 codeblock_4}
+section_1 -> { header_2 prose_3 prose_4 prose_5 prose_6 prose_7 prose_8 prose_9 prose_10 prose_11 prose_12 codeblock_13}
+{rank=same; header_2 prose_3 prose_4 prose_5 prose_6 prose_7 prose_8 prose_9 prose_10 prose_11 prose_12 codeblock_13}
 
 header_2 [label="1 : Table persistence via SQLite"]
 
 prose_3 [label="prose"]
 
-codeblock_4 [label="code block 3-403"]
+prose_4 [label="prose"]
+
+prose_5 [label="prose"]
+
+prose_6 [label="prose"]
+
+prose_7 [label="prose"]
+
+prose_8 [label="prose"]
+
+prose_9 [label="prose"]
+
+prose_10 [label="prose"]
+
+prose_11 [label="prose"]
+
+prose_12 [label="prose"]
+
+codeblock_13 [label="code block 43-443"]
 
 
 // END RANK section_1
 
-header_2 -> leaf_5
-leaf_5  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Table persistence via SQLite"]
+header_2 -> leaf_14
+leaf_14  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Table persistence via SQLite"]
 // END RANK header_2
 
-prose_3 -> { raw_6}
-{rank=same; raw_6}
+prose_3 -> { raw_15}
+{rank=same; raw_15}
 
-raw_6 [label="raw"]
+raw_15 [label="raw"]
 
 
 // END RANK prose_3
 
-raw_6 -> leaf_7
-leaf_7  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-"]
-// END RANK raw_6
+raw_15 -> leaf_16
+leaf_16  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
-codeblock_4 -> leaf_8
-leaf_8  [color=Gray,shape=rectangle,fontname=Inconsolata,label="--[[ luapersist3.lua  2004-Aug-31 e
+
+There's doing this, and there's doing it right.
+"]
+// END RANK raw_15
+
+prose_4 -> { raw_17}
+{rank=same; raw_17}
+
+raw_17 [label="raw"]
+
+
+// END RANK prose_4
+
+raw_17 -> leaf_18
+leaf_18  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Doing this right requires Merkelizing all acyclic tables.  It is painstaking
+work to define this correctly over functions, threads, userdata and C data,
+and to do it over cyclic tables requires metadata.
+"]
+// END RANK raw_17
+
+prose_5 -> { raw_19}
+{rank=same; raw_19}
+
+raw_19 [label="raw"]
+
+
+// END RANK prose_5
+
+raw_19 -> leaf_20
+leaf_20  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Which is okay. A value reference to an acyclic table is prepared by Merkle
+hashing and referred to by that hash inside the enclosing table.
+"]
+// END RANK raw_19
+
+prose_6 -> { raw_21}
+{rank=same; raw_21}
+
+raw_21 [label="raw"]
+
+
+// END RANK prose_6
+
+raw_21 -> leaf_22
+leaf_22  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+If they have circular references these must be fixed: each value reference is
+replaced with a deterministic and unique string, each table is then frozen
+once the full cycle graph is resolved, and all hashes are included in the
+container as resolutions of those strings.
+"]
+// END RANK raw_21
+
+prose_7 -> { raw_23}
+{rank=same; raw_23}
+
+raw_23 [label="raw"]
+
+
+// END RANK prose_7
+
+raw_23 -> leaf_24
+leaf_24  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+The containers therefore have no cycles and may be hashed also. We'll need
+the containing format anyway, for metatables, and any other metadata of the
+sort that is deterministic to the value and not the reference or instance.
+"]
+// END RANK raw_23
+
+prose_8 -> { raw_25 prespace_26 literal_27 raw_28}
+{rank=same; raw_25 prespace_26 literal_27 raw_28}
+
+raw_25 [label="raw"]
+
+prespace_26 [label="prespace"]
+
+literal_27 [label="literal"]
+
+raw_28 [label="raw"]
+
+
+// END RANK prose_8
+
+raw_25 -> leaf_29
+leaf_29  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Fortunately Lua has only the one level of reference, sparing us the need to
+serialize pointers to addresses and so on to the nth degree. "]
+// END RANK raw_25
+
+prespace_26 -> leaf_30
+leaf_30  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_26
+
+literal_27 -> leaf_31
+leaf_31  [color=Gray,shape=rectangle,fontname=Inconsolata,label="cdata"]
+// END RANK literal_27
+
+raw_28 -> leaf_32
+leaf_32  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is not
+so limited...
+"]
+// END RANK raw_28
+
+prose_9 -> { raw_33 prespace_34 literal_35 raw_36}
+{rank=same; raw_33 prespace_34 literal_35 raw_36}
+
+raw_33 [label="raw"]
+
+prespace_34 [label="prespace"]
+
+literal_35 [label="literal"]
+
+raw_36 [label="raw"]
+
+
+// END RANK prose_9
+
+raw_33 -> leaf_37
+leaf_37  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+For the near future I'm more interested in storing a naive string
+representation of results, than something which can be round-tripped and
+deduplicated in a generalized way, and I suspect"]
+// END RANK raw_33
+
+prespace_34 -> leaf_38
+leaf_38  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_34
+
+literal_35 -> leaf_39
+leaf_39  [color=Gray,shape=rectangle,fontname=Inconsolata,label="fossil"]
+// END RANK literal_35
+
+raw_36 -> leaf_40
+leaf_40  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is doing a lot of
+the heavy lifting for this kind of persistence already.
+"]
+// END RANK raw_36
+
+prose_10 -> { raw_41 prespace_42 italic_43 raw_44}
+{rank=same; raw_41 prespace_42 italic_43 raw_44}
+
+raw_41 [label="raw"]
+
+prespace_42 [label="prespace"]
+
+italic_43 [label="italic"]
+
+raw_44 [label="raw"]
+
+
+// END RANK prose_10
+
+raw_41 -> leaf_45
+leaf_45  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+To get it"]
+// END RANK raw_41
+
+prespace_42 -> leaf_46
+leaf_46  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_42
+
+italic_43 -> leaf_47
+leaf_47  [color=Gray,shape=rectangle,fontname=Inconsolata,label="really"]
+// END RANK italic_43
+
+raw_44 -> leaf_48
+leaf_48  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" right will involve normalizing the whitespace (but not
+values) of function strings, following upvalues and tree-shaking until we
+have a hash to go with each one.
+"]
+// END RANK raw_44
+
+prose_11 -> { raw_49}
+{rank=same; raw_49}
+
+raw_49 [label="raw"]
+
+
+// END RANK prose_11
+
+raw_49 -> leaf_50
+leaf_50  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+The result will be pretty butch though: a SHA-3 hash that would refer to the
+same object consistently across LuaJIT codebases.  Dedup and content-centric
+references don't have to be just for the big bois.
+"]
+// END RANK raw_49
+
+prose_12 -> { raw_51}
+{rank=same; raw_51}
+
+raw_51 [label="raw"]
+
+
+// END RANK prose_12
+
+raw_51 -> leaf_52
+leaf_52  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+The below is from the Wiki. It has some decent ideas for ordinary table
+persistence, though it must be adapted to the LuaJIT SQLite library we're
+using.
+"]
+// END RANK raw_51
+
+codeblock_13 -> leaf_53
+leaf_53  [color=Gray,shape=rectangle,fontname=Inconsolata,label="--[[ luapersist3.lua  2004-Aug-31 e
 
   The author disclaims copyright to this source code.  In place of
   a legal notice, here is a blessing:
@@ -443,7 +663,7 @@ end
 for r in lp.db:nrows(\"DROP TABLE luat\") do
      for k,v in pairs(r) do print(k,v) end
 end"]
-// END RANK codeblock_4
+// END RANK codeblock_13
 
 
 }

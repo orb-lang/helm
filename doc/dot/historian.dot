@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 209"]
+doc_0 [label="doc - 208"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-147"]
+section_1 [label="section: 1-146"]
 
 
 // END RANK doc_0
@@ -31,11 +31,11 @@ codeblock_7 [label="code block 16-21"]
 
 codeblock_8 [label="code block 23-25"]
 
-section_9 [label="section: 28-72"]
+section_9 [label="section: 28-71"]
 
-section_10 [label="section: 73-147"]
+section_10 [label="section: 72-146"]
 
-section_11 [label="section: 148-186"]
+section_11 [label="section: 147-185"]
 
 
 // END RANK section_1
@@ -124,7 +124,7 @@ header_23 [label="2 : Historian:load()"]
 
 prose_24 [label="prose"]
 
-codeblock_25 [label="code block 33-70"]
+codeblock_25 [label="code block 32-69"]
 
 
 // END RANK section_9
@@ -163,15 +163,14 @@ leaf_33  [color=Gray,shape=rectangle,fontname=Inconsolata,label="~/.bridge"]
 
 raw_30 -> leaf_34
 leaf_34  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" database.
-
 "]
 // END RANK raw_30
 
 codeblock_25 -> leaf_35
-leaf_35  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Historian.HISTORY_LIMIT = 500
+leaf_35  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Historian.HISTORY_LIMIT = 1000
 
 local create_repl_table = [[
-CREATE TABLE repl (
+CREATE TABLE IF NOT EXISTS repl (
 line_id INTEGER PRIMARY KEY AUTOINCREMENT,
 project TEXT,
 line TEXT,
@@ -179,7 +178,7 @@ time DATETIME DEFAULT CURRENT_TIMESTAMP);
 ]]
 
 local insert_line_stmt = [[
-INSERT INTO repl (project, line) VALUES(?, ?);
+INSERT INTO repl (project, line) VALUES(:project, :line);
 ]]
 
 local get_tables = [[
@@ -213,11 +212,11 @@ header_36 [label="2 : Historian:search(frag)"]
 
 prose_37 [label="prose"]
 
-codeblock_38 [label="code block 76-91"]
+codeblock_38 [label="code block 74-88"]
 
-codeblock_39 [label="code block 93-104"]
+codeblock_39 [label="code block 90-102"]
 
-codeblock_40 [label="code block 107-145"]
+codeblock_40 [label="code block 105-144"]
 
 
 // END RANK section_10
@@ -236,13 +235,12 @@ raw_42 [label="raw"]
 
 raw_42 -> leaf_43
 leaf_43  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-
 "]
 // END RANK raw_42
 
 codeblock_38 -> leaf_44
-leaf_44  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local P = L.P
-local function fuzzMatch(frag, string)
+leaf_44  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local P, match = L.P, L.match
+local function fuzz_patt(frag)
    frag = type(frag) == \"string\" and codepoints(frag) or frag
    local patt = (P(1) - P(frag[1]))^0
    for i,v in ipairs(frag) do
@@ -252,16 +250,16 @@ local function fuzzMatch(frag, string)
          patt = patt * (P(v))
       end
    end
-   return L.match(patt, string)
-end
-Historian.fuzzMatch = fuzzMatch"]
+   return patt
+end"]
 // END RANK codeblock_38
 
 codeblock_39 -> leaf_45
 leaf_45  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.search(historian, frag)
    local collection = {}
+   local patt = fuzz_patt(frag)
    for i = #historian, 1, -1 do
-      local score = fuzzMatch(frag, tostring(historian[i]))
+      local score = match(patt, tostring(historian[i]))
       if score then
          collection[#collection + 1] = tostring(historian[i])
       end
@@ -299,7 +297,8 @@ end
 
 function Historian.persist(historian, linebuf)
    local lb = tostring(linebuf)
-   historian.insert_stmt:bind(historian.project, lb)
+   historian.insert_stmt:bindkv { project = historian.project,
+                                  line    = lb }
    local err = historian.insert_stmt:step()
    if not err then
       historian.insert_stmt:clearbind():reset()
@@ -317,11 +316,11 @@ header_47 [label="2 : Historian:prev()"]
 
 prose_48 [label="prose"]
 
-codeblock_49 [label="code block 150-161"]
+codeblock_49 [label="code block 149-160"]
 
-section_50 [label="section: 164-186"]
+section_50 [label="section: 163-185"]
 
-section_51 [label="section: 187-209"]
+section_51 [label="section: 186-208"]
 
 
 // END RANK section_11
@@ -348,9 +347,9 @@ leaf_55  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histor
    if historian.cursor == 0 then
       return Linebuf()
    end
-   local delta = historian.cursor > 1 and 1 or 0
-   local linebuf = historian[historian.cursor - delta]:clone()
-   historian.cursor = historian.cursor - delta
+   local Δ = historian.cursor > 1 and 1 or 0
+   local linebuf = historian[historian.cursor - Δ]:clone()
+   historian.cursor = historian.cursor - Δ
    linebuf.cursor = #linebuf.line + 1
    return linebuf
 end"]
@@ -363,7 +362,7 @@ header_56 [label="3 : Historian:next()"]
 
 prose_57 [label="prose"]
 
-codeblock_58 [label="code block 169-184"]
+codeblock_58 [label="code block 168-183"]
 
 
 // END RANK section_50
@@ -407,14 +406,14 @@ leaf_67  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" it might be ti
 
 codeblock_58 -> leaf_68
 leaf_68  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.next(historian)
-   local delta = historian.cursor < #historian and 1 or 0
+   local Δ = historian.cursor < #historian and 1 or 0
    if historian.cursor == 0 then
       return Linebuf()
    end
-   local linebuf= historian[historian.cursor + delta]:clone()
-   historian.cursor = historian.cursor + delta
+   local linebuf= historian[historian.cursor + Δ]:clone()
+   historian.cursor = historian.cursor + Δ
    linebuf.cursor = #linebuf.line + 1
-   if not (delta > 0) and #linebuf.line > 0 then
+   if not (Δ > 0) and #linebuf.line > 0 then
       return linebuf, true
    else
       return linebuf, false
@@ -429,11 +428,11 @@ header_69 [label="3 : Historian:append()"]
 
 prose_70 [label="prose"]
 
-codeblock_71 [label="code block 189-196"]
+codeblock_71 [label="code block 188-195"]
 
-codeblock_72 [label="code block 198-205"]
+codeblock_72 [label="code block 197-204"]
 
-codeblock_73 [label="code block 207-209"]
+codeblock_73 [label="code block 206-208"]
 
 
 // END RANK section_51

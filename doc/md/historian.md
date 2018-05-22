@@ -29,12 +29,11 @@ local Historian = meta {}
 
 This is where we either create query or create our ``~/.bridge`` database.
 
-
 ```lua
-Historian.HISTORY_LIMIT = 500
+Historian.HISTORY_LIMIT = 1000
 
 local create_repl_table = [[
-CREATE TABLE repl (
+CREATE TABLE IF NOT EXISTS repl (
 line_id INTEGER PRIMARY KEY AUTOINCREMENT,
 project TEXT,
 line TEXT,
@@ -42,7 +41,7 @@ time DATETIME DEFAULT CURRENT_TIMESTAMP);
 ]]
 
 local insert_line_stmt = [[
-INSERT INTO repl (project, line) VALUES(?, ?);
+INSERT INTO repl (project, line) VALUES(:project, :line);
 ]]
 
 local get_tables = [[
@@ -70,10 +69,9 @@ end
 ```
 ## Historian:search(frag)
 
-
 ```lua
-local P = L.P
-local function fuzzMatch(frag, string)
+local P, match = L.P, L.match
+local function fuzz_patt(frag)
    frag = type(frag) == "string" and codepoints(frag) or frag
    local patt = (P(1) - P(frag[1]))^0
    for i,v in ipairs(frag) do
@@ -83,15 +81,15 @@ local function fuzzMatch(frag, string)
          patt = patt * (P(v))
       end
    end
-   return L.match(patt, string)
+   return patt
 end
-Historian.fuzzMatch = fuzzMatch
 ```
 ```lua
 function Historian.search(historian, frag)
    local collection = {}
+   local patt = fuzz_patt(frag)
    for i = #historian, 1, -1 do
-      local score = fuzzMatch(frag, tostring(historian[i]))
+      local score = match(patt, tostring(historian[i]))
       if score then
          collection[#collection + 1] = tostring(historian[i])
       end
@@ -128,7 +126,8 @@ end
 
 function Historian.persist(historian, linebuf)
    local lb = tostring(linebuf)
-   historian.insert_stmt:bind(historian.project, lb)
+   historian.insert_stmt:bindkv { project = historian.project,
+                                  line    = lb }
    local err = historian.insert_stmt:step()
    if not err then
       historian.insert_stmt:clearbind():reset()
@@ -145,9 +144,9 @@ function Historian.prev(historian)
    if historian.cursor == 0 then
       return Linebuf()
    end
-   local delta = historian.cursor > 1 and 1 or 0
-   local linebuf = historian[historian.cursor - delta]:clone()
-   historian.cursor = historian.cursor - delta
+   local Δ = historian.cursor > 1 and 1 or 0
+   local linebuf = historian[historian.cursor - Δ]:clone()
+   historian.cursor = historian.cursor - Δ
    linebuf.cursor = #linebuf.line + 1
    return linebuf
 end
@@ -159,14 +158,14 @@ Returns the next linebuf in history, and a second flag to tell the
 
 ```lua
 function Historian.next(historian)
-   local delta = historian.cursor < #historian and 1 or 0
+   local Δ = historian.cursor < #historian and 1 or 0
    if historian.cursor == 0 then
       return Linebuf()
    end
-   local linebuf= historian[historian.cursor + delta]:clone()
-   historian.cursor = historian.cursor + delta
+   local linebuf= historian[historian.cursor + Δ]:clone()
+   historian.cursor = historian.cursor + Δ
    linebuf.cursor = #linebuf.line + 1
-   if not (delta > 0) and #linebuf.line > 0 then
+   if not (Δ > 0) and #linebuf.line > 0 then
       return linebuf, true
    else
       return linebuf, false

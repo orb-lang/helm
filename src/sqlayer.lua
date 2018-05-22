@@ -44,6 +44,11 @@ sql.san = san
 
 
 
+
+
+
+
+
 function sql.format(str, ...)
    local argv = {...}
    str = gsub(str, "%%s", "'%%s'"):gsub("''%%s''", "'%%s'")

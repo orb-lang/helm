@@ -622,9 +622,24 @@ function stmt_mt:bind(...) T_open(self)
   return self
 end
 
-function stmt_mt:bindkv(t) T_open(self)
+-- note: after some thought, I've decided to let this method only handle string
+-- values.  It would be possible to bind against numeric indices as well, but this
+-- would do the wrong thing if given a table with the correct named keys as well as
+-- indexed values.
+--
+-- Worse, it would *unpredictably* do the wrong thing, since stmts silently accept
+-- rebinding, and `pair` offers no ordering guarantees.
+--
+
+function stmt_mt:bindkv(t, pre) T_open(self)
+  pre = pre or ":"
   for k,v in pairs(t) do
-    self:_bind1(sql.sqlite3_bind_parameter_index(self._ptr, k), v)
+    if type(k) == "string" then
+      local param = sql.sqlite3_bind_parameter_index(self._ptr, pre..k)
+      if param ~= 0 then
+        self:_bind1(param, v)
+      end
+    end
   end
   return self
 end
