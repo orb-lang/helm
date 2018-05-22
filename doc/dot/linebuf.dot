@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 193"]
+doc_0 [label="doc - 197"]
 
 
 doc_0 -> { section_1}
@@ -468,7 +468,7 @@ prose_110 [label="prose"]
 
 prose_111 [label="prose"]
 
-section_112 [label="section: 82-193"]
+section_112 [label="section: 82-197"]
 
 
 // END RANK section_11
@@ -564,15 +564,15 @@ header_132 [label="3 : join(token, frag)"]
 
 prose_133 [label="prose"]
 
-codeblock_134 [label="code block 86-151"]
+codeblock_134 [label="code block 86-155"]
 
-codeblock_135 [label="code block 155-168"]
+codeblock_135 [label="code block 159-172"]
 
-codeblock_136 [label="code block 170-180"]
+codeblock_136 [label="code block 174-184"]
 
-codeblock_137 [label="code block 182-189"]
+codeblock_137 [label="code block 186-193"]
 
-codeblock_138 [label="code block 191-193"]
+codeblock_138 [label="code block 195-197"]
 
 
 // END RANK section_112
@@ -610,6 +610,10 @@ local utf8, codepoints = string.utf8, string.codepoints
 
 function Linebuf.insert(linebuf, frag)
    local line = linebuf.line
+   if type(line) == \"string\" then
+      line = codepoints(line)
+      linebuf.line = line
+   end
    local wide_frag = utf8(frag)
    if wide_frag < #frag then -- a paste
       wide_frag = codepoints(frag)

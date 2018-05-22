@@ -104,6 +104,10 @@ local utf8, codepoints = string.utf8, string.codepoints
 
 function Linebuf.insert(linebuf, frag)
    local line = linebuf.line
+   if type(line) == "string" then
+      line = codepoints(line)
+      linebuf.line = line
+   end
    local wide_frag = utf8(frag)
    if wide_frag < #frag then -- a paste
       wide_frag = codepoints(frag)

@@ -138,6 +138,7 @@ local CTRL   = {}
 local ALT    = {}
 local FN     = {}
 local MOUSE  = {}
+local NYI    = {}
 ```
 
 Color schemes are supposed to be one-and-done, and I strongly suspect we
@@ -169,7 +170,13 @@ ModeS.modes = { ASCII  = ASCII,
                 CTRL   = CTRL,
                 ALT    = ALT,
                 MOUSE  = MOUSE,
-                NYI    = {} }
+                NYI    = NYI }
+```
+
+With some semi-constants:
+
+```lua
+ModeS.REPL_LINE = 2
 ```
 
 Sometimes its useful to briefly override handlers, so we check values
@@ -276,10 +283,10 @@ Does what it says on the label.
 
 ```lua
 function ModeS.paint_row(modeS)
-  write(a.col(modeS.l_margin))
-  write(a.erase.right())
-  write(tostring(modeS.linebuf))
-  write(a.col(modeS:cur_col()))
+   write(a.jump(modeS.replLine, modeS.l_margin))
+   write(a.erase.right())
+   modeS:write(tostring(modeS.linebuf))
+   write(a.col(modeS:cur_col()))
 end
 
 function ModeS.cur_col(modeS)
@@ -334,9 +341,6 @@ function ModeS.act(modeS, category, value)
       icon_paint("NYI", category .. ":" .. value)
    end
    colwrite(a.bold(modeS.hist.cursor), STATCOL + 6, 3)
-   for i,v in ipairs(modeS.hist) do
-      colwrite(tostring(v.line), STATCOL, i + 4)
-   end
    return modeS:paint_row()
 end
 ```
@@ -427,7 +431,6 @@ function ModeS.write(modeS, str)
    local nl = a.col(modeS.l_margin) .. a.jump.down()
    local phrase, num_subs = gsub(str, "\n", nl)
    write(phrase)
-   -- modeS.row = modeS.row + num_subs
 end
 ```
 ```lua
@@ -462,7 +465,8 @@ function ModeS.eval(modeS)
    local f, err = loadstring('return ' .. chunk, 'REPL')
 
    if not f then
-      f, err = loadstring(chunk, 'REPL') -- try again without return
+      -- try again without return
+      f, err = loadstring(chunk, 'REPL')
    end
    if not f then
       local head = sub(chunk, 1, 1)
@@ -472,6 +476,7 @@ function ModeS.eval(modeS)
    end
    if f then
       modeS.buffer = ""
+      modeS.replLine = modeS.REPL_LINE
       local success, results = gatherResults(xpcall(f, debug.traceback))
 
       if success then
@@ -489,6 +494,7 @@ function ModeS.eval(modeS)
       if err:match "'<eof>'$" then
          -- Lua expects some more input; stow it away for next time
          modeS.buffer = chunk .. '\n'
+         modeS.replLine = modeS.replLine + 1
          return '...'
       else
          modeS:write(err)

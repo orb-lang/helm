@@ -70,25 +70,6 @@ end
 
 
 
-local STATCOL = 81
-local STAT_TOP = 1
-local STAT_RUN = 2
-
-local function colwrite(str, col, row)
-   col = col or STATCOL
-   row = row or STAT_TOP
-   local dash = a.stash()
-             .. a.cursor.hide()
-             .. a.jump(row, col)
-             .. a.erase.right()
-             .. str
-             .. a.pop()
-             .. a.cursor.show()
-   write(dash)
-end
-
-
-
 local reverse = assert(table.reverse)
 
 function Historian.load(historian)
