@@ -149,6 +149,8 @@ int sqlite3_bind_null(sqlite3_stmt*, int);
 int sqlite3_bind_text(sqlite3_stmt*, int, const char*, int n, void(*)(void*));
 int sqlite3_bind_blob(sqlite3_stmt*, int, const void*, int n, void(*)(void*));
 
+int sqlite3_bind_parameter_index(sqlite3_stmt *stmt, const char *name);
+
 // Clear bindings.
 int sqlite3_clear_bindings(sqlite3_stmt*);
 
@@ -617,6 +619,13 @@ end
 
 function stmt_mt:bind(...) T_open(self)
   for i=1,select("#", ...) do self:_bind1(i, select(i, ...)) end
+  return self
+end
+
+function stmt_mt:bindkv(t) T_open(self)
+  for k,v in pairs(t) do
+    self:_bind1(sql.sqlite3_bind_parameter_index(self._ptr, k), v)
+  end
   return self
 end
 

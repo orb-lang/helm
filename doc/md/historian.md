@@ -90,16 +90,11 @@ Historian.fuzzMatch = fuzzMatch
 ```lua
 function Historian.search(historian, frag)
    local collection = {}
-   for i,v in ipairs(historian) do
-      local score = fuzzMatch(frag, tostring(v))
+   for i = #historian, 1, -1 do
+      local score = fuzzMatch(frag, tostring(historian[i]))
       if score then
-         collection[#collection + 1] = {score = score, val = v}
+         collection[#collection + 1] = tostring(historian[i])
       end
-   end
-   table.sort(collection, function(a,b)
-              return a.score > b.score end)
-   for i,v in ipairs(collection) do
-      collection[i] = tostring(v.val)
    end
    return collection
 end

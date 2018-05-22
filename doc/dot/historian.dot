@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 214"]
+doc_0 [label="doc - 209"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-152"]
+section_1 [label="section: 1-147"]
 
 
 // END RANK doc_0
@@ -33,9 +33,9 @@ codeblock_8 [label="code block 23-25"]
 
 section_9 [label="section: 28-72"]
 
-section_10 [label="section: 73-152"]
+section_10 [label="section: 73-147"]
 
-section_11 [label="section: 153-191"]
+section_11 [label="section: 148-186"]
 
 
 // END RANK section_1
@@ -215,9 +215,9 @@ prose_37 [label="prose"]
 
 codeblock_38 [label="code block 76-91"]
 
-codeblock_39 [label="code block 93-109"]
+codeblock_39 [label="code block 93-104"]
 
-codeblock_40 [label="code block 112-150"]
+codeblock_40 [label="code block 107-145"]
 
 
 // END RANK section_10
@@ -260,16 +260,11 @@ Historian.fuzzMatch = fuzzMatch"]
 codeblock_39 -> leaf_45
 leaf_45  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.search(historian, frag)
    local collection = {}
-   for i,v in ipairs(historian) do
-      local score = fuzzMatch(frag, tostring(v))
+   for i = #historian, 1, -1 do
+      local score = fuzzMatch(frag, tostring(historian[i]))
       if score then
-         collection[#collection + 1] = {score = score, val = v}
+         collection[#collection + 1] = tostring(historian[i])
       end
-   end
-   table.sort(collection, function(a,b)
-              return a.score > b.score end)
-   for i,v in ipairs(collection) do
-      collection[i] = tostring(v.val)
    end
    return collection
 end"]
@@ -322,11 +317,11 @@ header_47 [label="2 : Historian:prev()"]
 
 prose_48 [label="prose"]
 
-codeblock_49 [label="code block 155-166"]
+codeblock_49 [label="code block 150-161"]
 
-section_50 [label="section: 169-191"]
+section_50 [label="section: 164-186"]
 
-section_51 [label="section: 192-214"]
+section_51 [label="section: 187-209"]
 
 
 // END RANK section_11
@@ -368,7 +363,7 @@ header_56 [label="3 : Historian:next()"]
 
 prose_57 [label="prose"]
 
-codeblock_58 [label="code block 174-189"]
+codeblock_58 [label="code block 169-184"]
 
 
 // END RANK section_50
@@ -434,11 +429,11 @@ header_69 [label="3 : Historian:append()"]
 
 prose_70 [label="prose"]
 
-codeblock_71 [label="code block 194-201"]
+codeblock_71 [label="code block 189-196"]
 
-codeblock_72 [label="code block 203-210"]
+codeblock_72 [label="code block 198-205"]
 
-codeblock_73 [label="code block 212-214"]
+codeblock_73 [label="code block 207-209"]
 
 
 // END RANK section_51
