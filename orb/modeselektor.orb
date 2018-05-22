@@ -355,11 +355,13 @@ That's confusing, and I'll fix it when it's time to add modal editing.
 
 #!lua
 function NAV.UP(modeS, category, value)
+   modeS:clearResult()
    modeS.linebuf = modeS.hist:prev()
    return modeS
 end
 
 function NAV.DOWN(modeS, category, value)
+   modeS:clearResult()
    local next_p
    modeS.linebuf, next_p = modeS.hist:next()
    if next_p then
@@ -475,10 +477,10 @@ function ModeS.eval(modeS)
       end -- more special REPL prefix soon
    end
    if f then
+      modeS.linebuf = Linebuf(modeS.buffer .. tostring(modeS.linebuf))
       modeS.buffer = ""
       modeS.replLine = modeS.REPL_LINE
       local success, results = gatherResults(xpcall(f, debug.traceback))
-
       if success then
       -- successful call
          modeS:clearResult()
@@ -495,10 +497,14 @@ function ModeS.eval(modeS)
          -- Lua expects some more input; stow it away for next time
          modeS.buffer = chunk .. '\n'
          modeS.replLine = modeS.replLine + 1
-         return '...'
+         write '...'
+         return true
       else
+         modeS.replLine = modeS.REPL_LINE
+         modeS:clearResult()
          modeS:write(err)
-         modeS.buffer = ''
+         modeS.buffer = ""
+         return true
       end
    end
    modeS:prompt()

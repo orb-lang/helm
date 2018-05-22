@@ -16,6 +16,7 @@
 
 local Linebuf = require "linebuf"
 local sql     = require "sqlayer"
+local L       = require "lpeg"
 local format  = assert (string.format)
 
 
@@ -30,7 +31,7 @@ local Historian = meta {}
 
 
 
-Historian.HISTORY_LIMIT = 50
+Historian.HISTORY_LIMIT = 500
 
 local create_repl_table = [[
 CREATE TABLE repl (
@@ -65,6 +66,45 @@ local function has(table, name)
       end
    end
    return false
+end
+
+
+
+
+
+
+
+local P = L.P
+local function fuzzMatch(frag, string)
+   frag = type(frag) == "string" and codepoints(frag) or frag
+   local patt = (P(1) - P(frag[1]))^0
+   for i,v in ipairs(frag) do
+      if i < #frag then
+         patt = patt * (P(v) * (P(1) - P(frag[i + 1]))^0)
+      else
+         patt = patt * (P(v))
+      end
+   end
+   return L.match(patt, string)
+end
+Historian.fuzzMatch = fuzzMatch
+
+
+
+function Historian.search(historian, frag)
+   local collection = {}
+   for i,v in ipairs(historian) do
+      local score = fuzzMatch(frag, tostring(v))
+      if score then
+         collection[#collection + 1] = {score = score, val = v}
+      end
+   end
+   table.sort(collection, function(a,b)
+              return a.score > b.score end)
+   for i,v in ipairs(collection) do
+      collection[i] = tostring(v.val)
+   end
+   return collection
 end
 
 
