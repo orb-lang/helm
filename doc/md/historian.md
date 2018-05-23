@@ -21,6 +21,8 @@ local Linebuf = require "linebuf"
 local sql     = require "sqlayer"
 local L       = require "lpeg"
 local format  = assert (string.format)
+local sub     = assert (string.sub)
+assert(meta)
 ```
 ```lua
 local Historian = meta {}
@@ -71,22 +73,23 @@ end
 
 ```lua
 local P, match = L.P, L.match
+
+-- second_best is broke and I don't know why
+-- also this fails on a single key search >.<
 local function fuzz_patt(frag)
    frag = type(frag) == "string" and codepoints(frag) or frag
-   local patt = (P(1) - P(frag[1]))^0
-   for i,v in ipairs(frag) do
-      if i < #frag then
-         patt = patt * (P(v) * (P(1) - P(frag[i + 1]))^0)
-      else
-         patt = patt * (P(v))
-      end
+   local patt =        (P(1) - P(frag[1]))^0
+   for i = 1 , #frag - 1 do
+      local v = frag[i]
+      patt = patt * (P(v) * (P(1) - P(frag[i + 1]))^0)
    end
+   patt = patt * P(frag[#frag])
    return patt
 end
-```
-```lua
+
 function Historian.search(historian, frag)
    local collection = {}
+   local best = true
    local patt = fuzz_patt(frag)
    for i = #historian, 1, -1 do
       local score = match(patt, tostring(historian[i]))
@@ -94,7 +97,21 @@ function Historian.search(historian, frag)
          collection[#collection + 1] = tostring(historian[i])
       end
    end
-   return collection
+   local slip = ""
+   if #collection == 0 then
+      -- try the transpose
+      best = false
+      slip = sub(frag, 1, -3) .. sub(frag, -1, -1) .. sub(frag, -2, -2)
+      local second = fuzz_patt(slip)
+      for i = #historian, 1, -1 do
+         local score = match(second, tostring(historian[i]))
+         if score then
+            collection[#collection + 1] = tostring(historian[i])
+         end
+      end
+   end
+
+   return collection, best, slip
 end
 ```
 ```lua

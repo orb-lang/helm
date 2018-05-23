@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 208"]
+doc_0 [label="doc - 224"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-146"]
+section_1 [label="section: 1-162"]
 
 
 // END RANK doc_0
@@ -27,15 +27,15 @@ prose_5 [label="prose"]
 
 prose_6 [label="prose"]
 
-codeblock_7 [label="code block 16-21"]
+codeblock_7 [label="code block 16-23"]
 
-codeblock_8 [label="code block 23-25"]
+codeblock_8 [label="code block 25-27"]
 
-section_9 [label="section: 28-71"]
+section_9 [label="section: 30-73"]
 
-section_10 [label="section: 72-146"]
+section_10 [label="section: 74-162"]
 
-section_11 [label="section: 147-185"]
+section_11 [label="section: 163-201"]
 
 
 // END RANK section_1
@@ -110,7 +110,9 @@ codeblock_7 -> leaf_21
 leaf_21  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Linebuf = require \"linebuf\"
 local sql     = require \"sqlayer\"
 local L       = require \"lpeg\"
-local format  = assert (string.format)"]
+local format  = assert (string.format)
+local sub     = assert (string.sub)
+assert(meta)"]
 // END RANK codeblock_7
 
 codeblock_8 -> leaf_22
@@ -124,7 +126,7 @@ header_23 [label="2 : Historian:load()"]
 
 prose_24 [label="prose"]
 
-codeblock_25 [label="code block 32-69"]
+codeblock_25 [label="code block 34-71"]
 
 
 // END RANK section_9
@@ -205,58 +207,56 @@ local function has(table, name)
 end"]
 // END RANK codeblock_25
 
-section_10 -> { header_36 prose_37 codeblock_38 codeblock_39 codeblock_40}
-{rank=same; header_36 prose_37 codeblock_38 codeblock_39 codeblock_40}
+section_10 -> { header_36 prose_37 codeblock_38 codeblock_39}
+{rank=same; header_36 prose_37 codeblock_38 codeblock_39}
 
 header_36 [label="2 : Historian:search(frag)"]
 
 prose_37 [label="prose"]
 
-codeblock_38 [label="code block 74-88"]
+codeblock_38 [label="code block 76-118"]
 
-codeblock_39 [label="code block 90-102"]
-
-codeblock_40 [label="code block 105-144"]
+codeblock_39 [label="code block 121-160"]
 
 
 // END RANK section_10
 
-header_36 -> leaf_41
-leaf_41  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Historian:search(frag)"]
+header_36 -> leaf_40
+leaf_40  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Historian:search(frag)"]
 // END RANK header_36
 
-prose_37 -> { raw_42}
-{rank=same; raw_42}
+prose_37 -> { raw_41}
+{rank=same; raw_41}
 
-raw_42 [label="raw"]
+raw_41 [label="raw"]
 
 
 // END RANK prose_37
 
-raw_42 -> leaf_43
-leaf_43  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_41 -> leaf_42
+leaf_42  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 "]
-// END RANK raw_42
+// END RANK raw_41
 
-codeblock_38 -> leaf_44
-leaf_44  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local P, match = L.P, L.match
+codeblock_38 -> leaf_43
+leaf_43  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local P, match = L.P, L.match
+
+-- second_best is broke and I don't know why
+-- also this fails on a single key search >.<
 local function fuzz_patt(frag)
    frag = type(frag) == \"string\" and codepoints(frag) or frag
-   local patt = (P(1) - P(frag[1]))^0
-   for i,v in ipairs(frag) do
-      if i < #frag then
-         patt = patt * (P(v) * (P(1) - P(frag[i + 1]))^0)
-      else
-         patt = patt * (P(v))
-      end
+   local patt =        (P(1) - P(frag[1]))^0
+   for i = 1 , #frag - 1 do
+      local v = frag[i]
+      patt = patt * (P(v) * (P(1) - P(frag[i + 1]))^0)
    end
+   patt = patt * P(frag[#frag])
    return patt
-end"]
-// END RANK codeblock_38
+end
 
-codeblock_39 -> leaf_45
-leaf_45  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.search(historian, frag)
+function Historian.search(historian, frag)
    local collection = {}
+   local best = true
    local patt = fuzz_patt(frag)
    for i = #historian, 1, -1 do
       local score = match(patt, tostring(historian[i]))
@@ -264,12 +264,26 @@ leaf_45  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histor
          collection[#collection + 1] = tostring(historian[i])
       end
    end
-   return collection
-end"]
-// END RANK codeblock_39
+   local slip = \"\"
+   if #collection == 0 then
+      -- try the transpose
+      best = false
+      slip = sub(frag, 1, -3) .. sub(frag, -1, -1) .. sub(frag, -2, -2)
+      local second = fuzz_patt(slip)
+      for i = #historian, 1, -1 do
+         local score = match(second, tostring(historian[i]))
+         if score then
+            collection[#collection + 1] = tostring(historian[i])
+         end
+      end
+   end
 
-codeblock_40 -> leaf_46
-leaf_46  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local reverse = assert(table.reverse)
+   return collection, best, slip
+end"]
+// END RANK codeblock_38
+
+codeblock_39 -> leaf_44
+leaf_44  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local reverse = assert(table.reverse)
 
 function Historian.load(historian)
    local conn = sql.open(historian.home_dir .. \"/.bridge\")
@@ -307,43 +321,43 @@ function Historian.persist(historian, linebuf)
    end
    return true
 end"]
-// END RANK codeblock_40
+// END RANK codeblock_39
 
-section_11 -> { header_47 prose_48 codeblock_49 section_50 section_51}
-{rank=same; header_47 prose_48 codeblock_49 section_50 section_51}
+section_11 -> { header_45 prose_46 codeblock_47 section_48 section_49}
+{rank=same; header_45 prose_46 codeblock_47 section_48 section_49}
 
-header_47 [label="2 : Historian:prev()"]
+header_45 [label="2 : Historian:prev()"]
 
-prose_48 [label="prose"]
+prose_46 [label="prose"]
 
-codeblock_49 [label="code block 149-160"]
+codeblock_47 [label="code block 165-176"]
 
-section_50 [label="section: 163-185"]
+section_48 [label="section: 179-201"]
 
-section_51 [label="section: 186-208"]
+section_49 [label="section: 202-224"]
 
 
 // END RANK section_11
 
-header_47 -> leaf_52
-leaf_52  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Historian:prev()"]
-// END RANK header_47
+header_45 -> leaf_50
+leaf_50  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Historian:prev()"]
+// END RANK header_45
 
-prose_48 -> { raw_53}
-{rank=same; raw_53}
+prose_46 -> { raw_51}
+{rank=same; raw_51}
 
-raw_53 [label="raw"]
+raw_51 [label="raw"]
 
 
-// END RANK prose_48
+// END RANK prose_46
 
-raw_53 -> leaf_54
-leaf_54  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_51 -> leaf_52
+leaf_52  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 "]
-// END RANK raw_53
+// END RANK raw_51
 
-codeblock_49 -> leaf_55
-leaf_55  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.prev(historian)
+codeblock_47 -> leaf_53
+leaf_53  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.prev(historian)
    if historian.cursor == 0 then
       return Linebuf()
    end
@@ -353,59 +367,59 @@ leaf_55  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histor
    linebuf.cursor = #linebuf.line + 1
    return linebuf
 end"]
-// END RANK codeblock_49
+// END RANK codeblock_47
 
-section_50 -> { header_56 prose_57 codeblock_58}
-{rank=same; header_56 prose_57 codeblock_58}
+section_48 -> { header_54 prose_55 codeblock_56}
+{rank=same; header_54 prose_55 codeblock_56}
 
-header_56 [label="3 : Historian:next()"]
+header_54 [label="3 : Historian:next()"]
 
-prose_57 [label="prose"]
+prose_55 [label="prose"]
 
-codeblock_58 [label="code block 168-183"]
-
-
-// END RANK section_50
-
-header_56 -> leaf_59
-leaf_59  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Historian:next()"]
-// END RANK header_56
-
-prose_57 -> { raw_60 prespace_61 literal_62 raw_63}
-{rank=same; raw_60 prespace_61 literal_62 raw_63}
-
-raw_60 [label="raw"]
-
-prespace_61 [label="prespace"]
-
-literal_62 [label="literal"]
-
-raw_63 [label="raw"]
+codeblock_56 [label="code block 184-199"]
 
 
-// END RANK prose_57
+// END RANK section_48
 
-raw_60 -> leaf_64
-leaf_64  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_54 -> leaf_57
+leaf_57  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Historian:next()"]
+// END RANK header_54
+
+prose_55 -> { raw_58 prespace_59 literal_60 raw_61}
+{rank=same; raw_58 prespace_59 literal_60 raw_61}
+
+raw_58 [label="raw"]
+
+prespace_59 [label="prespace"]
+
+literal_60 [label="literal"]
+
+raw_61 [label="raw"]
+
+
+// END RANK prose_55
+
+raw_58 -> leaf_62
+leaf_62  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 Returns the next linebuf in history, and a second flag to tell the"]
-// END RANK raw_60
+// END RANK raw_58
 
-prespace_61 -> leaf_65
-leaf_65  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
-// END RANK prespace_61
+prespace_59 -> leaf_63
+leaf_63  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK prespace_59
 
-literal_62 -> leaf_66
-leaf_66  [color=Gray,shape=rectangle,fontname=Inconsolata,label="modeselektor"]
-// END RANK literal_62
+literal_60 -> leaf_64
+leaf_64  [color=Gray,shape=rectangle,fontname=Inconsolata,label="modeselektor"]
+// END RANK literal_60
 
-raw_63 -> leaf_67
-leaf_67  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" it might be time for a new one.
+raw_61 -> leaf_65
+leaf_65  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" it might be time for a new one.
 "]
-// END RANK raw_63
+// END RANK raw_61
 
-codeblock_58 -> leaf_68
-leaf_68  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.next(historian)
+codeblock_56 -> leaf_66
+leaf_66  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.next(historian)
    local Δ = historian.cursor < #historian and 1 or 0
    if historian.cursor == 0 then
       return Linebuf()
@@ -419,62 +433,62 @@ leaf_68  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histor
       return linebuf, false
    end
 end"]
-// END RANK codeblock_58
+// END RANK codeblock_56
 
-section_51 -> { header_69 prose_70 codeblock_71 codeblock_72 codeblock_73}
-{rank=same; header_69 prose_70 codeblock_71 codeblock_72 codeblock_73}
+section_49 -> { header_67 prose_68 codeblock_69 codeblock_70 codeblock_71}
+{rank=same; header_67 prose_68 codeblock_69 codeblock_70 codeblock_71}
 
-header_69 [label="3 : Historian:append()"]
+header_67 [label="3 : Historian:append()"]
 
-prose_70 [label="prose"]
+prose_68 [label="prose"]
 
-codeblock_71 [label="code block 188-195"]
+codeblock_69 [label="code block 204-211"]
 
-codeblock_72 [label="code block 197-204"]
+codeblock_70 [label="code block 213-220"]
 
-codeblock_73 [label="code block 206-208"]
-
-
-// END RANK section_51
-
-header_69 -> leaf_74
-leaf_74  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Historian:append()"]
-// END RANK header_69
-
-prose_70 -> { raw_75}
-{rank=same; raw_75}
-
-raw_75 [label="raw"]
+codeblock_71 [label="code block 222-224"]
 
 
-// END RANK prose_70
+// END RANK section_49
 
-raw_75 -> leaf_76
-leaf_76  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_67 -> leaf_72
+leaf_72  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Historian:append()"]
+// END RANK header_67
+
+prose_68 -> { raw_73}
+{rank=same; raw_73}
+
+raw_73 [label="raw"]
+
+
+// END RANK prose_68
+
+raw_73 -> leaf_74
+leaf_74  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 "]
-// END RANK raw_75
+// END RANK raw_73
 
-codeblock_71 -> leaf_77
-leaf_77  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.append(historian, linebuf)
+codeblock_69 -> leaf_75
+leaf_75  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.append(historian, linebuf)
    historian[#historian + 1] = linebuf
    historian.cursor = #historian
    historian:persist(linebuf)
    return true
 end"]
-// END RANK codeblock_71
+// END RANK codeblock_69
 
-codeblock_72 -> leaf_78
-leaf_78  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new()
+codeblock_70 -> leaf_76
+leaf_76  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new()
    local historian = meta(Historian)
    historian:load()
    return historian
 end
 Historian.idEst = new"]
-// END RANK codeblock_72
+// END RANK codeblock_70
 
-codeblock_73 -> leaf_79
-leaf_79  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return new"]
-// END RANK codeblock_73
+codeblock_71 -> leaf_77
+leaf_77  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return new"]
+// END RANK codeblock_71
 
 
 }
