@@ -272,7 +272,7 @@ Does what it says on the label.
 
 #!lua
 function ModeS.paint_row(modeS)
-   write(a.jump(modeS.replLine, modeS.l_margin))
+   write(a.jump(modeS.repl_line, modeS.l_margin))
    write(a.erase.right())
    modeS:write(tostring(modeS.linebuf))
    write(a.col(modeS:cur_col()))
@@ -359,6 +359,8 @@ function NAV.UP(modeS, category, value)
    modeS.linebuf, prev_result = modeS.hist:prev()
    if prev_result then
       modeS:printResults(prev_result)
+   else
+      modeS:clearResult()
    end
    return modeS
 end
@@ -372,6 +374,8 @@ function NAV.DOWN(modeS, category, value)
    end
    if next_result then
       modeS:printResults(next_result)
+   else
+      modeS:clearResult()
    end
    return modeS
 end
@@ -448,17 +452,18 @@ end
 #!lua
 function ModeS.printResults(modeS, results)
    local rainbuf = {}
-  for i = 1, results.n do
-    rainbuf[i] = ts(results[i])
-  end
-  modeS:write(concat(rainbuf, '   '))
+   modeS:write(a.rc(modeS.repl_line + 1, modeS.l_margin))
+   for i = 1, results.n do
+      rainbuf[i] = ts(results[i])
+   end
+   modeS:write(concat(rainbuf, '   '))
 end
 #/lua
 
 
 #!lua
 function ModeS.prompt(modeS)
-   write(a.jump(modeS.replLine, 1) .. "👉 ")
+   write(a.jump(modeS.repl_line, 1) .. "👉 ")
 end
 #/lua
 
@@ -492,7 +497,7 @@ function ModeS.eval(modeS)
    if f then
       modeS.linebuf = Linebuf(modeS.buffer .. tostring(modeS.linebuf))
       modeS.buffer = ""
-      modeS.replLine = modeS.REPL_LINE
+      modeS.repl_line = modeS.REPL_LINE
       success, results = gatherResults(xpcall(f, debug.traceback))
       if success then
       -- successful call
@@ -510,11 +515,11 @@ function ModeS.eval(modeS)
       if err:match "'<eof>'$" then
          -- Lua expects some more input; stow it away for next time
          modeS.buffer = chunk .. '\n'
-         modeS.replLine = modeS.replLine + 1
+         modeS.repl_line = modeS.repl_line + 1
          write '...'
          return true
       else
-         modeS.replLine = modeS.REPL_LINE
+         modeS.repl_line = modeS.REPL_LINE
          modeS:clearResult()
          modeS:write(err)
          modeS.buffer = ""
@@ -544,7 +549,7 @@ function new(cfg)
   modeS.l_margin = 4
   modeS.r_margin = 80
   modeS.row = 2
-  modeS.replLine = 2
+  modeS.repl_line = 2
   return modeS
 end
 

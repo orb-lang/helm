@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 580"]
+doc_0 [label="doc - 581"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-531"]
+section_1 [label="section: 1-532"]
 
 
 // END RANK doc_0
@@ -27,7 +27,7 @@ section_5 [label="section: 12-268"]
 
 section_6 [label="section: 291-426"]
 
-section_7 [label="section: 532-580"]
+section_7 [label="section: 533-581"]
 
 
 // END RANK section_1
@@ -1648,7 +1648,7 @@ Does what it says on the label.
 
 codeblock_404 -> leaf_408
 leaf_408  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS.paint_row(modeS)
-   write(a.jump(modeS.replLine, modeS.l_margin))
+   write(a.jump(modeS.repl_line, modeS.l_margin))
    write(a.erase.right())
    modeS:write(tostring(modeS.linebuf))
    write(a.col(modeS:cur_col()))
@@ -1688,7 +1688,7 @@ section_418 [label="section: 405-423"]
 
 section_419 [label="section: 424-426"]
 
-section_420 [label="section: 427-531"]
+section_420 [label="section: 427-532"]
 
 
 // END RANK section_6
@@ -2102,13 +2102,13 @@ codeblock_495 [label="code block 433-439"]
 
 codeblock_496 [label="code block 441-446"]
 
-codeblock_497 [label="code block 448-456"]
+codeblock_497 [label="code block 448-457"]
 
-codeblock_498 [label="code block 459-463"]
+codeblock_498 [label="code block 460-464"]
 
-codeblock_499 [label="code block 468-472"]
+codeblock_499 [label="code block 469-473"]
 
-codeblock_500 [label="code block 474-529"]
+codeblock_500 [label="code block 475-530"]
 
 
 // END RANK section_420
@@ -2152,16 +2152,17 @@ end"]
 codeblock_497 -> leaf_506
 leaf_506  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS.printResults(modeS, results)
    local rainbuf = {}
-  for i = 1, results.n do
-    rainbuf[i] = ts(results[i])
-  end
-  modeS:write(concat(rainbuf, '   '))
+   modeS:write(a.rc(modeS.repl_line + 1, modeS.l_margin))
+   for i = 1, results.n do
+      rainbuf[i] = ts(results[i])
+   end
+   modeS:write(concat(rainbuf, '   '))
 end"]
 // END RANK codeblock_497
 
 codeblock_498 -> leaf_507
 leaf_507  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS.prompt(modeS)
-   write(a.jump(modeS.replLine, 1) .. \"👉 \")
+   write(a.jump(modeS.repl_line, 1) .. \"👉 \")
 end"]
 // END RANK codeblock_498
 
@@ -2192,7 +2193,7 @@ leaf_509  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS
    if f then
       modeS.linebuf = Linebuf(modeS.buffer .. tostring(modeS.linebuf))
       modeS.buffer = \"\"
-      modeS.replLine = modeS.REPL_LINE
+      modeS.repl_line = modeS.REPL_LINE
       success, results = gatherResults(xpcall(f, debug.traceback))
       if success then
       -- successful call
@@ -2210,11 +2211,11 @@ leaf_509  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS
       if err:match \"'<eof>'$\" then
          -- Lua expects some more input; stow it away for next time
          modeS.buffer = chunk .. '\\n'
-         modeS.replLine = modeS.replLine + 1
+         modeS.repl_line = modeS.repl_line + 1
          write '...'
          return true
       else
-         modeS.replLine = modeS.REPL_LINE
+         modeS.repl_line = modeS.REPL_LINE
          modeS:clearResult()
          modeS:write(err)
          modeS.buffer = \"\"
@@ -2235,9 +2236,9 @@ header_510 [label="2 : new"]
 
 prose_511 [label="prose"]
 
-codeblock_512 [label="code block 536-552"]
+codeblock_512 [label="code block 537-553"]
 
-codeblock_513 [label="code block 554-556"]
+codeblock_513 [label="code block 555-557"]
 
 
 // END RANK section_7
@@ -2290,7 +2291,7 @@ leaf_523  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function new(c
   modeS.l_margin = 4
   modeS.r_margin = 80
   modeS.row = 2
-  modeS.replLine = 2
+  modeS.repl_line = 2
   return modeS
 end
 

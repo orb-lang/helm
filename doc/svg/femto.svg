@@ -1397,7 +1397,7 @@
 <text text-anchor="middle" x="6727" y="-1157.0306" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;buffer = &#39;&#39;</text>
 <text text-anchor="middle" x="6727" y="-1141.6306" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end</text>
 <text text-anchor="middle" x="6727" y="-1126.2306" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
-<text text-anchor="middle" x="6727" y="-1094.8305" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return &#39;👉 &#160;&#39;</text>
+<text text-anchor="middle" x="6727" y="-1094.8305" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return &#39;👉 &#39;</text>
 <text text-anchor="middle" x="6727" y="-1070.6018" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
 <text text-anchor="middle" x="6727" y="-1039.2017" font-family="Inconsolata" font-size="14.00" fill="#000000">local function displayPrompt(prompt)</text>
 <text text-anchor="middle" x="6727" y="-1023.8017" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;uv.write(stdout, prompt)</text>

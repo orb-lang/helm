@@ -185,7 +185,7 @@ local function evaluateLine(line)
       end
    end
 
-   return '👉  '
+   return '👉 '
 end
 
 local function displayPrompt(prompt)
