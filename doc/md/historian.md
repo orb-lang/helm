@@ -203,6 +203,8 @@ end
 local function new()
    local historian = meta(Historian)
    historian:load()
+   -- This will also be load()ed once we have the tables for it
+   historian.results = {} -- keyed by linebuf
    return historian
 end
 Historian.idEst = new

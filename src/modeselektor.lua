@@ -119,7 +119,7 @@ local ModeS = meta()
 
 
 
-local ASCII = meta()
+local ASCII  = meta {}
 local NAV    = {}
 local CTRL   = {}
 local ALT    = {}
@@ -246,7 +246,7 @@ local act_map = { MOUSE  = pr_mouse,
                   NAV    = mk_paint(": ", a.italic),
                   CTRL   = mk_paint(": ", c.field),
                   ALT    = mk_paint(": ", a.underscore),
-                  ASCII  = mk_paint(": ", c.field),
+                  ASCII  = mk_paint(": ", c.table),
                   NYI    = mk_paint(": ", a.red)}
 
 local icon_map = { MOUSE = mk_paint(STAT_ICON, c.userdata),
@@ -337,7 +337,6 @@ end
 
 
 
-
 function ModeS.__call(modeS, category, value)
   return modeS:act(category, value)
 end
@@ -382,8 +381,8 @@ function NAV.RETURN(modeS, category, value)
    -- eval etc.
    modeS:nl()
    modeS:eval()
-   modeS.hist:append(modeS.linebuf)
    modeS.linebuf = Linebuf()
+   modeS.hist.cursor = modeS.hist.cursor + 1
 end
 
 function NAV.BACKSPACE(modeS, category, value)
@@ -412,6 +411,7 @@ local function cursor_end(modeS, category, value)
 end
 
 CTRL["^E"] = cursor_end
+
 
 
 
@@ -454,6 +454,9 @@ end
 
 
 
+
+
+
 function ModeS.clearResult(modeS)
    write(a.erase.box(3, 1, modeS.max_row, modeS.r_margin))
 end
@@ -463,6 +466,7 @@ end
 function ModeS.eval(modeS)
    local line = tostring(modeS.linebuf)
    local chunk  = modeS.buffer .. line
+   local success, results
    -- first we prefix return
    local f, err = loadstring('return ' .. chunk, 'REPL')
 
@@ -480,12 +484,13 @@ function ModeS.eval(modeS)
       modeS.linebuf = Linebuf(modeS.buffer .. tostring(modeS.linebuf))
       modeS.buffer = ""
       modeS.replLine = modeS.REPL_LINE
-      local success, results = gatherResults(xpcall(f, debug.traceback))
+      success, results = gatherResults(xpcall(f, debug.traceback))
       if success then
       -- successful call
          modeS:clearResult()
          if results.n > 0 then
             modeS:printResults(results)
+
          end
       else
       -- error
@@ -507,6 +512,9 @@ function ModeS.eval(modeS)
          return true
       end
    end
+
+   modeS.hist:append(modeS.linebuf)
+   if success then modeS.hist.results[modeS.linebuf] = results end
    modeS:prompt()
 end
 

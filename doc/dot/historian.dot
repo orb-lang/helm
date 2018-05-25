@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 224"]
+doc_0 [label="doc - 226"]
 
 
 doc_0 -> { section_1}
@@ -334,7 +334,7 @@ codeblock_47 [label="code block 165-176"]
 
 section_48 [label="section: 179-201"]
 
-section_49 [label="section: 202-224"]
+section_49 [label="section: 202-226"]
 
 
 // END RANK section_11
@@ -444,9 +444,9 @@ prose_68 [label="prose"]
 
 codeblock_69 [label="code block 204-211"]
 
-codeblock_70 [label="code block 213-220"]
+codeblock_70 [label="code block 213-222"]
 
-codeblock_71 [label="code block 222-224"]
+codeblock_71 [label="code block 224-226"]
 
 
 // END RANK section_49
@@ -481,6 +481,8 @@ codeblock_70 -> leaf_76
 leaf_76  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new()
    local historian = meta(Historian)
    historian:load()
+   -- This will also be load()ed once we have the tables for it
+   historian.results = {} -- keyed by linebuf
    return historian
 end
 Historian.idEst = new"]

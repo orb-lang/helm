@@ -132,7 +132,7 @@ local ModeS = meta()
 These are the broad types of event.
 
 ```lua
-local ASCII = meta()
+local ASCII  = meta {}
 local NAV    = {}
 local CTRL   = {}
 local ALT    = {}
@@ -209,7 +209,7 @@ end
 ```
 ### status painter (colwrite)
 
-This just helps me see what I'm doing
+This is migrating to the paint module
 
 ```lua
 local STATCOL = 81
@@ -259,7 +259,7 @@ local act_map = { MOUSE  = pr_mouse,
                   NAV    = mk_paint(": ", a.italic),
                   CTRL   = mk_paint(": ", c.field),
                   ALT    = mk_paint(": ", a.underscore),
-                  ASCII  = mk_paint(": ", c.field),
+                  ASCII  = mk_paint(": ", c.table),
                   NYI    = mk_paint(": ", a.red)}
 
 local icon_map = { MOUSE = mk_paint(STAT_ICON, c.userdata),
@@ -391,8 +391,8 @@ function NAV.RETURN(modeS, category, value)
    -- eval etc.
    modeS:nl()
    modeS:eval()
-   modeS.hist:append(modeS.linebuf)
    modeS.linebuf = Linebuf()
+   modeS.hist.cursor = modeS.hist.cursor + 1
 end
 
 function NAV.BACKSPACE(modeS, category, value)
@@ -421,6 +421,7 @@ end
 CTRL["^E"] = cursor_end
 ```
 ### ModeS:eval()
+
 
 ### ModeS:write(str)
 
@@ -463,6 +464,7 @@ end
 function ModeS.eval(modeS)
    local line = tostring(modeS.linebuf)
    local chunk  = modeS.buffer .. line
+   local success, results
    -- first we prefix return
    local f, err = loadstring('return ' .. chunk, 'REPL')
 
@@ -480,12 +482,13 @@ function ModeS.eval(modeS)
       modeS.linebuf = Linebuf(modeS.buffer .. tostring(modeS.linebuf))
       modeS.buffer = ""
       modeS.replLine = modeS.REPL_LINE
-      local success, results = gatherResults(xpcall(f, debug.traceback))
+      success, results = gatherResults(xpcall(f, debug.traceback))
       if success then
       -- successful call
          modeS:clearResult()
          if results.n > 0 then
             modeS:printResults(results)
+
          end
       else
       -- error
@@ -507,6 +510,9 @@ function ModeS.eval(modeS)
          return true
       end
    end
+
+   modeS.hist:append(modeS.linebuf)
+   if success then modeS.hist.results[modeS.linebuf] = results end
    modeS:prompt()
 end
 ```

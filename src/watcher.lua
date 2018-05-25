@@ -21,19 +21,12 @@
 
 local uv = require "luv"
 
-local function __gc(fse)
-   print "Collected, stopping event"
-   uv.fs_event_stop(fse)
-end
-fse_MT = {__gc = __gc}
-
 local function watch(watcher, dir, recur)
     watcher.dir = dir
     if recur == nil then
         recur = true
     end
     local fse = uv.new_fs_event()
-    setmetatable(fse, fse_MT)
     watcher.fse = fse
     uv.fs_event_start(fse, dir,{recursive = recur},function (err,fname,status)
         if(err) then

@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 83"]
+doc_0 [label="doc - 76"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-83"]
+section_1 [label="section: 1-76"]
 
 
 // END RANK doc_0
@@ -33,13 +33,13 @@ prose_8 [label="prose"]
 
 prose_9 [label="prose"]
 
-codeblock_10 [label="code block 21-56"]
+codeblock_10 [label="code block 21-49"]
 
-codeblock_11 [label="code block 58-62"]
+codeblock_11 [label="code block 51-55"]
 
-codeblock_12 [label="code block 64-78"]
+codeblock_12 [label="code block 57-71"]
 
-codeblock_13 [label="code block 80-82"]
+codeblock_13 [label="code block 73-75"]
 
 
 // END RANK section_1
@@ -108,8 +108,8 @@ Since we do want to be able to update handlers, we don't need the extra layer.
 "]
 // END RANK raw_21
 
-prose_7 -> { raw_23 prespace_24 literal_25 raw_26 prespace_27 literal_28 raw_29}
-{rank=same; raw_23 prespace_24 literal_25 raw_26 prespace_27 literal_28 raw_29}
+prose_7 -> { raw_23 prespace_24 literal_25 raw_26 prespace_27 literal_28 raw_29 prespace_30 literal_31 raw_32}
+{rank=same; raw_23 prespace_24 literal_25 raw_26 prespace_27 literal_28 raw_29 prespace_30 literal_31 raw_32}
 
 raw_23 [label="raw"]
 
@@ -125,93 +125,105 @@ literal_28 [label="literal"]
 
 raw_29 [label="raw"]
 
+prespace_30 [label="prespace"]
+
+literal_31 [label="literal"]
+
+raw_32 [label="raw"]
+
 
 // END RANK prose_7
 
-raw_23 -> leaf_30
-leaf_30  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_23 -> leaf_33
+leaf_33  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 To set up a watcher, register"]
 // END RANK raw_23
 
-prespace_24 -> leaf_31
-leaf_31  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+prespace_24 -> leaf_34
+leaf_34  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
 // END RANK prespace_24
 
-literal_25 -> leaf_32
-leaf_32  [color=Gray,shape=rectangle,fontname=Inconsolata,label="watcher:onchange(fname)"]
+literal_25 -> leaf_35
+leaf_35  [color=Gray,shape=rectangle,fontname=Inconsolata,label="watcher:onchange(fname)"]
 // END RANK literal_25
 
-raw_26 -> leaf_33
-leaf_33  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" and/or"]
+raw_26 -> leaf_36
+leaf_36  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" and/or"]
 // END RANK raw_26
 
-prespace_27 -> leaf_34
-leaf_34  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+prespace_27 -> leaf_37
+leaf_37  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
 // END RANK prespace_27
 
-literal_28 -> leaf_35
-leaf_35  [color=Gray,shape=rectangle,fontname=Inconsolata,label="watcher:onrename(fname)"]
+literal_28 -> leaf_38
+leaf_38  [color=Gray,shape=rectangle,fontname=Inconsolata,label="watcher:onrename(fname)"]
 // END RANK literal_28
 
-raw_29 -> leaf_36
-leaf_36  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
-"]
+raw_29 -> leaf_39
+leaf_39  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".  That's"]
 // END RANK raw_29
 
-prose_8 -> { raw_37}
-{rank=same; raw_37}
+prespace_30 -> leaf_40
+leaf_40  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_30
 
-raw_37 [label="raw"]
+literal_31 -> leaf_41
+leaf_41  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function onchange(watcher,fname)"]
+// END RANK literal_31
+
+raw_32 -> leaf_42
+leaf_42  [color=Gray,shape=rectangle,fontname=Inconsolata,label="!
+"]
+// END RANK raw_32
+
+prose_8 -> { raw_43}
+{rank=same; raw_43}
+
+raw_43 [label="raw"]
 
 
 // END RANK prose_8
 
-raw_37 -> leaf_38
-leaf_38  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_43 -> leaf_44
+leaf_44  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 This can be done on creation, after creation, or after setting the watch.
 "]
-// END RANK raw_37
+// END RANK raw_43
 
-prose_9 -> { raw_39 prespace_40 literal_41 raw_42}
-{rank=same; raw_39 prespace_40 literal_41 raw_42}
+prose_9 -> { raw_45 prespace_46 literal_47 raw_48}
+{rank=same; raw_45 prespace_46 literal_47 raw_48}
 
-raw_39 [label="raw"]
+raw_45 [label="raw"]
 
-prespace_40 [label="prespace"]
+prespace_46 [label="prespace"]
 
-literal_41 [label="literal"]
+literal_47 [label="literal"]
 
-raw_42 [label="raw"]
+raw_48 [label="raw"]
 
 
 // END RANK prose_9
 
-raw_39 -> leaf_43
-leaf_43  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_45 -> leaf_49
+leaf_49  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 To stop watching, call"]
-// END RANK raw_39
+// END RANK raw_45
 
-prespace_40 -> leaf_44
-leaf_44  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_40
+prespace_46 -> leaf_50
+leaf_50  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_46
 
-literal_41 -> leaf_45
-leaf_45  [color=Gray,shape=rectangle,fontname=Inconsolata,label="watcher:stop()"]
-// END RANK literal_41
+literal_47 -> leaf_51
+leaf_51  [color=Gray,shape=rectangle,fontname=Inconsolata,label="watcher:stop()"]
+// END RANK literal_47
 
-raw_42 -> leaf_46
-leaf_46  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
+raw_48 -> leaf_52
+leaf_52  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
 "]
-// END RANK raw_42
+// END RANK raw_48
 
-codeblock_10 -> leaf_47
-leaf_47  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local uv = require \"luv\"
-
-local function __gc(fse)
-   print \"Collected, stopping event\"
-   uv.fs_event_stop(fse)
-end
-fse_MT = {__gc = __gc}
+codeblock_10 -> leaf_53
+leaf_53  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local uv = require \"luv\"
 
 local function watch(watcher, dir, recur)
     watcher.dir = dir
@@ -219,7 +231,6 @@ local function watch(watcher, dir, recur)
         recur = true
     end
     local fse = uv.new_fs_event()
-    setmetatable(fse, fse_MT)
     watcher.fse = fse
     uv.fs_event_start(fse, dir,{recursive = recur},function (err,fname,status)
         if(err) then
@@ -241,14 +252,14 @@ local function watch(watcher, dir, recur)
 end"]
 // END RANK codeblock_10
 
-codeblock_11 -> leaf_48
-leaf_48  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function stop(watcher)
+codeblock_11 -> leaf_54
+leaf_54  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function stop(watcher)
    uv.fs_event_stop(watcher.fse)
 end"]
 // END RANK codeblock_11
 
-codeblock_12 -> leaf_49
-leaf_49  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local _W = {__call = watch}
+codeblock_12 -> leaf_55
+leaf_55  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local _W = {__call = watch}
 _W.__index = _W
 
 local function Watcher(handlers)
@@ -263,8 +274,8 @@ end
 _W.idEst = _W"]
 // END RANK codeblock_12
 
-codeblock_13 -> leaf_50
-leaf_50  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return Watcher"]
+codeblock_13 -> leaf_56
+leaf_56  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return Watcher"]
 // END RANK codeblock_13
 
 
