@@ -195,7 +195,7 @@ function Historian.next(historian)
    if not (Δ > 0) and #linebuf.line > 0 then
       return linebuf:clone(), result, true
    else
-      return linebuf:clone(), result, false
+      return linebuf:clone(), nil, false
    end
 end
 #/lua
