@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 571"]
+doc_0 [label="doc - 580"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-522"]
+section_1 [label="section: 1-531"]
 
 
 // END RANK doc_0
@@ -25,9 +25,9 @@ prose_4 [label="prose"]
 
 section_5 [label="section: 12-268"]
 
-section_6 [label="section: 291-419"]
+section_6 [label="section: 291-426"]
 
-section_7 [label="section: 523-571"]
+section_7 [label="section: 532-580"]
 
 
 // END RANK section_1
@@ -1682,13 +1682,13 @@ codeblock_415 [label="code block 339-343"]
 
 section_416 [label="section: 346-352"]
 
-section_417 [label="section: 353-397"]
+section_417 [label="section: 353-404"]
 
-section_418 [label="section: 398-416"]
+section_418 [label="section: 405-423"]
 
-section_419 [label="section: 417-419"]
+section_419 [label="section: 424-426"]
 
-section_420 [label="section: 420-522"]
+section_420 [label="section: 427-531"]
 
 
 // END RANK section_6
@@ -1947,7 +1947,7 @@ header_474 [label="3 : NAV"]
 
 prose_475 [label="prose"]
 
-codeblock_476 [label="code block 355-395"]
+codeblock_476 [label="code block 355-402"]
 
 
 // END RANK section_417
@@ -1972,16 +1972,23 @@ leaf_479  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 codeblock_476 -> leaf_480
 leaf_480  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function NAV.UP(modeS, category, value)
    modeS:clearResult()
-   modeS.linebuf = modeS.hist:prev()
+   local prev_result
+   modeS.linebuf, prev_result = modeS.hist:prev()
+   if prev_result then
+      modeS:printResults(prev_result)
+   end
    return modeS
 end
 
 function NAV.DOWN(modeS, category, value)
    modeS:clearResult()
-   local next_p
-   modeS.linebuf, next_p = modeS.hist:next()
+   local next_p, next_result
+   modeS.linebuf, next_result, next_p = modeS.hist:next()
    if next_p then
       modeS.linebuf = Linebuf()
+   end
+   if next_result then
+      modeS:printResults(next_result)
    end
    return modeS
 end
@@ -2018,7 +2025,7 @@ header_481 [label="3 : CTRL"]
 
 prose_482 [label="prose"]
 
-codeblock_483 [label="code block 402-414"]
+codeblock_483 [label="code block 409-421"]
 
 
 // END RANK section_418
@@ -2091,17 +2098,17 @@ header_493 [label="3 : ModeS:write(str)"]
 
 prose_494 [label="prose"]
 
-codeblock_495 [label="code block 426-432"]
+codeblock_495 [label="code block 433-439"]
 
-codeblock_496 [label="code block 434-439"]
+codeblock_496 [label="code block 441-446"]
 
-codeblock_497 [label="code block 441-448"]
+codeblock_497 [label="code block 448-456"]
 
-codeblock_498 [label="code block 450-454"]
+codeblock_498 [label="code block 459-463"]
 
-codeblock_499 [label="code block 459-463"]
+codeblock_499 [label="code block 468-472"]
 
-codeblock_500 [label="code block 465-520"]
+codeblock_500 [label="code block 474-529"]
 
 
 // END RANK section_420
@@ -2144,10 +2151,11 @@ end"]
 
 codeblock_497 -> leaf_506
 leaf_506  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS.printResults(modeS, results)
+   local rainbuf = {}
   for i = 1, results.n do
-    results[i] = ts(results[i])
+    rainbuf[i] = ts(results[i])
   end
-  modeS:write(concat(results, '   '))
+  modeS:write(concat(rainbuf, '   '))
 end"]
 // END RANK codeblock_497
 
@@ -2227,9 +2235,9 @@ header_510 [label="2 : new"]
 
 prose_511 [label="prose"]
 
-codeblock_512 [label="code block 527-543"]
+codeblock_512 [label="code block 536-552"]
 
-codeblock_513 [label="code block 545-547"]
+codeblock_513 [label="code block 554-556"]
 
 
 // END RANK section_7

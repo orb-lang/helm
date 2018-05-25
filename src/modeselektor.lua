@@ -355,16 +355,23 @@ end
 
 function NAV.UP(modeS, category, value)
    modeS:clearResult()
-   modeS.linebuf = modeS.hist:prev()
+   local prev_result
+   modeS.linebuf, prev_result = modeS.hist:prev()
+   if prev_result then
+      modeS:printResults(prev_result)
+   end
    return modeS
 end
 
 function NAV.DOWN(modeS, category, value)
    modeS:clearResult()
-   local next_p
-   modeS.linebuf, next_p = modeS.hist:next()
+   local next_p, next_result
+   modeS.linebuf, next_result, next_p = modeS.hist:next()
    if next_p then
       modeS.linebuf = Linebuf()
+   end
+   if next_result then
+      modeS:printResults(next_result)
    end
    return modeS
 end
@@ -440,11 +447,13 @@ end
 
 
 function ModeS.printResults(modeS, results)
+   local rainbuf = {}
   for i = 1, results.n do
-    results[i] = ts(results[i])
+    rainbuf[i] = ts(results[i])
   end
-  modeS:write(concat(results, '   '))
+  modeS:write(concat(rainbuf, '   '))
 end
+
 
 
 

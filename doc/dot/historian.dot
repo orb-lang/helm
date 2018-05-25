@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 226"]
+doc_0 [label="doc - 228"]
 
 
 doc_0 -> { section_1}
@@ -35,7 +35,7 @@ section_9 [label="section: 30-73"]
 
 section_10 [label="section: 74-162"]
 
-section_11 [label="section: 163-201"]
+section_11 [label="section: 163-203"]
 
 
 // END RANK section_1
@@ -330,11 +330,11 @@ header_45 [label="2 : Historian:prev()"]
 
 prose_46 [label="prose"]
 
-codeblock_47 [label="code block 165-176"]
+codeblock_47 [label="code block 165-177"]
 
-section_48 [label="section: 179-201"]
+section_48 [label="section: 180-203"]
 
-section_49 [label="section: 202-226"]
+section_49 [label="section: 204-228"]
 
 
 // END RANK section_11
@@ -362,10 +362,11 @@ leaf_53  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histor
       return Linebuf()
    end
    local Δ = historian.cursor > 1 and 1 or 0
-   local linebuf = historian[historian.cursor - Δ]:clone()
+   local linebuf = historian[historian.cursor - Δ]
+   local result = historian.results[linebuf]
    historian.cursor = historian.cursor - Δ
    linebuf.cursor = #linebuf.line + 1
-   return linebuf
+   return linebuf:clone(), result
 end"]
 // END RANK codeblock_47
 
@@ -376,7 +377,7 @@ header_54 [label="3 : Historian:next()"]
 
 prose_55 [label="prose"]
 
-codeblock_56 [label="code block 184-199"]
+codeblock_56 [label="code block 185-201"]
 
 
 // END RANK section_48
@@ -424,13 +425,14 @@ leaf_66  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histor
    if historian.cursor == 0 then
       return Linebuf()
    end
-   local linebuf= historian[historian.cursor + Δ]:clone()
+   local linebuf= historian[historian.cursor + Δ]
+   local result = historian.results[linebuf]
    historian.cursor = historian.cursor + Δ
    linebuf.cursor = #linebuf.line + 1
    if not (Δ > 0) and #linebuf.line > 0 then
-      return linebuf, true
+      return linebuf:clone(), result, true
    else
-      return linebuf, false
+      return linebuf:clone(), result, false
    end
 end"]
 // END RANK codeblock_56
@@ -442,11 +444,11 @@ header_67 [label="3 : Historian:append()"]
 
 prose_68 [label="prose"]
 
-codeblock_69 [label="code block 204-211"]
+codeblock_69 [label="code block 206-213"]
 
-codeblock_70 [label="code block 213-222"]
+codeblock_70 [label="code block 215-224"]
 
-codeblock_71 [label="code block 224-226"]
+codeblock_71 [label="code block 226-228"]
 
 
 // END RANK section_49

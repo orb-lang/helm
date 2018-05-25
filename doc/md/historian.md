@@ -162,10 +162,11 @@ function Historian.prev(historian)
       return Linebuf()
    end
    local Δ = historian.cursor > 1 and 1 or 0
-   local linebuf = historian[historian.cursor - Δ]:clone()
+   local linebuf = historian[historian.cursor - Δ]
+   local result = historian.results[linebuf]
    historian.cursor = historian.cursor - Δ
    linebuf.cursor = #linebuf.line + 1
-   return linebuf
+   return linebuf:clone(), result
 end
 ```
 ### Historian:next()
@@ -179,13 +180,14 @@ function Historian.next(historian)
    if historian.cursor == 0 then
       return Linebuf()
    end
-   local linebuf= historian[historian.cursor + Δ]:clone()
+   local linebuf= historian[historian.cursor + Δ]
+   local result = historian.results[linebuf]
    historian.cursor = historian.cursor + Δ
    linebuf.cursor = #linebuf.line + 1
    if not (Δ > 0) and #linebuf.line > 0 then
-      return linebuf, true
+      return linebuf:clone(), result, true
    else
-      return linebuf, false
+      return linebuf:clone(), result, false
    end
 end
 ```
