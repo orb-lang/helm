@@ -252,7 +252,7 @@ local function ctrl_pr(str)
    end
 end
 
-scrub = function (str)
+local function scrub (str)
    return str:gsub("\27", e "\\x1b")
              :gsub('"',  e '\\"')
              :gsub("'",  e "\\'")

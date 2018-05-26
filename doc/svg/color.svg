@@ -1730,7 +1730,7 @@
 <text text-anchor="middle" x="7779.5" y="-593.519" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return str</text>
 <text text-anchor="middle" x="7779.5" y="-578.119" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
 <text text-anchor="middle" x="7779.5" y="-562.719" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
-<text text-anchor="middle" x="7779.5" y="-531.3189" font-family="Inconsolata" font-size="14.00" fill="#000000">scrub = function (str)</text>
+<text text-anchor="middle" x="7779.5" y="-531.3189" font-family="Inconsolata" font-size="14.00" fill="#000000">local function scrub (str)</text>
 <text text-anchor="middle" x="7779.5" y="-515.9189" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return str:gsub(&quot;\27&quot;, e &quot;\\x1b&quot;)</text>
 <text text-anchor="middle" x="7779.5" y="-500.5189" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;:gsub(&#39;&quot;&#39;, &#160;e &#39;\\&quot;&#39;)</text>
 <text text-anchor="middle" x="7779.5" y="-485.1188" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;:gsub(&quot;&#39;&quot;, &#160;e &quot;\\&#39;&quot;)</text>

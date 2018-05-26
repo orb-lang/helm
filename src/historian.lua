@@ -16,14 +16,17 @@
 
 local Linebuf = require "linebuf"
 local sql     = require "sqlayer"
+local color   = require "color"
 local L       = require "lpeg"
 local format  = assert (string.format)
 local sub     = assert (string.sub)
+local reverse = assert (table.reverse)
 assert(meta)
 
 
 
 local Historian = meta {}
+
 
 
 
@@ -46,12 +49,19 @@ local create_result_table = [[
 CREATE TABLE IF NOT EXISTS results (
 result_id INTEGER PRIMARY KEY AUTOINCREMENT,
 line_id INTEGER,
-FOREIGN KEY(line_id) REFERENCES repl(line_id),
-result text).
+repr text NOT NULL,
+value blob,
+FOREIGN KEY (line_id)
+   REFERENCES repl (line_id)
+   ON DELETE CASCADE);
 ]]
 
 local insert_line_stmt = [[
-INSERT INTO repl (project, line) VALUES(:project, :line);
+INSERT INTO repl (project, line) VALUES (:project, :line);
+]]
+
+local insert_result_stmt = [[
+INSERT INTO results (line_id, repr) VALUES (:line_id, :repr);
 ]]
 
 local get_tables = [[
@@ -65,7 +75,12 @@ SELECT line FROM repl
    DESC LIMIT %d;
 ]]
 
-Historian.home_dir = io.popen("echo $HOME", "r"):read("*a"):sub(1, -2)
+local home_dir = io.popen("echo $HOME", "r"):read("*a"):sub(1, -2)
+
+local bridge_home = io.popen("echo $BRIDGE_HOME", "r"):read("*a"):sub(1, -2)
+Historian.bridge_home = bridge_home ~= "" and bridge_home
+                        or home_dir .. "/.bridge"
+
 Historian.project = io.popen("pwd", "r"):read("*a"):sub(1, -2)
 
 local function has(table, name)
@@ -75,6 +90,84 @@ local function has(table, name)
       end
    end
    return false
+end
+
+
+
+
+
+
+
+
+function Historian.load(historian)
+   local conn = sql.open(historian.bridge_home)
+   historian.conn = conn
+   conn:exec "PRAGMA foreign_keys = ON;"
+   local table_names = conn:exec(get_tables)
+   conn:exec(create_result_table)
+   if not table_names or not has(table_names.name, "repl") then
+      local success, err = sql.pexec(conn, create_repl_table)
+      -- success is nil for creation, false for error
+      if success == false then
+         error(err)
+      end
+   end
+   historian.insert_line_stmt = conn:prepare(insert_line_stmt)
+   historian.insert_result_stmt = conn:prepare(insert_result_stmt)
+   local pop_stmt = sql.format(get_recent, historian.project,
+                        historian.HISTORY_LIMIT)
+   local values, err = sql.pexec(conn, pop_stmt)
+   if values then
+      for i,v in ipairs(reverse(values[1])) do
+         historian[i] = Linebuf(v)
+      end
+      historian.cursor = #historian
+      historian.up = false
+   end
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function Historian.persist(historian, linebuf, results)
+   local lb = tostring(linebuf)
+   historian.insert_line_stmt:bindkv { project = historian.project,
+                                  line    = lb }
+   local err = historian.insert_line_stmt:step()
+   if not err then
+      historian.insert_line_stmt:clearbind():reset()
+   else
+      error(err)
+   end
+   local line_id = sql.lastRowId(historian.conn)
+   if results and type(results) == "table" then
+      for _,v in ipairs(results) do
+         -- insert result repr
+         historian.insert_result_stmt:bindkv { line_id = line_id,
+                                               repr = color.ts(v) }
+         err = historian.insert_result_stmt:step()
+         if not err then
+            historian.insert_result_stmt:clearbind():reset()
+         end
+      end
+   end
+
+   return true
 end
 
 
@@ -107,11 +200,10 @@ function Historian.search(historian, frag)
          collection[#collection + 1] = tostring(historian[i])
       end
    end
-   local slip = ""
    if #collection == 0 then
       -- try the transpose
       best = false
-      slip = sub(frag, 1, -3) .. sub(frag, -1, -1) .. sub(frag, -2, -2)
+      local slip = sub(frag, 1, -3) .. sub(frag, -1, -1) .. sub(frag, -2, -2)
       local second = fuzz_patt(slip)
       for i = #historian, 1, -1 do
          local score = match(second, tostring(historian[i]))
@@ -121,50 +213,7 @@ function Historian.search(historian, frag)
       end
    end
 
-   return collection, best, slip
-end
-
-
-
-
-local reverse = assert(table.reverse)
-
-function Historian.load(historian)
-   local conn = sql.open(historian.home_dir .. "/.bridge")
-   historian.conn = conn
-   conn:exec "PRAGMA foreign_keys = ON;"
-   local table_names = conn:exec(get_tables)
-   if not table_names or not has(table_names.name, "repl") then
-      local success, err = sql.pexec(conn, create_repl_table)
-      -- success is nil for creation, false for error
-      if success == false then
-         error(err)
-      end
-   end
-   historian.insert_stmt = conn:prepare(insert_line_stmt)
-   local pop_stmt = sql.format(get_recent, historian.project,
-                        historian.HISTORY_LIMIT)
-   local values, err = sql.pexec(conn, pop_stmt)
-   if values then
-      for i,v in ipairs(reverse(values[1])) do
-         historian[i] = Linebuf(v)
-      end
-      historian.cursor = #historian
-      historian.up = false
-   end
-end
-
-function Historian.persist(historian, linebuf)
-   local lb = tostring(linebuf)
-   historian.insert_stmt:bindkv { project = historian.project,
-                                  line    = lb }
-   local err = historian.insert_stmt:step()
-   if not err then
-      historian.insert_stmt:clearbind():reset()
-   else
-      error(error)
-   end
-   return true
+   return collection, best
 end
 
 
@@ -217,10 +266,10 @@ end
 
 
 
-function Historian.append(historian, linebuf)
+function Historian.append(historian, linebuf, results)
    historian[#historian + 1] = linebuf
    historian.cursor = #historian
-   historian:persist(linebuf)
+   historian:persist(linebuf, results)
    return true
 end
 

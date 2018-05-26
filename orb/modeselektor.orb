@@ -226,7 +226,7 @@ local function tf(bool)
    end
 end
 
-function pr_mouse(m)
+local function pr_mouse(m)
    local phrase = a.magenta(m.button) .. ": "
                      .. a.bright(m.kind) .. " " .. tf(m.shift)
                      .. " " .. tf(m.meta)
@@ -527,7 +527,7 @@ function ModeS.eval(modeS)
       end
    end
 
-   modeS.hist:append(modeS.linebuf)
+   modeS.hist:append(modeS.linebuf, results)
    if success then modeS.hist.results[modeS.linebuf] = results end
    modeS:prompt()
 end

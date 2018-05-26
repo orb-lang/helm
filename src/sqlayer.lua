@@ -87,4 +87,19 @@ end
 
 
 
+
+
+
+
+
+
+
+function sql.lastRowId(conn)
+   local result = conn:exec "SELECT CAST(last_insert_rowid() AS REAL)"
+   return result[1][1]
+end
+
+
+
+
 return sql

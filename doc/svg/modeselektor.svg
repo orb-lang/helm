@@ -5112,7 +5112,7 @@
 <text text-anchor="middle" x="32067" y="-750.0012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return ts(&quot;f&quot;, &quot;false&quot;)</text>
 <text text-anchor="middle" x="32067" y="-734.6012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
 <text text-anchor="middle" x="32067" y="-719.2011" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
-<text text-anchor="middle" x="32067" y="-687.8011" font-family="Inconsolata" font-size="14.00" fill="#000000">function pr_mouse(m)</text>
+<text text-anchor="middle" x="32067" y="-687.8011" font-family="Inconsolata" font-size="14.00" fill="#000000">local function pr_mouse(m)</text>
 <text text-anchor="middle" x="32067" y="-672.4011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local phrase = a.magenta(m.button) .. &quot;: &quot;</text>
 <text text-anchor="middle" x="32067" y="-657.001" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;.. a.bright(m.kind) .. &quot; &quot; .. tf(m.shift)</text>
 <text text-anchor="middle" x="32067" y="-641.601" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;.. &quot; &quot; .. tf(m.meta)</text>
@@ -6409,7 +6409,7 @@
 <text text-anchor="middle" x="41269" y="-321.0924" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;return true</text>
 <text text-anchor="middle" x="41269" y="-305.6923" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end</text>
 <text text-anchor="middle" x="41269" y="-290.2923" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
-<text text-anchor="middle" x="41269" y="-258.8923" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;modeS.hist:append(modeS.linebuf)</text>
+<text text-anchor="middle" x="41269" y="-258.8923" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;modeS.hist:append(modeS.linebuf, results)</text>
 <text text-anchor="middle" x="41269" y="-243.4922" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if success then modeS.hist.results[modeS.linebuf] = results end</text>
 <text text-anchor="middle" x="41269" y="-228.0922" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;modeS:prompt()</text>
 <text text-anchor="middle" x="41269" y="-212.6922" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>

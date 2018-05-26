@@ -83,6 +83,19 @@ function sql.pexec(conn, stmt)
    end
 end
 ```
+## sql.lastid(conn)
+
+This could be improved by natively handling uint64_t ``cdata``.
+
+
+Y'know, if we ever keep more than 53 bits width of rows in uhhhhh SQLite.
+
+```lua
+function sql.lastRowId(conn)
+   local result = conn:exec "SELECT CAST(last_insert_rowid() AS REAL)"
+   return result[1][1]
+end
+```
 ```lua
 return sql
 ```
