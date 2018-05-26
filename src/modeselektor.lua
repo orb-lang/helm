@@ -359,6 +359,8 @@ function NAV.UP(modeS, category, value)
    modeS.linebuf, prev_result = modeS.hist:prev()
    if prev_result then
       modeS:printResults(prev_result)
+   else
+      modeS:clearResult()
    end
    return modeS
 end
@@ -372,6 +374,8 @@ function NAV.DOWN(modeS, category, value)
    end
    if next_result then
       modeS:printResults(next_result)
+   else
+      modeS:clearResult()
    end
    return modeS
 end

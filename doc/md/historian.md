@@ -42,6 +42,14 @@ line TEXT,
 time DATETIME DEFAULT CURRENT_TIMESTAMP);
 ]]
 
+local create_result_table = [[
+CREATE TABLE IF NOT EXISTS results (
+result_id INTEGER PRIMARY KEY AUTOINCREMENT,
+line_id INTEGER,
+FOREIGN KEY(line_id) REFERENCES repl(line_id),
+result text).
+]]
+
 local insert_line_stmt = [[
 INSERT INTO repl (project, line) VALUES(:project, :line);
 ]]
@@ -120,6 +128,7 @@ local reverse = assert(table.reverse)
 function Historian.load(historian)
    local conn = sql.open(historian.home_dir .. "/.bridge")
    historian.conn = conn
+   conn:exec "PRAGMA foreign_keys = ON;"
    local table_names = conn:exec(get_tables)
    if not table_names or not has(table_names.name, "repl") then
       local success, err = sql.pexec(conn, create_repl_table)
@@ -182,10 +191,14 @@ function Historian.next(historian)
    end
    local linebuf= historian[historian.cursor + Δ]
    local result = historian.results[linebuf]
+   if not linebuf then
+      return Linebuf()
+   end
    historian.cursor = historian.cursor + Δ
    linebuf.cursor = #linebuf.line + 1
    if not (Δ > 0) and #linebuf.line > 0 then
-      return linebuf:clone(), result, true
+      historian.cursor = #historian + 1
+      return linebuf:clone(), nil, true
    else
       return linebuf:clone(), result, false
    end
