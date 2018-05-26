@@ -1,0 +1,17 @@
+* Lex
+
+#!lua
+local Lex = meta {}
+
+#/lua
+
+
+** Lex.lua_thor(linebuf)
+
+...it's late.
+
+#!lua
+function Lex.lua_thor(linebuf)
+
+end
+#/lua

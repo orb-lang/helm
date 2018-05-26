@@ -1,0 +1,199 @@
+digraph lpegNode {
+
+node [fontname=Helvetica]
+edge [style=dashed]
+
+doc_0 [label="doc - 26"]
+
+
+doc_0 -> { section_1}
+{rank=same; section_1}
+
+section_1 [label="section: 1-26"]
+
+
+// END RANK doc_0
+
+section_1 -> { header_2 prose_3 prose_4 prose_5 prose_6 prose_7 prose_8 prose_9 prose_10 prose_11}
+{rank=same; header_2 prose_3 prose_4 prose_5 prose_6 prose_7 prose_8 prose_9 prose_10 prose_11}
+
+header_2 [label="1 : Out of Order: System Design in the Weird Hardware Era"]
+
+prose_3 [label="prose"]
+
+prose_4 [label="prose"]
+
+prose_5 [label="prose"]
+
+prose_6 [label="prose"]
+
+prose_7 [label="prose"]
+
+prose_8 [label="prose"]
+
+prose_9 [label="prose"]
+
+prose_10 [label="prose"]
+
+prose_11 [label="prose"]
+
+
+// END RANK section_1
+
+header_2 -> leaf_12
+leaf_12  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Out of Order: System Design in the Weird Hardware Era"]
+// END RANK header_2
+
+prose_3 -> { raw_13}
+{rank=same; raw_13}
+
+raw_13 [label="raw"]
+
+
+// END RANK prose_3
+
+raw_13 -> leaf_14
+leaf_14  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+talking points:
+"]
+// END RANK raw_13
+
+prose_4 -> { raw_15}
+{rank=same; raw_15}
+
+raw_15 [label="raw"]
+
+
+// END RANK prose_4
+
+raw_15 -> leaf_16
+leaf_16  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+- All machines are weird until proven otherwise
+"]
+// END RANK raw_15
+
+prose_5 -> { raw_17}
+{rank=same; raw_17}
+
+raw_17 [label="raw"]
+
+
+// END RANK prose_5
+
+raw_17 -> leaf_18
+leaf_18  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+- In important cases, this is just proven
+"]
+// END RANK raw_17
+
+prose_6 -> { raw_19}
+{rank=same; raw_19}
+
+raw_19 [label="raw"]
+
+
+// END RANK prose_6
+
+raw_19 -> leaf_20
+leaf_20  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+  -  Meltdown, Spectre: The most basic contract is \"do not follow opposite
+     conditional branches\", and this is violated, and it turns out that
+     matters.
+"]
+// END RANK raw_19
+
+prose_7 -> { raw_21}
+{rank=same; raw_21}
+
+raw_21 [label="raw"]
+
+
+// END RANK prose_7
+
+raw_21 -> leaf_22
+leaf_22  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+  -  Exploits on microSD, GSM band, other actors with arbitrary access to
+     system memory.  \"Every circuit is either Turing Complete or aspires
+     to be\".
+"]
+// END RANK raw_21
+
+prose_8 -> { raw_23}
+{rank=same; raw_23}
+
+raw_23 [label="raw"]
+
+
+// END RANK prose_8
+
+raw_23 -> leaf_24
+leaf_24  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+-  Successes:
+"]
+// END RANK raw_23
+
+prose_9 -> { raw_25}
+{rank=same; raw_25}
+
+raw_25 [label="raw"]
+
+
+// END RANK prose_9
+
+raw_25 -> leaf_26
+leaf_26  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+  -  ASICs for hash mining. Pure pipeline-fed number crunching. Notable for
+     what it cannot do.
+"]
+// END RANK raw_25
+
+prose_10 -> { raw_27}
+{rank=same; raw_27}
+
+raw_27 [label="raw"]
+
+
+// END RANK prose_10
+
+raw_27 -> leaf_28
+leaf_28  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+  -  Greenarrays: quirky, but if there was ever a chip that fulfills its
+     written specification, it's one that was synthesized from written
+     Forth...
+"]
+// END RANK raw_27
+
+prose_11 -> { raw_29 prespace_30 italic_31 raw_32}
+{rank=same; raw_29 prespace_30 italic_31 raw_32}
+
+raw_29 [label="raw"]
+
+prespace_30 [label="prespace"]
+
+italic_31 [label="italic"]
+
+raw_32 [label="raw"]
+
+
+// END RANK prose_11
+
+raw_29 -> leaf_33
+leaf_33  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+     Admittedly weird hardware! But is it"]
+// END RANK raw_29
+
+prespace_30 -> leaf_34
+leaf_34  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_30
+
+italic_31 -> leaf_35
+leaf_35  [color=Gray,shape=rectangle,fontname=Inconsolata,label="weird"]
+// END RANK italic_31
+
+raw_32 -> leaf_36
+leaf_36  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" weird hardware..."]
+// END RANK raw_32
+
+
+}
