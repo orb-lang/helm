@@ -97,8 +97,8 @@ Y'know, if we ever keep more than 53 bits width of rows in uhhhhh SQLite.
 
 ```lua
 function sql.lastRowId(conn)
-   local result = conn:exec "SELECT CAST(last_insert_rowid() AS REAL)"
-   return result[1][1]
+   local result = conn:rowexec "SELECT CAST(last_insert_rowid() AS REAL)"
+   return result
 end
 ```
 ```lua

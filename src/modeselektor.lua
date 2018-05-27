@@ -356,8 +356,14 @@ end
 
 function NAV.UP(modeS, category, value)
    modeS:clearResult()
-   local prev_result
+   local prev_result, linestash
+   if tostring(modeS.linebuf) ~= "" then
+      linestash = modeS.linebuf
+   end
    modeS.linebuf, prev_result = modeS.hist:prev()
+   if linestash then
+      modeS.hist:append(linestash)
+   end
    if prev_result then
       modeS:printResults(prev_result)
    else

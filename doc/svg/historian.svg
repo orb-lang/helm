@@ -13,13 +13,13 @@
 <g id="node1" class="node">
 <title>doc_0</title>
 <ellipse fill="none" stroke="#000000" cx="1806" cy="-2164.2032" rx="46.9581" ry="18"/>
-<text text-anchor="middle" x="1806" y="-2160.0032" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">doc &#45; 333</text>
+<text text-anchor="middle" x="1806" y="-2160.0032" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">doc &#45; 338</text>
 </g>
 <!-- section_1 -->
 <g id="node2" class="node">
 <title>section_1</title>
 <ellipse fill="none" stroke="#000000" cx="1806" cy="-2092.2032" rx="65.8187" ry="18"/>
-<text text-anchor="middle" x="1806" y="-2088.0032" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 1&#45;261</text>
+<text text-anchor="middle" x="1806" y="-2088.0032" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 1&#45;263</text>
 </g>
 <!-- doc_0&#45;&gt;section_1 -->
 <g id="edge1" class="edge">
@@ -115,7 +115,7 @@
 <g id="node10" class="node">
 <title>section_9</title>
 <ellipse fill="none" stroke="#000000" cx="5520" cy="-2020.2032" rx="70.655" ry="18"/>
-<text text-anchor="middle" x="5520" y="-2016.0032" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 32&#45;165</text>
+<text text-anchor="middle" x="5520" y="-2016.0032" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 32&#45;167</text>
 </g>
 <!-- section_1&#45;&gt;section_9 -->
 <g id="edge9" class="edge">
@@ -127,7 +127,7 @@
 <g id="node11" class="node">
 <title>section_10</title>
 <ellipse fill="none" stroke="#000000" cx="10504" cy="-2020.2032" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="10504" y="-2016.0032" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 216&#45;261</text>
+<text text-anchor="middle" x="10504" y="-2016.0032" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 218&#45;263</text>
 </g>
 <!-- section_1&#45;&gt;section_10 -->
 <g id="edge10" class="edge">
@@ -139,7 +139,7 @@
 <g id="node12" class="node">
 <title>section_11</title>
 <ellipse fill="none" stroke="#000000" cx="11532" cy="-2020.2032" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="11532" y="-2016.0032" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 262&#45;308</text>
+<text text-anchor="middle" x="11532" y="-2016.0032" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 264&#45;310</text>
 </g>
 <!-- section_1&#45;&gt;section_11 -->
 <g id="edge11" class="edge">
@@ -350,7 +350,7 @@
 <g id="node33" class="node">
 <title>section_32</title>
 <ellipse fill="none" stroke="#000000" cx="8803" cy="-1900.6031" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="8803" y="-1896.4031" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 131&#45;165</text>
+<text text-anchor="middle" x="8803" y="-1896.4031" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 131&#45;167</text>
 </g>
 <!-- section_9&#45;&gt;section_32 -->
 <g id="edge32" class="edge">
@@ -362,7 +362,7 @@
 <g id="node34" class="node">
 <title>section_33</title>
 <ellipse fill="none" stroke="#000000" cx="9769" cy="-1900.6031" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="9769" y="-1896.4031" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 166&#45;215</text>
+<text text-anchor="middle" x="9769" y="-1896.4031" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 168&#45;217</text>
 </g>
 <!-- section_9&#45;&gt;section_33 -->
 <g id="edge33" class="edge">
@@ -398,7 +398,7 @@
 <g id="node155" class="node">
 <title>codeblock_154</title>
 <ellipse fill="none" stroke="#000000" cx="10813" cy="-1900.6031" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="10813" y="-1896.4031" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 218&#45;259</text>
+<text text-anchor="middle" x="10813" y="-1896.4031" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 220&#45;261</text>
 </g>
 <!-- section_10&#45;&gt;codeblock_154 -->
 <g id="edge154" class="edge">
@@ -434,7 +434,7 @@
 <g id="node162" class="node">
 <title>codeblock_161</title>
 <ellipse fill="none" stroke="#000000" cx="11601" cy="-1900.6031" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="11601" y="-1896.4031" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 264&#45;276</text>
+<text text-anchor="middle" x="11601" y="-1896.4031" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 266&#45;278</text>
 </g>
 <!-- section_11&#45;&gt;codeblock_161 -->
 <g id="edge161" class="edge">
@@ -446,7 +446,7 @@
 <g id="node163" class="node">
 <title>section_162</title>
 <ellipse fill="none" stroke="#000000" cx="12037" cy="-1900.6031" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="12037" y="-1896.4031" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 279&#45;308</text>
+<text text-anchor="middle" x="12037" y="-1896.4031" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 281&#45;310</text>
 </g>
 <!-- section_11&#45;&gt;section_162 -->
 <g id="edge162" class="edge">
@@ -457,14 +457,14 @@
 <!-- section_163 -->
 <g id="node164" class="node">
 <title>section_163</title>
-<ellipse fill="none" stroke="#000000" cx="12984" cy="-1900.6031" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="12984" y="-1896.4031" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 309&#45;333</text>
+<ellipse fill="none" stroke="#000000" cx="12984" cy="-1900.6031" rx="74.6878" ry="18"/>
+<text text-anchor="middle" x="12984" y="-1896.4031" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 311&#45;338</text>
 </g>
 <!-- section_11&#45;&gt;section_163 -->
 <g id="edge163" class="edge">
 <title>section_11&#45;&gt;section_163</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M11603.5096,-2014.313C11847.1277,-1994.2464 12643.8551,-1928.6206 12902.2756,-1907.3347"/>
-<polygon fill="#000000" stroke="#000000" points="12902.6631,-1910.8147 12912.342,-1906.5055 12902.0884,-1903.8383 12902.6631,-1910.8147"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M11603.5096,-2014.313C11847.2685,-1994.2348 12644.7764,-1928.5447 12902.7232,-1907.2978"/>
+<polygon fill="#000000" stroke="#000000" points="12903.0911,-1910.7794 12912.77,-1906.4703 12902.5164,-1903.8031 12903.0911,-1910.7794"/>
 </g>
 <!-- leaf_14 -->
 <g id="node15" class="node">
@@ -1025,7 +1025,7 @@
 <g id="node120" class="node">
 <title>codeblock_119</title>
 <ellipse fill="none" stroke="#000000" cx="9079" cy="-1486.1024" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="9079" y="-1481.9024" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 135&#45;163</text>
+<text text-anchor="middle" x="9079" y="-1481.9024" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 135&#45;165</text>
 </g>
 <!-- section_32&#45;&gt;codeblock_119 -->
 <g id="edge119" class="edge">
@@ -1097,7 +1097,7 @@
 <g id="node130" class="node">
 <title>codeblock_129</title>
 <ellipse fill="none" stroke="#000000" cx="10228" cy="-1486.1024" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="10228" y="-1481.9024" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 181&#45;213</text>
+<text text-anchor="middle" x="10228" y="-1481.9024" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 183&#45;215</text>
 </g>
 <!-- section_33&#45;&gt;codeblock_129 -->
 <g id="edge129" class="edge">
@@ -1708,40 +1708,42 @@
 <!-- leaf_123 -->
 <g id="node124" class="node">
 <title>leaf_123</title>
-<polygon fill="none" stroke="#c0c0c0" points="9388,-833.5018 8910,-833.5018 8910,-409.9001 9388,-409.9001 9388,-833.5018"/>
-<text text-anchor="middle" x="9149" y="-818.4014" font-family="Inconsolata" font-size="14.00" fill="#000000">function Historian.load(historian)</text>
-<text text-anchor="middle" x="9149" y="-803.0013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local conn = sql.open(historian.bridge_home)</text>
-<text text-anchor="middle" x="9149" y="-787.6013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;historian.conn = conn</text>
-<text text-anchor="middle" x="9149" y="-772.2013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;conn:exec &quot;PRAGMA foreign_keys = ON;&quot;</text>
-<text text-anchor="middle" x="9149" y="-756.8012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;conn:exec(create_result_table)</text>
-<text text-anchor="middle" x="9149" y="-741.4012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local success, nrow = sql.pexec(conn, create_repl_table)</text>
-<text text-anchor="middle" x="9149" y="-726.0012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#45;&#45; success is nil for SQLITE_DONE, false for error</text>
-<text text-anchor="middle" x="9149" y="-710.6012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if success == false then</text>
-<text text-anchor="middle" x="9149" y="-695.2011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; error hides in nrow in the finest Lua style</text>
-<text text-anchor="middle" x="9149" y="-679.8011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;error(nrow)</text>
-<text text-anchor="middle" x="9149" y="-664.4011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
-<text text-anchor="middle" x="9149" y="-649.001" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;historian.insert_line_stmt = conn:prepare(insert_line_stmt)</text>
-<text text-anchor="middle" x="9149" y="-633.601" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;historian.insert_result_stmt = conn:prepare(insert_result_stmt)</text>
-<text text-anchor="middle" x="9149" y="-618.201" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local pop_stmt = sql.format(get_recent, historian.project,</text>
-<text text-anchor="middle" x="9149" y="-602.8009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;historian.HISTORY_LIMIT)</text>
-<text text-anchor="middle" x="9149" y="-587.4009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local values, err = sql.pexec(conn, pop_stmt, &quot;i&quot;)</text>
-<text text-anchor="middle" x="9149" y="-572.0009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if values then</text>
-<text text-anchor="middle" x="9149" y="-556.6008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;historian.values = values &#45;&#45; for repl</text>
-<text text-anchor="middle" x="9149" y="-541.2008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local lines = reverse(values[2])</text>
-<text text-anchor="middle" x="9149" y="-525.8008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local rowids = reverse(values[1])</text>
-<text text-anchor="middle" x="9149" y="-510.4007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;for i, v in ipairs(lines) do</text>
-<text text-anchor="middle" x="9149" y="-495.0007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;historian[i] = Linebuf(v)</text>
-<text text-anchor="middle" x="9149" y="-479.6007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end</text>
-<text text-anchor="middle" x="9149" y="-464.2007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;historian.cursor = #historian</text>
-<text text-anchor="middle" x="9149" y="-448.8006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;historian.up = false</text>
-<text text-anchor="middle" x="9149" y="-433.4006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
-<text text-anchor="middle" x="9149" y="-418.0006" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
+<polygon fill="none" stroke="#c0c0c0" points="9388,-848.802 8910,-848.802 8910,-394.5999 9388,-394.5999 9388,-848.802"/>
+<text text-anchor="middle" x="9149" y="-833.8014" font-family="Inconsolata" font-size="14.00" fill="#000000">function Historian.load(historian)</text>
+<text text-anchor="middle" x="9149" y="-818.4014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local conn = sql.open(historian.bridge_home)</text>
+<text text-anchor="middle" x="9149" y="-803.0013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;historian.conn = conn</text>
+<text text-anchor="middle" x="9149" y="-787.6013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;conn:exec &quot;PRAGMA foreign_keys = ON;&quot;</text>
+<text text-anchor="middle" x="9149" y="-772.2013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;conn:exec(create_result_table)</text>
+<text text-anchor="middle" x="9149" y="-756.8012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local success, err = sql.pexec(conn, create_repl_table)</text>
+<text text-anchor="middle" x="9149" y="-741.4012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#45;&#45; success is nil for SQLITE_DONE, false for error</text>
+<text text-anchor="middle" x="9149" y="-726.0012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if success == false then</text>
+<text text-anchor="middle" x="9149" y="-710.6012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;error(err)</text>
+<text text-anchor="middle" x="9149" y="-695.2011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
+<text text-anchor="middle" x="9149" y="-679.8011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;historian.insert_line_stmt = conn:prepare(insert_line_stmt)</text>
+<text text-anchor="middle" x="9149" y="-664.4011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;historian.insert_result_stmt = conn:prepare(insert_result_stmt)</text>
+<text text-anchor="middle" x="9149" y="-649.001" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local pop_stmt = sql.format(get_recent, historian.project,</text>
+<text text-anchor="middle" x="9149" y="-633.601" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;historian.HISTORY_LIMIT)</text>
+<text text-anchor="middle" x="9149" y="-618.201" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local values, nrow = sql.pexec(conn, pop_stmt, &quot;i&quot;)</text>
+<text text-anchor="middle" x="9149" y="-602.8009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if values then</text>
+<text text-anchor="middle" x="9149" y="-587.4009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;historian.values = values &#45;&#45; for repl</text>
+<text text-anchor="middle" x="9149" y="-572.0009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local lines = reverse(values[2])</text>
+<text text-anchor="middle" x="9149" y="-556.6008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local rowids = reverse(values[1])</text>
+<text text-anchor="middle" x="9149" y="-541.2008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;for i, v in ipairs(lines) do</text>
+<text text-anchor="middle" x="9149" y="-525.8008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;historian[i] = Linebuf(v)</text>
+<text text-anchor="middle" x="9149" y="-510.4007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end</text>
+<text text-anchor="middle" x="9149" y="-495.0007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;historian.cursor = #historian</text>
+<text text-anchor="middle" x="9149" y="-479.6007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;historian.up = false</text>
+<text text-anchor="middle" x="9149" y="-464.2007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;else</text>
+<text text-anchor="middle" x="9149" y="-448.8006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; error hides in nrow in the finest Lua style</text>
+<text text-anchor="middle" x="9149" y="-433.4006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;error(nrow)</text>
+<text text-anchor="middle" x="9149" y="-418.0006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
+<text text-anchor="middle" x="9149" y="-402.6005" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
 </g>
 <!-- codeblock_119&#45;&gt;leaf_123 -->
 <g id="edge123" class="edge">
 <title>codeblock_119&#45;&gt;leaf_123</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M9080.462,-1468.0481C9086.8671,-1388.9544 9112.9361,-1067.0394 9131.0096,-843.8565"/>
-<polygon fill="#000000" stroke="#000000" points="9134.5185,-843.8871 9131.8372,-833.6371 9127.5414,-843.322 9134.5185,-843.8871"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M9080.462,-1468.0481C9086.7221,-1390.7452 9111.7657,-1081.4922 9129.77,-859.1639"/>
+<polygon fill="#000000" stroke="#000000" points="9133.2764,-859.2255 9130.5951,-848.9756 9126.2993,-858.6604 9133.2764,-859.2255"/>
 </g>
 <!-- leaf_122 -->
 <g id="node123" class="node">
@@ -2222,7 +2224,7 @@
 <g id="node172" class="node">
 <title>codeblock_171</title>
 <ellipse fill="none" stroke="#000000" cx="12340" cy="-1486.1024" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="12340" y="-1481.9024" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 286&#45;306</text>
+<text text-anchor="middle" x="12340" y="-1481.9024" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 288&#45;308</text>
 </g>
 <!-- section_162&#45;&gt;codeblock_171 -->
 <g id="edge171" class="edge">
@@ -2239,26 +2241,26 @@
 <!-- section_163&#45;&gt;header_184 -->
 <g id="edge184" class="edge">
 <title>section_163&#45;&gt;header_184</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M12957.7685,-1883.3976C12931.367,-1865.0298 12890.8183,-1833.8211 12864,-1799.003 12791.9345,-1705.4405 12742.7851,-1571.4056 12723.7764,-1513.9644"/>
-<polygon fill="#000000" stroke="#000000" points="12727.0064,-1512.5798 12720.5791,-1504.1572 12720.3512,-1514.7496 12727.0064,-1512.5798"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M12957.5222,-1883.4593C12930.8785,-1865.1406 12889.9746,-1833.9704 12863,-1799.003 12790.9544,-1705.6096 12742.3823,-1571.4845 12723.6418,-1513.992"/>
+<polygon fill="#000000" stroke="#000000" points="12726.8798,-1512.6275 12720.4908,-1504.1758 12720.2148,-1514.767 12726.8798,-1512.6275"/>
 </g>
 <!-- prose_185 -->
 <g id="node186" class="node">
 <title>prose_185</title>
-<ellipse fill="none" stroke="#000000" cx="12905" cy="-1486.1024" rx="32.4585" ry="18"/>
-<text text-anchor="middle" x="12905" y="-1481.9024" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">prose</text>
+<ellipse fill="none" stroke="#000000" cx="12904" cy="-1486.1024" rx="32.4585" ry="18"/>
+<text text-anchor="middle" x="12904" y="-1481.9024" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">prose</text>
 </g>
 <!-- section_163&#45;&gt;prose_185 -->
 <g id="edge185" class="edge">
 <title>section_163&#45;&gt;prose_185</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M12980.5547,-1882.526C12968.1314,-1817.343 12925.5719,-1594.0402 12910.4144,-1514.511"/>
-<polygon fill="#000000" stroke="#000000" points="12913.7739,-1513.4425 12908.4635,-1504.2747 12906.8976,-1514.7531 12913.7739,-1513.4425"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M12980.5111,-1882.526C12967.9305,-1817.343 12924.8324,-1594.0402 12909.4829,-1514.511"/>
+<polygon fill="#000000" stroke="#000000" points="12912.839,-1513.4302 12907.5073,-1504.2747 12905.9659,-1514.7568 12912.839,-1513.4302"/>
 </g>
 <!-- codeblock_186 -->
 <g id="node187" class="node">
 <title>codeblock_186</title>
-<ellipse fill="none" stroke="#000000" cx="13064" cy="-1486.1024" rx="86.7905" ry="18"/>
-<text text-anchor="middle" x="13064" y="-1481.9024" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 311&#45;318</text>
+<ellipse fill="none" stroke="#000000" cx="13064" cy="-1486.1024" rx="87.0948" ry="18"/>
+<text text-anchor="middle" x="13064" y="-1481.9024" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 313&#45;323</text>
 </g>
 <!-- section_163&#45;&gt;codeblock_186 -->
 <g id="edge186" class="edge">
@@ -2269,26 +2271,26 @@
 <!-- codeblock_187 -->
 <g id="node188" class="node">
 <title>codeblock_187</title>
-<ellipse fill="none" stroke="#000000" cx="13393" cy="-1486.1024" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="13393" y="-1481.9024" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 320&#45;329</text>
+<ellipse fill="none" stroke="#000000" cx="13394" cy="-1486.1024" rx="87.0948" ry="18"/>
+<text text-anchor="middle" x="13394" y="-1481.9024" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 325&#45;334</text>
 </g>
 <!-- section_163&#45;&gt;codeblock_187 -->
 <g id="edge187" class="edge">
 <title>section_163&#45;&gt;codeblock_187</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M13020.8403,-1884.7742C13058.5276,-1867.4013 13117.4318,-1836.879 13160,-1799.003 13260.1762,-1709.8689 13344.7608,-1571.4609 13377.9565,-1513.3002"/>
-<polygon fill="#000000" stroke="#000000" points="13381.1392,-1514.7824 13383.0166,-1504.3552 13375.0465,-1511.3358 13381.1392,-1514.7824"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M13020.8244,-1884.7563C13058.4989,-1867.3691 13117.3929,-1836.8353 13160,-1799.003 13260.4214,-1709.8352 13345.47,-1571.4456 13378.8635,-1513.295"/>
+<polygon fill="#000000" stroke="#000000" points="13382.049,-1514.7738 13383.954,-1504.3516 13375.9654,-1511.311 13382.049,-1514.7738"/>
 </g>
 <!-- codeblock_188 -->
 <g id="node189" class="node">
 <title>codeblock_188</title>
-<ellipse fill="none" stroke="#000000" cx="13703" cy="-1486.1024" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="13703" y="-1481.9024" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 331&#45;333</text>
+<ellipse fill="none" stroke="#000000" cx="13704" cy="-1486.1024" rx="87.0948" ry="18"/>
+<text text-anchor="middle" x="13704" y="-1481.9024" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 336&#45;338</text>
 </g>
 <!-- section_163&#45;&gt;codeblock_188 -->
 <g id="edge188" class="edge">
 <title>section_163&#45;&gt;codeblock_188</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M13053.2642,-1893.177C13174.296,-1879.1493 13418.1566,-1845.8988 13489,-1799.003 13598.9469,-1726.222 13667.8724,-1575.7164 13692.6445,-1513.7175"/>
-<polygon fill="#000000" stroke="#000000" points="13695.9786,-1514.8022 13696.3706,-1504.2147 13689.4616,-1512.2469 13695.9786,-1514.8022"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M13052.4458,-1893.3023C13173.3838,-1879.363 13418.826,-1846.0981 13490,-1799.003 13599.9608,-1726.2431 13668.8785,-1575.7256 13693.6465,-1513.7205"/>
+<polygon fill="#000000" stroke="#000000" points="13696.9809,-1514.8043 13697.3719,-1504.2167 13690.4637,-1512.2495 13696.9809,-1514.8043"/>
 </g>
 <!-- leaf_166 -->
 <g id="node167" class="node">
@@ -2483,25 +2485,28 @@
 <!-- prose_185&#45;&gt;raw_190 -->
 <g id="edge190" class="edge">
 <title>prose_185&#45;&gt;raw_190</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M12902.9844,-1467.9593C12897.2875,-1416.301 12880.7829,-1263.9771 12870,-1137.2018 12854.2058,-951.5085 12840.3399,-727.7479 12835.6725,-649.9668"/>
-<polygon fill="#000000" stroke="#000000" points="12839.166,-649.7529 12835.0757,-639.9796 12832.1785,-650.1706 12839.166,-649.7529"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M12902.0546,-1467.9572C12896.5538,-1416.2935 12880.6,-1263.9567 12870,-1137.2018 12854.4693,-951.4863 12840.4393,-727.7395 12835.7006,-649.9644"/>
+<polygon fill="#000000" stroke="#000000" points="12839.194,-649.7475 12835.0944,-639.978 12832.2068,-650.1717 12839.194,-649.7475"/>
 </g>
 <!-- leaf_192 -->
 <g id="node193" class="node">
 <title>leaf_192</title>
-<polygon fill="none" stroke="#c0c0c0" points="13273,-672.1019 12879,-672.1019 12879,-571.3 13273,-571.3 13273,-672.1019"/>
-<text text-anchor="middle" x="13076" y="-656.701" font-family="Inconsolata" font-size="14.00" fill="#000000">function Historian.append(historian, linebuf, results)</text>
-<text text-anchor="middle" x="13076" y="-641.301" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;historian[#historian + 1] = linebuf</text>
-<text text-anchor="middle" x="13076" y="-625.901" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;historian.cursor = #historian</text>
-<text text-anchor="middle" x="13076" y="-610.501" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;historian:persist(linebuf, results)</text>
-<text text-anchor="middle" x="13076" y="-595.1009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return true</text>
-<text text-anchor="middle" x="13076" y="-579.7009" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
+<polygon fill="none" stroke="#c0c0c0" points="13273,-694.8018 12879,-694.8018 12879,-548.6001 13273,-548.6001 13273,-694.8018"/>
+<text text-anchor="middle" x="13076" y="-679.8011" font-family="Inconsolata" font-size="14.00" fill="#000000">function Historian.append(historian, linebuf, results)</text>
+<text text-anchor="middle" x="13076" y="-664.4011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;historian[#historian + 1] = linebuf</text>
+<text text-anchor="middle" x="13076" y="-649.001" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#45;&#45; only advance cursor if cursor is at end of set</text>
+<text text-anchor="middle" x="13076" y="-633.601" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if historian.cursor == #historian &#45; 1 then</text>
+<text text-anchor="middle" x="13076" y="-618.201" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;historian.cursor = #historian</text>
+<text text-anchor="middle" x="13076" y="-602.8009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
+<text text-anchor="middle" x="13076" y="-587.4009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;historian:persist(linebuf, results)</text>
+<text text-anchor="middle" x="13076" y="-572.0009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return true</text>
+<text text-anchor="middle" x="13076" y="-556.6008" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
 </g>
 <!-- codeblock_186&#45;&gt;leaf_192 -->
 <g id="edge192" class="edge">
 <title>codeblock_186&#45;&gt;leaf_192</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M13064.2506,-1468.0481C13065.6688,-1365.8931 13072.7102,-858.6752 13075.159,-682.2831"/>
-<polygon fill="#000000" stroke="#000000" points="13078.6605,-682.189 13075.2998,-672.1414 13071.6612,-682.0918 13078.6605,-682.189"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M13064.2506,-1468.0481C13065.6121,-1369.9769 13072.1562,-898.5812 13074.8439,-704.9766"/>
+<polygon fill="#000000" stroke="#000000" points="13078.3452,-704.9025 13074.9844,-694.8548 13071.3459,-704.8053 13078.3452,-704.9025"/>
 </g>
 <!-- leaf_193 -->
 <g id="node194" class="node">
@@ -2519,8 +2524,8 @@
 <!-- codeblock_187&#45;&gt;leaf_193 -->
 <g id="edge193" class="edge">
 <title>codeblock_187&#45;&gt;leaf_193</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M13395.6526,-1468.0481C13410.2467,-1368.7163 13481.1096,-886.4009 13508.8414,-697.6499"/>
-<polygon fill="#000000" stroke="#000000" points="13512.3368,-697.9365 13510.3277,-687.5339 13505.4111,-696.9189 13512.3368,-697.9365"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M13396.6317,-1468.0481C13411.1109,-1368.7163 13481.4159,-886.4009 13508.9293,-697.6499"/>
+<polygon fill="#000000" stroke="#000000" points="13512.4247,-697.9342 13510.4038,-687.5339 13505.4979,-696.9244 13512.4247,-697.9342"/>
 </g>
 <!-- leaf_194 -->
 <g id="node195" class="node">
@@ -2531,8 +2536,8 @@
 <!-- codeblock_188&#45;&gt;leaf_194 -->
 <g id="edge194" class="edge">
 <title>codeblock_188&#45;&gt;leaf_194</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M13706.2209,-1467.9927C13715.3137,-1416.4222 13741.584,-1264.307 13758,-1137.2018 13781.934,-951.8865 13801.2647,-727.8904 13807.7037,-650.0071"/>
-<polygon fill="#000000" stroke="#000000" points="13811.1946,-650.2596 13808.5258,-640.0064 13804.2182,-649.686 13811.1946,-650.2596"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M13707.1509,-1467.9894C13716.0481,-1416.4102 13741.7689,-1264.2743 13758,-1137.2018 13781.6748,-951.8532 13801.167,-727.8779 13807.676,-650.0036"/>
+<polygon fill="#000000" stroke="#000000" points="13811.1667,-650.2597 13808.5074,-640.004 13804.1908,-649.6796 13811.1667,-650.2597"/>
 </g>
 <!-- leaf_191 -->
 <g id="node192" class="node">

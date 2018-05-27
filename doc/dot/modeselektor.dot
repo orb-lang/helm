@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 589"]
+doc_0 [label="doc - 595"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-540"]
+section_1 [label="section: 1-546"]
 
 
 // END RANK doc_0
@@ -25,9 +25,9 @@ prose_4 [label="prose"]
 
 section_5 [label="section: 12-269"]
 
-section_6 [label="section: 292-431"]
+section_6 [label="section: 292-437"]
 
-section_7 [label="section: 541-589"]
+section_7 [label="section: 547-595"]
 
 
 // END RANK section_1
@@ -1683,13 +1683,13 @@ codeblock_415 [label="code block 340-344"]
 
 section_416 [label="section: 347-353"]
 
-section_417 [label="section: 354-409"]
+section_417 [label="section: 354-415"]
 
-section_418 [label="section: 410-428"]
+section_418 [label="section: 416-434"]
 
-section_419 [label="section: 429-431"]
+section_419 [label="section: 435-437"]
 
-section_420 [label="section: 432-540"]
+section_420 [label="section: 438-546"]
 
 
 // END RANK section_6
@@ -1948,7 +1948,7 @@ header_474 [label="3 : NAV"]
 
 prose_475 [label="prose"]
 
-codeblock_476 [label="code block 356-407"]
+codeblock_476 [label="code block 356-413"]
 
 
 // END RANK section_417
@@ -1973,8 +1973,14 @@ leaf_479  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 codeblock_476 -> leaf_480
 leaf_480  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function NAV.UP(modeS, category, value)
    modeS:clearResult()
-   local prev_result
+   local prev_result, linestash
+   if tostring(modeS.linebuf) ~= \"\" then
+      linestash = modeS.linebuf
+   end
    modeS.linebuf, prev_result = modeS.hist:prev()
+   if linestash then
+      modeS.hist:append(linestash)
+   end
    if prev_result then
       modeS:printResults(prev_result)
    else
@@ -2030,7 +2036,7 @@ header_481 [label="3 : CTRL"]
 
 prose_482 [label="prose"]
 
-codeblock_483 [label="code block 414-426"]
+codeblock_483 [label="code block 420-432"]
 
 
 // END RANK section_418
@@ -2103,17 +2109,17 @@ header_493 [label="3 : ModeS:write(str)"]
 
 prose_494 [label="prose"]
 
-codeblock_495 [label="code block 438-444"]
+codeblock_495 [label="code block 444-450"]
 
-codeblock_496 [label="code block 446-451"]
+codeblock_496 [label="code block 452-457"]
 
-codeblock_497 [label="code block 453-466"]
+codeblock_497 [label="code block 459-472"]
 
-codeblock_498 [label="code block 468-472"]
+codeblock_498 [label="code block 474-478"]
 
-codeblock_499 [label="code block 477-481"]
+codeblock_499 [label="code block 483-487"]
 
-codeblock_500 [label="code block 483-538"]
+codeblock_500 [label="code block 489-544"]
 
 
 // END RANK section_420
@@ -2245,9 +2251,9 @@ header_510 [label="2 : new"]
 
 prose_511 [label="prose"]
 
-codeblock_512 [label="code block 545-561"]
+codeblock_512 [label="code block 551-567"]
 
-codeblock_513 [label="code block 563-565"]
+codeblock_513 [label="code block 569-571"]
 
 
 // END RANK section_7
