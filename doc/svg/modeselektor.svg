@@ -13,13 +13,13 @@
 <g id="node1" class="node">
 <title>doc_0</title>
 <ellipse fill="none" stroke="#000000" cx="7426" cy="-1904.7867" rx="46.9581" ry="18"/>
-<text text-anchor="middle" x="7426" y="-1900.5867" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">doc &#45; 595</text>
+<text text-anchor="middle" x="7426" y="-1900.5867" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">doc &#45; 596</text>
 </g>
 <!-- section_1 -->
 <g id="node2" class="node">
 <title>section_1</title>
 <ellipse fill="none" stroke="#000000" cx="7426" cy="-1832.7867" rx="65.8187" ry="18"/>
-<text text-anchor="middle" x="7426" y="-1828.5867" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 1&#45;546</text>
+<text text-anchor="middle" x="7426" y="-1828.5867" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 1&#45;548</text>
 </g>
 <!-- doc_0&#45;&gt;section_1 -->
 <g id="edge1" class="edge">
@@ -79,7 +79,7 @@
 <g id="node7" class="node">
 <title>section_6</title>
 <ellipse fill="none" stroke="#000000" cx="36723" cy="-1760.7867" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="36723" y="-1756.5867" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 292&#45;437</text>
+<text text-anchor="middle" x="36723" y="-1756.5867" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 292&#45;438</text>
 </g>
 <!-- section_1&#45;&gt;section_6 -->
 <g id="edge6" class="edge">
@@ -91,7 +91,7 @@
 <g id="node8" class="node">
 <title>section_7</title>
 <ellipse fill="none" stroke="#000000" cx="41818" cy="-1760.7867" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="41818" y="-1756.5867" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 547&#45;595</text>
+<text text-anchor="middle" x="41818" y="-1756.5867" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 549&#45;596</text>
 </g>
 <!-- section_1&#45;&gt;section_7 -->
 <g id="edge7" class="edge">
@@ -655,7 +655,7 @@
 <g id="node418" class="node">
 <title>section_417</title>
 <ellipse fill="none" stroke="#000000" cx="37618" cy="-1688.7867" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="37618" y="-1684.5867" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 354&#45;415</text>
+<text text-anchor="middle" x="37618" y="-1684.5867" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 354&#45;416</text>
 </g>
 <!-- section_6&#45;&gt;section_417 -->
 <g id="edge417" class="edge">
@@ -667,7 +667,7 @@
 <g id="node419" class="node">
 <title>section_418</title>
 <ellipse fill="none" stroke="#000000" cx="38121" cy="-1688.7867" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="38121" y="-1684.5867" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 416&#45;434</text>
+<text text-anchor="middle" x="38121" y="-1684.5867" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 417&#45;435</text>
 </g>
 <!-- section_6&#45;&gt;section_418 -->
 <g id="edge418" class="edge">
@@ -679,7 +679,7 @@
 <g id="node420" class="node">
 <title>section_419</title>
 <ellipse fill="none" stroke="#000000" cx="38646" cy="-1688.7867" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="38646" y="-1684.5867" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 435&#45;437</text>
+<text text-anchor="middle" x="38646" y="-1684.5867" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 436&#45;438</text>
 </g>
 <!-- section_6&#45;&gt;section_419 -->
 <g id="edge419" class="edge">
@@ -691,7 +691,7 @@
 <g id="node421" class="node">
 <title>section_420</title>
 <ellipse fill="none" stroke="#000000" cx="39615" cy="-1688.7867" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="39615" y="-1684.5867" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 438&#45;546</text>
+<text text-anchor="middle" x="39615" y="-1684.5867" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 439&#45;548</text>
 </g>
 <!-- section_6&#45;&gt;section_420 -->
 <g id="edge420" class="edge">
@@ -727,7 +727,7 @@
 <g id="node513" class="node">
 <title>codeblock_512</title>
 <ellipse fill="none" stroke="#000000" cx="42056" cy="-1688.7867" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="42056" y="-1684.5867" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 551&#45;567</text>
+<text text-anchor="middle" x="42056" y="-1684.5867" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 553&#45;568</text>
 </g>
 <!-- section_7&#45;&gt;codeblock_512 -->
 <g id="edge512" class="edge">
@@ -739,7 +739,7 @@
 <g id="node514" class="node">
 <title>codeblock_513</title>
 <ellipse fill="none" stroke="#000000" cx="42299" cy="-1688.7867" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="42299" y="-1684.5867" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 569&#45;571</text>
+<text text-anchor="middle" x="42299" y="-1684.5867" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 570&#45;572</text>
 </g>
 <!-- section_7&#45;&gt;codeblock_513 -->
 <g id="edge513" class="edge">
@@ -5605,7 +5605,7 @@
 <g id="node477" class="node">
 <title>codeblock_476</title>
 <ellipse fill="none" stroke="#000000" cx="37812" cy="-1399.1863" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="37812" y="-1394.9863" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 356&#45;413</text>
+<text text-anchor="middle" x="37812" y="-1394.9863" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 356&#45;414</text>
 </g>
 <!-- section_417&#45;&gt;codeblock_476 -->
 <g id="edge476" class="edge">
@@ -5641,7 +5641,7 @@
 <g id="node484" class="node">
 <title>codeblock_483</title>
 <ellipse fill="none" stroke="#000000" cx="38346" cy="-1399.1863" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="38346" y="-1394.9863" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 420&#45;432</text>
+<text text-anchor="middle" x="38346" y="-1394.9863" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 421&#45;433</text>
 </g>
 <!-- section_418&#45;&gt;codeblock_483 -->
 <g id="edge483" class="edge">
@@ -5701,7 +5701,7 @@
 <g id="node496" class="node">
 <title>codeblock_495</title>
 <ellipse fill="none" stroke="#000000" cx="39392" cy="-1399.1863" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="39392" y="-1394.9863" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 444&#45;450</text>
+<text text-anchor="middle" x="39392" y="-1394.9863" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 445&#45;451</text>
 </g>
 <!-- section_420&#45;&gt;codeblock_495 -->
 <g id="edge495" class="edge">
@@ -5713,7 +5713,7 @@
 <g id="node497" class="node">
 <title>codeblock_496</title>
 <ellipse fill="none" stroke="#000000" cx="39615" cy="-1399.1863" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="39615" y="-1394.9863" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 452&#45;457</text>
+<text text-anchor="middle" x="39615" y="-1394.9863" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 453&#45;458</text>
 </g>
 <!-- section_420&#45;&gt;codeblock_496 -->
 <g id="edge496" class="edge">
@@ -5725,7 +5725,7 @@
 <g id="node498" class="node">
 <title>codeblock_497</title>
 <ellipse fill="none" stroke="#000000" cx="39902" cy="-1399.1863" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="39902" y="-1394.9863" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 459&#45;472</text>
+<text text-anchor="middle" x="39902" y="-1394.9863" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 460&#45;473</text>
 </g>
 <!-- section_420&#45;&gt;codeblock_497 -->
 <g id="edge497" class="edge">
@@ -5737,7 +5737,7 @@
 <g id="node499" class="node">
 <title>codeblock_498</title>
 <ellipse fill="none" stroke="#000000" cx="40243" cy="-1399.1863" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="40243" y="-1394.9863" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 474&#45;478</text>
+<text text-anchor="middle" x="40243" y="-1394.9863" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 475&#45;479</text>
 </g>
 <!-- section_420&#45;&gt;codeblock_498 -->
 <g id="edge498" class="edge">
@@ -5749,7 +5749,7 @@
 <g id="node500" class="node">
 <title>codeblock_499</title>
 <ellipse fill="none" stroke="#000000" cx="40612" cy="-1399.1863" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="40612" y="-1394.9863" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 483&#45;487</text>
+<text text-anchor="middle" x="40612" y="-1394.9863" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 484&#45;488</text>
 </g>
 <!-- section_420&#45;&gt;codeblock_499 -->
 <g id="edge499" class="edge">
@@ -5761,7 +5761,7 @@
 <g id="node501" class="node">
 <title>codeblock_500</title>
 <ellipse fill="none" stroke="#000000" cx="41037" cy="-1399.1863" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="41037" y="-1394.9863" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 489&#45;544</text>
+<text text-anchor="middle" x="41037" y="-1394.9863" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 490&#45;546</text>
 </g>
 <!-- section_420&#45;&gt;codeblock_500 -->
 <g id="edge500" class="edge">
@@ -6104,63 +6104,64 @@
 <!-- leaf_480 -->
 <g id="node481" class="node">
 <title>leaf_480</title>
-<polygon fill="none" stroke="#c0c0c0" points="38025.5,-1062.1945 37610.5,-1062.1945 37610.5,-188.1914 38025.5,-188.1914 38025.5,-1062.1945"/>
-<text text-anchor="middle" x="37818" y="-1046.9937" font-family="Inconsolata" font-size="14.00" fill="#000000">function NAV.UP(modeS, category, value)</text>
-<text text-anchor="middle" x="37818" y="-1031.5937" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;modeS:clearResult()</text>
-<text text-anchor="middle" x="37818" y="-1016.1937" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local prev_result, linestash</text>
-<text text-anchor="middle" x="37818" y="-1000.7936" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if tostring(modeS.linebuf) ~= &quot;&quot; then</text>
-<text text-anchor="middle" x="37818" y="-985.3936" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;linestash = modeS.linebuf</text>
-<text text-anchor="middle" x="37818" y="-969.9936" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
-<text text-anchor="middle" x="37818" y="-954.5935" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;modeS.linebuf, prev_result = modeS.hist:prev()</text>
-<text text-anchor="middle" x="37818" y="-939.1935" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if linestash then</text>
-<text text-anchor="middle" x="37818" y="-923.7935" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;modeS.hist:append(linestash)</text>
-<text text-anchor="middle" x="37818" y="-908.3934" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
-<text text-anchor="middle" x="37818" y="-892.9934" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if prev_result then</text>
-<text text-anchor="middle" x="37818" y="-877.5934" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;modeS:printResults(prev_result)</text>
-<text text-anchor="middle" x="37818" y="-862.1933" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;else</text>
-<text text-anchor="middle" x="37818" y="-846.7933" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;modeS:clearResult()</text>
-<text text-anchor="middle" x="37818" y="-831.3933" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
-<text text-anchor="middle" x="37818" y="-815.9933" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return modeS</text>
-<text text-anchor="middle" x="37818" y="-800.5932" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
-<text text-anchor="middle" x="37818" y="-769.1932" font-family="Inconsolata" font-size="14.00" fill="#000000">function NAV.DOWN(modeS, category, value)</text>
-<text text-anchor="middle" x="37818" y="-753.7932" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;modeS:clearResult()</text>
-<text text-anchor="middle" x="37818" y="-738.3931" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local next_p, next_result</text>
-<text text-anchor="middle" x="37818" y="-722.9931" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;modeS.linebuf, next_result, next_p = modeS.hist:next()</text>
-<text text-anchor="middle" x="37818" y="-707.5931" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if next_p then</text>
-<text text-anchor="middle" x="37818" y="-692.193" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;modeS.linebuf = Linebuf()</text>
-<text text-anchor="middle" x="37818" y="-676.793" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
-<text text-anchor="middle" x="37818" y="-661.393" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if next_result then</text>
-<text text-anchor="middle" x="37818" y="-645.9929" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;modeS:printResults(next_result)</text>
-<text text-anchor="middle" x="37818" y="-630.5929" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;else</text>
-<text text-anchor="middle" x="37818" y="-615.1929" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;modeS:clearResult()</text>
-<text text-anchor="middle" x="37818" y="-599.7928" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
-<text text-anchor="middle" x="37818" y="-584.3928" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return modeS</text>
-<text text-anchor="middle" x="37818" y="-568.9928" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
-<text text-anchor="middle" x="37818" y="-537.5928" font-family="Inconsolata" font-size="14.00" fill="#000000">function NAV.LEFT(modeS, category, value)</text>
-<text text-anchor="middle" x="37818" y="-522.1927" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return modeS.linebuf:left()</text>
-<text text-anchor="middle" x="37818" y="-506.7927" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
-<text text-anchor="middle" x="37818" y="-475.3927" font-family="Inconsolata" font-size="14.00" fill="#000000">function NAV.RIGHT(modeS, category, value)</text>
-<text text-anchor="middle" x="37818" y="-459.9926" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return modeS.linebuf:right()</text>
-<text text-anchor="middle" x="37818" y="-444.5926" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
-<text text-anchor="middle" x="37818" y="-413.1926" font-family="Inconsolata" font-size="14.00" fill="#000000">function NAV.RETURN(modeS, category, value)</text>
-<text text-anchor="middle" x="37818" y="-397.7925" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#45;&#45; eval etc.</text>
-<text text-anchor="middle" x="37818" y="-382.3925" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;modeS:nl()</text>
-<text text-anchor="middle" x="37818" y="-366.9925" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;modeS:eval()</text>
-<text text-anchor="middle" x="37818" y="-351.5924" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;modeS.linebuf = Linebuf()</text>
-<text text-anchor="middle" x="37818" y="-336.1924" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;modeS.hist.cursor = modeS.hist.cursor + 1</text>
-<text text-anchor="middle" x="37818" y="-320.7924" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
-<text text-anchor="middle" x="37818" y="-289.3923" font-family="Inconsolata" font-size="14.00" fill="#000000">function NAV.BACKSPACE(modeS, category, value)</text>
-<text text-anchor="middle" x="37818" y="-273.9923" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return modeS.linebuf:d_back()</text>
-<text text-anchor="middle" x="37818" y="-258.5923" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
-<text text-anchor="middle" x="37818" y="-227.1923" font-family="Inconsolata" font-size="14.00" fill="#000000">function NAV.DELETE(modeS, category, value)</text>
-<text text-anchor="middle" x="37818" y="-211.7922" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return modeS.linebuf:d_fwd()</text>
-<text text-anchor="middle" x="37818" y="-196.3922" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
+<polygon fill="none" stroke="#c0c0c0" points="38025.5,-1070.0946 37610.5,-1070.0946 37610.5,-180.2913 38025.5,-180.2913 38025.5,-1070.0946"/>
+<text text-anchor="middle" x="37818" y="-1054.6937" font-family="Inconsolata" font-size="14.00" fill="#000000">function NAV.UP(modeS, category, value)</text>
+<text text-anchor="middle" x="37818" y="-1039.2937" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;modeS:clearResult()</text>
+<text text-anchor="middle" x="37818" y="-1023.8937" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local prev_result, linestash</text>
+<text text-anchor="middle" x="37818" y="-1008.4936" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if tostring(modeS.linebuf) ~= &quot;&quot;</text>
+<text text-anchor="middle" x="37818" y="-993.0936" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;and modeS.hist.cursor &gt; #modeS.hist then</text>
+<text text-anchor="middle" x="37818" y="-977.6936" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;linestash = modeS.linebuf</text>
+<text text-anchor="middle" x="37818" y="-962.2936" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
+<text text-anchor="middle" x="37818" y="-946.8935" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;modeS.linebuf, prev_result = modeS.hist:prev()</text>
+<text text-anchor="middle" x="37818" y="-931.4935" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if linestash then</text>
+<text text-anchor="middle" x="37818" y="-916.0935" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;modeS.hist:append(linestash)</text>
+<text text-anchor="middle" x="37818" y="-900.6934" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
+<text text-anchor="middle" x="37818" y="-885.2934" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if prev_result then</text>
+<text text-anchor="middle" x="37818" y="-869.8934" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;modeS:printResults(prev_result)</text>
+<text text-anchor="middle" x="37818" y="-854.4933" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;else</text>
+<text text-anchor="middle" x="37818" y="-839.0933" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;modeS:clearResult()</text>
+<text text-anchor="middle" x="37818" y="-823.6933" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
+<text text-anchor="middle" x="37818" y="-808.2932" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return modeS</text>
+<text text-anchor="middle" x="37818" y="-792.8932" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
+<text text-anchor="middle" x="37818" y="-761.4932" font-family="Inconsolata" font-size="14.00" fill="#000000">function NAV.DOWN(modeS, category, value)</text>
+<text text-anchor="middle" x="37818" y="-746.0931" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;modeS:clearResult()</text>
+<text text-anchor="middle" x="37818" y="-730.6931" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local next_p, next_result</text>
+<text text-anchor="middle" x="37818" y="-715.2931" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;modeS.linebuf, next_result, next_p = modeS.hist:next()</text>
+<text text-anchor="middle" x="37818" y="-699.8931" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if next_p then</text>
+<text text-anchor="middle" x="37818" y="-684.493" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;modeS.linebuf = Linebuf()</text>
+<text text-anchor="middle" x="37818" y="-669.093" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
+<text text-anchor="middle" x="37818" y="-653.693" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if next_result then</text>
+<text text-anchor="middle" x="37818" y="-638.2929" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;modeS:printResults(next_result)</text>
+<text text-anchor="middle" x="37818" y="-622.8929" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;else</text>
+<text text-anchor="middle" x="37818" y="-607.4929" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;modeS:clearResult()</text>
+<text text-anchor="middle" x="37818" y="-592.0928" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
+<text text-anchor="middle" x="37818" y="-576.6928" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return modeS</text>
+<text text-anchor="middle" x="37818" y="-561.2928" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
+<text text-anchor="middle" x="37818" y="-529.8927" font-family="Inconsolata" font-size="14.00" fill="#000000">function NAV.LEFT(modeS, category, value)</text>
+<text text-anchor="middle" x="37818" y="-514.4927" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return modeS.linebuf:left()</text>
+<text text-anchor="middle" x="37818" y="-499.0927" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
+<text text-anchor="middle" x="37818" y="-467.6926" font-family="Inconsolata" font-size="14.00" fill="#000000">function NAV.RIGHT(modeS, category, value)</text>
+<text text-anchor="middle" x="37818" y="-452.2926" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return modeS.linebuf:right()</text>
+<text text-anchor="middle" x="37818" y="-436.8926" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
+<text text-anchor="middle" x="37818" y="-405.4926" font-family="Inconsolata" font-size="14.00" fill="#000000">function NAV.RETURN(modeS, category, value)</text>
+<text text-anchor="middle" x="37818" y="-390.0925" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#45;&#45; eval etc.</text>
+<text text-anchor="middle" x="37818" y="-374.6925" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;modeS:nl()</text>
+<text text-anchor="middle" x="37818" y="-359.2925" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;modeS:eval()</text>
+<text text-anchor="middle" x="37818" y="-343.8924" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;modeS.linebuf = Linebuf()</text>
+<text text-anchor="middle" x="37818" y="-328.4924" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;modeS.hist.cursor = modeS.hist.cursor + 1</text>
+<text text-anchor="middle" x="37818" y="-313.0924" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
+<text text-anchor="middle" x="37818" y="-281.6923" font-family="Inconsolata" font-size="14.00" fill="#000000">function NAV.BACKSPACE(modeS, category, value)</text>
+<text text-anchor="middle" x="37818" y="-266.2923" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return modeS.linebuf:d_back()</text>
+<text text-anchor="middle" x="37818" y="-250.8923" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
+<text text-anchor="middle" x="37818" y="-219.4922" font-family="Inconsolata" font-size="14.00" fill="#000000">function NAV.DELETE(modeS, category, value)</text>
+<text text-anchor="middle" x="37818" y="-204.0922" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return modeS.linebuf:d_fwd()</text>
+<text text-anchor="middle" x="37818" y="-188.6922" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
 </g>
 <!-- codeblock_476&#45;&gt;leaf_480 -->
 <g id="edge480" class="edge">
 <title>codeblock_476&#45;&gt;leaf_480</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M37812.1424,-1380.8171C37812.4986,-1334.866 37813.4758,-1208.806 37814.5324,-1072.5123"/>
-<polygon fill="#000000" stroke="#000000" points="37818.0341,-1072.2888 37814.6118,-1062.2619 37811.0343,-1072.2344 37818.0341,-1072.2888"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M37812.1424,-1380.8171C37812.4921,-1335.7035 37813.4404,-1213.3745 37814.4747,-1079.9539"/>
+<polygon fill="#000000" stroke="#000000" points="37817.9748,-1079.9444 37814.5525,-1069.9176 37810.975,-1079.8901 37817.9748,-1079.9444"/>
 </g>
 <!-- leaf_479 -->
 <g id="node480" class="node">
@@ -6372,64 +6373,65 @@
 <!-- leaf_509 -->
 <g id="node510" class="node">
 <title>leaf_509</title>
-<polygon fill="none" stroke="#c0c0c0" points="41522,-1046.0946 41016,-1046.0946 41016,-204.2913 41522,-204.2913 41522,-1046.0946"/>
-<text text-anchor="middle" x="41269" y="-1030.6937" font-family="Inconsolata" font-size="14.00" fill="#000000">function ModeS.eval(modeS)</text>
-<text text-anchor="middle" x="41269" y="-1015.2937" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local line = tostring(modeS.linebuf)</text>
-<text text-anchor="middle" x="41269" y="-999.8937" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local chunk &#160;= modeS.buffer .. line</text>
-<text text-anchor="middle" x="41269" y="-984.4936" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local success, results</text>
-<text text-anchor="middle" x="41269" y="-969.0936" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#45;&#45; first we prefix return</text>
-<text text-anchor="middle" x="41269" y="-953.6936" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local f, err = loadstring(&#39;return &#39; .. chunk, &#39;REPL&#39;)</text>
-<text text-anchor="middle" x="41269" y="-922.2936" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if not f then</text>
-<text text-anchor="middle" x="41269" y="-906.8935" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; try again without return</text>
-<text text-anchor="middle" x="41269" y="-891.4935" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;f, err = loadstring(chunk, &#39;REPL&#39;)</text>
-<text text-anchor="middle" x="41269" y="-876.0935" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
-<text text-anchor="middle" x="41269" y="-860.6934" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if not f then</text>
-<text text-anchor="middle" x="41269" y="-845.2934" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local head = sub(chunk, 1, 1)</text>
-<text text-anchor="middle" x="41269" y="-829.8934" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;if head == &quot;=&quot; then &#45;&#45; take pity on old&#45;school Lua hackers</text>
-<text text-anchor="middle" x="41269" y="-814.4933" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;f, err = loadstring(&#39;return &#39; .. sub(chunk,2), &#39;REPL&#39;)</text>
-<text text-anchor="middle" x="41269" y="-799.0933" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end &#45;&#45; more special REPL prefix soon</text>
-<text text-anchor="middle" x="41269" y="-783.6933" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
-<text text-anchor="middle" x="41269" y="-768.2932" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if f then</text>
-<text text-anchor="middle" x="41269" y="-752.8932" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;modeS.linebuf = Linebuf(modeS.buffer .. tostring(modeS.linebuf))</text>
-<text text-anchor="middle" x="41269" y="-737.4932" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;modeS.buffer = &quot;&quot;</text>
-<text text-anchor="middle" x="41269" y="-722.0931" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;modeS.repl_line = modeS.REPL_LINE</text>
-<text text-anchor="middle" x="41269" y="-706.6931" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;success, results = gatherResults(xpcall(f, debug.traceback))</text>
-<text text-anchor="middle" x="41269" y="-691.2931" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;if success then</text>
-<text text-anchor="middle" x="41269" y="-675.8931" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; successful call</text>
-<text text-anchor="middle" x="41269" y="-660.493" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;modeS:clearResult()</text>
-<text text-anchor="middle" x="41269" y="-645.093" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;if results.n &gt; 0 then</text>
-<text text-anchor="middle" x="41269" y="-629.693" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;modeS:printResults(results)</text>
-<text text-anchor="middle" x="41269" y="-598.2929" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;end</text>
-<text text-anchor="middle" x="41269" y="-582.8929" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;else</text>
-<text text-anchor="middle" x="41269" y="-567.4929" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; error</text>
-<text text-anchor="middle" x="41269" y="-552.0928" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;modeS:clearResult()</text>
-<text text-anchor="middle" x="41269" y="-536.6928" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;modeS:write(results[1])</text>
-<text text-anchor="middle" x="41269" y="-521.2928" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end</text>
-<text text-anchor="middle" x="41269" y="-505.8927" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;else</text>
-<text text-anchor="middle" x="41269" y="-490.4927" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;if err:match &quot;&#39;&lt;eof&gt;&#39;$&quot; then</text>
-<text text-anchor="middle" x="41269" y="-475.0927" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#45;&#45; Lua expects some more input; stow it away for next time</text>
-<text text-anchor="middle" x="41269" y="-459.6926" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;modeS.buffer = chunk .. &#39;\n&#39;</text>
-<text text-anchor="middle" x="41269" y="-444.2926" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;modeS.repl_line = modeS.repl_line + 1</text>
-<text text-anchor="middle" x="41269" y="-428.8926" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;write &#39;...&#39;</text>
-<text text-anchor="middle" x="41269" y="-413.4926" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;return true</text>
-<text text-anchor="middle" x="41269" y="-398.0925" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;else</text>
-<text text-anchor="middle" x="41269" y="-382.6925" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;modeS.repl_line = modeS.REPL_LINE</text>
-<text text-anchor="middle" x="41269" y="-367.2925" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;modeS:clearResult()</text>
-<text text-anchor="middle" x="41269" y="-351.8924" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;modeS:write(err)</text>
-<text text-anchor="middle" x="41269" y="-336.4924" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;modeS.buffer = &quot;&quot;</text>
-<text text-anchor="middle" x="41269" y="-321.0924" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;return true</text>
-<text text-anchor="middle" x="41269" y="-305.6923" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end</text>
-<text text-anchor="middle" x="41269" y="-290.2923" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
-<text text-anchor="middle" x="41269" y="-258.8923" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;modeS.hist:append(modeS.linebuf, results)</text>
-<text text-anchor="middle" x="41269" y="-243.4922" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if success then modeS.hist.results[modeS.linebuf] = results end</text>
-<text text-anchor="middle" x="41269" y="-228.0922" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;modeS:prompt()</text>
-<text text-anchor="middle" x="41269" y="-212.6922" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
+<polygon fill="none" stroke="#c0c0c0" points="41522,-1053.4946 41016,-1053.4946 41016,-196.8913 41522,-196.8913 41522,-1053.4946"/>
+<text text-anchor="middle" x="41269" y="-1038.3938" font-family="Inconsolata" font-size="14.00" fill="#000000">function ModeS.eval(modeS)</text>
+<text text-anchor="middle" x="41269" y="-1022.9937" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local line = tostring(modeS.linebuf)</text>
+<text text-anchor="middle" x="41269" y="-1007.5937" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local chunk &#160;= modeS.buffer .. line</text>
+<text text-anchor="middle" x="41269" y="-992.1937" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local success, results</text>
+<text text-anchor="middle" x="41269" y="-976.7936" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#45;&#45; first we prefix return</text>
+<text text-anchor="middle" x="41269" y="-961.3936" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local f, err = loadstring(&#39;return &#39; .. chunk, &#39;REPL&#39;)</text>
+<text text-anchor="middle" x="41269" y="-929.9936" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if not f then</text>
+<text text-anchor="middle" x="41269" y="-914.5935" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; try again without return</text>
+<text text-anchor="middle" x="41269" y="-899.1935" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;f, err = loadstring(chunk, &#39;REPL&#39;)</text>
+<text text-anchor="middle" x="41269" y="-883.7935" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
+<text text-anchor="middle" x="41269" y="-868.3934" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if not f then</text>
+<text text-anchor="middle" x="41269" y="-852.9934" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local head = sub(chunk, 1, 1)</text>
+<text text-anchor="middle" x="41269" y="-837.5934" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;if head == &quot;=&quot; then &#45;&#45; take pity on old&#45;school Lua hackers</text>
+<text text-anchor="middle" x="41269" y="-822.1933" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;f, err = loadstring(&#39;return &#39; .. sub(chunk,2), &#39;REPL&#39;)</text>
+<text text-anchor="middle" x="41269" y="-806.7933" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end &#45;&#45; more special REPL prefix soon</text>
+<text text-anchor="middle" x="41269" y="-791.3933" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
+<text text-anchor="middle" x="41269" y="-775.9933" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if f then</text>
+<text text-anchor="middle" x="41269" y="-760.5932" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;modeS.linebuf = Linebuf(modeS.buffer .. tostring(modeS.linebuf))</text>
+<text text-anchor="middle" x="41269" y="-745.1932" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;modeS.buffer = &quot;&quot;</text>
+<text text-anchor="middle" x="41269" y="-729.7932" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;modeS.repl_line = modeS.REPL_LINE</text>
+<text text-anchor="middle" x="41269" y="-714.3931" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;success, results = gatherResults(xpcall(f, debug.traceback))</text>
+<text text-anchor="middle" x="41269" y="-698.9931" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;if success then</text>
+<text text-anchor="middle" x="41269" y="-683.5931" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; successful call</text>
+<text text-anchor="middle" x="41269" y="-668.193" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;modeS:clearResult()</text>
+<text text-anchor="middle" x="41269" y="-652.793" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;if results.n &gt; 0 then</text>
+<text text-anchor="middle" x="41269" y="-637.393" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;modeS:printResults(results)</text>
+<text text-anchor="middle" x="41269" y="-605.9929" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;end</text>
+<text text-anchor="middle" x="41269" y="-590.5929" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;else</text>
+<text text-anchor="middle" x="41269" y="-575.1929" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; error</text>
+<text text-anchor="middle" x="41269" y="-559.7928" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;modeS:clearResult()</text>
+<text text-anchor="middle" x="41269" y="-544.3928" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;modeS:write(results[1])</text>
+<text text-anchor="middle" x="41269" y="-528.9928" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end</text>
+<text text-anchor="middle" x="41269" y="-513.5928" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;else</text>
+<text text-anchor="middle" x="41269" y="-498.1927" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;if err:match &quot;&#39;&lt;eof&gt;&#39;$&quot; then</text>
+<text text-anchor="middle" x="41269" y="-482.7927" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#45;&#45; Lua expects some more input; stow it away for next time</text>
+<text text-anchor="middle" x="41269" y="-467.3927" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;modeS.buffer = chunk .. &#39;\n&#39;</text>
+<text text-anchor="middle" x="41269" y="-451.9926" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;modeS.repl_line = modeS.repl_line + 1</text>
+<text text-anchor="middle" x="41269" y="-436.5926" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;write &#39;...&#39;</text>
+<text text-anchor="middle" x="41269" y="-421.1926" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;return true</text>
+<text text-anchor="middle" x="41269" y="-405.7925" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;else</text>
+<text text-anchor="middle" x="41269" y="-390.3925" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;modeS.repl_line = modeS.REPL_LINE</text>
+<text text-anchor="middle" x="41269" y="-374.9925" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;modeS:clearResult()</text>
+<text text-anchor="middle" x="41269" y="-359.5924" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;modeS:write(err)</text>
+<text text-anchor="middle" x="41269" y="-344.1924" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;modeS.buffer = &quot;&quot;</text>
+<text text-anchor="middle" x="41269" y="-328.7924" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;return true</text>
+<text text-anchor="middle" x="41269" y="-313.3923" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end</text>
+<text text-anchor="middle" x="41269" y="-297.9923" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
+<text text-anchor="middle" x="41269" y="-266.5923" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;modeS.hist:append(modeS.linebuf, results)</text>
+<text text-anchor="middle" x="41269" y="-251.1923" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;modeS.hist.cursor = #modeS.hist</text>
+<text text-anchor="middle" x="41269" y="-235.7922" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if success then modeS.hist.results[modeS.linebuf] = results end</text>
+<text text-anchor="middle" x="41269" y="-220.3922" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;modeS:prompt()</text>
+<text text-anchor="middle" x="41269" y="-204.9922" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
 </g>
 <!-- codeblock_500&#45;&gt;leaf_509 -->
 <g id="edge509" class="edge">
 <title>codeblock_500&#45;&gt;leaf_509</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M41042.3932,-1381.1934C41056.6257,-1333.7116 41097.0572,-1198.8247 41139.9031,-1055.8833"/>
-<polygon fill="#000000" stroke="#000000" points="41143.3413,-1056.6023 41142.86,-1046.0184 41136.6361,-1054.5924 41143.3413,-1056.6023"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M41042.3932,-1381.1934C41056.3763,-1334.5436 41095.6483,-1203.5252 41137.653,-1063.3899"/>
+<polygon fill="#000000" stroke="#000000" points="41141.0338,-1064.3006 41140.5525,-1053.7167 41134.3286,-1062.2907 41141.0338,-1064.3006"/>
 </g>
 <!-- leaf_503 -->
 <g id="node504" class="node">
@@ -6507,27 +6509,26 @@
 <!-- leaf_523 -->
 <g id="node524" class="node">
 <title>leaf_523</title>
-<polygon fill="none" stroke="#c0c0c0" points="42264,-1518.787 42010,-1518.787 42010,-1279.5855 42264,-1279.5855 42264,-1518.787"/>
-<text text-anchor="middle" x="42137" y="-1503.7865" font-family="Inconsolata" font-size="14.00" fill="#000000">function new(cfg)</text>
-<text text-anchor="middle" x="42137" y="-1488.3864" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;local modeS = meta(ModeS)</text>
-<text text-anchor="middle" x="42137" y="-1472.9864" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;modeS.linebuf = Linebuf()</text>
-<text text-anchor="middle" x="42137" y="-1457.5864" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;modeS.buffer = &quot;&quot;</text>
-<text text-anchor="middle" x="42137" y="-1442.1864" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;modeS.hist &#160;= Historian()</text>
-<text text-anchor="middle" x="42137" y="-1426.7863" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;modeS.hist:append(modeS.linebuf)</text>
-<text text-anchor="middle" x="42137" y="-1411.3863" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#45;&#45; this will be more complex but</text>
-<text text-anchor="middle" x="42137" y="-1395.9863" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;modeS.l_margin = 4</text>
-<text text-anchor="middle" x="42137" y="-1380.5862" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;modeS.r_margin = 80</text>
-<text text-anchor="middle" x="42137" y="-1365.1862" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;modeS.row = 2</text>
-<text text-anchor="middle" x="42137" y="-1349.7862" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;modeS.repl_line = 2</text>
-<text text-anchor="middle" x="42137" y="-1334.3861" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;return modeS</text>
-<text text-anchor="middle" x="42137" y="-1318.9861" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
-<text text-anchor="middle" x="42137" y="-1287.5861" font-family="Inconsolata" font-size="14.00" fill="#000000">ModeS.idEst = new</text>
+<polygon fill="none" stroke="#c0c0c0" points="42264,-1511.3868 42010,-1511.3868 42010,-1286.9858 42264,-1286.9858 42264,-1511.3868"/>
+<text text-anchor="middle" x="42137" y="-1496.0865" font-family="Inconsolata" font-size="14.00" fill="#000000">function new(cfg)</text>
+<text text-anchor="middle" x="42137" y="-1480.6864" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;local modeS = meta(ModeS)</text>
+<text text-anchor="middle" x="42137" y="-1465.2864" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;modeS.linebuf = Linebuf()</text>
+<text text-anchor="middle" x="42137" y="-1449.8864" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;modeS.buffer = &quot;&quot;</text>
+<text text-anchor="middle" x="42137" y="-1434.4863" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;modeS.hist &#160;= Historian()</text>
+<text text-anchor="middle" x="42137" y="-1419.0863" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#45;&#45; this will be more complex but</text>
+<text text-anchor="middle" x="42137" y="-1403.6863" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;modeS.l_margin = 4</text>
+<text text-anchor="middle" x="42137" y="-1388.2862" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;modeS.r_margin = 80</text>
+<text text-anchor="middle" x="42137" y="-1372.8862" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;modeS.row = 2</text>
+<text text-anchor="middle" x="42137" y="-1357.4862" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;modeS.repl_line = 2</text>
+<text text-anchor="middle" x="42137" y="-1342.0862" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;return modeS</text>
+<text text-anchor="middle" x="42137" y="-1326.6861" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
+<text text-anchor="middle" x="42137" y="-1295.2861" font-family="Inconsolata" font-size="14.00" fill="#000000">ModeS.idEst = new</text>
 </g>
 <!-- codeblock_512&#45;&gt;leaf_523 -->
 <g id="edge523" class="edge">
 <title>codeblock_512&#45;&gt;leaf_523</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M42061.0669,-1670.6709C42069.0717,-1642.0511 42085.3227,-1583.9487 42100.7439,-1528.8133"/>
-<polygon fill="#000000" stroke="#000000" points="42104.1876,-1529.4944 42103.5107,-1518.9212 42097.4464,-1527.6088 42104.1876,-1529.4944"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M42061.0669,-1670.6709C42069.4321,-1640.7627 42086.8026,-1578.6579 42102.8206,-1521.3883"/>
+<polygon fill="#000000" stroke="#000000" points="42106.262,-1522.0779 42105.585,-1511.5047 42099.5207,-1520.1923 42106.262,-1522.0779"/>
 </g>
 <!-- leaf_524 -->
 <g id="node525" class="node">

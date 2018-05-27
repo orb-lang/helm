@@ -357,7 +357,8 @@ That's confusing, and I'll fix it when it's time to add modal editing.
 function NAV.UP(modeS, category, value)
    modeS:clearResult()
    local prev_result, linestash
-   if tostring(modeS.linebuf) ~= "" then
+   if tostring(modeS.linebuf) ~= ""
+      and modeS.hist.cursor > #modeS.hist then
       linestash = modeS.linebuf
    end
    modeS.linebuf, prev_result = modeS.hist:prev()
@@ -538,6 +539,7 @@ function ModeS.eval(modeS)
    end
 
    modeS.hist:append(modeS.linebuf, results)
+   modeS.hist.cursor = #modeS.hist
    if success then modeS.hist.results[modeS.linebuf] = results end
    modeS:prompt()
 end
@@ -554,7 +556,6 @@ function new(cfg)
   modeS.linebuf = Linebuf()
   modeS.buffer = ""
   modeS.hist  = Historian()
-  modeS.hist:append(modeS.linebuf)
   -- this will be more complex but
   modeS.l_margin = 4
   modeS.r_margin = 80

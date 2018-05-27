@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 338"]
+doc_0 [label="doc - 342"]
 
 
 doc_0 -> { section_1}
@@ -847,7 +847,7 @@ codeblock_161 [label="code block 266-278"]
 
 section_162 [label="section: 281-310"]
 
-section_163 [label="section: 311-338"]
+section_163 [label="section: 311-342"]
 
 
 // END RANK section_11
@@ -970,53 +970,71 @@ leaf_183  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histo
 end"]
 // END RANK codeblock_171
 
-section_163 -> { header_184 prose_185 codeblock_186 codeblock_187 codeblock_188}
-{rank=same; header_184 prose_185 codeblock_186 codeblock_187 codeblock_188}
+section_163 -> { header_184 prose_185 prose_186 codeblock_187 codeblock_188 codeblock_189}
+{rank=same; header_184 prose_185 prose_186 codeblock_187 codeblock_188 codeblock_189}
 
 header_184 [label="3 : Historian:append()"]
 
 prose_185 [label="prose"]
 
-codeblock_186 [label="code block 313-323"]
+prose_186 [label="prose"]
 
-codeblock_187 [label="code block 325-334"]
+codeblock_187 [label="code block 317-327"]
 
-codeblock_188 [label="code block 336-338"]
+codeblock_188 [label="code block 329-338"]
+
+codeblock_189 [label="code block 340-342"]
 
 
 // END RANK section_163
 
-header_184 -> leaf_189
-leaf_189  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Historian:append()"]
+header_184 -> leaf_190
+leaf_190  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Historian:append()"]
 // END RANK header_184
 
-prose_185 -> { raw_190}
-{rank=same; raw_190}
+prose_185 -> { raw_191}
+{rank=same; raw_191}
 
-raw_190 [label="raw"]
+raw_191 [label="raw"]
 
 
 // END RANK prose_185
 
-raw_190 -> leaf_191
-leaf_191  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-"]
-// END RANK raw_190
+raw_191 -> leaf_192
+leaf_192  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
-codeblock_186 -> leaf_192
-leaf_192  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.append(historian, linebuf, results)
-   historian[#historian + 1] = linebuf
-   -- only advance cursor if cursor is at end of set
-   if historian.cursor == #historian - 1 then
-      historian.cursor = #historian
+Appends a linebuf to history and persists it.
+"]
+// END RANK raw_191
+
+prose_186 -> { raw_193}
+{rank=same; raw_193}
+
+raw_193 [label="raw"]
+
+
+// END RANK prose_186
+
+raw_193 -> leaf_194
+leaf_194  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Doesn't adjust the cursor.
+"]
+// END RANK raw_193
+
+codeblock_187 -> leaf_195
+leaf_195  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.append(historian, linebuf, results)
+   if tostring(historian[#historian]) == tostring(linebuf) then
+      -- don't bother
+      return false
    end
+   historian[#historian + 1] = linebuf
    historian:persist(linebuf, results)
    return true
 end"]
-// END RANK codeblock_186
+// END RANK codeblock_187
 
-codeblock_187 -> leaf_193
-leaf_193  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new()
+codeblock_188 -> leaf_196
+leaf_196  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new()
    local historian = meta(Historian)
    historian:load()
    -- This will also be load()ed once we have the tables for it
@@ -1024,11 +1042,11 @@ leaf_193  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function
    return historian
 end
 Historian.idEst = new"]
-// END RANK codeblock_187
-
-codeblock_188 -> leaf_194
-leaf_194  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return new"]
 // END RANK codeblock_188
+
+codeblock_189 -> leaf_197
+leaf_197  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return new"]
+// END RANK codeblock_189
 
 
 }

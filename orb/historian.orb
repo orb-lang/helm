@@ -310,13 +310,17 @@ end
 
 *** Historian:append()
 
+Appends a linebuf to history and persists it.
+
+Doesn't adjust the cursor.
+
 #!lua
 function Historian.append(historian, linebuf, results)
-   historian[#historian + 1] = linebuf
-   -- only advance cursor if cursor is at end of set
-   if historian.cursor == #historian - 1 then
-      historian.cursor = #historian
+   if tostring(historian[#historian]) == tostring(linebuf) then
+      -- don't bother
+      return false
    end
+   historian[#historian + 1] = linebuf
    historian:persist(linebuf, results)
    return true
 end
