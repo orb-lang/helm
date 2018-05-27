@@ -5,6 +5,9 @@ This will be in pylon eventually.
 Enhances the existing SQLite bindings, which in turn will be turned into a
 statically-linked part of =pylon=.
 
+SQLite being a core competency, we want to make this really nice; see
+[[stretch goals][#stretch-goals]] for details.
+
 #!lua
 local sql = require "sqlite"
 local pcall = assert (pcall)
@@ -75,11 +78,12 @@ Executes the statement on conn in protected mode.
 Unwraps and returns success, or =false= and error.
 
 #!lua
-function sql.pexec(conn, stmt)
+function sql.pexec(conn, stmt, col_str)
    -- conn:exec(stmt)
-   local success, value = pcall(conn.exec, conn, stmt)
+   col_str = col_str or "hik"
+   local success, result, nrow = pcall(conn.exec, conn, stmt, col_str)
    if success then
-      return value
+      return result, nrow
    else
       return false, value
    end
@@ -108,13 +112,30 @@ return sql
 
 *** Stretch goals
 
+
+**** sql.pragma.etc(bool)
+
+A convenience wrapper over the SQL pragma commands.
+
+We can use the same interface for setting Lua-specific values, the one I need
+is =sql.pragma.nulls_are_nil(false)=.
+
+
+**** sql.NULL
+
+This isn't much of a stretch, just a truthy table that represents nullity.
+
+
+**** Dereferencing pointers in Luaspace
+
 It would be nice to write a small C wrapper on =sqlite3_sql()= that gets the
 address from a statement pointer and returns the resulting string.  The whole
 dataflow layer of =bridge= is predicated on abstracting over some pretty
 gnarly SQL introspection.
 
 The easy way is just to denormalize the string onto a member of the stmt
-table
+table, but that violates single-source-of-truth, and handling pointers across
+the abstraction barrier is something I'm going to need to get used to.
 
 
 

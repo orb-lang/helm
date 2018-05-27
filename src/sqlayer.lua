@@ -6,6 +6,9 @@
 
 
 
+
+
+
 local sql = require "sqlite"
 local pcall = assert (pcall)
 local gsub = assert(string.gsub)
@@ -75,11 +78,12 @@ end
 
 
 
-function sql.pexec(conn, stmt)
+function sql.pexec(conn, stmt, col_str)
    -- conn:exec(stmt)
-   local success, value = pcall(conn.exec, conn, stmt)
+   col_str = col_str or "hik"
+   local success, result, nrow = pcall(conn.exec, conn, stmt, col_str)
    if success then
-      return value
+      return result, nrow
    else
       return false, value
    end

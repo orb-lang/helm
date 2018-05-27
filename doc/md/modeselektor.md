@@ -118,7 +118,8 @@ The easiest way to go mad in concurrent environments is to share memory.
 a better idea.
 
 ```lua
-local Linebuf = require "linebuf"
+local Linebuf   = require "linebuf"
+local Resbuf    = require "resbuf"
 local Historian = require "historian"
 
 local concat = assert(table.concat)
@@ -458,7 +459,11 @@ function ModeS.printResults(modeS, results)
    local rainbuf = {}
    modeS:write(a.rc(modeS.repl_line + 1, modeS.l_margin))
    for i = 1, results.n do
-      rainbuf[i] = ts(results[i])
+      if results.frozen then
+         rainbuf[i] = results[i]
+      else
+         rainbuf[i] = ts(results[i])
+      end
    end
    modeS:write(concat(rainbuf, '   '))
 end
