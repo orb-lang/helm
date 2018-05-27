@@ -142,10 +142,11 @@ function Historian.load(historian)
    historian.conn = conn
    conn:exec "PRAGMA foreign_keys = ON;"
    conn:exec(create_result_table)
-   local success, err = sql.pexec(conn, create_repl_table)
-   -- success is nil for creation, false for error
+   local success, nrow = sql.pexec(conn, create_repl_table)
+   -- success is nil for SQLITE_DONE, false for error
    if success == false then
-      error(err)
+      -- error hides in nrow in the finest Lua style
+      error(nrow)
    end
    historian.insert_line_stmt = conn:prepare(insert_line_stmt)
    historian.insert_result_stmt = conn:prepare(insert_result_stmt)
@@ -153,7 +154,10 @@ function Historian.load(historian)
                         historian.HISTORY_LIMIT)
    local values, err = sql.pexec(conn, pop_stmt, "i")
    if values then
-      for i, v in ipairs(reverse(values[2])) do
+      historian.values = values -- for repl
+      local lines = reverse(values[2])
+      local rowids = reverse(values[1])
+      for i, v in ipairs(lines) do
          historian[i] = Linebuf(v)
       end
       historian.cursor = #historian

@@ -101,6 +101,19 @@ function core.reverse(tab)
    return bat
 end
 ```
+### keys(tab)
+
+Returns an array of the keys of a table.
+
+```lua
+function core.keys(tab)
+   local keys = {}
+   for k,v in pairs(tab) do
+      keys[#keys + 1] = k
+   end
+   return keys, #keys
+end
+```
 ### splice(tab, index, into)
 
 Puts the full contents of ``into`` into ``tab`` at ``index``.  The argument order is

@@ -116,6 +116,21 @@ end
 
 
 
+function core.keys(tab)
+   local keys = {}
+   for k,v in pairs(tab) do
+      keys[#keys + 1] = k
+   end
+   return keys, #keys
+end
+
+
+
+
+
+
+
+
 
 local insert = table.insert
 

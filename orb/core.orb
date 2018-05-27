@@ -111,6 +111,21 @@ end
 #/lua
 
 
+*** keys(tab)
+
+Returns an array of the keys of a table.
+
+#!lua
+function core.keys(tab)
+   local keys = {}
+   for k,v in pairs(tab) do
+      keys[#keys + 1] = k
+   end
+   return keys, #keys
+end
+#/lua
+
+
 *** splice(tab, index, into)
 
 Puts the full contents of =into= into =tab= at =index=.  The argument order is
