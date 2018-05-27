@@ -14,6 +14,7 @@
 
 
 
+
 local pairs = assert (pairs)
 local tostring = assert (tostring)
 local setmeta = assert (setmetatable)
@@ -268,24 +269,24 @@ anterm["fg24"], anterm["bg24"] = fg24, bg24
 local jump = {}
 
 jump.up = function(num)
-    if not num then num = "" end
+    if not num then num = "1" end
     return CSI..num.."A"
 end
 
 jump.down = function(num)
-    if not num then num = "" end
+    if not num then num = "1" end
         return CSI..num.."B"
 end
 
 jump.forward = function(num)
-    if not num then num = "" end
+    if not num then num = "1" end
     return CSI..num.."C"
 end
 
 jump.right = jump.forward
 
 jump.back = function(num)
-    if not num then num = "" end
+    if not num then num = "1" end
     return CSI..num.."D"
 end
 
@@ -337,7 +338,6 @@ function erase.right() return e__right end
 function erase.left()  return e__left  end
 
 function erase.line()  return e__line  end
-
 
 
 

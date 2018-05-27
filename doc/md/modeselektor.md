@@ -274,7 +274,7 @@ local function icon_paint(category, value)
    assert(icon_map[category], "icon_paint NYI:" .. category)
    if category == "MOUSE" then
       return colwrite(icon_map[category]("", pr_mouse(value)))
-    end
+   end
    return colwrite(icon_map[category]("", ts(value)))
 end
 ```
@@ -282,20 +282,60 @@ end
 
 Does what it says on the label.
 
-```lua
-function ModeS.paint_row(modeS)
-   write(a.jump(modeS.repl_line, modeS.l_margin))
-   write(a.erase.right())
-   modeS:write(tostring(modeS.linebuf))
-   write(a.col(modeS:cur_col()))
-end
 
+```lua
 function ModeS.cur_col(modeS)
    return modeS.linebuf.cursor + modeS.l_margin - 1
 end
 
 function ModeS.nl(modeS)
    write(a.col(modeS.l_margin).. a.jump.down(1))
+end
+```
+### ModeS:write(str)
+
+This will let us phase out the colwrite business in favor of actual tiles in
+the terminal.
+
+
+```lua
+function ModeS.write(modeS, str)
+   local nl = a.col(modeS.l_margin) .. a.jump.down(1)
+   local phrase, num_subs
+   -- handle silly string
+   str = gsub(str, "\r\n", "\n"):gsub("\r", "\n")
+   phrase, num_subs = gsub(str, "\n", nl)
+   colwrite("SUBS: " .. num_subs, STATCOL + 4, 12)
+   write(phrase)
+end
+```
+```lua
+function ModeS.paint_row(modeS)
+   write(a.jump(modeS.repl_line, modeS.l_margin))
+   write(a.erase.right())
+   colwrite("BUF     : " .. modeS.buffer, STATCOL + 4, 8)
+   colwrite("LINEBUF : " .. ts(tostring(modeS.linebuf)), STATCOL + 4, 9)
+   modeS:write(modeS.buffer .. tostring(modeS.linebuf))
+   write(a.col(modeS:cur_col()))
+end
+```
+```lua
+function ModeS.printResults(modeS, results)
+   local rainbuf = {}
+   modeS:write(a.rc(modeS.repl_line + 1, modeS.l_margin))
+   for i = 1, results.n do
+      if results.frozen then
+         rainbuf[i] = results[i]
+      else
+         rainbuf[i] = ts(results[i])
+      end
+   end
+   modeS:write(concat(rainbuf, '   '), "printing")
+end
+```
+```lua
+function ModeS.prompt(modeS)
+   write(a.jump(modeS.repl_line, 1) .. "👉 ")
 end
 ```
 ## act
@@ -341,7 +381,7 @@ function ModeS.act(modeS, category, value)
    else
       icon_paint("NYI", category .. ":" .. value)
    end
-   colwrite(a.bold(modeS.hist.cursor), STATCOL + 6, 3)
+   colwrite(a.bold(modeS.hist.cursor), STATCOL + 6, 10)
    return modeS:paint_row()
 end
 ```
@@ -442,42 +482,10 @@ CTRL["^E"] = cursor_end
 ### ModeS:eval()
 
 
-### ModeS:write(str)
-
-This will let us phase out the colwrite business in favor of actual tiles in
-the terminal.
-
-
-```lua
-function ModeS.write(modeS, str)
-   local nl = a.col(modeS.l_margin) .. a.jump.down()
-   local phrase, num_subs = gsub(str, "\n", nl)
-   write(phrase)
-end
-```
 ```lua
 local function gatherResults(success, ...)
   local n = select('#', ...)
   return success, { n = n, ... }
-end
-```
-```lua
-function ModeS.printResults(modeS, results)
-   local rainbuf = {}
-   modeS:write(a.rc(modeS.repl_line + 1, modeS.l_margin))
-   for i = 1, results.n do
-      if results.frozen then
-         rainbuf[i] = results[i]
-      else
-         rainbuf[i] = ts(results[i])
-      end
-   end
-   modeS:write(concat(rainbuf, '   '))
-end
-```
-```lua
-function ModeS.prompt(modeS)
-   write(a.jump(modeS.repl_line, 1) .. "👉 ")
 end
 ```
 ```lua
@@ -532,7 +540,7 @@ function ModeS.eval(modeS)
          modeS:clearResult()
          modeS:write(err)
          modeS.buffer = ""
-         return true
+         -- pass through to default.
       end
    end
 
@@ -552,6 +560,7 @@ function new(cfg)
   modeS.linebuf = Linebuf()
   modeS.buffer = ""
   modeS.hist  = Historian()
+  modeS.hist.cursor = #modeS.hist + 1
   -- this will be more complex but
   modeS.l_margin = 4
   modeS.r_margin = 80

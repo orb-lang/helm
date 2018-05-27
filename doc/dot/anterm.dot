@@ -29,15 +29,15 @@ prose_6 [label="prose"]
 
 prose_7 [label="prose"]
 
-section_8 [label="section: 14-40"]
+section_8 [label="section: 15-41"]
 
-section_9 [label="section: 41-56"]
+section_9 [label="section: 42-57"]
 
-section_10 [label="section: 57-210"]
+section_10 [label="section: 58-211"]
 
-section_11 [label="section: 265-315"]
+section_11 [label="section: 266-316"]
 
-section_12 [label="section: 316-363"]
+section_12 [label="section: 317-363"]
 
 section_13 [label="section: 364-524"]
 
@@ -180,7 +180,8 @@ raw_45 [label="raw"]
 
 raw_45 -> leaf_46
 leaf_46  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-It is largely free of dependencies:"]
+It is free of non-core extensions, with one exception:
+"]
 // END RANK raw_45
 
 section_8 -> { header_47 prose_48 codeblock_49 prose_50 prose_51}
@@ -190,7 +191,7 @@ header_47 [label="3 : includes"]
 
 prose_48 [label="prose"]
 
-codeblock_49 [label="code block 16-31"]
+codeblock_49 [label="code block 17-32"]
 
 prose_50 [label="prose"]
 
@@ -300,7 +301,7 @@ prose_71 [label="prose"]
 
 prose_72 [label="prose"]
 
-codeblock_73 [label="code block 50-54"]
+codeblock_73 [label="code block 51-55"]
 
 
 // END RANK section_9
@@ -356,13 +357,13 @@ prose_81 [label="prose"]
 
 prose_82 [label="prose"]
 
-codeblock_83 [label="code block 64-66"]
+codeblock_83 [label="code block 65-67"]
 
-section_84 [label="section: 69-161"]
+section_84 [label="section: 70-162"]
 
-section_85 [label="section: 162-210"]
+section_85 [label="section: 163-211"]
 
-section_86 [label="section: 211-264"]
+section_86 [label="section: 212-265"]
 
 
 // END RANK section_10
@@ -414,7 +415,7 @@ prose_94 [label="prose"]
 
 prose_95 [label="prose"]
 
-codeblock_96 [label="code block 75-159"]
+codeblock_96 [label="code block 76-160"]
 
 
 // END RANK section_84
@@ -565,7 +566,7 @@ prose_110 [label="prose"]
 
 prose_111 [label="prose"]
 
-codeblock_112 [label="code block 168-208"]
+codeblock_112 [label="code block 169-209"]
 
 
 // END RANK section_85
@@ -676,7 +677,7 @@ prose_128 [label="prose"]
 
 prose_129 [label="prose"]
 
-codeblock_130 [label="code block 224-262"]
+codeblock_130 [label="code block 225-263"]
 
 
 // END RANK section_86
@@ -792,7 +793,7 @@ header_141 [label="2 : Jumps"]
 
 prose_142 [label="prose"]
 
-codeblock_143 [label="code block 267-313"]
+codeblock_143 [label="code block 268-314"]
 
 
 // END RANK section_11
@@ -818,24 +819,24 @@ codeblock_143 -> leaf_147
 leaf_147  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local jump = {}
 
 jump.up = function(num)
-    if not num then num = \"\" end
+    if not num then num = \"1\" end
     return CSI..num..\"A\"
 end
 
 jump.down = function(num)
-    if not num then num = \"\" end
+    if not num then num = \"1\" end
         return CSI..num..\"B\"
 end
 
 jump.forward = function(num)
-    if not num then num = \"\" end
+    if not num then num = \"1\" end
     return CSI..num..\"C\"
 end
 
 jump.right = jump.forward
 
 jump.back = function(num)
-    if not num then num = \"\" end
+    if not num then num = \"1\" end
     return CSI..num..\"D\"
 end
 
@@ -869,7 +870,7 @@ header_148 [label="2 : Erasure"]
 
 prose_149 [label="prose"]
 
-codeblock_150 [label="code block 318-341"]
+codeblock_150 [label="code block 319-341"]
 
 codeblock_151 [label="code block 345-361"]
 
@@ -914,8 +915,7 @@ function erase.right() return e__right end
 
 function erase.left()  return e__left  end
 
-function erase.line()  return e__line  end
-"]
+function erase.line()  return e__line  end"]
 // END RANK codeblock_150
 
 codeblock_151 -> leaf_156
