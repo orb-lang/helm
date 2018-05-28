@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 350"]
+doc_0 [label="doc - 354"]
 
 
 doc_0 -> { section_1}
@@ -31,7 +31,7 @@ prose_7 [label="prose"]
 
 codeblock_8 [label="code block 20-64"]
 
-section_9 [label="section: 68-280"]
+section_9 [label="section: 68-284"]
 
 
 // END RANK section_1
@@ -296,9 +296,9 @@ section_65 [label="section: 87-100"]
 
 section_66 [label="section: 101-164"]
 
-section_67 [label="section: 165-280"]
+section_67 [label="section: 165-284"]
 
-section_68 [label="section: 281-350"]
+section_68 [label="section: 285-354"]
 
 
 // END RANK section_9
@@ -527,7 +527,7 @@ leaf_113  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function
             end
          end
          local _M = getmetatable(v)
-         local _M_id = _M and \"⟨\" .. pre .. k .. \"⟩\" or \"\"
+         local _M_id = _M and \"⟨\" .. key.. \"⟩\" or \"\"
          if _M then
             if not aG[_M] then
                addName(_M, aG, _M_id)
@@ -575,7 +575,7 @@ prose_118 [label="prose"]
 
 codeblock_119 [label="code block 240-271"]
 
-codeblock_120 [label="code block 273-279"]
+codeblock_120 [label="code block 273-283"]
 
 
 // END RANK section_67
@@ -728,8 +728,12 @@ end"]
 codeblock_120 -> leaf_130
 leaf_130  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function c_data(value, str)
    local meta = reflect.getmetatable(value)
-   local mt_str = ts(meta)
-   return str .. \" = \" .. mt_str
+   if meta then
+      local mt_str = ts(meta)
+      return str .. \" = \" .. mt_str
+   else
+      return str
+   end
 end"]
 // END RANK codeblock_120
 
@@ -740,9 +744,9 @@ header_131 [label="3 : ts"]
 
 prose_132 [label="prose"]
 
-codeblock_133 [label="code block 285-346"]
+codeblock_133 [label="code block 289-350"]
 
-codeblock_134 [label="code block 348-350"]
+codeblock_134 [label="code block 352-354"]
 
 
 // END RANK section_68

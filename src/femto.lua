@@ -13,13 +13,14 @@
 
 
 
-sql = require "sqlayer"
-L = require "lpeg"
+L   = require "lpeg"
 lfs = require "lfs"
 ffi = require "ffi"
 bit = require "bit"
+uv  = require "luv"
+-- sqlayer uses this monkey patch:
 ffi.reflect = require "reflect"
-uv = require "luv"
+sql = require "sqlayer"
 
 
 

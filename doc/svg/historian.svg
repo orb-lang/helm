@@ -13,7 +13,7 @@
 <g id="node1" class="node">
 <title>doc_0</title>
 <ellipse fill="none" stroke="#000000" cx="1806" cy="-2164.2032" rx="46.9581" ry="18"/>
-<text text-anchor="middle" x="1806" y="-2160.0032" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">doc &#45; 360</text>
+<text text-anchor="middle" x="1806" y="-2160.0032" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">doc &#45; 364</text>
 </g>
 <!-- section_1 -->
 <g id="node2" class="node">
@@ -458,7 +458,7 @@
 <g id="node164" class="node">
 <title>section_163</title>
 <ellipse fill="none" stroke="#000000" cx="12964" cy="-1900.6031" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="12964" y="-1896.4031" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 331&#45;360</text>
+<text text-anchor="middle" x="12964" y="-1896.4031" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 331&#45;364</text>
 </g>
 <!-- section_11&#45;&gt;section_163 -->
 <g id="edge163" class="edge">
@@ -2292,7 +2292,7 @@
 <g id="node188" class="node">
 <title>codeblock_187</title>
 <ellipse fill="none" stroke="#000000" cx="13165" cy="-1486.1024" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="13165" y="-1481.9024" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 337&#45;347</text>
+<text text-anchor="middle" x="13165" y="-1481.9024" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 337&#45;351</text>
 </g>
 <!-- section_163&#45;&gt;codeblock_187 -->
 <g id="edge187" class="edge">
@@ -2304,7 +2304,7 @@
 <g id="node189" class="node">
 <title>codeblock_188</title>
 <ellipse fill="none" stroke="#000000" cx="13483" cy="-1486.1024" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="13483" y="-1481.9024" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 349&#45;356</text>
+<text text-anchor="middle" x="13483" y="-1481.9024" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 353&#45;360</text>
 </g>
 <!-- section_163&#45;&gt;codeblock_188 -->
 <g id="edge188" class="edge">
@@ -2316,7 +2316,7 @@
 <g id="node190" class="node">
 <title>codeblock_189</title>
 <ellipse fill="none" stroke="#000000" cx="13740" cy="-1486.1024" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="13740" y="-1481.9024" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 358&#45;360</text>
+<text text-anchor="middle" x="13740" y="-1481.9024" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 362&#45;364</text>
 </g>
 <!-- section_163&#45;&gt;codeblock_189 -->
 <g id="edge189" class="edge">
@@ -2535,22 +2535,26 @@
 <!-- leaf_195 -->
 <g id="node196" class="node">
 <title>leaf_195</title>
-<polygon fill="none" stroke="#c0c0c0" points="13449.5,-694.8018 12992.5,-694.8018 12992.5,-548.6001 13449.5,-548.6001 13449.5,-694.8018"/>
-<text text-anchor="middle" x="13221" y="-679.8011" font-family="Inconsolata" font-size="14.00" fill="#000000">function Historian.append(historian, linebuf, results)</text>
-<text text-anchor="middle" x="13221" y="-664.4011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if tostring(historian[#historian]) == tostring(linebuf) then</text>
-<text text-anchor="middle" x="13221" y="-649.001" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; don&#39;t bother</text>
-<text text-anchor="middle" x="13221" y="-633.601" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return false</text>
-<text text-anchor="middle" x="13221" y="-618.201" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
-<text text-anchor="middle" x="13221" y="-602.8009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;historian[#historian + 1] = linebuf</text>
-<text text-anchor="middle" x="13221" y="-587.4009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;historian:persist(linebuf, results)</text>
-<text text-anchor="middle" x="13221" y="-572.0009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return true</text>
-<text text-anchor="middle" x="13221" y="-556.6008" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
+<polygon fill="none" stroke="#c0c0c0" points="13449.5,-725.9015 12992.5,-725.9015 12992.5,-517.5004 13449.5,-517.5004 13449.5,-725.9015"/>
+<text text-anchor="middle" x="13221" y="-710.6012" font-family="Inconsolata" font-size="14.00" fill="#000000">function Historian.append(historian, linebuf, results, success)</text>
+<text text-anchor="middle" x="13221" y="-695.2011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if tostring(historian[#historian]) == tostring(linebuf) then</text>
+<text text-anchor="middle" x="13221" y="-679.8011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; don&#39;t bother</text>
+<text text-anchor="middle" x="13221" y="-664.4011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return false</text>
+<text text-anchor="middle" x="13221" y="-649.001" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
+<text text-anchor="middle" x="13221" y="-633.601" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;historian[#historian + 1] = linebuf</text>
+<text text-anchor="middle" x="13221" y="-618.201" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if success then</text>
+<text text-anchor="middle" x="13221" y="-602.8009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;historian:persist(linebuf, results)</text>
+<text text-anchor="middle" x="13221" y="-587.4009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;else</text>
+<text text-anchor="middle" x="13221" y="-572.0009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;historian:persist(linebuf)</text>
+<text text-anchor="middle" x="13221" y="-556.6008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
+<text text-anchor="middle" x="13221" y="-541.2008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return true</text>
+<text text-anchor="middle" x="13221" y="-525.8008" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
 </g>
 <!-- codeblock_187&#45;&gt;leaf_195 -->
 <g id="edge195" class="edge">
 <title>codeblock_187&#45;&gt;leaf_195</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M13166.1696,-1468.0481C13172.5232,-1369.9769 13203.0624,-898.5812 13215.605,-704.9766"/>
-<polygon fill="#000000" stroke="#000000" points="13219.1068,-705.0602 13216.2607,-694.8548 13212.1215,-704.6076 13219.1068,-705.0602"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M13166.1696,-1468.0481C13172.2042,-1374.8996 13200.0575,-944.9639 13213.5856,-736.1478"/>
+<polygon fill="#000000" stroke="#000000" points="13217.0847,-736.2741 13214.2386,-726.0688 13210.0993,-735.8215 13217.0847,-736.2741"/>
 </g>
 <!-- leaf_196 -->
 <g id="node197" class="node">

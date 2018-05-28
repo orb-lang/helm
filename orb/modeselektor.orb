@@ -293,23 +293,21 @@ function ModeS.write(modeS, str)
    local nl = a.col(modeS.l_margin) .. a.jump.down(1)
    local phrase, num_subs
    phrase, num_subs = gsub(str, "\n", nl)
-   colwrite("SUBS: " .. num_subs, STATCOL + 4, 12)
+   write(a.cursor.hide())
    write(phrase)
+   write(a.cursor.show())
 end
 #/lua
 
 
-This should start with turning the cursor off and end by printing a
-request for the cursor location.
-
 #!lua
 function ModeS.paint_row(modeS)
+   write(a.cursor.hide())
    write(a.jump(modeS.repl_line, modeS.l_margin))
    write(a.erase.right())
-   colwrite("BUF     : " .. modeS.buffer, STATCOL + 4, 8)
-   colwrite("LINEBUF : " .. ts(tostring(modeS.linebuf)), STATCOL + 4, 9)
    modeS:write(modeS.buffer .. tostring(modeS.linebuf))
    write(a.col(modeS:cur_col()))
+   write(a.cursor.show())
 end
 #/lua
 
@@ -324,7 +322,7 @@ function ModeS.printResults(modeS, results)
          rainbuf[i] = ts(results[i])
       end
    end
-   modeS:write(concat(rainbuf, '   '), "printing")
+   modeS:write(concat(rainbuf, '   '))
 end
 #/lua
 
@@ -376,7 +374,6 @@ function ModeS.act(modeS, category, value)
    else
       icon_paint("NYI", category .. ":" .. value)
    end
-   colwrite(a.bold(modeS.hist.cursor), STATCOL + 6, 10)
    return modeS:paint_row()
 end
 #/lua
@@ -546,7 +543,7 @@ function ModeS.eval(modeS)
       end
    end
 
-   modeS.hist:append(modeS.linebuf, results)
+   modeS.hist:append(modeS.linebuf, results, success)
    modeS.hist.cursor = #modeS.hist
    if success then modeS.hist.results[modeS.linebuf] = results end
    modeS:prompt()

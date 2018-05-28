@@ -335,13 +335,17 @@ end
 
 
 
-function Historian.append(historian, linebuf, results)
+function Historian.append(historian, linebuf, results, success)
    if tostring(historian[#historian]) == tostring(linebuf) then
       -- don't bother
       return false
    end
    historian[#historian + 1] = linebuf
-   historian:persist(linebuf, results)
+   if success then
+      historian:persist(linebuf, results)
+   else
+      historian:persist(linebuf)
+   end
    return true
 end
 

@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 308"]
+doc_0 [label="doc - 309"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-212"]
+section_1 [label="section: 1-213"]
 
 
 // END RANK doc_0
@@ -21,13 +21,13 @@ header_2 [label="1 : Femto"]
 
 prose_3 [label="prose"]
 
-section_4 [label="section: 6-25"]
+section_4 [label="section: 6-26"]
 
-section_5 [label="section: 32-111"]
+section_5 [label="section: 33-112"]
 
-section_6 [label="section: 125-212"]
+section_6 [label="section: 126-213"]
 
-section_7 [label="section: 213-217"]
+section_7 [label="section: 214-218"]
 
 
 // END RANK section_1
@@ -63,9 +63,9 @@ prose_13 [label="prose"]
 
 prose_14 [label="prose"]
 
-codeblock_15 [label="code block 15-23"]
+codeblock_15 [label="code block 15-24"]
 
-section_16 [label="section: 26-31"]
+section_16 [label="section: 27-32"]
 
 
 // END RANK section_4
@@ -119,13 +119,14 @@ All of these are exceedingly well-behaved.
 // END RANK raw_22
 
 codeblock_15 -> leaf_24
-leaf_24  [color=Gray,shape=rectangle,fontname=Inconsolata,label="sql = require \"sqlayer\"
-L = require \"lpeg\"
+leaf_24  [color=Gray,shape=rectangle,fontname=Inconsolata,label="L   = require \"lpeg\"
 lfs = require \"lfs\"
 ffi = require \"ffi\"
 bit = require \"bit\"
+uv  = require \"luv\"
+-- sqlayer uses this monkey patch:
 ffi.reflect = require \"reflect\"
-uv = require \"luv\""]
+sql = require \"sqlayer\""]
 // END RANK codeblock_15
 
 section_16 -> { header_25 prose_26}
@@ -168,23 +169,23 @@ prose_31 [label="prose"]
 
 prose_32 [label="prose"]
 
-codeblock_33 [label="code block 39-56"]
+codeblock_33 [label="code block 40-57"]
 
 prose_34 [label="prose"]
 
 prose_35 [label="prose"]
 
-codeblock_36 [label="code block 63-70"]
+codeblock_36 [label="code block 64-71"]
 
 prose_37 [label="prose"]
 
 prose_38 [label="prose"]
 
-codeblock_39 [label="code block 77-98"]
+codeblock_39 [label="code block 78-99"]
 
-codeblock_40 [label="code block 100-109"]
+codeblock_40 [label="code block 101-110"]
 
-section_41 [label="section: 112-124"]
+section_41 [label="section: 113-125"]
 
 
 // END RANK section_5
@@ -440,7 +441,7 @@ header_89 [label="3 : tty setup"]
 
 prose_90 [label="prose"]
 
-codeblock_91 [label="code block 114-122"]
+codeblock_91 [label="code block 115-123"]
 
 
 // END RANK section_41
@@ -479,11 +480,11 @@ header_96 [label="2 : Modeselektor"]
 
 prose_97 [label="prose"]
 
-codeblock_98 [label="code block 127-133"]
+codeblock_98 [label="code block 128-134"]
 
-codeblock_99 [label="code block 135-197"]
+codeblock_99 [label="code block 136-198"]
 
-codeblock_100 [label="code block 199-210"]
+codeblock_100 [label="code block 200-211"]
 
 
 // END RANK section_6
@@ -597,7 +598,7 @@ header_107 [label="2 : Reader"]
 
 prose_108 [label="prose"]
 
-section_109 [label="section: 218-308"]
+section_109 [label="section: 219-309"]
 
 
 // END RANK section_7
@@ -665,9 +666,9 @@ header_125 [label="3 : process_escapes(seq)"]
 
 prose_126 [label="prose"]
 
-codeblock_127 [label="code block 220-275"]
+codeblock_127 [label="code block 221-276"]
 
-codeblock_128 [label="code block 277-308"]
+codeblock_128 [label="code block 278-309"]
 
 
 // END RANK section_109

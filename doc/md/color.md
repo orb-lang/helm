@@ -126,7 +126,7 @@ local function addName(t, aG, pre)
             end
          end
          local _M = getmetatable(v)
-         local _M_id = _M and "⟨" .. pre .. k .. "⟩" or ""
+         local _M_id = _M and "⟨" .. key.. "⟩" or ""
          if _M then
             if not aG[_M] then
                addName(_M, aG, _M_id)
@@ -267,8 +267,12 @@ end
 ```lua
 local function c_data(value, str)
    local meta = reflect.getmetatable(value)
-   local mt_str = ts(meta)
-   return str .. " = " .. mt_str
+   if meta then
+      local mt_str = ts(meta)
+      return str .. " = " .. mt_str
+   else
+      return str
+   end
 end
 ```
 ### ts

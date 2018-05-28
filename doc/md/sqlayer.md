@@ -15,6 +15,24 @@ local sql = require "sqlite"
 local pcall = assert (pcall)
 local gsub = assert(string.gsub)
 local format = assert(string.format)
+assert(ffi)
+assert(ffi.reflect)
+```
+### Monkey Patches
+
+It's time to start decorating the ``conn`` and ``stmt`` metatables.
+
+
+First we must summon them from the ether.
+
+```lua
+-- get a conn object via in-memory DB
+local conn = sql.open ":memory:"
+local conn_mt = ffi.reflect.getmetatable(conn)
+local stmt = conn:prepare "CREATE TABLE IF NOT EXISTS test(a,b);"
+local stmt_mt = ffi.reflect.getmetatable(stmt)
+conn:close() -- polite
+conn, stmt = nil, nil
 ```
 ## sql.san(str)
 
@@ -26,7 +44,6 @@ local function san(str)
 end
 
 sql.san = san
-
 ```
 ## sql.format(str)
 
@@ -101,19 +118,72 @@ function sql.lastRowId(conn)
    return result
 end
 ```
-```lua
-return sql
-```
-### Stretch goals
-
-
-#### sql.pragma.etc(bool)
+#### conn.pragma.etc(bool)
 
 A convenience wrapper over the SQL pragma commands.
 
 
 We can use the same interface for setting Lua-specific values, the one I need
-is ``sql.pragma.nulls_are_nil(false)``.
+is ``conn.pragma.nulls_are_nil(false)``.
+
+
+```lua
+local pragma_pre = "PRAGMA "
+local c = require "color"
+local function __pragma(prag, value)
+   local val
+   if type(value) == "boolean" then
+      val = value and " = 1" or " = 0"
+   elseif type(value) == "string" then
+      val = "('" .. san(value) .. "')"
+   else
+      assert(false, "value of type " .. type(value) .. ", " .. c.ts(value))
+   end
+   return pragma_pre .. prag .. val .. ";"
+end
+
+local function _prag_set(conn, prag)
+   return function(value)
+      local prag_str = __pragma(prag, value)
+      conn:exec(prag_str)
+      -- check for a boolean
+      -- #todo make sure this gives sane results for a method-call pragma
+      local answer = conn:exec(pragma_pre .. prag .. ";")
+      if answer[1] and answer[1][1] then
+         if answer[1][1] == 1 then
+            return true
+         elseif answer[1][1] == 0 then
+            return false
+         else
+            return nil
+         end
+      end
+      return prag_str
+   end
+end
+
+sql.pragma = __pragma
+
+
+
+local function new_conn_index(conn, key)
+   local function _prag_index(f, prag)
+      return _prag_set(conn, prag)
+   end
+   if key == "pragma" then
+      return setmetatable({}, {__index = _prag_index})
+   else
+      return conn_mt[key]
+   end
+end
+
+conn_mt.__index = new_conn_index
+```
+```lua
+return sql
+```
+### Stretch goals
+
 
 
 #### sql.NULL

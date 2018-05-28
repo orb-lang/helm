@@ -13,7 +13,7 @@
 <g id="node1" class="node">
 <title>doc_0</title>
 <ellipse fill="none" stroke="#000000" cx="2206.5" cy="-2073.6029" rx="46.9581" ry="18"/>
-<text text-anchor="middle" x="2206.5" y="-2069.4029" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">doc &#45; 350</text>
+<text text-anchor="middle" x="2206.5" y="-2069.4029" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">doc &#45; 354</text>
 </g>
 <!-- section_1 -->
 <g id="node2" class="node">
@@ -115,7 +115,7 @@
 <g id="node10" class="node">
 <title>section_9</title>
 <ellipse fill="none" stroke="#000000" cx="4899.5" cy="-1929.6029" rx="70.655" ry="18"/>
-<text text-anchor="middle" x="4899.5" y="-1925.4029" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 68&#45;280</text>
+<text text-anchor="middle" x="4899.5" y="-1925.4029" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 68&#45;284</text>
 </g>
 <!-- section_1&#45;&gt;section_9 -->
 <g id="edge9" class="edge">
@@ -542,7 +542,7 @@
 <g id="node68" class="node">
 <title>section_67</title>
 <ellipse fill="none" stroke="#000000" cx="7204.5" cy="-1537.2024" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="7204.5" y="-1533.0024" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 165&#45;280</text>
+<text text-anchor="middle" x="7204.5" y="-1533.0024" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 165&#45;284</text>
 </g>
 <!-- section_9&#45;&gt;section_67 -->
 <g id="edge67" class="edge">
@@ -554,7 +554,7 @@
 <g id="node69" class="node">
 <title>section_68</title>
 <ellipse fill="none" stroke="#000000" cx="8597.5" cy="-1537.2024" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="8597.5" y="-1533.0024" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 281&#45;350</text>
+<text text-anchor="middle" x="8597.5" y="-1533.0024" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 285&#45;354</text>
 </g>
 <!-- section_9&#45;&gt;section_68 -->
 <g id="edge68" class="edge">
@@ -1086,7 +1086,7 @@
 <g id="node121" class="node">
 <title>codeblock_120</title>
 <ellipse fill="none" stroke="#000000" cx="8100.5" cy="-1127.1019" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="8100.5" y="-1122.9019" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 273&#45;279</text>
+<text text-anchor="middle" x="8100.5" y="-1122.9019" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 273&#45;283</text>
 </g>
 <!-- section_67&#45;&gt;codeblock_120 -->
 <g id="edge120" class="edge">
@@ -1122,7 +1122,7 @@
 <g id="node134" class="node">
 <title>codeblock_133</title>
 <ellipse fill="none" stroke="#000000" cx="8805.5" cy="-1127.1019" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="8805.5" y="-1122.9019" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 285&#45;346</text>
+<text text-anchor="middle" x="8805.5" y="-1122.9019" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 289&#45;350</text>
 </g>
 <!-- section_68&#45;&gt;codeblock_133 -->
 <g id="edge133" class="edge">
@@ -1134,7 +1134,7 @@
 <g id="node135" class="node">
 <title>codeblock_134</title>
 <ellipse fill="none" stroke="#000000" cx="9118.5" cy="-1127.1019" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="9118.5" y="-1122.9019" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 348&#45;350</text>
+<text text-anchor="middle" x="9118.5" y="-1122.9019" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 352&#45;354</text>
 </g>
 <!-- section_68&#45;&gt;codeblock_134 -->
 <g id="edge134" class="edge">
@@ -1511,7 +1511,7 @@
 <text text-anchor="middle" x="6512.5" y="-671.4191" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;end</text>
 <text text-anchor="middle" x="6512.5" y="-656.0191" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;end</text>
 <text text-anchor="middle" x="6512.5" y="-640.6191" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;local _M = getmetatable(v)</text>
-<text text-anchor="middle" x="6512.5" y="-625.219" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;local _M_id = _M and &quot;⟨&quot; .. pre .. k .. &quot;⟩&quot; or &quot;&quot;</text>
+<text text-anchor="middle" x="6512.5" y="-625.219" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;local _M_id = _M and &quot;⟨&quot; .. key.. &quot;⟩&quot; or &quot;&quot;</text>
 <text text-anchor="middle" x="6512.5" y="-608.783" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;if _M then</text>
 <text text-anchor="middle" x="6512.5" y="-593.383" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;if not aG[_M] then</text>
 <text text-anchor="middle" x="6512.5" y="-577.983" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;addName(_M, aG, _M_id)</text>
@@ -1755,18 +1755,22 @@
 <!-- leaf_130 -->
 <g id="node131" class="node">
 <title>leaf_130</title>
-<polygon fill="none" stroke="#c0c0c0" points="8470,-623.9011 8153,-623.9011 8153,-538.9008 8470,-538.9008 8470,-623.9011"/>
-<text text-anchor="middle" x="8311.5" y="-608.701" font-family="Inconsolata" font-size="14.00" fill="#000000">local function c_data(value, str)</text>
-<text text-anchor="middle" x="8311.5" y="-593.301" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local meta = reflect.getmetatable(value)</text>
-<text text-anchor="middle" x="8311.5" y="-577.901" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local mt_str = ts(meta)</text>
-<text text-anchor="middle" x="8311.5" y="-562.501" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return str .. &quot; = &quot; .. mt_str</text>
-<text text-anchor="middle" x="8311.5" y="-547.1009" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
+<polygon fill="none" stroke="#c0c0c0" points="8470,-654.5018 8153,-654.5018 8153,-508.3001 8470,-508.3001 8470,-654.5018"/>
+<text text-anchor="middle" x="8311.5" y="-639.5011" font-family="Inconsolata" font-size="14.00" fill="#000000">local function c_data(value, str)</text>
+<text text-anchor="middle" x="8311.5" y="-624.1011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local meta = reflect.getmetatable(value)</text>
+<text text-anchor="middle" x="8311.5" y="-608.701" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if meta then</text>
+<text text-anchor="middle" x="8311.5" y="-593.301" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local mt_str = ts(meta)</text>
+<text text-anchor="middle" x="8311.5" y="-577.901" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return str .. &quot; = &quot; .. mt_str</text>
+<text text-anchor="middle" x="8311.5" y="-562.501" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;else</text>
+<text text-anchor="middle" x="8311.5" y="-547.1009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return str</text>
+<text text-anchor="middle" x="8311.5" y="-531.7009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
+<text text-anchor="middle" x="8311.5" y="-516.3009" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
 </g>
 <!-- codeblock_120&#45;&gt;leaf_130 -->
 <g id="edge130" class="edge">
 <title>codeblock_120&#45;&gt;leaf_130</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M8112.6814,-1109.0896C8121.9241,-1094.9141 8134.5275,-1074.4401 8143.5,-1055.4019 8213.1179,-907.6833 8270.6879,-722.7884 8296.6515,-633.8968"/>
-<polygon fill="#000000" stroke="#000000" points="8300.082,-634.6342 8299.5114,-624.0547 8293.36,-632.6808 8300.082,-634.6342"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M8112.6814,-1109.0896C8121.9241,-1094.9141 8134.5275,-1074.4401 8143.5,-1055.4019 8205.9335,-922.9275 8258.6774,-760.5539 8287.625,-664.3379"/>
+<polygon fill="#000000" stroke="#000000" points="8291.0065,-665.2465 8290.5228,-654.6627 8284.3007,-663.2381 8291.0065,-665.2465"/>
 </g>
 <!-- leaf_123 -->
 <g id="node124" class="node">

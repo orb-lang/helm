@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 360"]
+doc_0 [label="doc - 364"]
 
 
 doc_0 -> { section_1}
@@ -867,7 +867,7 @@ codeblock_161 [label="code block 286-298"]
 
 section_162 [label="section: 301-330"]
 
-section_163 [label="section: 331-360"]
+section_163 [label="section: 331-364"]
 
 
 // END RANK section_11
@@ -999,11 +999,11 @@ prose_185 [label="prose"]
 
 prose_186 [label="prose"]
 
-codeblock_187 [label="code block 337-347"]
+codeblock_187 [label="code block 337-351"]
 
-codeblock_188 [label="code block 349-356"]
+codeblock_188 [label="code block 353-360"]
 
-codeblock_189 [label="code block 358-360"]
+codeblock_189 [label="code block 362-364"]
 
 
 // END RANK section_163
@@ -1042,13 +1042,17 @@ Doesn't adjust the cursor.
 // END RANK raw_193
 
 codeblock_187 -> leaf_195
-leaf_195  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.append(historian, linebuf, results)
+leaf_195  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.append(historian, linebuf, results, success)
    if tostring(historian[#historian]) == tostring(linebuf) then
       -- don't bother
       return false
    end
    historian[#historian + 1] = linebuf
-   historian:persist(linebuf, results)
+   if success then
+      historian:persist(linebuf, results)
+   else
+      historian:persist(linebuf)
+   end
    return true
 end"]
 // END RANK codeblock_187

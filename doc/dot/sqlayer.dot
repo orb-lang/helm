@@ -3,19 +3,19 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 148"]
+doc_0 [label="doc - 220"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-93"]
+section_1 [label="section: 1-110"]
 
 
 // END RANK doc_0
 
-section_1 -> { header_2 prose_3 prose_4 prose_5 codeblock_6 section_7 section_8 section_9 section_10}
-{rank=same; header_2 prose_3 prose_4 prose_5 codeblock_6 section_7 section_8 section_9 section_10}
+section_1 -> { header_2 prose_3 prose_4 prose_5 codeblock_6 section_7 section_8 section_9 section_10 section_11}
+{rank=same; header_2 prose_3 prose_4 prose_5 codeblock_6 section_7 section_8 section_9 section_10 section_11}
 
 header_2 [label="1 : SQLayer"]
 
@@ -25,307 +25,321 @@ prose_4 [label="prose"]
 
 prose_5 [label="prose"]
 
-codeblock_6 [label="code block 11-16"]
+codeblock_6 [label="code block 11-18"]
 
-section_7 [label="section: 19-32"]
+section_7 [label="section: 21-36"]
 
-section_8 [label="section: 33-73"]
+section_8 [label="section: 37-49"]
 
-section_9 [label="section: 74-93"]
+section_9 [label="section: 50-90"]
 
-section_10 [label="section: 94-112"]
+section_10 [label="section: 91-110"]
+
+section_11 [label="section: 111-191"]
 
 
 // END RANK section_1
 
-header_2 -> leaf_11
-leaf_11  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* SQLayer"]
+header_2 -> leaf_12
+leaf_12  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* SQLayer"]
 // END RANK header_2
 
-prose_3 -> { raw_12}
-{rank=same; raw_12}
+prose_3 -> { raw_13}
+{rank=same; raw_13}
 
-raw_12 [label="raw"]
+raw_13 [label="raw"]
 
 
 // END RANK prose_3
 
-raw_12 -> leaf_13
-leaf_13  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_13 -> leaf_14
+leaf_14  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 This will be in pylon eventually.
 "]
-// END RANK raw_12
+// END RANK raw_13
 
-prose_4 -> { raw_14 prespace_15 literal_16 raw_17}
-{rank=same; raw_14 prespace_15 literal_16 raw_17}
+prose_4 -> { raw_15 prespace_16 literal_17 raw_18}
+{rank=same; raw_15 prespace_16 literal_17 raw_18}
 
-raw_14 [label="raw"]
+raw_15 [label="raw"]
 
-prespace_15 [label="prespace"]
+prespace_16 [label="prespace"]
 
-literal_16 [label="literal"]
+literal_17 [label="literal"]
 
-raw_17 [label="raw"]
+raw_18 [label="raw"]
 
 
 // END RANK prose_4
 
-raw_14 -> leaf_18
-leaf_18  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_15 -> leaf_19
+leaf_19  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 Enhances the existing SQLite bindings, which in turn will be turned into a
 statically-linked part of"]
-// END RANK raw_14
+// END RANK raw_15
 
-prespace_15 -> leaf_19
-leaf_19  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_15
+prespace_16 -> leaf_20
+leaf_20  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_16
 
-literal_16 -> leaf_20
-leaf_20  [color=Gray,shape=rectangle,fontname=Inconsolata,label="pylon"]
-// END RANK literal_16
+literal_17 -> leaf_21
+leaf_21  [color=Gray,shape=rectangle,fontname=Inconsolata,label="pylon"]
+// END RANK literal_17
 
-raw_17 -> leaf_21
-leaf_21  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
+raw_18 -> leaf_22
+leaf_22  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
 "]
-// END RANK raw_17
+// END RANK raw_18
 
-prose_5 -> { raw_22}
-{rank=same; raw_22}
+prose_5 -> { raw_23}
+{rank=same; raw_23}
 
-raw_22 [label="raw"]
+raw_23 [label="raw"]
 
 
 // END RANK prose_5
 
-raw_22 -> leaf_23
-leaf_23  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_23 -> leaf_24
+leaf_24  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 SQLite being a core competency, we want to make this really nice; see
 [[stretch goals][#stretch-goals]] for details.
 "]
-// END RANK raw_22
+// END RANK raw_23
 
-codeblock_6 -> leaf_24
-leaf_24  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local sql = require \"sqlite\"
+codeblock_6 -> leaf_25
+leaf_25  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local sql = require \"sqlite\"
 local pcall = assert (pcall)
 local gsub = assert(string.gsub)
-local format = assert(string.format)"]
+local format = assert(string.format)
+assert(ffi)
+assert(ffi.reflect)"]
 // END RANK codeblock_6
 
-section_7 -> { header_25 prose_26 codeblock_27}
-{rank=same; header_25 prose_26 codeblock_27}
+section_7 -> { header_26 prose_27 prose_28 codeblock_29}
+{rank=same; header_26 prose_27 prose_28 codeblock_29}
 
-header_25 [label="2 : sql.san(str)"]
+header_26 [label="3 : Monkey Patches"]
 
-prose_26 [label="prose"]
+prose_27 [label="prose"]
 
-codeblock_27 [label="code block 23-30"]
+prose_28 [label="prose"]
+
+codeblock_29 [label="code block 27-35"]
 
 
 // END RANK section_7
 
-header_25 -> leaf_28
-leaf_28  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** sql.san(str)"]
-// END RANK header_25
+header_26 -> leaf_30
+leaf_30  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Monkey Patches"]
+// END RANK header_26
 
-prose_26 -> { raw_29}
-{rank=same; raw_29}
+prose_27 -> { raw_31 prespace_32 literal_33 raw_34 prespace_35 literal_36 raw_37}
+{rank=same; raw_31 prespace_32 literal_33 raw_34 prespace_35 literal_36 raw_37}
 
-raw_29 [label="raw"]
+raw_31 [label="raw"]
+
+prespace_32 [label="prespace"]
+
+literal_33 [label="literal"]
+
+raw_34 [label="raw"]
+
+prespace_35 [label="prespace"]
+
+literal_36 [label="literal"]
+
+raw_37 [label="raw"]
 
 
-// END RANK prose_26
+// END RANK prose_27
 
-raw_29 -> leaf_30
-leaf_30  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_31 -> leaf_38
+leaf_38  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
-Sanitizes a string for SQL(ite) quoting.
+It's time to start decorating the"]
+// END RANK raw_31
+
+prespace_32 -> leaf_39
+leaf_39  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_32
+
+literal_33 -> leaf_40
+leaf_40  [color=Gray,shape=rectangle,fontname=Inconsolata,label="conn"]
+// END RANK literal_33
+
+raw_34 -> leaf_41
+leaf_41  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" and"]
+// END RANK raw_34
+
+prespace_35 -> leaf_42
+leaf_42  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_35
+
+literal_36 -> leaf_43
+leaf_43  [color=Gray,shape=rectangle,fontname=Inconsolata,label="stmt"]
+// END RANK literal_36
+
+raw_37 -> leaf_44
+leaf_44  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" metatables.
 "]
-// END RANK raw_29
+// END RANK raw_37
 
-codeblock_27 -> leaf_31
-leaf_31  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function san(str)
-   return gsub(str, \"'\", \"''\")
-end
+prose_28 -> { raw_45}
+{rank=same; raw_45}
 
-sql.san = san
+raw_45 [label="raw"]
+
+
+// END RANK prose_28
+
+raw_45 -> leaf_46
+leaf_46  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+First we must summon them from the ether.
 "]
-// END RANK codeblock_27
+// END RANK raw_45
 
-section_8 -> { header_32 prose_33 prose_34 prose_35 prose_36 prose_37 codeblock_38}
-{rank=same; header_32 prose_33 prose_34 prose_35 prose_36 prose_37 codeblock_38}
+codeblock_29 -> leaf_47
+leaf_47  [color=Gray,shape=rectangle,fontname=Inconsolata,label="-- get a conn object via in-memory DB
+local conn = sql.open \":memory:\"
+local conn_mt = ffi.reflect.getmetatable(conn)
+local stmt = conn:prepare \"CREATE TABLE IF NOT EXISTS test(a,b);\"
+local stmt_mt = ffi.reflect.getmetatable(stmt)
+conn:close() -- polite
+conn, stmt = nil, nil"]
+// END RANK codeblock_29
 
-header_32 [label="2 : sql.format(str)"]
+section_8 -> { header_48 prose_49 codeblock_50}
+{rank=same; header_48 prose_49 codeblock_50}
 
-prose_33 [label="prose"]
+header_48 [label="2 : sql.san(str)"]
 
-prose_34 [label="prose"]
+prose_49 [label="prose"]
 
-prose_35 [label="prose"]
-
-prose_36 [label="prose"]
-
-prose_37 [label="prose"]
-
-codeblock_38 [label="code block 54-72"]
+codeblock_50 [label="code block 41-47"]
 
 
 // END RANK section_8
 
-header_32 -> leaf_39
-leaf_39  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** sql.format(str)"]
-// END RANK header_32
+header_48 -> leaf_51
+leaf_51  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** sql.san(str)"]
+// END RANK header_48
 
-prose_33 -> { raw_40}
-{rank=same; raw_40}
+prose_49 -> { raw_52}
+{rank=same; raw_52}
 
-raw_40 [label="raw"]
+raw_52 [label="raw"]
 
 
-// END RANK prose_33
+// END RANK prose_49
 
-raw_40 -> leaf_41
-leaf_41  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_52 -> leaf_53
+leaf_53  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+Sanitizes a string for SQL(ite) quoting.
+"]
+// END RANK raw_52
+
+codeblock_50 -> leaf_54
+leaf_54  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function san(str)
+   return gsub(str, \"'\", \"''\")
+end
+
+sql.san = san"]
+// END RANK codeblock_50
+
+section_9 -> { header_55 prose_56 prose_57 prose_58 prose_59 prose_60 codeblock_61}
+{rank=same; header_55 prose_56 prose_57 prose_58 prose_59 prose_60 codeblock_61}
+
+header_55 [label="2 : sql.format(str)"]
+
+prose_56 [label="prose"]
+
+prose_57 [label="prose"]
+
+prose_58 [label="prose"]
+
+prose_59 [label="prose"]
+
+prose_60 [label="prose"]
+
+codeblock_61 [label="code block 71-89"]
+
+
+// END RANK section_9
+
+header_55 -> leaf_62
+leaf_62  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** sql.format(str)"]
+// END RANK header_55
+
+prose_56 -> { raw_63}
+{rank=same; raw_63}
+
+raw_63 [label="raw"]
+
+
+// END RANK prose_56
+
+raw_63 -> leaf_64
+leaf_64  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 The SQLite bindings I'm using support only an impoverished subset of the
 SQLite binds.  In the meantime we're going to use format strings, which at
 least typecheck parameters.
 "]
-// END RANK raw_40
-
-prose_34 -> { prespace_42 bold_43 raw_44 prespace_45 literal_46 raw_47}
-{rank=same; prespace_42 bold_43 raw_44 prespace_45 literal_46 raw_47}
-
-prespace_42 [label="prespace"]
-
-bold_43 [label="bold"]
-
-raw_44 [label="raw"]
-
-prespace_45 [label="prespace"]
-
-literal_46 [label="literal"]
-
-raw_47 [label="raw"]
-
-
-// END RANK prose_34
-
-prespace_42 -> leaf_48
-leaf_48  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
-// END RANK prespace_42
-
-bold_43 -> leaf_49
-leaf_49  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Update"]
-// END RANK bold_43
-
-raw_44 -> leaf_50
-leaf_50  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" I've added"]
-// END RANK raw_44
-
-prespace_45 -> leaf_51
-leaf_51  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_45
-
-literal_46 -> leaf_52
-leaf_52  [color=Gray,shape=rectangle,fontname=Inconsolata,label="bindkv"]
-// END RANK literal_46
-
-raw_47 -> leaf_53
-leaf_53  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" which helps.
-"]
-// END RANK raw_47
-
-prose_35 -> { raw_54 prespace_55 literal_56 raw_57 prespace_58 literal_59 raw_60 prespace_61 literal_62 raw_63 prespace_64 literal_65 raw_66}
-{rank=same; raw_54 prespace_55 literal_56 raw_57 prespace_58 literal_59 raw_60 prespace_61 literal_62 raw_63 prespace_64 literal_65 raw_66}
-
-raw_54 [label="raw"]
-
-prespace_55 [label="prespace"]
-
-literal_56 [label="literal"]
-
-raw_57 [label="raw"]
-
-prespace_58 [label="prespace"]
-
-literal_59 [label="literal"]
-
-raw_60 [label="raw"]
-
-prespace_61 [label="prespace"]
-
-literal_62 [label="literal"]
-
-raw_63 [label="raw"]
-
-prespace_64 [label="prespace"]
-
-literal_65 [label="literal"]
-
-raw_66 [label="raw"]
-
-
-// END RANK prose_35
-
-raw_54 -> leaf_67
-leaf_67  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-This"]
-// END RANK raw_54
-
-prespace_55 -> leaf_68
-leaf_68  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_55
-
-literal_56 -> leaf_69
-leaf_69  [color=Gray,shape=rectangle,fontname=Inconsolata,label="format"]
-// END RANK literal_56
-
-raw_57 -> leaf_70
-leaf_70  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" command sanitizes string inputs, and also replaces any"]
-// END RANK raw_57
-
-prespace_58 -> leaf_71
-leaf_71  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_58
-
-literal_59 -> leaf_72
-leaf_72  [color=Gray,shape=rectangle,fontname=Inconsolata,label="%s"]
-// END RANK literal_59
-
-raw_60 -> leaf_73
-leaf_73  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-with"]
-// END RANK raw_60
-
-prespace_61 -> leaf_74
-leaf_74  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_61
-
-literal_62 -> leaf_75
-leaf_75  [color=Gray,shape=rectangle,fontname=Inconsolata,label="'%s'"]
-// END RANK literal_62
-
-raw_63 -> leaf_76
-leaf_76  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" without making any"]
 // END RANK raw_63
 
-prespace_64 -> leaf_77
-leaf_77  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_64
+prose_57 -> { prespace_65 bold_66 raw_67 prespace_68 literal_69 raw_70}
+{rank=same; prespace_65 bold_66 raw_67 prespace_68 literal_69 raw_70}
 
-literal_65 -> leaf_78
-leaf_78  [color=Gray,shape=rectangle,fontname=Inconsolata,label="''%s''"]
-// END RANK literal_65
+prespace_65 [label="prespace"]
 
-raw_66 -> leaf_79
-leaf_79  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", or more accurately trimming them
-if it creates them.
+bold_66 [label="bold"]
+
+raw_67 [label="raw"]
+
+prespace_68 [label="prespace"]
+
+literal_69 [label="literal"]
+
+raw_70 [label="raw"]
+
+
+// END RANK prose_57
+
+prespace_65 -> leaf_71
+leaf_71  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK prespace_65
+
+bold_66 -> leaf_72
+leaf_72  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Update"]
+// END RANK bold_66
+
+raw_67 -> leaf_73
+leaf_73  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" I've added"]
+// END RANK raw_67
+
+prespace_68 -> leaf_74
+leaf_74  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_68
+
+literal_69 -> leaf_75
+leaf_75  [color=Gray,shape=rectangle,fontname=Inconsolata,label="bindkv"]
+// END RANK literal_69
+
+raw_70 -> leaf_76
+leaf_76  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" which helps.
 "]
-// END RANK raw_66
+// END RANK raw_70
 
-prose_36 -> { raw_80 prespace_81 literal_82 raw_83 prespace_84 literal_85 raw_86 prespace_87 literal_88 raw_89}
-{rank=same; raw_80 prespace_81 literal_82 raw_83 prespace_84 literal_85 raw_86 prespace_87 literal_88 raw_89}
+prose_58 -> { raw_77 prespace_78 literal_79 raw_80 prespace_81 literal_82 raw_83 prespace_84 literal_85 raw_86 prespace_87 literal_88 raw_89}
+{rank=same; raw_77 prespace_78 literal_79 raw_80 prespace_81 literal_82 raw_83 prespace_84 literal_85 raw_86 prespace_87 literal_88 raw_89}
+
+raw_77 [label="raw"]
+
+prespace_78 [label="prespace"]
+
+literal_79 [label="literal"]
 
 raw_80 [label="raw"]
 
@@ -348,86 +362,168 @@ literal_88 [label="literal"]
 raw_89 [label="raw"]
 
 
-// END RANK prose_36
+// END RANK prose_58
 
-raw_80 -> leaf_90
+raw_77 -> leaf_90
 leaf_90  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-So"]
+This"]
+// END RANK raw_77
+
+prespace_78 -> leaf_91
+leaf_91  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_78
+
+literal_79 -> leaf_92
+leaf_92  [color=Gray,shape=rectangle,fontname=Inconsolata,label="format"]
+// END RANK literal_79
+
+raw_80 -> leaf_93
+leaf_93  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" command sanitizes string inputs, and also replaces any"]
 // END RANK raw_80
 
-prespace_81 -> leaf_91
-leaf_91  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+prespace_81 -> leaf_94
+leaf_94  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
 // END RANK prespace_81
 
-literal_82 -> leaf_92
-leaf_92  [color=Gray,shape=rectangle,fontname=Inconsolata,label="sql.format(\"it's %s!\", \"it's\")"]
+literal_82 -> leaf_95
+leaf_95  [color=Gray,shape=rectangle,fontname=Inconsolata,label="%s"]
 // END RANK literal_82
 
-raw_83 -> leaf_93
-leaf_93  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" and"]
+raw_83 -> leaf_96
+leaf_96  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+with"]
 // END RANK raw_83
 
-prespace_84 -> leaf_94
-leaf_94  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+prespace_84 -> leaf_97
+leaf_97  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
 // END RANK prespace_84
 
-literal_85 -> leaf_95
-leaf_95  [color=Gray,shape=rectangle,fontname=Inconsolata,label="sql.format(\"it's '%s'!\", \"it's\")"]
+literal_85 -> leaf_98
+leaf_98  [color=Gray,shape=rectangle,fontname=Inconsolata,label="'%s'"]
 // END RANK literal_85
 
-raw_86 -> leaf_96
-leaf_96  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-both yield"]
+raw_86 -> leaf_99
+leaf_99  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" without making any"]
 // END RANK raw_86
 
-prespace_87 -> leaf_97
-leaf_97  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+prespace_87 -> leaf_100
+leaf_100  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
 // END RANK prespace_87
 
-literal_88 -> leaf_98
-leaf_98  [color=Gray,shape=rectangle,fontname=Inconsolata,label="\"it's 'it''s\""]
+literal_88 -> leaf_101
+leaf_101  [color=Gray,shape=rectangle,fontname=Inconsolata,label="''%s''"]
 // END RANK literal_88
 
-raw_89 -> leaf_99
-leaf_99  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".  I figure any apostrophes in the format string
-belong there.
+raw_89 -> leaf_102
+leaf_102  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", or more accurately trimming them
+if it creates them.
 "]
 // END RANK raw_89
 
-prose_37 -> { raw_100 prespace_101 literal_102 raw_103}
-{rank=same; raw_100 prespace_101 literal_102 raw_103}
-
-raw_100 [label="raw"]
-
-prespace_101 [label="prespace"]
-
-literal_102 [label="literal"]
+prose_59 -> { raw_103 prespace_104 literal_105 raw_106 prespace_107 literal_108 raw_109 prespace_110 literal_111 raw_112}
+{rank=same; raw_103 prespace_104 literal_105 raw_106 prespace_107 literal_108 raw_109 prespace_110 literal_111 raw_112}
 
 raw_103 [label="raw"]
 
+prespace_104 [label="prespace"]
 
-// END RANK prose_37
+literal_105 [label="literal"]
 
-raw_100 -> leaf_104
-leaf_104  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-Failure to format returns"]
-// END RANK raw_100
+raw_106 [label="raw"]
 
-prespace_101 -> leaf_105
-leaf_105  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_101
+prespace_107 [label="prespace"]
 
-literal_102 -> leaf_106
-leaf_106  [color=Gray,shape=rectangle,fontname=Inconsolata,label="false, err"]
-// END RANK literal_102
+literal_108 [label="literal"]
 
-raw_103 -> leaf_107
-leaf_107  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
-"]
+raw_109 [label="raw"]
+
+prespace_110 [label="prespace"]
+
+literal_111 [label="literal"]
+
+raw_112 [label="raw"]
+
+
+// END RANK prose_59
+
+raw_103 -> leaf_113
+leaf_113  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+So"]
 // END RANK raw_103
 
-codeblock_38 -> leaf_108
-leaf_108  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function sql.format(str, ...)
+prespace_104 -> leaf_114
+leaf_114  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_104
+
+literal_105 -> leaf_115
+leaf_115  [color=Gray,shape=rectangle,fontname=Inconsolata,label="sql.format(\"it's %s!\", \"it's\")"]
+// END RANK literal_105
+
+raw_106 -> leaf_116
+leaf_116  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" and"]
+// END RANK raw_106
+
+prespace_107 -> leaf_117
+leaf_117  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_107
+
+literal_108 -> leaf_118
+leaf_118  [color=Gray,shape=rectangle,fontname=Inconsolata,label="sql.format(\"it's '%s'!\", \"it's\")"]
+// END RANK literal_108
+
+raw_109 -> leaf_119
+leaf_119  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+both yield"]
+// END RANK raw_109
+
+prespace_110 -> leaf_120
+leaf_120  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_110
+
+literal_111 -> leaf_121
+leaf_121  [color=Gray,shape=rectangle,fontname=Inconsolata,label="\"it's 'it''s\""]
+// END RANK literal_111
+
+raw_112 -> leaf_122
+leaf_122  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".  I figure any apostrophes in the format string
+belong there.
+"]
+// END RANK raw_112
+
+prose_60 -> { raw_123 prespace_124 literal_125 raw_126}
+{rank=same; raw_123 prespace_124 literal_125 raw_126}
+
+raw_123 [label="raw"]
+
+prespace_124 [label="prespace"]
+
+literal_125 [label="literal"]
+
+raw_126 [label="raw"]
+
+
+// END RANK prose_60
+
+raw_123 -> leaf_127
+leaf_127  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Failure to format returns"]
+// END RANK raw_123
+
+prespace_124 -> leaf_128
+leaf_128  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_124
+
+literal_125 -> leaf_129
+leaf_129  [color=Gray,shape=rectangle,fontname=Inconsolata,label="false, err"]
+// END RANK literal_125
+
+raw_126 -> leaf_130
+leaf_130  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
+"]
+// END RANK raw_126
+
+codeblock_61 -> leaf_131
+leaf_131  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function sql.format(str, ...)
    local argv = {...}
    str = gsub(str, \"%%s\", \"'%%s'\"):gsub(\"''%%s''\", \"'%%s'\")
    for i, v in ipairs(argv) do
@@ -444,75 +540,75 @@ leaf_108  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function sql.f
       return success, ret
    end
 end"]
-// END RANK codeblock_38
+// END RANK codeblock_61
 
-section_9 -> { header_109 prose_110 prose_111 codeblock_112}
-{rank=same; header_109 prose_110 prose_111 codeblock_112}
+section_10 -> { header_132 prose_133 prose_134 codeblock_135}
+{rank=same; header_132 prose_133 prose_134 codeblock_135}
 
-header_109 [label="2 : sql.pexec(conn, stmt)"]
+header_132 [label="2 : sql.pexec(conn, stmt)"]
 
-prose_110 [label="prose"]
+prose_133 [label="prose"]
 
-prose_111 [label="prose"]
+prose_134 [label="prose"]
 
-codeblock_112 [label="code block 80-91"]
-
-
-// END RANK section_9
-
-header_109 -> leaf_113
-leaf_113  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** sql.pexec(conn, stmt)"]
-// END RANK header_109
-
-prose_110 -> { raw_114}
-{rank=same; raw_114}
-
-raw_114 [label="raw"]
+codeblock_135 [label="code block 97-108"]
 
 
-// END RANK prose_110
+// END RANK section_10
 
-raw_114 -> leaf_115
-leaf_115  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_132 -> leaf_136
+leaf_136  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** sql.pexec(conn, stmt)"]
+// END RANK header_132
+
+prose_133 -> { raw_137}
+{rank=same; raw_137}
+
+raw_137 [label="raw"]
+
+
+// END RANK prose_133
+
+raw_137 -> leaf_138
+leaf_138  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 Executes the statement on conn in protected mode.
 "]
-// END RANK raw_114
+// END RANK raw_137
 
-prose_111 -> { raw_116 prespace_117 literal_118 raw_119}
-{rank=same; raw_116 prespace_117 literal_118 raw_119}
+prose_134 -> { raw_139 prespace_140 literal_141 raw_142}
+{rank=same; raw_139 prespace_140 literal_141 raw_142}
 
-raw_116 [label="raw"]
+raw_139 [label="raw"]
 
-prespace_117 [label="prespace"]
+prespace_140 [label="prespace"]
 
-literal_118 [label="literal"]
+literal_141 [label="literal"]
 
-raw_119 [label="raw"]
+raw_142 [label="raw"]
 
 
-// END RANK prose_111
+// END RANK prose_134
 
-raw_116 -> leaf_120
-leaf_120  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_139 -> leaf_143
+leaf_143  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 Unwraps and returns success, or"]
-// END RANK raw_116
+// END RANK raw_139
 
-prespace_117 -> leaf_121
-leaf_121  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_117
+prespace_140 -> leaf_144
+leaf_144  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_140
 
-literal_118 -> leaf_122
-leaf_122  [color=Gray,shape=rectangle,fontname=Inconsolata,label="false"]
-// END RANK literal_118
+literal_141 -> leaf_145
+leaf_145  [color=Gray,shape=rectangle,fontname=Inconsolata,label="false"]
+// END RANK literal_141
 
-raw_119 -> leaf_123
-leaf_123  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" and error.
+raw_142 -> leaf_146
+leaf_146  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" and error.
 "]
-// END RANK raw_119
+// END RANK raw_142
 
-codeblock_112 -> leaf_124
-leaf_124  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function sql.pexec(conn, stmt, col_str)
+codeblock_135 -> leaf_147
+leaf_147  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function sql.pexec(conn, stmt, col_str)
    -- conn:exec(stmt)
    col_str = col_str or \"hik\"
    local success, result, nrow = pcall(conn.exec, conn, stmt, col_str)
@@ -522,297 +618,353 @@ leaf_124  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function sql.p
       return false, value
    end
 end"]
-// END RANK codeblock_112
+// END RANK codeblock_135
 
-section_10 -> { header_125 prose_126 prose_127 codeblock_128 codeblock_129 section_130}
-{rank=same; header_125 prose_126 prose_127 codeblock_128 codeblock_129 section_130}
+section_11 -> { header_148 prose_149 prose_150 codeblock_151 section_152 section_153}
+{rank=same; header_148 prose_149 prose_150 codeblock_151 section_152 section_153}
 
-header_125 [label="2 : sql.lastid(conn)"]
+header_148 [label="2 : sql.lastid(conn)"]
 
-prose_126 [label="prose"]
+prose_149 [label="prose"]
 
-prose_127 [label="prose"]
+prose_150 [label="prose"]
 
-codeblock_128 [label="code block 100-105"]
+codeblock_151 [label="code block 117-122"]
 
-codeblock_129 [label="code block 108-110"]
+section_152 [label="section: 125-191"]
 
-section_130 [label="section: 113-128"]
-
-
-// END RANK section_10
-
-header_125 -> leaf_131
-leaf_131  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** sql.lastid(conn)"]
-// END RANK header_125
-
-prose_126 -> { raw_132 prespace_133 literal_134 raw_135}
-{rank=same; raw_132 prespace_133 literal_134 raw_135}
-
-raw_132 [label="raw"]
-
-prespace_133 [label="prespace"]
-
-literal_134 [label="literal"]
-
-raw_135 [label="raw"]
+section_153 [label="section: 192-200"]
 
 
-// END RANK prose_126
+// END RANK section_11
 
-raw_132 -> leaf_136
-leaf_136  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_148 -> leaf_154
+leaf_154  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** sql.lastid(conn)"]
+// END RANK header_148
 
-This could be improved by natively handling uint64_t"]
-// END RANK raw_132
+prose_149 -> { raw_155 prespace_156 literal_157 raw_158}
+{rank=same; raw_155 prespace_156 literal_157 raw_158}
 
-prespace_133 -> leaf_137
-leaf_137  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_133
+raw_155 [label="raw"]
 
-literal_134 -> leaf_138
-leaf_138  [color=Gray,shape=rectangle,fontname=Inconsolata,label="cdata"]
-// END RANK literal_134
+prespace_156 [label="prespace"]
 
-raw_135 -> leaf_139
-leaf_139  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
-"]
-// END RANK raw_135
-
-prose_127 -> { raw_140}
-{rank=same; raw_140}
-
-raw_140 [label="raw"]
-
-
-// END RANK prose_127
-
-raw_140 -> leaf_141
-leaf_141  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-Y'know, if we ever keep more than 53 bits width of rows in uhhhhh SQLite.
-"]
-// END RANK raw_140
-
-codeblock_128 -> leaf_142
-leaf_142  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function sql.lastRowId(conn)
-   local result = conn:rowexec \"SELECT CAST(last_insert_rowid() AS REAL)\"
-   return result
-end"]
-// END RANK codeblock_128
-
-codeblock_129 -> leaf_143
-leaf_143  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return sql"]
-// END RANK codeblock_129
-
-section_130 -> { header_144 prose_145 section_146 section_147 section_148}
-{rank=same; header_144 prose_145 section_146 section_147 section_148}
-
-header_144 [label="3 : Stretch goals"]
-
-prose_145 [label="prose"]
-
-section_146 [label="section: 116-123"]
-
-section_147 [label="section: 124-128"]
-
-section_148 [label="section: 129-148"]
-
-
-// END RANK section_130
-
-header_144 -> leaf_149
-leaf_149  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Stretch goals"]
-// END RANK header_144
-
-prose_145 -> { raw_150}
-{rank=same; raw_150}
-
-raw_150 [label="raw"]
-
-
-// END RANK prose_145
-
-raw_150 -> leaf_151
-leaf_151  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-
-"]
-// END RANK raw_150
-
-section_146 -> { header_152 prose_153 prose_154}
-{rank=same; header_152 prose_153 prose_154}
-
-header_152 [label="4 : sql.pragma.etc(bool)"]
-
-prose_153 [label="prose"]
-
-prose_154 [label="prose"]
-
-
-// END RANK section_146
-
-header_152 -> leaf_155
-leaf_155  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** sql.pragma.etc(bool)"]
-// END RANK header_152
-
-prose_153 -> { raw_156}
-{rank=same; raw_156}
-
-raw_156 [label="raw"]
-
-
-// END RANK prose_153
-
-raw_156 -> leaf_157
-leaf_157  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-
-A convenience wrapper over the SQL pragma commands.
-"]
-// END RANK raw_156
-
-prose_154 -> { raw_158 prespace_159 literal_160 raw_161}
-{rank=same; raw_158 prespace_159 literal_160 raw_161}
+literal_157 [label="literal"]
 
 raw_158 [label="raw"]
 
-prespace_159 [label="prespace"]
 
-literal_160 [label="literal"]
+// END RANK prose_149
 
-raw_161 [label="raw"]
+raw_155 -> leaf_159
+leaf_159  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
+This could be improved by natively handling uint64_t"]
+// END RANK raw_155
 
-// END RANK prose_154
+prespace_156 -> leaf_160
+leaf_160  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_156
+
+literal_157 -> leaf_161
+leaf_161  [color=Gray,shape=rectangle,fontname=Inconsolata,label="cdata"]
+// END RANK literal_157
 
 raw_158 -> leaf_162
-leaf_162  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-We can use the same interface for setting Lua-specific values, the one I need
-is"]
+leaf_162  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
+"]
 // END RANK raw_158
 
-prespace_159 -> leaf_163
-leaf_163  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_159
+prose_150 -> { raw_163}
+{rank=same; raw_163}
 
-literal_160 -> leaf_164
-leaf_164  [color=Gray,shape=rectangle,fontname=Inconsolata,label="sql.pragma.nulls_are_nil(false)"]
-// END RANK literal_160
+raw_163 [label="raw"]
 
-raw_161 -> leaf_165
-leaf_165  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
 
+// END RANK prose_150
+
+raw_163 -> leaf_164
+leaf_164  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Y'know, if we ever keep more than 53 bits width of rows in uhhhhh SQLite.
 "]
-// END RANK raw_161
+// END RANK raw_163
 
-section_147 -> { header_166 prose_167}
-{rank=same; header_166 prose_167}
+codeblock_151 -> leaf_165
+leaf_165  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function sql.lastRowId(conn)
+   local result = conn:rowexec \"SELECT CAST(last_insert_rowid() AS REAL)\"
+   return result
+end"]
+// END RANK codeblock_151
 
-header_166 [label="4 : sql.NULL"]
+section_152 -> { header_166 prose_167 prose_168 codeblock_169 codeblock_170}
+{rank=same; header_166 prose_167 prose_168 codeblock_169 codeblock_170}
+
+header_166 [label="4 : conn.pragma.etc(bool)"]
 
 prose_167 [label="prose"]
 
+prose_168 [label="prose"]
 
-// END RANK section_147
+codeblock_169 [label="code block 133-184"]
 
-header_166 -> leaf_168
-leaf_168  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** sql.NULL"]
+codeblock_170 [label="code block 187-189"]
+
+
+// END RANK section_152
+
+header_166 -> leaf_171
+leaf_171  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** conn.pragma.etc(bool)"]
 // END RANK header_166
 
-prose_167 -> { raw_169}
-{rank=same; raw_169}
+prose_167 -> { raw_172}
+{rank=same; raw_172}
 
-raw_169 [label="raw"]
+raw_172 [label="raw"]
 
 
 // END RANK prose_167
 
-raw_169 -> leaf_170
-leaf_170  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_172 -> leaf_173
+leaf_173  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
-This isn't much of a stretch, just a truthy table that represents nullity.
+A convenience wrapper over the SQL pragma commands.
+"]
+// END RANK raw_172
+
+prose_168 -> { raw_174 prespace_175 literal_176 raw_177}
+{rank=same; raw_174 prespace_175 literal_176 raw_177}
+
+raw_174 [label="raw"]
+
+prespace_175 [label="prespace"]
+
+literal_176 [label="literal"]
+
+raw_177 [label="raw"]
+
+
+// END RANK prose_168
+
+raw_174 -> leaf_178
+leaf_178  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+We can use the same interface for setting Lua-specific values, the one I need
+is"]
+// END RANK raw_174
+
+prespace_175 -> leaf_179
+leaf_179  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_175
+
+literal_176 -> leaf_180
+leaf_180  [color=Gray,shape=rectangle,fontname=Inconsolata,label="conn.pragma.nulls_are_nil(false)"]
+// END RANK literal_176
+
+raw_177 -> leaf_181
+leaf_181  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
 
 "]
-// END RANK raw_169
+// END RANK raw_177
 
-section_148 -> { header_171 prose_172 prose_173}
-{rank=same; header_171 prose_172 prose_173}
+codeblock_169 -> leaf_182
+leaf_182  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local pragma_pre = \"PRAGMA \"
+local c = require \"color\"
+local function __pragma(prag, value)
+   local val
+   if type(value) == \"boolean\" then
+      val = value and \" = 1\" or \" = 0\"
+   elseif type(value) == \"string\" then
+      val = \"('\" .. san(value) .. \"')\"
+   else
+      assert(false, \"value of type \" .. type(value) .. \", \" .. c.ts(value))
+   end
+   return pragma_pre .. prag .. val .. \";\"
+end
 
-header_171 [label="4 : Dereferencing pointers in Luaspace"]
+local function _prag_set(conn, prag)
+   return function(value)
+      local prag_str = __pragma(prag, value)
+      conn:exec(prag_str)
+      -- check for a boolean
+      -- #todo make sure this gives sane results for a method-call pragma
+      local answer = conn:exec(pragma_pre .. prag .. \";\")
+      if answer[1] and answer[1][1] then
+         if answer[1][1] == 1 then
+            return true
+         elseif answer[1][1] == 0 then
+            return false
+         else
+            return nil
+         end
+      end
+      return prag_str
+   end
+end
 
-prose_172 [label="prose"]
-
-prose_173 [label="prose"]
-
-
-// END RANK section_148
-
-header_171 -> leaf_174
-leaf_174  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** Dereferencing pointers in Luaspace"]
-// END RANK header_171
-
-prose_172 -> { raw_175 prespace_176 literal_177 raw_178 prespace_179 literal_180 raw_181}
-{rank=same; raw_175 prespace_176 literal_177 raw_178 prespace_179 literal_180 raw_181}
-
-raw_175 [label="raw"]
-
-prespace_176 [label="prespace"]
-
-literal_177 [label="literal"]
-
-raw_178 [label="raw"]
-
-prespace_179 [label="prespace"]
-
-literal_180 [label="literal"]
-
-raw_181 [label="raw"]
+sql.pragma = __pragma
 
 
-// END RANK prose_172
 
-raw_175 -> leaf_182
-leaf_182  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+local function new_conn_index(conn, key)
+   local function _prag_index(f, prag)
+      return _prag_set(conn, prag)
+   end
+   if key == \"pragma\" then
+      return setmetatable({}, {__index = _prag_index})
+   else
+      return conn_mt[key]
+   end
+end
 
-It would be nice to write a small C wrapper on"]
-// END RANK raw_175
+conn_mt.__index = new_conn_index"]
+// END RANK codeblock_169
 
-prespace_176 -> leaf_183
-leaf_183  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_176
+codeblock_170 -> leaf_183
+leaf_183  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return sql"]
+// END RANK codeblock_170
 
-literal_177 -> leaf_184
-leaf_184  [color=Gray,shape=rectangle,fontname=Inconsolata,label="sqlite3_sql()"]
-// END RANK literal_177
+section_153 -> { header_184 prose_185 section_186 section_187}
+{rank=same; header_184 prose_185 section_186 section_187}
 
-raw_178 -> leaf_185
-leaf_185  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" that gets the
-address from a statement pointer and returns the resulting string.  The whole
-dataflow layer of"]
-// END RANK raw_178
+header_184 [label="3 : Stretch goals"]
 
-prespace_179 -> leaf_186
-leaf_186  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_179
+prose_185 [label="prose"]
 
-literal_180 -> leaf_187
-leaf_187  [color=Gray,shape=rectangle,fontname=Inconsolata,label="bridge"]
-// END RANK literal_180
+section_186 [label="section: 196-200"]
 
-raw_181 -> leaf_188
-leaf_188  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is predicated on abstracting over some pretty
-gnarly SQL introspection.
-"]
-// END RANK raw_181
+section_187 [label="section: 201-220"]
 
-prose_173 -> { raw_189}
+
+// END RANK section_153
+
+header_184 -> leaf_188
+leaf_188  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Stretch goals"]
+// END RANK header_184
+
+prose_185 -> { raw_189}
 {rank=same; raw_189}
 
 raw_189 [label="raw"]
 
 
-// END RANK prose_173
+// END RANK prose_185
 
 raw_189 -> leaf_190
 leaf_190  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+
+"]
+// END RANK raw_189
+
+section_186 -> { header_191 prose_192}
+{rank=same; header_191 prose_192}
+
+header_191 [label="4 : sql.NULL"]
+
+prose_192 [label="prose"]
+
+
+// END RANK section_186
+
+header_191 -> leaf_193
+leaf_193  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** sql.NULL"]
+// END RANK header_191
+
+prose_192 -> { raw_194}
+{rank=same; raw_194}
+
+raw_194 [label="raw"]
+
+
+// END RANK prose_192
+
+raw_194 -> leaf_195
+leaf_195  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+This isn't much of a stretch, just a truthy table that represents nullity.
+
+"]
+// END RANK raw_194
+
+section_187 -> { header_196 prose_197 prose_198}
+{rank=same; header_196 prose_197 prose_198}
+
+header_196 [label="4 : Dereferencing pointers in Luaspace"]
+
+prose_197 [label="prose"]
+
+prose_198 [label="prose"]
+
+
+// END RANK section_187
+
+header_196 -> leaf_199
+leaf_199  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** Dereferencing pointers in Luaspace"]
+// END RANK header_196
+
+prose_197 -> { raw_200 prespace_201 literal_202 raw_203 prespace_204 literal_205 raw_206}
+{rank=same; raw_200 prespace_201 literal_202 raw_203 prespace_204 literal_205 raw_206}
+
+raw_200 [label="raw"]
+
+prespace_201 [label="prespace"]
+
+literal_202 [label="literal"]
+
+raw_203 [label="raw"]
+
+prespace_204 [label="prespace"]
+
+literal_205 [label="literal"]
+
+raw_206 [label="raw"]
+
+
+// END RANK prose_197
+
+raw_200 -> leaf_207
+leaf_207  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+It would be nice to write a small C wrapper on"]
+// END RANK raw_200
+
+prespace_201 -> leaf_208
+leaf_208  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_201
+
+literal_202 -> leaf_209
+leaf_209  [color=Gray,shape=rectangle,fontname=Inconsolata,label="sqlite3_sql()"]
+// END RANK literal_202
+
+raw_203 -> leaf_210
+leaf_210  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" that gets the
+address from a statement pointer and returns the resulting string.  The whole
+dataflow layer of"]
+// END RANK raw_203
+
+prespace_204 -> leaf_211
+leaf_211  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_204
+
+literal_205 -> leaf_212
+leaf_212  [color=Gray,shape=rectangle,fontname=Inconsolata,label="bridge"]
+// END RANK literal_205
+
+raw_206 -> leaf_213
+leaf_213  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is predicated on abstracting over some pretty
+gnarly SQL introspection.
+"]
+// END RANK raw_206
+
+prose_198 -> { raw_214}
+{rank=same; raw_214}
+
+raw_214 [label="raw"]
+
+
+// END RANK prose_198
+
+raw_214 -> leaf_215
+leaf_215  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 The easy way is just to denormalize the string onto a member of the stmt
 table, but that violates single-source-of-truth, and handling pointers across
 the abstraction barrier is something I'm going to need to get used to.
@@ -826,7 +978,7 @@ the abstraction barrier is something I'm going to need to get used to.
 
 
 "]
-// END RANK raw_189
+// END RANK raw_214
 
 
 }
