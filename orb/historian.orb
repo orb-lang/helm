@@ -161,7 +161,22 @@ function Historian.load(historian)
          repl_map[line_ids[i]] = buf
       end
       historian.cursor = #historian
-      historian.repl_map = repl_map
+      historian.repl_map = repl_map -- remove
+      -- reuse line_id var for foreign keys
+      line_ids = res_val[1]
+      local reprs = res_val[2]
+      -- This is keyed by linebuf with a string value.
+      local result_map = {}
+      for i = #reprs, 1, -1 do
+         local buf = repl_map[line_ids[i]]
+         if buf then
+            local result = result_map[buf] or {frozen = true}
+            result[#result + 1] = reprs[i]
+            result.n = #result -- for compat with nil in live use
+            result_map[buf] = result
+         end
+      end
+      historian.results = result_map
    else
       -- one of the 'row' vals will have an error
       error(repr_row .. res_row)
@@ -203,7 +218,7 @@ function Historian.persist(historian, linebuf, results)
             -- insert result repr
             -- tostring() just for compactness
             historian.insert_result_stmt:bindkv { line_id = line_id,
-                                                  repr = tostring(v) }
+                                                  repr = color.ts(v) }
             err = historian.insert_result_stmt:step()
             if not err then
                historian.insert_result_stmt:clearbind():reset()
@@ -335,8 +350,6 @@ end
 local function new()
    local historian = meta(Historian)
    historian:load()
-   -- This will also be load()ed once we have the tables for it
-   historian.results = {} -- keyed by linebuf
    return historian
 end
 Historian.idEst = new

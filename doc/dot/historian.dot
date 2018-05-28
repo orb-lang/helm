@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 347"]
+doc_0 [label="doc - 360"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-268"]
+section_1 [label="section: 1-283"]
 
 
 // END RANK doc_0
@@ -31,11 +31,11 @@ codeblock_7 [label="code block 16-25"]
 
 codeblock_8 [label="code block 27-29"]
 
-section_9 [label="section: 32-172"]
+section_9 [label="section: 32-187"]
 
-section_10 [label="section: 223-268"]
+section_10 [label="section: 238-283"]
 
-section_11 [label="section: 269-315"]
+section_11 [label="section: 284-330"]
 
 
 // END RANK section_1
@@ -142,9 +142,9 @@ prose_30 [label="prose"]
 
 section_31 [label="section: 59-130"]
 
-section_32 [label="section: 131-172"]
+section_32 [label="section: 131-187"]
 
-section_33 [label="section: 173-222"]
+section_33 [label="section: 188-237"]
 
 
 // END RANK section_9
@@ -554,7 +554,7 @@ header_117 [label="3 : Historian:load()"]
 
 prose_118 [label="prose"]
 
-codeblock_119 [label="code block 135-170"]
+codeblock_119 [label="code block 135-185"]
 
 
 // END RANK section_32
@@ -607,7 +607,22 @@ leaf_123  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histo
          repl_map[line_ids[i]] = buf
       end
       historian.cursor = #historian
-      historian.repl_map = repl_map
+      historian.repl_map = repl_map -- remove
+      -- reuse line_id var for foreign keys
+      line_ids = res_val[1]
+      local reprs = res_val[2]
+      -- This is keyed by linebuf with a string value.
+      local result_map = {}
+      for i = #reprs, 1, -1 do
+         local buf = repl_map[line_ids[i]]
+         if buf then
+            local result = result_map[buf] or {frozen = true}
+            result[#result + 1] = reprs[i]
+            result.n = #result -- for compat with nil in live use
+            result_map[buf] = result
+         end
+      end
+      historian.results = result_map
    else
       -- one of the 'row' vals will have an error
       error(repr_row .. res_row)
@@ -628,7 +643,7 @@ prose_127 [label="prose"]
 
 prose_128 [label="prose"]
 
-codeblock_129 [label="code block 188-220"]
+codeblock_129 [label="code block 203-235"]
 
 
 // END RANK section_33
@@ -753,7 +768,7 @@ leaf_151  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histo
             -- insert result repr
             -- tostring() just for compactness
             historian.insert_result_stmt:bindkv { line_id = line_id,
-                                                  repr = tostring(v) }
+                                                  repr = color.ts(v) }
             err = historian.insert_result_stmt:step()
             if not err then
                historian.insert_result_stmt:clearbind():reset()
@@ -776,7 +791,7 @@ header_152 [label="2 : Historian:search(frag)"]
 
 prose_153 [label="prose"]
 
-codeblock_154 [label="code block 225-266"]
+codeblock_154 [label="code block 240-281"]
 
 
 // END RANK section_10
@@ -848,11 +863,11 @@ header_159 [label="2 : Historian:prev()"]
 
 prose_160 [label="prose"]
 
-codeblock_161 [label="code block 271-283"]
+codeblock_161 [label="code block 286-298"]
 
-section_162 [label="section: 286-315"]
+section_162 [label="section: 301-330"]
 
-section_163 [label="section: 316-347"]
+section_163 [label="section: 331-360"]
 
 
 // END RANK section_11
@@ -897,7 +912,7 @@ prose_169 [label="prose"]
 
 prose_170 [label="prose"]
 
-codeblock_171 [label="code block 293-313"]
+codeblock_171 [label="code block 308-328"]
 
 
 // END RANK section_162
@@ -984,11 +999,11 @@ prose_185 [label="prose"]
 
 prose_186 [label="prose"]
 
-codeblock_187 [label="code block 322-332"]
+codeblock_187 [label="code block 337-347"]
 
-codeblock_188 [label="code block 334-343"]
+codeblock_188 [label="code block 349-356"]
 
-codeblock_189 [label="code block 345-347"]
+codeblock_189 [label="code block 358-360"]
 
 
 // END RANK section_163
@@ -1042,8 +1057,6 @@ codeblock_188 -> leaf_196
 leaf_196  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new()
    local historian = meta(Historian)
    historian:load()
-   -- This will also be load()ed once we have the tables for it
-   historian.results = {} -- keyed by linebuf
    return historian
 end
 Historian.idEst = new"]
