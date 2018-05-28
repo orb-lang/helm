@@ -167,16 +167,19 @@ I've dressed it up a bit.
 
 ```lua
 local ts
-local function tabulate(tab, depth)
+
+local function tabulate(tab, depth, cycle)
+   cycle = cycle or {}
    if type(tab) ~= "table" then
       return ts(tab)
    end
    if type(depth) == "nil" then
       depth = 0
    end
-   if depth > C.depth then
+   if depth > C.depth or cycle[tab] then
       return ts(tab, "tab_name")
    end
+   cycle[tab] = true
    local indent = ("  "):rep(depth)
    -- Check to see if this is an array
    local is_array = true
@@ -193,7 +196,7 @@ local function tabulate(tab, depth)
    local mt = ""
    local _M = getmetatable(tab)
    if _M then
-      mt = ts(tab, "mt") .. c.base(" = ") .. tabulate(_M, depth + 1)
+      mt = ts(tab, "mt") .. c.base(" = ") .. tabulate(_M, depth + 1, cycle)
       lines[1] = mt
       i = 2
    else
@@ -208,10 +211,10 @@ local function tabulate(tab, depth)
          if type(k) == "string" and k:find("^[%a_][%a%d_]*$") then
             s = ts(k) .. c.base(" = ")
          else
-            s = c.base("[") .. tabulate(k, 100) .. c.base("] = ")
+            s = c.base("[") .. tabulate(k, 100, cycle) .. c.base("] = ")
          end
       end
-      s = s .. tabulate(v, depth + 1)
+      s = s .. tabulate(v, depth + 1, cycle)
       lines[i] = s
       estimated = estimated + #s
       i = i + 1

@@ -40,6 +40,7 @@
 
 
 local sub, byte = assert(string.sub), assert(string.byte)
+local gsub = assert(string.gsub)
 
 
 
@@ -103,6 +104,8 @@ function Linebuf.insert(linebuf, frag)
    end
    local wide_frag = utf8(frag)
    if wide_frag < #frag then -- a paste
+      -- handle quirky concepts of a newline
+      frag = gsub(frag, "\r\n", "\n"):gsub("\r", "\n")
       wide_frag = codepoints(frag)
    else
       wide_frag = false

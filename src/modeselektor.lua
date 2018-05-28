@@ -292,12 +292,14 @@ end
 function ModeS.write(modeS, str)
    local nl = a.col(modeS.l_margin) .. a.jump.down(1)
    local phrase, num_subs
-   -- handle silly string
-   str = gsub(str, "\r\n", "\n"):gsub("\r", "\n")
    phrase, num_subs = gsub(str, "\n", nl)
    colwrite("SUBS: " .. num_subs, STATCOL + 4, 12)
    write(phrase)
 end
+
+
+
+
 
 
 

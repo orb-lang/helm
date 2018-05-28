@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 342"]
+doc_0 [label="doc - 347"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-263"]
+section_1 [label="section: 1-268"]
 
 
 // END RANK doc_0
@@ -31,11 +31,11 @@ codeblock_7 [label="code block 16-25"]
 
 codeblock_8 [label="code block 27-29"]
 
-section_9 [label="section: 32-167"]
+section_9 [label="section: 32-172"]
 
-section_10 [label="section: 218-263"]
+section_10 [label="section: 223-268"]
 
-section_11 [label="section: 264-310"]
+section_11 [label="section: 269-315"]
 
 
 // END RANK section_1
@@ -142,9 +142,9 @@ prose_30 [label="prose"]
 
 section_31 [label="section: 59-130"]
 
-section_32 [label="section: 131-167"]
+section_32 [label="section: 131-172"]
 
-section_33 [label="section: 168-217"]
+section_33 [label="section: 173-222"]
 
 
 // END RANK section_9
@@ -519,7 +519,7 @@ SELECT CAST (line_id AS REAL), line FROM repl
    DESC LIMIT %d;
 ]]
 
-local get_recent_2 = [[
+local get_reprs = [[
 SELECT CAST (repl.line_id AS REAL), results.repr
 FROM repl
 LEFT OUTER JOIN results
@@ -554,7 +554,7 @@ header_117 [label="3 : Historian:load()"]
 
 prose_118 [label="prose"]
 
-codeblock_119 [label="code block 135-165"]
+codeblock_119 [label="code block 135-170"]
 
 
 // END RANK section_32
@@ -593,19 +593,24 @@ leaf_123  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histo
    historian.insert_result_stmt = conn:prepare(insert_result_stmt)
    local pop_stmt = sql.format(get_recent, historian.project,
                         historian.HISTORY_LIMIT)
-   local values, nrow = sql.pexec(conn, pop_stmt, \"i\")
-   if values then
-      historian.values = values -- for repl
-      local lines = reverse(values[2])
-      local rowids = reverse(values[1])
+   local repl_val, repl_row = sql.pexec(conn, pop_stmt, \"i\")
+   local res_stmt = sql.format(get_reprs, historian.project,
+                       historian.HISTORY_LIMIT * 2)
+   local res_val, res_row = sql.pexec(conn, res_stmt, \"i\")
+   if repl_val and res_val then
+      local lines = reverse(repl_val[2])
+      local line_ids = reverse(repl_val[1])
+      local repl_map = {}
       for i, v in ipairs(lines) do
-         historian[i] = Linebuf(v)
+         local buf = Linebuf(v)
+         historian[i] = buf
+         repl_map[line_ids[i]] = buf
       end
       historian.cursor = #historian
-      historian.up = false
+      historian.repl_map = repl_map
    else
-      -- error hides in nrow in the finest Lua style
-      error(nrow)
+      -- one of the 'row' vals will have an error
+      error(repr_row .. res_row)
    end
 end"]
 // END RANK codeblock_119
@@ -623,7 +628,7 @@ prose_127 [label="prose"]
 
 prose_128 [label="prose"]
 
-codeblock_129 [label="code block 183-215"]
+codeblock_129 [label="code block 188-220"]
 
 
 // END RANK section_33
@@ -771,7 +776,7 @@ header_152 [label="2 : Historian:search(frag)"]
 
 prose_153 [label="prose"]
 
-codeblock_154 [label="code block 220-261"]
+codeblock_154 [label="code block 225-266"]
 
 
 // END RANK section_10
@@ -843,11 +848,11 @@ header_159 [label="2 : Historian:prev()"]
 
 prose_160 [label="prose"]
 
-codeblock_161 [label="code block 266-278"]
+codeblock_161 [label="code block 271-283"]
 
-section_162 [label="section: 281-310"]
+section_162 [label="section: 286-315"]
 
-section_163 [label="section: 311-342"]
+section_163 [label="section: 316-347"]
 
 
 // END RANK section_11
@@ -892,7 +897,7 @@ prose_169 [label="prose"]
 
 prose_170 [label="prose"]
 
-codeblock_171 [label="code block 288-308"]
+codeblock_171 [label="code block 293-313"]
 
 
 // END RANK section_162
@@ -979,11 +984,11 @@ prose_185 [label="prose"]
 
 prose_186 [label="prose"]
 
-codeblock_187 [label="code block 317-327"]
+codeblock_187 [label="code block 322-332"]
 
-codeblock_188 [label="code block 329-338"]
+codeblock_188 [label="code block 334-343"]
 
-codeblock_189 [label="code block 340-342"]
+codeblock_189 [label="code block 345-347"]
 
 
 // END RANK section_163

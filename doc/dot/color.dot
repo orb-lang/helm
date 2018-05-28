@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 347"]
+doc_0 [label="doc - 350"]
 
 
 doc_0 -> { section_1}
@@ -31,7 +31,7 @@ prose_7 [label="prose"]
 
 codeblock_8 [label="code block 20-64"]
 
-section_9 [label="section: 68-277"]
+section_9 [label="section: 68-280"]
 
 
 // END RANK section_1
@@ -296,9 +296,9 @@ section_65 [label="section: 87-100"]
 
 section_66 [label="section: 101-164"]
 
-section_67 [label="section: 165-277"]
+section_67 [label="section: 165-280"]
 
-section_68 [label="section: 278-347"]
+section_68 [label="section: 281-350"]
 
 
 // END RANK section_9
@@ -569,13 +569,13 @@ prose_115 [label="prose"]
 
 prose_116 [label="prose"]
 
-codeblock_117 [label="code block 173-232"]
+codeblock_117 [label="code block 173-235"]
 
 prose_118 [label="prose"]
 
-codeblock_119 [label="code block 237-268"]
+codeblock_119 [label="code block 240-271"]
 
-codeblock_120 [label="code block 270-276"]
+codeblock_120 [label="code block 273-279"]
 
 
 // END RANK section_67
@@ -615,16 +615,19 @@ I've dressed it up a bit.
 
 codeblock_117 -> leaf_126
 leaf_126  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local ts
-local function tabulate(tab, depth)
+
+local function tabulate(tab, depth, cycle)
+   cycle = cycle or {}
    if type(tab) ~= \"table\" then
       return ts(tab)
    end
    if type(depth) == \"nil\" then
       depth = 0
    end
-   if depth > C.depth then
+   if depth > C.depth or cycle[tab] then
       return ts(tab, \"tab_name\")
    end
+   cycle[tab] = true
    local indent = (\"  \"):rep(depth)
    -- Check to see if this is an array
    local is_array = true
@@ -641,7 +644,7 @@ local function tabulate(tab, depth)
    local mt = \"\"
    local _M = getmetatable(tab)
    if _M then
-      mt = ts(tab, \"mt\") .. c.base(\" = \") .. tabulate(_M, depth + 1)
+      mt = ts(tab, \"mt\") .. c.base(\" = \") .. tabulate(_M, depth + 1, cycle)
       lines[1] = mt
       i = 2
    else
@@ -656,10 +659,10 @@ local function tabulate(tab, depth)
          if type(k) == \"string\" and k:find(\"^[%a_][%a%d_]*$\") then
             s = ts(k) .. c.base(\" = \")
          else
-            s = c.base(\"[\") .. tabulate(k, 100) .. c.base(\"] = \")
+            s = c.base(\"[\") .. tabulate(k, 100, cycle) .. c.base(\"] = \")
          end
       end
-      s = s .. tabulate(v, depth + 1)
+      s = s .. tabulate(v, depth + 1, cycle)
       lines[i] = s
       estimated = estimated + #s
       i = i + 1
@@ -737,9 +740,9 @@ header_131 [label="3 : ts"]
 
 prose_132 [label="prose"]
 
-codeblock_133 [label="code block 282-343"]
+codeblock_133 [label="code block 285-346"]
 
-codeblock_134 [label="code block 345-347"]
+codeblock_134 [label="code block 348-350"]
 
 
 // END RANK section_68

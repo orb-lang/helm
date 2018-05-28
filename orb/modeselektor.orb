@@ -292,13 +292,15 @@ the terminal.
 function ModeS.write(modeS, str)
    local nl = a.col(modeS.l_margin) .. a.jump.down(1)
    local phrase, num_subs
-   -- handle silly string
-   str = gsub(str, "\r\n", "\n"):gsub("\r", "\n")
    phrase, num_subs = gsub(str, "\n", nl)
    colwrite("SUBS: " .. num_subs, STATCOL + 4, 12)
    write(phrase)
 end
 #/lua
+
+
+This should start with turning the cursor off and end by printing a
+request for the cursor location.
 
 #!lua
 function ModeS.paint_row(modeS)

@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 197"]
+doc_0 [label="doc - 200"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-70"]
+section_1 [label="section: 1-71"]
 
 
 // END RANK doc_0
@@ -33,9 +33,9 @@ prose_8 [label="prose"]
 
 prose_9 [label="prose"]
 
-section_10 [label="section: 27-70"]
+section_10 [label="section: 27-71"]
 
-section_11 [label="section: 71-81"]
+section_11 [label="section: 72-82"]
 
 
 // END RANK section_1
@@ -318,11 +318,11 @@ prose_79 [label="prose"]
 
 prose_80 [label="prose"]
 
-codeblock_81 [label="code block 41-43"]
+codeblock_81 [label="code block 41-44"]
 
-codeblock_82 [label="code block 45-47"]
+codeblock_82 [label="code block 46-48"]
 
-codeblock_83 [label="code block 49-68"]
+codeblock_83 [label="code block 50-69"]
 
 
 // END RANK section_10
@@ -429,7 +429,8 @@ leaf_104  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 // END RANK raw_103
 
 codeblock_81 -> leaf_105
-leaf_105  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local sub, byte = assert(string.sub), assert(string.byte)"]
+leaf_105  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local sub, byte = assert(string.sub), assert(string.byte)
+local gsub = assert(string.gsub)"]
 // END RANK codeblock_81
 
 codeblock_82 -> leaf_106
@@ -468,7 +469,7 @@ prose_110 [label="prose"]
 
 prose_111 [label="prose"]
 
-section_112 [label="section: 82-197"]
+section_112 [label="section: 83-200"]
 
 
 // END RANK section_11
@@ -564,15 +565,15 @@ header_132 [label="3 : join(token, frag)"]
 
 prose_133 [label="prose"]
 
-codeblock_134 [label="code block 86-155"]
+codeblock_134 [label="code block 87-158"]
 
-codeblock_135 [label="code block 159-172"]
+codeblock_135 [label="code block 162-175"]
 
-codeblock_136 [label="code block 174-184"]
+codeblock_136 [label="code block 177-187"]
 
-codeblock_137 [label="code block 186-193"]
+codeblock_137 [label="code block 189-196"]
 
-codeblock_138 [label="code block 195-197"]
+codeblock_138 [label="code block 198-200"]
 
 
 // END RANK section_112
@@ -616,6 +617,8 @@ function Linebuf.insert(linebuf, frag)
    end
    local wide_frag = utf8(frag)
    if wide_frag < #frag then -- a paste
+      -- handle quirky concepts of a newline
+      frag = gsub(frag, \"\\r\\n\", \"\\n\"):gsub(\"\\r\", \"\\n\")
       wide_frag = codepoints(frag)
    else
       wide_frag = false

@@ -99,7 +99,7 @@ SELECT CAST (line_id AS REAL), line FROM repl
    DESC LIMIT %d;
 ]]
 
-local get_recent_2 = [[
+local get_reprs = [[
 SELECT CAST (repl.line_id AS REAL), results.repr
 FROM repl
 LEFT OUTER JOIN results
@@ -147,19 +147,24 @@ function Historian.load(historian)
    historian.insert_result_stmt = conn:prepare(insert_result_stmt)
    local pop_stmt = sql.format(get_recent, historian.project,
                         historian.HISTORY_LIMIT)
-   local values, nrow = sql.pexec(conn, pop_stmt, "i")
-   if values then
-      historian.values = values -- for repl
-      local lines = reverse(values[2])
-      local rowids = reverse(values[1])
+   local repl_val, repl_row = sql.pexec(conn, pop_stmt, "i")
+   local res_stmt = sql.format(get_reprs, historian.project,
+                       historian.HISTORY_LIMIT * 2)
+   local res_val, res_row = sql.pexec(conn, res_stmt, "i")
+   if repl_val and res_val then
+      local lines = reverse(repl_val[2])
+      local line_ids = reverse(repl_val[1])
+      local repl_map = {}
       for i, v in ipairs(lines) do
-         historian[i] = Linebuf(v)
+         local buf = Linebuf(v)
+         historian[i] = buf
+         repl_map[line_ids[i]] = buf
       end
       historian.cursor = #historian
-      historian.up = false
+      historian.repl_map = repl_map
    else
-      -- error hides in nrow in the finest Lua style
-      error(nrow)
+      -- one of the 'row' vals will have an error
+      error(repr_row .. res_row)
    end
 end
 #/lua
