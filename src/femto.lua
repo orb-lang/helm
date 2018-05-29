@@ -18,6 +18,7 @@ lfs = require "lfs"
 ffi = require "ffi"
 bit = require "bit"
 uv  = require "luv"
+
 -- sqlayer uses this monkey patch:
 ffi.reflect = require "reflect"
 sql = require "sqlayer"
@@ -51,6 +52,7 @@ utf8 = core.utf8
 codepoints = core.codepoints
 _G.meta = core.meta
 getmeta, setmeta = getmetatable, setmetatable
+hasmetamethod, hasfield = core.hasmetamethod, core.hasfield
 coro = coroutine
 
 local concat = table.concat

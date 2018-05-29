@@ -35,8 +35,63 @@ function core.meta(MT)
    end
 end
 ```
+### hasmetamethod(tab, mmethod)
+
+The function of this is clear: given a table, return ``true`` if it can receive
+a given metamethod.
+
+
+The question is, how magical to make it. I'm going with "slightly magical" for
+now.  You can leave off the "__" in checking for a metamethod.
+
+
+A successful lookup returns the result, presumable truthy, otherwise ``false``
+for a non-table argument and ``nil`` for a failed lookup.
+
+```lua
+local sub = assert(string.sub)
+
+function core.hasmetamethod(tab, mmethod)
+   assert(type(mmethod) == "string", "metamethod must be a string")
+   if sub(mmethod,1,2) == "__" then
+      return type(tab) == "table" and tab[mmethod]
+   else
+      return type(tab) == "table" and tab["__" ..mmethod]
+   end
+end
+```
 ## Table extensions
 
+
+### hasfield(tab, field)
+
+For bonus points, =hasfield.field(tab)!
+
+
+Returns the lookup for a true value, just in case.
+
+```lua
+local function _hasfield(field, tab)
+   if type(tab) == "table" and tab[field] ~= nil then
+      return true, tab[field]
+   else
+      return false
+   end
+end
+
+function _hf__index(_, field)
+   return function(tab)
+      return _hasfield(field, tab)
+   end
+end
+
+function _hf__call(_, field, tab)
+   return _hasfield(field, tab)
+end
+
+core.hasfield = setmetatable({}, { __index = _hf__index,
+                                   __call  = _hf__call })
+```
 ### clone(tab)
 
 Performs a shallow clone of table, attaching metatable if available.

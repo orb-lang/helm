@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 309"]
+doc_0 [label="doc - 311"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-213"]
+section_1 [label="section: 1-215"]
 
 
 // END RANK doc_0
@@ -21,13 +21,13 @@ header_2 [label="1 : Femto"]
 
 prose_3 [label="prose"]
 
-section_4 [label="section: 6-26"]
+section_4 [label="section: 6-27"]
 
-section_5 [label="section: 33-112"]
+section_5 [label="section: 34-114"]
 
-section_6 [label="section: 126-213"]
+section_6 [label="section: 128-215"]
 
-section_7 [label="section: 214-218"]
+section_7 [label="section: 216-220"]
 
 
 // END RANK section_1
@@ -63,9 +63,9 @@ prose_13 [label="prose"]
 
 prose_14 [label="prose"]
 
-codeblock_15 [label="code block 15-24"]
+codeblock_15 [label="code block 15-25"]
 
-section_16 [label="section: 27-32"]
+section_16 [label="section: 28-33"]
 
 
 // END RANK section_4
@@ -124,6 +124,7 @@ lfs = require \"lfs\"
 ffi = require \"ffi\"
 bit = require \"bit\"
 uv  = require \"luv\"
+
 -- sqlayer uses this monkey patch:
 ffi.reflect = require \"reflect\"
 sql = require \"sqlayer\""]
@@ -169,23 +170,23 @@ prose_31 [label="prose"]
 
 prose_32 [label="prose"]
 
-codeblock_33 [label="code block 40-57"]
+codeblock_33 [label="code block 41-59"]
 
 prose_34 [label="prose"]
 
 prose_35 [label="prose"]
 
-codeblock_36 [label="code block 64-71"]
+codeblock_36 [label="code block 66-73"]
 
 prose_37 [label="prose"]
 
 prose_38 [label="prose"]
 
-codeblock_39 [label="code block 78-99"]
+codeblock_39 [label="code block 80-101"]
 
-codeblock_40 [label="code block 101-110"]
+codeblock_40 [label="code block 103-112"]
 
-section_41 [label="section: 113-125"]
+section_41 [label="section: 115-127"]
 
 
 // END RANK section_5
@@ -292,6 +293,7 @@ utf8 = core.utf8
 codepoints = core.codepoints
 _G.meta = core.meta
 getmeta, setmeta = getmetatable, setmetatable
+hasmetamethod, hasfield = core.hasmetamethod, core.hasfield
 coro = coroutine
 
 local concat = table.concat"]
@@ -441,7 +443,7 @@ header_89 [label="3 : tty setup"]
 
 prose_90 [label="prose"]
 
-codeblock_91 [label="code block 115-123"]
+codeblock_91 [label="code block 117-125"]
 
 
 // END RANK section_41
@@ -480,11 +482,11 @@ header_96 [label="2 : Modeselektor"]
 
 prose_97 [label="prose"]
 
-codeblock_98 [label="code block 128-134"]
+codeblock_98 [label="code block 130-136"]
 
-codeblock_99 [label="code block 136-198"]
+codeblock_99 [label="code block 138-200"]
 
-codeblock_100 [label="code block 200-211"]
+codeblock_100 [label="code block 202-213"]
 
 
 // END RANK section_6
@@ -598,7 +600,7 @@ header_107 [label="2 : Reader"]
 
 prose_108 [label="prose"]
 
-section_109 [label="section: 219-309"]
+section_109 [label="section: 221-311"]
 
 
 // END RANK section_7
@@ -666,9 +668,9 @@ header_125 [label="3 : process_escapes(seq)"]
 
 prose_126 [label="prose"]
 
-codeblock_127 [label="code block 221-276"]
+codeblock_127 [label="code block 223-278"]
 
-codeblock_128 [label="code block 278-309"]
+codeblock_128 [label="code block 280-311"]
 
 
 // END RANK section_109

@@ -44,6 +44,61 @@ end
 
 
 
+
+
+
+
+
+local sub = assert(string.sub)
+
+function core.hasmetamethod(tab, mmethod)
+   assert(type(mmethod) == "string", "metamethod must be a string")
+   if sub(mmethod,1,2) == "__" then
+      return type(tab) == "table" and tab[mmethod]
+   else
+      return type(tab) == "table" and tab["__" ..mmethod]
+   end
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+local function _hasfield(field, tab)
+   if type(tab) == "table" and tab[field] ~= nil then
+      return true, tab[field]
+   else
+      return false
+   end
+end
+
+function _hf__index(_, field)
+   return function(tab)
+      return _hasfield(field, tab)
+   end
+end
+
+function _hf__call(_, field, tab)
+   return _hasfield(field, tab)
+end
+
+core.hasfield = setmetatable({}, { __index = _hf__index,
+                                   __call  = _hf__call })
+
+
+
+
+
+
+
 function core.clone(tab)
    local _M = getmetatable(tab)
    local clone = _M and setmetatable({}, _M) or {}
