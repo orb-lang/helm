@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 155"]
+doc_0 [label="doc - 170"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-105"]
+section_1 [label="section: 1-113"]
 
 
 // END RANK doc_0
@@ -23,9 +23,9 @@ prose_3 [label="prose"]
 
 codeblock_4 [label="code block 6-13"]
 
-section_5 [label="section: 16-105"]
+section_5 [label="section: 16-113"]
 
-section_6 [label="section: 106-155"]
+section_6 [label="section: 114-118"]
 
 
 // END RANK section_1
@@ -84,7 +84,7 @@ header_17 [label="3 : Lua lexers"]
 
 prose_18 [label="prose"]
 
-codeblock_19 [label="code block 18-103"]
+codeblock_19 [label="code block 18-111"]
 
 
 // END RANK section_5
@@ -124,10 +124,22 @@ local OP = P\"+\" + \"-\" + \"*\" + \"/\" + \"%\" + \"^\" + \"#\"
            + \"=\" + \"(\" + \")\" + \"{\" + \"}\" + \"[\" + \"]\"
            + \";\" + \";\" + \"...\" + \"..\" + \".\" + \",\"
 
+-- long strings, straight from the LPEG docs
+
+local _equals = P\"=\"^0
+local _open = \"[\" * L.Cg(_equals, \"init\") * \"[\" * P\"\\n\"^-1
+local _close = \"]\" * L.C(_equals) * \"]\"
+local _closeeq = L.Cmt(_close * L.Cb(\"init\"),
+                          function (s, i, a, b) return a == b end)
+
+local long_str = (_open * L.C((P(1) - _closeeq)^0) * _close) / 0 * L.Cp()
+
 -- #todo valid escape sequences instead of P(1)s in below    ↓
 
 local double_str = P\"\\\"\" * (P(1) - (P\"\\\"\" + P\"\\\\\") + P\"\\\\\" * P(1))^0 * P\"\\\"\"
 local single_str = P\"\\'\" * (P(1) - (P\"\\'\" + P\"\\\\\") + P\"\\\\\" * P(1))^0 * P\"\\'\"
+
+local string_P = double_str + single_str + long_str
 
 local digit = R\"09\"
 
@@ -145,21 +157,20 @@ local _hexadecimal = P\"0\" * (P\"x\" + P\"X\") * (digit + R\"af\" + R\"AF\")^1
 
 local number = _digital
 
-local comment = P\"--\" * (P(1) - NL) * (NL + - (1))
+local comment = P\"--\" * long_str
+              + P\"--\" * (P(1) - NL)^0 * (NL + - P(1))
 
--- long strings, long comments...
 
-local ERR = P(1)^1
+local ERR = P(1)
 
-local lua_toks = {KW, number, OP, symbol, double_str, single_str,
-                  comment, WS, NL, ERR}
+local lua_toks = {comment, KW, string_P, number, OP, symbol,
+                  WS, NL, ERR}
 
 local lex_kv = { KW = KW,
                  number = number,
                  OP = OP,
                  symbol = symbol,
-                 double_str = double_str,
-                 single_str = single_str,
+                 string = string_P,
                  comment = comment,
                  WS = WS,
                  NL = NL,
@@ -170,10 +181,9 @@ local color_map = {
    OP = c.color.operator(),
    number = c.color.number(),
    symbol = c.color.field(),
-   double_str = c.color.string(),
-   single_str = c.color.string(),
+   string = c.color.string(),
    comment = c.color.comment(),
-   ERR = c.color.error,
+   ERR = c.color.error(),
 }
 
 
@@ -187,47 +197,96 @@ lex_kv = nil
 
 Lex.lex_map = lex_map
 
-Lex.WS, Lex.NL, Lex.KW, Lex.OP = WS, NL, KW, OP
-Lex.double, Lex.single = double_str, single_str
-Lex.digit, Lex.letter, Lex.symbol, Lex.number = digit, letter, symbol, number
-Lex.comment = comment"]
+Lex.long_str = long_str
+Lex.string = string_P"]
 // END RANK codeblock_19
 
-section_6 -> { header_24 prose_25 codeblock_26 codeblock_27}
-{rank=same; header_24 prose_25 codeblock_26 codeblock_27}
+section_6 -> { header_24 prose_25 section_26}
+{rank=same; header_24 prose_25 section_26}
 
 header_24 [label="2 : Lex.lua_thor(linebuf)"]
 
 prose_25 [label="prose"]
 
-codeblock_26 [label="code block 110-149"]
-
-codeblock_27 [label="code block 152-154"]
+section_26 [label="section: 119-170"]
 
 
 // END RANK section_6
 
-header_24 -> leaf_28
-leaf_28  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Lex.lua_thor(linebuf)"]
+header_24 -> leaf_27
+leaf_27  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Lex.lua_thor(linebuf)"]
 // END RANK header_24
 
-prose_25 -> { raw_29}
-{rank=same; raw_29}
+prose_25 -> { raw_28}
+{rank=same; raw_28}
 
-raw_29 [label="raw"]
+raw_28 [label="raw"]
 
 
 // END RANK prose_25
 
-raw_29 -> leaf_30
-leaf_30  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_28 -> leaf_29
+leaf_29  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 ...it's late.
-"]
-// END RANK raw_29
 
-codeblock_26 -> leaf_31
-leaf_31  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function chomp_token(lb)
+"]
+// END RANK raw_28
+
+section_26 -> { header_30 prose_31 codeblock_32 codeblock_33}
+{rank=same; header_30 prose_31 codeblock_32 codeblock_33}
+
+header_30 [label="3 : chomp_token(lb)"]
+
+prose_31 [label="prose"]
+
+codeblock_32 [label="code block 124-164"]
+
+codeblock_33 [label="code block 167-169"]
+
+
+// END RANK section_26
+
+header_30 -> leaf_34
+leaf_34  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** chomp_token(lb)"]
+// END RANK header_30
+
+prose_31 -> { raw_35 prespace_36 literal_37 raw_38}
+{rank=same; raw_35 prespace_36 literal_37 raw_38}
+
+raw_35 [label="raw"]
+
+prespace_36 [label="prespace"]
+
+literal_37 [label="literal"]
+
+raw_38 [label="raw"]
+
+
+// END RANK prose_31
+
+raw_35 -> leaf_39
+leaf_39  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+This is an almost pessimal way to use"]
+// END RANK raw_35
+
+prespace_36 -> leaf_40
+leaf_40  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_36
+
+literal_37 -> leaf_41
+leaf_41  [color=Gray,shape=rectangle,fontname=Inconsolata,label="lpeg"]
+// END RANK literal_37
+
+raw_38 -> leaf_42
+leaf_42  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", which is quite capable of
+handling a full line in one pass.
+"]
+// END RANK raw_38
+
+codeblock_32 -> leaf_43
+leaf_43  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function chomp_token(lb)
    for _,v in ipairs(lua_toks) do
       local bite = match(v, lb)
       if bite ~= nil then
@@ -258,18 +317,19 @@ function Lex.lua_thor(linebuf)
 
       end
       if len == #lb then
-         toks[#toks + 1] = \"!!!\"
+         toks[#toks + 1] = a.clear .. color_map.ERR
+         toks[#toks + 1] = sub(lb, 1, 1)
          lb = sub(lb,2)
       end
    end
    toks[#toks + 1] = a.clear()
    return toks
 end"]
-// END RANK codeblock_26
+// END RANK codeblock_32
 
-codeblock_27 -> leaf_32
-leaf_32  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return Lex"]
-// END RANK codeblock_27
+codeblock_33 -> leaf_44
+leaf_44  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return Lex"]
+// END RANK codeblock_33
 
 
 }

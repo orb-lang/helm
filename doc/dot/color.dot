@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 360"]
+doc_0 [label="doc - 363"]
 
 
 doc_0 -> { section_1}
@@ -283,7 +283,7 @@ C.color.operator = a.fg24(220, 40, 150)
 C.color.keyword = a.fg24(100, 210, 100)
 C.color.comment = a.fg24(128,128,128)
 
-C.color.error = a.bright .. a.bg24(150,0,0)
+C.color.error = a.bg24(50,0,0)
 
 
 C.depth = 3 -- table print depth"]
@@ -304,7 +304,7 @@ section_66 [label="section: 107-170"]
 
 section_67 [label="section: 171-290"]
 
-section_68 [label="section: 291-360"]
+section_68 [label="section: 291-363"]
 
 
 // END RANK section_9
@@ -750,9 +750,9 @@ header_131 [label="3 : ts"]
 
 prose_132 [label="prose"]
 
-codeblock_133 [label="code block 295-356"]
+codeblock_133 [label="code block 295-359"]
 
-codeblock_134 [label="code block 358-360"]
+codeblock_134 [label="code block 361-363"]
 
 
 // END RANK section_68
@@ -792,8 +792,6 @@ leaf_138  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ts = function 
          return hints[hint](str)
       elseif c[hint] then
          return c[hint](str)
-      else
-         return str
       end
    end
 
@@ -801,6 +799,11 @@ leaf_138  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ts = function 
    if typica == \"number\" then
       str = c.number(str)
    elseif typica == \"table\" then
+      -- check for a repr
+      if value.__repr and not hint == \"raw\" then
+         return value:__repr()
+      end
+
       str = tabulate(value)
    elseif typica == \"function\" then
       local func_name = anti_G[value] or \"f:\" .. sub(str, -6)

@@ -33,10 +33,22 @@ local OP = P"+" + "-" + "*" + "/" + "%" + "^" + "#"
            + "=" + "(" + ")" + "{" + "}" + "[" + "]"
            + ";" + ";" + "..." + ".." + "." + ","
 
+-- long strings, straight from the LPEG docs
+
+local _equals = P"="^0
+local _open = "[" * L.Cg(_equals, "init") * "[" * P"\n"^-1
+local _close = "]" * L.C(_equals) * "]"
+local _closeeq = L.Cmt(_close * L.Cb("init"),
+                          function (s, i, a, b) return a == b end)
+
+local long_str = (_open * L.C((P(1) - _closeeq)^0) * _close) / 0 * L.Cp()
+
 -- #todo valid escape sequences instead of P(1)s in below    ↓
 
 local double_str = P"\"" * (P(1) - (P"\"" + P"\\") + P"\\" * P(1))^0 * P"\""
 local single_str = P"\'" * (P(1) - (P"\'" + P"\\") + P"\\" * P(1))^0 * P"\'"
+
+local string_P = double_str + single_str + long_str
 
 local digit = R"09"
 
@@ -54,21 +66,20 @@ local _hexadecimal = P"0" * (P"x" + P"X") * (digit + R"af" + R"AF")^1
 
 local number = _digital
 
-local comment = P"--" * (P(1) - NL) * (NL + - (1))
+local comment = P"--" * long_str
+              + P"--" * (P(1) - NL)^0 * (NL + - P(1))
 
--- long strings, long comments...
 
-local ERR = P(1)^1
+local ERR = P(1)
 
-local lua_toks = {KW, number, OP, symbol, double_str, single_str,
-                  comment, WS, NL, ERR}
+local lua_toks = {comment, KW, string_P, number, OP, symbol,
+                  WS, NL, ERR}
 
 local lex_kv = { KW = KW,
                  number = number,
                  OP = OP,
                  symbol = symbol,
-                 double_str = double_str,
-                 single_str = single_str,
+                 string = string_P,
                  comment = comment,
                  WS = WS,
                  NL = NL,
@@ -79,10 +90,9 @@ local color_map = {
    OP = c.color.operator(),
    number = c.color.number(),
    symbol = c.color.field(),
-   double_str = c.color.string(),
-   single_str = c.color.string(),
+   string = c.color.string(),
    comment = c.color.comment(),
-   ERR = c.color.error,
+   ERR = c.color.error(),
 }
 
 
@@ -96,10 +106,14 @@ lex_kv = nil
 
 Lex.lex_map = lex_map
 
-Lex.WS, Lex.NL, Lex.KW, Lex.OP = WS, NL, KW, OP
-Lex.double, Lex.single = double_str, single_str
-Lex.digit, Lex.letter, Lex.symbol, Lex.number = digit, letter, symbol, number
-Lex.comment = comment
+Lex.long_str = long_str
+Lex.string = string_P
+
+
+
+
+
+
 
 
 
@@ -139,7 +153,8 @@ function Lex.lua_thor(linebuf)
 
       end
       if len == #lb then
-         toks[#toks + 1] = "!!!"
+         toks[#toks + 1] = a.clear .. color_map.ERR
+         toks[#toks + 1] = sub(lb, 1, 1)
          lb = sub(lb,2)
       end
    end

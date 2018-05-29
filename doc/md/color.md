@@ -67,7 +67,7 @@ C.color.operator = a.fg24(220, 40, 150)
 C.color.keyword = a.fg24(100, 210, 100)
 C.color.comment = a.fg24(128,128,128)
 
-C.color.error = a.bright .. a.bg24(150,0,0)
+C.color.error = a.bg24(50,0,0)
 
 
 C.depth = 3 -- table print depth
@@ -301,8 +301,6 @@ ts = function (value, hint)
          return hints[hint](str)
       elseif c[hint] then
          return c[hint](str)
-      else
-         return str
       end
    end
 
@@ -310,6 +308,11 @@ ts = function (value, hint)
    if typica == "number" then
       str = c.number(str)
    elseif typica == "table" then
+      -- check for a repr
+      if value.__repr and not hint == "raw" then
+         return value:__repr()
+      end
+
       str = tabulate(value)
    elseif typica == "function" then
       local func_name = anti_G[value] or "f:" .. sub(str, -6)
