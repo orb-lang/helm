@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 363"]
+doc_0 [label="doc - 367"]
 
 
 doc_0 -> { section_1}
@@ -304,7 +304,7 @@ section_66 [label="section: 107-170"]
 
 section_67 [label="section: 171-290"]
 
-section_68 [label="section: 291-363"]
+section_68 [label="section: 291-367"]
 
 
 // END RANK section_9
@@ -750,9 +750,9 @@ header_131 [label="3 : ts"]
 
 prose_132 [label="prose"]
 
-codeblock_133 [label="code block 295-359"]
+codeblock_133 [label="code block 295-363"]
 
-codeblock_134 [label="code block 361-363"]
+codeblock_134 [label="code block 365-367"]
 
 
 // END RANK section_68
@@ -806,7 +806,11 @@ leaf_138  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ts = function 
 
       str = tabulate(value)
    elseif typica == \"function\" then
-      local func_name = anti_G[value] or \"f:\" .. sub(str, -6)
+      local f_label = sub(str,11)
+      f_label = sub(f_label,1,5) == \"built\"
+                and f_label
+                or \"f:\" .. sub(str, -6)
+      local func_name = anti_G[value] or f_label
       str = c.func(func_name)
    elseif typica == \"boolean\" then
       str = value and c.truth(str) or c.falsehood(str)

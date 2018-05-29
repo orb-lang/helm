@@ -63,12 +63,10 @@ end
 ## Table extensions
 
 
-### hasfield(tab, field)
-
-For bonus points, =hasfield.field(tab)!
+### hasfield(field, tab) & hasfield.field(tab)
 
 
-Returns the lookup for a true value, just in case.
+A nicety which can be used both for predication and assignment.
 
 ```lua
 local function _hasfield(field, tab)

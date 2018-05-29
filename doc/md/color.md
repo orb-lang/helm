@@ -315,7 +315,11 @@ ts = function (value, hint)
 
       str = tabulate(value)
    elseif typica == "function" then
-      local func_name = anti_G[value] or "f:" .. sub(str, -6)
+      local f_label = sub(str,11)
+      f_label = sub(f_label,1,5) == "built"
+                and f_label
+                or "f:" .. sub(str, -6)
+      local func_name = anti_G[value] or f_label
       str = c.func(func_name)
    elseif typica == "boolean" then
       str = value and c.truth(str) or c.falsehood(str)

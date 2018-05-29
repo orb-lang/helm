@@ -1766,7 +1766,7 @@
 <text text-anchor="middle" x="9221" y="-518.1008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local reprs = res_val[2]</text>
 <text text-anchor="middle" x="9221" y="-502.7007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; This is keyed by linebuf with a string value.</text>
 <text text-anchor="middle" x="9221" y="-487.3007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local result_map = {}</text>
-<text text-anchor="middle" x="9221" y="-471.9007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;for i = #reprs, 1, &#45;1 do</text>
+<text text-anchor="middle" x="9221" y="-471.9007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;for i = 1, #reprs do</text>
 <text text-anchor="middle" x="9221" y="-456.5006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;local buf = repl_map[line_ids[i]]</text>
 <text text-anchor="middle" x="9221" y="-441.1006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;if buf then</text>
 <text text-anchor="middle" x="9221" y="-425.7006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;local result = result_map[buf] or {frozen = true}</text>

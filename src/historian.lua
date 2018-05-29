@@ -169,7 +169,7 @@ function Historian.load(historian)
       local reprs = res_val[2]
       -- This is keyed by linebuf with a string value.
       local result_map = {}
-      for i = #reprs, 1, -1 do
+      for i = 1, #reprs do
          local buf = repl_map[line_ids[i]]
          if buf then
             local result = result_map[buf] or {frozen = true}
