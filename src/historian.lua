@@ -133,24 +133,26 @@ end
 
 
 
+
+
+
 function Historian.load(historian)
    local conn = sql.open(historian.bridge_home)
    historian.conn = conn
-   conn:exec "PRAGMA foreign_keys = ON;"
+   -- Set up bridge tables
+   conn.pragma.foreign_keys(true)
    conn:exec(create_result_table)
-   local success, err = sql.pexec(conn, create_repl_table)
-   -- success is nil for SQLITE_DONE, false for error
-   if success == false then
-      error(err)
-   end
+   conn:exec(create_repl_table)
+   -- Create insert prepared statements
    historian.insert_line_stmt = conn:prepare(insert_line_stmt)
    historian.insert_result_stmt = conn:prepare(insert_result_stmt)
-   local pop_stmt = sql.format(get_recent, historian.project,
+   -- Retrieve history
+   local pop_str = sql.format(get_recent, historian.project,
                         historian.HISTORY_LIMIT)
-   local repl_val, repl_row = sql.pexec(conn, pop_stmt, "i")
-   local res_stmt = sql.format(get_reprs, historian.project,
+   local repl_val, repl_row = sql.pexec(conn, pop_str, "i")
+   local res_str = sql.format(get_reprs, historian.project,
                        historian.HISTORY_LIMIT * 2)
-   local res_val, res_row = sql.pexec(conn, res_stmt, "i")
+   local res_val, res_row = sql.pexec(conn, res_str, "i")
    if repl_val and res_val then
       local lines = reverse(repl_val[2])
       local line_ids = reverse(repl_val[1])

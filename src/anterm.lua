@@ -64,6 +64,7 @@ local CSI = schar(27)..'['
 
 
 local colormt = {}
+colormt.__index = colormt
 
 
 
@@ -125,12 +126,12 @@ for kind, val in pairs(colors) do
     end
 end
 
-function colormt:__tostring()
-    return self.value
+function colormt.__tostring(color)
+    return color.value
 end
 
-function colormt:__concat(other)
-    return tostring(self) .. tostring(other)
+function colormt.__concat(color, other)
+    return tostring(color) .. tostring(other)
 end
 
 local clear_fg, clear_bg, clear = anterm.clear_fg, anterm.clear_bg,
@@ -150,12 +151,20 @@ end
 
 local __ts = colormt.__tostring
 
-function colormt:__call(s)
-    if s then
-        return __ts(self) .. s .. reset(self)
+function colormt.__call(color, str)
+    if str then
+        return __ts(color) .. str .. reset(color)
     else
-        return __ts(self)
+        return __ts(color)
     end
+end
+
+function colormt.__repr(color, str)
+   if str then
+      return {__ts(color), str, reset(color)()}
+   else
+      return {__ts(color)}
+   end
 end
 
 

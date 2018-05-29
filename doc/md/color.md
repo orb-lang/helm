@@ -63,6 +63,12 @@ C.color["true"]     = C.color.truth
 C.color["false"]    = C.color.falsehood
 C.color["nil"]      = C.color.nilness
 
+C.color.operator = a.fg24(220, 40, 150)
+C.color.keyword = a.fg24(100, 210, 100)
+C.color.comment = a.fg24(128,128,128)
+
+C.color.error = a.bright .. a.bg24(150,0,0)
+
 
 C.depth = 3 -- table print depth
 ```

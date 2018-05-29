@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 220"]
+doc_0 [label="doc - 225"]
 
 
 doc_0 -> { section_1}
@@ -35,7 +35,7 @@ section_9 [label="section: 50-90"]
 
 section_10 [label="section: 91-110"]
 
-section_11 [label="section: 111-191"]
+section_11 [label="section: 111-196"]
 
 
 // END RANK section_1
@@ -631,9 +631,9 @@ prose_150 [label="prose"]
 
 codeblock_151 [label="code block 117-122"]
 
-section_152 [label="section: 125-191"]
+section_152 [label="section: 125-196"]
 
-section_153 [label="section: 192-200"]
+section_153 [label="section: 197-205"]
 
 
 // END RANK section_11
@@ -705,9 +705,9 @@ prose_167 [label="prose"]
 
 prose_168 [label="prose"]
 
-codeblock_169 [label="code block 133-184"]
+codeblock_169 [label="code block 133-189"]
 
-codeblock_170 [label="code block 187-189"]
+codeblock_170 [label="code block 192-194"]
 
 
 // END RANK section_152
@@ -768,14 +768,20 @@ leaf_181  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
 codeblock_169 -> leaf_182
 leaf_182  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local pragma_pre = \"PRAGMA \"
 local c = require \"color\"
+
 local function __pragma(prag, value)
    local val
+   if value == nil then
+      return pragma_pre .. prag .. \";\"
+   end
    if type(value) == \"boolean\" then
       val = value and \" = 1\" or \" = 0\"
    elseif type(value) == \"string\" then
       val = \"('\" .. san(value) .. \"')\"
+   elseif type(value) == \"number\" then
+      val = \" = \" .. tostring(value)
    else
-      assert(false, \"value of type \" .. type(value) .. \", \" .. c.ts(value))
+      error(false, \"value of type \" .. type(value) .. \", \" .. c.ts(value))
    end
    return pragma_pre .. prag .. val .. \";\"
 end
@@ -796,7 +802,6 @@ local function _prag_set(conn, prag)
             return nil
          end
       end
-      return prag_str
    end
 end
 
@@ -829,9 +834,9 @@ header_184 [label="3 : Stretch goals"]
 
 prose_185 [label="prose"]
 
-section_186 [label="section: 196-200"]
+section_186 [label="section: 201-205"]
 
-section_187 [label="section: 201-220"]
+section_187 [label="section: 206-225"]
 
 
 // END RANK section_153

@@ -121,6 +121,7 @@ a better idea.
 local Linebuf   = require "linebuf"
 local Resbuf    = require "resbuf"
 local Historian = require "historian"
+local Lex = require "lex"
 
 local concat = assert(table.concat)
 local sub, gsub = assert(string.sub), assert(string.gsub)
@@ -310,10 +311,11 @@ end
 ```
 ```lua
 function ModeS.paint_row(modeS)
+   local lb = Lex.lua_thor(modeS.buffer .. tostring(modeS.linebuf))
    write(a.cursor.hide())
    write(a.jump(modeS.repl_line, modeS.l_margin))
    write(a.erase.right())
-   modeS:write(modeS.buffer .. tostring(modeS.linebuf))
+   modeS:write(concat(lb))
    write(a.col(modeS:cur_col()))
    write(a.cursor.show())
 end

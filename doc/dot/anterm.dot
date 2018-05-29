@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 594"]
+doc_0 [label="doc - 603"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-363"]
+section_1 [label="section: 1-372"]
 
 
 // END RANK doc_0
@@ -33,13 +33,13 @@ section_8 [label="section: 15-41"]
 
 section_9 [label="section: 42-57"]
 
-section_10 [label="section: 58-211"]
+section_10 [label="section: 58-220"]
 
-section_11 [label="section: 266-316"]
+section_11 [label="section: 275-325"]
 
-section_12 [label="section: 317-363"]
+section_12 [label="section: 326-372"]
 
-section_13 [label="section: 364-524"]
+section_13 [label="section: 373-533"]
 
 
 // END RANK section_1
@@ -357,13 +357,13 @@ prose_81 [label="prose"]
 
 prose_82 [label="prose"]
 
-codeblock_83 [label="code block 65-67"]
+codeblock_83 [label="code block 65-68"]
 
-section_84 [label="section: 70-162"]
+section_84 [label="section: 71-171"]
 
-section_85 [label="section: 163-211"]
+section_85 [label="section: 172-220"]
 
-section_86 [label="section: 212-265"]
+section_86 [label="section: 221-274"]
 
 
 // END RANK section_10
@@ -403,7 +403,8 @@ Called on a string, they will cleanup the color in a way which composes.
 // END RANK raw_90
 
 codeblock_83 -> leaf_92
-leaf_92  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local colormt = {}"]
+leaf_92  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local colormt = {}
+colormt.__index = colormt"]
 // END RANK codeblock_83
 
 section_84 -> { header_93 prose_94 prose_95 codeblock_96}
@@ -415,7 +416,7 @@ prose_94 [label="prose"]
 
 prose_95 [label="prose"]
 
-codeblock_96 [label="code block 76-160"]
+codeblock_96 [label="code block 77-169"]
 
 
 // END RANK section_84
@@ -523,12 +524,12 @@ for kind, val in pairs(colors) do
     end
 end
 
-function colormt:__tostring()
-    return self.value
+function colormt.__tostring(color)
+    return color.value
 end
 
-function colormt:__concat(other)
-    return tostring(self) .. tostring(other)
+function colormt.__concat(color, other)
+    return tostring(color) .. tostring(other)
 end
 
 local clear_fg, clear_bg, clear = anterm.clear_fg, anterm.clear_bg,
@@ -548,12 +549,20 @@ end
 
 local __ts = colormt.__tostring
 
-function colormt:__call(s)
-    if s then
-        return __ts(self) .. s .. reset(self)
+function colormt.__call(color, str)
+    if str then
+        return __ts(color) .. str .. reset(color)
     else
-        return __ts(self)
+        return __ts(color)
     end
+end
+
+function colormt.__repr(color, str)
+   if str then
+      return {__ts(color), str, reset(color)()}
+   else
+      return {__ts(color)}
+   end
 end"]
 // END RANK codeblock_96
 
@@ -566,7 +575,7 @@ prose_110 [label="prose"]
 
 prose_111 [label="prose"]
 
-codeblock_112 [label="code block 169-209"]
+codeblock_112 [label="code block 178-218"]
 
 
 // END RANK section_85
@@ -677,7 +686,7 @@ prose_128 [label="prose"]
 
 prose_129 [label="prose"]
 
-codeblock_130 [label="code block 225-263"]
+codeblock_130 [label="code block 234-272"]
 
 
 // END RANK section_86
@@ -793,7 +802,7 @@ header_141 [label="2 : Jumps"]
 
 prose_142 [label="prose"]
 
-codeblock_143 [label="code block 268-314"]
+codeblock_143 [label="code block 277-323"]
 
 
 // END RANK section_11
@@ -870,9 +879,9 @@ header_148 [label="2 : Erasure"]
 
 prose_149 [label="prose"]
 
-codeblock_150 [label="code block 319-341"]
+codeblock_150 [label="code block 328-350"]
 
-codeblock_151 [label="code block 345-361"]
+codeblock_151 [label="code block 354-370"]
 
 
 // END RANK section_12
@@ -943,17 +952,17 @@ header_157 [label="2 : Mouse"]
 
 prose_158 [label="prose"]
 
-codeblock_159 [label="code block 366-371"]
+codeblock_159 [label="code block 375-380"]
 
-section_160 [label="section: 374-398"]
+section_160 [label="section: 383-407"]
 
-section_161 [label="section: 428-442"]
+section_161 [label="section: 437-451"]
 
-section_162 [label="section: 443-467"]
+section_162 [label="section: 452-476"]
 
-section_163 [label="section: 468-524"]
+section_163 [label="section: 477-533"]
 
-section_164 [label="section: 525-533"]
+section_164 [label="section: 534-542"]
 
 
 // END RANK section_13
@@ -991,11 +1000,11 @@ prose_170 [label="prose"]
 
 prose_171 [label="prose"]
 
-codeblock_172 [label="code block 380-388"]
+codeblock_172 [label="code block 389-397"]
 
-codeblock_173 [label="code block 390-396"]
+codeblock_173 [label="code block 399-405"]
 
-section_174 [label="section: 399-427"]
+section_174 [label="section: 408-436"]
 
 
 // END RANK section_160
@@ -1078,7 +1087,7 @@ prose_189 [label="prose"]
 
 prose_190 [label="prose"]
 
-codeblock_191 [label="code block 405-425"]
+codeblock_191 [label="code block 414-434"]
 
 
 // END RANK section_174
@@ -1145,7 +1154,7 @@ header_198 [label="3 : mouse.parse(seq)"]
 
 prose_199 [label="prose"]
 
-codeblock_200 [label="code block 432-440"]
+codeblock_200 [label="code block 441-449"]
 
 
 // END RANK section_161
@@ -1186,7 +1195,7 @@ header_205 [label="3 : Cursor handling"]
 
 prose_206 [label="prose"]
 
-codeblock_207 [label="code block 445-465"]
+codeblock_207 [label="code block 454-474"]
 
 
 // END RANK section_162
@@ -1241,11 +1250,11 @@ prose_214 [label="prose"]
 
 prose_215 [label="prose"]
 
-codeblock_216 [label="code block 477-506"]
+codeblock_216 [label="code block 486-515"]
 
 prose_217 [label="prose"]
 
-codeblock_218 [label="code block 510-516"]
+codeblock_218 [label="code block 519-525"]
 
 prose_219 [label="prose"]
 
@@ -1408,9 +1417,9 @@ header_242 [label="3 : #todo function keys"]
 
 prose_243 [label="prose"]
 
-codeblock_244 [label="code block 529-531"]
+codeblock_244 [label="code block 538-540"]
 
-section_245 [label="section: 534-594"]
+section_245 [label="section: 543-603"]
 
 
 // END RANK section_164
@@ -1445,9 +1454,9 @@ header_250 [label="4 : flip"]
 
 prose_251 [label="prose"]
 
-codeblock_252 [label="code block 538-559"]
+codeblock_252 [label="code block 547-568"]
 
-codeblock_253 [label="code block 561-563"]
+codeblock_253 [label="code block 570-572"]
 
 
 // END RANK section_245

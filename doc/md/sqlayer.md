@@ -130,14 +130,20 @@ is ``conn.pragma.nulls_are_nil(false)``.
 ```lua
 local pragma_pre = "PRAGMA "
 local c = require "color"
+
 local function __pragma(prag, value)
    local val
+   if value == nil then
+      return pragma_pre .. prag .. ";"
+   end
    if type(value) == "boolean" then
       val = value and " = 1" or " = 0"
    elseif type(value) == "string" then
       val = "('" .. san(value) .. "')"
+   elseif type(value) == "number" then
+      val = " = " .. tostring(value)
    else
-      assert(false, "value of type " .. type(value) .. ", " .. c.ts(value))
+      error(false, "value of type " .. type(value) .. ", " .. c.ts(value))
    end
    return pragma_pre .. prag .. val .. ";"
 end
@@ -158,7 +164,6 @@ local function _prag_set(conn, prag)
             return nil
          end
       end
-      return prag_str
    end
 end
 
