@@ -18,7 +18,7 @@ local WS = (P" ")^0
 
 local NL = P"\n"
 
-local terminal = S" +-*^~%#;,<>={}[]().:\n" + -P(1)
+local terminal = S" \"'+-*^~%#;,<>={}[]().:\n" + -P(1)
 
 local KW = (P"function" + "local" + "for" + "in" + "do"
            + "and" + "or" + "not" + "true" + "false"

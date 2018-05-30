@@ -314,7 +314,7 @@
 <polygon fill="none" stroke="#c0c0c0" points="1728,-2179.2042 1180,-2179.2042 1180,-738.0001 1728,-738.0001 1728,-2179.2042"/>
 <text text-anchor="middle" x="1454" y="-2164.2032" font-family="Inconsolata" font-size="14.00" fill="#000000">local WS = (P&quot; &quot;)^0</text>
 <text text-anchor="middle" x="1454" y="-2132.8031" font-family="Inconsolata" font-size="14.00" fill="#000000">local NL = P&quot;\n&quot;</text>
-<text text-anchor="middle" x="1454" y="-2101.4031" font-family="Inconsolata" font-size="14.00" fill="#000000">local terminal = S&quot; +&#45;*^~%#;,&lt;&gt;={}[]().:\n&quot; + &#45;P(1)</text>
+<text text-anchor="middle" x="1454" y="-2101.4031" font-family="Inconsolata" font-size="14.00" fill="#000000">local terminal = S&quot; \&quot;&#39;+&#45;*^~%#;,&lt;&gt;={}[]().:\n&quot; + &#45;P(1)</text>
 <text text-anchor="middle" x="1454" y="-2070.0031" font-family="Inconsolata" font-size="14.00" fill="#000000">local KW = (P&quot;function&quot; + &quot;local&quot; + &quot;for&quot; + &quot;in&quot; + &quot;do&quot;</text>
 <text text-anchor="middle" x="1454" y="-2054.603" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;+ &quot;and&quot; + &quot;or&quot; + &quot;not&quot; + &quot;true&quot; + &quot;false&quot;</text>
 <text text-anchor="middle" x="1454" y="-2039.203" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;+ &quot;while&quot; + &quot;break&quot; + &quot;if&quot; + &quot;then&quot; + &quot;else&quot; + &quot;elseif&quot;</text>
