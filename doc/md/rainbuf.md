@@ -97,3 +97,42 @@ I think.  Because we're operating on an event loop, the rainbuf has to both
 soley own write access to itself, and only lend out one read pointer after
 an atomic update.  That implies two different views must be separate rainbufs
 fed from the same quipu, and renderers are rainbuf interpreters.
+
+```lua
+local Linebuf = require "linebuf"
+local byte = assert(string.byte)
+
+local Rainbuf = meta {}
+```
+```lua
+local function new(linebuf)
+   local rainbuf = meta(Rainbuf)
+   local disp = {}
+   rainbuf.disp = disp
+   if type(linebuf) == "string" then
+      linebuf = Linebuf(linebuf)
+   elseif type(linebuf) == "table" then
+      if linebuf.idEst == Linebuf then
+         _from_linebuf(rainbuf, linebuf)
+      else
+         for i,v in ipairs(linebuf) do
+            if type(v) == "string" then
+               rainbuf[i] = v
+               if byte(v) == 0x1b then
+                  disp[i] = 0
+               else
+                  disp[i] = v
+               end
+            else
+               error("content of table in Rainbuf must be strings")
+            end
+         end
+      end
+   end
+   return rainbuf
+end
+Rainbuf.idEst = new
+```
+```lua
+return new
+```

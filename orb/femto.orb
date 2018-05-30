@@ -19,6 +19,9 @@ ffi = require "ffi"
 bit = require "bit"
 uv  = require "luv"
 
+jit.vmdef = require "vmdef"
+jit.p = require "ljprof"
+
 -- sqlayer uses this monkey patch:
 ffi.reflect = require "reflect"
 sql = require "sqlayer"

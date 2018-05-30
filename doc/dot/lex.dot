@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 186"]
+doc_0 [label="doc - 189"]
 
 
 doc_0 -> { section_1}
@@ -214,7 +214,7 @@ header_24 [label="2 : Lex.lua_thor(linebuf)"]
 
 prose_25 [label="prose"]
 
-section_26 [label="section: 125-186"]
+section_26 [label="section: 125-189"]
 
 
 // END RANK section_6
@@ -246,9 +246,9 @@ header_30 [label="3 : chomp_token(lb)"]
 
 prose_31 [label="prose"]
 
-codeblock_32 [label="code block 130-180"]
+codeblock_32 [label="code block 130-183"]
 
-codeblock_33 [label="code block 183-185"]
+codeblock_33 [label="code block 186-188"]
 
 
 // END RANK section_26
@@ -304,6 +304,9 @@ end
 
 Lex.chomp = chomp_token
 
+
+-- Not using this. Want to replace it with a less-dumb match-based
+-- lpeg system but kind over it for now.
 local function _str_hl(str)
    local mark = sub(str,1,1) == \"'\" and \"'\" or '\"'
    mark = c.color.string(mark)

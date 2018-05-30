@@ -57,7 +57,6 @@ C.color.base       = a.fg24(200, 200, 200)
 C.color.metatable  = a.fg24(242, 0, 234)
 C.color.meta       = C.color.metatable
 
-
 C.color["function"] = C.color.func
 C.color["true"]     = C.color.truth
 C.color["false"]    = C.color.falsehood

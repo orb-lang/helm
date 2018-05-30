@@ -136,6 +136,9 @@ end
 
 Lex.chomp = chomp_token
 
+
+-- Not using this. Want to replace it with a less-dumb match-based
+-- lpeg system but kind over it for now.
 local function _str_hl(str)
    local mark = sub(str,1,1) == "'" and "'" or '"'
    mark = c.color.string(mark)
