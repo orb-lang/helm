@@ -8,8 +8,10 @@ local L = require "lpeg"
 local P, R, S, match = L.P, L.R, L.S, L.match
 local Lex = meta {}
 local Rainbuf = require "rainbuf"
-local sub = assert(string.sub)
+local sub, gsub = assert(string.sub), assert(string.gsub)
+local concat = assert(table.concat)
 local c = require "color"
+local codepoints = assert(string.codepoints)
 ```
 ### Lua lexers
 
@@ -41,12 +43,14 @@ local _closeeq = L.Cmt(_close * L.Cb("init"),
 
 local long_str = (_open * L.C((P(1) - _closeeq)^0) * _close) / 0 * L.Cp()
 
--- #todo valid escape sequences instead of P(1)s in below    ↓
+local str_esc = P"\\" * (S"abfnrtv\\\"'[]\n" + (R"09" * R"09"^-2))
 
-local double_str = P"\"" * (P(1) - (P"\"" + P"\\") + P"\\" * P(1))^0 * P"\""
-local single_str = P"\'" * (P(1) - (P"\'" + P"\\") + P"\\" * P(1))^0 * P"\'"
+local double_str = P"\"" * (P(1) - (P"\"" + P"\\") + str_esc)^0 * P"\""
+local single_str = P"\'" * (P(1) - (P"\'" + P"\\") + str_esc)^0 * P"\'"
 
-local string_P = double_str + single_str + long_str
+local string_esc = double_str + single_str
+
+local string_long = long_str
 
 local digit = R"09"
 
@@ -56,13 +60,13 @@ local symbol =   (letter^1 + P"_"^1)
                * (letter + digit + P"_")^0
                * #terminal
 
-local _digital = P"-"^0 * ((digit^1 * P"."^-1 * digit^0
+local _decimal = P"-"^0 * ((digit^1 * P"."^-1 * digit^0
                            * ((P"e" + P"E")^-1 * P"-"^-1 * digit^1)^-1
                         + digit^1)^1 + digit^1)
 
 local _hexadecimal = P"0" * (P"x" + P"X") * (digit + R"af" + R"AF")^1
 
-local number = _digital
+local number = _hexadecimal + _decimal
 
 local comment = P"--" * long_str
               + P"--" * (P(1) - NL)^0 * (NL + - P(1))
@@ -70,14 +74,15 @@ local comment = P"--" * long_str
 
 local ERR = P(1)
 
-local lua_toks = {comment, KW, string_P, number, OP, symbol,
+local lua_toks = {comment, KW, string_long, string_esc, number, OP, symbol,
                   WS, NL, ERR}
 
 local lex_kv = { KW = KW,
                  number = number,
                  OP = OP,
                  symbol = symbol,
-                 string = string_P,
+                 string_long = string_long,
+                 string_esc = string_esc,
                  comment = comment,
                  WS = WS,
                  NL = NL,
@@ -88,7 +93,8 @@ local color_map = {
    OP = c.color.operator(),
    number = c.color.number(),
    symbol = c.color.field(),
-   string = c.color.string(),
+   string_esc = c.color.string(),
+   string_long = c.color.string(),
    comment = c.color.comment(),
    ERR = c.color.error(),
 }
@@ -105,7 +111,7 @@ lex_kv = nil
 Lex.lex_map = lex_map
 
 Lex.long_str = long_str
-Lex.string = string_P
+Lex.string = string_long
 ```
 ## Lex.lua_thor(linebuf)
 
@@ -130,6 +136,13 @@ end
 
 Lex.chomp = chomp_token
 
+local function _str_hl(str)
+   local mark = sub(str,1,1) == "'" and "'" or '"'
+   mark = c.color.string(mark)
+   return mark .. ts(str) .. mark
+end
+
+
 function Lex.lua_thor(linebuf)
    local toks = {}
    local lb = tostring(linebuf)
@@ -144,9 +157,12 @@ function Lex.lua_thor(linebuf)
          local col = color_map[lex_map[tok_t]]
          if col then
             toks[#toks + 1] = col
+            toks[#toks + 1] = bite
+         elseif tok_t == string_esc then
+            toks[#toks + 1] = _str_hl(bite)
+         else
+            toks[#toks + 1] = bite
          end
-         toks[#toks + 1] = bite
-
       end
       if len == #lb then
          toks[#toks + 1] = a.clear .. color_map.ERR

@@ -124,7 +124,9 @@ local Historian = require "historian"
 local Lex = require "lex"
 
 local concat = assert(table.concat)
-local sub, gsub = assert(string.sub), assert(string.gsub)
+local sub, gsub, rep = assert(string.sub),
+                       assert(string.gsub),
+                       assert(string.rep)
 ```
 ```lua
 local ModeS = meta()
