@@ -130,6 +130,7 @@ Recursively return all =v= for =key= in all subtables of tab
 
 #!lua
 local function _select(collection, tab, key, cycle)
+   cycle = cycle or {}
    for k,v in pairs(tab) do
       if key == k then
          collection[#collection + 1] = v
@@ -143,7 +144,7 @@ local function _select(collection, tab, key, cycle)
 end
 
 function core.select(tab, key)
-   return _select({}, tab, key, {})
+   return _select({}, tab, key)
 end
 #/lua
 
@@ -171,11 +172,28 @@ Returns an array of the keys of a table.
 
 #!lua
 function core.keys(tab)
+   assert(type(tab) == "table", "keys must receive a table")
    local keys = {}
-   for k,v in pairs(tab) do
+   for k, _ in pairs(tab) do
       keys[#keys + 1] = k
    end
+
    return keys, #keys
+end
+#/lua
+
+
+*** values(tab)
+
+#!lua
+function core.values(tab)
+   assert(type(tab) == "table", "vals must receive a table")
+   local vals = {}
+   for _, v in pairs(tab) do
+      vals[#vals + 1] = v
+   end
+
+   return vals, #vals
 end
 #/lua
 
@@ -397,6 +415,28 @@ function core.codepoints(str)
       end
    end
    return codes
+end
+#/lua
+
+
+** Errors and asserts
+
+
+*** Assertfmt
+
+I'll probably just globally replace assert with this over time.
+
+This avoids doing concatenations and conversions on messages that we never
+see in normal use.
+
+#!lua
+local format = string.format
+function core.assertfmt(pred, msg, ...)
+   if pred then
+      return pred
+   else
+      error(format(msg, ...))
+   end
 end
 #/lua
 

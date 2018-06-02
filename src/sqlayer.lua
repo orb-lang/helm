@@ -131,9 +131,13 @@ end
 
 
 
+
+
+
 local pragma_pre = "PRAGMA "
 local c = require "color"
 
+-- Builds and returns a pragma string
 local function __pragma(prag, value)
    local val
    if value == nil then
@@ -151,6 +155,7 @@ local function __pragma(prag, value)
    return pragma_pre .. prag .. val .. ";"
 end
 
+-- Sets a pragma and checks its new value
 local function _prag_set(conn, prag)
    return function(value)
       local prag_str = __pragma(prag, value)
@@ -170,7 +175,8 @@ local function _prag_set(conn, prag)
    end
 end
 
-sql.pragma = __pragma
+
+
 
 
 

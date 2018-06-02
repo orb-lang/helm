@@ -59,8 +59,9 @@ meta = core.meta
 getmeta, setmeta = getmetatable, setmetatable
 hasmetamethod, hasfield = core.hasmetamethod, core.hasfield
 coro = coroutine
+assert = core.assertfmt
 
-local concat = table.concat
+local concat = assert(table.concat)
 ```
 
 Primitives for terminal manipulation.
@@ -78,12 +79,10 @@ watch = require "watcher"
 
 ```
 
-This is all from the ``luv`` repl example, which has been an excellent launching
-off point.  Thanks Tim Caswell!
+This boot sequence builds on Tim Caswell and the Luvit Author's repl example.
 
 
-It's getting phased out bit by bit.
-
+Couple pieces I'm not using but should:
 ```lua
 local usecolors
 stdout = ""
@@ -101,7 +100,11 @@ if not usecolors then
    ts = tostring
    -- #todo make this properly black and white ts
 end
+```
 
+Not-blocking ``write`` and ``print``:
+
+```lua
 function write(str)
    uv.write(stdout, str)
 end
@@ -136,85 +139,11 @@ write "\x1b[?47h\x1b[2J\x1b[H"
 modeS = require "modeselektor" ()
 modeS.max_row, modeS.max_col = uv.tty_get_winsize(stdin)
 ```
-```lua
-
---  *** utilities
-
-local function gatherResults(success, ...)
-  local n = select('#', ...)
-  return success, { n = n, ... }
-end
-
-local function printResults(results)
-  for i = 1, results.n do
-    results[i] = ts(results[i])
-  end
-  print(concat(results, '\t'))
-end
-
-local buffer = ''
-
-local function evaluateLine(line)
-   if string.byte(line) == 17 then -- ^Q
-      -- move this to modeselektor asap
-      modeS.hist.conn:close()
-      uv.stop()
-      return 0
-   end
-   local chunk  = buffer .. line
-   local f, err = loadstring('return ' .. chunk, 'REPL') -- first we prefix return
-
-   if not f then
-      f, err = loadstring(chunk, 'REPL') -- try again without return
-   end
-
-   if f then
-      buffer = ''
-      local success, results = gatherResults(xpcall(f, debug.traceback))
-
-      if success then
-      -- successful call
-         if results.n > 0 then
-            printResults(results)
-         end
-      else
-      -- error
-         print(results[1])
-      end
-   else
-      if err:match "'<eof>'$" then
-         -- Lua expects some more input; stow it away for next time
-         buffer = chunk .. '\n'
-         return '...'
-      else
-         print(err)
-         buffer = ''
-      end
-   end
-
-   return '👉 '
-end
-
-local function displayPrompt(prompt)
-  uv.write(stdout, prompt)
-end
-```
-```lua
--- Deprecated, but useful if I want, y'know, a REPL
-local function onread(err, line)
-  if err then error(err) end
-  if line then
-    local prompt = evaluateLine(line)
-    displayPrompt(prompt)
-  else
-    uv.close(stdin)
-  end
-end
-```
 ## Reader
 
 The reader takes a stream of data from ``stdin``, asynchronously, and
 processes it into tokens, which stream to the ``modeselektor``.
+
 
 ### process_escapes(seq)
 
@@ -249,7 +178,7 @@ local function onseq(err,seq)
    local head = byte(seq)
    -- ^Q hard coded as quit, for now
    if head == 17 then
-      femto.cooked()
+      uv.tty_set_mode(stdin, 1)
       write(a.mouse.track(false))
       uv.stop()
       return 0
@@ -267,6 +196,8 @@ local function onseq(err,seq)
    end
    -- Printables
    if head > 31 and head < 127 then
+      -- This also includes pastes, and I should probably
+      -- signal the distinction at some point
       return modeS("ASCII", seq)
    else
       -- wchars go here
@@ -280,19 +211,13 @@ end
 color.allNames()
 
 print "an repl, plz reply uwu 👀"
-displayPrompt '👉  '
--- Crude hack to choose raw mode at runtime
-if arg[1] == "-r" then
-   femto.raw()
-   --uv.tty_set_mode(stdin, 2)
-   -- mouse mode
-   write(a.mouse.track(true))
-   uv.read_start(stdin, onseq)
-else
-   uv.read_start(stdin, onread)
-end
+write '👉  '
 
-
+-- raw mode
+uv.tty_set_mode(stdin, 2)
+-- mouse mode
+write(a.mouse.track(true))
+uv.read_start(stdin, onseq)
 
 -- main loop
 local retcode =  uv.run('default')

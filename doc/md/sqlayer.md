@@ -127,10 +127,16 @@ We can use the same interface for setting Lua-specific values, the one I need
 is ``conn.pragma.nulls_are_nil(false)``.
 
 
+This is a subtle bit of function composition with a nice result.
+
+
+I might be able to use this technique in ``check`` to favor ``.`` over ``:``.
+
 ```lua
 local pragma_pre = "PRAGMA "
 local c = require "color"
 
+-- Builds and returns a pragma string
 local function __pragma(prag, value)
    local val
    if value == nil then
@@ -148,6 +154,7 @@ local function __pragma(prag, value)
    return pragma_pre .. prag .. val .. ";"
 end
 
+-- Sets a pragma and checks its new value
 local function _prag_set(conn, prag)
    return function(value)
       local prag_str = __pragma(prag, value)
@@ -166,11 +173,12 @@ local function _prag_set(conn, prag)
       end
    end
 end
+```
 
-sql.pragma = __pragma
+This is the fun part: we swap the old metatable for a function which closes
+over our ``conn``, passing it along to the pragma.
 
-
-
+```lua
 local function new_conn_index(conn, key)
    local function _prag_index(f, prag)
       return _prag_set(conn, prag)

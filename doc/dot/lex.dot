@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 189"]
+doc_0 [label="doc - 195"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-119"]
+section_1 [label="section: 1-125"]
 
 
 // END RANK doc_0
@@ -23,9 +23,9 @@ prose_3 [label="prose"]
 
 codeblock_4 [label="code block 6-15"]
 
-section_5 [label="section: 18-119"]
+section_5 [label="section: 18-125"]
 
-section_6 [label="section: 120-124"]
+section_6 [label="section: 126-130"]
 
 
 // END RANK section_1
@@ -86,7 +86,7 @@ header_17 [label="3 : Lua lexers"]
 
 prose_18 [label="prose"]
 
-codeblock_19 [label="code block 20-117"]
+codeblock_19 [label="code block 20-123"]
 
 
 // END RANK section_5
@@ -157,7 +157,13 @@ local _decimal = P\"-\"^0 * ((digit^1 * P\".\"^-1 * digit^0
                            * ((P\"e\" + P\"E\")^-1 * P\"-\"^-1 * digit^1)^-1
                         + digit^1)^1 + digit^1)
 
-local _hexadecimal = P\"0\" * (P\"x\" + P\"X\") * (digit + R\"af\" + R\"AF\")^1
+local higit = R\"09\" + R\"af\" + R\"AF\"
+
+-- hexadecimal floats. are a thing. that exists.
+local _hexadecimal = P\"-\"^0 * P\"0\" * (P\"x\" + P\"X\")
+                        * ((higit^1 * P\".\"^-1 * higit^0
+                           * ((P\"p\" + P\"P\")^-1 * P\"-\"^-1 * higit^1)^-1
+                        + higit^1)^1 + higit^1)
 
 local number = _hexadecimal + _decimal
 
@@ -214,7 +220,7 @@ header_24 [label="2 : Lex.lua_thor(linebuf)"]
 
 prose_25 [label="prose"]
 
-section_26 [label="section: 125-189"]
+section_26 [label="section: 131-195"]
 
 
 // END RANK section_6
@@ -246,9 +252,9 @@ header_30 [label="3 : chomp_token(lb)"]
 
 prose_31 [label="prose"]
 
-codeblock_32 [label="code block 130-183"]
+codeblock_32 [label="code block 136-189"]
 
-codeblock_33 [label="code block 186-188"]
+codeblock_33 [label="code block 192-194"]
 
 
 // END RANK section_26

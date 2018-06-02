@@ -130,6 +130,7 @@ end
 
 
 local function _select(collection, tab, key, cycle)
+   cycle = cycle or {}
    for k,v in pairs(tab) do
       if key == k then
          collection[#collection + 1] = v
@@ -143,7 +144,7 @@ local function _select(collection, tab, key, cycle)
 end
 
 function core.select(tab, key)
-   return _select({}, tab, key, {})
+   return _select({}, tab, key)
 end
 
 
@@ -171,11 +172,28 @@ end
 
 
 function core.keys(tab)
+   assert(type(tab) == "table", "keys must receive a table")
    local keys = {}
-   for k,v in pairs(tab) do
+   for k, _ in pairs(tab) do
       keys[#keys + 1] = k
    end
+
    return keys, #keys
+end
+
+
+
+
+
+
+function core.values(tab)
+   assert(type(tab) == "table", "vals must receive a table")
+   local vals = {}
+   for _, v in pairs(tab) do
+      vals[#vals + 1] = v
+   end
+
+   return vals, #vals
 end
 
 
@@ -397,6 +415,28 @@ function core.codepoints(str)
       end
    end
    return codes
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local format = string.format
+function core.assertfmt(pred, msg, ...)
+   if pred then
+      return pred
+   else
+      error(format(msg, ...))
+   end
 end
 
 

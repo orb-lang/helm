@@ -64,7 +64,13 @@ local _decimal = P"-"^0 * ((digit^1 * P"."^-1 * digit^0
                            * ((P"e" + P"E")^-1 * P"-"^-1 * digit^1)^-1
                         + digit^1)^1 + digit^1)
 
-local _hexadecimal = P"0" * (P"x" + P"X") * (digit + R"af" + R"AF")^1
+local higit = R"09" + R"af" + R"AF"
+
+-- hexadecimal floats. are a thing. that exists.
+local _hexadecimal = P"-"^0 * P"0" * (P"x" + P"X")
+                        * ((higit^1 * P"."^-1 * higit^0
+                           * ((P"p" + P"P")^-1 * P"-"^-1 * higit^1)^-1
+                        + higit^1)^1 + higit^1)
 
 local number = _hexadecimal + _decimal
 
