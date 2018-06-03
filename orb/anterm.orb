@@ -473,6 +473,60 @@ cursor.stash = anterm.stash
 cursor.pop = anterm.pop
 #/lua
 
+*** String Transformation
+
+Turns out I had some useful stuff in =termstring.lua=.
+
+Observe a very hacky thing:
+
+Now we have code that's commented out, but the syntax highlighter
+can't see that.
+
+#!lua
+local totty = {}
+
+function totty.nl_to_jumps(str)
+  local lines = stringx.splitlines(str)
+  local phrase = ""
+  local length = 0
+  for i,v in ipairs(lines) do
+    phrase = phrase..v..a.jump.down()..a.jump.back(#v)
+    if length < utf8.width(v) then
+      length = utf8.width(v)
+    end
+  end
+  return phrase, length, #lines
+end
+
+--- takes a string and a width in columns.
+--  Returns the amount of string which fits the width.
+function totty.truncate(str, width)
+  local trunc = utf8.sub(str,1,width)
+  if utf8.len(trunc) == utf8.width(trunc) then
+    return trunc
+  else
+    local i = 1
+    while utf8.width(trunc) > width do
+      -- io.write("width is ", utf8.width(trunc), "  target: ", width, "\n")
+      trunc = utf8.sub(str,1,width-i)
+      i = i + 1
+    end
+    return trunc
+  end
+end
+
+-- takes a string, returning a string which, when printed, will:
+-- print the string as a column, return to the top, and move one beyond
+-- the column thereby printed.
+function totty.collimate(str)
+  local phrase, length, lines = totty.nl_to_jumps(str)
+  return phrase..a.jump.up(lines)..a.jump.forward(length)
+end
+
+anterm.totty = totty
+#/lua
+
+If we forget to delete the above, no harm done.
 
 *** Input handling
 

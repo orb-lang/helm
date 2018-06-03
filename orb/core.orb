@@ -285,9 +285,12 @@ end
 #/lua
 
 
-*** format_safe(str, ...)
+*** typeformat(str, ...)
 
-#NB lack the patience to finish this rn. =sqlayer.format= is good enough.
+Background: I want to start using format in errors and assertions.
+
+It's not as bad to use concatenation in-place for errors, since evaluating
+them is a final step.  Assertions run much faster if passed only arguments.
 
 Lua peforms a small number of implicit conversions, mostly at the string
 boundary. This is an actual feature since the language has both =..= and =+=,
@@ -297,11 +300,8 @@ but it leaves a bit to be desired when it comes to =string.format=.
 =%d= as a call to =tonumber=.  The latter I will allow, I'm struggling to find
 a circumstance where casting "1" to "1" through =1= is dangerous.
 
-This isn't "safe" in the sense of preventing injections, all it does is check
-that its arguments are of a valid type, prohibiting implicit =tostring=
-conversions.  So =format("select %s from ...", "';drop table users;")= will
-get through, but not
-==format("%s", setmeta({}, {__tostring = function() return "'; drop..."}))==.
+What I want is a type-checked =format=, which I can extend to use a few more
+flexible strategies, depending on the context.
 
 Less concerned about hostility and more about explicit coding practices. Also
 don't want to undermine hardening elsewhere.
@@ -311,13 +311,18 @@ From the wiki, the full set of numeric parameters is
 string escaping but of course it is the Lua/C style of escaping.
 
 We add =%t= and =%L= (for λ), which call =tostring= on a table or a function
-respectively.  =%t= will actually accept all remaining compound types:
-=userdata=, =thread=, and =cdata=.  While we're being thorough, =%b= for
-boolean.  Perhaps =%*= as a wildcard?
+respectively.  While we're being thorough, =%b= for boolean, =%n= for =nil=,
+and =%*= for the union type.  Why bother with =nil=, which we can just write?
+Type-checking, of course.  We treat =nil= as a full type, because in Lua, it
+is.
+
+=%t= will actually accept all remaining compound types: =userdata=, =thread=,
+and =cdata=.  For only tables, we can have =%T=, and also =%U=, =%R= (coRo),
+and =%C=.
 
 Note our =%L= is not the C version.
 
-=format_safe= returns the correctly formatted string, or throws an error.
+=typeformat= returns the correctly formatted string, or throws an error.
 
 #!lua
 local fmt_set = {"L", "q", "s", "t"}
@@ -431,6 +436,7 @@ see in normal use.
 
 #!lua
 local format = string.format
+
 function core.assertfmt(pred, msg, ...)
    if pred then
       return pred

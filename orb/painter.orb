@@ -55,7 +55,7 @@ local function tf(bool)
    end
 end
 
-function pr_mouse(m)
+local function pr_mouse(m)
    local phrase = a.magenta(m.button) .. ": "
                      .. a.bright(m.kind) .. " " .. tf(m.shift)
                      .. " " .. tf(m.meta)

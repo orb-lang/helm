@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 195"]
+doc_0 [label="doc - 196"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-125"]
+section_1 [label="section: 1-126"]
 
 
 // END RANK doc_0
@@ -23,9 +23,9 @@ prose_3 [label="prose"]
 
 codeblock_4 [label="code block 6-15"]
 
-section_5 [label="section: 18-125"]
+section_5 [label="section: 18-126"]
 
-section_6 [label="section: 126-130"]
+section_6 [label="section: 127-131"]
 
 
 // END RANK section_1
@@ -86,7 +86,7 @@ header_17 [label="3 : Lua lexers"]
 
 prose_18 [label="prose"]
 
-codeblock_19 [label="code block 20-123"]
+codeblock_19 [label="code block 20-124"]
 
 
 // END RANK section_5
@@ -126,32 +126,7 @@ local OP = P\"+\" + \"-\" + \"*\" + \"/\" + \"%\" + \"^\" + \"#\"
            + \"=\" + \"(\" + \")\" + \"{\" + \"}\" + \"[\" + \"]\"
            + \";\" + \";\" + \"...\" + \"..\" + \".\" + \",\"
 
--- long strings, straight from the LPEG docs
-
-local _equals = P\"=\"^0
-local _open = \"[\" * L.Cg(_equals, \"init\") * \"[\" * P\"\\n\"^-1
-local _close = \"]\" * L.C(_equals) * \"]\"
-local _closeeq = L.Cmt(_close * L.Cb(\"init\"),
-                          function (s, i, a, b) return a == b end)
-
-local long_str = (_open * L.C((P(1) - _closeeq)^0) * _close) / 0 * L.Cp()
-
-local str_esc = P\"\\\\\" * (S\"abfnrtv\\\\\\\"'[]\\n\" + (R\"09\" * R\"09\"^-2))
-
-local double_str = P\"\\\"\" * (P(1) - (P\"\\\"\" + P\"\\\\\") + str_esc)^0 * P\"\\\"\"
-local single_str = P\"\\'\" * (P(1) - (P\"\\'\" + P\"\\\\\") + str_esc)^0 * P\"\\'\"
-
-local string_esc = double_str + single_str
-
-local string_long = long_str
-
 local digit = R\"09\"
-
-local letter = R\"az\" + R\"AZ\"
-
-local symbol =   (letter^1 + P\"_\"^1)
-               * (letter + digit + P\"_\")^0
-               * #terminal
 
 local _decimal = P\"-\"^0 * ((digit^1 * P\".\"^-1 * digit^0
                            * ((P\"e\" + P\"E\")^-1 * P\"-\"^-1 * digit^1)^-1
@@ -165,11 +140,37 @@ local _hexadecimal = P\"-\"^0 * P\"0\" * (P\"x\" + P\"X\")
                            * ((P\"p\" + P\"P\")^-1 * P\"-\"^-1 * higit^1)^-1
                         + higit^1)^1 + higit^1)
 
+-- long strings, straight from the LPEG docs
+
+local _equals = P\"=\"^0
+local _open = \"[\" * L.Cg(_equals, \"init\") * \"[\" * P\"\\n\"^-1
+local _close = \"]\" * L.C(_equals) * \"]\"
+local _closeeq = L.Cmt(_close * L.Cb(\"init\"),
+                          function (s, i, a, b) return a == b end)
+
+local long_str = (_open * L.C((P(1) - _closeeq)^0) * _close) / 0 * L.Cp()
+
+local str_esc = P\"\\\\\" * (S\"abfnrtvz\\\\\\\"'[]\\n\"
+                         + (R\"09\" * R\"09\"^-2)
+                         + (P\"x\" + P\"X\") * higit * higit)
+
+local double_str = P\"\\\"\" * (P(1) - (P\"\\\"\" + P\"\\\\\") + str_esc)^0 * P\"\\\"\"
+local single_str = P\"\\'\" * (P(1) - (P\"\\'\" + P\"\\\\\") + str_esc)^0 * P\"\\'\"
+
+local string_esc = double_str + single_str
+
+local string_long = long_str
+
+local letter = R\"az\" + R\"AZ\"
+
+local symbol =   (letter^1 + P\"_\"^1)
+               * (letter + digit + P\"_\")^0
+               * #terminal
+
 local number = _hexadecimal + _decimal
 
 local comment = P\"--\" * long_str
               + P\"--\" * (P(1) - NL)^0 * (NL + - P(1))
-
 
 local ERR = P(1)
 
@@ -220,7 +221,7 @@ header_24 [label="2 : Lex.lua_thor(linebuf)"]
 
 prose_25 [label="prose"]
 
-section_26 [label="section: 131-195"]
+section_26 [label="section: 132-196"]
 
 
 // END RANK section_6
@@ -252,9 +253,9 @@ header_30 [label="3 : chomp_token(lb)"]
 
 prose_31 [label="prose"]
 
-codeblock_32 [label="code block 136-189"]
+codeblock_32 [label="code block 137-190"]
 
-codeblock_33 [label="code block 192-194"]
+codeblock_33 [label="code block 193-195"]
 
 
 // END RANK section_26

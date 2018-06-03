@@ -847,7 +847,7 @@
 <text text-anchor="middle" x="6194.5" y="-901.2014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return ts(&quot;f&quot;, &quot;false&quot;)</text>
 <text text-anchor="middle" x="6194.5" y="-885.8014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
 <text text-anchor="middle" x="6194.5" y="-870.4014" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
-<text text-anchor="middle" x="6194.5" y="-839.0013" font-family="Inconsolata" font-size="14.00" fill="#000000">function pr_mouse(m)</text>
+<text text-anchor="middle" x="6194.5" y="-839.0013" font-family="Inconsolata" font-size="14.00" fill="#000000">local function pr_mouse(m)</text>
 <text text-anchor="middle" x="6194.5" y="-823.6013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local phrase = a.magenta(m.button) .. &quot;: &quot;</text>
 <text text-anchor="middle" x="6194.5" y="-808.2013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;.. a.bright(m.kind) .. &quot; &quot; .. tf(m.shift)</text>
 <text text-anchor="middle" x="6194.5" y="-792.8012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;.. &quot; &quot; .. tf(m.meta)</text>

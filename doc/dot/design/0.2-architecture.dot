@@ -1,0 +1,1229 @@
+digraph lpegNode {
+
+node [fontname=Helvetica]
+edge [style=dashed]
+
+doc_0 [label="doc - 146"]
+
+
+doc_0 -> { section_1}
+{rank=same; section_1}
+
+section_1 [label="section: 1-93"]
+
+
+// END RANK doc_0
+
+section_1 -> { header_2 prose_3 prose_4 prose_5 section_6 section_7 section_8}
+{rank=same; header_2 prose_3 prose_4 prose_5 section_6 section_7 section_8}
+
+header_2 [label="1 : Femto 0.2"]
+
+prose_3 [label="prose"]
+
+prose_4 [label="prose"]
+
+prose_5 [label="prose"]
+
+section_6 [label="section: 13-23"]
+
+section_7 [label="section: 45-71"]
+
+section_8 [label="section: 94-132"]
+
+
+// END RANK section_1
+
+header_2 -> leaf_9
+leaf_9  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Femto 0.2"]
+// END RANK header_2
+
+prose_3 -> { raw_10 prespace_11 literal_12 raw_13}
+{rank=same; raw_10 prespace_11 literal_12 raw_13}
+
+raw_10 [label="raw"]
+
+prespace_11 [label="prespace"]
+
+literal_12 [label="literal"]
+
+raw_13 [label="raw"]
+
+
+// END RANK prose_3
+
+raw_10 -> leaf_14
+leaf_14  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+
+This is exciting!"]
+// END RANK raw_10
+
+prespace_11 -> leaf_15
+leaf_15  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_11
+
+literal_12 -> leaf_16
+leaf_16  [color=Gray,shape=rectangle,fontname=Inconsolata,label="femto"]
+// END RANK literal_12
+
+raw_13 -> leaf_17
+leaf_17  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is now a capable-enough top-line repl. Capable
+enough that I'm no longer using the cooked-mode REPL which I started with,
+and certainly not lua(jit) -i.
+"]
+// END RANK raw_13
+
+prose_4 -> { raw_18}
+{rank=same; raw_18}
+
+raw_18 [label="raw"]
+
+
+// END RANK prose_4
+
+raw_18 -> leaf_19
+leaf_19  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+The 0.1 release needs some polishing, most of the notes for that are in-line.
+"]
+// END RANK raw_18
+
+prose_5 -> { raw_20}
+{rank=same; raw_20}
+
+raw_20 [label="raw"]
+
+
+// END RANK prose_5
+
+raw_20 -> leaf_21
+leaf_21  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+It's time to start planning out 0.2.
+
+"]
+// END RANK raw_20
+
+section_6 -> { header_22 prose_23 prose_24 section_25}
+{rank=same; header_22 prose_23 prose_24 section_25}
+
+header_22 [label="2 : Big-picture design"]
+
+prose_23 [label="prose"]
+
+prose_24 [label="prose"]
+
+section_25 [label="section: 24-44"]
+
+
+// END RANK section_6
+
+header_22 -> leaf_26
+leaf_26  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Big-picture design"]
+// END RANK header_22
+
+prose_23 -> { raw_27 prespace_28 literal_29 raw_30 prespace_31 literal_32 raw_33}
+{rank=same; raw_27 prespace_28 literal_29 raw_30 prespace_31 literal_32 raw_33}
+
+raw_27 [label="raw"]
+
+prespace_28 [label="prespace"]
+
+literal_29 [label="literal"]
+
+raw_30 [label="raw"]
+
+prespace_31 [label="prespace"]
+
+literal_32 [label="literal"]
+
+raw_33 [label="raw"]
+
+
+// END RANK prose_23
+
+raw_27 -> leaf_34
+leaf_34  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+Right now,"]
+// END RANK raw_27
+
+prespace_28 -> leaf_35
+leaf_35  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_28
+
+literal_29 -> leaf_36
+leaf_36  [color=Gray,shape=rectangle,fontname=Inconsolata,label="femto"]
+// END RANK literal_29
+
+raw_30 -> leaf_37
+leaf_37  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" shares a namespace with the 'program'. Actually, it is the
+program.  I'm reminded of this every time I accidentally declare an"]
+// END RANK raw_30
+
+prespace_31 -> leaf_38
+leaf_38  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_31
+
+literal_32 -> leaf_39
+leaf_39  [color=Gray,shape=rectangle,fontname=Inconsolata,label="a"]
+// END RANK literal_32
+
+raw_33 -> leaf_40
+leaf_40  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" and
+blow my terminal object to pieces.
+"]
+// END RANK raw_33
+
+prose_24 -> { raw_41}
+{rank=same; raw_41}
+
+raw_41 [label="raw"]
+
+
+// END RANK prose_24
+
+raw_41 -> leaf_42
+leaf_42  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+There's a super-light fix, which is to just wrap _G as a metatable.  I'd need
+to think about how that interacts with the colorizer; but in any case it
+doesn't get us where we need to go.
+
+"]
+// END RANK raw_41
+
+section_25 -> { header_43 prose_44 prose_45 prose_46 prose_47}
+{rank=same; header_43 prose_44 prose_45 prose_46 prose_47}
+
+header_43 [label="3 : Pylon 0.2"]
+
+prose_44 [label="prose"]
+
+prose_45 [label="prose"]
+
+prose_46 [label="prose"]
+
+prose_47 [label="prose"]
+
+
+// END RANK section_25
+
+header_43 -> leaf_48
+leaf_48  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Pylon 0.2"]
+// END RANK header_43
+
+prose_44 -> { raw_49 prespace_50 literal_51 raw_52}
+{rank=same; raw_49 prespace_50 literal_51 raw_52}
+
+raw_49 [label="raw"]
+
+prespace_50 [label="prespace"]
+
+literal_51 [label="literal"]
+
+raw_52 [label="raw"]
+
+
+// END RANK prose_44
+
+raw_49 -> leaf_53
+leaf_53  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK raw_49
+
+prespace_50 -> leaf_54
+leaf_54  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK prespace_50
+
+literal_51 -> leaf_55
+leaf_55  [color=Gray,shape=rectangle,fontname=Inconsolata,label="pylon"]
+// END RANK literal_51
+
+raw_52 -> leaf_56
+leaf_56  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is effectively 0.1. It's doing everything I need it to, zero qualms.
+"]
+// END RANK raw_52
+
+prose_45 -> { raw_57 prespace_58 literal_59 raw_60 prespace_61 literal_62 raw_63}
+{rank=same; raw_57 prespace_58 literal_59 raw_60 prespace_61 literal_62 raw_63}
+
+raw_57 [label="raw"]
+
+prespace_58 [label="prespace"]
+
+literal_59 [label="literal"]
+
+raw_60 [label="raw"]
+
+prespace_61 [label="prespace"]
+
+literal_62 [label="literal"]
+
+raw_63 [label="raw"]
+
+
+// END RANK prose_45
+
+raw_57 -> leaf_64
+leaf_64  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+I've completely phased out the"]
+// END RANK raw_57
+
+prespace_58 -> leaf_65
+leaf_65  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_58
+
+literal_59 -> leaf_66
+leaf_66  [color=Gray,shape=rectangle,fontname=Inconsolata,label="femto"]
+// END RANK literal_59
+
+raw_60 -> leaf_67
+leaf_67  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" library in favor of"]
+// END RANK raw_60
+
+prespace_61 -> leaf_68
+leaf_68  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_61
+
+literal_62 -> leaf_69
+leaf_69  [color=Gray,shape=rectangle,fontname=Inconsolata,label="uv"]
+// END RANK literal_62
+
+raw_63 -> leaf_70
+leaf_70  [color=Gray,shape=rectangle,fontname=Inconsolata,label=". It's taught
+me some invaluable things!
+"]
+// END RANK raw_63
+
+prose_46 -> { raw_71 prespace_72 literal_73 raw_74 prespace_75 literal_76 raw_77}
+{rank=same; raw_71 prespace_72 literal_73 raw_74 prespace_75 literal_76 raw_77}
+
+raw_71 [label="raw"]
+
+prespace_72 [label="prespace"]
+
+literal_73 [label="literal"]
+
+raw_74 [label="raw"]
+
+prespace_75 [label="prespace"]
+
+literal_76 [label="literal"]
+
+raw_77 [label="raw"]
+
+
+// END RANK prose_46
+
+raw_71 -> leaf_78
+leaf_78  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+0.2 is going to enhance our runtime so that it can allocate and free a
+flexible number of lua states.  It won't have any thread management or process
+forking, at least not in 0.2, and we'll most likely stick with"]
+// END RANK raw_71
+
+prespace_72 -> leaf_79
+leaf_79  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_72
+
+literal_73 -> leaf_80
+leaf_80  [color=Gray,shape=rectangle,fontname=Inconsolata,label="libuv"]
+// END RANK literal_73
+
+raw_74 -> leaf_81
+leaf_81  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" for
+threads and handle forks and processes on an even higher level. "]
+// END RANK raw_74
+
+prespace_75 -> leaf_82
+leaf_82  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_75
+
+literal_76 -> leaf_83
+leaf_83  [color=Gray,shape=rectangle,fontname=Inconsolata,label="pylon"]
+// END RANK literal_76
+
+raw_77 -> leaf_84
+leaf_84  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is
+explicitly a process-level abstraction.
+"]
+// END RANK raw_77
+
+prose_47 -> { raw_85 prespace_86 literal_87 raw_88 prespace_89 literal_90 raw_91 prespace_92 literal_93 raw_94}
+{rank=same; raw_85 prespace_86 literal_87 raw_88 prespace_89 literal_90 raw_91 prespace_92 literal_93 raw_94}
+
+raw_85 [label="raw"]
+
+prespace_86 [label="prespace"]
+
+literal_87 [label="literal"]
+
+raw_88 [label="raw"]
+
+prespace_89 [label="prespace"]
+
+literal_90 [label="literal"]
+
+raw_91 [label="raw"]
+
+prespace_92 [label="prespace"]
+
+literal_93 [label="literal"]
+
+raw_94 [label="raw"]
+
+
+// END RANK prose_47
+
+raw_85 -> leaf_95
+leaf_95  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+The C to manage these states will expose through the internal FFI, giving us
+the tooling to establish multiple Lua environments from within"]
+// END RANK raw_85
+
+prespace_86 -> leaf_96
+leaf_96  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_86
+
+literal_87 -> leaf_97
+leaf_97  [color=Gray,shape=rectangle,fontname=Inconsolata,label="pylon"]
+// END RANK literal_87
+
+raw_88 -> leaf_98
+leaf_98  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
+I'm going to reach out to Tim Caswell on this, because the first-step goal is
+to run"]
+// END RANK raw_88
+
+prespace_89 -> leaf_99
+leaf_99  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_89
+
+literal_90 -> leaf_100
+leaf_100  [color=Gray,shape=rectangle,fontname=Inconsolata,label="femto"]
+// END RANK literal_90
+
+raw_91 -> leaf_101
+leaf_101  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" against other"]
+// END RANK raw_91
+
+prespace_92 -> leaf_102
+leaf_102  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_92
+
+literal_93 -> leaf_103
+leaf_103  [color=Gray,shape=rectangle,fontname=Inconsolata,label="luv"]
+// END RANK literal_93
+
+raw_94 -> leaf_104
+leaf_104  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" applications in the classic runtime
+attachment style, and I think they're going to like this and have some
+insight into how to do it.
+
+"]
+// END RANK raw_94
+
+section_7 -> { header_105 prose_106 prose_107 prose_108 prose_109 prose_110 prose_111 section_112}
+{rank=same; header_105 prose_106 prose_107 prose_108 prose_109 prose_110 prose_111 section_112}
+
+header_105 [label="2 : Femto 0.2: runtime architecture"]
+
+prose_106 [label="prose"]
+
+prose_107 [label="prose"]
+
+prose_108 [label="prose"]
+
+prose_109 [label="prose"]
+
+prose_110 [label="prose"]
+
+prose_111 [label="prose"]
+
+section_112 [label="section: 72-93"]
+
+
+// END RANK section_7
+
+header_105 -> leaf_113
+leaf_113  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Femto 0.2: runtime architecture"]
+// END RANK header_105
+
+prose_106 -> { raw_114 prespace_115 literal_116 raw_117}
+{rank=same; raw_114 prespace_115 literal_116 raw_117}
+
+raw_114 [label="raw"]
+
+prespace_115 [label="prespace"]
+
+literal_116 [label="literal"]
+
+raw_117 [label="raw"]
+
+
+// END RANK prose_106
+
+raw_114 -> leaf_118
+leaf_118  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+According to the roadmap,"]
+// END RANK raw_114
+
+prespace_115 -> leaf_119
+leaf_119  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_115
+
+literal_116 -> leaf_120
+leaf_120  [color=Gray,shape=rectangle,fontname=Inconsolata,label="femto"]
+// END RANK literal_116
+
+raw_117 -> leaf_121
+leaf_121  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" will grow for two or three point releases,
+then slim down.  By 1.0, it will handle tty reads and writes; end of story.
+"]
+// END RANK raw_117
+
+prose_107 -> { raw_122 prespace_123 literal_124 raw_125 prespace_126 literal_127 raw_128 prespace_129 literal_130 raw_131}
+{rank=same; raw_122 prespace_123 literal_124 raw_125 prespace_126 literal_127 raw_128 prespace_129 literal_130 raw_131}
+
+raw_122 [label="raw"]
+
+prespace_123 [label="prespace"]
+
+literal_124 [label="literal"]
+
+raw_125 [label="raw"]
+
+prespace_126 [label="prespace"]
+
+literal_127 [label="literal"]
+
+raw_128 [label="raw"]
+
+prespace_129 [label="prespace"]
+
+literal_130 [label="literal"]
+
+raw_131 [label="raw"]
+
+
+// END RANK prose_107
+
+raw_122 -> leaf_132
+leaf_132  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+In the meantime, we're going to have a \"fat femto\". It will be a nursery for
+techniques and libraries which will end up in"]
+// END RANK raw_122
+
+prespace_123 -> leaf_133
+leaf_133  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_123
+
+literal_124 -> leaf_134
+leaf_134  [color=Gray,shape=rectangle,fontname=Inconsolata,label="bridge"]
+// END RANK literal_124
+
+raw_125 -> leaf_135
+leaf_135  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" and"]
+// END RANK raw_125
+
+prespace_126 -> leaf_136
+leaf_136  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_126
+
+literal_127 -> leaf_137
+leaf_137  [color=Gray,shape=rectangle,fontname=Inconsolata,label="codex"]
+// END RANK literal_127
+
+raw_128 -> leaf_138
+leaf_138  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" and"]
+// END RANK raw_128
+
+prespace_129 -> leaf_139
+leaf_139  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_129
+
+literal_130 -> leaf_140
+leaf_140  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ed"]
+// END RANK literal_130
+
+raw_131 -> leaf_141
+leaf_141  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+as time goes by.
+"]
+// END RANK raw_131
+
+prose_108 -> { prespace_142 literal_143 raw_144 prespace_145 literal_146 raw_147}
+{rank=same; prespace_142 literal_143 raw_144 prespace_145 literal_146 raw_147}
+
+prespace_142 [label="prespace"]
+
+literal_143 [label="literal"]
+
+raw_144 [label="raw"]
+
+prespace_145 [label="prespace"]
+
+literal_146 [label="literal"]
+
+raw_147 [label="raw"]
+
+
+// END RANK prose_108
+
+prespace_142 -> leaf_148
+leaf_148  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK prespace_142
+
+literal_143 -> leaf_149
+leaf_149  [color=Gray,shape=rectangle,fontname=Inconsolata,label="femto"]
+// END RANK literal_143
+
+raw_144 -> leaf_150
+leaf_150  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" 1.0 will be around 200 lines of Lua, with a full graphical"]
+// END RANK raw_144
+
+prespace_145 -> leaf_151
+leaf_151  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_145
+
+literal_146 -> leaf_152
+leaf_152  [color=Gray,shape=rectangle,fontname=Inconsolata,label="anterm"]
+// END RANK literal_146
+
+raw_147 -> leaf_153
+leaf_153  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+protocol, about twice that.  I expect it will look a fair amount like it does
+now, just with all the modules living elsewhere.
+"]
+// END RANK raw_147
+
+prose_109 -> { raw_154}
+{rank=same; raw_154}
+
+raw_154 [label="raw"]
+
+
+// END RANK prose_109
+
+raw_154 -> leaf_155
+leaf_155  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+So. 0.2. We'll steadily beef up modeselecktor into a respectable editor, not
+much to say about that.
+"]
+// END RANK raw_154
+
+prose_110 -> { raw_156 prespace_157 literal_158 raw_159}
+{rank=same; raw_156 prespace_157 literal_158 raw_159}
+
+raw_156 [label="raw"]
+
+prespace_157 [label="prespace"]
+
+literal_158 [label="literal"]
+
+raw_159 [label="raw"]
+
+
+// END RANK prose_110
+
+raw_156 -> leaf_160
+leaf_160  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+I'll be working out good and better strategies for SQLite persistence of
+objects, ending up with a sort of T-shaped structure:"]
+// END RANK raw_156
+
+prespace_157 -> leaf_161
+leaf_161  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_157
+
+literal_158 -> leaf_162
+leaf_162  [color=Gray,shape=rectangle,fontname=Inconsolata,label="pylon"]
+// END RANK literal_158
+
+raw_159 -> leaf_163
+leaf_163  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" will juggle two
+or three SQLite states, one for the i/o loop, one for the attached runtime,
+and possibly a third to handle disk persistence.
+"]
+// END RANK raw_159
+
+prose_111 -> { raw_164}
+{rank=same; raw_164}
+
+raw_164 [label="raw"]
+
+
+// END RANK prose_111
+
+raw_164 -> leaf_165
+leaf_165  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+State is shared between Luas, each of which is on its own thread, by a shared
+in-memory SQLite database. Each will have its own conn, and its own trigger
+collection, and between them, that database will manage flow between the
+otherwise non-blocking systems.
+
+"]
+// END RANK raw_164
+
+section_112 -> { header_166 prose_167 prose_168 prose_169 prose_170 prose_171}
+{rank=same; header_166 prose_167 prose_168 prose_169 prose_170 prose_171}
+
+header_166 [label="3 : LuaL_states: pylon or femto?"]
+
+prose_167 [label="prose"]
+
+prose_168 [label="prose"]
+
+prose_169 [label="prose"]
+
+prose_170 [label="prose"]
+
+prose_171 [label="prose"]
+
+
+// END RANK section_112
+
+header_166 -> leaf_172
+leaf_172  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** LuaL_states: pylon or femto?"]
+// END RANK header_166
+
+prose_167 -> { raw_173 prespace_174 literal_175 raw_176}
+{rank=same; raw_173 prespace_174 literal_175 raw_176}
+
+raw_173 [label="raw"]
+
+prespace_174 [label="prespace"]
+
+literal_175 [label="literal"]
+
+raw_176 [label="raw"]
+
+
+// END RANK prose_167
+
+raw_173 -> leaf_177
+leaf_177  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+It's possible to just generate new LuaL_states from the"]
+// END RANK raw_173
+
+prespace_174 -> leaf_178
+leaf_178  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_174
+
+literal_175 -> leaf_179
+leaf_179  [color=Gray,shape=rectangle,fontname=Inconsolata,label="luv"]
+// END RANK literal_175
+
+raw_176 -> leaf_180
+leaf_180  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" threadpool.
+Let's go the distance and manage them from within Pylon.  Otherwise we've
+preselected a privileged state and that kinda decision leads to regret.
+"]
+// END RANK raw_176
+
+prose_168 -> { raw_181 prespace_182 literal_183 raw_184 prespace_185 literal_186 raw_187}
+{rank=same; raw_181 prespace_182 literal_183 raw_184 prespace_185 literal_186 raw_187}
+
+raw_181 [label="raw"]
+
+prespace_182 [label="prespace"]
+
+literal_183 [label="literal"]
+
+raw_184 [label="raw"]
+
+prespace_185 [label="prespace"]
+
+literal_186 [label="literal"]
+
+raw_187 [label="raw"]
+
+
+// END RANK prose_168
+
+raw_181 -> leaf_188
+leaf_188  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+I don't think we save any ass or neck pain with this choice, either.  Might
+need some flick of the wrist to keep the"]
+// END RANK raw_181
+
+prespace_182 -> leaf_189
+leaf_189  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_182
+
+literal_183 -> leaf_190
+leaf_190  [color=Gray,shape=rectangle,fontname=Inconsolata,label="luv"]
+// END RANK literal_183
+
+raw_184 -> leaf_191
+leaf_191  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" and"]
+// END RANK raw_184
+
+prespace_185 -> leaf_192
+leaf_192  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_185
+
+literal_186 -> leaf_193
+leaf_193  [color=Gray,shape=rectangle,fontname=Inconsolata,label="pylon"]
+// END RANK literal_186
+
+raw_187 -> leaf_194
+leaf_194  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" ideas of what's
+happening consistent.
+"]
+// END RANK raw_187
+
+prose_169 -> { prespace_195 literal_196 raw_197 prespace_198 literal_199 raw_200}
+{rank=same; prespace_195 literal_196 raw_197 prespace_198 literal_199 raw_200}
+
+prespace_195 [label="prespace"]
+
+literal_196 [label="literal"]
+
+raw_197 [label="raw"]
+
+prespace_198 [label="prespace"]
+
+literal_199 [label="literal"]
+
+raw_200 [label="raw"]
+
+
+// END RANK prose_169
+
+prespace_195 -> leaf_201
+leaf_201  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK prespace_195
+
+literal_196 -> leaf_202
+leaf_202  [color=Gray,shape=rectangle,fontname=Inconsolata,label="femto"]
+// END RANK literal_196
+
+raw_197 -> leaf_203
+leaf_203  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is 0.2 when user commands are inserted into the shared-memory
+database, triggering an update in the attached loop, where the return value
+is then inserted to that database, triggering an update on the"]
+// END RANK raw_197
+
+prespace_198 -> leaf_204
+leaf_204  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_198
+
+literal_199 -> leaf_205
+leaf_205  [color=Gray,shape=rectangle,fontname=Inconsolata,label="femto"]
+// END RANK literal_199
+
+raw_200 -> leaf_206
+leaf_206  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" side.
+During idles, these changes get transacted to store.
+"]
+// END RANK raw_200
+
+prose_170 -> { raw_207 prespace_208 literal_209 raw_210 prespace_211 literal_212 raw_213}
+{rank=same; raw_207 prespace_208 literal_209 raw_210 prespace_211 literal_212 raw_213}
+
+raw_207 [label="raw"]
+
+prespace_208 [label="prespace"]
+
+literal_209 [label="literal"]
+
+raw_210 [label="raw"]
+
+prespace_211 [label="prespace"]
+
+literal_212 [label="literal"]
+
+raw_213 [label="raw"]
+
+
+// END RANK prose_170
+
+raw_207 -> leaf_214
+leaf_214  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Letting the database keep blocking on the femto side is probably okay for 0.2.
+When building"]
+// END RANK raw_207
+
+prespace_208 -> leaf_215
+leaf_215  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_208
+
+literal_209 -> leaf_216
+leaf_216  [color=Gray,shape=rectangle,fontname=Inconsolata,label="n"]
+// END RANK literal_209
+
+raw_210 -> leaf_217
+leaf_217  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" interacting systems, set"]
+// END RANK raw_210
+
+prespace_211 -> leaf_218
+leaf_218  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_211
+
+literal_212 -> leaf_219
+leaf_219  [color=Gray,shape=rectangle,fontname=Inconsolata,label="n=2"]
+// END RANK literal_212
+
+raw_213 -> leaf_220
+leaf_220  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" at first.
+"]
+// END RANK raw_213
+
+prose_171 -> { raw_221 prespace_222 literal_223 raw_224}
+{rank=same; raw_221 prespace_222 literal_223 raw_224}
+
+raw_221 [label="raw"]
+
+prespace_222 [label="prespace"]
+
+literal_223 [label="literal"]
+
+raw_224 [label="raw"]
+
+
+// END RANK prose_171
+
+raw_221 -> leaf_225
+leaf_225  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+But the user OODA loop is sacred, and"]
+// END RANK raw_221
+
+prespace_222 -> leaf_226
+leaf_226  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_222
+
+literal_223 -> leaf_227
+leaf_227  [color=Gray,shape=rectangle,fontname=Inconsolata,label="bridge"]
+// END RANK literal_223
+
+raw_224 -> leaf_228
+leaf_228  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" systems give it the highest
+priority the platform easily allows.
+
+"]
+// END RANK raw_224
+
+section_8 -> { header_229 prose_230 prose_231 prose_232 prose_233 prose_234 prose_235 prose_236 prose_237 section_238}
+{rank=same; header_229 prose_230 prose_231 prose_232 prose_233 prose_234 prose_235 prose_236 prose_237 section_238}
+
+header_229 [label="2 : Game Plan"]
+
+prose_230 [label="prose"]
+
+prose_231 [label="prose"]
+
+prose_232 [label="prose"]
+
+prose_233 [label="prose"]
+
+prose_234 [label="prose"]
+
+prose_235 [label="prose"]
+
+prose_236 [label="prose"]
+
+prose_237 [label="prose"]
+
+section_238 [label="section: 133-146"]
+
+
+// END RANK section_8
+
+header_229 -> leaf_239
+leaf_239  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Game Plan"]
+// END RANK header_229
+
+prose_230 -> { raw_240 prespace_241 literal_242 raw_243 prespace_244 literal_245 raw_246 prespace_247 literal_248 raw_249}
+{rank=same; raw_240 prespace_241 literal_242 raw_243 prespace_244 literal_245 raw_246 prespace_247 literal_248 raw_249}
+
+raw_240 [label="raw"]
+
+prespace_241 [label="prespace"]
+
+literal_242 [label="literal"]
+
+raw_243 [label="raw"]
+
+prespace_244 [label="prespace"]
+
+literal_245 [label="literal"]
+
+raw_246 [label="raw"]
+
+prespace_247 [label="prespace"]
+
+literal_248 [label="literal"]
+
+raw_249 [label="raw"]
+
+
+// END RANK prose_230
+
+raw_240 -> leaf_250
+leaf_250  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+My nomenclature is aspirational as much as it is informative."]
+// END RANK raw_240
+
+prespace_241 -> leaf_251
+leaf_251  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_241
+
+literal_242 -> leaf_252
+leaf_252  [color=Gray,shape=rectangle,fontname=Inconsolata,label="pylon"]
+// END RANK literal_242
+
+raw_243 -> leaf_253
+leaf_253  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" makes a
+binary called"]
+// END RANK raw_243
+
+prespace_244 -> leaf_254
+leaf_254  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_244
+
+literal_245 -> leaf_255
+leaf_255  [color=Gray,shape=rectangle,fontname=Inconsolata,label="br"]
+// END RANK literal_245
+
+raw_246 -> leaf_256
+leaf_256  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", and I'll fork it and have that fork make"]
+// END RANK raw_246
+
+prespace_247 -> leaf_257
+leaf_257  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_247
+
+literal_248 -> leaf_258
+leaf_258  [color=Gray,shape=rectangle,fontname=Inconsolata,label="bur"]
+// END RANK literal_248
+
+raw_249 -> leaf_259
+leaf_259  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" or
+something, while I make a test repo that purely works out the basic character
+of running a couple processes against each other.
+"]
+// END RANK raw_249
+
+prose_231 -> { raw_260 prespace_261 literal_262 raw_263}
+{rank=same; raw_260 prespace_261 literal_262 raw_263}
+
+raw_260 [label="raw"]
+
+prespace_261 [label="prespace"]
+
+literal_262 [label="literal"]
+
+raw_263 [label="raw"]
+
+
+// END RANK prose_231
+
+raw_260 -> leaf_264
+leaf_264  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+I'm hoping to get some reasonable advice from Tim Caswell, whom I will put on
+the contact list for femto 0.1. I want luv/lit/luvit programs to be able to
+pull in one module  and then be able to connect to the"]
+// END RANK raw_260
+
+prespace_261 -> leaf_265
+leaf_265  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_261
+
+literal_262 -> leaf_266
+leaf_266  [color=Gray,shape=rectangle,fontname=Inconsolata,label="bridge"]
+// END RANK literal_262
+
+raw_263 -> leaf_267
+leaf_267  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" repl from
+there.
+"]
+// END RANK raw_263
+
+prose_232 -> { raw_268 prespace_269 literal_270 raw_271}
+{rank=same; raw_268 prespace_269 literal_270 raw_271}
+
+raw_268 [label="raw"]
+
+prespace_269 [label="prespace"]
+
+literal_270 [label="literal"]
+
+raw_271 [label="raw"]
+
+
+// END RANK prose_232
+
+raw_268 -> leaf_272
+leaf_272  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+I think the boot sequence is: if the -i flag isn't present, just run the
+program, if it is, fire up the repl first, which launches a second state
+that holds a conn to"]
+// END RANK raw_268
+
+prespace_269 -> leaf_273
+leaf_273  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_269
+
+literal_270 -> leaf_274
+leaf_274  [color=Gray,shape=rectangle,fontname=Inconsolata,label="~/.bridge"]
+// END RANK literal_270
+
+raw_271 -> leaf_275
+leaf_275  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" and another to an in-memory DB, once the
+luser has a prompt, set up the programme, print any output to a buffer, then
+run back any session from the DB.
+"]
+// END RANK raw_271
+
+prose_233 -> { raw_276}
+{rank=same; raw_276}
+
+raw_276 [label="raw"]
+
+
+// END RANK prose_233
+
+raw_276 -> leaf_277
+leaf_277  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+This is all a little mind-bending but having an ACID store between threads is
+literally what STM is and I think once I figure out some good, if not totally
+ordered, semantics for ORM in Lua, we'll be in pretty nice shape.
+"]
+// END RANK raw_276
+
+prose_234 -> { raw_278}
+{rank=same; raw_278}
+
+raw_278 [label="raw"]
+
+
+// END RANK prose_234
+
+raw_278 -> leaf_279
+leaf_279  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Clu is supposed to be \"What if Clojure except persistent rather than immutable\"
+and having the snapshot living in in-memory and store DBs while the state
+itself lives in a fast mutable object is a good premise.
+"]
+// END RANK raw_278
+
+prose_235 -> { raw_280}
+{rank=same; raw_280}
+
+raw_280 [label="raw"]
+
+
+// END RANK prose_235
+
+raw_280 -> leaf_281
+leaf_281  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+It's not exceptionally expensive to keep undo buffers and the like, and I tend
+to want the property that a pointer always shows the latest state, rather than
+value-side referential transparency.
+"]
+// END RANK raw_280
+
+prose_236 -> { raw_282}
+{rank=same; raw_282}
+
+raw_282 [label="raw"]
+
+
+// END RANK prose_236
+
+raw_282 -> leaf_283
+leaf_283  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Quipu are intended to have this property also. I recognize that this makes
+OT editing of them inappropriate and that's fine, we solve one problem at a
+time and using a fast, owned quipu doesn't preclude more intricate AST forms
+later.
+"]
+// END RANK raw_282
+
+prose_237 -> { raw_284}
+{rank=same; raw_284}
+
+raw_284 [label="raw"]
+
+
+// END RANK prose_237
+
+raw_284 -> leaf_285
+leaf_285  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+What I want is a form of undo which looks for changes by recency within a
+defined form. Usually a function, sometimes a conditional.
+
+"]
+// END RANK raw_284
+
+section_238 -> { header_286 prose_287 prose_288 prose_289}
+{rank=same; header_286 prose_287 prose_288 prose_289}
+
+header_286 [label="3 : Build model objects"]
+
+prose_287 [label="prose"]
+
+prose_288 [label="prose"]
+
+prose_289 [label="prose"]
+
+
+// END RANK section_238
+
+header_286 -> leaf_290
+leaf_290  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Build model objects"]
+// END RANK header_286
+
+prose_287 -> { raw_291}
+{rank=same; raw_291}
+
+raw_291 [label="raw"]
+
+
+// END RANK prose_287
+
+raw_291 -> leaf_292
+leaf_292  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+To really get places in this refactoring, I intend to build small collections
+of objects which simply exhibit the behavior I'm looking for.  These will be
+useful in PMPLVM and will spare a lot of grief compared to bolting new
+patterns onto existing systems.
+"]
+// END RANK raw_291
+
+prose_288 -> { raw_293}
+{rank=same; raw_293}
+
+raw_293 [label="raw"]
+
+
+// END RANK prose_288
+
+raw_293 -> leaf_294
+leaf_294  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+This is of course the huge advantage of a proper prototype object system.
+We don't try and make an ontology or figure out what a class is or why we
+would need one. We just hook a few tables together with our surrounding C and
+library code and get them doing what we want.
+"]
+// END RANK raw_293
+
+prose_289 -> { raw_295}
+{rank=same; raw_295}
+
+raw_295 [label="raw"]
+
+
+// END RANK prose_289
+
+raw_295 -> leaf_296
+leaf_296  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+I do need to figure out a couple really-basic things.  Like how to register
+a trigger with SQLite from Lua."]
+// END RANK raw_295
+
+
+}

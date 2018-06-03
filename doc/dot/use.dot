@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 46"]
+doc_0 [label="doc - 48"]
 
 
 doc_0 -> { section_1}
@@ -39,7 +39,7 @@ prose_11 [label="prose"]
 
 prose_12 [label="prose"]
 
-section_13 [label="section: 41-46"]
+section_13 [label="section: 41-48"]
 
 
 // END RANK section_1
@@ -428,7 +428,9 @@ leaf_107  [color=Gray,shape=rectangle,fontname=Inconsolata,label="-i"]
 raw_98 -> leaf_108
 leaf_108  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" flag.  This allows the loop to respond to reloads by reloading anything
 which could be changed by the library and re-executing the entry point into
-a fresh global context."]
+a fresh global context.
+
+"]
 // END RANK raw_98
 
 

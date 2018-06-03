@@ -33,32 +33,7 @@ local OP = P"+" + "-" + "*" + "/" + "%" + "^" + "#"
            + "=" + "(" + ")" + "{" + "}" + "[" + "]"
            + ";" + ";" + "..." + ".." + "." + ","
 
--- long strings, straight from the LPEG docs
-
-local _equals = P"="^0
-local _open = "[" * L.Cg(_equals, "init") * "[" * P"\n"^-1
-local _close = "]" * L.C(_equals) * "]"
-local _closeeq = L.Cmt(_close * L.Cb("init"),
-                          function (s, i, a, b) return a == b end)
-
-local long_str = (_open * L.C((P(1) - _closeeq)^0) * _close) / 0 * L.Cp()
-
-local str_esc = P"\\" * (S"abfnrtv\\\"'[]\n" + (R"09" * R"09"^-2))
-
-local double_str = P"\"" * (P(1) - (P"\"" + P"\\") + str_esc)^0 * P"\""
-local single_str = P"\'" * (P(1) - (P"\'" + P"\\") + str_esc)^0 * P"\'"
-
-local string_esc = double_str + single_str
-
-local string_long = long_str
-
 local digit = R"09"
-
-local letter = R"az" + R"AZ"
-
-local symbol =   (letter^1 + P"_"^1)
-               * (letter + digit + P"_")^0
-               * #terminal
 
 local _decimal = P"-"^0 * ((digit^1 * P"."^-1 * digit^0
                            * ((P"e" + P"E")^-1 * P"-"^-1 * digit^1)^-1
@@ -72,11 +47,37 @@ local _hexadecimal = P"-"^0 * P"0" * (P"x" + P"X")
                            * ((P"p" + P"P")^-1 * P"-"^-1 * higit^1)^-1
                         + higit^1)^1 + higit^1)
 
+-- long strings, straight from the LPEG docs
+
+local _equals = P"="^0
+local _open = "[" * L.Cg(_equals, "init") * "[" * P"\n"^-1
+local _close = "]" * L.C(_equals) * "]"
+local _closeeq = L.Cmt(_close * L.Cb("init"),
+                          function (s, i, a, b) return a == b end)
+
+local long_str = (_open * L.C((P(1) - _closeeq)^0) * _close) / 0 * L.Cp()
+
+local str_esc = P"\\" * (S"abfnrtvz\\\"'[]\n"
+                         + (R"09" * R"09"^-2)
+                         + (P"x" + P"X") * higit * higit)
+
+local double_str = P"\"" * (P(1) - (P"\"" + P"\\") + str_esc)^0 * P"\""
+local single_str = P"\'" * (P(1) - (P"\'" + P"\\") + str_esc)^0 * P"\'"
+
+local string_esc = double_str + single_str
+
+local string_long = long_str
+
+local letter = R"az" + R"AZ"
+
+local symbol =   (letter^1 + P"_"^1)
+               * (letter + digit + P"_")^0
+               * #terminal
+
 local number = _hexadecimal + _decimal
 
 local comment = P"--" * long_str
               + P"--" * (P(1) - NL)^0 * (NL + - P(1))
-
 
 local ERR = P(1)
 
