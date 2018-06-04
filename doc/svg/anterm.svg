@@ -3148,7 +3148,7 @@
 <text text-anchor="middle" x="14920" y="-1396.7023" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;local phrase = &quot;&quot;</text>
 <text text-anchor="middle" x="14920" y="-1381.3023" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;local length = 0</text>
 <text text-anchor="middle" x="14920" y="-1365.9022" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;for i,v in ipairs(lines) do</text>
-<text text-anchor="middle" x="14920" y="-1350.5022" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;phrase = phrase..v..a.jump.down()..a.jump.back(#v)</text>
+<text text-anchor="middle" x="14920" y="-1350.5022" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;phrase = phrase..v..a.jump.down()..a.jump.back(utf8.width(v))</text>
 <text text-anchor="middle" x="14920" y="-1335.1022" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;if length &lt; utf8.width(v) then</text>
 <text text-anchor="middle" x="14920" y="-1319.7021" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;length = utf8.width(v)</text>
 <text text-anchor="middle" x="14920" y="-1304.3021" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;end</text>

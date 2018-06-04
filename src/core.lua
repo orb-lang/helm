@@ -325,7 +325,10 @@ end
 
 
 
-local fmt_set = {"L", "q", "s", "t"}
+
+
+
+local fmt_set = {"*", "C", "L", "R", "T", "U", "b", "n", "q", "s", "t" }
 
 for i, v in ipairs(fmt_set) do
    fmt_set[i] = "%%" .. v
@@ -381,10 +384,36 @@ end
 
 
 
-function core.cleave(str, pat)
+local function cleave(str, pat)
    local at = find(str, pat)
-   return sub(str, 1, at - 1), sub(str, at + 1)
+   if at then
+      return sub(str, 1, at - 1), sub(str, at + 1)
+   else
+      return nil
+   end
 end
+core.cleave = cleave
+
+
+
+local yield, wrap = assert(coroutine.yield), assert(coroutine.wrap)
+
+local function _lines(str)
+   if str == "" or not str then return nil end
+   local line, rem = cleave(str, "\n")
+   if line then
+      yield(line)
+   else
+      yield(str)
+   end
+   _lines(rem)
+end
+
+local function lines(str)
+  return coroutine.wrap(function() return _lines(str) end)
+end
+
+core.lines = lines
 
 
 
@@ -398,6 +427,8 @@ end
 local function split(str, at)
    return sub(str,1, at), sub(str, at + 1)
 end
+
+
 
 function core.codepoints(str)
    local utf8 = core.utf8

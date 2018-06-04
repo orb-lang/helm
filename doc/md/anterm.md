@@ -476,7 +476,7 @@ function totty.nl_to_jumps(str)
   local phrase = ""
   local length = 0
   for i,v in ipairs(lines) do
-    phrase = phrase..v..a.jump.down()..a.jump.back(#v)
+    phrase = phrase..v..a.jump.down()..a.jump.back(utf8.width(v))
     if length < utf8.width(v) then
       length = utf8.width(v)
     end
