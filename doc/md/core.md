@@ -9,11 +9,15 @@ It will eventually land in ``pylon``.
 ```lua
 local core = {}
 ```
-## meta
+## Meta Object Protocol
+
+This is where we start to design Cluster.
+
 
 We shorten a few of the common Lua keywords: ``coro`` rather than ``coroutine``,
 and ``getmeta`` and ``setmeta`` over ``getmetatable`` and ``setmetatable``.
 
+### meta
 
 In my code there is a repeated pattern of use that is basic enough that I'm
 entering it into the global namespace as simple ``meta``.
@@ -60,6 +64,35 @@ function core.hasmetamethod(tab, mmethod)
    end
 end
 ```
+### endow(Meta)
+
+Performs a thick copy of the metatable.
+
+
+Because this will include __index and the like, this folds an level of
+indirection out of inheritance.
+
+
+I plan to use this with Nodes when I make a single base class for a complex
+Grammar.
+
+```lua
+local pairs = assert(pairs)
+
+function core.endow(Meta)
+   local MC = {}
+   for k, v in pairs(Meta) do
+      MC[k] = v
+   end
+   return MC
+end
+```
+
+That's just a shallow clone, the subtlety is that if the __index was a
+self-table, it now points to ``Meta``, while if Meta was created through
+endowment or inheritance it's now out of the picture.
+
+
 ## Table extensions
 
 
@@ -115,6 +148,21 @@ function core.arrayof(tab)
       arr[i] = v
    end
    return arr
+end
+```
+### collect(iter, tab)
+
+Collects and returns up to two tables of values, given an iterator and a
+table to iterate over.
+
+```lua
+function core.collect(iter, tab)
+   local k_tab, v_tab = {}, {}
+   for k, v in iter(tab) do
+      k_tab[#k_tab + 1] = k
+      v_tab[#v_tab + 1] = v
+   end
+   return k_tab, v_tab
 end
 ```
 ### select(tab, key)

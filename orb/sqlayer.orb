@@ -180,12 +180,15 @@ This is the fun part: we swap the old metatable for a function which closes
 over our =conn=, passing it along to the pragma.
 
 #!lua
+
+local _Pragma = setmetatable({}, {__index = _prag_index})
+
 local function new_conn_index(conn, key)
    local function _prag_index(f, prag)
       return _prag_set(conn, prag)
    end
    if key == "pragma" then
-      return setmetatable({}, {__index = _prag_index})
+      return _Pragma
    else
       return conn_mt[key]
    end

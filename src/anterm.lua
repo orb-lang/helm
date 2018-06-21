@@ -28,6 +28,7 @@ local rep   = assert(string.rep)
 local byte  = assert(string.byte)
 local bit   = assert(bit, "anterm requires Luajit 'bit' or compatible in _G")
 local rshift = assert(bit.rshift)
+local core = require "core"
 bit = nil
 
 
@@ -232,6 +233,15 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
 local x24k = setmetatable({}, {__mode = "v"})
 
 local fg24pre = schar(27) .. "[38;2;"
@@ -277,17 +287,17 @@ anterm["fg24"], anterm["bg24"] = fg24, bg24
 
 local jump = {}
 
-jump.up = function(num)
+function jump.up(num)
     if not num then num = "1" end
     return CSI..num.."A"
 end
 
-jump.down = function(num)
+function jump.down(num)
     if not num then num = "1" end
         return CSI..num.."B"
 end
 
-jump.forward = function(num)
+function jump.forward(num)
     if not num then num = "1" end
     return CSI..num.."C"
 end
@@ -297,6 +307,12 @@ jump.right = jump.forward
 jump.back = function(num)
     if not num then num = "1" end
     return CSI..num.."D"
+end
+
+local __nl = CSI .. 1 .. "B" .. CSI .. 1 .. "G"
+
+function jump.nl()
+   return __nl
 end
 
 jump.left = jump.back
@@ -480,22 +496,31 @@ cursor.pop = anterm.pop
 
 
 
-
-
-
 local totty = {}
+local lines = assert(core.lines)
+local collect = assert(core.collect)
+
+
+
+
+
+
+
+
+
+
 
 function totty.nl_to_jumps(str)
-  local lines = stringx.splitlines(str)
+  local l = collect(lines, str)
   local phrase = ""
   local length = 0
-  for i,v in ipairs(lines) do
+  for i,v in ipairs(l) do
     phrase = phrase..v..a.jump.down()..a.jump.back(utf8.width(v))
     if length < utf8.width(v) then
       length = utf8.width(v)
     end
   end
-  return phrase, length, #lines
+  return phrase, length, #l
 end
 
 --- takes a string and a width in columns.

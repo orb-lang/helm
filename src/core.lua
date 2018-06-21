@@ -19,6 +19,10 @@ local core = {}
 
 
 
+
+
+
+
 function core.meta(MT)
    if MT and MT.__index then
       -- inherit
@@ -59,6 +63,32 @@ function core.hasmetamethod(tab, mmethod)
       return type(tab) == "table" and tab["__" ..mmethod]
    end
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+local pairs = assert(pairs)
+
+function core.endow(Meta)
+   local MC = {}
+   for k, v in pairs(Meta) do
+      MC[k] = v
+   end
+   return MC
+end
+
+
+
+
 
 
 
@@ -120,6 +150,23 @@ function core.arrayof(tab)
       arr[i] = v
    end
    return arr
+end
+
+
+
+
+
+
+
+
+
+function core.collect(iter, tab)
+   local k_tab, v_tab = {}, {}
+   for k, v in iter(tab) do
+      k_tab[#k_tab + 1] = k
+      v_tab[#v_tab + 1] = v
+   end
+   return k_tab, v_tab
 end
 
 

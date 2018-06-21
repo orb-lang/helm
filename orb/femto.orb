@@ -13,11 +13,19 @@ First we load everything that might reasonable expect a stock namespace.
 All of these are exceedingly well-behaved.
 
 #!lua
-L   = require "lpeg"
-lfs = require "lfs"
-ffi = require "ffi"
-bit = require "bit"
-uv  = require "luv"
+L    = require "lpeg"
+lfs  = require "lfs"
+ffi  = require "ffi"
+bit  = require "bit"
+uv   = require "luv"
+utf8 = require "lua-utf8"
+
+-- replace string lib with utf8 equivalents
+for k,v in pairs(utf8) do
+   if string[k] then
+      string[k] = v
+   end
+end
 
 jit.vmdef = require "vmdef"
 jit.p = require "ljprof"
@@ -44,15 +52,16 @@ This prelude belongs in =pylon=; it, and =core=, will eventually end up there.
 #!lua
 core = require "core"
 string.cleave, string.litpat = core.cleave, core.litpat
-string.utf8 = core.utf8
+string.utf8 = core.utf8 -- deprecated
 string.codepoints = core.codepoints
+string.lines = core.lines
 table.splice = core.splice
 table.clone = core.clone
 table.arrayof = core.arrayof
+table.collect = core.collect
 table.select = core.select
 table.reverse = core.reverse
 table.hasfield = core.hasfield
-utf8 = core.utf8
 codepoints = core.codepoints
 meta = core.meta
 getmeta, setmeta = getmetatable, setmetatable

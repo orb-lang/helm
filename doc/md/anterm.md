@@ -32,6 +32,7 @@ local rep   = assert(string.rep)
 local byte  = assert(string.byte)
 local bit   = assert(bit, "anterm requires Luajit 'bit' or compatible in _G")
 local rshift = assert(bit.rshift)
+local core = require "core"
 bit = nil
 ```
 
@@ -232,6 +233,13 @@ to it.
 
 Happily, this is a requirement for any comparison.
 
+
+#### other color sequences?
+
+I don't think this is relevant for _writing_ colors but there appear to be
+other ways to emit them in the wild, including codes that set entire
+backgrounds, and ``#`` hex-coded colors are also supported.
+
 ```lua
 local x24k = setmetatable({}, {__mode = "v"})
 
@@ -276,17 +284,17 @@ anterm["fg24"], anterm["bg24"] = fg24, bg24
 ```lua
 local jump = {}
 
-jump.up = function(num)
+function jump.up(num)
     if not num then num = "1" end
     return CSI..num.."A"
 end
 
-jump.down = function(num)
+function jump.down(num)
     if not num then num = "1" end
         return CSI..num.."B"
 end
 
-jump.forward = function(num)
+function jump.forward(num)
     if not num then num = "1" end
     return CSI..num.."C"
 end
@@ -296,6 +304,12 @@ jump.right = jump.forward
 jump.back = function(num)
     if not num then num = "1" end
     return CSI..num.."D"
+end
+
+local __nl = CSI .. 1 .. "B" .. CSI .. 1 .. "G"
+
+function jump.nl()
+   return __nl
 end
 
 jump.left = jump.back
@@ -462,26 +476,32 @@ cursor.pop = anterm.pop
 Turns out I had some useful stuff in ``termstring.lua``.
 
 
-Observe a very hacky thing:
-
-
-Now we have code that's commented out, but the syntax highlighter
-can't see that.
 
 ```lua
 local totty = {}
+local lines = assert(core.lines)
+local collect = assert(core.collect)
+```
+#### nl_to_jumps(str)
 
+Turns newlines into jumps.
+
+
+Returns the transformed string, the length of the widest line, and the
+number of lines total.
+
+```lua
 function totty.nl_to_jumps(str)
-  local lines = stringx.splitlines(str)
+  local l = collect(lines, str)
   local phrase = ""
   local length = 0
-  for i,v in ipairs(lines) do
+  for i,v in ipairs(l) do
     phrase = phrase..v..a.jump.down()..a.jump.back(utf8.width(v))
     if length < utf8.width(v) then
       length = utf8.width(v)
     end
   end
-  return phrase, length, #lines
+  return phrase, length, #l
 end
 
 --- takes a string and a width in columns.
