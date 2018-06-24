@@ -24,21 +24,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 local sub, byte = assert(string.sub), assert(string.byte)
 local gsub = assert(string.gsub)
 
@@ -47,15 +32,6 @@ local gsub = assert(string.gsub)
 local Linebuf = meta {}
 
 
-
-
-local function sum(dsps)
-   local summa = 0
-   for i = 1, #dsps do
-      summa = summa + #dsps[i]
-   end
-   return summa
-end
 
 local concat = table.concat
 

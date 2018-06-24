@@ -16,3 +16,33 @@ into a grid of characters.  These in turn get 'closed' when the cursor leaves.
 
 
 A closed line is just a string.
+
+
+## Interface
+
+  A txtbuf is a drop-in replacement for a linebuf, used when there's more than
+one line to buffer.
+
+
+This means it implements the following methods:
+
+
+### Txtbuf.__tostring(txtbuf)
+
+
+### Txtbuf.insert(txtbuf, frag)
+
+
+### .d_back
+
+
+### .d_fwd .left .right
+
+
+### suspend
+
+
+### resume
+
+
+### new

@@ -47,6 +47,21 @@ local P, R    = elpatt.P, elpatt.R
 
 
 
+
+
+
+
+
+local alpha = R"az" + R"AZ"
+
+
+
+local digit = R"09"
+
+
+
+
+
 local hexdig = digit + R"AF"
 
 
@@ -60,14 +75,6 @@ local hexdig = digit + R"AF"
 local pct_encoded = P"%" * hexdig * hexdig
 
 
-
-
-
-local alpha = R"az" + R"AZ"
-
-
-
-local digit = R"09"
 
 
 
@@ -122,19 +129,6 @@ local unreserved = alpha + digit + P"-" + P"." + P"_" + P"~"
 
 
 
-local hier_part, query, fragment
-
-local uri = scheme * P":" * hier_part * (P"?" * query)^-1 * (P"#" * fragment)-1
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -158,113 +152,6 @@ local scheme = alpha * (alpha + digit + "+" + ".")^0
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-local authority, path_abempty, path_absolute, path_rootless
-
-hier_part = P"//" * authority * path_abempty
-          + path_absolute
-          + path_rootless
-          + path_empty
-
-
-
-
-
-
-
-
-
-
-
-
-
-local userinfo, host, port
-
-authority = (userinfo * P"@")^-1 * host *(P":" * port)^-1
-
-
-
-
-
-
-
-
-
-
-
-userinfo = (unreserved + pct_encoded + sub_delims + ":")^0
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-local ip_literal, ipv4address, reg_name
-
-host = ipv4address + ip_literal + reg_name
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-local ipv6address, ipvfuture
-ip_literal = P"[" *  (ipv6address / ipvfuture) * P"]"
-
-ipvfuture = P"v" * hexdig^1 * "." * (unreserved + sub_delims + ":")^1
 
 
 
@@ -333,13 +220,81 @@ ipv4address = dec_octet * "." * dec_octet * "."
 
 
 
+ipvfuture = P"v" * hexdig^1 * "." * (unreserved + sub_delims + ":")^1
+ipv6address = "NYI"
+ip_literal = P"[" *  (ipv6address + ipvfuture) * P"]"
 
 
 
 
 
 
-reg_name = (unreserved + pct_encoded + sub_delims)^1
+
+
+reg_name = (unreserved + pct_encoded + sub_delims)^0
+
+
+host = ipv4address + ip_literal + reg_name
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -370,6 +325,21 @@ port = digit^0
 
 
 
+userinfo = (unreserved + pct_encoded + sub_delims + ":")^0
+
+
+
+
+
+
+
+
+
+
+
+
+
+authority = (userinfo * P"@")^-1 * host *(P":" * port)^-1
 
 
 
@@ -390,17 +360,34 @@ port = digit^0
 
 
 
-local path_noscheme
-
-local path = path_abempty    -- begins with "/" or is empty
-           + path_absolute   -- begins with "/" but not "//"
-           + path_noscheme   -- begins with a non-colon segment
-           + path_rootless   -- begins with a segment
-           + path_empty      -- zero characters
 
 
 
-local segment, segment_nz, segment_nz_nc, pchar
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+pchar = unreserved + pct_encoded + sub_delims + P"@" + ":"
+segment = pchar^0
+segment_nz = pchar^1
+segment_nz_nc = (unreserved + pct_encoded + sub_delims + P"@")^1
+
+
 
 path_abempty = (P"/" * segment)^0
 path_absolute = P"/" * (segment_nz * (P"/" * segment)^0)^-1
@@ -415,25 +402,19 @@ path_empty = -pchar
 
 
 
+local path = path_empty    -- zero characters
+
+           + path_absolute   -- begins with "/" but not "//"
+           + path_noscheme   -- begins with a non-colon segment
+           + path_rootless   -- begins with a segment
+           + path_abempty    -- begins with "/" or is empty
 
 
 
-
-
-
-
-
-
-
-
-
-
-segment = pchar^0
-segment_nz = pchar^1
-segment_nz_nc = (unreserved + pct_encoded + sub_delims + P"@")^1
-pchar = unreserved + pct_encoded + sub_delims + P"@" + ":"
-
-
+hier_part = P"//" * authority * path_abempty
+          + path_absolute
+          + path_rootless
+          + path_empty
 
 
 
@@ -490,6 +471,10 @@ local relative_ref = relative_part * (P"?" * query)^-1 * (P"#" * fragment)^-1
 
 
 local absolute_uri = scheme * P":" * hier_part * (P"?" * query)^-1
+
+
+
+local uri = scheme * P":" * hier_part * (P"?" * query)^-1 * (P"#" * fragment)-1
 
 
 

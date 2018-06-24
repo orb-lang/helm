@@ -42,7 +42,7 @@ I believe the 5.3 idiom is ``bit = { rshift = ``
 
 This code is otherwise 5.1 and upward compatible.
 
-### Principles
+#NB lots of good stuff [[in here][https://chromium.googlesource.com/apps/libapps/+/master/hterm/doc/ControlSequences.md#OSC-1337]].### Principles
 
 As a rule, fields are either functions returning strings,
 or callable tables which return strings when called or concatenated, or

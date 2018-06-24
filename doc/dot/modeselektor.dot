@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 606"]
+doc_0 [label="doc - 600"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-557"]
+section_1 [label="section: 1-551"]
 
 
 // END RANK doc_0
@@ -23,11 +23,11 @@ prose_3 [label="prose"]
 
 prose_4 [label="prose"]
 
-section_5 [label="section: 12-287"]
+section_5 [label="section: 12-281"]
 
-section_6 [label="section: 340-482"]
+section_6 [label="section: 334-476"]
 
-section_7 [label="section: 558-606"]
+section_7 [label="section: 552-600"]
 
 
 // END RANK section_1
@@ -51,8 +51,7 @@ raw_12 [label="raw"]
 // END RANK prose_3
 
 raw_9 -> leaf_13
-leaf_13  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-"]
+leaf_13  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
 // END RANK raw_9
 
 prespace_10 -> leaf_14
@@ -64,8 +63,9 @@ leaf_15  [color=Gray,shape=rectangle,fontname=Inconsolata,label="femto"]
 // END RANK literal_11
 
 raw_12 -> leaf_16
-leaf_16  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" will hold all state for an terminal session.  Soon, we will
-encapsulate that, making the library re-entrant.
+leaf_16  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" will hold all state for an terminal session, including setup of io,
+the main event loop, teardown and exuent.  Soon, we will encapsulate that,
+making the library re-entrant.
 "]
 // END RANK raw_12
 
@@ -172,19 +172,19 @@ prose_51 [label="prose"]
 
 prose_52 [label="prose"]
 
-section_53 [label="section: 85-96"]
+section_53 [label="section: 84-95"]
 
-section_54 [label="section: 97-120"]
+section_54 [label="section: 96-119"]
 
-section_55 [label="section: 121-184"]
+section_55 [label="section: 120-183"]
 
-section_56 [label="section: 185-200"]
+section_56 [label="section: 184-194"]
 
-section_57 [label="section: 201-272"]
+section_57 [label="section: 195-266"]
 
-section_58 [label="section: 273-287"]
+section_58 [label="section: 267-281"]
 
-section_59 [label="section: 288-339"]
+section_59 [label="section: 282-333"]
 
 
 // END RANK section_5
@@ -687,7 +687,6 @@ leaf_187  [color=Gray,shape=rectangle,fontname=Inconsolata,label="err"]
 
 raw_178 -> leaf_188
 leaf_188  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is an error object which may be a primitive string.
-
 "]
 // END RANK raw_178
 
@@ -1008,7 +1007,7 @@ header_275 [label="4 : asserts"]
 
 prose_276 [label="prose"]
 
-codeblock_277 [label="code block 90-94"]
+codeblock_277 [label="code block 89-93"]
 
 
 // END RANK section_53
@@ -1084,9 +1083,9 @@ prose_295 [label="prose"]
 
 prose_296 [label="prose"]
 
-codeblock_297 [label="code block 104-114"]
+codeblock_297 [label="code block 103-113"]
 
-codeblock_298 [label="code block 116-118"]
+codeblock_298 [label="code block 115-117"]
 
 
 // END RANK section_54
@@ -1140,9 +1139,9 @@ codeblock_297 -> leaf_308
 leaf_308  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Linebuf   = require \"linebuf\"
 local Resbuf    = require \"resbuf\"
 local Historian = require \"historian\"
-local Lex = require \"lex\"
+local Lex       = require \"lex\"
 
-local concat = assert(table.concat)
+local concat         = assert(table.concat)
 local sub, gsub, rep = assert(string.sub),
                        assert(string.gsub),
                        assert(string.rep)"]
@@ -1159,7 +1158,7 @@ header_310 [label="3 : Categories"]
 
 prose_311 [label="prose"]
 
-codeblock_312 [label="code block 125-133"]
+codeblock_312 [label="code block 124-132"]
 
 prose_313 [label="prose"]
 
@@ -1171,19 +1170,19 @@ prose_316 [label="prose"]
 
 prose_317 [label="prose"]
 
-codeblock_318 [label="code block 154-161"]
+codeblock_318 [label="code block 153-160"]
 
 prose_319 [label="prose"]
 
-codeblock_320 [label="code block 165-167"]
+codeblock_320 [label="code block 164-166"]
 
 prose_321 [label="prose"]
 
-codeblock_322 [label="code block 172-174"]
+codeblock_322 [label="code block 171-173"]
 
 prose_323 [label="prose"]
 
-codeblock_324 [label="code block 178-182"]
+codeblock_324 [label="code block 177-181"]
 
 
 // END RANK section_55
@@ -1488,7 +1487,7 @@ header_389 [label="3 : self-insert(modeS, category, value)"]
 
 prose_390 [label="prose"]
 
-codeblock_391 [label="code block 189-198"]
+codeblock_391 [label="code block 188-192"]
 
 
 // END RANK section_56
@@ -1515,11 +1514,6 @@ Inserts the value into the linebuf at cursor.
 codeblock_391 -> leaf_395
 leaf_395  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS.insert(modeS, category, value)
     local success =  modeS.linebuf:insert(value)
-    if not success then
-      write(\"no insert: \" .. value)
-    else
-      write(value)
-    end
 end"]
 // END RANK codeblock_391
 
@@ -1530,7 +1524,7 @@ header_396 [label="3 : status painter (colwrite)"]
 
 prose_397 [label="prose"]
 
-codeblock_398 [label="code block 205-270"]
+codeblock_398 [label="code block 199-264"]
 
 
 // END RANK section_57
@@ -1628,7 +1622,7 @@ header_403 [label="3 : ModeS:paint_row()"]
 
 prose_404 [label="prose"]
 
-codeblock_405 [label="code block 278-286"]
+codeblock_405 [label="code block 272-280"]
 
 
 // END RANK section_58
@@ -1670,13 +1664,13 @@ header_410 [label="3 : ModeS:write(str)"]
 
 prose_411 [label="prose"]
 
-codeblock_412 [label="code block 294-303"]
+codeblock_412 [label="code block 288-297"]
 
-codeblock_413 [label="code block 306-316"]
+codeblock_413 [label="code block 300-310"]
 
-codeblock_414 [label="code block 318-331"]
+codeblock_414 [label="code block 312-325"]
 
-codeblock_415 [label="code block 333-337"]
+codeblock_415 [label="code block 327-331"]
 
 
 // END RANK section_59
@@ -1757,19 +1751,19 @@ prose_425 [label="prose"]
 
 prose_426 [label="prose"]
 
-codeblock_427 [label="code block 353-383"]
+codeblock_427 [label="code block 347-377"]
 
 prose_428 [label="prose"]
 
-codeblock_429 [label="code block 387-391"]
+codeblock_429 [label="code block 381-385"]
 
-section_430 [label="section: 394-400"]
+section_430 [label="section: 388-394"]
 
-section_431 [label="section: 401-463"]
+section_431 [label="section: 395-457"]
 
-section_432 [label="section: 464-482"]
+section_432 [label="section: 458-476"]
 
-section_433 [label="section: 483-557"]
+section_433 [label="section: 477-551"]
 
 
 // END RANK section_6
@@ -2027,7 +2021,7 @@ header_487 [label="3 : NAV"]
 
 prose_488 [label="prose"]
 
-codeblock_489 [label="code block 403-461"]
+codeblock_489 [label="code block 397-455"]
 
 
 // END RANK section_431
@@ -2116,7 +2110,7 @@ header_494 [label="3 : CTRL"]
 
 prose_495 [label="prose"]
 
-codeblock_496 [label="code block 468-480"]
+codeblock_496 [label="code block 462-474"]
 
 
 // END RANK section_432
@@ -2161,11 +2155,11 @@ header_501 [label="3 : ModeS:eval()"]
 
 prose_502 [label="prose"]
 
-codeblock_503 [label="code block 486-491"]
+codeblock_503 [label="code block 480-485"]
 
-codeblock_504 [label="code block 493-497"]
+codeblock_504 [label="code block 487-491"]
 
-codeblock_505 [label="code block 499-555"]
+codeblock_505 [label="code block 493-549"]
 
 
 // END RANK section_433
@@ -2266,9 +2260,9 @@ header_512 [label="2 : new"]
 
 prose_513 [label="prose"]
 
-codeblock_514 [label="code block 562-578"]
+codeblock_514 [label="code block 556-572"]
 
-codeblock_515 [label="code block 580-582"]
+codeblock_515 [label="code block 574-576"]
 
 
 // END RANK section_7

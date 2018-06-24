@@ -12,3 +12,85 @@ Plan: A line that has a cursor on it, and there can be many, gets 'opened'
 into a grid of characters.  These in turn get 'closed' when the cursor leaves.
 
 A closed line is just a string.
+
+
+** Interface
+
+  A txtbuf is a drop-in replacement for a linebuf, used when there's more than
+one line to buffer.
+
+*** Instance fields
+
+- lines :  An array of arrays containing codepoints (string fragments).
+
+- cursor :  Number of fragments to skip before an insertion.
+
+- cur_row :  Row containing the cursor.
+
+- disp :  Array of numbers, representing the furthest-right column which
+          may be reached by printing the corresponding row.
+
+
+** Methods
+
+Initially these are only the methods of linebuf.
+
+I think the way forward is to treat txtbuf as a special case until it's at
+feature parity, and we have the other aspects such as resizing the result
+field working correctly.
+
+Then we will simply switch to using =txtbuf=s of a single line instead of the
+two separate classes, and factor out =linebuf=.
+
+This amounts to porting the existing =linebuf=, as I think about it. A single
+line isn't even a special case for the logic.
+
+
+**** dependencies
+
+#!lua
+assert(meta)
+local collect = assert(core.collect, "must have core.collect")
+local lines = assert(core.lines, "must have core.lines")
+#/lua
+
+#!lua
+local Txtbuf = meta {}
+#/lua
+
+*** Txtbuf.__tostring(txtbuf)
+
+
+*** Txtbuf.insert(txtbuf, frag)
+
+
+*** .d_back
+
+
+*** .d_fwd .left .right
+
+
+*** suspend
+
+
+*** resume
+
+
+*** new
+
+#!lua
+local function new(line)
+   local txtbuf = meta(Txtbuf)
+   local __l = line and line or ""
+   txtbuf.lines = collect(lines(__l))
+   txtbuf.cursor = line and #lines[#lines] or 1
+   txtbuf.cur_row = line and #lines or 1
+   return txtbuf
+end
+
+Txtbuf.idEst = new
+#/lua
+
+#!lua
+return new
+#/lua

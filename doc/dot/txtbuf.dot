@@ -3,19 +3,19 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 14"]
+doc_0 [label="doc - 43"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-14"]
+section_1 [label="section: 1-16"]
 
 
 // END RANK doc_0
 
-section_1 -> { header_2 prose_3 prose_4 prose_5 prose_6 prose_7}
-{rank=same; header_2 prose_3 prose_4 prose_5 prose_6 prose_7}
+section_1 -> { header_2 prose_3 prose_4 prose_5 prose_6 prose_7 section_8}
+{rank=same; header_2 prose_3 prose_4 prose_5 prose_6 prose_7 section_8}
 
 header_2 [label="1 : Txtbuf"]
 
@@ -29,85 +29,345 @@ prose_6 [label="prose"]
 
 prose_7 [label="prose"]
 
+section_8 [label="section: 17-42"]
+
 
 // END RANK section_1
 
-header_2 -> leaf_8
-leaf_8  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Txtbuf"]
+header_2 -> leaf_9
+leaf_9  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Txtbuf"]
 // END RANK header_2
 
-prose_3 -> { raw_9}
-{rank=same; raw_9}
+prose_3 -> { raw_10}
+{rank=same; raw_10}
 
-raw_9 [label="raw"]
+raw_10 [label="raw"]
 
 
 // END RANK prose_3
 
-raw_9 -> leaf_10
-leaf_10  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_10 -> leaf_11
+leaf_11  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 We're not going to have one of these right away.
 "]
-// END RANK raw_9
+// END RANK raw_10
 
-prose_4 -> { raw_11}
-{rank=same; raw_11}
+prose_4 -> { raw_12}
+{rank=same; raw_12}
 
-raw_11 [label="raw"]
+raw_12 [label="raw"]
 
 
 // END RANK prose_4
 
-raw_11 -> leaf_12
-leaf_12  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_12 -> leaf_13
+leaf_13  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 This is not much more than an ordinary array of lines that has a bit of
 awareness, mostly about which lines have cursors and which don't.
 "]
-// END RANK raw_11
+// END RANK raw_12
 
-prose_5 -> { raw_13}
-{rank=same; raw_13}
+prose_5 -> { raw_14}
+{rank=same; raw_14}
 
-raw_13 [label="raw"]
+raw_14 [label="raw"]
 
 
 // END RANK prose_5
 
-raw_13 -> leaf_14
-leaf_14  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_14 -> leaf_15
+leaf_15  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 I'll circle back for quipu but I want a basic editor as soon as possible. The
 interaction dynamics need to be worked out right away, plus I want to use it!
 "]
-// END RANK raw_13
+// END RANK raw_14
 
-prose_6 -> { raw_15}
-{rank=same; raw_15}
+prose_6 -> { raw_16}
+{rank=same; raw_16}
 
-raw_15 [label="raw"]
+raw_16 [label="raw"]
 
 
 // END RANK prose_6
 
-raw_15 -> leaf_16
-leaf_16  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_16 -> leaf_17
+leaf_17  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 Plan: A line that has a cursor on it, and there can be many, gets 'opened'
 into a grid of characters.  These in turn get 'closed' when the cursor leaves.
 "]
-// END RANK raw_15
+// END RANK raw_16
 
-prose_7 -> { raw_17}
-{rank=same; raw_17}
+prose_7 -> { raw_18}
+{rank=same; raw_18}
 
-raw_17 [label="raw"]
+raw_18 [label="raw"]
 
 
 // END RANK prose_7
 
-raw_17 -> leaf_18
-leaf_18  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-A closed line is just a string."]
-// END RANK raw_17
+raw_18 -> leaf_19
+leaf_19  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+A closed line is just a string.
+
+"]
+// END RANK raw_18
+
+section_8 -> { header_20 prose_21 prose_22 section_23 section_24 section_25 section_26 section_27 section_28 section_29}
+{rank=same; header_20 prose_21 prose_22 section_23 section_24 section_25 section_26 section_27 section_28 section_29}
+
+header_20 [label="2 : Interface"]
+
+prose_21 [label="prose"]
+
+prose_22 [label="prose"]
+
+section_23 [label="section: 25-27"]
+
+section_24 [label="section: 28-30"]
+
+section_25 [label="section: 31-33"]
+
+section_26 [label="section: 34-36"]
+
+section_27 [label="section: 37-39"]
+
+section_28 [label="section: 40-42"]
+
+section_29 [label="section: 43-43"]
+
+
+// END RANK section_8
+
+header_20 -> leaf_30
+leaf_30  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Interface"]
+// END RANK header_20
+
+prose_21 -> { raw_31}
+{rank=same; raw_31}
+
+raw_31 [label="raw"]
+
+
+// END RANK prose_21
+
+raw_31 -> leaf_32
+leaf_32  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+  A txtbuf is a drop-in replacement for a linebuf, used when there's more than
+one line to buffer.
+"]
+// END RANK raw_31
+
+prose_22 -> { raw_33}
+{rank=same; raw_33}
+
+raw_33 [label="raw"]
+
+
+// END RANK prose_22
+
+raw_33 -> leaf_34
+leaf_34  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+This means it implements the following methods:
+
+"]
+// END RANK raw_33
+
+section_23 -> { header_35 prose_36}
+{rank=same; header_35 prose_36}
+
+header_35 [label="3 : Txtbuf.__tostring(txtbuf)"]
+
+prose_36 [label="prose"]
+
+
+// END RANK section_23
+
+header_35 -> leaf_37
+leaf_37  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Txtbuf.__tostring(txtbuf)"]
+// END RANK header_35
+
+prose_36 -> { raw_38}
+{rank=same; raw_38}
+
+raw_38 [label="raw"]
+
+
+// END RANK prose_36
+
+raw_38 -> leaf_39
+leaf_39  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+"]
+// END RANK raw_38
+
+section_24 -> { header_40 prose_41}
+{rank=same; header_40 prose_41}
+
+header_40 [label="3 : Txtbuf.insert(txtbuf, frag)"]
+
+prose_41 [label="prose"]
+
+
+// END RANK section_24
+
+header_40 -> leaf_42
+leaf_42  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Txtbuf.insert(txtbuf, frag)"]
+// END RANK header_40
+
+prose_41 -> { raw_43}
+{rank=same; raw_43}
+
+raw_43 [label="raw"]
+
+
+// END RANK prose_41
+
+raw_43 -> leaf_44
+leaf_44  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+"]
+// END RANK raw_43
+
+section_25 -> { header_45 prose_46}
+{rank=same; header_45 prose_46}
+
+header_45 [label="3 : .d_back"]
+
+prose_46 [label="prose"]
+
+
+// END RANK section_25
+
+header_45 -> leaf_47
+leaf_47  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** .d_back"]
+// END RANK header_45
+
+prose_46 -> { raw_48}
+{rank=same; raw_48}
+
+raw_48 [label="raw"]
+
+
+// END RANK prose_46
+
+raw_48 -> leaf_49
+leaf_49  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+"]
+// END RANK raw_48
+
+section_26 -> { header_50 prose_51}
+{rank=same; header_50 prose_51}
+
+header_50 [label="3 : .d_fwd .left .right"]
+
+prose_51 [label="prose"]
+
+
+// END RANK section_26
+
+header_50 -> leaf_52
+leaf_52  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** .d_fwd .left .right"]
+// END RANK header_50
+
+prose_51 -> { raw_53}
+{rank=same; raw_53}
+
+raw_53 [label="raw"]
+
+
+// END RANK prose_51
+
+raw_53 -> leaf_54
+leaf_54  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+"]
+// END RANK raw_53
+
+section_27 -> { header_55 prose_56}
+{rank=same; header_55 prose_56}
+
+header_55 [label="3 : suspend"]
+
+prose_56 [label="prose"]
+
+
+// END RANK section_27
+
+header_55 -> leaf_57
+leaf_57  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** suspend"]
+// END RANK header_55
+
+prose_56 -> { raw_58}
+{rank=same; raw_58}
+
+raw_58 [label="raw"]
+
+
+// END RANK prose_56
+
+raw_58 -> leaf_59
+leaf_59  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+"]
+// END RANK raw_58
+
+section_28 -> { header_60 prose_61}
+{rank=same; header_60 prose_61}
+
+header_60 [label="3 : resume"]
+
+prose_61 [label="prose"]
+
+
+// END RANK section_28
+
+header_60 -> leaf_62
+leaf_62  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** resume"]
+// END RANK header_60
+
+prose_61 -> { raw_63}
+{rank=same; raw_63}
+
+raw_63 [label="raw"]
+
+
+// END RANK prose_61
+
+raw_63 -> leaf_64
+leaf_64  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+"]
+// END RANK raw_63
+
+section_29 -> { header_65 prose_66}
+{rank=same; header_65 prose_66}
+
+header_65 [label="3 : new"]
+
+prose_66 [label="prose"]
+
+
+// END RANK section_29
+
+header_65 -> leaf_67
+leaf_67  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+*** new"]
+// END RANK header_65
+
+prose_66 -> { raw_68}
+{rank=same; raw_68}
+
+raw_68 [label="raw"]
+
+
+// END RANK prose_66
+
+raw_68 -> leaf_69
+leaf_69  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK raw_68
 
 
 }

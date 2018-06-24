@@ -932,7 +932,7 @@ leaf_216  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", passing it a
 
 codeblock_173 -> leaf_217
 leaf_217  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new_conn_index(conn, key)
-   local function _prag_index(f, prag)
+   local function _prag_index(_, prag)
       return _prag_set(conn, prag)
    end
    if key == \"pragma\" then

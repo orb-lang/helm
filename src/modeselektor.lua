@@ -87,7 +87,6 @@
 
 
 
-
 assert(meta, "must have meta in _G")
 assert(write, "must have write in _G")
 assert(ts, "must have ts in _G")
@@ -105,9 +104,9 @@ assert(ts, "must have ts in _G")
 local Linebuf   = require "linebuf"
 local Resbuf    = require "resbuf"
 local Historian = require "historian"
-local Lex = require "lex"
+local Lex       = require "lex"
 
-local concat = assert(table.concat)
+local concat         = assert(table.concat)
 local sub, gsub, rep = assert(string.sub),
                        assert(string.gsub),
                        assert(string.rep)
@@ -189,11 +188,6 @@ end
 
 function ModeS.insert(modeS, category, value)
     local success =  modeS.linebuf:insert(value)
-    if not success then
-      write("no insert: " .. value)
-    else
-      write(value)
-    end
 end
 
 

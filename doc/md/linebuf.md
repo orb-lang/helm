@@ -1,40 +1,24 @@
 # Linebuf
 
 
-Rather than derive this from [[espalier's Phrase class][@/espalier/phrase]],
-I'm going to port it.
+The ``linebuf`` class buffers a single line of text.
 
 
-The concepts are close, but different.
+To make editing practical, we model the line as an array of codepoints when
+active, and a simple string otherwise.
 
 
-The main notes on where I'm going with this are under [rainbuf](rainbuf),
-which will build from this class and is a generalization of it to support
-complex text types.
+``linebuf`` are promoted to ``txtbuf`` if editing needs to span multiple lines.
 
-
-I'm realizing that for clarity, a ``linebuf`` needs to be a line, period.  The
-recursive container class is a ``txtbuf``, and ``rainbuf`` enhances that and
-also makes a ``rainline`` out of each ``linebuf``.
-
-
-I'm making this the dumbest thing that can work. The dumbest thing that can
-work, has one string per char, period.
-
-
-The way I'm doing this, a ``linebuf`` is used as a pointer to history.  When
-it's not in play, ``linebuf.line`` is just a string, exploding into an array
-of codepoints when edited.
-
-
-This lets us load the history without making a bunch of codepoint arrays we
-might not ever use.
 
 ## Instance fields
 
+
+Instance fields for a linebuf may be read by other code, but should be written
+internally.
+
+
 - lines :  An array of string fragments
-- dsps  :  An array of uint, each corresponds to the number of **bytes**
-          in line[i].
 
 
 - cursor :  An uint representing the number of bytes to be skipped over
@@ -44,9 +28,6 @@ might not ever use.
 
             cursor is moved by linebuf, ensuring we stay on codepoint
             boundaries.
-
-
-- len  : sum of dsps.
 ```lua
 local sub, byte = assert(string.sub), assert(string.byte)
 local gsub = assert(string.gsub)
@@ -55,15 +36,6 @@ local gsub = assert(string.gsub)
 local Linebuf = meta {}
 ```
 ```lua
-
-local function sum(dsps)
-   local summa = 0
-   for i = 1, #dsps do
-      summa = summa + #dsps[i]
-   end
-   return summa
-end
-
 local concat = table.concat
 
 function Linebuf.__tostring(linebuf)

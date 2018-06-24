@@ -1,8 +1,8 @@
 # Modeselektor
 
-
-``femto`` will hold all state for an terminal session.  Soon, we will
-encapsulate that, making the library re-entrant.
+``femto`` will hold all state for an terminal session, including setup of io,
+the main event loop, teardown and exuent.  Soon, we will encapsulate that,
+making the library re-entrant.
 
 
 ``modeselektor`` is the modal interpreter for the repl language, which becomes
@@ -69,7 +69,6 @@ They must also have the same return type, with is either ``true`` or
 ``false, err``  where ``err`` is an error object which may be a primitive string.
 
 
-
 ``modeselektor`` passes any edit or movement commands to an internally-owned
 ``linebuf``, which keeps all modeling of the line.  ``modeselektor`` decides when
 to repaint the screen, calling ``rainbuf`` with a region of ``linebuf`` and
@@ -121,9 +120,9 @@ a better idea.
 local Linebuf   = require "linebuf"
 local Resbuf    = require "resbuf"
 local Historian = require "historian"
-local Lex = require "lex"
+local Lex       = require "lex"
 
-local concat = assert(table.concat)
+local concat         = assert(table.concat)
 local sub, gsub, rep = assert(string.sub),
                        assert(string.gsub),
                        assert(string.rep)
@@ -204,11 +203,6 @@ Inserts the value into the linebuf at cursor.
 ```lua
 function ModeS.insert(modeS, category, value)
     local success =  modeS.linebuf:insert(value)
-    if not success then
-      write("no insert: " .. value)
-    else
-      write(value)
-    end
 end
 ```
 ### status painter (colwrite)
