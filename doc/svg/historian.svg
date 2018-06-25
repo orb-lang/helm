@@ -211,7 +211,7 @@
 <g id="node22" class="node">
 <title>leaf_21</title>
 <polygon fill="none" stroke="#c0c0c0" points="2017,-1966.3035 1735,-1966.3035 1735,-1834.9027 2017,-1834.9027 2017,-1966.3035"/>
-<text text-anchor="middle" x="1876" y="-1951.0032" font-family="Inconsolata" font-size="14.00" fill="#000000">local Linebuf = require &quot;linebuf&quot;</text>
+<text text-anchor="middle" x="1876" y="-1951.0032" font-family="Inconsolata" font-size="14.00" fill="#000000">local Txtbuf = require &quot;txtbuf&quot;</text>
 <text text-anchor="middle" x="1876" y="-1935.6032" font-family="Inconsolata" font-size="14.00" fill="#000000">local sql &#160;&#160;&#160;&#160;= require &quot;sqlayer&quot;</text>
 <text text-anchor="middle" x="1876" y="-1920.2032" font-family="Inconsolata" font-size="14.00" fill="#000000">local color &#160;&#160;= require &quot;color&quot;</text>
 <text text-anchor="middle" x="1876" y="-1904.8031" font-family="Inconsolata" font-size="14.00" fill="#000000">local L &#160;&#160;&#160;&#160;&#160;&#160;= require &quot;lpeg&quot;</text>
@@ -508,7 +508,7 @@
 <g id="node21" class="node">
 <title>leaf_20</title>
 <polygon fill="none" stroke="#c0c0c0" points="2030,-1521.4027 1482,-1521.4027 1482,-1450.802 2030,-1450.802 2030,-1521.4027"/>
-<text text-anchor="middle" x="1756" y="-1490.3024" font-family="Inconsolata" font-size="14.00" fill="#000000">Next step: now that we clone a new linebuf each time, we have an immutable</text>
+<text text-anchor="middle" x="1756" y="-1490.3024" font-family="Inconsolata" font-size="14.00" fill="#000000">Next step: now that we clone a new txtbuf each time, we have an immutable</text>
 <text text-anchor="middle" x="1756" y="-1474.9024" font-family="Inconsolata" font-size="14.00" fill="#000000">record. &#160;We should store the line as a string, to facilitate fuzzy matching.</text>
 </g>
 <!-- raw_19&#45;&gt;leaf_20 -->
@@ -1049,7 +1049,7 @@
 <g id="node128" class="node">
 <title>header_127</title>
 <ellipse fill="none" stroke="#000000" cx="9882" cy="-1486.1024" rx="117.9886" ry="18"/>
-<text text-anchor="middle" x="9882" y="-1481.9024" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">3 : Historian:persist(linebuf)</text>
+<text text-anchor="middle" x="9882" y="-1481.9024" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">3 : Historian:persist(txtbuf)</text>
 </g>
 <!-- section_33&#45;&gt;header_127 -->
 <g id="edge127" class="edge">
@@ -1755,7 +1755,7 @@
 <text text-anchor="middle" x="9221" y="-687.5011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local line_ids = reverse(repl_val[1])</text>
 <text text-anchor="middle" x="9221" y="-672.1011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local repl_map = {}</text>
 <text text-anchor="middle" x="9221" y="-656.701" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;for i, v in ipairs(lines) do</text>
-<text text-anchor="middle" x="9221" y="-641.301" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;local buf = Linebuf(v)</text>
+<text text-anchor="middle" x="9221" y="-641.301" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;local buf = Txtbuf(v)</text>
 <text text-anchor="middle" x="9221" y="-625.901" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;historian[i] = buf</text>
 <text text-anchor="middle" x="9221" y="-610.501" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;repl_map[line_ids[i]] = buf</text>
 <text text-anchor="middle" x="9221" y="-595.1009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end</text>
@@ -1764,7 +1764,7 @@
 <text text-anchor="middle" x="9221" y="-548.9008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; reuse line_id var for foreign keys</text>
 <text text-anchor="middle" x="9221" y="-533.5008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;line_ids = res_val[1]</text>
 <text text-anchor="middle" x="9221" y="-518.1008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local reprs = res_val[2]</text>
-<text text-anchor="middle" x="9221" y="-502.7007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; This is keyed by linebuf with a string value.</text>
+<text text-anchor="middle" x="9221" y="-502.7007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; This is keyed by txtbuf with a string value.</text>
 <text text-anchor="middle" x="9221" y="-487.3007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local result_map = {}</text>
 <text text-anchor="middle" x="9221" y="-471.9007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;for i = 1, #reprs do</text>
 <text text-anchor="middle" x="9221" y="-456.5006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;local buf = repl_map[line_ids[i]]</text>
@@ -1805,7 +1805,7 @@
 <title>leaf_125</title>
 <polygon fill="none" stroke="#c0c0c0" points="9058.5,-62.4005 8559.5,-62.4005 8559.5,-7.7996 9058.5,-7.7996 9058.5,-62.4005"/>
 <text text-anchor="middle" x="8809" y="-31.3001" font-family="Inconsolata" font-size="14.00" fill="#000000">Most of the complexity serves to make a simple key/value relationship</text>
-<text text-anchor="middle" x="8809" y="-15.9" font-family="Inconsolata" font-size="14.00" fill="#000000">between the regenerated linebufs and their associated result history.</text>
+<text text-anchor="middle" x="8809" y="-15.9" font-family="Inconsolata" font-size="14.00" fill="#000000">between the regenerated txtbufs and their associated result history.</text>
 </g>
 <!-- raw_124&#45;&gt;leaf_125 -->
 <g id="edge125" class="edge">
@@ -1817,7 +1817,7 @@
 <g id="node134" class="node">
 <title>leaf_133</title>
 <polygon fill="none" stroke="#c0c0c0" points="9995,-639.701 9769,-639.701 9769,-603.701 9995,-603.701 9995,-639.701"/>
-<text text-anchor="middle" x="9882" y="-618.201" font-family="Inconsolata" font-size="14.00" fill="#000000">*** Historian:persist(linebuf)</text>
+<text text-anchor="middle" x="9882" y="-618.201" font-family="Inconsolata" font-size="14.00" fill="#000000">*** Historian:persist(txtbuf)</text>
 </g>
 <!-- header_127&#45;&gt;leaf_133 -->
 <g id="edge133" class="edge">
@@ -1949,8 +1949,8 @@
 <g id="node155" class="node">
 <title>leaf_154</title>
 <polygon fill="none" stroke="#c0c0c0" points="11555,-864.7019 11049,-864.7019 11049,-378.7 11555,-378.7 11555,-864.7019"/>
-<text text-anchor="middle" x="11302" y="-849.5014" font-family="Inconsolata" font-size="14.00" fill="#000000">function Historian.persist(historian, linebuf, results)</text>
-<text text-anchor="middle" x="11302" y="-834.1014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local lb = tostring(linebuf)</text>
+<text text-anchor="middle" x="11302" y="-849.5014" font-family="Inconsolata" font-size="14.00" fill="#000000">function Historian.persist(historian, txtbuf, results)</text>
+<text text-anchor="middle" x="11302" y="-834.1014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local lb = tostring(txtbuf)</text>
 <text text-anchor="middle" x="11302" y="-818.7014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if lb ~= &quot;&quot; then</text>
 <text text-anchor="middle" x="11302" y="-803.3013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;historian.insert_line_stmt:bindkv { project = historian.project,</text>
 <text text-anchor="middle" x="11302" y="-787.9013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;line &#160;&#160;&#160;= lb }</text>
@@ -2224,14 +2224,14 @@
 <polygon fill="none" stroke="#c0c0c0" points="12388.9016,-1580.0833 12021.0984,-1580.0833 12021.0984,-1392.1215 12388.9016,-1392.1215 12388.9016,-1580.0833"/>
 <text text-anchor="middle" x="12205" y="-1564.6425" font-family="Inconsolata" font-size="14.00" fill="#000000">function Historian.prev(historian)</text>
 <text text-anchor="middle" x="12205" y="-1549.2425" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if historian.cursor == 0 then</text>
-<text text-anchor="middle" x="12205" y="-1533.8425" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return Linebuf()</text>
+<text text-anchor="middle" x="12205" y="-1533.8425" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return Txtbuf()</text>
 <text text-anchor="middle" x="12205" y="-1518.4424" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
 <text text-anchor="middle" x="12205" y="-1503.0424" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local Δ = historian.cursor &gt; 1 and 1 or 0</text>
-<text text-anchor="middle" x="12205" y="-1484.2824" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local linebuf = historian[historian.cursor &#45; Δ]</text>
-<text text-anchor="middle" x="12205" y="-1465.5224" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local result = historian.results[linebuf]</text>
+<text text-anchor="middle" x="12205" y="-1484.2824" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local txtbuf = historian[historian.cursor &#45; Δ]</text>
+<text text-anchor="middle" x="12205" y="-1465.5224" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local result = historian.results[txtbuf]</text>
 <text text-anchor="middle" x="12205" y="-1450.1224" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;historian.cursor = historian.cursor &#45; Δ</text>
-<text text-anchor="middle" x="12205" y="-1431.3624" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;linebuf.cursor = #linebuf.lines + 1</text>
-<text text-anchor="middle" x="12205" y="-1415.9623" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return linebuf:clone(), result</text>
+<text text-anchor="middle" x="12205" y="-1431.3624" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;txtbuf.cursor = #txtbuf.lines + 1</text>
+<text text-anchor="middle" x="12205" y="-1415.9623" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return txtbuf:clone(), result</text>
 <text text-anchor="middle" x="12205" y="-1400.5623" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
 </g>
 <!-- codeblock_164&#45;&gt;leaf_170 -->
@@ -2450,20 +2450,20 @@
 <text text-anchor="middle" x="12992" y="-763.5212" font-family="Inconsolata" font-size="14.00" fill="#000000">function Historian.next(historian)</text>
 <text text-anchor="middle" x="12992" y="-748.1212" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local Δ = historian.cursor &lt; #historian and 1 or 0</text>
 <text text-anchor="middle" x="12992" y="-729.3612" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if historian.cursor == 0 then</text>
-<text text-anchor="middle" x="12992" y="-713.9611" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return Linebuf()</text>
+<text text-anchor="middle" x="12992" y="-713.9611" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return Txtbuf()</text>
 <text text-anchor="middle" x="12992" y="-698.5611" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
-<text text-anchor="middle" x="12992" y="-683.1611" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local linebuf= historian[historian.cursor + Δ]</text>
-<text text-anchor="middle" x="12992" y="-664.4011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local result = historian.results[linebuf]</text>
-<text text-anchor="middle" x="12992" y="-649.001" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if not linebuf then</text>
-<text text-anchor="middle" x="12992" y="-633.601" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return Linebuf()</text>
+<text text-anchor="middle" x="12992" y="-683.1611" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local txtbuf= historian[historian.cursor + Δ]</text>
+<text text-anchor="middle" x="12992" y="-664.4011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local result = historian.results[txtbuf]</text>
+<text text-anchor="middle" x="12992" y="-649.001" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if not txtbuf then</text>
+<text text-anchor="middle" x="12992" y="-633.601" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return Txtbuf()</text>
 <text text-anchor="middle" x="12992" y="-618.201" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
 <text text-anchor="middle" x="12992" y="-602.8009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;historian.cursor = historian.cursor + Δ</text>
-<text text-anchor="middle" x="12992" y="-584.0409" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;linebuf.cursor = #linebuf.lines + 1</text>
-<text text-anchor="middle" x="12992" y="-568.6409" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if not (Δ &gt; 0) and #linebuf.lines &gt; 0 then</text>
+<text text-anchor="middle" x="12992" y="-584.0409" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;txtbuf.cursor = #txtbuf.lines + 1</text>
+<text text-anchor="middle" x="12992" y="-568.6409" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if not (Δ &gt; 0) and #txtbuf.lines &gt; 0 then</text>
 <text text-anchor="middle" x="12992" y="-549.8809" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;historian.cursor = #historian + 1</text>
-<text text-anchor="middle" x="12992" y="-534.4809" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return linebuf:clone(), nil, true</text>
+<text text-anchor="middle" x="12992" y="-534.4809" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return txtbuf:clone(), nil, true</text>
 <text text-anchor="middle" x="12992" y="-519.0808" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;else</text>
-<text text-anchor="middle" x="12992" y="-503.6808" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return linebuf:clone(), result, false</text>
+<text text-anchor="middle" x="12992" y="-503.6808" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return txtbuf:clone(), result, false</text>
 <text text-anchor="middle" x="12992" y="-488.2808" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
 <text text-anchor="middle" x="12992" y="-472.8807" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
 </g>
@@ -2477,7 +2477,7 @@
 <g id="node181" class="node">
 <title>leaf_180</title>
 <polygon fill="none" stroke="#c0c0c0" points="12430,-63.0015 11952,-63.0015 11952,-7.1986 12430,-7.1986 12430,-63.0015"/>
-<text text-anchor="middle" x="12191" y="-15.6001" font-family="Inconsolata" font-size="14.00" fill="#000000">Returns the next linebuf in history, and a second flag to tell the</text>
+<text text-anchor="middle" x="12191" y="-15.6001" font-family="Inconsolata" font-size="14.00" fill="#000000">Returns the next txtbuf in history, and a second flag to tell the</text>
 </g>
 <!-- raw_176&#45;&gt;leaf_180 -->
 <g id="edge180" class="edge">
@@ -2572,16 +2572,16 @@
 <g id="node199" class="node">
 <title>leaf_198</title>
 <polygon fill="none" stroke="#c0c0c0" points="14041.5,-725.9015 13584.5,-725.9015 13584.5,-517.5004 14041.5,-517.5004 14041.5,-725.9015"/>
-<text text-anchor="middle" x="13813" y="-710.6012" font-family="Inconsolata" font-size="14.00" fill="#000000">function Historian.append(historian, linebuf, results, success)</text>
-<text text-anchor="middle" x="13813" y="-695.2011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if tostring(historian[#historian]) == tostring(linebuf) then</text>
+<text text-anchor="middle" x="13813" y="-710.6012" font-family="Inconsolata" font-size="14.00" fill="#000000">function Historian.append(historian, txtbuf, results, success)</text>
+<text text-anchor="middle" x="13813" y="-695.2011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if tostring(historian[#historian]) == tostring(txtbuf) then</text>
 <text text-anchor="middle" x="13813" y="-679.8011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; don&#39;t bother</text>
 <text text-anchor="middle" x="13813" y="-664.4011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return false</text>
 <text text-anchor="middle" x="13813" y="-649.001" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
-<text text-anchor="middle" x="13813" y="-633.601" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;historian[#historian + 1] = linebuf</text>
+<text text-anchor="middle" x="13813" y="-633.601" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;historian[#historian + 1] = txtbuf</text>
 <text text-anchor="middle" x="13813" y="-618.201" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if success then</text>
-<text text-anchor="middle" x="13813" y="-602.8009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;historian:persist(linebuf, results)</text>
+<text text-anchor="middle" x="13813" y="-602.8009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;historian:persist(txtbuf, results)</text>
 <text text-anchor="middle" x="13813" y="-587.4009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;else</text>
-<text text-anchor="middle" x="13813" y="-572.0009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;historian:persist(linebuf)</text>
+<text text-anchor="middle" x="13813" y="-572.0009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;historian:persist(txtbuf)</text>
 <text text-anchor="middle" x="13813" y="-556.6008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
 <text text-anchor="middle" x="13813" y="-541.2008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return true</text>
 <text text-anchor="middle" x="13813" y="-525.8008" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
@@ -2625,7 +2625,7 @@
 <g id="node196" class="node">
 <title>leaf_195</title>
 <polygon fill="none" stroke="#c0c0c0" points="13632.5,-63.0015 13301.5,-63.0015 13301.5,-7.1986 13632.5,-7.1986 13632.5,-63.0015"/>
-<text text-anchor="middle" x="13467" y="-15.6001" font-family="Inconsolata" font-size="14.00" fill="#000000">Appends a linebuf to history and persists it.</text>
+<text text-anchor="middle" x="13467" y="-15.6001" font-family="Inconsolata" font-size="14.00" fill="#000000">Appends a txtbuf to history and persists it.</text>
 </g>
 <!-- raw_194&#45;&gt;leaf_195 -->
 <g id="edge195" class="edge">

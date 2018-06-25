@@ -31,7 +31,7 @@
 <g id="node3" class="node">
 <title>header_2</title>
 <ellipse fill="none" stroke="#000000" cx="124.5" cy="-1416.202" rx="51.319" ry="18"/>
-<text text-anchor="middle" x="124.5" y="-1412.002" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">1 : Linebuf</text>
+<text text-anchor="middle" x="124.5" y="-1412.002" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">1 : Txtbuf</text>
 </g>
 <!-- section_1&#45;&gt;header_2 -->
 <g id="edge2" class="edge">
@@ -103,7 +103,7 @@
 <g id="node9" class="node">
 <title>leaf_8</title>
 <polygon fill="none" stroke="#c0c0c0" points="79,-1362.202 0,-1362.202 0,-1326.202 79,-1326.202 79,-1362.202"/>
-<text text-anchor="middle" x="39.5" y="-1340.702" font-family="Inconsolata" font-size="14.00" fill="#000000">* Linebuf</text>
+<text text-anchor="middle" x="39.5" y="-1340.702" font-family="Inconsolata" font-size="14.00" fill="#000000">* Txtbuf</text>
 </g>
 <!-- header_2&#45;&gt;leaf_8 -->
 <g id="edge8" class="edge">
@@ -319,7 +319,7 @@
 <g id="node64" class="node">
 <title>header_63</title>
 <ellipse fill="none" stroke="#000000" cx="4419.5" cy="-1344.202" rx="127.6874" ry="18"/>
-<text text-anchor="middle" x="4419.5" y="-1340.002" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">2 : Linebuf.insert(linebuf, frag)</text>
+<text text-anchor="middle" x="4419.5" y="-1340.002" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">2 : Txtbuf.insert(txtbuf, frag)</text>
 </g>
 <!-- section_7&#45;&gt;header_63 -->
 <g id="edge63" class="edge">
@@ -403,7 +403,7 @@
 <g id="node16" class="node">
 <title>leaf_15</title>
 <polygon fill="none" stroke="#c0c0c0" points="288,-1272.502 223,-1272.502 223,-1236.502 288,-1236.502 288,-1272.502"/>
-<text text-anchor="middle" x="255.5" y="-1251.002" font-family="Inconsolata" font-size="14.00" fill="#000000">linebuf</text>
+<text text-anchor="middle" x="255.5" y="-1251.002" font-family="Inconsolata" font-size="14.00" fill="#000000">txtbuf</text>
 </g>
 <!-- literal_11&#45;&gt;leaf_15 -->
 <g id="edge15" class="edge">
@@ -451,7 +451,7 @@
 <g id="node27" class="node">
 <title>leaf_26</title>
 <polygon fill="none" stroke="#c0c0c0" points="1296,-1272.502 1231,-1272.502 1231,-1236.502 1296,-1236.502 1296,-1272.502"/>
-<text text-anchor="middle" x="1263.5" y="-1251.002" font-family="Inconsolata" font-size="14.00" fill="#000000">linebuf</text>
+<text text-anchor="middle" x="1263.5" y="-1251.002" font-family="Inconsolata" font-size="14.00" fill="#000000">txtbuf</text>
 </g>
 <!-- literal_20&#45;&gt;leaf_26 -->
 <g id="edge26" class="edge">
@@ -667,7 +667,7 @@
 <g id="node40" class="node">
 <title>leaf_39</title>
 <polygon fill="none" stroke="#c0c0c0" points="1461.5,-680.4013 899.5,-680.4013 899.5,-593.8007 1461.5,-593.8007 1461.5,-680.4013"/>
-<text text-anchor="middle" x="1180.5" y="-617.301" font-family="Inconsolata" font-size="14.00" fill="#000000">Instance fields for a linebuf may be read by other code, but should be written</text>
+<text text-anchor="middle" x="1180.5" y="-617.301" font-family="Inconsolata" font-size="14.00" fill="#000000">Instance fields for a txtbuf may be read by other code, but should be written</text>
 <text text-anchor="middle" x="1180.5" y="-601.901" font-family="Inconsolata" font-size="14.00" fill="#000000">internally.</text>
 </g>
 <!-- raw_38&#45;&gt;leaf_39 -->
@@ -742,7 +742,7 @@
 <g id="node52" class="node">
 <title>leaf_51</title>
 <polygon fill="none" stroke="#c0c0c0" points="3273,-672.4013 2774,-672.4013 2774,-601.8006 3273,-601.8006 3273,-672.4013"/>
-<text text-anchor="middle" x="3023.5" y="-641.301" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;cursor is moved by linebuf, ensuring we stay on codepoint</text>
+<text text-anchor="middle" x="3023.5" y="-641.301" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;cursor is moved by txtbuf, ensuring we stay on codepoint</text>
 <text text-anchor="middle" x="3023.5" y="-625.901" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;boundaries.</text>
 </g>
 <!-- raw_50&#45;&gt;leaf_51 -->
@@ -781,7 +781,7 @@
 <polygon fill="none" stroke="#c0c0c0" points="3897,-664.3014 3482,-664.3014 3482,-609.9005 3897,-609.9005 3897,-664.3014"/>
 <text text-anchor="middle" x="3689.5" y="-649.001" font-family="Inconsolata" font-size="14.00" fill="#000000">local sub, byte = assert(string.sub), assert(string.byte)</text>
 <text text-anchor="middle" x="3689.5" y="-633.601" font-family="Inconsolata" font-size="14.00" fill="#000000">local gsub = assert(string.gsub)</text>
-<text text-anchor="middle" x="3689.5" y="-618.201" font-family="Inconsolata" font-size="14.00" fill="#000000">assert(meta, &quot;linebuf requires meta&quot;)</text>
+<text text-anchor="middle" x="3689.5" y="-618.201" font-family="Inconsolata" font-size="14.00" fill="#000000">assert(meta, &quot;txtbuf requires meta&quot;)</text>
 </g>
 <!-- codeblock_54&#45;&gt;leaf_60 -->
 <g id="edge60" class="edge">
@@ -793,7 +793,7 @@
 <g id="node62" class="node">
 <title>leaf_61</title>
 <polygon fill="none" stroke="#c0c0c0" points="4092,-655.101 3915,-655.101 3915,-619.101 4092,-619.101 4092,-655.101"/>
-<text text-anchor="middle" x="4003.5" y="-633.601" font-family="Inconsolata" font-size="14.00" fill="#000000">local Linebuf = meta {}</text>
+<text text-anchor="middle" x="4003.5" y="-633.601" font-family="Inconsolata" font-size="14.00" fill="#000000">local Txtbuf = meta {}</text>
 </g>
 <!-- codeblock_55&#45;&gt;leaf_61 -->
 <g id="edge61" class="edge">
@@ -806,11 +806,11 @@
 <title>leaf_62</title>
 <polygon fill="none" stroke="#c0c0c0" points="4413,-710.8014 4110,-710.8014 4110,-563.4006 4413,-563.4006 4413,-710.8014"/>
 <text text-anchor="middle" x="4261.5" y="-695.5011" font-family="Inconsolata" font-size="14.00" fill="#000000">local concat = table.concat</text>
-<text text-anchor="middle" x="4261.5" y="-664.1011" font-family="Inconsolata" font-size="14.00" fill="#000000">function Linebuf.__tostring(linebuf)</text>
-<text text-anchor="middle" x="4261.5" y="-648.701" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if type(linebuf.lines) == &quot;table&quot; then</text>
-<text text-anchor="middle" x="4261.5" y="-633.301" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return concat(linebuf.lines)</text>
+<text text-anchor="middle" x="4261.5" y="-664.1011" font-family="Inconsolata" font-size="14.00" fill="#000000">function Txtbuf.__tostring(txtbuf)</text>
+<text text-anchor="middle" x="4261.5" y="-648.701" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if type(txtbuf.lines) == &quot;table&quot; then</text>
+<text text-anchor="middle" x="4261.5" y="-633.301" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return concat(txtbuf.lines)</text>
 <text text-anchor="middle" x="4261.5" y="-617.901" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;else</text>
-<text text-anchor="middle" x="4261.5" y="-602.501" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return linebuf.lines</text>
+<text text-anchor="middle" x="4261.5" y="-602.501" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return txtbuf.lines</text>
 <text text-anchor="middle" x="4261.5" y="-587.1009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
 <text text-anchor="middle" x="4261.5" y="-571.7009" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
 </g>
@@ -835,7 +835,7 @@
 <g id="node69" class="node">
 <title>leaf_68</title>
 <polygon fill="none" stroke="#c0c0c0" points="4452.5,-1272.502 4212.5,-1272.502 4212.5,-1236.502 4452.5,-1236.502 4452.5,-1272.502"/>
-<text text-anchor="middle" x="4332.5" y="-1251.002" font-family="Inconsolata" font-size="14.00" fill="#000000">** Linebuf.insert(linebuf, frag)</text>
+<text text-anchor="middle" x="4332.5" y="-1251.002" font-family="Inconsolata" font-size="14.00" fill="#000000">** Txtbuf.insert(txtbuf, frag)</text>
 </g>
 <!-- header_63&#45;&gt;leaf_68 -->
 <g id="edge68" class="edge">
@@ -1180,11 +1180,11 @@
 <text text-anchor="middle" x="6877.5" y="-1075.2017" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
 <text text-anchor="middle" x="6877.5" y="-1043.8017" font-family="Inconsolata" font-size="14.00" fill="#000000">local t_insert, splice = assert(table.insert), assert(table.splice)</text>
 <text text-anchor="middle" x="6877.5" y="-1028.4017" font-family="Inconsolata" font-size="14.00" fill="#000000">local utf8, codepoints = string.utf8, string.codepoints</text>
-<text text-anchor="middle" x="6877.5" y="-997.0017" font-family="Inconsolata" font-size="14.00" fill="#000000">function Linebuf.insert(linebuf, frag)</text>
-<text text-anchor="middle" x="6877.5" y="-981.6016" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local line = linebuf.lines</text>
+<text text-anchor="middle" x="6877.5" y="-997.0017" font-family="Inconsolata" font-size="14.00" fill="#000000">function Txtbuf.insert(txtbuf, frag)</text>
+<text text-anchor="middle" x="6877.5" y="-981.6016" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local line = txtbuf.lines</text>
 <text text-anchor="middle" x="6877.5" y="-966.2016" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if type(line) == &quot;string&quot; then</text>
 <text text-anchor="middle" x="6877.5" y="-950.8016" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;line = codepoints(line)</text>
-<text text-anchor="middle" x="6877.5" y="-935.4015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;linebuf.lines = line</text>
+<text text-anchor="middle" x="6877.5" y="-935.4015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;txtbuf.lines = line</text>
 <text text-anchor="middle" x="6877.5" y="-920.0015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
 <text text-anchor="middle" x="6877.5" y="-904.6015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local wide_frag = utf8(frag)</text>
 <text text-anchor="middle" x="6877.5" y="-889.2014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if wide_frag &lt; #frag then &#45;&#45; a paste</text>
@@ -1195,42 +1195,42 @@
 <text text-anchor="middle" x="6877.5" y="-812.2013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;wide_frag = false</text>
 <text text-anchor="middle" x="6877.5" y="-796.8012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
 <text text-anchor="middle" x="6877.5" y="-781.4012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if not wide_frag then</text>
-<text text-anchor="middle" x="6877.5" y="-766.0012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;t_insert(line, linebuf.cursor, frag)</text>
-<text text-anchor="middle" x="6877.5" y="-750.6012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;linebuf.cursor = linebuf.cursor + 1</text>
+<text text-anchor="middle" x="6877.5" y="-766.0012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;t_insert(line, txtbuf.cursor, frag)</text>
+<text text-anchor="middle" x="6877.5" y="-750.6012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;txtbuf.cursor = txtbuf.cursor + 1</text>
 <text text-anchor="middle" x="6877.5" y="-735.2011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return true</text>
 <text text-anchor="middle" x="6877.5" y="-719.8011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;else</text>
-<text text-anchor="middle" x="6877.5" y="-704.4011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;splice(line, linebuf.cursor, wide_frag)</text>
-<text text-anchor="middle" x="6877.5" y="-689.001" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;linebuf.cursor = linebuf.cursor + #wide_frag</text>
+<text text-anchor="middle" x="6877.5" y="-704.4011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;splice(line, txtbuf.cursor, wide_frag)</text>
+<text text-anchor="middle" x="6877.5" y="-689.001" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;txtbuf.cursor = txtbuf.cursor + #wide_frag</text>
 <text text-anchor="middle" x="6877.5" y="-673.601" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return true</text>
 <text text-anchor="middle" x="6877.5" y="-658.201" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
 <text text-anchor="middle" x="6877.5" y="-626.8009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return false</text>
 <text text-anchor="middle" x="6877.5" y="-611.4009" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
 <text text-anchor="middle" x="6877.5" y="-580.0009" font-family="Inconsolata" font-size="14.00" fill="#000000">local remove = table.remove</text>
-<text text-anchor="middle" x="6877.5" y="-548.6008" font-family="Inconsolata" font-size="14.00" fill="#000000">function Linebuf.d_back(linebuf)</text>
-<text text-anchor="middle" x="6877.5" y="-533.2008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;remove(linebuf.lines, linebuf.cursor &#45; 1)</text>
-<text text-anchor="middle" x="6877.5" y="-517.8008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;linebuf.cursor = linebuf.cursor &gt; 1 and linebuf.cursor &#45; 1 or 1</text>
+<text text-anchor="middle" x="6877.5" y="-548.6008" font-family="Inconsolata" font-size="14.00" fill="#000000">function Txtbuf.d_back(txtbuf)</text>
+<text text-anchor="middle" x="6877.5" y="-533.2008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;remove(txtbuf.lines, txtbuf.cursor &#45; 1)</text>
+<text text-anchor="middle" x="6877.5" y="-517.8008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;txtbuf.cursor = txtbuf.cursor &gt; 1 and txtbuf.cursor &#45; 1 or 1</text>
 <text text-anchor="middle" x="6877.5" y="-502.4007" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
-<text text-anchor="middle" x="6877.5" y="-455.0007" font-family="Inconsolata" font-size="14.00" fill="#000000">function Linebuf.d_fwd(linebuf)</text>
-<text text-anchor="middle" x="6877.5" y="-439.6007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;remove(linebuf.lines, linebuf.cursor)</text>
+<text text-anchor="middle" x="6877.5" y="-455.0007" font-family="Inconsolata" font-size="14.00" fill="#000000">function Txtbuf.d_fwd(txtbuf)</text>
+<text text-anchor="middle" x="6877.5" y="-439.6007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;remove(txtbuf.lines, txtbuf.cursor)</text>
 <text text-anchor="middle" x="6877.5" y="-424.2007" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
-<text text-anchor="middle" x="6877.5" y="-392.8006" font-family="Inconsolata" font-size="14.00" fill="#000000">function Linebuf.left(linebuf, disp)</text>
+<text text-anchor="middle" x="6877.5" y="-392.8006" font-family="Inconsolata" font-size="14.00" fill="#000000">function Txtbuf.left(txtbuf, disp)</text>
 <text text-anchor="middle" x="6877.5" y="-377.4006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local disp = disp or 1</text>
-<text text-anchor="middle" x="6877.5" y="-362.0006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if linebuf.cursor &#45; disp &gt;= 1 then</text>
-<text text-anchor="middle" x="6877.5" y="-346.6005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;linebuf.cursor = linebuf.cursor &#45; disp</text>
-<text text-anchor="middle" x="6877.5" y="-331.2005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return linebuf.cursor</text>
+<text text-anchor="middle" x="6877.5" y="-362.0006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if txtbuf.cursor &#45; disp &gt;= 1 then</text>
+<text text-anchor="middle" x="6877.5" y="-346.6005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;txtbuf.cursor = txtbuf.cursor &#45; disp</text>
+<text text-anchor="middle" x="6877.5" y="-331.2005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return txtbuf.cursor</text>
 <text text-anchor="middle" x="6877.5" y="-315.8005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;else</text>
-<text text-anchor="middle" x="6877.5" y="-300.4004" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;linebuf.cursor = 1</text>
-<text text-anchor="middle" x="6877.5" y="-285.0004" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return linebuf.cursor</text>
+<text text-anchor="middle" x="6877.5" y="-300.4004" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;txtbuf.cursor = 1</text>
+<text text-anchor="middle" x="6877.5" y="-285.0004" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return txtbuf.cursor</text>
 <text text-anchor="middle" x="6877.5" y="-269.6004" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
 <text text-anchor="middle" x="6877.5" y="-254.2003" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
-<text text-anchor="middle" x="6877.5" y="-222.8003" font-family="Inconsolata" font-size="14.00" fill="#000000">function Linebuf.right(linebuf, disp)</text>
+<text text-anchor="middle" x="6877.5" y="-222.8003" font-family="Inconsolata" font-size="14.00" fill="#000000">function Txtbuf.right(txtbuf, disp)</text>
 <text text-anchor="middle" x="6877.5" y="-207.4003" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;disp = disp or 1</text>
-<text text-anchor="middle" x="6877.5" y="-192.0002" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if linebuf.cursor + disp &lt;= #linebuf.lines + 1 then</text>
-<text text-anchor="middle" x="6877.5" y="-176.6002" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;linebuf.cursor = linebuf.cursor + disp</text>
+<text text-anchor="middle" x="6877.5" y="-192.0002" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if txtbuf.cursor + disp &lt;= #txtbuf.lines + 1 then</text>
+<text text-anchor="middle" x="6877.5" y="-176.6002" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;txtbuf.cursor = txtbuf.cursor + disp</text>
 <text text-anchor="middle" x="6877.5" y="-161.2002" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;else</text>
-<text text-anchor="middle" x="6877.5" y="-145.8002" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;linebuf.cursor = #linebuf.lines + 1</text>
+<text text-anchor="middle" x="6877.5" y="-145.8002" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;txtbuf.cursor = #txtbuf.lines + 1</text>
 <text text-anchor="middle" x="6877.5" y="-130.4001" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
-<text text-anchor="middle" x="6877.5" y="-115.0001" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return linebuf.cursor</text>
+<text text-anchor="middle" x="6877.5" y="-115.0001" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return txtbuf.cursor</text>
 <text text-anchor="middle" x="6877.5" y="-99.6001" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
 </g>
 <!-- codeblock_89&#45;&gt;leaf_97 -->
@@ -1244,14 +1244,14 @@
 <title>leaf_98</title>
 <polygon fill="none" stroke="#c0c0c0" points="7605.5,-734.1013 7155.5,-734.1013 7155.5,-540.1007 7605.5,-540.1007 7605.5,-734.1013"/>
 <text text-anchor="middle" x="7380.5" y="-718.9011" font-family="Inconsolata" font-size="14.00" fill="#000000">local cl = assert(table.clone, &quot;table.clone must be provided&quot;)</text>
-<text text-anchor="middle" x="7380.5" y="-687.5011" font-family="Inconsolata" font-size="14.00" fill="#000000">function Linebuf.suspend(linebuf)</text>
-<text text-anchor="middle" x="7380.5" y="-672.1011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;linebuf.lines = tostring(linebuf)</text>
-<text text-anchor="middle" x="7380.5" y="-656.701" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return linebuf</text>
+<text text-anchor="middle" x="7380.5" y="-687.5011" font-family="Inconsolata" font-size="14.00" fill="#000000">function Txtbuf.suspend(txtbuf)</text>
+<text text-anchor="middle" x="7380.5" y="-672.1011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;txtbuf.lines = tostring(txtbuf)</text>
+<text text-anchor="middle" x="7380.5" y="-656.701" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return txtbuf</text>
 <text text-anchor="middle" x="7380.5" y="-641.301" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
-<text text-anchor="middle" x="7380.5" y="-609.901" font-family="Inconsolata" font-size="14.00" fill="#000000">function Linebuf.resume(linebuf)</text>
-<text text-anchor="middle" x="7380.5" y="-594.501" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;linebuf.lines = codepoints(linebuf.lines)</text>
-<text text-anchor="middle" x="7380.5" y="-579.1009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;linebuf.cursor = #linebuf.lines + 1</text>
-<text text-anchor="middle" x="7380.5" y="-563.7009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return linebuf</text>
+<text text-anchor="middle" x="7380.5" y="-609.901" font-family="Inconsolata" font-size="14.00" fill="#000000">function Txtbuf.resume(txtbuf)</text>
+<text text-anchor="middle" x="7380.5" y="-594.501" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;txtbuf.lines = codepoints(txtbuf.lines)</text>
+<text text-anchor="middle" x="7380.5" y="-579.1009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;txtbuf.cursor = #txtbuf.lines + 1</text>
+<text text-anchor="middle" x="7380.5" y="-563.7009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return txtbuf</text>
 <text text-anchor="middle" x="7380.5" y="-548.3009" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
 </g>
 <!-- codeblock_90&#45;&gt;leaf_98 -->
@@ -1264,8 +1264,8 @@
 <g id="node100" class="node">
 <title>leaf_99</title>
 <polygon fill="none" stroke="#c0c0c0" points="7927,-710.2018 7624,-710.2018 7624,-564.0002 7927,-564.0002 7927,-710.2018"/>
-<text text-anchor="middle" x="7775.5" y="-695.2011" font-family="Inconsolata" font-size="14.00" fill="#000000">function Linebuf.clone(linebuf)</text>
-<text text-anchor="middle" x="7775.5" y="-679.8011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local lb = cl(linebuf)</text>
+<text text-anchor="middle" x="7775.5" y="-695.2011" font-family="Inconsolata" font-size="14.00" fill="#000000">function Txtbuf.clone(txtbuf)</text>
+<text text-anchor="middle" x="7775.5" y="-679.8011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local lb = cl(txtbuf)</text>
 <text text-anchor="middle" x="7775.5" y="-664.4011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if type(lb.lines) == &quot;table&quot; then</text>
 <text text-anchor="middle" x="7775.5" y="-649.001" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;lb.lines = cl(lb.lines)</text>
 <text text-anchor="middle" x="7775.5" y="-633.601" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;elseif type(lb.lines) == &quot;string&quot; then</text>
@@ -1285,10 +1285,10 @@
 <title>leaf_100</title>
 <polygon fill="none" stroke="#c0c0c0" points="8234,-687.502 7945,-687.502 7945,-586.7 8234,-586.7 8234,-687.502"/>
 <text text-anchor="middle" x="8089.5" y="-672.1011" font-family="Inconsolata" font-size="14.00" fill="#000000">local function new(line)</text>
-<text text-anchor="middle" x="8089.5" y="-656.701" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local linebuf = meta(Linebuf)</text>
-<text text-anchor="middle" x="8089.5" y="-641.301" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;linebuf.cursor = line and #line or 1</text>
-<text text-anchor="middle" x="8089.5" y="-625.901" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;linebuf.lines &#160;= line or {}</text>
-<text text-anchor="middle" x="8089.5" y="-610.501" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return linebuf</text>
+<text text-anchor="middle" x="8089.5" y="-656.701" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local txtbuf = meta(Txtbuf)</text>
+<text text-anchor="middle" x="8089.5" y="-641.301" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;txtbuf.cursor = line and #line or 1</text>
+<text text-anchor="middle" x="8089.5" y="-625.901" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;txtbuf.lines &#160;= line or {}</text>
+<text text-anchor="middle" x="8089.5" y="-610.501" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return txtbuf</text>
 <text text-anchor="middle" x="8089.5" y="-595.1009" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
 </g>
 <!-- codeblock_92&#45;&gt;leaf_100 -->

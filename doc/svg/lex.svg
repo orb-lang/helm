@@ -206,7 +206,7 @@
 <g id="node25" class="node">
 <title>header_24</title>
 <ellipse fill="none" stroke="#000000" cx="1914" cy="-2652.4039" rx="103.0387" ry="18"/>
-<text text-anchor="middle" x="1914" y="-2648.2039" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">2 : Lex.lua_thor(linebuf)</text>
+<text text-anchor="middle" x="1914" y="-2648.2039" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">2 : Lex.lua_thor(txtbuf)</text>
 </g>
 <!-- section_6&#45;&gt;header_24 -->
 <g id="edge24" class="edge">
@@ -410,7 +410,7 @@
 <g id="node28" class="node">
 <title>leaf_27</title>
 <polygon fill="none" stroke="#c0c0c0" points="2010,-1763.0027 1826,-1763.0027 1826,-1727.0027 2010,-1727.0027 2010,-1763.0027"/>
-<text text-anchor="middle" x="1918" y="-1741.5027" font-family="Inconsolata" font-size="14.00" fill="#000000">** Lex.lua_thor(linebuf)</text>
+<text text-anchor="middle" x="1918" y="-1741.5027" font-family="Inconsolata" font-size="14.00" fill="#000000">** Lex.lua_thor(txtbuf)</text>
 </g>
 <!-- header_24&#45;&gt;leaf_27 -->
 <g id="edge27" class="edge">
@@ -571,9 +571,9 @@
 <text text-anchor="middle" x="2853" y="-624.4011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;mark = c.color.string(mark)</text>
 <text text-anchor="middle" x="2853" y="-609.001" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return mark .. ts(str) .. mark</text>
 <text text-anchor="middle" x="2853" y="-593.601" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
-<text text-anchor="middle" x="2853" y="-546.201" font-family="Inconsolata" font-size="14.00" fill="#000000">function Lex.lua_thor(linebuf)</text>
+<text text-anchor="middle" x="2853" y="-546.201" font-family="Inconsolata" font-size="14.00" fill="#000000">function Lex.lua_thor(txtbuf)</text>
 <text text-anchor="middle" x="2853" y="-530.8009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local toks = {}</text>
-<text text-anchor="middle" x="2853" y="-515.4009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local lb = tostring(linebuf)</text>
+<text text-anchor="middle" x="2853" y="-515.4009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local lb = tostring(txtbuf)</text>
 <text text-anchor="middle" x="2853" y="-500.0009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;while lb ~= &quot;&quot; do</text>
 <text text-anchor="middle" x="2853" y="-484.6008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local len = #lb</text>
 <text text-anchor="middle" x="2853" y="-469.2008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local bite, tok_t</text>

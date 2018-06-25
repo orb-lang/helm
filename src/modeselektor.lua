@@ -101,7 +101,7 @@ assert(ts, "must have ts in _G")
 
 
 
-local Linebuf   = require "txtbuf"
+local Txtbuf   = require "txtbuf"
 local Resbuf    = require "resbuf"
 local Historian = require "historian"
 local Lex       = require "lex"
@@ -187,7 +187,7 @@ end
 
 
 function ModeS.insert(modeS, category, value)
-    local success =  modeS.linebuf:insert(value)
+    local success =  modeS.txtbuf:insert(value)
 end
 
 
@@ -225,13 +225,14 @@ local function tf(bool)
 end
 
 local function pr_mouse(m)
-   local phrase = a.magenta(m.button) .. ": "
-                     .. a.bright(m.kind) .. " " .. tf(m.shift)
-                     .. " " .. tf(m.meta)
-                     .. " " .. tf(m.ctrl) .. " " .. tf(m.moving) .. " "
-                     .. tf(m.scrolling) .. " "
-                     .. a.cyan(m.col) .. "," .. a.cyan(m.row)
-   return phrase
+   return a.magenta(m.button) .. ": "
+      .. a.bright(m.kind) .. " "
+      .. tf(m.shift) .. " "
+      .. tf(m.meta) .. " "
+      .. tf(m.ctrl) .. " "
+      .. tf(m.moving) .. " "
+      .. tf(m.scrolling) .. " "
+      .. a.cyan(m.col) .. "," .. a.cyan(m.row)
 end
 
 local function mk_paint(fragment, shade)
@@ -271,7 +272,7 @@ end
 
 
 function ModeS.cur_col(modeS)
-   return modeS.linebuf.cursor + modeS.l_margin - 1
+   return modeS.txtbuf.cursor + modeS.l_margin - 1
 end
 
 function ModeS.nl(modeS)
@@ -299,7 +300,7 @@ end
 
 
 function ModeS.paint_row(modeS)
-   local lb = Lex.lua_thor(modeS.buffer .. tostring(modeS.linebuf))
+   local lb = Lex.lua_thor(modeS.buffer .. tostring(modeS.txtbuf))
    write(a.cursor.hide())
    write(a.jump(modeS.repl_line, modeS.l_margin))
    write(a.erase.right())
@@ -345,8 +346,9 @@ end
 
 
 
+local assertfmt = assert(core.assertfmt)
 function ModeS.act(modeS, category, value)
-   assert(modeS.modes[category], "no category " .. category .. " in modeS")
+   assertfmt(modeS.modes[category], "no category %s in modeS", category)
    -- catch special handlers first
    if modeS.special[value] then
       return modeS.special[value](modeS, category, value)
@@ -398,11 +400,11 @@ end
 function NAV.UP(modeS, category, value)
    modeS:clearResult()
    local prev_result, linestash
-   if tostring(modeS.linebuf) ~= ""
+   if tostring(modeS.txtbuf) ~= ""
       and modeS.hist.cursor > #modeS.hist then
-      linestash = modeS.linebuf
+      linestash = modeS.txtbuf
    end
-   modeS.linebuf, prev_result = modeS.hist:prev()
+   modeS.txtbuf, prev_result = modeS.hist:prev()
    if linestash then
       modeS.hist:append(linestash)
    end
@@ -417,9 +419,9 @@ end
 function NAV.DOWN(modeS, category, value)
    modeS:clearResult()
    local next_p, next_result
-   modeS.linebuf, next_result, next_p = modeS.hist:next()
+   modeS.txtbuf, next_result, next_p = modeS.hist:next()
    if next_p then
-      modeS.linebuf = Linebuf()
+      modeS.txtbuf = Txtbuf()
    end
    if next_result then
       modeS:printResults(next_result)
@@ -430,27 +432,27 @@ function NAV.DOWN(modeS, category, value)
 end
 
 function NAV.LEFT(modeS, category, value)
-   return modeS.linebuf:left()
+   return modeS.txtbuf:left()
 end
 
 function NAV.RIGHT(modeS, category, value)
-   return modeS.linebuf:right()
+   return modeS.txtbuf:right()
 end
 
 function NAV.RETURN(modeS, category, value)
    -- eval etc.
    modeS:nl()
    modeS:eval()
-   modeS.linebuf = Linebuf()
+   modeS.txtbuf = Txtbuf()
    modeS.hist.cursor = modeS.hist.cursor + 1
 end
 
 function NAV.BACKSPACE(modeS, category, value)
-   return modeS.linebuf:d_back()
+   return modeS.txtbuf:d_back()
 end
 
 function NAV.DELETE(modeS, category, value)
-   return modeS.linebuf:d_fwd()
+   return modeS.txtbuf:d_fwd()
 end
 
 
@@ -461,13 +463,13 @@ end
 
 
 local function cursor_begin(modeS, category, value)
-   modeS.linebuf.cursor = 1
+   modeS.txtbuf.cursor = 1
 end
 
 CTRL["^A"] = cursor_begin
 
 local function cursor_end(modeS, category, value)
-   modeS.linebuf.cursor = #modeS.linebuf.lines + 1
+   modeS.txtbuf.cursor = #modeS.txtbuf.lines + 1
 end
 
 CTRL["^E"] = cursor_end
@@ -492,7 +494,7 @@ end
 
 
 function ModeS.eval(modeS)
-   local line = tostring(modeS.linebuf)
+   local line = tostring(modeS.txtbuf)
    local chunk  = modeS.buffer .. line
    local success, results
    -- first we prefix return
@@ -509,7 +511,7 @@ function ModeS.eval(modeS)
       end -- more special REPL prefix soon
    end
    if f then
-      modeS.linebuf = Linebuf(modeS.buffer .. tostring(modeS.linebuf))
+      modeS.txtbuf = Txtbuf(modeS.buffer .. tostring(modeS.txtbuf))
       modeS.buffer = ""
       modeS.repl_line = modeS.REPL_LINE
       success, results = gatherResults(xpcall(f, debug.traceback))
@@ -541,9 +543,9 @@ function ModeS.eval(modeS)
       end
    end
 
-   modeS.hist:append(modeS.linebuf, results, success)
+   modeS.hist:append(modeS.txtbuf, results, success)
    modeS.hist.cursor = #modeS.hist
-   if success then modeS.hist.results[modeS.linebuf] = results end
+   if success then modeS.hist.results[modeS.txtbuf] = results end
    modeS:prompt()
 end
 
@@ -556,7 +558,7 @@ end
 
 function new(cfg)
   local modeS = meta(ModeS)
-  modeS.linebuf = Linebuf()
+  modeS.txtbuf = Txtbuf()
   modeS.buffer = ""
   modeS.hist  = Historian()
   modeS.hist.cursor = #modeS.hist + 1

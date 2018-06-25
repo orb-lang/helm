@@ -17,7 +17,7 @@ section_1 [label="section: 1-52"]
 section_1 -> { header_2 prose_3 prose_4 prose_5 section_6 section_7}
 {rank=same; header_2 prose_3 prose_4 prose_5 section_6 section_7}
 
-header_2 [label="1 : Linebuf"]
+header_2 [label="1 : Txtbuf"]
 
 prose_3 [label="prose"]
 
@@ -33,7 +33,7 @@ section_7 [label="section: 53-63"]
 // END RANK section_1
 
 header_2 -> leaf_8
-leaf_8  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Linebuf"]
+leaf_8  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Txtbuf"]
 // END RANK header_2
 
 prose_3 -> { raw_9 prespace_10 literal_11 raw_12}
@@ -62,7 +62,7 @@ leaf_14  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
 // END RANK prespace_10
 
 literal_11 -> leaf_15
-leaf_15  [color=Gray,shape=rectangle,fontname=Inconsolata,label="linebuf"]
+leaf_15  [color=Gray,shape=rectangle,fontname=Inconsolata,label="txtbuf"]
 // END RANK literal_11
 
 raw_12 -> leaf_16
@@ -108,7 +108,7 @@ leaf_25  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
 // END RANK prespace_19
 
 literal_20 -> leaf_26
-leaf_26  [color=Gray,shape=rectangle,fontname=Inconsolata,label="linebuf"]
+leaf_26  [color=Gray,shape=rectangle,fontname=Inconsolata,label="txtbuf"]
 // END RANK literal_20
 
 raw_21 -> leaf_27
@@ -163,7 +163,7 @@ raw_38 -> leaf_39
 leaf_39  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 
-Instance fields for a linebuf may be read by other code, but should be written
+Instance fields for a txtbuf may be read by other code, but should be written
 internally.
 "]
 // END RANK raw_38
@@ -226,7 +226,7 @@ raw_50 [label="raw"]
 
 raw_50 -> leaf_51
 leaf_51  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-            cursor is moved by linebuf, ensuring we stay on codepoint
+            cursor is moved by txtbuf, ensuring we stay on codepoint
             boundaries.
 
 "]
@@ -268,21 +268,21 @@ leaf_59  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 codeblock_54 -> leaf_60
 leaf_60  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local sub, byte = assert(string.sub), assert(string.byte)
 local gsub = assert(string.gsub)
-assert(meta, \"linebuf requires meta\")"]
+assert(meta, \"txtbuf requires meta\")"]
 // END RANK codeblock_54
 
 codeblock_55 -> leaf_61
-leaf_61  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Linebuf = meta {}"]
+leaf_61  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Txtbuf = meta {}"]
 // END RANK codeblock_55
 
 codeblock_56 -> leaf_62
 leaf_62  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local concat = table.concat
 
-function Linebuf.__tostring(linebuf)
-   if type(linebuf.lines) == \"table\" then
-      return concat(linebuf.lines)
+function Txtbuf.__tostring(txtbuf)
+   if type(txtbuf.lines) == \"table\" then
+      return concat(txtbuf.lines)
    else
-      return linebuf.lines
+      return txtbuf.lines
    end
 end"]
 // END RANK codeblock_56
@@ -290,7 +290,7 @@ end"]
 section_7 -> { header_63 prose_64 prose_65 prose_66 section_67}
 {rank=same; header_63 prose_64 prose_65 prose_66 section_67}
 
-header_63 [label="2 : Linebuf.insert(linebuf, frag)"]
+header_63 [label="2 : Txtbuf.insert(txtbuf, frag)"]
 
 prose_64 [label="prose"]
 
@@ -304,7 +304,7 @@ section_67 [label="section: 64-181"]
 // END RANK section_7
 
 header_63 -> leaf_68
-leaf_68  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Linebuf.insert(linebuf, frag)"]
+leaf_68  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Txtbuf.insert(txtbuf, frag)"]
 // END RANK header_63
 
 prose_64 -> { raw_69 prespace_70 literal_71 raw_72}
@@ -438,11 +438,11 @@ end
 local t_insert, splice = assert(table.insert), assert(table.splice)
 local utf8, codepoints = string.utf8, string.codepoints
 
-function Linebuf.insert(linebuf, frag)
-   local line = linebuf.lines
+function Txtbuf.insert(txtbuf, frag)
+   local line = txtbuf.lines
    if type(line) == \"string\" then
       line = codepoints(line)
-      linebuf.lines = line
+      txtbuf.lines = line
    end
    local wide_frag = utf8(frag)
    if wide_frag < #frag then -- a paste
@@ -453,12 +453,12 @@ function Linebuf.insert(linebuf, frag)
       wide_frag = false
    end
    if not wide_frag then
-      t_insert(line, linebuf.cursor, frag)
-      linebuf.cursor = linebuf.cursor + 1
+      t_insert(line, txtbuf.cursor, frag)
+      txtbuf.cursor = txtbuf.cursor + 1
       return true
    else
-      splice(line, linebuf.cursor, wide_frag)
-      linebuf.cursor = linebuf.cursor + #wide_frag
+      splice(line, txtbuf.cursor, wide_frag)
+      txtbuf.cursor = txtbuf.cursor + #wide_frag
       return true
    end
 
@@ -467,56 +467,56 @@ end
 
 local remove = table.remove
 
-function Linebuf.d_back(linebuf)
-   remove(linebuf.lines, linebuf.cursor - 1)
-   linebuf.cursor = linebuf.cursor > 1 and linebuf.cursor - 1 or 1
+function Txtbuf.d_back(txtbuf)
+   remove(txtbuf.lines, txtbuf.cursor - 1)
+   txtbuf.cursor = txtbuf.cursor > 1 and txtbuf.cursor - 1 or 1
 end
 
 
-function Linebuf.d_fwd(linebuf)
-   remove(linebuf.lines, linebuf.cursor)
+function Txtbuf.d_fwd(txtbuf)
+   remove(txtbuf.lines, txtbuf.cursor)
 end
 
-function Linebuf.left(linebuf, disp)
+function Txtbuf.left(txtbuf, disp)
    local disp = disp or 1
-   if linebuf.cursor - disp >= 1 then
-      linebuf.cursor = linebuf.cursor - disp
-      return linebuf.cursor
+   if txtbuf.cursor - disp >= 1 then
+      txtbuf.cursor = txtbuf.cursor - disp
+      return txtbuf.cursor
    else
-      linebuf.cursor = 1
-      return linebuf.cursor
+      txtbuf.cursor = 1
+      return txtbuf.cursor
    end
 end
 
-function Linebuf.right(linebuf, disp)
+function Txtbuf.right(txtbuf, disp)
    disp = disp or 1
-   if linebuf.cursor + disp <= #linebuf.lines + 1 then
-      linebuf.cursor = linebuf.cursor + disp
+   if txtbuf.cursor + disp <= #txtbuf.lines + 1 then
+      txtbuf.cursor = txtbuf.cursor + disp
    else
-      linebuf.cursor = #linebuf.lines + 1
+      txtbuf.cursor = #txtbuf.lines + 1
    end
-   return linebuf.cursor
+   return txtbuf.cursor
 end"]
 // END RANK codeblock_89
 
 codeblock_90 -> leaf_98
 leaf_98  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local cl = assert(table.clone, \"table.clone must be provided\")
 
-function Linebuf.suspend(linebuf)
-   linebuf.lines = tostring(linebuf)
-   return linebuf
+function Txtbuf.suspend(txtbuf)
+   txtbuf.lines = tostring(txtbuf)
+   return txtbuf
 end
 
-function Linebuf.resume(linebuf)
-   linebuf.lines = codepoints(linebuf.lines)
-   linebuf.cursor = #linebuf.lines + 1
-   return linebuf
+function Txtbuf.resume(txtbuf)
+   txtbuf.lines = codepoints(txtbuf.lines)
+   txtbuf.cursor = #txtbuf.lines + 1
+   return txtbuf
 end"]
 // END RANK codeblock_90
 
 codeblock_91 -> leaf_99
-leaf_99  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Linebuf.clone(linebuf)
-   local lb = cl(linebuf)
+leaf_99  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Txtbuf.clone(txtbuf)
+   local lb = cl(txtbuf)
    if type(lb.lines) == \"table\" then
       lb.lines = cl(lb.lines)
    elseif type(lb.lines) == \"string\" then
@@ -528,10 +528,10 @@ end"]
 
 codeblock_92 -> leaf_100
 leaf_100  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new(line)
-   local linebuf = meta(Linebuf)
-   linebuf.cursor = line and #line or 1
-   linebuf.lines  = line or {}
-   return linebuf
+   local txtbuf = meta(Txtbuf)
+   txtbuf.cursor = line and #line or 1
+   txtbuf.lines  = line or {}
+   return txtbuf
 end"]
 // END RANK codeblock_92
 

@@ -14,7 +14,7 @@
 
 
 
-local Linebuf = require "linebuf"
+local Txtbuf = require "txtbuf"
 local sql     = require "sqlayer"
 local color   = require "color"
 local L       = require "lpeg"
@@ -158,7 +158,7 @@ function Historian.load(historian)
       local line_ids = reverse(repl_val[1])
       local repl_map = {}
       for i, v in ipairs(lines) do
-         local buf = Linebuf(v)
+         local buf = Txtbuf(v)
          historian[i] = buf
          repl_map[line_ids[i]] = buf
       end
@@ -167,7 +167,7 @@ function Historian.load(historian)
       -- reuse line_id var for foreign keys
       line_ids = res_val[1]
       local reprs = res_val[2]
-      -- This is keyed by linebuf with a string value.
+      -- This is keyed by txtbuf with a string value.
       local result_map = {}
       for i = 1, #reprs do
          local buf = repl_map[line_ids[i]]
@@ -203,8 +203,8 @@ end
 
 
 
-function Historian.persist(historian, linebuf, results)
-   local lb = tostring(linebuf)
+function Historian.persist(historian, txtbuf, results)
+   local lb = tostring(txtbuf)
    if lb ~= "" then
       historian.insert_line_stmt:bindkv { project = historian.project,
                                      line    = lb }
@@ -288,14 +288,14 @@ end
 
 function Historian.prev(historian)
    if historian.cursor == 0 then
-      return Linebuf()
+      return Txtbuf()
    end
    local Δ = historian.cursor > 1 and 1 or 0
-   local linebuf = historian[historian.cursor - Δ]
-   local result = historian.results[linebuf]
+   local txtbuf = historian[historian.cursor - Δ]
+   local result = historian.results[txtbuf]
    historian.cursor = historian.cursor - Δ
-   linebuf.cursor = #linebuf.lines + 1
-   return linebuf:clone(), result
+   txtbuf.cursor = #txtbuf.lines + 1
+   return txtbuf:clone(), result
 end
 
 
@@ -311,20 +311,20 @@ end
 function Historian.next(historian)
    local Δ = historian.cursor < #historian and 1 or 0
    if historian.cursor == 0 then
-      return Linebuf()
+      return Txtbuf()
    end
-   local linebuf= historian[historian.cursor + Δ]
-   local result = historian.results[linebuf]
-   if not linebuf then
-      return Linebuf()
+   local txtbuf= historian[historian.cursor + Δ]
+   local result = historian.results[txtbuf]
+   if not txtbuf then
+      return Txtbuf()
    end
    historian.cursor = historian.cursor + Δ
-   linebuf.cursor = #linebuf.lines + 1
-   if not (Δ > 0) and #linebuf.lines > 0 then
+   txtbuf.cursor = #txtbuf.lines + 1
+   if not (Δ > 0) and #txtbuf.lines > 0 then
       historian.cursor = #historian + 1
-      return linebuf:clone(), nil, true
+      return txtbuf:clone(), nil, true
    else
-      return linebuf:clone(), result, false
+      return txtbuf:clone(), result, false
    end
 end
 
@@ -337,16 +337,16 @@ end
 
 
 
-function Historian.append(historian, linebuf, results, success)
-   if tostring(historian[#historian]) == tostring(linebuf) then
+function Historian.append(historian, txtbuf, results, success)
+   if tostring(historian[#historian]) == tostring(txtbuf) then
       -- don't bother
       return false
    end
-   historian[#historian + 1] = linebuf
+   historian[#historian + 1] = txtbuf
    if success then
-      historian:persist(linebuf, results)
+      historian:persist(txtbuf, results)
    else
-      historian:persist(linebuf)
+      historian:persist(txtbuf)
    end
    return true
 end

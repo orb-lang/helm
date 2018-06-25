@@ -159,9 +159,9 @@ local function _str_hl(str)
 end
 
 
-function Lex.lua_thor(linebuf)
+function Lex.lua_thor(txtbuf)
    local toks = {}
-   local lb = tostring(linebuf)
+   local lb = tostring(txtbuf)
    while lb ~= "" do
       local len = #lb
       local bite, tok_t

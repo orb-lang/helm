@@ -123,6 +123,7 @@ core.hasfield = setmetatable({}, { __index = _hf__index,
                                    __call  = _hf__call })
 #/lua
 
+
 *** clone(tab)
 
 Performs a shallow clone of table, attaching metatable if available.

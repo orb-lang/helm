@@ -100,14 +100,14 @@ raw_19 [label="raw"]
 
 raw_19 -> leaf_20
 leaf_20  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-Next step: now that we clone a new linebuf each time, we have an immutable
+Next step: now that we clone a new txtbuf each time, we have an immutable
 record.  We should store the line as a string, to facilitate fuzzy matching.
 
 "]
 // END RANK raw_19
 
 codeblock_7 -> leaf_21
-leaf_21  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Linebuf = require \"linebuf\"
+leaf_21  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Txtbuf = require \"txtbuf\"
 local sql     = require \"sqlayer\"
 local color   = require \"color\"
 local L       = require \"lpeg\"
@@ -591,7 +591,7 @@ raw_124 [label="raw"]
 raw_124 -> leaf_125
 leaf_125  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 Most of the complexity serves to make a simple key/value relationship
-between the regenerated linebufs and their associated result history.
+between the regenerated txtbufs and their associated result history.
 "]
 // END RANK raw_124
 
@@ -618,7 +618,7 @@ leaf_126  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histo
       local line_ids = reverse(repl_val[1])
       local repl_map = {}
       for i, v in ipairs(lines) do
-         local buf = Linebuf(v)
+         local buf = Txtbuf(v)
          historian[i] = buf
          repl_map[line_ids[i]] = buf
       end
@@ -627,7 +627,7 @@ leaf_126  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histo
       -- reuse line_id var for foreign keys
       line_ids = res_val[1]
       local reprs = res_val[2]
-      -- This is keyed by linebuf with a string value.
+      -- This is keyed by txtbuf with a string value.
       local result_map = {}
       for i = 1, #reprs do
          local buf = repl_map[line_ids[i]]
@@ -649,7 +649,7 @@ end"]
 section_33 -> { header_127 prose_128 prose_129 prose_130 prose_131 codeblock_132}
 {rank=same; header_127 prose_128 prose_129 prose_130 prose_131 codeblock_132}
 
-header_127 [label="3 : Historian:persist(linebuf)"]
+header_127 [label="3 : Historian:persist(txtbuf)"]
 
 prose_128 [label="prose"]
 
@@ -665,7 +665,7 @@ codeblock_132 [label="code block 205-237"]
 // END RANK section_33
 
 header_127 -> leaf_133
-leaf_133  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Historian:persist(linebuf)"]
+leaf_133  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Historian:persist(txtbuf)"]
 // END RANK header_127
 
 prose_128 -> { raw_134}
@@ -767,8 +767,8 @@ common value for any identical semantics.
 // END RANK raw_152
 
 codeblock_132 -> leaf_154
-leaf_154  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.persist(historian, linebuf, results)
-   local lb = tostring(linebuf)
+leaf_154  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.persist(historian, txtbuf, results)
+   local lb = tostring(txtbuf)
    if lb ~= \"\" then
       historian.insert_line_stmt:bindkv { project = historian.project,
                                      line    = lb }
@@ -908,14 +908,14 @@ leaf_169  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 codeblock_164 -> leaf_170
 leaf_170  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.prev(historian)
    if historian.cursor == 0 then
-      return Linebuf()
+      return Txtbuf()
    end
    local Δ = historian.cursor > 1 and 1 or 0
-   local linebuf = historian[historian.cursor - Δ]
-   local result = historian.results[linebuf]
+   local txtbuf = historian[historian.cursor - Δ]
+   local result = historian.results[txtbuf]
    historian.cursor = historian.cursor - Δ
-   linebuf.cursor = #linebuf.lines + 1
-   return linebuf:clone(), result
+   txtbuf.cursor = #txtbuf.lines + 1
+   return txtbuf:clone(), result
 end"]
 // END RANK codeblock_164
 
@@ -954,7 +954,7 @@ raw_179 [label="raw"]
 raw_176 -> leaf_180
 leaf_180  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
-Returns the next linebuf in history, and a second flag to tell the"]
+Returns the next txtbuf in history, and a second flag to tell the"]
 // END RANK raw_176
 
 prespace_177 -> leaf_181
@@ -988,20 +988,20 @@ codeblock_174 -> leaf_186
 leaf_186  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.next(historian)
    local Δ = historian.cursor < #historian and 1 or 0
    if historian.cursor == 0 then
-      return Linebuf()
+      return Txtbuf()
    end
-   local linebuf= historian[historian.cursor + Δ]
-   local result = historian.results[linebuf]
-   if not linebuf then
-      return Linebuf()
+   local txtbuf= historian[historian.cursor + Δ]
+   local result = historian.results[txtbuf]
+   if not txtbuf then
+      return Txtbuf()
    end
    historian.cursor = historian.cursor + Δ
-   linebuf.cursor = #linebuf.lines + 1
-   if not (Δ > 0) and #linebuf.lines > 0 then
+   txtbuf.cursor = #txtbuf.lines + 1
+   if not (Δ > 0) and #txtbuf.lines > 0 then
       historian.cursor = #historian + 1
-      return linebuf:clone(), nil, true
+      return txtbuf:clone(), nil, true
    else
-      return linebuf:clone(), result, false
+      return txtbuf:clone(), result, false
    end
 end"]
 // END RANK codeblock_174
@@ -1039,7 +1039,7 @@ raw_194 [label="raw"]
 raw_194 -> leaf_195
 leaf_195  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
-Appends a linebuf to history and persists it.
+Appends a txtbuf to history and persists it.
 "]
 // END RANK raw_194
 
@@ -1058,16 +1058,16 @@ Doesn't adjust the cursor.
 // END RANK raw_196
 
 codeblock_190 -> leaf_198
-leaf_198  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.append(historian, linebuf, results, success)
-   if tostring(historian[#historian]) == tostring(linebuf) then
+leaf_198  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.append(historian, txtbuf, results, success)
+   if tostring(historian[#historian]) == tostring(txtbuf) then
       -- don't bother
       return false
    end
-   historian[#historian + 1] = linebuf
+   historian[#historian + 1] = txtbuf
    if success then
-      historian:persist(linebuf, results)
+      historian:persist(txtbuf, results)
    else
-      historian:persist(linebuf)
+      historian:persist(txtbuf)
    end
    return true
 end"]

@@ -70,8 +70,8 @@ They must also have the same return type, with is either ``true`` or
 
 
 ``modeselektor`` passes any edit or movement commands to an internally-owned
-``linebuf``, which keeps all modeling of the line.  ``modeselektor`` decides when
-to repaint the screen, calling ``rainbuf`` with a region of ``linebuf`` and
+``txtbuf``, which keeps all modeling of the line.  ``modeselektor`` decides when
+to repaint the screen, calling ``rainbuf`` with a region of ``txtbuf`` and
 instructions as to how to paint it.
 
 
@@ -80,13 +80,13 @@ space.  ``modeselektor`` is the writer, and ``rainbuf`` holds a pointer to the
 table for read access.
 
 
-When we have our fancy parse engine and quipu structure, linebuf will call
+When we have our fancy parse engine and quipu structure, txtbuf will call
 ``comb`` to redecorate the syntax tree before passing it to ``rainbuf`` for
 markup.  At the moment I'm just going to write some crude lexers, which
 will be more than enough for Clu and Lua, which have straightforward syntax.
 
 
-An intermediate step could just squeeze the linebuf into a string, parse it
+An intermediate step could just squeeze the txtbuf into a string, parse it
 with ``esplalier`` and emit a ``rainbuf`` through the usual recursive method
 lookup.  The problem isn't speed, not for a REPL, it's not having error
 recovery parsing available.
@@ -113,11 +113,11 @@ assert(ts, "must have ts in _G")
 The easiest way to go mad in concurrent environments is to share memory.
 
 
-``modeselektor`` will own linebuf, and eventually txtbuf, unless I come up with
+``modeselektor`` will own txtbuf, and eventually txtbuf, unless I come up with
 a better idea.
 
 ```lua
-local Linebuf   = require "txtbuf"
+local Txtbuf   = require "txtbuf"
 local Resbuf    = require "resbuf"
 local Historian = require "historian"
 local Lex       = require "lex"
@@ -198,11 +198,11 @@ end
 ```
 ### self-insert(modeS, category, value)
 
-Inserts the value into the linebuf at cursor.
+Inserts the value into the txtbuf at cursor.
 
 ```lua
 function ModeS.insert(modeS, category, value)
-    local success =  modeS.linebuf:insert(value)
+    local success =  modeS.txtbuf:insert(value)
 end
 ```
 ### status painter (colwrite)
@@ -238,13 +238,14 @@ local function tf(bool)
 end
 
 local function pr_mouse(m)
-   local phrase = a.magenta(m.button) .. ": "
-                     .. a.bright(m.kind) .. " " .. tf(m.shift)
-                     .. " " .. tf(m.meta)
-                     .. " " .. tf(m.ctrl) .. " " .. tf(m.moving) .. " "
-                     .. tf(m.scrolling) .. " "
-                     .. a.cyan(m.col) .. "," .. a.cyan(m.row)
-   return phrase
+   return a.magenta(m.button) .. ": "
+      .. a.bright(m.kind) .. " "
+      .. tf(m.shift) .. " "
+      .. tf(m.meta) .. " "
+      .. tf(m.ctrl) .. " "
+      .. tf(m.moving) .. " "
+      .. tf(m.scrolling) .. " "
+      .. a.cyan(m.col) .. "," .. a.cyan(m.row)
 end
 
 local function mk_paint(fragment, shade)
@@ -282,7 +283,7 @@ Does what it says on the label.
 
 ```lua
 function ModeS.cur_col(modeS)
-   return modeS.linebuf.cursor + modeS.l_margin - 1
+   return modeS.txtbuf.cursor + modeS.l_margin - 1
 end
 
 function ModeS.nl(modeS)
@@ -307,7 +308,7 @@ end
 ```
 ```lua
 function ModeS.paint_row(modeS)
-   local lb = Lex.lua_thor(modeS.buffer .. tostring(modeS.linebuf))
+   local lb = Lex.lua_thor(modeS.buffer .. tostring(modeS.txtbuf))
    write(a.cursor.hide())
    write(a.jump(modeS.repl_line, modeS.l_margin))
    write(a.erase.right())
@@ -351,8 +352,9 @@ It's easier to get the core actions down as conditionals, then
 migrate them into the jump table and fill out from there.
 
 ```lua
+local assertfmt = assert(core.assertfmt)
 function ModeS.act(modeS, category, value)
-   assert(modeS.modes[category], "no category " .. category .. " in modeS")
+   assertfmt(modeS.modes[category], "no category %s in modeS", category)
    -- catch special handlers first
    if modeS.special[value] then
       return modeS.special[value](modeS, category, value)
@@ -382,19 +384,19 @@ function ModeS.act(modeS, category, value)
 end
 ```
 
-To keep ``act`` replaceable, we look it up on each call:
+To keep ``act`` itself replaceable, we look it up on each call:
 
 ```lua
 function ModeS.__call(modeS, category, value)
   return modeS:act(category, value)
 end
 ```
-### INSERT
+### ASCII
 
-INSERT is currently both a category and an action table.
+Any printable 7 bit utf-8 sequence.
 
 
-That's confusing, and I'll fix it when it's time to add modal editing.
+Currently just self-inserts, but watch this space...
 
 
 ### NAV
@@ -403,11 +405,11 @@ That's confusing, and I'll fix it when it's time to add modal editing.
 function NAV.UP(modeS, category, value)
    modeS:clearResult()
    local prev_result, linestash
-   if tostring(modeS.linebuf) ~= ""
+   if tostring(modeS.txtbuf) ~= ""
       and modeS.hist.cursor > #modeS.hist then
-      linestash = modeS.linebuf
+      linestash = modeS.txtbuf
    end
-   modeS.linebuf, prev_result = modeS.hist:prev()
+   modeS.txtbuf, prev_result = modeS.hist:prev()
    if linestash then
       modeS.hist:append(linestash)
    end
@@ -422,9 +424,9 @@ end
 function NAV.DOWN(modeS, category, value)
    modeS:clearResult()
    local next_p, next_result
-   modeS.linebuf, next_result, next_p = modeS.hist:next()
+   modeS.txtbuf, next_result, next_p = modeS.hist:next()
    if next_p then
-      modeS.linebuf = Linebuf()
+      modeS.txtbuf = Txtbuf()
    end
    if next_result then
       modeS:printResults(next_result)
@@ -435,27 +437,27 @@ function NAV.DOWN(modeS, category, value)
 end
 
 function NAV.LEFT(modeS, category, value)
-   return modeS.linebuf:left()
+   return modeS.txtbuf:left()
 end
 
 function NAV.RIGHT(modeS, category, value)
-   return modeS.linebuf:right()
+   return modeS.txtbuf:right()
 end
 
 function NAV.RETURN(modeS, category, value)
    -- eval etc.
    modeS:nl()
    modeS:eval()
-   modeS.linebuf = Linebuf()
+   modeS.txtbuf = Txtbuf()
    modeS.hist.cursor = modeS.hist.cursor + 1
 end
 
 function NAV.BACKSPACE(modeS, category, value)
-   return modeS.linebuf:d_back()
+   return modeS.txtbuf:d_back()
 end
 
 function NAV.DELETE(modeS, category, value)
-   return modeS.linebuf:d_fwd()
+   return modeS.txtbuf:d_fwd()
 end
 ```
 ### CTRL
@@ -464,13 +466,13 @@ Many/most of these will be re-used as e.g. "^" and "$" in vim mode.
 
 ```lua
 local function cursor_begin(modeS, category, value)
-   modeS.linebuf.cursor = 1
+   modeS.txtbuf.cursor = 1
 end
 
 CTRL["^A"] = cursor_begin
 
 local function cursor_end(modeS, category, value)
-   modeS.linebuf.cursor = #modeS.linebuf.lines + 1
+   modeS.txtbuf.cursor = #modeS.txtbuf.lines + 1
 end
 
 CTRL["^E"] = cursor_end
@@ -491,7 +493,7 @@ end
 ```
 ```lua
 function ModeS.eval(modeS)
-   local line = tostring(modeS.linebuf)
+   local line = tostring(modeS.txtbuf)
    local chunk  = modeS.buffer .. line
    local success, results
    -- first we prefix return
@@ -508,7 +510,7 @@ function ModeS.eval(modeS)
       end -- more special REPL prefix soon
    end
    if f then
-      modeS.linebuf = Linebuf(modeS.buffer .. tostring(modeS.linebuf))
+      modeS.txtbuf = Txtbuf(modeS.buffer .. tostring(modeS.txtbuf))
       modeS.buffer = ""
       modeS.repl_line = modeS.REPL_LINE
       success, results = gatherResults(xpcall(f, debug.traceback))
@@ -540,9 +542,9 @@ function ModeS.eval(modeS)
       end
    end
 
-   modeS.hist:append(modeS.linebuf, results, success)
+   modeS.hist:append(modeS.txtbuf, results, success)
    modeS.hist.cursor = #modeS.hist
-   if success then modeS.hist.results[modeS.linebuf] = results end
+   if success then modeS.hist.results[modeS.txtbuf] = results end
    modeS:prompt()
 end
 ```
@@ -553,7 +555,7 @@ This should be configurable via ``cfg``.
 ```lua
 function new(cfg)
   local modeS = meta(ModeS)
-  modeS.linebuf = Linebuf()
+  modeS.txtbuf = Txtbuf()
   modeS.buffer = ""
   modeS.hist  = Historian()
   modeS.hist.cursor = #modeS.hist + 1

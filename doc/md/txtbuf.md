@@ -20,7 +20,7 @@ A closed line is just a string.
 
 ## Interface
 
-  A txtbuf is a drop-in replacement for a linebuf, used when there's more than
+  A txtbuf is a drop-in replacement for a txtbuf, used when there's more than
 one line to buffer.
 
 ### Instance fields
@@ -40,7 +40,7 @@ one line to buffer.
 
 ## Methods
 
-Initially these are only the methods of linebuf.
+Initially these are only the methods of txtbuf.
 
 
 I think the way forward is to treat txtbuf as a special case until it's at
@@ -49,10 +49,10 @@ field working correctly.
 
 
 Then we will simply switch to using ``txtbuf``s of a single line instead of the
-two separate classes, and factor out ``linebuf``.
+two separate classes, and factor out ``txtbuf``.
 
 
-This amounts to porting the existing ``linebuf``, as I think about it. A single
+This amounts to porting the existing ``txtbuf``, as I think about it. A single
 line isn't even a special case for the logic.
 
 
@@ -220,11 +220,9 @@ end
 local function new(line)
    local txtbuf = meta(Txtbuf)
    local __l = line or ""
-   local _lines
-   if line then
-      _lines = into_codepoints(collect(lines, __l))
-   else
-      _lines = {{}}
+   local _lines = into_codepoints(collect(lines, __l))
+   if #_lines == 0 then
+      _lines[1] = {}
    end
    txtbuf.cursor = line and #_lines[#_lines] + 1 or 1
    txtbuf.cur_row = line and #_lines  or 1

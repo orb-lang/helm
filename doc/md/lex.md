@@ -120,7 +120,7 @@ Lex.lex_map = lex_map
 Lex.long_str = long_str
 Lex.string = string_long
 ```
-## Lex.lua_thor(linebuf)
+## Lex.lua_thor(txtbuf)
 
 ...it's late.
 
@@ -153,9 +153,9 @@ local function _str_hl(str)
 end
 
 
-function Lex.lua_thor(linebuf)
+function Lex.lua_thor(txtbuf)
    local toks = {}
-   local lb = tostring(linebuf)
+   local lb = tostring(txtbuf)
    while lb ~= "" do
       local len = #lb
       local bite, tok_t

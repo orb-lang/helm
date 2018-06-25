@@ -226,11 +226,9 @@ end
 local function new(line)
    local txtbuf = meta(Txtbuf)
    local __l = line or ""
-   local _lines
-   if line then
-      _lines = into_codepoints(collect(lines, __l))
-   else
-      _lines = {{}}
+   local _lines = into_codepoints(collect(lines, __l))
+   if #_lines == 0 then
+      _lines[1] = {}
    end
    txtbuf.cursor = line and #_lines[#_lines] + 1 or 1
    txtbuf.cur_row = line and #_lines  or 1

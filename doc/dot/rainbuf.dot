@@ -818,24 +818,24 @@ fed from the same quipu, and renderers are rainbuf interpreters.
 // END RANK raw_202
 
 codeblock_68 -> leaf_204
-leaf_204  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Linebuf = require \"linebuf\"
+leaf_204  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Txtbuf = require \"txtbuf\"
 local byte = assert(string.byte)
 
 local Rainbuf = meta {}"]
 // END RANK codeblock_68
 
 codeblock_69 -> leaf_205
-leaf_205  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new(linebuf)
+leaf_205  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new(txtbuf)
    local rainbuf = meta(Rainbuf)
    local disp = {}
    rainbuf.disp = disp
-   if type(linebuf) == \"string\" then
-      linebuf = Linebuf(linebuf)
-   elseif type(linebuf) == \"table\" then
-      if linebuf.idEst == Linebuf then
-         _from_linebuf(rainbuf, linebuf)
+   if type(txtbuf) == \"string\" then
+      txtbuf = Txtbuf(txtbuf)
+   elseif type(txtbuf) == \"table\" then
+      if txtbuf.idEst == Txtbuf then
+         _from_txtbuf(rainbuf, txtbuf)
       else
-         for i,v in ipairs(linebuf) do
+         for i,v in ipairs(txtbuf) do
             if type(v) == \"string\" then
                rainbuf[i] = v
                if byte(v) == 0x1b then

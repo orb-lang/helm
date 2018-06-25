@@ -217,7 +217,7 @@ Lex.string = string_long"]
 section_6 -> { header_24 prose_25 section_26}
 {rank=same; header_24 prose_25 section_26}
 
-header_24 [label="2 : Lex.lua_thor(linebuf)"]
+header_24 [label="2 : Lex.lua_thor(txtbuf)"]
 
 prose_25 [label="prose"]
 
@@ -227,7 +227,7 @@ section_26 [label="section: 134-198"]
 // END RANK section_6
 
 header_24 -> leaf_27
-leaf_27  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Lex.lua_thor(linebuf)"]
+leaf_27  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Lex.lua_thor(txtbuf)"]
 // END RANK header_24
 
 prose_25 -> { raw_28}
@@ -321,9 +321,9 @@ local function _str_hl(str)
 end
 
 
-function Lex.lua_thor(linebuf)
+function Lex.lua_thor(txtbuf)
    local toks = {}
-   local lb = tostring(linebuf)
+   local lb = tostring(txtbuf)
    while lb ~= \"\" do
       local len = #lb
       local bite, tok_t

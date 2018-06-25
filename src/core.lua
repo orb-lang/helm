@@ -128,6 +128,7 @@ core.hasfield = setmetatable({}, { __index = _hf__index,
 
 
 
+
 function core.clone(tab)
    local _M = getmetatable(tab)
    local clone = _M and setmetatable({}, _M) or {}

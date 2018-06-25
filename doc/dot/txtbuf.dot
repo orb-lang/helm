@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 246"]
+doc_0 [label="doc - 244"]
 
 
 doc_0 -> { section_1}
@@ -142,7 +142,7 @@ raw_25 [label="raw"]
 raw_25 -> leaf_26
 leaf_26  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
-  A txtbuf is a drop-in replacement for a linebuf, used when there's more than
+  A txtbuf is a drop-in replacement for a txtbuf, used when there's more than
 one line to buffer.
 "]
 // END RANK raw_25
@@ -253,7 +253,7 @@ section_51 [label="section: 142-157"]
 
 section_52 [label="section: 158-213"]
 
-section_53 [label="section: 214-246"]
+section_53 [label="section: 214-244"]
 
 
 // END RANK section_9
@@ -273,7 +273,7 @@ raw_55 [label="raw"]
 raw_55 -> leaf_56
 leaf_56  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
-Initially these are only the methods of linebuf.
+Initially these are only the methods of txtbuf.
 "]
 // END RANK raw_55
 
@@ -336,7 +336,7 @@ leaf_70  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
 // END RANK prespace_63
 
 literal_64 -> leaf_71
-leaf_71  [color=Gray,shape=rectangle,fontname=Inconsolata,label="linebuf"]
+leaf_71  [color=Gray,shape=rectangle,fontname=Inconsolata,label="txtbuf"]
 // END RANK literal_64
 
 raw_65 -> leaf_72
@@ -368,7 +368,7 @@ leaf_78  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
 // END RANK prespace_74
 
 literal_75 -> leaf_79
-leaf_79  [color=Gray,shape=rectangle,fontname=Inconsolata,label="linebuf"]
+leaf_79  [color=Gray,shape=rectangle,fontname=Inconsolata,label="txtbuf"]
 // END RANK literal_75
 
 raw_76 -> leaf_80
@@ -742,9 +742,9 @@ header_138 [label="3 : new"]
 
 prose_139 [label="prose"]
 
-codeblock_140 [label="code block 216-242"]
+codeblock_140 [label="code block 216-240"]
 
-codeblock_141 [label="code block 244-246"]
+codeblock_141 [label="code block 242-244"]
 
 
 // END RANK section_53
@@ -779,11 +779,9 @@ end
 local function new(line)
    local txtbuf = meta(Txtbuf)
    local __l = line or \"\"
-   local _lines
-   if line then
-      _lines = into_codepoints(collect(lines, __l))
-   else
-      _lines = {{}}
+   local _lines = into_codepoints(collect(lines, __l))
+   if #_lines == 0 then
+      _lines[1] = {}
    end
    txtbuf.cursor = line and #_lines[#_lines] + 1 or 1
    txtbuf.cur_row = line and #_lines  or 1
