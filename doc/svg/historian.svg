@@ -2230,7 +2230,7 @@
 <text text-anchor="middle" x="12205" y="-1484.2824" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local linebuf = historian[historian.cursor &#45; Δ]</text>
 <text text-anchor="middle" x="12205" y="-1465.5224" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local result = historian.results[linebuf]</text>
 <text text-anchor="middle" x="12205" y="-1450.1224" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;historian.cursor = historian.cursor &#45; Δ</text>
-<text text-anchor="middle" x="12205" y="-1431.3624" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;linebuf.cursor = #linebuf.line + 1</text>
+<text text-anchor="middle" x="12205" y="-1431.3624" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;linebuf.cursor = #linebuf.lines + 1</text>
 <text text-anchor="middle" x="12205" y="-1415.9623" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return linebuf:clone(), result</text>
 <text text-anchor="middle" x="12205" y="-1400.5623" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
 </g>
@@ -2458,8 +2458,8 @@
 <text text-anchor="middle" x="12992" y="-633.601" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return Linebuf()</text>
 <text text-anchor="middle" x="12992" y="-618.201" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
 <text text-anchor="middle" x="12992" y="-602.8009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;historian.cursor = historian.cursor + Δ</text>
-<text text-anchor="middle" x="12992" y="-584.0409" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;linebuf.cursor = #linebuf.line + 1</text>
-<text text-anchor="middle" x="12992" y="-568.6409" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if not (Δ &gt; 0) and #linebuf.line &gt; 0 then</text>
+<text text-anchor="middle" x="12992" y="-584.0409" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;linebuf.cursor = #linebuf.lines + 1</text>
+<text text-anchor="middle" x="12992" y="-568.6409" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if not (Δ &gt; 0) and #linebuf.lines &gt; 0 then</text>
 <text text-anchor="middle" x="12992" y="-549.8809" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;historian.cursor = #historian + 1</text>
 <text text-anchor="middle" x="12992" y="-534.4809" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return linebuf:clone(), nil, true</text>
 <text text-anchor="middle" x="12992" y="-519.0808" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;else</text>

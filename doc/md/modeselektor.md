@@ -117,7 +117,7 @@ The easiest way to go mad in concurrent environments is to share memory.
 a better idea.
 
 ```lua
-local Linebuf   = require "linebuf"
+local Linebuf   = require "txtbuf"
 local Resbuf    = require "resbuf"
 local Historian = require "historian"
 local Lex       = require "lex"
@@ -470,7 +470,7 @@ end
 CTRL["^A"] = cursor_begin
 
 local function cursor_end(modeS, category, value)
-   modeS.linebuf.cursor = #modeS.linebuf.line + 1
+   modeS.linebuf.cursor = #modeS.linebuf.lines + 1
 end
 
 CTRL["^E"] = cursor_end

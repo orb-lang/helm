@@ -914,7 +914,7 @@ leaf_170  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histo
    local linebuf = historian[historian.cursor - Δ]
    local result = historian.results[linebuf]
    historian.cursor = historian.cursor - Δ
-   linebuf.cursor = #linebuf.line + 1
+   linebuf.cursor = #linebuf.lines + 1
    return linebuf:clone(), result
 end"]
 // END RANK codeblock_164
@@ -996,8 +996,8 @@ leaf_186  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histo
       return Linebuf()
    end
    historian.cursor = historian.cursor + Δ
-   linebuf.cursor = #linebuf.line + 1
-   if not (Δ > 0) and #linebuf.line > 0 then
+   linebuf.cursor = #linebuf.lines + 1
+   if not (Δ > 0) and #linebuf.lines > 0 then
       historian.cursor = #historian + 1
       return linebuf:clone(), nil, true
    else

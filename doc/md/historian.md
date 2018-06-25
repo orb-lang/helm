@@ -296,7 +296,7 @@ function Historian.prev(historian)
    local linebuf = historian[historian.cursor - Δ]
    local result = historian.results[linebuf]
    historian.cursor = historian.cursor - Δ
-   linebuf.cursor = #linebuf.line + 1
+   linebuf.cursor = #linebuf.lines + 1
    return linebuf:clone(), result
 end
 ```
@@ -320,8 +320,8 @@ function Historian.next(historian)
       return Linebuf()
    end
    historian.cursor = historian.cursor + Δ
-   linebuf.cursor = #linebuf.line + 1
-   if not (Δ > 0) and #linebuf.line > 0 then
+   linebuf.cursor = #linebuf.lines + 1
+   if not (Δ > 0) and #linebuf.lines > 0 then
       historian.cursor = #historian + 1
       return linebuf:clone(), nil, true
    else

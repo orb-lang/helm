@@ -4218,7 +4218,7 @@
 <g id="node309" class="node">
 <title>leaf_308</title>
 <polygon fill="none" stroke="#c0c0c0" points="24749.5,-698.8933 24432.5,-698.8933 24432.5,-551.4926 24749.5,-551.4926 24749.5,-698.8933"/>
-<text text-anchor="middle" x="24591" y="-683.5931" font-family="Inconsolata" font-size="14.00" fill="#000000">local Linebuf &#160;&#160;= require &quot;linebuf&quot;</text>
+<text text-anchor="middle" x="24591" y="-683.5931" font-family="Inconsolata" font-size="14.00" fill="#000000">local Linebuf &#160;&#160;= require &quot;txtbuf&quot;</text>
 <text text-anchor="middle" x="24591" y="-668.193" font-family="Inconsolata" font-size="14.00" fill="#000000">local Resbuf &#160;&#160;&#160;= require &quot;resbuf&quot;</text>
 <text text-anchor="middle" x="24591" y="-652.793" font-family="Inconsolata" font-size="14.00" fill="#000000">local Historian = require &quot;historian&quot;</text>
 <text text-anchor="middle" x="24591" y="-637.393" font-family="Inconsolata" font-size="14.00" fill="#000000">local Lex &#160;&#160;&#160;&#160;&#160;&#160;= require &quot;lex&quot;</text>
@@ -6324,7 +6324,7 @@
 <text text-anchor="middle" x="40384" y="-668.793" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
 <text text-anchor="middle" x="40384" y="-637.393" font-family="Inconsolata" font-size="14.00" fill="#000000">CTRL[&quot;^A&quot;] = cursor_begin</text>
 <text text-anchor="middle" x="40384" y="-605.9929" font-family="Inconsolata" font-size="14.00" fill="#000000">local function cursor_end(modeS, category, value)</text>
-<text text-anchor="middle" x="40384" y="-590.5929" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;modeS.linebuf.cursor = #modeS.linebuf.line + 1</text>
+<text text-anchor="middle" x="40384" y="-590.5929" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;modeS.linebuf.cursor = #modeS.linebuf.lines + 1</text>
 <text text-anchor="middle" x="40384" y="-575.1929" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
 <text text-anchor="middle" x="40384" y="-543.7928" font-family="Inconsolata" font-size="14.00" fill="#000000">CTRL[&quot;^E&quot;] = cursor_end</text>
 </g>
