@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 601"]
+doc_0 [label="doc - 602"]
 
 
 doc_0 -> { section_1}
@@ -27,7 +27,7 @@ section_5 [label="section: 12-282"]
 
 section_6 [label="section: 334-480"]
 
-section_7 [label="section: 554-601"]
+section_7 [label="section: 554-602"]
 
 
 // END RANK section_1
@@ -1710,7 +1710,7 @@ codeblock_413 -> leaf_420
 leaf_420  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS.paint_row(modeS)
    local lb = Lex.lua_thor(tostring(modeS.txtbuf))
    write(a.cursor.hide())
-   write(a.jump(modeS.repl_line, modeS.l_margin))
+   write(a.jump(modeS.repl_top, modeS.l_margin))
    write(a.erase.right())
    modeS:write(concat(lb))
    write(a.col(modeS:cur_col()))
@@ -1735,7 +1735,7 @@ end"]
 
 codeblock_415 -> leaf_422
 leaf_422  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS.prompt(modeS)
-   write(a.jump(modeS.repl_line, 1) .. \"👉 \")
+   write(a.jump(modeS.repl_top, 1) .. \"👉 \")
 end"]
 // END RANK codeblock_415
 
@@ -2239,7 +2239,7 @@ leaf_511  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS
          -- Lua expects some more input, advance the txtbuf
          modeS.txtbuf:advance()
          modeS.repl_line = modeS.repl_line + 1
-         modeS:write '...'
+         write(a.col(1) .. \"...\")
          return true
       else
          modeS.repl_line = modeS.REPL_LINE
@@ -2263,9 +2263,9 @@ header_512 [label="2 : new"]
 
 prose_513 [label="prose"]
 
-codeblock_514 [label="code block 558-573"]
+codeblock_514 [label="code block 558-574"]
 
-codeblock_515 [label="code block 575-577"]
+codeblock_515 [label="code block 576-578"]
 
 
 // END RANK section_7
@@ -2317,7 +2317,8 @@ leaf_525  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function new(c
   modeS.l_margin = 4
   modeS.r_margin = 80
   modeS.row = 2
-  modeS.repl_line = 2
+  modeS.repl_line = ModeS.REPL_LINE
+  modeS.repl_top  = ModeS.REPL_LINE
   return modeS
 end
 

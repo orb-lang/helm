@@ -96,7 +96,7 @@ function Txtbuf.__tostring(txtbuf)
    return phrase .. cat(txtbuf.lines[#txtbuf.lines])
 end
 ```
-#/lua### Txtbuf:insert(frag)
+### Txtbuf:insert(frag)
 
 ```lua
 local t_insert, splice = assert(table.insert), assert(table.splice)

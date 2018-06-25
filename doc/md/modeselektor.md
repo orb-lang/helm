@@ -308,7 +308,7 @@ end
 function ModeS.paint_row(modeS)
    local lb = Lex.lua_thor(tostring(modeS.txtbuf))
    write(a.cursor.hide())
-   write(a.jump(modeS.repl_line, modeS.l_margin))
+   write(a.jump(modeS.repl_top, modeS.l_margin))
    write(a.erase.right())
    modeS:write(concat(lb))
    write(a.col(modeS:cur_col()))
@@ -331,7 +331,7 @@ end
 ```
 ```lua
 function ModeS.prompt(modeS)
-   write(a.jump(modeS.repl_line, 1) .. "👉 ")
+   write(a.jump(modeS.repl_top, 1) .. "👉 ")
 end
 ```
 ## act
@@ -531,7 +531,7 @@ function ModeS.eval(modeS)
          -- Lua expects some more input, advance the txtbuf
          modeS.txtbuf:advance()
          modeS.repl_line = modeS.repl_line + 1
-         modeS:write '...'
+         write(a.col(1) .. "...")
          return true
       else
          modeS.repl_line = modeS.REPL_LINE
@@ -561,7 +561,8 @@ function new(cfg)
   modeS.l_margin = 4
   modeS.r_margin = 80
   modeS.row = 2
-  modeS.repl_line = 2
+  modeS.repl_line = ModeS.REPL_LINE
+  modeS.repl_top  = ModeS.REPL_LINE
   return modeS
 end
 

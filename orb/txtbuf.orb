@@ -79,8 +79,6 @@ local function cat(l)
 end
 #/lua
 
-Below is a more-correct yet buggy =__tostring=.
-
 #!lua
 function Txtbuf.__tostring(txtbuf)
    local phrase = ""
@@ -92,7 +90,6 @@ function Txtbuf.__tostring(txtbuf)
 end
 #/lua
 
-#/lua
 
 *** Txtbuf:insert(frag)
 

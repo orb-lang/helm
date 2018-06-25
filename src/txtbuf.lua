@@ -80,8 +80,6 @@ end
 
 
 
-
-
 function Txtbuf.__tostring(txtbuf)
    local phrase = ""
    for i = 1, #txtbuf.lines - 1 do
@@ -90,7 +88,6 @@ function Txtbuf.__tostring(txtbuf)
 
    return phrase .. cat(txtbuf.lines[#txtbuf.lines])
 end
-
 
 
 
