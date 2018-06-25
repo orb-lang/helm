@@ -68,11 +68,19 @@ local function cat(l)
    if type(l) == "string" then
       return l
    elseif type(l) == "table" then
-      return concat(l)
+      if l[1] ~= nil then
+         return concat(l)
+      else
+         return ""
+      end
    end
 
    error("called private fn cat with type" .. type(l))
 end
+
+
+
+
 
 function Txtbuf.__tostring(txtbuf)
    local phrase = ""
@@ -82,6 +90,8 @@ function Txtbuf.__tostring(txtbuf)
 
    return phrase .. cat(txtbuf.lines[#txtbuf.lines])
 end
+
+
 
 
 
@@ -115,6 +125,19 @@ function Txtbuf.insert(txtbuf, frag)
    end
 
    return false
+end
+
+
+
+
+
+local ts_bw = (require "color").ts_bw
+
+function Txtbuf.advance(txtbuf)
+   txtbuf.lines[#txtbuf.lines + 1] = {}
+   txtbuf.cur_row = #txtbuf.lines
+   txtbuf.cursor = 1
+   log("advanced %s", ts_bw(txtbuf))
 end
 
 

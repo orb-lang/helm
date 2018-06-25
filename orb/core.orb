@@ -94,6 +94,16 @@ endowment or inheritance it's now out of the picture.
 
 ** Table extensions
 
+*** pack(...)
+
+A 5.2 shim we won't need forever.
+
+#!lua
+function core.pack(...)
+   return { n = select('#', ...), ... }
+end
+#/lua
+
 
 *** hasfield(field, tab) & hasfield.field(tab)
 

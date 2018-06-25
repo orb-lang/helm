@@ -99,6 +99,16 @@ end
 
 
 
+function core.pack(...)
+   return { n = select('#', ...), ... }
+end
+
+
+
+
+
+
+
 
 
 local function _hasfield(field, tab)

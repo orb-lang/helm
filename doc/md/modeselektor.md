@@ -280,7 +280,6 @@ end
 
 Does what it says on the label.
 
-
 ```lua
 function ModeS.cur_col(modeS)
    return modeS.txtbuf.cursor + modeS.l_margin - 1
@@ -292,9 +291,8 @@ end
 ```
 ### ModeS:write(str)
 
-This will let us phase out the colwrite business in favor of actual tiles in
+  This will let us phase out the colwrite business in favor of actual tiles in
 the terminal.
-
 
 ```lua
 function ModeS.write(modeS, str)
@@ -308,7 +306,7 @@ end
 ```
 ```lua
 function ModeS.paint_row(modeS)
-   local lb = Lex.lua_thor(modeS.buffer .. tostring(modeS.txtbuf))
+   local lb = Lex.lua_thor(tostring(modeS.txtbuf))
    write(a.cursor.hide())
    write(a.jump(modeS.repl_line, modeS.l_margin))
    write(a.erase.right())
@@ -338,7 +336,7 @@ end
 ```
 ## act
 
-``act`` simply dispatches. Note that our common interfaces is
+  ``act`` simply dispatches. Note that our common interfaces is
 ``method(modeS, category, value)``, we need to distinguish betwen the tuple
 ``("INSERT", "SHIFT-LEFT")`` (which could arrive from copy-paste) and
 ``("NAV", "SHIFT-LEFT")`` and preserve information for our fall-through method.
@@ -347,12 +345,9 @@ end
 ``act`` always succeeds, meaning we need some metatable action to absorb and
 log anything unexpected.
 
-
-It's easier to get the core actions down as conditionals, then
-migrate them into the jump table and fill out from there.
-
 ```lua
 local assertfmt = assert(core.assertfmt)
+
 function ModeS.act(modeS, category, value)
    assertfmt(modeS.modes[category], "no category %s in modeS", category)
    -- catch special handlers first
@@ -447,8 +442,11 @@ end
 function NAV.RETURN(modeS, category, value)
    -- eval etc.
    modeS:nl()
-   modeS:eval()
-   modeS.txtbuf = Txtbuf()
+   local more = modeS:eval()
+   if not more then
+     modeS.txtbuf = Txtbuf()
+   end
+   -- Question: is this wrong for an error?
    modeS.hist.cursor = modeS.hist.cursor + 1
 end
 
@@ -464,6 +462,9 @@ end
 
 Many/most of these will be re-used as e.g. "^" and "$" in vim mode.
 
+
+Thus we will declare them as bare functions and assign them to slots.
+
 ```lua
 local function cursor_begin(modeS, category, value)
    modeS.txtbuf.cursor = 1
@@ -472,7 +473,7 @@ end
 CTRL["^A"] = cursor_begin
 
 local function cursor_end(modeS, category, value)
-   modeS.txtbuf.cursor = #modeS.txtbuf.lines + 1
+   modeS.txtbuf.cursor = #modeS.txtbuf.lines[modeS.txtbuf.cur_row] + 1
 end
 
 CTRL["^E"] = cursor_end
@@ -493,8 +494,8 @@ end
 ```
 ```lua
 function ModeS.eval(modeS)
-   local line = tostring(modeS.txtbuf)
-   local chunk  = modeS.buffer .. line
+   local chunk = tostring(modeS.txtbuf)
+
    local success, results
    -- first we prefix return
    local f, err = loadstring('return ' .. chunk, 'REPL')
@@ -507,12 +508,11 @@ function ModeS.eval(modeS)
       local head = sub(chunk, 1, 1)
       if head == "=" then -- take pity on old-school Lua hackers
          f, err = loadstring('return ' .. sub(chunk,2), 'REPL')
-      end -- more special REPL prefix soon
+      end -- more special REPL prefix soon: /, ?, >(?)
    end
    if f then
-      modeS.txtbuf = Txtbuf(modeS.buffer .. tostring(modeS.txtbuf))
-      modeS.buffer = ""
       modeS.repl_line = modeS.REPL_LINE
+      log(tostring(modeS.txtbuf), modeS.txtbuf)
       success, results = gatherResults(xpcall(f, debug.traceback))
       if success then
       -- successful call
@@ -528,16 +528,15 @@ function ModeS.eval(modeS)
       end
    else
       if err:match "'<eof>'$" then
-         -- Lua expects some more input; stow it away for next time
-         modeS.buffer = chunk .. '\n'
+         -- Lua expects some more input, advance the txtbuf
+         modeS.txtbuf:advance()
          modeS.repl_line = modeS.repl_line + 1
-         write '...'
+         modeS:write '...'
          return true
       else
          modeS.repl_line = modeS.REPL_LINE
          modeS:clearResult()
          modeS:write(err)
-         modeS.buffer = ""
          -- pass through to default.
       end
    end
@@ -556,7 +555,6 @@ This should be configurable via ``cfg``.
 function new(cfg)
   local modeS = meta(ModeS)
   modeS.txtbuf = Txtbuf()
-  modeS.buffer = ""
   modeS.hist  = Historian()
   modeS.hist.cursor = #modeS.hist + 1
   -- this will be more complex but

@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 602"]
+doc_0 [label="doc - 601"]
 
 
 doc_0 -> { section_1}
@@ -25,9 +25,9 @@ prose_4 [label="prose"]
 
 section_5 [label="section: 12-282"]
 
-section_6 [label="section: 335-478"]
+section_6 [label="section: 334-480"]
 
-section_7 [label="section: 554-602"]
+section_7 [label="section: 554-601"]
 
 
 // END RANK section_1
@@ -184,7 +184,7 @@ section_57 [label="section: 195-267"]
 
 section_58 [label="section: 268-282"]
 
-section_59 [label="section: 283-334"]
+section_59 [label="section: 283-333"]
 
 
 // END RANK section_5
@@ -1623,7 +1623,7 @@ header_403 [label="3 : ModeS:paint_row()"]
 
 prose_404 [label="prose"]
 
-codeblock_405 [label="code block 273-281"]
+codeblock_405 [label="code block 272-280"]
 
 
 // END RANK section_58
@@ -1644,7 +1644,6 @@ raw_407 -> leaf_408
 leaf_408  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 Does what it says on the label.
-
 "]
 // END RANK raw_407
 
@@ -1665,13 +1664,13 @@ header_410 [label="3 : ModeS:write(str)"]
 
 prose_411 [label="prose"]
 
-codeblock_412 [label="code block 289-298"]
+codeblock_412 [label="code block 288-297"]
 
-codeblock_413 [label="code block 301-311"]
+codeblock_413 [label="code block 300-310"]
 
-codeblock_414 [label="code block 313-326"]
+codeblock_414 [label="code block 312-325"]
 
-codeblock_415 [label="code block 328-332"]
+codeblock_415 [label="code block 327-331"]
 
 
 // END RANK section_59
@@ -1691,9 +1690,8 @@ raw_417 [label="raw"]
 raw_417 -> leaf_418
 leaf_418  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
-This will let us phase out the colwrite business in favor of actual tiles in
+  This will let us phase out the colwrite business in favor of actual tiles in
 the terminal.
-
 "]
 // END RANK raw_417
 
@@ -1710,7 +1708,7 @@ end"]
 
 codeblock_413 -> leaf_420
 leaf_420  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS.paint_row(modeS)
-   local lb = Lex.lua_thor(modeS.buffer .. tostring(modeS.txtbuf))
+   local lb = Lex.lua_thor(tostring(modeS.txtbuf))
    write(a.cursor.hide())
    write(a.jump(modeS.repl_line, modeS.l_margin))
    write(a.erase.right())
@@ -1741,8 +1739,8 @@ leaf_422  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS
 end"]
 // END RANK codeblock_415
 
-section_6 -> { header_423 prose_424 prose_425 prose_426 codeblock_427 prose_428 codeblock_429 section_430 section_431 section_432 section_433}
-{rank=same; header_423 prose_424 prose_425 prose_426 codeblock_427 prose_428 codeblock_429 section_430 section_431 section_432 section_433}
+section_6 -> { header_423 prose_424 prose_425 codeblock_426 prose_427 codeblock_428 section_429 section_430 section_431 section_432}
+{rank=same; header_423 prose_424 prose_425 codeblock_426 prose_427 codeblock_428 section_429 section_430 section_431 section_432}
 
 header_423 [label="2 : act"]
 
@@ -1750,157 +1748,143 @@ prose_424 [label="prose"]
 
 prose_425 [label="prose"]
 
-prose_426 [label="prose"]
+codeblock_426 [label="code block 344-376"]
 
-codeblock_427 [label="code block 348-379"]
+prose_427 [label="prose"]
 
-prose_428 [label="prose"]
+codeblock_428 [label="code block 380-384"]
 
-codeblock_429 [label="code block 383-387"]
+section_429 [label="section: 387-393"]
 
-section_430 [label="section: 390-396"]
+section_430 [label="section: 394-459"]
 
-section_431 [label="section: 397-459"]
+section_431 [label="section: 460-480"]
 
-section_432 [label="section: 460-478"]
-
-section_433 [label="section: 479-553"]
+section_432 [label="section: 481-553"]
 
 
 // END RANK section_6
 
-header_423 -> leaf_434
-leaf_434  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** act"]
+header_423 -> leaf_433
+leaf_433  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** act"]
 // END RANK header_423
 
-prose_424 -> { raw_435 prespace_436 literal_437 raw_438 prespace_439 literal_440 raw_441 prespace_442 literal_443 raw_444 prespace_445 literal_446 raw_447}
-{rank=same; raw_435 prespace_436 literal_437 raw_438 prespace_439 literal_440 raw_441 prespace_442 literal_443 raw_444 prespace_445 literal_446 raw_447}
+prose_424 -> { raw_434 prespace_435 literal_436 raw_437 prespace_438 literal_439 raw_440 prespace_441 literal_442 raw_443 prespace_444 literal_445 raw_446}
+{rank=same; raw_434 prespace_435 literal_436 raw_437 prespace_438 literal_439 raw_440 prespace_441 literal_442 raw_443 prespace_444 literal_445 raw_446}
 
-raw_435 [label="raw"]
+raw_434 [label="raw"]
 
-prespace_436 [label="prespace"]
+prespace_435 [label="prespace"]
 
-literal_437 [label="literal"]
+literal_436 [label="literal"]
 
-raw_438 [label="raw"]
+raw_437 [label="raw"]
 
-prespace_439 [label="prespace"]
+prespace_438 [label="prespace"]
 
-literal_440 [label="literal"]
+literal_439 [label="literal"]
 
-raw_441 [label="raw"]
+raw_440 [label="raw"]
 
-prespace_442 [label="prespace"]
+prespace_441 [label="prespace"]
 
-literal_443 [label="literal"]
+literal_442 [label="literal"]
 
-raw_444 [label="raw"]
+raw_443 [label="raw"]
 
-prespace_445 [label="prespace"]
+prespace_444 [label="prespace"]
 
-literal_446 [label="literal"]
+literal_445 [label="literal"]
 
-raw_447 [label="raw"]
+raw_446 [label="raw"]
 
 
 // END RANK prose_424
 
-raw_435 -> leaf_448
-leaf_448  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
-// END RANK raw_435
+raw_434 -> leaf_447
+leaf_447  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
-prespace_436 -> leaf_449
-leaf_449  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
-// END RANK prespace_436
+ "]
+// END RANK raw_434
 
-literal_437 -> leaf_450
-leaf_450  [color=Gray,shape=rectangle,fontname=Inconsolata,label="act"]
-// END RANK literal_437
+prespace_435 -> leaf_448
+leaf_448  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_435
 
-raw_438 -> leaf_451
-leaf_451  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" simply dispatches. Note that our common interfaces is"]
-// END RANK raw_438
+literal_436 -> leaf_449
+leaf_449  [color=Gray,shape=rectangle,fontname=Inconsolata,label="act"]
+// END RANK literal_436
 
-prespace_439 -> leaf_452
-leaf_452  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
-// END RANK prespace_439
+raw_437 -> leaf_450
+leaf_450  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" simply dispatches. Note that our common interfaces is"]
+// END RANK raw_437
 
-literal_440 -> leaf_453
-leaf_453  [color=Gray,shape=rectangle,fontname=Inconsolata,label="method(modeS, category, value)"]
-// END RANK literal_440
+prespace_438 -> leaf_451
+leaf_451  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK prespace_438
 
-raw_441 -> leaf_454
-leaf_454  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", we need to distinguish betwen the tuple"]
-// END RANK raw_441
+literal_439 -> leaf_452
+leaf_452  [color=Gray,shape=rectangle,fontname=Inconsolata,label="method(modeS, category, value)"]
+// END RANK literal_439
 
-prespace_442 -> leaf_455
-leaf_455  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
-// END RANK prespace_442
+raw_440 -> leaf_453
+leaf_453  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", we need to distinguish betwen the tuple"]
+// END RANK raw_440
 
-literal_443 -> leaf_456
-leaf_456  [color=Gray,shape=rectangle,fontname=Inconsolata,label="(\"INSERT\", \"SHIFT-LEFT\")"]
-// END RANK literal_443
+prespace_441 -> leaf_454
+leaf_454  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK prespace_441
 
-raw_444 -> leaf_457
-leaf_457  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" (which could arrive from copy-paste) and"]
-// END RANK raw_444
+literal_442 -> leaf_455
+leaf_455  [color=Gray,shape=rectangle,fontname=Inconsolata,label="(\"INSERT\", \"SHIFT-LEFT\")"]
+// END RANK literal_442
 
-prespace_445 -> leaf_458
-leaf_458  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
-// END RANK prespace_445
+raw_443 -> leaf_456
+leaf_456  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" (which could arrive from copy-paste) and"]
+// END RANK raw_443
 
-literal_446 -> leaf_459
-leaf_459  [color=Gray,shape=rectangle,fontname=Inconsolata,label="(\"NAV\", \"SHIFT-LEFT\")"]
-// END RANK literal_446
+prespace_444 -> leaf_457
+leaf_457  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK prespace_444
 
-raw_447 -> leaf_460
-leaf_460  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" and preserve information for our fall-through method.
+literal_445 -> leaf_458
+leaf_458  [color=Gray,shape=rectangle,fontname=Inconsolata,label="(\"NAV\", \"SHIFT-LEFT\")"]
+// END RANK literal_445
+
+raw_446 -> leaf_459
+leaf_459  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" and preserve information for our fall-through method.
 "]
-// END RANK raw_447
+// END RANK raw_446
 
-prose_425 -> { prespace_461 literal_462 raw_463}
-{rank=same; prespace_461 literal_462 raw_463}
+prose_425 -> { prespace_460 literal_461 raw_462}
+{rank=same; prespace_460 literal_461 raw_462}
 
-prespace_461 [label="prespace"]
+prespace_460 [label="prespace"]
 
-literal_462 [label="literal"]
+literal_461 [label="literal"]
 
-raw_463 [label="raw"]
+raw_462 [label="raw"]
 
 
 // END RANK prose_425
 
-prespace_461 -> leaf_464
-leaf_464  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
-// END RANK prespace_461
+prespace_460 -> leaf_463
+leaf_463  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK prespace_460
 
-literal_462 -> leaf_465
-leaf_465  [color=Gray,shape=rectangle,fontname=Inconsolata,label="act"]
-// END RANK literal_462
+literal_461 -> leaf_464
+leaf_464  [color=Gray,shape=rectangle,fontname=Inconsolata,label="act"]
+// END RANK literal_461
 
-raw_463 -> leaf_466
-leaf_466  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" always succeeds, meaning we need some metatable action to absorb and
+raw_462 -> leaf_465
+leaf_465  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" always succeeds, meaning we need some metatable action to absorb and
 log anything unexpected.
 "]
-// END RANK raw_463
+// END RANK raw_462
 
-prose_426 -> { raw_467}
-{rank=same; raw_467}
+codeblock_426 -> leaf_466
+leaf_466  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local assertfmt = assert(core.assertfmt)
 
-raw_467 [label="raw"]
-
-
-// END RANK prose_426
-
-raw_467 -> leaf_468
-leaf_468  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-It's easier to get the core actions down as conditionals, then
-migrate them into the jump table and fill out from there.
-"]
-// END RANK raw_467
-
-codeblock_427 -> leaf_469
-leaf_469  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local assertfmt = assert(core.assertfmt)
 function ModeS.act(modeS, category, value)
    assertfmt(modeS.modes[category], \"no category %s in modeS\", category)
    -- catch special handlers first
@@ -1930,123 +1914,123 @@ function ModeS.act(modeS, category, value)
    end
    return modeS:paint_row()
 end"]
-// END RANK codeblock_427
+// END RANK codeblock_426
 
-prose_428 -> { raw_470 prespace_471 literal_472 raw_473}
-{rank=same; raw_470 prespace_471 literal_472 raw_473}
+prose_427 -> { raw_467 prespace_468 literal_469 raw_470}
+{rank=same; raw_467 prespace_468 literal_469 raw_470}
+
+raw_467 [label="raw"]
+
+prespace_468 [label="prespace"]
+
+literal_469 [label="literal"]
 
 raw_470 [label="raw"]
 
-prespace_471 [label="prespace"]
 
-literal_472 [label="literal"]
+// END RANK prose_427
 
-raw_473 [label="raw"]
+raw_467 -> leaf_471
+leaf_471  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+To keep"]
+// END RANK raw_467
 
+prespace_468 -> leaf_472
+leaf_472  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_468
 
-// END RANK prose_428
+literal_469 -> leaf_473
+leaf_473  [color=Gray,shape=rectangle,fontname=Inconsolata,label="act"]
+// END RANK literal_469
 
 raw_470 -> leaf_474
-leaf_474  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-To keep"]
+leaf_474  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" itself replaceable, we look it up on each call:
+"]
 // END RANK raw_470
 
-prespace_471 -> leaf_475
-leaf_475  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_471
-
-literal_472 -> leaf_476
-leaf_476  [color=Gray,shape=rectangle,fontname=Inconsolata,label="act"]
-// END RANK literal_472
-
-raw_473 -> leaf_477
-leaf_477  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" itself replaceable, we look it up on each call:
-"]
-// END RANK raw_473
-
-codeblock_429 -> leaf_478
-leaf_478  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS.__call(modeS, category, value)
+codeblock_428 -> leaf_475
+leaf_475  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS.__call(modeS, category, value)
   return modeS:act(category, value)
 end"]
-// END RANK codeblock_429
+// END RANK codeblock_428
 
-section_430 -> { header_479 prose_480 prose_481}
-{rank=same; header_479 prose_480 prose_481}
+section_429 -> { header_476 prose_477 prose_478}
+{rank=same; header_476 prose_477 prose_478}
 
-header_479 [label="3 : ASCII"]
+header_476 [label="3 : ASCII"]
 
-prose_480 [label="prose"]
+prose_477 [label="prose"]
 
-prose_481 [label="prose"]
+prose_478 [label="prose"]
+
+
+// END RANK section_429
+
+header_476 -> leaf_479
+leaf_479  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** ASCII"]
+// END RANK header_476
+
+prose_477 -> { raw_480}
+{rank=same; raw_480}
+
+raw_480 [label="raw"]
+
+
+// END RANK prose_477
+
+raw_480 -> leaf_481
+leaf_481  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+Any printable 7 bit utf-8 sequence.
+"]
+// END RANK raw_480
+
+prose_478 -> { raw_482}
+{rank=same; raw_482}
+
+raw_482 [label="raw"]
+
+
+// END RANK prose_478
+
+raw_482 -> leaf_483
+leaf_483  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Currently just self-inserts, but watch this space...
+
+"]
+// END RANK raw_482
+
+section_430 -> { header_484 prose_485 codeblock_486}
+{rank=same; header_484 prose_485 codeblock_486}
+
+header_484 [label="3 : NAV"]
+
+prose_485 [label="prose"]
+
+codeblock_486 [label="code block 396-457"]
 
 
 // END RANK section_430
 
-header_479 -> leaf_482
-leaf_482  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** ASCII"]
-// END RANK header_479
+header_484 -> leaf_487
+leaf_487  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** NAV"]
+// END RANK header_484
 
-prose_480 -> { raw_483}
-{rank=same; raw_483}
+prose_485 -> { raw_488}
+{rank=same; raw_488}
 
-raw_483 [label="raw"]
+raw_488 [label="raw"]
 
 
-// END RANK prose_480
+// END RANK prose_485
 
-raw_483 -> leaf_484
-leaf_484  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-
-Any printable 7 bit utf-8 sequence.
+raw_488 -> leaf_489
+leaf_489  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 "]
-// END RANK raw_483
+// END RANK raw_488
 
-prose_481 -> { raw_485}
-{rank=same; raw_485}
-
-raw_485 [label="raw"]
-
-
-// END RANK prose_481
-
-raw_485 -> leaf_486
-leaf_486  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-Currently just self-inserts, but watch this space...
-
-"]
-// END RANK raw_485
-
-section_431 -> { header_487 prose_488 codeblock_489}
-{rank=same; header_487 prose_488 codeblock_489}
-
-header_487 [label="3 : NAV"]
-
-prose_488 [label="prose"]
-
-codeblock_489 [label="code block 399-457"]
-
-
-// END RANK section_431
-
-header_487 -> leaf_490
-leaf_490  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** NAV"]
-// END RANK header_487
-
-prose_488 -> { raw_491}
-{rank=same; raw_491}
-
-raw_491 [label="raw"]
-
-
-// END RANK prose_488
-
-raw_491 -> leaf_492
-leaf_492  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-"]
-// END RANK raw_491
-
-codeblock_489 -> leaf_493
-leaf_493  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function NAV.UP(modeS, category, value)
+codeblock_486 -> leaf_490
+leaf_490  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function NAV.UP(modeS, category, value)
    modeS:clearResult()
    local prev_result, linestash
    if tostring(modeS.txtbuf) ~= \"\"
@@ -2091,8 +2075,11 @@ end
 function NAV.RETURN(modeS, category, value)
    -- eval etc.
    modeS:nl()
-   modeS:eval()
-   modeS.txtbuf = Txtbuf()
+   local more = modeS:eval()
+   if not more then
+     modeS.txtbuf = Txtbuf()
+   end
+   -- Question: is this wrong for an error?
    modeS.hist.cursor = modeS.hist.cursor + 1
 end
 
@@ -2103,40 +2090,56 @@ end
 function NAV.DELETE(modeS, category, value)
    return modeS.txtbuf:d_fwd()
 end"]
-// END RANK codeblock_489
+// END RANK codeblock_486
 
-section_432 -> { header_494 prose_495 codeblock_496}
-{rank=same; header_494 prose_495 codeblock_496}
+section_431 -> { header_491 prose_492 prose_493 codeblock_494}
+{rank=same; header_491 prose_492 prose_493 codeblock_494}
 
-header_494 [label="3 : CTRL"]
+header_491 [label="3 : CTRL"]
 
-prose_495 [label="prose"]
+prose_492 [label="prose"]
 
-codeblock_496 [label="code block 464-476"]
+prose_493 [label="prose"]
+
+codeblock_494 [label="code block 466-478"]
 
 
-// END RANK section_432
+// END RANK section_431
 
-header_494 -> leaf_497
-leaf_497  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** CTRL"]
-// END RANK header_494
+header_491 -> leaf_495
+leaf_495  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** CTRL"]
+// END RANK header_491
 
-prose_495 -> { raw_498}
+prose_492 -> { raw_496}
+{rank=same; raw_496}
+
+raw_496 [label="raw"]
+
+
+// END RANK prose_492
+
+raw_496 -> leaf_497
+leaf_497  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+Many/most of these will be re-used as e.g. \"^\" and \"$\" in vim mode.
+"]
+// END RANK raw_496
+
+prose_493 -> { raw_498}
 {rank=same; raw_498}
 
 raw_498 [label="raw"]
 
 
-// END RANK prose_495
+// END RANK prose_493
 
 raw_498 -> leaf_499
 leaf_499  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-
-Many/most of these will be re-used as e.g. \"^\" and \"$\" in vim mode.
+Thus we will declare them as bare functions and assign them to slots.
 "]
 // END RANK raw_498
 
-codeblock_496 -> leaf_500
+codeblock_494 -> leaf_500
 leaf_500  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function cursor_begin(modeS, category, value)
    modeS.txtbuf.cursor = 1
 end
@@ -2144,27 +2147,27 @@ end
 CTRL[\"^A\"] = cursor_begin
 
 local function cursor_end(modeS, category, value)
-   modeS.txtbuf.cursor = #modeS.txtbuf.lines + 1
+   modeS.txtbuf.cursor = #modeS.txtbuf.lines[modeS.txtbuf.cur_row] + 1
 end
 
 CTRL[\"^E\"] = cursor_end"]
-// END RANK codeblock_496
+// END RANK codeblock_494
 
-section_433 -> { header_501 prose_502 codeblock_503 codeblock_504 codeblock_505}
+section_432 -> { header_501 prose_502 codeblock_503 codeblock_504 codeblock_505}
 {rank=same; header_501 prose_502 codeblock_503 codeblock_504 codeblock_505}
 
 header_501 [label="3 : ModeS:eval()"]
 
 prose_502 [label="prose"]
 
-codeblock_503 [label="code block 482-487"]
+codeblock_503 [label="code block 484-489"]
 
-codeblock_504 [label="code block 489-493"]
+codeblock_504 [label="code block 491-495"]
 
-codeblock_505 [label="code block 495-551"]
+codeblock_505 [label="code block 497-551"]
 
 
-// END RANK section_433
+// END RANK section_432
 
 header_501 -> leaf_506
 leaf_506  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** ModeS:eval()"]
@@ -2199,8 +2202,8 @@ end"]
 
 codeblock_505 -> leaf_511
 leaf_511  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS.eval(modeS)
-   local line = tostring(modeS.txtbuf)
-   local chunk  = modeS.buffer .. line
+   local chunk = tostring(modeS.txtbuf)
+
    local success, results
    -- first we prefix return
    local f, err = loadstring('return ' .. chunk, 'REPL')
@@ -2213,12 +2216,11 @@ leaf_511  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS
       local head = sub(chunk, 1, 1)
       if head == \"=\" then -- take pity on old-school Lua hackers
          f, err = loadstring('return ' .. sub(chunk,2), 'REPL')
-      end -- more special REPL prefix soon
+      end -- more special REPL prefix soon: /, ?, >(?)
    end
    if f then
-      modeS.txtbuf = Txtbuf(modeS.buffer .. tostring(modeS.txtbuf))
-      modeS.buffer = \"\"
       modeS.repl_line = modeS.REPL_LINE
+      log(tostring(modeS.txtbuf), modeS.txtbuf)
       success, results = gatherResults(xpcall(f, debug.traceback))
       if success then
       -- successful call
@@ -2234,16 +2236,15 @@ leaf_511  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS
       end
    else
       if err:match \"'<eof>'$\" then
-         -- Lua expects some more input; stow it away for next time
-         modeS.buffer = chunk .. '\\n'
+         -- Lua expects some more input, advance the txtbuf
+         modeS.txtbuf:advance()
          modeS.repl_line = modeS.repl_line + 1
-         write '...'
+         modeS:write '...'
          return true
       else
          modeS.repl_line = modeS.REPL_LINE
          modeS:clearResult()
          modeS:write(err)
-         modeS.buffer = \"\"
          -- pass through to default.
       end
    end
@@ -2262,9 +2263,9 @@ header_512 [label="2 : new"]
 
 prose_513 [label="prose"]
 
-codeblock_514 [label="code block 558-574"]
+codeblock_514 [label="code block 558-573"]
 
-codeblock_515 [label="code block 576-578"]
+codeblock_515 [label="code block 575-577"]
 
 
 // END RANK section_7
@@ -2310,7 +2311,6 @@ codeblock_514 -> leaf_525
 leaf_525  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function new(cfg)
   local modeS = meta(ModeS)
   modeS.txtbuf = Txtbuf()
-  modeS.buffer = \"\"
   modeS.hist  = Historian()
   modeS.hist.cursor = #modeS.hist + 1
   -- this will be more complex but
