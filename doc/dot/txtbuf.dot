@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 297"]
+doc_0 [label="doc - 294"]
 
 
 doc_0 -> { section_1}
@@ -31,7 +31,7 @@ prose_7 [label="prose"]
 
 section_8 [label="section: 17-21"]
 
-section_9 [label="section: 34-266"]
+section_9 [label="section: 34-263"]
 
 
 // END RANK section_1
@@ -255,9 +255,9 @@ section_52 [label="section: 163-178"]
 
 section_53 [label="section: 179-195"]
 
-section_54 [label="section: 196-266"]
+section_54 [label="section: 196-263"]
 
-section_55 [label="section: 267-297"]
+section_55 [label="section: 264-294"]
 
 
 // END RANK section_9
@@ -757,7 +757,7 @@ codeblock_147 [label="code block 228-236"]
 
 codeblock_148 [label="code block 238-248"]
 
-codeblock_149 [label="code block 250-264"]
+codeblock_149 [label="code block 250-261"]
 
 
 // END RANK section_54
@@ -834,16 +834,13 @@ end"]
 codeblock_149 -> leaf_157
 leaf_157  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local cl = assert(table.clone, \"table.clone must be provided\")
 
--- #todo rewrite this
-
 function Txtbuf.clone(txtbuf)
-   local lb = cl(txtbuf)
-   if type(lb.line) == \"table\" then
-      lb.line = cl(lb.line)
-   elseif type(lb.line) == \"string\" then
-      lb:resume()
+   local tb = cl(txtbuf)
+   tb.lines = cl(txtbuf.lines)
+   if type(tb.lines[1]) == \"string\" then
+      return tb:resume()
    end
-   return lb
+   return tb
 end"]
 // END RANK codeblock_149
 
@@ -854,9 +851,9 @@ header_158 [label="3 : new"]
 
 prose_159 [label="prose"]
 
-codeblock_160 [label="code block 269-293"]
+codeblock_160 [label="code block 266-290"]
 
-codeblock_161 [label="code block 295-297"]
+codeblock_161 [label="code block 292-294"]
 
 
 // END RANK section_55

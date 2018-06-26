@@ -250,16 +250,13 @@ end
 #!lua
 local cl = assert(table.clone, "table.clone must be provided")
 
--- #todo rewrite this
-
 function Txtbuf.clone(txtbuf)
-   local lb = cl(txtbuf)
-   if type(lb.line) == "table" then
-      lb.line = cl(lb.line)
-   elseif type(lb.line) == "string" then
-      lb:resume()
+   local tb = cl(txtbuf)
+   tb.lines = cl(txtbuf.lines)
+   if type(tb.lines[1]) == "string" then
+      return tb:resume()
    end
-   return lb
+   return tb
 end
 #/lua
 

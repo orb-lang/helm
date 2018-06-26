@@ -304,6 +304,7 @@ function Historian.prev(historian)
    end
    local Δ = historian.cursor > 1 and 1 or 0
    local txtbuf = historian[historian.cursor - Δ]
+   txtbuf.cur_row = 1
    local result = historian.results[txtbuf]
    historian.cursor = historian.cursor - Δ
    txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
@@ -326,6 +327,7 @@ function Historian.next(historian)
       return Txtbuf()
    end
    local txtbuf= historian[historian.cursor + Δ]
+   txtbuf.cur_row = #txtbuf.lines
    local result = historian.results[txtbuf]
    if not txtbuf then
       return Txtbuf()

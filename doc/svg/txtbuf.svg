@@ -13,7 +13,7 @@
 <g id="node1" class="node">
 <title>doc_0</title>
 <ellipse fill="none" stroke="#000000" cx="1715" cy="-924.0009" rx="46.9581" ry="18"/>
-<text text-anchor="middle" x="1715" y="-919.8009" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">doc &#45; 297</text>
+<text text-anchor="middle" x="1715" y="-919.8009" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">doc &#45; 294</text>
 </g>
 <!-- section_1 -->
 <g id="node2" class="node">
@@ -115,7 +115,7 @@
 <g id="node10" class="node">
 <title>section_9</title>
 <ellipse fill="none" stroke="#000000" cx="7246" cy="-780.0009" rx="70.655" ry="18"/>
-<text text-anchor="middle" x="7246" y="-775.8009" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 34&#45;266</text>
+<text text-anchor="middle" x="7246" y="-775.8009" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 34&#45;263</text>
 </g>
 <!-- section_1&#45;&gt;section_9 -->
 <g id="edge9" class="edge">
@@ -391,7 +391,7 @@
 <g id="node55" class="node">
 <title>section_54</title>
 <ellipse fill="none" stroke="#000000" cx="12158" cy="-708.0009" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="12158" y="-703.8009" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 196&#45;266</text>
+<text text-anchor="middle" x="12158" y="-703.8009" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 196&#45;263</text>
 </g>
 <!-- section_9&#45;&gt;section_54 -->
 <g id="edge54" class="edge">
@@ -403,7 +403,7 @@
 <g id="node56" class="node">
 <title>section_55</title>
 <ellipse fill="none" stroke="#000000" cx="13852" cy="-708.0009" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="13852" y="-703.8009" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 267&#45;297</text>
+<text text-anchor="middle" x="13852" y="-703.8009" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 264&#45;294</text>
 </g>
 <!-- section_9&#45;&gt;section_55 -->
 <g id="edge55" class="edge">
@@ -1236,7 +1236,7 @@
 <g id="node150" class="node">
 <title>codeblock_149</title>
 <ellipse fill="none" stroke="#000000" cx="13308" cy="-626.3009" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="13308" y="-622.1009" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 250&#45;264</text>
+<text text-anchor="middle" x="13308" y="-622.1009" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 250&#45;261</text>
 </g>
 <!-- section_54&#45;&gt;codeblock_149 -->
 <g id="edge149" class="edge">
@@ -1272,7 +1272,7 @@
 <g id="node161" class="node">
 <title>codeblock_160</title>
 <ellipse fill="none" stroke="#000000" cx="14036" cy="-626.3009" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="14036" y="-622.1009" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 269&#45;293</text>
+<text text-anchor="middle" x="14036" y="-622.1009" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 266&#45;290</text>
 </g>
 <!-- section_55&#45;&gt;codeblock_160 -->
 <g id="edge160" class="edge">
@@ -1284,7 +1284,7 @@
 <g id="node162" class="node">
 <title>codeblock_161</title>
 <ellipse fill="none" stroke="#000000" cx="14285" cy="-626.3009" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="14285" y="-622.1009" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 295&#45;297</text>
+<text text-anchor="middle" x="14285" y="-622.1009" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 292&#45;294</text>
 </g>
 <!-- section_55&#45;&gt;codeblock_161 -->
 <g id="edge161" class="edge">
@@ -2036,24 +2036,22 @@
 <!-- leaf_157 -->
 <g id="node158" class="node">
 <title>leaf_157</title>
-<polygon fill="none" stroke="#c0c0c0" points="13712,-439.6012 13262,-439.6012 13262,-229.7998 13712,-229.7998 13712,-439.6012"/>
-<text text-anchor="middle" x="13487" y="-424.2007" font-family="Inconsolata" font-size="14.00" fill="#000000">local cl = assert(table.clone, &quot;table.clone must be provided&quot;)</text>
-<text text-anchor="middle" x="13487" y="-392.8006" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; #todo rewrite this</text>
-<text text-anchor="middle" x="13487" y="-361.4006" font-family="Inconsolata" font-size="14.00" fill="#000000">function Txtbuf.clone(txtbuf)</text>
-<text text-anchor="middle" x="13487" y="-346.0006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local lb = cl(txtbuf)</text>
-<text text-anchor="middle" x="13487" y="-330.6005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if type(lb.line) == &quot;table&quot; then</text>
-<text text-anchor="middle" x="13487" y="-315.2005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;lb.line = cl(lb.line)</text>
-<text text-anchor="middle" x="13487" y="-299.8005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;elseif type(lb.line) == &quot;string&quot; then</text>
-<text text-anchor="middle" x="13487" y="-284.4004" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;lb:resume()</text>
-<text text-anchor="middle" x="13487" y="-269.0004" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
-<text text-anchor="middle" x="13487" y="-253.6004" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return lb</text>
-<text text-anchor="middle" x="13487" y="-238.2003" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
+<polygon fill="none" stroke="#c0c0c0" points="13712,-415.8013 13262,-415.8013 13262,-253.5997 13712,-253.5997 13712,-415.8013"/>
+<text text-anchor="middle" x="13487" y="-400.8006" font-family="Inconsolata" font-size="14.00" fill="#000000">local cl = assert(table.clone, &quot;table.clone must be provided&quot;)</text>
+<text text-anchor="middle" x="13487" y="-369.4006" font-family="Inconsolata" font-size="14.00" fill="#000000">function Txtbuf.clone(txtbuf)</text>
+<text text-anchor="middle" x="13487" y="-354.0006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local tb = cl(txtbuf)</text>
+<text text-anchor="middle" x="13487" y="-338.6005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;tb.lines = cl(txtbuf.lines)</text>
+<text text-anchor="middle" x="13487" y="-323.2005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if type(tb.lines[1]) == &quot;string&quot; then</text>
+<text text-anchor="middle" x="13487" y="-307.8005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return tb:resume()</text>
+<text text-anchor="middle" x="13487" y="-292.4004" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
+<text text-anchor="middle" x="13487" y="-277.0004" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return tb</text>
+<text text-anchor="middle" x="13487" y="-261.6004" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
 </g>
 <!-- codeblock_149&#45;&gt;leaf_157 -->
 <g id="edge157" class="edge">
 <title>codeblock_149&#45;&gt;leaf_157</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M13319.1973,-608.06C13338.675,-576.3298 13380.2457,-508.6088 13417.1353,-448.5137"/>
-<polygon fill="#000000" stroke="#000000" points="13420.2922,-450.0612 13422.5409,-439.7078 13414.3265,-446.3991 13420.2922,-450.0612"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M13319.1973,-608.06C13341.3185,-572.0233 13391.9368,-489.5635 13431.8299,-424.5755"/>
+<polygon fill="#000000" stroke="#000000" points="13434.8861,-426.287 13437.1348,-415.9335 13428.9204,-422.6249 13434.8861,-426.287"/>
 </g>
 <!-- leaf_152 -->
 <g id="node153" class="node">

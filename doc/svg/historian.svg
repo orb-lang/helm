@@ -13,7 +13,7 @@
 <g id="node1" class="node">
 <title>doc_0</title>
 <ellipse fill="none" stroke="#000000" cx="1806" cy="-2349.6036" rx="46.9581" ry="18"/>
-<text text-anchor="middle" x="1806" y="-2345.4036" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">doc &#45; 378</text>
+<text text-anchor="middle" x="1806" y="-2345.4036" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">doc &#45; 380</text>
 </g>
 <!-- section_1 -->
 <g id="node2" class="node">
@@ -139,7 +139,7 @@
 <g id="node12" class="node">
 <title>section_11</title>
 <ellipse fill="none" stroke="#000000" cx="12119" cy="-2205.6036" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="12119" y="-2201.4036" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 298&#45;344</text>
+<text text-anchor="middle" x="12119" y="-2201.4036" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 298&#45;346</text>
 </g>
 <!-- section_1&#45;&gt;section_11 -->
 <g id="edge11" class="edge">
@@ -434,7 +434,7 @@
 <g id="node165" class="node">
 <title>codeblock_164</title>
 <ellipse fill="none" stroke="#000000" cx="12189" cy="-2086.0034" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="12189" y="-2081.8034" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 300&#45;312</text>
+<text text-anchor="middle" x="12189" y="-2081.8034" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 300&#45;313</text>
 </g>
 <!-- section_11&#45;&gt;codeblock_164 -->
 <g id="edge164" class="edge">
@@ -446,7 +446,7 @@
 <g id="node166" class="node">
 <title>section_165</title>
 <ellipse fill="none" stroke="#000000" cx="12633" cy="-2086.0034" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="12633" y="-2081.8034" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 315&#45;344</text>
+<text text-anchor="middle" x="12633" y="-2081.8034" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 316&#45;346</text>
 </g>
 <!-- section_11&#45;&gt;section_165 -->
 <g id="edge165" class="edge">
@@ -458,7 +458,7 @@
 <g id="node167" class="node">
 <title>section_166</title>
 <ellipse fill="none" stroke="#000000" cx="13566" cy="-2086.0034" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="13566" y="-2081.8034" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 345&#45;378</text>
+<text text-anchor="middle" x="13566" y="-2081.8034" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 347&#45;380</text>
 </g>
 <!-- section_11&#45;&gt;section_166 -->
 <g id="edge166" class="edge">
@@ -2232,24 +2232,25 @@
 <!-- leaf_170 -->
 <g id="node171" class="node">
 <title>leaf_170</title>
-<polygon fill="none" stroke="#c0c0c0" points="12400,-1765.4836 12020,-1765.4836 12020,-1577.5219 12400,-1577.5219 12400,-1765.4836"/>
-<text text-anchor="middle" x="12210" y="-1750.0429" font-family="Inconsolata" font-size="14.00" fill="#000000">function Historian.prev(historian)</text>
-<text text-anchor="middle" x="12210" y="-1734.6428" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if historian.cursor == 0 then</text>
-<text text-anchor="middle" x="12210" y="-1719.2428" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return Txtbuf()</text>
-<text text-anchor="middle" x="12210" y="-1703.8428" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
-<text text-anchor="middle" x="12210" y="-1688.4427" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local Δ = historian.cursor &gt; 1 and 1 or 0</text>
-<text text-anchor="middle" x="12210" y="-1669.6827" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local txtbuf = historian[historian.cursor &#45; Δ]</text>
-<text text-anchor="middle" x="12210" y="-1650.9227" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local result = historian.results[txtbuf]</text>
-<text text-anchor="middle" x="12210" y="-1635.5227" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;historian.cursor = historian.cursor &#45; Δ</text>
-<text text-anchor="middle" x="12210" y="-1616.7627" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1</text>
-<text text-anchor="middle" x="12210" y="-1601.3627" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return txtbuf:clone(), result</text>
-<text text-anchor="middle" x="12210" y="-1585.9626" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
+<polygon fill="none" stroke="#c0c0c0" points="12400,-1772.8831 12020,-1772.8831 12020,-1570.1224 12400,-1570.1224 12400,-1772.8831"/>
+<text text-anchor="middle" x="12210" y="-1757.7429" font-family="Inconsolata" font-size="14.00" fill="#000000">function Historian.prev(historian)</text>
+<text text-anchor="middle" x="12210" y="-1742.3428" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if historian.cursor == 0 then</text>
+<text text-anchor="middle" x="12210" y="-1726.9428" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return Txtbuf()</text>
+<text text-anchor="middle" x="12210" y="-1711.5428" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
+<text text-anchor="middle" x="12210" y="-1696.1428" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local Δ = historian.cursor &gt; 1 and 1 or 0</text>
+<text text-anchor="middle" x="12210" y="-1677.3827" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local txtbuf = historian[historian.cursor &#45; Δ]</text>
+<text text-anchor="middle" x="12210" y="-1658.6227" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;txtbuf.cur_row = 1</text>
+<text text-anchor="middle" x="12210" y="-1643.2227" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local result = historian.results[txtbuf]</text>
+<text text-anchor="middle" x="12210" y="-1627.8227" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;historian.cursor = historian.cursor &#45; Δ</text>
+<text text-anchor="middle" x="12210" y="-1609.0627" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1</text>
+<text text-anchor="middle" x="12210" y="-1593.6626" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return txtbuf:clone(), result</text>
+<text text-anchor="middle" x="12210" y="-1578.2626" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
 </g>
 <!-- codeblock_164&#45;&gt;leaf_170 -->
 <g id="edge170" class="edge">
 <title>codeblock_164&#45;&gt;leaf_170</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M12189.9158,-2067.9263C12192.4459,-2017.9873 12199.6781,-1875.2376 12204.7343,-1775.437"/>
-<polygon fill="#000000" stroke="#000000" points="12208.2367,-1775.4763 12205.2473,-1765.312 12201.2457,-1775.1221 12208.2367,-1775.4763"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M12189.9158,-2067.9263C12192.3811,-2019.2678 12199.3103,-1882.4971 12204.3412,-1783.1964"/>
+<polygon fill="#000000" stroke="#000000" points="12207.842,-1783.2674 12204.8526,-1773.1031 12200.851,-1782.9132 12207.842,-1783.2674"/>
 </g>
 <!-- header_171 -->
 <g id="node172" class="node">
@@ -2291,7 +2292,7 @@
 <g id="node175" class="node">
 <title>codeblock_174</title>
 <ellipse fill="none" stroke="#000000" cx="12936" cy="-1671.5027" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="12936" y="-1667.3027" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 322&#45;342</text>
+<text text-anchor="middle" x="12936" y="-1667.3027" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 323&#45;344</text>
 </g>
 <!-- section_165&#45;&gt;codeblock_174 -->
 <g id="edge174" class="edge">
@@ -2339,7 +2340,7 @@
 <g id="node191" class="node">
 <title>codeblock_190</title>
 <ellipse fill="none" stroke="#000000" cx="13761" cy="-1671.5027" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="13761" y="-1667.3027" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 351&#45;365</text>
+<text text-anchor="middle" x="13761" y="-1667.3027" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 353&#45;367</text>
 </g>
 <!-- section_166&#45;&gt;codeblock_190 -->
 <g id="edge190" class="edge">
@@ -2351,7 +2352,7 @@
 <g id="node192" class="node">
 <title>codeblock_191</title>
 <ellipse fill="none" stroke="#000000" cx="14074" cy="-1671.5027" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="14074" y="-1667.3027" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 367&#45;374</text>
+<text text-anchor="middle" x="14074" y="-1667.3027" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 369&#45;376</text>
 </g>
 <!-- section_166&#45;&gt;codeblock_191 -->
 <g id="edge191" class="edge">
@@ -2363,7 +2364,7 @@
 <g id="node193" class="node">
 <title>codeblock_192</title>
 <ellipse fill="none" stroke="#000000" cx="14328" cy="-1671.5027" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="14328" y="-1667.3027" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 376&#45;378</text>
+<text text-anchor="middle" x="14328" y="-1667.3027" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 378&#45;380</text>
 </g>
 <!-- section_166&#45;&gt;codeblock_192 -->
 <g id="edge192" class="edge">
@@ -2457,32 +2458,33 @@
 <!-- leaf_186 -->
 <g id="node187" class="node">
 <title>leaf_186</title>
-<polygon fill="none" stroke="#c0c0c0" points="13197.4016,-871.4416 12808.5984,-871.4416 12808.5984,-557.3606 13197.4016,-557.3606 13197.4016,-871.4416"/>
-<text text-anchor="middle" x="13003" y="-856.2214" font-family="Inconsolata" font-size="14.00" fill="#000000">function Historian.next(historian)</text>
-<text text-anchor="middle" x="13003" y="-840.8213" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local Δ = historian.cursor &lt; #historian and 1 or 0</text>
-<text text-anchor="middle" x="13003" y="-822.0613" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if historian.cursor == 0 then</text>
-<text text-anchor="middle" x="13003" y="-806.6613" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return Txtbuf()</text>
-<text text-anchor="middle" x="13003" y="-791.2613" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
-<text text-anchor="middle" x="13003" y="-775.8612" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local txtbuf= historian[historian.cursor + Δ]</text>
-<text text-anchor="middle" x="13003" y="-757.1012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local result = historian.results[txtbuf]</text>
-<text text-anchor="middle" x="13003" y="-741.7012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if not txtbuf then</text>
-<text text-anchor="middle" x="13003" y="-726.3012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return Txtbuf()</text>
-<text text-anchor="middle" x="13003" y="-710.9011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
-<text text-anchor="middle" x="13003" y="-695.5011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;historian.cursor = historian.cursor + Δ</text>
-<text text-anchor="middle" x="13003" y="-676.7411" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1</text>
-<text text-anchor="middle" x="13003" y="-661.3411" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if not (Δ &gt; 0) and #txtbuf.lines &gt; 0 then</text>
-<text text-anchor="middle" x="13003" y="-642.5811" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;historian.cursor = #historian + 1</text>
-<text text-anchor="middle" x="13003" y="-627.181" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return txtbuf:clone(), nil, true</text>
-<text text-anchor="middle" x="13003" y="-611.781" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;else</text>
-<text text-anchor="middle" x="13003" y="-596.381" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return txtbuf:clone(), result, false</text>
-<text text-anchor="middle" x="13003" y="-580.9809" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
-<text text-anchor="middle" x="13003" y="-565.5809" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
+<polygon fill="none" stroke="#c0c0c0" points="13197.4016,-879.3419 12808.5984,-879.3419 12808.5984,-549.4603 13197.4016,-549.4603 13197.4016,-879.3419"/>
+<text text-anchor="middle" x="13003" y="-863.9214" font-family="Inconsolata" font-size="14.00" fill="#000000">function Historian.next(historian)</text>
+<text text-anchor="middle" x="13003" y="-848.5213" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local Δ = historian.cursor &lt; #historian and 1 or 0</text>
+<text text-anchor="middle" x="13003" y="-829.7613" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if historian.cursor == 0 then</text>
+<text text-anchor="middle" x="13003" y="-814.3613" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return Txtbuf()</text>
+<text text-anchor="middle" x="13003" y="-798.9613" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
+<text text-anchor="middle" x="13003" y="-783.5613" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local txtbuf= historian[historian.cursor + Δ]</text>
+<text text-anchor="middle" x="13003" y="-764.8012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;txtbuf.cur_row = #txtbuf.lines</text>
+<text text-anchor="middle" x="13003" y="-749.4012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local result = historian.results[txtbuf]</text>
+<text text-anchor="middle" x="13003" y="-734.0012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if not txtbuf then</text>
+<text text-anchor="middle" x="13003" y="-718.6012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return Txtbuf()</text>
+<text text-anchor="middle" x="13003" y="-703.2011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
+<text text-anchor="middle" x="13003" y="-687.8011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;historian.cursor = historian.cursor + Δ</text>
+<text text-anchor="middle" x="13003" y="-669.0411" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1</text>
+<text text-anchor="middle" x="13003" y="-653.6411" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if not (Δ &gt; 0) and #txtbuf.lines &gt; 0 then</text>
+<text text-anchor="middle" x="13003" y="-634.8811" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;historian.cursor = #historian + 1</text>
+<text text-anchor="middle" x="13003" y="-619.481" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return txtbuf:clone(), nil, true</text>
+<text text-anchor="middle" x="13003" y="-604.081" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;else</text>
+<text text-anchor="middle" x="13003" y="-588.681" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return txtbuf:clone(), result, false</text>
+<text text-anchor="middle" x="13003" y="-573.2809" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
+<text text-anchor="middle" x="13003" y="-557.8809" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
 </g>
 <!-- codeblock_174&#45;&gt;leaf_186 -->
 <g id="edge186" class="edge">
 <title>codeblock_174&#45;&gt;leaf_186</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M12937.2786,-1653.238C12943.8541,-1559.3063 12974.2134,-1125.6199 12991.2753,-881.8892"/>
-<polygon fill="#000000" stroke="#000000" points="12994.7701,-882.0848 12991.9771,-871.8647 12987.7872,-881.5959 12994.7701,-882.0848"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M12937.2786,-1653.238C12943.7872,-1560.2622 12973.598,-1134.4114 12990.7504,-889.3885"/>
+<polygon fill="#000000" stroke="#000000" points="12994.2493,-889.5251 12991.4562,-879.3051 12987.2664,-889.0362 12994.2493,-889.5251"/>
 </g>
 <!-- leaf_180 -->
 <g id="node181" class="node">
