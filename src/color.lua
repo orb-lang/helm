@@ -75,6 +75,33 @@ C.depth = 3 -- table print depth
 
 
 
+local no_color = {}
+-- if field accessed, pass through
+local function _no_c_index(nc, _)
+   return nc
+end
+
+local function _no_c_call(_, str)
+   return str or ""
+end
+
+local function _no_c_concat(head, tail)
+   head = type(head) == "string" and head or ""
+   tail = type(tail) == "string" and tail or ""
+   return head .. tail
+end
+
+C.no_color = setmetatable({}, { __index  = _no_c_index,
+                                __call   = _no_c_call,
+                                __concat = _no_c_concat, })
+
+
+
+
+
+
+
+
 
 
 
@@ -157,7 +184,7 @@ local function addName(t, aG, pre)
 end
 
 function C.allNames()
-   return addName(_G)
+   return addName(package.loaded, addName(_G))
 end
 
 function C.clearNames()
@@ -358,7 +385,17 @@ ts = function (value, hint)
    end
    return str
 end
+
 C.ts = ts
+
+
+
+function C.ts_bw(value)
+   c = C.no_color
+   local to_string = ts(value)
+   c = C.color
+   return to_string
+end
 
 
 

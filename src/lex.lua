@@ -4,6 +4,8 @@
 
 
 
+
+
 local L = require "lpeg"
 local P, R, S, match = L.P, L.R, L.S, L.match
 local Lex = meta {}
@@ -106,6 +108,7 @@ local color_map = {
    string_long = c.color.string(),
    comment = c.color.comment(),
    ERR = c.color.error(),
+   NL = a.clear(),
 }
 
 
@@ -157,9 +160,9 @@ local function _str_hl(str)
 end
 
 
-function Lex.lua_thor(linebuf)
+function Lex.lua_thor(txtbuf)
    local toks = {}
-   local lb = tostring(linebuf)
+   local lb = tostring(txtbuf)
    while lb ~= "" do
       local len = #lb
       local bite, tok_t
@@ -179,8 +182,13 @@ function Lex.lua_thor(linebuf)
          end
       end
       if len == #lb then
-         toks[#toks + 1] = a.clear .. color_map.ERR
-         toks[#toks + 1] = sub(lb, 1, 1)
+         bite = sub(lb, 1, 1) -- take a piece anyhow
+         -- this is a bad hack because for some reason
+         -- we're not picking up newlines correctly
+         if bite ~= "\n" then
+            toks[#toks + 1] = a.clear .. color_map.ERR
+         end
+         toks[#toks + 1] = bite
          lb = sub(lb,2)
       end
    end

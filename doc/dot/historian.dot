@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 366"]
+doc_0 [label="doc - 383"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-285"]
+section_1 [label="section: 1-297"]
 
 
 // END RANK doc_0
@@ -31,11 +31,11 @@ codeblock_7 [label="code block 16-25"]
 
 codeblock_8 [label="code block 27-29"]
 
-section_9 [label="section: 32-189"]
+section_9 [label="section: 32-201"]
 
-section_10 [label="section: 240-285"]
+section_10 [label="section: 252-297"]
 
-section_11 [label="section: 286-332"]
+section_11 [label="section: 298-349"]
 
 
 // END RANK section_1
@@ -100,14 +100,14 @@ raw_19 [label="raw"]
 
 raw_19 -> leaf_20
 leaf_20  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-Next step: now that we clone a new linebuf each time, we have an immutable
+Next step: now that we clone a new txtbuf each time, we have an immutable
 record.  We should store the line as a string, to facilitate fuzzy matching.
 
 "]
 // END RANK raw_19
 
 codeblock_7 -> leaf_21
-leaf_21  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Linebuf = require \"linebuf\"
+leaf_21  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Txtbuf = require \"txtbuf\"
 local sql     = require \"sqlayer\"
 local color   = require \"color\"
 local L       = require \"lpeg\"
@@ -140,11 +140,11 @@ prose_29 [label="prose"]
 
 prose_30 [label="prose"]
 
-section_31 [label="section: 59-130"]
+section_31 [label="section: 59-142"]
 
-section_32 [label="section: 131-189"]
+section_32 [label="section: 143-201"]
 
-section_33 [label="section: 190-239"]
+section_33 [label="section: 202-251"]
 
 
 // END RANK section_9
@@ -456,7 +456,7 @@ header_110 [label="3 : SQLite battery"]
 
 prose_111 [label="prose"]
 
-codeblock_112 [label="code block 61-128"]
+codeblock_112 [label="code block 61-140"]
 
 
 // END RANK section_31
@@ -498,6 +498,18 @@ value blob,
 FOREIGN KEY (line_id)
    REFERENCES repl (line_id)
    ON DELETE CASCADE);
+]]
+
+local create_session_table = [[
+CREATE TABLE IF NOT EXISTS sessions (
+session_id INTEGER PRIMARY KEY AUTOINCREMENT,
+name TEXT,
+-- These two are line_ids
+start INTEGER NOT NULL,
+end INTEGER,
+test BOOLEAN,
+commit TEXT;
+)
 ]]
 
 local insert_line_stmt = [[
@@ -556,7 +568,7 @@ prose_118 [label="prose"]
 
 prose_119 [label="prose"]
 
-codeblock_120 [label="code block 138-187"]
+codeblock_120 [label="code block 150-199"]
 
 
 // END RANK section_32
@@ -591,7 +603,7 @@ raw_124 [label="raw"]
 raw_124 -> leaf_125
 leaf_125  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 Most of the complexity serves to make a simple key/value relationship
-between the regenerated linebufs and their associated result history.
+between the regenerated txtbufs and their associated result history.
 "]
 // END RANK raw_124
 
@@ -618,7 +630,7 @@ leaf_126  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histo
       local line_ids = reverse(repl_val[1])
       local repl_map = {}
       for i, v in ipairs(lines) do
-         local buf = Linebuf(v)
+         local buf = Txtbuf(v)
          historian[i] = buf
          repl_map[line_ids[i]] = buf
       end
@@ -627,7 +639,7 @@ leaf_126  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histo
       -- reuse line_id var for foreign keys
       line_ids = res_val[1]
       local reprs = res_val[2]
-      -- This is keyed by linebuf with a string value.
+      -- This is keyed by txtbuf with a string value.
       local result_map = {}
       for i = 1, #reprs do
          local buf = repl_map[line_ids[i]]
@@ -649,7 +661,7 @@ end"]
 section_33 -> { header_127 prose_128 prose_129 prose_130 prose_131 codeblock_132}
 {rank=same; header_127 prose_128 prose_129 prose_130 prose_131 codeblock_132}
 
-header_127 [label="3 : Historian:persist(linebuf)"]
+header_127 [label="3 : Historian:persist(txtbuf)"]
 
 prose_128 [label="prose"]
 
@@ -659,13 +671,13 @@ prose_130 [label="prose"]
 
 prose_131 [label="prose"]
 
-codeblock_132 [label="code block 205-237"]
+codeblock_132 [label="code block 217-249"]
 
 
 // END RANK section_33
 
 header_127 -> leaf_133
-leaf_133  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Historian:persist(linebuf)"]
+leaf_133  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Historian:persist(txtbuf)"]
 // END RANK header_127
 
 prose_128 -> { raw_134}
@@ -767,8 +779,8 @@ common value for any identical semantics.
 // END RANK raw_152
 
 codeblock_132 -> leaf_154
-leaf_154  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.persist(historian, linebuf, results)
-   local lb = tostring(linebuf)
+leaf_154  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.persist(historian, txtbuf, results)
+   local lb = tostring(txtbuf)
    if lb ~= \"\" then
       historian.insert_line_stmt:bindkv { project = historian.project,
                                      line    = lb }
@@ -807,7 +819,7 @@ header_155 [label="2 : Historian:search(frag)"]
 
 prose_156 [label="prose"]
 
-codeblock_157 [label="code block 242-283"]
+codeblock_157 [label="code block 254-295"]
 
 
 // END RANK section_10
@@ -879,11 +891,11 @@ header_162 [label="2 : Historian:prev()"]
 
 prose_163 [label="prose"]
 
-codeblock_164 [label="code block 288-300"]
+codeblock_164 [label="code block 300-313"]
 
-section_165 [label="section: 303-332"]
+section_165 [label="section: 316-349"]
 
-section_166 [label="section: 333-366"]
+section_166 [label="section: 350-383"]
 
 
 // END RANK section_11
@@ -908,14 +920,15 @@ leaf_169  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 codeblock_164 -> leaf_170
 leaf_170  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.prev(historian)
    if historian.cursor == 0 then
-      return Linebuf()
+      return Txtbuf()
    end
    local Δ = historian.cursor > 1 and 1 or 0
-   local linebuf = historian[historian.cursor - Δ]
-   local result = historian.results[linebuf]
+   local txtbuf = historian[historian.cursor - Δ]
+   txtbuf.cur_row = 1
+   local result = historian.results[txtbuf]
    historian.cursor = historian.cursor - Δ
-   linebuf.cursor = #linebuf.line + 1
-   return linebuf:clone(), result
+   txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
+   return txtbuf:clone(), result
 end"]
 // END RANK codeblock_164
 
@@ -928,7 +941,7 @@ prose_172 [label="prose"]
 
 prose_173 [label="prose"]
 
-codeblock_174 [label="code block 310-330"]
+codeblock_174 [label="code block 323-347"]
 
 
 // END RANK section_165
@@ -954,7 +967,7 @@ raw_179 [label="raw"]
 raw_176 -> leaf_180
 leaf_180  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
-Returns the next linebuf in history, and a second flag to tell the"]
+Returns the next txtbuf in history, and a second flag to tell the"]
 // END RANK raw_176
 
 prespace_177 -> leaf_181
@@ -988,20 +1001,24 @@ codeblock_174 -> leaf_186
 leaf_186  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.next(historian)
    local Δ = historian.cursor < #historian and 1 or 0
    if historian.cursor == 0 then
-      return Linebuf()
+      return Txtbuf()
    end
-   local linebuf= historian[historian.cursor + Δ]
-   local result = historian.results[linebuf]
-   if not linebuf then
-      return Linebuf()
+   local txtbuf = historian[historian.cursor + Δ]
+   if not txtbuf then
+      return Txtbuf()
+   end
+   txtbuf.cur_row = #txtbuf.lines
+   local result = historian.results[txtbuf]
+   if not txtbuf then
+      return Txtbuf()
    end
    historian.cursor = historian.cursor + Δ
-   linebuf.cursor = #linebuf.line + 1
-   if not (Δ > 0) and #linebuf.line > 0 then
+   txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
+   if not (Δ > 0) and #txtbuf.lines > 0 then
       historian.cursor = #historian + 1
-      return linebuf:clone(), nil, true
+      return txtbuf:clone(), nil, true
    else
-      return linebuf:clone(), result, false
+      return txtbuf:clone(), result, false
    end
 end"]
 // END RANK codeblock_174
@@ -1015,11 +1032,11 @@ prose_188 [label="prose"]
 
 prose_189 [label="prose"]
 
-codeblock_190 [label="code block 339-353"]
+codeblock_190 [label="code block 356-370"]
 
-codeblock_191 [label="code block 355-362"]
+codeblock_191 [label="code block 372-379"]
 
-codeblock_192 [label="code block 364-366"]
+codeblock_192 [label="code block 381-383"]
 
 
 // END RANK section_166
@@ -1039,7 +1056,7 @@ raw_194 [label="raw"]
 raw_194 -> leaf_195
 leaf_195  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
-Appends a linebuf to history and persists it.
+Appends a txtbuf to history and persists it.
 "]
 // END RANK raw_194
 
@@ -1058,16 +1075,16 @@ Doesn't adjust the cursor.
 // END RANK raw_196
 
 codeblock_190 -> leaf_198
-leaf_198  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.append(historian, linebuf, results, success)
-   if tostring(historian[#historian]) == tostring(linebuf) then
+leaf_198  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.append(historian, txtbuf, results, success)
+   if tostring(historian[#historian]) == tostring(txtbuf) then
       -- don't bother
       return false
    end
-   historian[#historian + 1] = linebuf
+   historian[#historian + 1] = txtbuf
    if success then
-      historian:persist(linebuf, results)
+      historian:persist(txtbuf, results)
    else
-      historian:persist(linebuf)
+      historian:persist(txtbuf)
    end
    return true
 end"]

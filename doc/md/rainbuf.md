@@ -99,23 +99,23 @@ an atomic update.  That implies two different views must be separate rainbufs
 fed from the same quipu, and renderers are rainbuf interpreters.
 
 ```lua
-local Linebuf = require "linebuf"
+local Txtbuf = require "txtbuf"
 local byte = assert(string.byte)
 
 local Rainbuf = meta {}
 ```
 ```lua
-local function new(linebuf)
+local function new(txtbuf)
    local rainbuf = meta(Rainbuf)
    local disp = {}
    rainbuf.disp = disp
-   if type(linebuf) == "string" then
-      linebuf = Linebuf(linebuf)
-   elseif type(linebuf) == "table" then
-      if linebuf.idEst == Linebuf then
-         _from_linebuf(rainbuf, linebuf)
+   if type(txtbuf) == "string" then
+      txtbuf = Txtbuf(txtbuf)
+   elseif type(txtbuf) == "table" then
+      if txtbuf.idEst == Txtbuf then
+         _from_txtbuf(rainbuf, txtbuf)
       else
-         for i,v in ipairs(linebuf) do
+         for i,v in ipairs(txtbuf) do
             if type(v) == "string" then
                rainbuf[i] = v
                if byte(v) == 0x1b then

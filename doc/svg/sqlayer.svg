@@ -2504,7 +2504,7 @@
 <title>leaf_217</title>
 <polygon fill="none" stroke="#c0c0c0" points="13202.5,-751.7014 12808.5,-751.7014 12808.5,-557.8999 13202.5,-557.8999 13202.5,-751.7014"/>
 <text text-anchor="middle" x="13005.5" y="-736.3009" font-family="Inconsolata" font-size="14.00" fill="#000000">local function new_conn_index(conn, key)</text>
-<text text-anchor="middle" x="13005.5" y="-720.9008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local function _prag_index(f, prag)</text>
+<text text-anchor="middle" x="13005.5" y="-720.9008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local function _prag_index(_, prag)</text>
 <text text-anchor="middle" x="13005.5" y="-705.5008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return _prag_set(conn, prag)</text>
 <text text-anchor="middle" x="13005.5" y="-690.1008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
 <text text-anchor="middle" x="13005.5" y="-674.7007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if key == &quot;pragma&quot; then</text>

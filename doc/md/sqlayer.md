@@ -180,7 +180,7 @@ over our ``conn``, passing it along to the pragma.
 
 ```lua
 local function new_conn_index(conn, key)
-   local function _prag_index(f, prag)
+   local function _prag_index(_, prag)
       return _prag_set(conn, prag)
    end
    if key == "pragma" then

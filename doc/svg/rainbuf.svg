@@ -570,38 +570,38 @@
 <!-- codeblock_68 -->
 <g id="node69" class="node">
 <title>codeblock_68</title>
-<ellipse fill="none" stroke="#000000" cx="17303" cy="-599.401" rx="77.4211" ry="18"/>
-<text text-anchor="middle" x="17303" y="-595.201" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 89&#45;94</text>
+<ellipse fill="none" stroke="#000000" cx="17301" cy="-599.401" rx="77.4211" ry="18"/>
+<text text-anchor="middle" x="17301" y="-595.201" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 89&#45;94</text>
 </g>
 <!-- section_12&#45;&gt;codeblock_68 -->
 <g id="edge68" class="edge">
 <title>section_12&#45;&gt;codeblock_68</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M13289.7594,-670.8503C13786.7764,-666.9268 16745.4888,-642.6374 17144,-617.401 17170.6788,-615.7115 17199.7663,-612.7489 17225.6823,-609.709"/>
-<polygon fill="#000000" stroke="#000000" points="17226.3081,-613.1592 17235.8221,-608.4971 17225.4774,-606.2086 17226.3081,-613.1592"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M13289.7598,-670.8564C13786.7795,-666.9747 16745.5069,-642.9211 17144,-617.401 17170.1046,-615.7292 17198.5418,-612.8059 17223.9533,-609.7952"/>
+<polygon fill="#000000" stroke="#000000" points="17224.3921,-613.2678 17233.9005,-608.5944 17223.553,-606.3182 17224.3921,-613.2678"/>
 </g>
 <!-- codeblock_69 -->
 <g id="node70" class="node">
 <title>codeblock_69</title>
-<ellipse fill="none" stroke="#000000" cx="17623" cy="-599.401" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="17623" y="-595.201" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 101&#45;129</text>
+<ellipse fill="none" stroke="#000000" cx="17618" cy="-599.401" rx="87.0948" ry="18"/>
+<text text-anchor="middle" x="17618" y="-595.201" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 101&#45;129</text>
 </g>
 <!-- section_12&#45;&gt;codeblock_69 -->
 <g id="edge69" class="edge">
 <title>section_12&#45;&gt;codeblock_69</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M13289.6347,-671.1047C13768.3888,-669.004 16544.1061,-655.3287 17389,-617.401 17436.6752,-615.2608 17489.7082,-611.3111 17533.2166,-607.6556"/>
-<polygon fill="#000000" stroke="#000000" points="17533.5354,-611.1412 17543.2034,-606.8077 17532.9432,-604.1663 17533.5354,-611.1412"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M13289.6012,-671.114C13768.1286,-669.0745 16542.5303,-655.7324 17387,-617.401 17433.6884,-615.2817 17485.5791,-611.3785 17528.333,-607.7471"/>
+<polygon fill="#000000" stroke="#000000" points="17528.7682,-611.2227 17538.4321,-606.88 17528.1693,-604.2484 17528.7682,-611.2227"/>
 </g>
 <!-- codeblock_70 -->
 <g id="node71" class="node">
 <title>codeblock_70</title>
-<ellipse fill="none" stroke="#000000" cx="17940" cy="-599.401" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="17940" y="-595.201" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 138&#45;140</text>
+<ellipse fill="none" stroke="#000000" cx="17934" cy="-599.401" rx="87.0948" ry="18"/>
+<text text-anchor="middle" x="17934" y="-595.201" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 138&#45;140</text>
 </g>
 <!-- section_12&#45;&gt;codeblock_70 -->
 <g id="edge70" class="edge">
 <title>section_12&#45;&gt;codeblock_70</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M13289.9261,-671.2249C13791.0201,-669.8794 16804.1583,-660.0947 17719,-617.401 17762.5138,-615.3703 17810.7403,-611.6178 17851.0109,-608.0625"/>
-<polygon fill="#000000" stroke="#000000" points="17851.4211,-611.5398 17861.07,-607.164 17850.7983,-604.5676 17851.4211,-611.5398"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M13289.8475,-671.2276C13790.3859,-669.9008 16800.1827,-660.2214 17714,-617.401 17757.2296,-615.3753 17805.1306,-611.634 17845.1694,-608.085"/>
+<polygon fill="#000000" stroke="#000000" points="17845.5243,-611.5673 17855.1717,-607.188 17844.899,-604.5953 17845.5243,-611.5673"/>
 </g>
 <!-- leaf_15 -->
 <g id="node16" class="node">
@@ -1671,66 +1671,66 @@
 <!-- leaf_204 -->
 <g id="node205" class="node">
 <title>leaf_204</title>
-<polygon fill="none" stroke="#c0c0c0" points="17499.5,-368.7009 17252.5,-368.7009 17252.5,-298.3002 17499.5,-298.3002 17499.5,-368.7009"/>
-<text text-anchor="middle" x="17376" y="-353.4006" font-family="Inconsolata" font-size="14.00" fill="#000000">local Linebuf = require &quot;linebuf&quot;</text>
-<text text-anchor="middle" x="17376" y="-338.0006" font-family="Inconsolata" font-size="14.00" fill="#000000">local byte = assert(string.byte)</text>
-<text text-anchor="middle" x="17376" y="-306.6005" font-family="Inconsolata" font-size="14.00" fill="#000000">local Rainbuf = meta {}</text>
+<polygon fill="none" stroke="#c0c0c0" points="17492,-368.7009 17252,-368.7009 17252,-298.3002 17492,-298.3002 17492,-368.7009"/>
+<text text-anchor="middle" x="17372" y="-353.4006" font-family="Inconsolata" font-size="14.00" fill="#000000">local Txtbuf = require &quot;txtbuf&quot;</text>
+<text text-anchor="middle" x="17372" y="-338.0006" font-family="Inconsolata" font-size="14.00" fill="#000000">local byte = assert(string.byte)</text>
+<text text-anchor="middle" x="17372" y="-306.6005" font-family="Inconsolata" font-size="14.00" fill="#000000">local Rainbuf = meta {}</text>
 </g>
 <!-- codeblock_68&#45;&gt;leaf_204 -->
 <g id="edge204" class="edge">
 <title>codeblock_68&#45;&gt;leaf_204</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M17308.0176,-581.1246C17319.3757,-539.7528 17347.332,-437.923 17363.6381,-378.5286"/>
-<polygon fill="#000000" stroke="#000000" points="17367.0732,-379.2362 17366.3456,-368.6664 17360.323,-377.383 17367.0732,-379.2362"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M17305.8801,-581.1246C17316.9271,-539.7528 17344.1174,-437.923 17359.9767,-378.5286"/>
+<polygon fill="#000000" stroke="#000000" points="17363.4118,-379.2309 17362.6101,-368.6664 17356.6487,-377.425 17363.4118,-379.2309"/>
 </g>
 <!-- leaf_205 -->
 <g id="node206" class="node">
 <title>leaf_205</title>
-<polygon fill="none" stroke="#c0c0c0" points="18002.5,-545.3014 17517.5,-545.3014 17517.5,-121.6997 18002.5,-121.6997 18002.5,-545.3014"/>
-<text text-anchor="middle" x="17760" y="-530.201" font-family="Inconsolata" font-size="14.00" fill="#000000">local function new(linebuf)</text>
-<text text-anchor="middle" x="17760" y="-514.8009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local rainbuf = meta(Rainbuf)</text>
-<text text-anchor="middle" x="17760" y="-499.4009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local disp = {}</text>
-<text text-anchor="middle" x="17760" y="-484.0009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;rainbuf.disp = disp</text>
-<text text-anchor="middle" x="17760" y="-468.6008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if type(linebuf) == &quot;string&quot; then</text>
-<text text-anchor="middle" x="17760" y="-453.2008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;linebuf = Linebuf(linebuf)</text>
-<text text-anchor="middle" x="17760" y="-437.8008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;elseif type(linebuf) == &quot;table&quot; then</text>
-<text text-anchor="middle" x="17760" y="-422.4007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;if linebuf.idEst == Linebuf then</text>
-<text text-anchor="middle" x="17760" y="-407.0007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;_from_linebuf(rainbuf, linebuf)</text>
-<text text-anchor="middle" x="17760" y="-391.6007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;else</text>
-<text text-anchor="middle" x="17760" y="-376.2007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;for i,v in ipairs(linebuf) do</text>
-<text text-anchor="middle" x="17760" y="-360.8006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;if type(v) == &quot;string&quot; then</text>
-<text text-anchor="middle" x="17760" y="-345.4006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;rainbuf[i] = v</text>
-<text text-anchor="middle" x="17760" y="-330.0006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;if byte(v) == 0x1b then</text>
-<text text-anchor="middle" x="17760" y="-314.6005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;disp[i] = 0</text>
-<text text-anchor="middle" x="17760" y="-299.2005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;else</text>
-<text text-anchor="middle" x="17760" y="-283.8005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;disp[i] = v</text>
-<text text-anchor="middle" x="17760" y="-268.4004" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;end</text>
-<text text-anchor="middle" x="17760" y="-253.0004" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;else</text>
-<text text-anchor="middle" x="17760" y="-237.6004" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;error(&quot;content of table in Rainbuf must be strings&quot;)</text>
-<text text-anchor="middle" x="17760" y="-222.2003" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;end</text>
-<text text-anchor="middle" x="17760" y="-206.8003" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;end</text>
-<text text-anchor="middle" x="17760" y="-191.4003" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end</text>
-<text text-anchor="middle" x="17760" y="-176.0002" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
-<text text-anchor="middle" x="17760" y="-160.6002" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return rainbuf</text>
-<text text-anchor="middle" x="17760" y="-145.2002" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
-<text text-anchor="middle" x="17760" y="-129.8002" font-family="Inconsolata" font-size="14.00" fill="#000000">Rainbuf.idEst = new</text>
+<polygon fill="none" stroke="#c0c0c0" points="17995.5,-545.3014 17510.5,-545.3014 17510.5,-121.6997 17995.5,-121.6997 17995.5,-545.3014"/>
+<text text-anchor="middle" x="17753" y="-530.201" font-family="Inconsolata" font-size="14.00" fill="#000000">local function new(txtbuf)</text>
+<text text-anchor="middle" x="17753" y="-514.8009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local rainbuf = meta(Rainbuf)</text>
+<text text-anchor="middle" x="17753" y="-499.4009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local disp = {}</text>
+<text text-anchor="middle" x="17753" y="-484.0009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;rainbuf.disp = disp</text>
+<text text-anchor="middle" x="17753" y="-468.6008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if type(txtbuf) == &quot;string&quot; then</text>
+<text text-anchor="middle" x="17753" y="-453.2008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;txtbuf = Txtbuf(txtbuf)</text>
+<text text-anchor="middle" x="17753" y="-437.8008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;elseif type(txtbuf) == &quot;table&quot; then</text>
+<text text-anchor="middle" x="17753" y="-422.4007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;if txtbuf.idEst == Txtbuf then</text>
+<text text-anchor="middle" x="17753" y="-407.0007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;_from_txtbuf(rainbuf, txtbuf)</text>
+<text text-anchor="middle" x="17753" y="-391.6007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;else</text>
+<text text-anchor="middle" x="17753" y="-376.2007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;for i,v in ipairs(txtbuf) do</text>
+<text text-anchor="middle" x="17753" y="-360.8006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;if type(v) == &quot;string&quot; then</text>
+<text text-anchor="middle" x="17753" y="-345.4006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;rainbuf[i] = v</text>
+<text text-anchor="middle" x="17753" y="-330.0006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;if byte(v) == 0x1b then</text>
+<text text-anchor="middle" x="17753" y="-314.6005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;disp[i] = 0</text>
+<text text-anchor="middle" x="17753" y="-299.2005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;else</text>
+<text text-anchor="middle" x="17753" y="-283.8005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;disp[i] = v</text>
+<text text-anchor="middle" x="17753" y="-268.4004" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;end</text>
+<text text-anchor="middle" x="17753" y="-253.0004" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;else</text>
+<text text-anchor="middle" x="17753" y="-237.6004" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;error(&quot;content of table in Rainbuf must be strings&quot;)</text>
+<text text-anchor="middle" x="17753" y="-222.2003" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;end</text>
+<text text-anchor="middle" x="17753" y="-206.8003" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;end</text>
+<text text-anchor="middle" x="17753" y="-191.4003" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end</text>
+<text text-anchor="middle" x="17753" y="-176.0002" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
+<text text-anchor="middle" x="17753" y="-160.6002" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return rainbuf</text>
+<text text-anchor="middle" x="17753" y="-145.2002" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
+<text text-anchor="middle" x="17753" y="-129.8002" font-family="Inconsolata" font-size="14.00" fill="#000000">Rainbuf.idEst = new</text>
 </g>
 <!-- codeblock_69&#45;&gt;leaf_205 -->
 <g id="edge205" class="edge">
 <title>codeblock_69&#45;&gt;leaf_205</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M17632.4166,-581.1246C17636.1477,-573.8829 17640.8332,-564.7889 17646.1887,-554.3944"/>
-<polygon fill="#000000" stroke="#000000" points="17649.3699,-555.8618 17650.8388,-545.3693 17643.1473,-552.6557 17649.3699,-555.8618"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M17627.2791,-581.1246C17630.9557,-573.8829 17635.5728,-564.7889 17640.8502,-554.3944"/>
+<polygon fill="#000000" stroke="#000000" points="17644.0261,-555.8704 17645.4324,-545.3693 17637.7845,-552.7014 17644.0261,-555.8704"/>
 </g>
 <!-- leaf_206 -->
 <g id="node207" class="node">
 <title>leaf_206</title>
-<polygon fill="none" stroke="#c0c0c0" points="18107,-351.5005 18021,-351.5005 18021,-315.5005 18107,-315.5005 18107,-351.5005"/>
-<text text-anchor="middle" x="18064" y="-330.0006" font-family="Inconsolata" font-size="14.00" fill="#000000">return new</text>
+<polygon fill="none" stroke="#c0c0c0" points="18100,-351.5005 18014,-351.5005 18014,-315.5005 18100,-315.5005 18100,-351.5005"/>
+<text text-anchor="middle" x="18057" y="-330.0006" font-family="Inconsolata" font-size="14.00" fill="#000000">return new</text>
 </g>
 <!-- codeblock_70&#45;&gt;leaf_206 -->
 <g id="edge206" class="edge">
 <title>codeblock_70&#45;&gt;leaf_206</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M17971.7147,-582.4184C17986.0155,-573.2427 18001.9208,-560.6527 18012,-545.401 18050.121,-487.7168 18060.3166,-404.5643 18063.0289,-361.5878"/>
-<polygon fill="#000000" stroke="#000000" points="18066.5256,-361.7413 18063.5697,-351.5671 18059.5358,-361.364 18066.5256,-361.7413"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M17964.9132,-582.5634C17979.1081,-573.3472 17994.9761,-560.6804 18005,-545.401 18042.9267,-487.5889 18053.2051,-404.4909 18055.9809,-361.5562"/>
+<polygon fill="#000000" stroke="#000000" points="18059.4769,-361.7246 18056.5373,-351.5458 18052.4877,-361.3361 18059.4769,-361.7246"/>
 </g>
 <!-- leaf_79 -->
 <g id="node80" class="node">

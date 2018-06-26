@@ -63,6 +63,10 @@ table.collect = core.collect
 table.select = core.select
 table.reverse = core.reverse
 table.hasfield = core.hasfield
+
+table.pack = rawget(table, "pack") and table.pack or core.pack
+table.unpack = rawget(table, "unpack") and table.unpack or unpack
+
 codepoints = core.codepoints
 meta = core.meta
 getmeta, setmeta = getmetatable, setmetatable
@@ -86,6 +90,21 @@ ts = color.ts
 c = color.color
 watch = require "watcher"
 
+```
+### Logging
+
+I'm making the crudest possible logger here.
+
+```lua
+local _log = {}
+_log.vals = {}
+local format = assert(string.format )
+local function __logger(_, fmtstr, ...)
+   _log[#_log + 1] = format(fmtstr, ...)
+   _log.vals[#_log.vals + 1] = table.pack(...)
+end
+
+log = setmeta(_log, {__call = __logger})
 ```
 
 This boot sequence builds on Tim Caswell and the Luvit Author's repl example.
@@ -140,6 +159,9 @@ end
 local stdin = uv.new_tty(0, true)
 ```
 ## Modeselektor
+
+This should start with a read which saves the cursor location.
+
 
 ```lua
 -- This switches screens and does a wipe,

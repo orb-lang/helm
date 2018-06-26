@@ -3,21 +3,21 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 200"]
+doc_0 [label="doc - 181"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-71"]
+section_1 [label="section: 1-52"]
 
 
 // END RANK doc_0
 
-section_1 -> { header_2 prose_3 prose_4 prose_5 prose_6 prose_7 prose_8 prose_9 section_10 section_11}
-{rank=same; header_2 prose_3 prose_4 prose_5 prose_6 prose_7 prose_8 prose_9 section_10 section_11}
+section_1 -> { header_2 prose_3 prose_4 prose_5 section_6 section_7}
+{rank=same; header_2 prose_3 prose_4 prose_5 section_6 section_7}
 
-header_2 [label="1 : Linebuf"]
+header_2 [label="1 : Txtbuf"]
 
 prose_3 [label="prose"]
 
@@ -25,580 +25,409 @@ prose_4 [label="prose"]
 
 prose_5 [label="prose"]
 
-prose_6 [label="prose"]
+section_6 [label="section: 12-27"]
 
-prose_7 [label="prose"]
-
-prose_8 [label="prose"]
-
-prose_9 [label="prose"]
-
-section_10 [label="section: 27-71"]
-
-section_11 [label="section: 72-82"]
+section_7 [label="section: 53-63"]
 
 
 // END RANK section_1
 
-header_2 -> leaf_12
-leaf_12  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Linebuf"]
+header_2 -> leaf_8
+leaf_8  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Txtbuf"]
 // END RANK header_2
 
-prose_3 -> { raw_13}
-{rank=same; raw_13}
+prose_3 -> { raw_9 prespace_10 literal_11 raw_12}
+{rank=same; raw_9 prespace_10 literal_11 raw_12}
 
-raw_13 [label="raw"]
+raw_9 [label="raw"]
+
+prespace_10 [label="prespace"]
+
+literal_11 [label="literal"]
+
+raw_12 [label="raw"]
 
 
 // END RANK prose_3
 
-raw_13 -> leaf_14
-leaf_14  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_9 -> leaf_13
+leaf_13  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 
-Rather than derive this from [[espalier's Phrase class][@/espalier/phrase]],
-I'm going to port it.
+The"]
+// END RANK raw_9
+
+prespace_10 -> leaf_14
+leaf_14  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_10
+
+literal_11 -> leaf_15
+leaf_15  [color=Gray,shape=rectangle,fontname=Inconsolata,label="txtbuf"]
+// END RANK literal_11
+
+raw_12 -> leaf_16
+leaf_16  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" class buffers a single line of text.
 "]
-// END RANK raw_13
+// END RANK raw_12
 
-prose_4 -> { raw_15}
-{rank=same; raw_15}
+prose_4 -> { raw_17}
+{rank=same; raw_17}
 
-raw_15 [label="raw"]
+raw_17 [label="raw"]
 
 
 // END RANK prose_4
 
-raw_15 -> leaf_16
-leaf_16  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-The concepts are close, but different.
+raw_17 -> leaf_18
+leaf_18  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+To make editing practical, we model the line as an array of codepoints when
+active, and a simple string otherwise.
 "]
-// END RANK raw_15
+// END RANK raw_17
 
-prose_5 -> { raw_17 link_18 raw_19}
-{rank=same; raw_17 link_18 raw_19}
+prose_5 -> { prespace_19 literal_20 raw_21 prespace_22 literal_23 raw_24}
+{rank=same; prespace_19 literal_20 raw_21 prespace_22 literal_23 raw_24}
 
-raw_17 [label="raw"]
+prespace_19 [label="prespace"]
 
-link_18 [label="link"]
+literal_20 [label="literal"]
 
-raw_19 [label="raw"]
+raw_21 [label="raw"]
+
+prespace_22 [label="prespace"]
+
+literal_23 [label="literal"]
+
+raw_24 [label="raw"]
 
 
 // END RANK prose_5
 
-raw_17 -> leaf_20
-leaf_20  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-The main notes on where I'm going with this are under "]
-// END RANK raw_17
+prespace_19 -> leaf_25
+leaf_25  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK prespace_19
 
-link_18 -> { anchortext_21 url_22}
-{rank=same; anchortext_21 url_22}
+literal_20 -> leaf_26
+leaf_26  [color=Gray,shape=rectangle,fontname=Inconsolata,label="txtbuf"]
+// END RANK literal_20
 
-anchortext_21 [label="anchortext"]
+raw_21 -> leaf_27
+leaf_27  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" are promoted to"]
+// END RANK raw_21
 
-url_22 [label="url"]
+prespace_22 -> leaf_28
+leaf_28  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_22
 
+literal_23 -> leaf_29
+leaf_29  [color=Gray,shape=rectangle,fontname=Inconsolata,label="txtbuf"]
+// END RANK literal_23
 
-// END RANK link_18
+raw_24 -> leaf_30
+leaf_30  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" if editing needs to span multiple lines.
 
-anchortext_21 -> leaf_23
-leaf_23  [color=Gray,shape=rectangle,fontname=Inconsolata,label="rainbuf"]
-// END RANK anchortext_21
-
-url_22 -> leaf_24
-leaf_24  [color=Gray,shape=rectangle,fontname=Inconsolata,label="rainbuf"]
-// END RANK url_22
-
-raw_19 -> leaf_25
-leaf_25  [color=Gray,shape=rectangle,fontname=Inconsolata,label=",
-which will build from this class and is a generalization of it to support
-complex text types.
 "]
-// END RANK raw_19
+// END RANK raw_24
 
-prose_6 -> { raw_26 prespace_27 literal_28 raw_29 prespace_30 literal_31 raw_32 prespace_33 literal_34 raw_35 prespace_36 literal_37 raw_38 prespace_39 literal_40 raw_41}
-{rank=same; raw_26 prespace_27 literal_28 raw_29 prespace_30 literal_31 raw_32 prespace_33 literal_34 raw_35 prespace_36 literal_37 raw_38 prespace_39 literal_40 raw_41}
+section_6 -> { header_31 prose_32 prose_33 prose_34 prose_35 section_36}
+{rank=same; header_31 prose_32 prose_33 prose_34 prose_35 section_36}
 
-raw_26 [label="raw"]
+header_31 [label="2 : Instance fields"]
 
-prespace_27 [label="prespace"]
+prose_32 [label="prose"]
 
-literal_28 [label="literal"]
+prose_33 [label="prose"]
 
-raw_29 [label="raw"]
+prose_34 [label="prose"]
 
-prespace_30 [label="prespace"]
+prose_35 [label="prose"]
 
-literal_31 [label="literal"]
+section_36 [label="section: 28-52"]
 
-raw_32 [label="raw"]
 
-prespace_33 [label="prespace"]
+// END RANK section_6
 
-literal_34 [label="literal"]
+header_31 -> leaf_37
+leaf_37  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Instance fields"]
+// END RANK header_31
 
-raw_35 [label="raw"]
-
-prespace_36 [label="prespace"]
-
-literal_37 [label="literal"]
+prose_32 -> { raw_38}
+{rank=same; raw_38}
 
 raw_38 [label="raw"]
 
-prespace_39 [label="prespace"]
 
-literal_40 [label="literal"]
+// END RANK prose_32
 
-raw_41 [label="raw"]
+raw_38 -> leaf_39
+leaf_39  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 
-// END RANK prose_6
-
-raw_26 -> leaf_42
-leaf_42  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-I'm realizing that for clarity, a"]
-// END RANK raw_26
-
-prespace_27 -> leaf_43
-leaf_43  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_27
-
-literal_28 -> leaf_44
-leaf_44  [color=Gray,shape=rectangle,fontname=Inconsolata,label="linebuf"]
-// END RANK literal_28
-
-raw_29 -> leaf_45
-leaf_45  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" needs to be a line, period.  The
-recursive container class is a"]
-// END RANK raw_29
-
-prespace_30 -> leaf_46
-leaf_46  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_30
-
-literal_31 -> leaf_47
-leaf_47  [color=Gray,shape=rectangle,fontname=Inconsolata,label="txtbuf"]
-// END RANK literal_31
-
-raw_32 -> leaf_48
-leaf_48  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", and"]
-// END RANK raw_32
-
-prespace_33 -> leaf_49
-leaf_49  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_33
-
-literal_34 -> leaf_50
-leaf_50  [color=Gray,shape=rectangle,fontname=Inconsolata,label="rainbuf"]
-// END RANK literal_34
-
-raw_35 -> leaf_51
-leaf_51  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" enhances that and
-also makes a"]
-// END RANK raw_35
-
-prespace_36 -> leaf_52
-leaf_52  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_36
-
-literal_37 -> leaf_53
-leaf_53  [color=Gray,shape=rectangle,fontname=Inconsolata,label="rainline"]
-// END RANK literal_37
-
-raw_38 -> leaf_54
-leaf_54  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" out of each"]
+Instance fields for a txtbuf may be read by other code, but should be written
+internally.
+"]
 // END RANK raw_38
 
-prespace_39 -> leaf_55
-leaf_55  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_39
+prose_33 -> { raw_40}
+{rank=same; raw_40}
 
-literal_40 -> leaf_56
-leaf_56  [color=Gray,shape=rectangle,fontname=Inconsolata,label="linebuf"]
-// END RANK literal_40
+raw_40 [label="raw"]
 
-raw_41 -> leaf_57
-leaf_57  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
+
+// END RANK prose_33
+
+raw_40 -> leaf_41
+leaf_41  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+- line   :  An array of string fragments
 "]
-// END RANK raw_41
+// END RANK raw_40
 
-prose_7 -> { raw_58}
+prose_34 -> { raw_42 prespace_43 literal_44 raw_45}
+{rank=same; raw_42 prespace_43 literal_44 raw_45}
+
+raw_42 [label="raw"]
+
+prespace_43 [label="prespace"]
+
+literal_44 [label="literal"]
+
+raw_45 [label="raw"]
+
+
+// END RANK prose_34
+
+raw_42 -> leaf_46
+leaf_46  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+- cursor :  An uint representing the number of bytes to be skipped over
+            before executing"]
+// END RANK raw_42
+
+prespace_43 -> leaf_47
+leaf_47  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_43
+
+literal_44 -> leaf_48
+leaf_48  [color=Gray,shape=rectangle,fontname=Inconsolata,label="insert()"]
+// END RANK literal_44
+
+raw_45 -> leaf_49
+leaf_49  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".  Not 1-1 the same as the column
+            index of the tty cursor.
+"]
+// END RANK raw_45
+
+prose_35 -> { raw_50}
+{rank=same; raw_50}
+
+raw_50 [label="raw"]
+
+
+// END RANK prose_35
+
+raw_50 -> leaf_51
+leaf_51  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+            cursor is moved by txtbuf, ensuring we stay on codepoint
+            boundaries.
+
+"]
+// END RANK raw_50
+
+section_36 -> { header_52 prose_53 codeblock_54 codeblock_55 codeblock_56}
+{rank=same; header_52 prose_53 codeblock_54 codeblock_55 codeblock_56}
+
+header_52 [label="4 : imports"]
+
+prose_53 [label="prose"]
+
+codeblock_54 [label="code block 30-34"]
+
+codeblock_55 [label="code block 36-38"]
+
+codeblock_56 [label="code block 40-50"]
+
+
+// END RANK section_36
+
+header_52 -> leaf_57
+leaf_57  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** imports"]
+// END RANK header_52
+
+prose_53 -> { raw_58}
 {rank=same; raw_58}
 
 raw_58 [label="raw"]
 
 
-// END RANK prose_7
+// END RANK prose_53
 
 raw_58 -> leaf_59
 leaf_59  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-I'm making this the dumbest thing that can work. The dumbest thing that can
-work, has one string per char, period.
 "]
 // END RANK raw_58
 
-prose_8 -> { raw_60 prespace_61 literal_62 raw_63 prespace_64 literal_65 raw_66}
-{rank=same; raw_60 prespace_61 literal_62 raw_63 prespace_64 literal_65 raw_66}
+codeblock_54 -> leaf_60
+leaf_60  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local sub, byte = assert(string.sub), assert(string.byte)
+local gsub = assert(string.gsub)
+assert(meta, \"txtbuf requires meta\")"]
+// END RANK codeblock_54
 
-raw_60 [label="raw"]
+codeblock_55 -> leaf_61
+leaf_61  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Txtbuf = meta {}"]
+// END RANK codeblock_55
 
-prespace_61 [label="prespace"]
+codeblock_56 -> leaf_62
+leaf_62  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local concat = table.concat
 
-literal_62 [label="literal"]
+function Txtbuf.__tostring(txtbuf)
+   if type(txtbuf.lines) == \"table\" then
+      return concat(txtbuf.lines)
+   else
+      return txtbuf.lines
+   end
+end"]
+// END RANK codeblock_56
 
-raw_63 [label="raw"]
+section_7 -> { header_63 prose_64 prose_65 prose_66 section_67}
+{rank=same; header_63 prose_64 prose_65 prose_66 section_67}
 
-prespace_64 [label="prespace"]
+header_63 [label="2 : Txtbuf.insert(txtbuf, frag)"]
 
-literal_65 [label="literal"]
+prose_64 [label="prose"]
 
-raw_66 [label="raw"]
+prose_65 [label="prose"]
+
+prose_66 [label="prose"]
+
+section_67 [label="section: 64-181"]
 
 
-// END RANK prose_8
+// END RANK section_7
 
-raw_60 -> leaf_67
-leaf_67  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-The way I'm doing this, a"]
-// END RANK raw_60
+header_63 -> leaf_68
+leaf_68  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Txtbuf.insert(txtbuf, frag)"]
+// END RANK header_63
 
-prespace_61 -> leaf_68
-leaf_68  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_61
+prose_64 -> { raw_69 prespace_70 literal_71 raw_72}
+{rank=same; raw_69 prespace_70 literal_71 raw_72}
 
-literal_62 -> leaf_69
-leaf_69  [color=Gray,shape=rectangle,fontname=Inconsolata,label="linebuf"]
-// END RANK literal_62
+raw_69 [label="raw"]
 
-raw_63 -> leaf_70
-leaf_70  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is used as a pointer to history.  When
-it's not in play,"]
-// END RANK raw_63
+prespace_70 [label="prespace"]
 
-prespace_64 -> leaf_71
-leaf_71  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_64
+literal_71 [label="literal"]
 
-literal_65 -> leaf_72
-leaf_72  [color=Gray,shape=rectangle,fontname=Inconsolata,label="linebuf.line"]
-// END RANK literal_65
+raw_72 [label="raw"]
 
-raw_66 -> leaf_73
-leaf_73  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is just a string, exploding into an array
-of codepoints when edited.
+
+// END RANK prose_64
+
+raw_69 -> leaf_73
+leaf_73  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK raw_69
+
+prespace_70 -> leaf_74
+leaf_74  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK prespace_70
+
+literal_71 -> leaf_75
+leaf_75  [color=Gray,shape=rectangle,fontname=Inconsolata,label="insert"]
+// END RANK literal_71
+
+raw_72 -> leaf_76
+leaf_76  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" takes a fragment and carefully places it at the cursor point.
 "]
-// END RANK raw_66
+// END RANK raw_72
 
-prose_9 -> { raw_74}
-{rank=same; raw_74}
+prose_65 -> { raw_77 prespace_78 literal_79 raw_80}
+{rank=same; raw_77 prespace_78 literal_79 raw_80}
 
-raw_74 [label="raw"]
+raw_77 [label="raw"]
+
+prespace_78 [label="prespace"]
+
+literal_79 [label="literal"]
+
+raw_80 [label="raw"]
 
 
-// END RANK prose_9
+// END RANK prose_65
 
-raw_74 -> leaf_75
-leaf_75  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-This lets us load the history without making a bunch of codepoint arrays we
-might not ever use.
+raw_77 -> leaf_81
+leaf_81  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+A"]
+// END RANK raw_77
+
+prespace_78 -> leaf_82
+leaf_82  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_78
+
+literal_79 -> leaf_83
+leaf_83  [color=Gray,shape=rectangle,fontname=Inconsolata,label="frag"]
+// END RANK literal_79
+
+raw_80 -> leaf_84
+leaf_84  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is any kind of string that we won't want to break into pieces.
 "]
-// END RANK raw_74
+// END RANK raw_80
 
-section_10 -> { header_76 prose_77 prose_78 prose_79 prose_80 codeblock_81 codeblock_82 codeblock_83}
-{rank=same; header_76 prose_77 prose_78 prose_79 prose_80 codeblock_81 codeblock_82 codeblock_83}
-
-header_76 [label="2 : Instance fields"]
-
-prose_77 [label="prose"]
-
-prose_78 [label="prose"]
-
-prose_79 [label="prose"]
-
-prose_80 [label="prose"]
-
-codeblock_81 [label="code block 41-44"]
-
-codeblock_82 [label="code block 46-48"]
-
-codeblock_83 [label="code block 50-69"]
-
-
-// END RANK section_10
-
-header_76 -> leaf_84
-leaf_84  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Instance fields"]
-// END RANK header_76
-
-prose_77 -> { raw_85 prespace_86 bold_87 raw_88}
-{rank=same; raw_85 prespace_86 bold_87 raw_88}
+prose_66 -> { raw_85}
+{rank=same; raw_85}
 
 raw_85 [label="raw"]
 
-prespace_86 [label="prespace"]
 
-bold_87 [label="bold"]
+// END RANK prose_66
 
-raw_88 [label="raw"]
-
-
-// END RANK prose_77
-
-raw_85 -> leaf_89
-leaf_89  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-
-- lines :  An array of string fragments
-- dsps  :  An array of uint, each corresponds to the number of"]
-// END RANK raw_85
-
-prespace_86 -> leaf_90
-leaf_90  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_86
-
-bold_87 -> leaf_91
-leaf_91  [color=Gray,shape=rectangle,fontname=Inconsolata,label="bytes"]
-// END RANK bold_87
-
-raw_88 -> leaf_92
-leaf_92  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-          in line[i].
-"]
-// END RANK raw_88
-
-prose_78 -> { raw_93 prespace_94 literal_95 raw_96}
-{rank=same; raw_93 prespace_94 literal_95 raw_96}
-
-raw_93 [label="raw"]
-
-prespace_94 [label="prespace"]
-
-literal_95 [label="literal"]
-
-raw_96 [label="raw"]
-
-
-// END RANK prose_78
-
-raw_93 -> leaf_97
-leaf_97  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-- cursor :  An uint representing the number of bytes to be skipped over
-            before executing"]
-// END RANK raw_93
-
-prespace_94 -> leaf_98
-leaf_98  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_94
-
-literal_95 -> leaf_99
-leaf_99  [color=Gray,shape=rectangle,fontname=Inconsolata,label="insert()"]
-// END RANK literal_95
-
-raw_96 -> leaf_100
-leaf_100  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".  Not 1-1 the same as the column
-            index of the tty cursor.
-"]
-// END RANK raw_96
-
-prose_79 -> { raw_101}
-{rank=same; raw_101}
-
-raw_101 [label="raw"]
-
-
-// END RANK prose_79
-
-raw_101 -> leaf_102
-leaf_102  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-            cursor is moved by linebuf, ensuring we stay on codepoint
-            boundaries.
-"]
-// END RANK raw_101
-
-prose_80 -> { raw_103}
-{rank=same; raw_103}
-
-raw_103 [label="raw"]
-
-
-// END RANK prose_80
-
-raw_103 -> leaf_104
-leaf_104  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-- len  : sum of dsps."]
-// END RANK raw_103
-
-codeblock_81 -> leaf_105
-leaf_105  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local sub, byte = assert(string.sub), assert(string.byte)
-local gsub = assert(string.gsub)"]
-// END RANK codeblock_81
-
-codeblock_82 -> leaf_106
-leaf_106  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Linebuf = meta {}"]
-// END RANK codeblock_82
-
-codeblock_83 -> leaf_107
-leaf_107  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-local function sum(dsps)
-   local summa = 0
-   for i = 1, #dsps do
-      summa = summa + #dsps[i]
-   end
-   return summa
-end
-
-local concat = table.concat
-
-function Linebuf.__tostring(linebuf)
-   if type(linebuf.line) == \"table\" then
-      return concat(linebuf.line)
-   else
-      return linebuf.line
-   end
-end"]
-// END RANK codeblock_83
-
-section_11 -> { header_108 prose_109 prose_110 prose_111 section_112}
-{rank=same; header_108 prose_109 prose_110 prose_111 section_112}
-
-header_108 [label="2 : Linebuf.insert(linebuf, frag)"]
-
-prose_109 [label="prose"]
-
-prose_110 [label="prose"]
-
-prose_111 [label="prose"]
-
-section_112 [label="section: 83-200"]
-
-
-// END RANK section_11
-
-header_108 -> leaf_113
-leaf_113  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Linebuf.insert(linebuf, frag)"]
-// END RANK header_108
-
-prose_109 -> { raw_114 prespace_115 literal_116 raw_117}
-{rank=same; raw_114 prespace_115 literal_116 raw_117}
-
-raw_114 [label="raw"]
-
-prespace_115 [label="prespace"]
-
-literal_116 [label="literal"]
-
-raw_117 [label="raw"]
-
-
-// END RANK prose_109
-
-raw_114 -> leaf_118
-leaf_118  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
-// END RANK raw_114
-
-prespace_115 -> leaf_119
-leaf_119  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
-// END RANK prespace_115
-
-literal_116 -> leaf_120
-leaf_120  [color=Gray,shape=rectangle,fontname=Inconsolata,label="insert"]
-// END RANK literal_116
-
-raw_117 -> leaf_121
-leaf_121  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" takes a fragment and carefully places it at the cursor point.
-"]
-// END RANK raw_117
-
-prose_110 -> { raw_122 prespace_123 literal_124 raw_125}
-{rank=same; raw_122 prespace_123 literal_124 raw_125}
-
-raw_122 [label="raw"]
-
-prespace_123 [label="prespace"]
-
-literal_124 [label="literal"]
-
-raw_125 [label="raw"]
-
-
-// END RANK prose_110
-
-raw_122 -> leaf_126
-leaf_126  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-A"]
-// END RANK raw_122
-
-prespace_123 -> leaf_127
-leaf_127  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_123
-
-literal_124 -> leaf_128
-leaf_128  [color=Gray,shape=rectangle,fontname=Inconsolata,label="frag"]
-// END RANK literal_124
-
-raw_125 -> leaf_129
-leaf_129  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is any kind of string that we won't want to break into pieces.
-"]
-// END RANK raw_125
-
-prose_111 -> { raw_130}
-{rank=same; raw_130}
-
-raw_130 [label="raw"]
-
-
-// END RANK prose_111
-
-raw_130 -> leaf_131
-leaf_131  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_85 -> leaf_86
+leaf_86  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 At first that means pasting long strings will cause syntax highlighting to
 fall over. Harmlessly.  Once lexing is working we can trip an interrupt on
 long input.
 
 "]
-// END RANK raw_130
+// END RANK raw_85
 
-section_112 -> { header_132 prose_133 codeblock_134 codeblock_135 codeblock_136 codeblock_137 codeblock_138}
-{rank=same; header_132 prose_133 codeblock_134 codeblock_135 codeblock_136 codeblock_137 codeblock_138}
+section_67 -> { header_87 prose_88 codeblock_89 codeblock_90 codeblock_91 codeblock_92 codeblock_93}
+{rank=same; header_87 prose_88 codeblock_89 codeblock_90 codeblock_91 codeblock_92 codeblock_93}
 
-header_132 [label="3 : join(token, frag)"]
+header_87 [label="3 : join(token, frag)"]
 
-prose_133 [label="prose"]
+prose_88 [label="prose"]
 
-codeblock_134 [label="code block 87-158"]
+codeblock_89 [label="code block 68-139"]
 
-codeblock_135 [label="code block 162-175"]
+codeblock_90 [label="code block 143-156"]
 
-codeblock_136 [label="code block 177-187"]
+codeblock_91 [label="code block 158-168"]
 
-codeblock_137 [label="code block 189-196"]
+codeblock_92 [label="code block 170-177"]
 
-codeblock_138 [label="code block 198-200"]
-
-
-// END RANK section_112
-
-header_132 -> leaf_139
-leaf_139  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** join(token, frag)"]
-// END RANK header_132
-
-prose_133 -> { raw_140}
-{rank=same; raw_140}
-
-raw_140 [label="raw"]
+codeblock_93 [label="code block 179-181"]
 
 
-// END RANK prose_133
+// END RANK section_67
 
-raw_140 -> leaf_141
-leaf_141  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_87 -> leaf_94
+leaf_94  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** join(token, frag)"]
+// END RANK header_87
+
+prose_88 -> { raw_95}
+{rank=same; raw_95}
+
+raw_95 [label="raw"]
+
+
+// END RANK prose_88
+
+raw_95 -> leaf_96
+leaf_96  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 Decides when to emit a new token.
 "]
-// END RANK raw_140
+// END RANK raw_95
 
-codeblock_134 -> leaf_142
-leaf_142  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function join(token, frag)
+codeblock_89 -> leaf_97
+leaf_97  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function join(token, frag)
    if sub(token, -1) == \" \" and sub(frag, 1,1) ~= \" \" then
       return token, frag
    else
@@ -609,11 +438,11 @@ end
 local t_insert, splice = assert(table.insert), assert(table.splice)
 local utf8, codepoints = string.utf8, string.codepoints
 
-function Linebuf.insert(linebuf, frag)
-   local line = linebuf.line
+function Txtbuf.insert(txtbuf, frag)
+   local line = txtbuf.lines
    if type(line) == \"string\" then
       line = codepoints(line)
-      linebuf.line = line
+      txtbuf.lines = line
    end
    local wide_frag = utf8(frag)
    if wide_frag < #frag then -- a paste
@@ -624,12 +453,12 @@ function Linebuf.insert(linebuf, frag)
       wide_frag = false
    end
    if not wide_frag then
-      t_insert(line, linebuf.cursor, frag)
-      linebuf.cursor = linebuf.cursor + 1
+      t_insert(line, txtbuf.cursor, frag)
+      txtbuf.cursor = txtbuf.cursor + 1
       return true
    else
-      splice(line, linebuf.cursor, wide_frag)
-      linebuf.cursor = linebuf.cursor + #wide_frag
+      splice(line, txtbuf.cursor, wide_frag)
+      txtbuf.cursor = txtbuf.cursor + #wide_frag
       return true
    end
 
@@ -638,77 +467,77 @@ end
 
 local remove = table.remove
 
-function Linebuf.d_back(linebuf)
-   remove(linebuf.line, linebuf.cursor - 1)
-   linebuf.cursor = linebuf.cursor > 1 and linebuf.cursor - 1 or 1
+function Txtbuf.d_back(txtbuf)
+   remove(txtbuf.lines, txtbuf.cursor - 1)
+   txtbuf.cursor = txtbuf.cursor > 1 and txtbuf.cursor - 1 or 1
 end
 
 
-function Linebuf.d_fwd(linebuf)
-   remove(linebuf.line, linebuf.cursor)
+function Txtbuf.d_fwd(txtbuf)
+   remove(txtbuf.lines, txtbuf.cursor)
 end
 
-function Linebuf.left(linebuf, disp)
+function Txtbuf.left(txtbuf, disp)
    local disp = disp or 1
-   if linebuf.cursor - disp >= 1 then
-      linebuf.cursor = linebuf.cursor - disp
-      return linebuf.cursor
+   if txtbuf.cursor - disp >= 1 then
+      txtbuf.cursor = txtbuf.cursor - disp
+      return txtbuf.cursor
    else
-      linebuf.cursor = 1
-      return linebuf.cursor
+      txtbuf.cursor = 1
+      return txtbuf.cursor
    end
 end
 
-function Linebuf.right(linebuf, disp)
+function Txtbuf.right(txtbuf, disp)
    disp = disp or 1
-   if linebuf.cursor + disp <= #linebuf.line + 1 then
-      linebuf.cursor = linebuf.cursor + disp
+   if txtbuf.cursor + disp <= #txtbuf.lines + 1 then
+      txtbuf.cursor = txtbuf.cursor + disp
    else
-      linebuf.cursor = #linebuf.line + 1
+      txtbuf.cursor = #txtbuf.lines + 1
    end
-   return linebuf.cursor
+   return txtbuf.cursor
 end"]
-// END RANK codeblock_134
+// END RANK codeblock_89
 
-codeblock_135 -> leaf_143
-leaf_143  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local cl = assert(table.clone, \"table.clone must be provided\")
+codeblock_90 -> leaf_98
+leaf_98  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local cl = assert(table.clone, \"table.clone must be provided\")
 
-function Linebuf.suspend(linebuf)
-   linebuf.line = tostring(linebuf)
-   return linebuf
+function Txtbuf.suspend(txtbuf)
+   txtbuf.lines = tostring(txtbuf)
+   return txtbuf
 end
 
-function Linebuf.resume(linebuf)
-   linebuf.line = codepoints(linebuf.line)
-   linebuf.cursor = #linebuf.line + 1
-   return linebuf
+function Txtbuf.resume(txtbuf)
+   txtbuf.lines = codepoints(txtbuf.lines)
+   txtbuf.cursor = #txtbuf.lines + 1
+   return txtbuf
 end"]
-// END RANK codeblock_135
+// END RANK codeblock_90
 
-codeblock_136 -> leaf_144
-leaf_144  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Linebuf.clone(linebuf)
-   local lb = cl(linebuf)
-   if type(lb.line) == \"table\" then
-      lb.line = cl(lb.line)
-   elseif type(lb.line) == \"string\" then
+codeblock_91 -> leaf_99
+leaf_99  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Txtbuf.clone(txtbuf)
+   local lb = cl(txtbuf)
+   if type(lb.lines) == \"table\" then
+      lb.lines = cl(lb.lines)
+   elseif type(lb.lines) == \"string\" then
       lb:resume()
    end
    return lb
 end"]
-// END RANK codeblock_136
+// END RANK codeblock_91
 
-codeblock_137 -> leaf_145
-leaf_145  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new(line)
-   local linebuf = meta(Linebuf)
-   linebuf.cursor = line and #line or 1
-   linebuf.line  = line or {}
-   return linebuf
+codeblock_92 -> leaf_100
+leaf_100  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new(line)
+   local txtbuf = meta(Txtbuf)
+   txtbuf.cursor = line and #line or 1
+   txtbuf.lines  = line or {}
+   return txtbuf
 end"]
-// END RANK codeblock_137
+// END RANK codeblock_92
 
-codeblock_138 -> leaf_146
-leaf_146  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return new"]
-// END RANK codeblock_138
+codeblock_93 -> leaf_101
+leaf_101  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return new"]
+// END RANK codeblock_93
 
 
 }

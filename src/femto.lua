@@ -62,6 +62,10 @@ table.collect = core.collect
 table.select = core.select
 table.reverse = core.reverse
 table.hasfield = core.hasfield
+
+table.pack = rawget(table, "pack") and table.pack or core.pack
+table.unpack = rawget(table, "unpack") and table.unpack or unpack
+
 codepoints = core.codepoints
 meta = core.meta
 getmeta, setmeta = getmetatable, setmetatable
@@ -84,6 +88,22 @@ ts = color.ts
 c = color.color
 watch = require "watcher"
 
+
+
+
+
+
+
+
+local _log = {}
+_log.vals = {}
+local format = assert(string.format )
+local function __logger(_, fmtstr, ...)
+   _log[#_log + 1] = format(fmtstr, ...)
+   _log.vals[#_log.vals + 1] = table.pack(...)
+end
+
+log = setmeta(_log, {__call = __logger})
 
 
 
@@ -138,6 +158,9 @@ if uv.guess_handle(0) ~= "tty" or
 end
 
 local stdin = uv.new_tty(0, true)
+
+
+
 
 
 

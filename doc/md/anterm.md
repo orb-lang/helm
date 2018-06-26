@@ -42,7 +42,7 @@ I believe the 5.3 idiom is ``bit = { rshift = ``
 
 This code is otherwise 5.1 and upward compatible.
 
-### Principles
+#NB lots of good stuff [[in here][https://chromium.googlesource.com/apps/libapps/+/master/hterm/doc/ControlSequences.md#OSC-1337]].### Principles
 
 As a rule, fields are either functions returning strings,
 or callable tables which return strings when called or concatenated, or
@@ -359,21 +359,24 @@ function erase.left()  return e__left  end
 
 function erase.line()  return e__line  end
 ```
+
+Comes with an optional fifth parameter for debugging purposes.
+
 ```lua
 local cursor = {}
-function erase.box(tr, tc, br, bc)
+function erase.box(tr, tc, br, bc, dash)
+   dash = dash or " "
    assert(tr <= br and tc <= bc, "box must be at least 1 by 1")
    local phrase = anterm.stash()
-               .. cursor.hide()
                .. Jump(nil, tr, tc)
    br = br + 1
    bc = bc + 1
-   local blanks = rep(" ", bc - tc)
+   local blanks = rep(dash, bc - tc)
    local nl = anterm.col(tc) .. jump.down(1)
    for i = 1, br - tr do
       phrase = phrase .. blanks .. nl
    end
-   return phrase .. anterm.pop() .. cursor.show()
+   return phrase .. anterm.pop()
 end
 ```
 ## Mouse

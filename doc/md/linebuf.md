@@ -1,40 +1,24 @@
-# Linebuf
+# Txtbuf
 
 
-Rather than derive this from [[espalier's Phrase class][@/espalier/phrase]],
-I'm going to port it.
+The ``txtbuf`` class buffers a single line of text.
 
 
-The concepts are close, but different.
+To make editing practical, we model the line as an array of codepoints when
+active, and a simple string otherwise.
 
 
-The main notes on where I'm going with this are under [rainbuf](rainbuf),
-which will build from this class and is a generalization of it to support
-complex text types.
+``txtbuf`` are promoted to ``txtbuf`` if editing needs to span multiple lines.
 
-
-I'm realizing that for clarity, a ``linebuf`` needs to be a line, period.  The
-recursive container class is a ``txtbuf``, and ``rainbuf`` enhances that and
-also makes a ``rainline`` out of each ``linebuf``.
-
-
-I'm making this the dumbest thing that can work. The dumbest thing that can
-work, has one string per char, period.
-
-
-The way I'm doing this, a ``linebuf`` is used as a pointer to history.  When
-it's not in play, ``linebuf.line`` is just a string, exploding into an array
-of codepoints when edited.
-
-
-This lets us load the history without making a bunch of codepoint arrays we
-might not ever use.
 
 ## Instance fields
 
-- lines :  An array of string fragments
-- dsps  :  An array of uint, each corresponds to the number of **bytes**
-          in line[i].
+
+Instance fields for a txtbuf may be read by other code, but should be written
+internally.
+
+
+- line   :  An array of string fragments
 
 
 - cursor :  An uint representing the number of bytes to be skipped over
@@ -42,39 +26,32 @@ might not ever use.
             index of the tty cursor.
 
 
-            cursor is moved by linebuf, ensuring we stay on codepoint
+            cursor is moved by txtbuf, ensuring we stay on codepoint
             boundaries.
 
 
-- len  : sum of dsps.
+#### imports
+
 ```lua
 local sub, byte = assert(string.sub), assert(string.byte)
 local gsub = assert(string.gsub)
+assert(meta, "txtbuf requires meta")
 ```
 ```lua
-local Linebuf = meta {}
+local Txtbuf = meta {}
 ```
 ```lua
-
-local function sum(dsps)
-   local summa = 0
-   for i = 1, #dsps do
-      summa = summa + #dsps[i]
-   end
-   return summa
-end
-
 local concat = table.concat
 
-function Linebuf.__tostring(linebuf)
-   if type(linebuf.line) == "table" then
-      return concat(linebuf.line)
+function Txtbuf.__tostring(txtbuf)
+   if type(txtbuf.lines) == "table" then
+      return concat(txtbuf.lines)
    else
-      return linebuf.line
+      return txtbuf.lines
    end
 end
 ```
-## Linebuf.insert(linebuf, frag)
+## Txtbuf.insert(txtbuf, frag)
 
 ``insert`` takes a fragment and carefully places it at the cursor point.
 
@@ -103,11 +80,11 @@ end
 local t_insert, splice = assert(table.insert), assert(table.splice)
 local utf8, codepoints = string.utf8, string.codepoints
 
-function Linebuf.insert(linebuf, frag)
-   local line = linebuf.line
+function Txtbuf.insert(txtbuf, frag)
+   local line = txtbuf.lines
    if type(line) == "string" then
       line = codepoints(line)
-      linebuf.line = line
+      txtbuf.lines = line
    end
    local wide_frag = utf8(frag)
    if wide_frag < #frag then -- a paste
@@ -118,12 +95,12 @@ function Linebuf.insert(linebuf, frag)
       wide_frag = false
    end
    if not wide_frag then
-      t_insert(line, linebuf.cursor, frag)
-      linebuf.cursor = linebuf.cursor + 1
+      t_insert(line, txtbuf.cursor, frag)
+      txtbuf.cursor = txtbuf.cursor + 1
       return true
    else
-      splice(line, linebuf.cursor, wide_frag)
-      linebuf.cursor = linebuf.cursor + #wide_frag
+      splice(line, txtbuf.cursor, wide_frag)
+      txtbuf.cursor = txtbuf.cursor + #wide_frag
       return true
    end
 
@@ -132,57 +109,57 @@ end
 
 local remove = table.remove
 
-function Linebuf.d_back(linebuf)
-   remove(linebuf.line, linebuf.cursor - 1)
-   linebuf.cursor = linebuf.cursor > 1 and linebuf.cursor - 1 or 1
+function Txtbuf.d_back(txtbuf)
+   remove(txtbuf.lines, txtbuf.cursor - 1)
+   txtbuf.cursor = txtbuf.cursor > 1 and txtbuf.cursor - 1 or 1
 end
 
 
-function Linebuf.d_fwd(linebuf)
-   remove(linebuf.line, linebuf.cursor)
+function Txtbuf.d_fwd(txtbuf)
+   remove(txtbuf.lines, txtbuf.cursor)
 end
 
-function Linebuf.left(linebuf, disp)
+function Txtbuf.left(txtbuf, disp)
    local disp = disp or 1
-   if linebuf.cursor - disp >= 1 then
-      linebuf.cursor = linebuf.cursor - disp
-      return linebuf.cursor
+   if txtbuf.cursor - disp >= 1 then
+      txtbuf.cursor = txtbuf.cursor - disp
+      return txtbuf.cursor
    else
-      linebuf.cursor = 1
-      return linebuf.cursor
+      txtbuf.cursor = 1
+      return txtbuf.cursor
    end
 end
 
-function Linebuf.right(linebuf, disp)
+function Txtbuf.right(txtbuf, disp)
    disp = disp or 1
-   if linebuf.cursor + disp <= #linebuf.line + 1 then
-      linebuf.cursor = linebuf.cursor + disp
+   if txtbuf.cursor + disp <= #txtbuf.lines + 1 then
+      txtbuf.cursor = txtbuf.cursor + disp
    else
-      linebuf.cursor = #linebuf.line + 1
+      txtbuf.cursor = #txtbuf.lines + 1
    end
-   return linebuf.cursor
+   return txtbuf.cursor
 end
 ```
 ```lua
 local cl = assert(table.clone, "table.clone must be provided")
 
-function Linebuf.suspend(linebuf)
-   linebuf.line = tostring(linebuf)
-   return linebuf
+function Txtbuf.suspend(txtbuf)
+   txtbuf.lines = tostring(txtbuf)
+   return txtbuf
 end
 
-function Linebuf.resume(linebuf)
-   linebuf.line = codepoints(linebuf.line)
-   linebuf.cursor = #linebuf.line + 1
-   return linebuf
+function Txtbuf.resume(txtbuf)
+   txtbuf.lines = codepoints(txtbuf.lines)
+   txtbuf.cursor = #txtbuf.lines + 1
+   return txtbuf
 end
 ```
 ```lua
-function Linebuf.clone(linebuf)
-   local lb = cl(linebuf)
-   if type(lb.line) == "table" then
-      lb.line = cl(lb.line)
-   elseif type(lb.line) == "string" then
+function Txtbuf.clone(txtbuf)
+   local lb = cl(txtbuf)
+   if type(lb.lines) == "table" then
+      lb.lines = cl(lb.lines)
+   elseif type(lb.lines) == "string" then
       lb:resume()
    end
    return lb
@@ -190,10 +167,10 @@ end
 ```
 ```lua
 local function new(line)
-   local linebuf = meta(Linebuf)
-   linebuf.cursor = line and #line or 1
-   linebuf.line  = line or {}
-   return linebuf
+   local txtbuf = meta(Txtbuf)
+   txtbuf.cursor = line and #line or 1
+   txtbuf.lines  = line or {}
+   return txtbuf
 end
 ```
 ```lua

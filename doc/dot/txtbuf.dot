@@ -3,19 +3,19 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 14"]
+doc_0 [label="doc - 294"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-14"]
+section_1 [label="section: 1-33"]
 
 
 // END RANK doc_0
 
-section_1 -> { header_2 prose_3 prose_4 prose_5 prose_6 prose_7}
-{rank=same; header_2 prose_3 prose_4 prose_5 prose_6 prose_7}
+section_1 -> { header_2 prose_3 prose_4 prose_5 prose_6 prose_7 section_8 section_9}
+{rank=same; header_2 prose_3 prose_4 prose_5 prose_6 prose_7 section_8 section_9}
 
 header_2 [label="1 : Txtbuf"]
 
@@ -29,85 +29,881 @@ prose_6 [label="prose"]
 
 prose_7 [label="prose"]
 
+section_8 [label="section: 17-21"]
+
+section_9 [label="section: 34-263"]
+
 
 // END RANK section_1
 
-header_2 -> leaf_8
-leaf_8  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Txtbuf"]
+header_2 -> leaf_10
+leaf_10  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Txtbuf"]
 // END RANK header_2
 
-prose_3 -> { raw_9}
-{rank=same; raw_9}
-
-raw_9 [label="raw"]
-
-
-// END RANK prose_3
-
-raw_9 -> leaf_10
-leaf_10  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-
-We're not going to have one of these right away.
-"]
-// END RANK raw_9
-
-prose_4 -> { raw_11}
+prose_3 -> { raw_11}
 {rank=same; raw_11}
 
 raw_11 [label="raw"]
 
 
-// END RANK prose_4
+// END RANK prose_3
 
 raw_11 -> leaf_12
 leaf_12  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-This is not much more than an ordinary array of lines that has a bit of
-awareness, mostly about which lines have cursors and which don't.
+
+We're not going to have one of these right away.
 "]
 // END RANK raw_11
 
-prose_5 -> { raw_13}
+prose_4 -> { raw_13}
 {rank=same; raw_13}
 
 raw_13 [label="raw"]
 
 
-// END RANK prose_5
+// END RANK prose_4
 
 raw_13 -> leaf_14
 leaf_14  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-I'll circle back for quipu but I want a basic editor as soon as possible. The
-interaction dynamics need to be worked out right away, plus I want to use it!
+This is not much more than an ordinary array of lines that has a bit of
+awareness, mostly about which lines have cursors and which don't.
 "]
 // END RANK raw_13
 
-prose_6 -> { raw_15}
+prose_5 -> { raw_15}
 {rank=same; raw_15}
 
 raw_15 [label="raw"]
 
 
-// END RANK prose_6
+// END RANK prose_5
 
 raw_15 -> leaf_16
 leaf_16  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-Plan: A line that has a cursor on it, and there can be many, gets 'opened'
-into a grid of characters.  These in turn get 'closed' when the cursor leaves.
+I'll circle back for quipu but I want a basic editor as soon as possible. The
+interaction dynamics need to be worked out right away, plus I want to use it!
 "]
 // END RANK raw_15
 
-prose_7 -> { raw_17}
+prose_6 -> { raw_17}
 {rank=same; raw_17}
 
 raw_17 [label="raw"]
 
 
-// END RANK prose_7
+// END RANK prose_6
 
 raw_17 -> leaf_18
 leaf_18  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-A closed line is just a string."]
+Plan: A line that has a cursor on it, and there can be many, gets 'opened'
+into a grid of characters.  These in turn get 'closed' when the cursor leaves.
+"]
 // END RANK raw_17
+
+prose_7 -> { raw_19}
+{rank=same; raw_19}
+
+raw_19 [label="raw"]
+
+
+// END RANK prose_7
+
+raw_19 -> leaf_20
+leaf_20  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+A closed line is just a string.
+
+"]
+// END RANK raw_19
+
+section_8 -> { header_21 prose_22 section_23}
+{rank=same; header_21 prose_22 section_23}
+
+header_21 [label="2 : Interface"]
+
+prose_22 [label="prose"]
+
+section_23 [label="section: 22-33"]
+
+
+// END RANK section_8
+
+header_21 -> leaf_24
+leaf_24  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Interface"]
+// END RANK header_21
+
+prose_22 -> { raw_25}
+{rank=same; raw_25}
+
+raw_25 [label="raw"]
+
+
+// END RANK prose_22
+
+raw_25 -> leaf_26
+leaf_26  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+  A txtbuf is a drop-in replacement for a txtbuf, used when there's more than
+one line to buffer.
+"]
+// END RANK raw_25
+
+section_23 -> { header_27 prose_28 prose_29 prose_30 prose_31}
+{rank=same; header_27 prose_28 prose_29 prose_30 prose_31}
+
+header_27 [label="3 : Instance fields"]
+
+prose_28 [label="prose"]
+
+prose_29 [label="prose"]
+
+prose_30 [label="prose"]
+
+prose_31 [label="prose"]
+
+
+// END RANK section_23
+
+header_27 -> leaf_32
+leaf_32  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Instance fields"]
+// END RANK header_27
+
+prose_28 -> { raw_33}
+{rank=same; raw_33}
+
+raw_33 [label="raw"]
+
+
+// END RANK prose_28
+
+raw_33 -> leaf_34
+leaf_34  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+- lines :  An array of arrays containing codepoints (string fragments).
+"]
+// END RANK raw_33
+
+prose_29 -> { raw_35}
+{rank=same; raw_35}
+
+raw_35 [label="raw"]
+
+
+// END RANK prose_29
+
+raw_35 -> leaf_36
+leaf_36  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+- cursor :  Number of fragments to skip before an insertion.
+"]
+// END RANK raw_35
+
+prose_30 -> { raw_37}
+{rank=same; raw_37}
+
+raw_37 [label="raw"]
+
+
+// END RANK prose_30
+
+raw_37 -> leaf_38
+leaf_38  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+- cur_row :  Row containing the cursor.
+"]
+// END RANK raw_37
+
+prose_31 -> { raw_39}
+{rank=same; raw_39}
+
+raw_39 [label="raw"]
+
+
+// END RANK prose_31
+
+raw_39 -> leaf_40
+leaf_40  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+- disp :  Array of numbers, representing the furthest-right column which
+          may be reached by printing the corresponding row.
+
+"]
+// END RANK raw_39
+
+section_9 -> { header_41 prose_42 prose_43 prose_44 prose_45 section_46 section_47 section_48 section_49 section_50 section_51 section_52 section_53 section_54 section_55}
+{rank=same; header_41 prose_42 prose_43 prose_44 prose_45 section_46 section_47 section_48 section_49 section_50 section_51 section_52 section_53 section_54 section_55}
+
+header_41 [label="2 : Methods"]
+
+prose_42 [label="prose"]
+
+prose_43 [label="prose"]
+
+prose_44 [label="prose"]
+
+prose_45 [label="prose"]
+
+section_46 [label="section: 49-61"]
+
+section_47 [label="section: 62-93"]
+
+section_48 [label="section: 94-128"]
+
+section_49 [label="section: 129-141"]
+
+section_50 [label="section: 142-153"]
+
+section_51 [label="section: 154-162"]
+
+section_52 [label="section: 163-178"]
+
+section_53 [label="section: 179-195"]
+
+section_54 [label="section: 196-263"]
+
+section_55 [label="section: 264-294"]
+
+
+// END RANK section_9
+
+header_41 -> leaf_56
+leaf_56  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Methods"]
+// END RANK header_41
+
+prose_42 -> { raw_57}
+{rank=same; raw_57}
+
+raw_57 [label="raw"]
+
+
+// END RANK prose_42
+
+raw_57 -> leaf_58
+leaf_58  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+Initially these are only the methods of txtbuf.
+"]
+// END RANK raw_57
+
+prose_43 -> { raw_59}
+{rank=same; raw_59}
+
+raw_59 [label="raw"]
+
+
+// END RANK prose_43
+
+raw_59 -> leaf_60
+leaf_60  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+I think the way forward is to treat txtbuf as a special case until it's at
+feature parity, and we have the other aspects such as resizing the result
+field working correctly.
+"]
+// END RANK raw_59
+
+prose_44 -> { raw_61 prespace_62 literal_63 raw_64 prespace_65 literal_66 raw_67}
+{rank=same; raw_61 prespace_62 literal_63 raw_64 prespace_65 literal_66 raw_67}
+
+raw_61 [label="raw"]
+
+prespace_62 [label="prespace"]
+
+literal_63 [label="literal"]
+
+raw_64 [label="raw"]
+
+prespace_65 [label="prespace"]
+
+literal_66 [label="literal"]
+
+raw_67 [label="raw"]
+
+
+// END RANK prose_44
+
+raw_61 -> leaf_68
+leaf_68  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Then we will simply switch to using"]
+// END RANK raw_61
+
+prespace_62 -> leaf_69
+leaf_69  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_62
+
+literal_63 -> leaf_70
+leaf_70  [color=Gray,shape=rectangle,fontname=Inconsolata,label="txtbuf"]
+// END RANK literal_63
+
+raw_64 -> leaf_71
+leaf_71  [color=Gray,shape=rectangle,fontname=Inconsolata,label="s of a single line instead of the
+two separate classes, and factor out"]
+// END RANK raw_64
+
+prespace_65 -> leaf_72
+leaf_72  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_65
+
+literal_66 -> leaf_73
+leaf_73  [color=Gray,shape=rectangle,fontname=Inconsolata,label="txtbuf"]
+// END RANK literal_66
+
+raw_67 -> leaf_74
+leaf_74  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
+"]
+// END RANK raw_67
+
+prose_45 -> { raw_75 prespace_76 literal_77 raw_78}
+{rank=same; raw_75 prespace_76 literal_77 raw_78}
+
+raw_75 [label="raw"]
+
+prespace_76 [label="prespace"]
+
+literal_77 [label="literal"]
+
+raw_78 [label="raw"]
+
+
+// END RANK prose_45
+
+raw_75 -> leaf_79
+leaf_79  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+This amounts to porting the existing"]
+// END RANK raw_75
+
+prespace_76 -> leaf_80
+leaf_80  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_76
+
+literal_77 -> leaf_81
+leaf_81  [color=Gray,shape=rectangle,fontname=Inconsolata,label="txtbuf"]
+// END RANK literal_77
+
+raw_78 -> leaf_82
+leaf_82  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", as I think about it. A single
+line isn't even a special case for the logic.
+
+"]
+// END RANK raw_78
+
+section_46 -> { header_83 prose_84 codeblock_85 codeblock_86}
+{rank=same; header_83 prose_84 codeblock_85 codeblock_86}
+
+header_83 [label="4 : dependencies"]
+
+prose_84 [label="prose"]
+
+codeblock_85 [label="code block 51-56"]
+
+codeblock_86 [label="code block 58-60"]
+
+
+// END RANK section_46
+
+header_83 -> leaf_87
+leaf_87  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** dependencies"]
+// END RANK header_83
+
+prose_84 -> { raw_88}
+{rank=same; raw_88}
+
+raw_88 [label="raw"]
+
+
+// END RANK prose_84
+
+raw_88 -> leaf_89
+leaf_89  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+"]
+// END RANK raw_88
+
+codeblock_85 -> leaf_90
+leaf_90  [color=Gray,shape=rectangle,fontname=Inconsolata,label="assert(meta)
+local collect = assert(table.collect)
+local lines = assert(string.lines)
+local codepoints = assert(string.codepoints)"]
+// END RANK codeblock_85
+
+codeblock_86 -> leaf_91
+leaf_91  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Txtbuf = meta {}"]
+// END RANK codeblock_86
+
+section_47 -> { header_92 prose_93 codeblock_94 codeblock_95}
+{rank=same; header_92 prose_93 codeblock_94 codeblock_95}
+
+header_92 [label="3 : Txtbuf.__tostring(txtbuf)"]
+
+prose_93 [label="prose"]
+
+codeblock_94 [label="code block 64-80"]
+
+codeblock_95 [label="code block 82-91"]
+
+
+// END RANK section_47
+
+header_92 -> leaf_96
+leaf_96  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Txtbuf.__tostring(txtbuf)"]
+// END RANK header_92
+
+prose_93 -> { raw_97}
+{rank=same; raw_97}
+
+raw_97 [label="raw"]
+
+
+// END RANK prose_93
+
+raw_97 -> leaf_98
+leaf_98  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+"]
+// END RANK raw_97
+
+codeblock_94 -> leaf_99
+leaf_99  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local concat = assert(table.concat)
+
+local function cat(l)
+   if type(l) == \"string\" then
+      return l
+   elseif type(l) == \"table\" then
+      if l[1] ~= nil then
+         return concat(l)
+      else
+         return \"\"
+      end
+   end
+
+   error(\"called private fn cat with type\" .. type(l))
+end"]
+// END RANK codeblock_94
+
+codeblock_95 -> leaf_100
+leaf_100  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Txtbuf.__tostring(txtbuf)
+   local phrase = \"\"
+   for i = 1, #txtbuf.lines - 1 do
+      phrase = phrase .. cat(txtbuf.lines[i]) .. \"\\n\"
+   end
+
+   return phrase .. cat(txtbuf.lines[#txtbuf.lines])
+end"]
+// END RANK codeblock_95
+
+section_48 -> { header_101 prose_102 codeblock_103}
+{rank=same; header_101 prose_102 codeblock_103}
+
+header_101 [label="3 : Txtbuf:insert(frag)"]
+
+prose_102 [label="prose"]
+
+codeblock_103 [label="code block 96-126"]
+
+
+// END RANK section_48
+
+header_101 -> leaf_104
+leaf_104  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Txtbuf:insert(frag)"]
+// END RANK header_101
+
+prose_102 -> { raw_105}
+{rank=same; raw_105}
+
+raw_105 [label="raw"]
+
+
+// END RANK prose_102
+
+raw_105 -> leaf_106
+leaf_106  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+"]
+// END RANK raw_105
+
+codeblock_103 -> leaf_107
+leaf_107  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local t_insert, splice = assert(table.insert), assert(table.splice)
+local utf8, codepoints = string.utf8, string.codepoints
+
+function Txtbuf.insert(txtbuf, frag)
+   local line = txtbuf.lines[txtbuf.cur_row]
+   if type(line) == \"string\" then
+      line = codepoints(line)
+      txtbuf.line = line
+   end
+   local wide_frag = utf8(frag)
+   if wide_frag < #frag then -- a paste
+      -- Normalize whitespace
+      frag = gsub(frag, \"\\r\\n\", \"\\n\"):gsub(\"\\r\", \"\\n\"):gsub(\"\\t\", \"   \")
+      wide_frag = codepoints(frag)
+   else
+      wide_frag = false
+   end
+   if not wide_frag then
+      t_insert(line, txtbuf.cursor, frag)
+      txtbuf.cursor = txtbuf.cursor + 1
+      return true
+   else
+      splice(line, txtbuf.cursor, wide_frag)
+      txtbuf.cursor = txtbuf.cursor + #wide_frag
+      return true
+   end
+
+   return false
+end"]
+// END RANK codeblock_103
+
+section_49 -> { header_108 prose_109 codeblock_110}
+{rank=same; header_108 prose_109 codeblock_110}
+
+header_108 [label="3 : Txtbuf:advance()"]
+
+prose_109 [label="prose"]
+
+codeblock_110 [label="code block 131-139"]
+
+
+// END RANK section_49
+
+header_108 -> leaf_111
+leaf_111  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Txtbuf:advance()"]
+// END RANK header_108
+
+prose_109 -> { raw_112}
+{rank=same; raw_112}
+
+raw_112 [label="raw"]
+
+
+// END RANK prose_109
+
+raw_112 -> leaf_113
+leaf_113  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+"]
+// END RANK raw_112
+
+codeblock_110 -> leaf_114
+leaf_114  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local ts_bw = (require \"color\").ts_bw
+
+function Txtbuf.advance(txtbuf)
+   txtbuf.lines[#txtbuf.lines + 1] = {}
+   txtbuf.cur_row = #txtbuf.lines
+   txtbuf.cursor = 1
+end"]
+// END RANK codeblock_110
+
+section_50 -> { header_115 prose_116 codeblock_117}
+{rank=same; header_115 prose_116 codeblock_117}
+
+header_115 [label="3 : Txtbuf:d_back()"]
+
+prose_116 [label="prose"]
+
+codeblock_117 [label="code block 144-151"]
+
+
+// END RANK section_50
+
+header_115 -> leaf_118
+leaf_118  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Txtbuf:d_back()"]
+// END RANK header_115
+
+prose_116 -> { raw_119}
+{rank=same; raw_119}
+
+raw_119 [label="raw"]
+
+
+// END RANK prose_116
+
+raw_119 -> leaf_120
+leaf_120  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+"]
+// END RANK raw_119
+
+codeblock_117 -> leaf_121
+leaf_121  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local remove = assert(table.remove)
+
+function Txtbuf.d_back(txtbuf)
+   remove(txtbuf.lines[txtbuf.cur_row], txtbuf.cursor - 1)
+   txtbuf.cursor = txtbuf.cursor > 1 and txtbuf.cursor - 1 or 1
+end"]
+// END RANK codeblock_117
+
+section_51 -> { header_122 prose_123 codeblock_124}
+{rank=same; header_122 prose_123 codeblock_124}
+
+header_122 [label="3 : Txtbuf:d_fwd()"]
+
+prose_123 [label="prose"]
+
+codeblock_124 [label="code block 156-160"]
+
+
+// END RANK section_51
+
+header_122 -> leaf_125
+leaf_125  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Txtbuf:d_fwd()"]
+// END RANK header_122
+
+prose_123 -> { raw_126}
+{rank=same; raw_126}
+
+raw_126 [label="raw"]
+
+
+// END RANK prose_123
+
+raw_126 -> leaf_127
+leaf_127  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+"]
+// END RANK raw_126
+
+codeblock_124 -> leaf_128
+leaf_128  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Txtbuf.d_fwd(txtbuf)
+   remove(txtbuf.lines[txtbuf.cur_row], txtbuf.cursor)
+end"]
+// END RANK codeblock_124
+
+section_52 -> { header_129 prose_130 codeblock_131}
+{rank=same; header_129 prose_130 codeblock_131}
+
+header_129 [label="3 : Txtbuf:left(disp)"]
+
+prose_130 [label="prose"]
+
+codeblock_131 [label="code block 165-176"]
+
+
+// END RANK section_52
+
+header_129 -> leaf_132
+leaf_132  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Txtbuf:left(disp)"]
+// END RANK header_129
+
+prose_130 -> { raw_133}
+{rank=same; raw_133}
+
+raw_133 [label="raw"]
+
+
+// END RANK prose_130
+
+raw_133 -> leaf_134
+leaf_134  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+"]
+// END RANK raw_133
+
+codeblock_131 -> leaf_135
+leaf_135  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Txtbuf.left(txtbuf, disp)
+   local disp = disp or 1
+   if txtbuf.cursor - disp >= 1 then
+      txtbuf.cursor = txtbuf.cursor - disp
+   else
+      txtbuf.cursor = 1
+   end
+
+   return txtbuf.cursor
+end"]
+// END RANK codeblock_131
+
+section_53 -> { header_136 prose_137 codeblock_138}
+{rank=same; header_136 prose_137 codeblock_138}
+
+header_136 [label="3 : Txtbuf:right(disp)"]
+
+prose_137 [label="prose"]
+
+codeblock_138 [label="code block 181-193"]
+
+
+// END RANK section_53
+
+header_136 -> leaf_139
+leaf_139  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Txtbuf:right(disp)"]
+// END RANK header_136
+
+prose_137 -> { raw_140}
+{rank=same; raw_140}
+
+raw_140 [label="raw"]
+
+
+// END RANK prose_137
+
+raw_140 -> leaf_141
+leaf_141  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+"]
+// END RANK raw_140
+
+codeblock_138 -> leaf_142
+leaf_142  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Txtbuf.right(txtbuf, disp)
+   disp = disp or 1
+   local line = txtbuf.lines[txtbuf.cur_row]
+   if txtbuf.cursor + disp <= #line + 1 then
+      txtbuf.cursor = txtbuf.cursor + disp
+   else
+      txtbuf.cursor = #line + 1
+   end
+
+   return txtbuf.cursor
+end"]
+// END RANK codeblock_138
+
+section_54 -> { header_143 prose_144 codeblock_145 codeblock_146 codeblock_147 codeblock_148 codeblock_149}
+{rank=same; header_143 prose_144 codeblock_145 codeblock_146 codeblock_147 codeblock_148 codeblock_149}
+
+header_143 [label="3 : Txtbuf:up()"]
+
+prose_144 [label="prose"]
+
+codeblock_145 [label="code block 198-211"]
+
+codeblock_146 [label="code block 213-226"]
+
+codeblock_147 [label="code block 228-236"]
+
+codeblock_148 [label="code block 238-248"]
+
+codeblock_149 [label="code block 250-261"]
+
+
+// END RANK section_54
+
+header_143 -> leaf_150
+leaf_150  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Txtbuf:up()"]
+// END RANK header_143
+
+prose_144 -> { raw_151}
+{rank=same; raw_151}
+
+raw_151 [label="raw"]
+
+
+// END RANK prose_144
+
+raw_151 -> leaf_152
+leaf_152  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+"]
+// END RANK raw_151
+
+codeblock_145 -> leaf_153
+leaf_153  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Txtbuf.up(txtbuf)
+   local cur_row = txtbuf.cur_row
+   if cur_row == 1 then
+      return false
+   else
+      txtbuf.cur_row = cur_row - 1
+      if txtbuf.cursor > #txtbuf.lines[txtbuf.cur_row] + 1 then
+         txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
+      end
+      return true
+   end
+end"]
+// END RANK codeblock_145
+
+codeblock_146 -> leaf_154
+leaf_154  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Txtbuf.down(txtbuf)
+   local cur_row = txtbuf.cur_row
+   if cur_row == #txtbuf.lines then
+      return false
+   else
+      txtbuf.cur_row = cur_row + 1
+      if txtbuf.cursor > #txtbuf.lines[txtbuf.cur_row] + 1 then
+         txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
+      end
+      return true
+   end
+end"]
+// END RANK codeblock_146
+
+codeblock_147 -> leaf_155
+leaf_155  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Txtbuf.suspend(txtbuf)
+   for i,v in ipairs(txtbuf.lines) do
+      txtbuf.lines[i] = tostring(v)
+   end
+
+   return txtbuf
+end"]
+// END RANK codeblock_147
+
+codeblock_148 -> leaf_156
+leaf_156  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Txtbuf.resume(txtbuf)
+   for i, line in ipairs(txtbuf.lines) do
+      txtbuf.lines[i] = codepoints(line)
+   end
+   txtbuf.cursor = #txtbuf.lines[#txtbuf.lines] + 1
+   txtbuf.cur_row = #txtbuf.lines
+
+   return txtbuf
+end"]
+// END RANK codeblock_148
+
+codeblock_149 -> leaf_157
+leaf_157  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local cl = assert(table.clone, \"table.clone must be provided\")
+
+function Txtbuf.clone(txtbuf)
+   local tb = cl(txtbuf)
+   tb.lines = cl(txtbuf.lines)
+   if type(tb.lines[1]) == \"string\" then
+      return tb:resume()
+   end
+   return tb
+end"]
+// END RANK codeblock_149
+
+section_55 -> { header_158 prose_159 codeblock_160 codeblock_161}
+{rank=same; header_158 prose_159 codeblock_160 codeblock_161}
+
+header_158 [label="3 : new"]
+
+prose_159 [label="prose"]
+
+codeblock_160 [label="code block 266-290"]
+
+codeblock_161 [label="code block 292-294"]
+
+
+// END RANK section_55
+
+header_158 -> leaf_162
+leaf_162  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** new"]
+// END RANK header_158
+
+prose_159 -> { raw_163}
+{rank=same; raw_163}
+
+raw_163 [label="raw"]
+
+
+// END RANK prose_159
+
+raw_163 -> leaf_164
+leaf_164  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+"]
+// END RANK raw_163
+
+codeblock_160 -> leaf_165
+leaf_165  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function into_codepoints(lines)
+   local cp = {}
+   for i,v in ipairs(lines) do
+      cp[i] = codepoints(v)
+   end
+
+   return cp
+end
+
+local function new(line)
+   local txtbuf = meta(Txtbuf)
+   local __l = line or \"\"
+   local _lines = into_codepoints(collect(lines, __l))
+   if #_lines == 0 then
+      _lines[1] = {}
+   end
+   txtbuf.cursor = line and #_lines[#_lines] + 1 or 1
+   txtbuf.cur_row = line and #_lines  or 1
+   txtbuf.lines = _lines
+   return txtbuf
+end
+
+Txtbuf.idEst = new"]
+// END RANK codeblock_160
+
+codeblock_161 -> leaf_166
+leaf_166  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return new"]
+// END RANK codeblock_161
 
 
 }
