@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 266"]
+doc_0 [label="doc - 269"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-173"]
+section_1 [label="section: 1-176"]
 
 
 // END RANK doc_0
@@ -25,9 +25,9 @@ section_4 [label="section: 6-38"]
 
 section_5 [label="section: 45-150"]
 
-section_6 [label="section: 164-173"]
+section_6 [label="section: 164-176"]
 
-section_7 [label="section: 174-179"]
+section_7 [label="section: 177-182"]
 
 
 // END RANK section_1
@@ -581,7 +581,7 @@ header_115 [label="2 : Modeselektor"]
 
 prose_116 [label="prose"]
 
-codeblock_117 [label="code block 166-172"]
+codeblock_117 [label="code block 169-175"]
 
 
 // END RANK section_6
@@ -600,6 +600,9 @@ raw_119 [label="raw"]
 
 raw_119 -> leaf_120
 leaf_120  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+This should start with a read which saves the cursor location.
+
 "]
 // END RANK raw_119
 
@@ -618,7 +621,7 @@ header_122 [label="2 : Reader"]
 
 prose_123 [label="prose"]
 
-section_124 [label="section: 180-266"]
+section_124 [label="section: 183-269"]
 
 
 // END RANK section_7
@@ -687,9 +690,9 @@ header_140 [label="3 : process_escapes(seq)"]
 
 prose_141 [label="prose"]
 
-codeblock_142 [label="code block 182-239"]
+codeblock_142 [label="code block 185-242"]
 
-codeblock_143 [label="code block 241-266"]
+codeblock_143 [label="code block 244-269"]
 
 
 // END RANK section_124

@@ -186,6 +186,36 @@ function Txtbuf.right(txtbuf, disp)
    return txtbuf.cursor
 end
 ```
+### Txtbuf:up()
+
+```lua
+function Txtbuf.up(txtbuf)
+   local cur_row = txtbuf.cur_row
+   if cur_row == 1 then
+      return false
+   else
+      txtbuf.cur_row = cur_row - 1
+      if txtbuf.cursor > #txtbuf.lines[txtbuf.cur_row] + 1 then
+         txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
+      end
+      return true
+   end
+end
+```
+```lua
+function Txtbuf.down(txtbuf)
+   local cur_row = txtbuf.cur_row
+   if cur_row == #txtbuf.lines then
+      return false
+   else
+      txtbuf.cur_row = cur_row + 1
+      if txtbuf.cursor > #txtbuf.lines[txtbuf.cur_row] + 1 then
+         txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
+      end
+      return true
+   end
+end
+```
 ```lua
 function Txtbuf.suspend(txtbuf)
    for i,v in ipairs(txtbuf.lines) do

@@ -128,6 +128,7 @@ end
 
 
 
+
 local ts_bw = (require "color").ts_bw
 
 function Txtbuf.advance(txtbuf)
@@ -135,6 +136,7 @@ function Txtbuf.advance(txtbuf)
    txtbuf.cur_row = #txtbuf.lines
    txtbuf.cursor = 1
 end
+
 
 
 
@@ -189,6 +191,38 @@ function Txtbuf.right(txtbuf, disp)
    return txtbuf.cursor
 end
 
+
+
+
+
+
+function Txtbuf.up(txtbuf)
+   local cur_row = txtbuf.cur_row
+   if cur_row == 1 then
+      return false
+   else
+      txtbuf.cur_row = cur_row - 1
+      if txtbuf.cursor > #txtbuf.lines[txtbuf.cur_row] + 1 then
+         txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
+      end
+      return true
+   end
+end
+
+
+
+function Txtbuf.down(txtbuf)
+   local cur_row = txtbuf.cur_row
+   if cur_row == #txtbuf.lines then
+      return false
+   else
+      txtbuf.cur_row = cur_row + 1
+      if txtbuf.cursor > #txtbuf.lines[txtbuf.cur_row] + 1 then
+         txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
+      end
+      return true
+   end
+end
 
 
 

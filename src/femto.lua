@@ -164,6 +164,9 @@ local stdin = uv.new_tty(0, true)
 
 
 
+
+
+
 -- This switches screens and does a wipe,
 -- then puts the cursor at 1,1.
 write "\x1b[?47h\x1b[2J\x1b[H"

@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 366"]
+doc_0 [label="doc - 378"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-285"]
+section_1 [label="section: 1-297"]
 
 
 // END RANK doc_0
@@ -31,11 +31,11 @@ codeblock_7 [label="code block 16-25"]
 
 codeblock_8 [label="code block 27-29"]
 
-section_9 [label="section: 32-189"]
+section_9 [label="section: 32-201"]
 
-section_10 [label="section: 240-285"]
+section_10 [label="section: 252-297"]
 
-section_11 [label="section: 286-332"]
+section_11 [label="section: 298-344"]
 
 
 // END RANK section_1
@@ -140,11 +140,11 @@ prose_29 [label="prose"]
 
 prose_30 [label="prose"]
 
-section_31 [label="section: 59-130"]
+section_31 [label="section: 59-142"]
 
-section_32 [label="section: 131-189"]
+section_32 [label="section: 143-201"]
 
-section_33 [label="section: 190-239"]
+section_33 [label="section: 202-251"]
 
 
 // END RANK section_9
@@ -456,7 +456,7 @@ header_110 [label="3 : SQLite battery"]
 
 prose_111 [label="prose"]
 
-codeblock_112 [label="code block 61-128"]
+codeblock_112 [label="code block 61-140"]
 
 
 // END RANK section_31
@@ -498,6 +498,18 @@ value blob,
 FOREIGN KEY (line_id)
    REFERENCES repl (line_id)
    ON DELETE CASCADE);
+]]
+
+local create_session_table = [[
+CREATE TABLE IF NOT EXISTS sessions (
+session_id INTEGER PRIMARY KEY AUTOINCREMENT,
+name TEXT,
+-- These two are line_ids
+start INTEGER NOT NULL,
+end INTEGER,
+test BOOLEAN,
+commit TEXT;
+)
 ]]
 
 local insert_line_stmt = [[
@@ -556,7 +568,7 @@ prose_118 [label="prose"]
 
 prose_119 [label="prose"]
 
-codeblock_120 [label="code block 138-187"]
+codeblock_120 [label="code block 150-199"]
 
 
 // END RANK section_32
@@ -659,7 +671,7 @@ prose_130 [label="prose"]
 
 prose_131 [label="prose"]
 
-codeblock_132 [label="code block 205-237"]
+codeblock_132 [label="code block 217-249"]
 
 
 // END RANK section_33
@@ -807,7 +819,7 @@ header_155 [label="2 : Historian:search(frag)"]
 
 prose_156 [label="prose"]
 
-codeblock_157 [label="code block 242-283"]
+codeblock_157 [label="code block 254-295"]
 
 
 // END RANK section_10
@@ -879,11 +891,11 @@ header_162 [label="2 : Historian:prev()"]
 
 prose_163 [label="prose"]
 
-codeblock_164 [label="code block 288-300"]
+codeblock_164 [label="code block 300-312"]
 
-section_165 [label="section: 303-332"]
+section_165 [label="section: 315-344"]
 
-section_166 [label="section: 333-366"]
+section_166 [label="section: 345-378"]
 
 
 // END RANK section_11
@@ -914,7 +926,7 @@ leaf_170  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histo
    local txtbuf = historian[historian.cursor - Δ]
    local result = historian.results[txtbuf]
    historian.cursor = historian.cursor - Δ
-   txtbuf.cursor = #txtbuf.lines + 1
+   txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
    return txtbuf:clone(), result
 end"]
 // END RANK codeblock_164
@@ -928,7 +940,7 @@ prose_172 [label="prose"]
 
 prose_173 [label="prose"]
 
-codeblock_174 [label="code block 310-330"]
+codeblock_174 [label="code block 322-342"]
 
 
 // END RANK section_165
@@ -996,7 +1008,7 @@ leaf_186  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histo
       return Txtbuf()
    end
    historian.cursor = historian.cursor + Δ
-   txtbuf.cursor = #txtbuf.lines + 1
+   txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
    if not (Δ > 0) and #txtbuf.lines > 0 then
       historian.cursor = #historian + 1
       return txtbuf:clone(), nil, true
@@ -1015,11 +1027,11 @@ prose_188 [label="prose"]
 
 prose_189 [label="prose"]
 
-codeblock_190 [label="code block 339-353"]
+codeblock_190 [label="code block 351-365"]
 
-codeblock_191 [label="code block 355-362"]
+codeblock_191 [label="code block 367-374"]
 
-codeblock_192 [label="code block 364-366"]
+codeblock_192 [label="code block 376-378"]
 
 
 // END RANK section_166

@@ -304,17 +304,22 @@ function ModeS.paint_row(modeS)
    write(a.erase.box(modeS.repl_top, modeS.l_margin,
                      modeS.repl_line, modeS.r_margin))
    write(a.jump(modeS.repl_top, modeS.l_margin))
-   write(a.erase.right())
    modeS:write(concat(lb))
-   write(a.col(modeS:cur_col()))
+   write(a.rc(modeS.txtbuf.cur_row + modeS.repl_top - 1, modeS:cur_col()))
    write(a.cursor.show())
 end
 
 
 
-function ModeS.printResults(modeS, results)
+function ModeS.replLine(modeS)
+   return modeS.repl_top + #modeS.txtbuf.lines - 1
+end
+
+
+function ModeS.printResults(modeS, results, new)
    local rainbuf = {}
-   modeS:write(a.rc(modeS.repl_line + 1, modeS.l_margin))
+   local row = new and modeS.repl_top + 1 or modeS:replLine() + 1
+   modeS:write(a.rc(row, modeS.l_margin))
    for i = 1, results.n do
       if results.frozen then
          rainbuf[i] = results[i]
@@ -396,37 +401,44 @@ end
 
 
 
+local up1, down1 = a.jump.up(), a.jump.down()
+
 function NAV.UP(modeS, category, value)
-   modeS:clearResult()
-   local prev_result, linestash
-   if tostring(modeS.txtbuf) ~= ""
-      and modeS.hist.cursor > #modeS.hist then
-      linestash = modeS.txtbuf
-   end
-   modeS.txtbuf, prev_result = modeS.hist:prev()
-   if linestash then
-      modeS.hist:append(linestash)
-   end
-   if prev_result then
-      modeS.repl_line = #modeS.txtbuf.lines + 1
-      modeS:printResults(prev_result)
-   else
+   local inline = modeS.txtbuf:up()
+   if not inline then
+      local prev_result, linestash
+      if tostring(modeS.txtbuf) ~= ""
+         and modeS.hist.cursor > #modeS.hist then
+         linestash = modeS.txtbuf
+      end
+      modeS.txtbuf, prev_result = modeS.hist:prev()
+      if linestash then
+         modeS.hist:append(linestash)
+      end
       modeS:clearResult()
+      if prev_result then
+         modeS:printResults(prev_result)
+      end
+   else
+      write(up1)
    end
    return modeS
 end
 
 function NAV.DOWN(modeS, category, value)
-   modeS:clearResult()
-   local next_p, next_result
-   modeS.txtbuf, next_result, next_p = modeS.hist:next()
-   if next_p then
-      modeS.txtbuf = Txtbuf()
-   end
-   if next_result then
-      modeS:printResults(next_result)
-   else
+   local inline = modeS.txtbuf:down()
+   if not inline then
+      local next_p, next_result
+      modeS.txtbuf, next_result, next_p = modeS.hist:next()
+      if next_p then
+         modeS.txtbuf = Txtbuf()
+      end
       modeS:clearResult()
+      if next_result then
+         modeS:printResults(next_result)
+      end
+   else
+      write(down1)
    end
    return modeS
 end
@@ -517,14 +529,12 @@ function ModeS.eval(modeS)
    end
    if f then
       modeS.repl_line = modeS.REPL_LINE
-      log(tostring(modeS.txtbuf), modeS.txtbuf)
       success, results = gatherResults(xpcall(f, debug.traceback))
       if success then
       -- successful call
          modeS:clearResult()
          if results.n > 0 then
-            modeS:printResults(results)
-
+            modeS:printResults(results, success)
          end
       else
       -- error

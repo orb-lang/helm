@@ -163,6 +163,9 @@ local stdin = uv.new_tty(0, true)
 
 ** Modeselektor
 
+This should start with a read which saves the cursor location.
+
+
 #!lua
 -- This switches screens and does a wipe,
 -- then puts the cursor at 1,1.

@@ -86,6 +86,18 @@ FOREIGN KEY (line_id)
    ON DELETE CASCADE);
 ]]
 
+local create_session_table = [[
+CREATE TABLE IF NOT EXISTS sessions (
+session_id INTEGER PRIMARY KEY AUTOINCREMENT,
+name TEXT,
+-- These two are line_ids
+start INTEGER NOT NULL,
+end INTEGER,
+test BOOLEAN,
+commit TEXT;
+)
+]]
+
 local insert_line_stmt = [[
 INSERT INTO repl (project, line) VALUES (:project, :line);
 ]]
@@ -296,7 +308,7 @@ function Historian.prev(historian)
    local txtbuf = historian[historian.cursor - Δ]
    local result = historian.results[txtbuf]
    historian.cursor = historian.cursor - Δ
-   txtbuf.cursor = #txtbuf.lines + 1
+   txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
    return txtbuf:clone(), result
 end
 ```
@@ -320,7 +332,7 @@ function Historian.next(historian)
       return Txtbuf()
    end
    historian.cursor = historian.cursor + Δ
-   txtbuf.cursor = #txtbuf.lines + 1
+   txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
    if not (Δ > 0) and #txtbuf.lines > 0 then
       historian.cursor = #historian + 1
       return txtbuf:clone(), nil, true
