@@ -108,6 +108,7 @@ local color_map = {
    string_long = c.color.string(),
    comment = c.color.comment(),
    ERR = c.color.error(),
+   NL = a.clear(),
 }
 
 
@@ -181,8 +182,13 @@ function Lex.lua_thor(txtbuf)
          end
       end
       if len == #lb then
-         toks[#toks + 1] = a.clear .. color_map.ERR
-         toks[#toks + 1] = sub(lb, 1, 1)
+         bite = sub(lb, 1, 1) -- take a piece anyhow
+         -- this is a bad hack because for some reason
+         -- we're not picking up newlines correctly
+         if bite ~= "\n" then
+            toks[#toks + 1] = a.clear .. color_map.ERR
+         end
+         toks[#toks + 1] = bite
          lb = sub(lb,2)
       end
    end

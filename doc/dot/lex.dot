@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 198"]
+doc_0 [label="doc - 204"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-128"]
+section_1 [label="section: 1-129"]
 
 
 // END RANK doc_0
@@ -23,9 +23,9 @@ prose_3 [label="prose"]
 
 codeblock_4 [label="code block 8-17"]
 
-section_5 [label="section: 20-128"]
+section_5 [label="section: 20-129"]
 
-section_6 [label="section: 129-133"]
+section_6 [label="section: 130-134"]
 
 
 // END RANK section_1
@@ -86,7 +86,7 @@ header_17 [label="3 : Lua lexers"]
 
 prose_18 [label="prose"]
 
-codeblock_19 [label="code block 22-126"]
+codeblock_19 [label="code block 22-127"]
 
 
 // END RANK section_5
@@ -197,6 +197,7 @@ local color_map = {
    string_long = c.color.string(),
    comment = c.color.comment(),
    ERR = c.color.error(),
+   NL = a.clear(),
 }
 
 
@@ -221,7 +222,7 @@ header_24 [label="2 : Lex.lua_thor(txtbuf)"]
 
 prose_25 [label="prose"]
 
-section_26 [label="section: 134-198"]
+section_26 [label="section: 135-204"]
 
 
 // END RANK section_6
@@ -253,9 +254,9 @@ header_30 [label="3 : chomp_token(lb)"]
 
 prose_31 [label="prose"]
 
-codeblock_32 [label="code block 139-192"]
+codeblock_32 [label="code block 140-198"]
 
-codeblock_33 [label="code block 195-197"]
+codeblock_33 [label="code block 201-203"]
 
 
 // END RANK section_26
@@ -343,8 +344,13 @@ function Lex.lua_thor(txtbuf)
          end
       end
       if len == #lb then
-         toks[#toks + 1] = a.clear .. color_map.ERR
-         toks[#toks + 1] = sub(lb, 1, 1)
+         bite = sub(lb, 1, 1) -- take a piece anyhow
+         -- this is a bad hack because for some reason
+         -- we're not picking up newlines correctly
+         if bite ~= \"\\n\" then
+            toks[#toks + 1] = a.clear .. color_map.ERR
+         end
+         toks[#toks + 1] = bite
          lb = sub(lb,2)
       end
    end

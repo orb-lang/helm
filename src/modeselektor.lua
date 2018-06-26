@@ -301,6 +301,8 @@ end
 function ModeS.paint_row(modeS)
    local lb = Lex.lua_thor(tostring(modeS.txtbuf))
    write(a.cursor.hide())
+   write(a.erase.box(modeS.repl_top, modeS.l_margin,
+                     modeS.repl_line, modeS.r_margin))
    write(a.jump(modeS.repl_top, modeS.l_margin))
    write(a.erase.right())
    modeS:write(concat(lb))
@@ -406,6 +408,7 @@ function NAV.UP(modeS, category, value)
       modeS.hist:append(linestash)
    end
    if prev_result then
+      modeS.repl_line = #modeS.txtbuf.lines + 1
       modeS:printResults(prev_result)
    else
       modeS:clearResult()

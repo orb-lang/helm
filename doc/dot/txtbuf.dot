@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 264"]
+doc_0 [label="doc - 263"]
 
 
 doc_0 -> { section_1}
@@ -31,7 +31,7 @@ prose_7 [label="prose"]
 
 section_8 [label="section: 17-21"]
 
-section_9 [label="section: 34-233"]
+section_9 [label="section: 34-232"]
 
 
 // END RANK section_1
@@ -245,17 +245,17 @@ section_47 [label="section: 62-93"]
 
 section_48 [label="section: 94-127"]
 
-section_49 [label="section: 128-140"]
+section_49 [label="section: 128-139"]
 
-section_50 [label="section: 141-152"]
+section_50 [label="section: 140-151"]
 
-section_51 [label="section: 153-161"]
+section_51 [label="section: 152-160"]
 
-section_52 [label="section: 162-177"]
+section_52 [label="section: 161-176"]
 
-section_53 [label="section: 178-233"]
+section_53 [label="section: 177-232"]
 
-section_54 [label="section: 234-264"]
+section_54 [label="section: 233-263"]
 
 
 // END RANK section_9
@@ -550,7 +550,7 @@ header_107 [label="3 : Txtbuf:advance()"]
 
 prose_108 [label="prose"]
 
-codeblock_109 [label="code block 130-139"]
+codeblock_109 [label="code block 130-138"]
 
 
 // END RANK section_49
@@ -579,7 +579,6 @@ function Txtbuf.advance(txtbuf)
    txtbuf.lines[#txtbuf.lines + 1] = {}
    txtbuf.cur_row = #txtbuf.lines
    txtbuf.cursor = 1
-   log(\"advanced %s\", ts_bw(txtbuf))
 end"]
 // END RANK codeblock_109
 
@@ -590,7 +589,7 @@ header_114 [label="3 : Txtbuf:d_back()"]
 
 prose_115 [label="prose"]
 
-codeblock_116 [label="code block 143-150"]
+codeblock_116 [label="code block 142-149"]
 
 
 // END RANK section_50
@@ -628,7 +627,7 @@ header_121 [label="3 : Txtbuf:d_fwd()"]
 
 prose_122 [label="prose"]
 
-codeblock_123 [label="code block 155-159"]
+codeblock_123 [label="code block 154-158"]
 
 
 // END RANK section_51
@@ -663,7 +662,7 @@ header_128 [label="3 : Txtbuf:left(disp)"]
 
 prose_129 [label="prose"]
 
-codeblock_130 [label="code block 164-175"]
+codeblock_130 [label="code block 163-174"]
 
 
 // END RANK section_52
@@ -705,13 +704,13 @@ header_135 [label="3 : Txtbuf:right(disp)"]
 
 prose_136 [label="prose"]
 
-codeblock_137 [label="code block 180-192"]
+codeblock_137 [label="code block 179-191"]
 
-codeblock_138 [label="code block 195-203"]
+codeblock_138 [label="code block 194-202"]
 
-codeblock_139 [label="code block 205-215"]
+codeblock_139 [label="code block 204-214"]
 
-codeblock_140 [label="code block 217-231"]
+codeblock_140 [label="code block 216-230"]
 
 
 // END RANK section_53
@@ -792,9 +791,9 @@ header_148 [label="3 : new"]
 
 prose_149 [label="prose"]
 
-codeblock_150 [label="code block 236-260"]
+codeblock_150 [label="code block 235-259"]
 
-codeblock_151 [label="code block 262-264"]
+codeblock_151 [label="code block 261-263"]
 
 
 // END RANK section_54

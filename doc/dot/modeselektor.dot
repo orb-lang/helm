@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 602"]
+doc_0 [label="doc - 605"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-553"]
+section_1 [label="section: 1-556"]
 
 
 // END RANK doc_0
@@ -25,9 +25,9 @@ prose_4 [label="prose"]
 
 section_5 [label="section: 12-282"]
 
-section_6 [label="section: 334-480"]
+section_6 [label="section: 336-483"]
 
-section_7 [label="section: 554-602"]
+section_7 [label="section: 557-605"]
 
 
 // END RANK section_1
@@ -184,7 +184,7 @@ section_57 [label="section: 195-267"]
 
 section_58 [label="section: 268-282"]
 
-section_59 [label="section: 283-333"]
+section_59 [label="section: 283-335"]
 
 
 // END RANK section_5
@@ -1666,11 +1666,11 @@ prose_411 [label="prose"]
 
 codeblock_412 [label="code block 288-297"]
 
-codeblock_413 [label="code block 300-310"]
+codeblock_413 [label="code block 300-312"]
 
-codeblock_414 [label="code block 312-325"]
+codeblock_414 [label="code block 314-327"]
 
-codeblock_415 [label="code block 327-331"]
+codeblock_415 [label="code block 329-333"]
 
 
 // END RANK section_59
@@ -1710,6 +1710,8 @@ codeblock_413 -> leaf_420
 leaf_420  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS.paint_row(modeS)
    local lb = Lex.lua_thor(tostring(modeS.txtbuf))
    write(a.cursor.hide())
+   write(a.erase.box(modeS.repl_top, modeS.l_margin,
+                     modeS.repl_line, modeS.r_margin))
    write(a.jump(modeS.repl_top, modeS.l_margin))
    write(a.erase.right())
    modeS:write(concat(lb))
@@ -1748,19 +1750,19 @@ prose_424 [label="prose"]
 
 prose_425 [label="prose"]
 
-codeblock_426 [label="code block 344-376"]
+codeblock_426 [label="code block 346-378"]
 
 prose_427 [label="prose"]
 
-codeblock_428 [label="code block 380-384"]
+codeblock_428 [label="code block 382-386"]
 
-section_429 [label="section: 387-393"]
+section_429 [label="section: 389-395"]
 
-section_430 [label="section: 394-459"]
+section_430 [label="section: 396-462"]
 
-section_431 [label="section: 460-480"]
+section_431 [label="section: 463-483"]
 
-section_432 [label="section: 481-553"]
+section_432 [label="section: 484-556"]
 
 
 // END RANK section_6
@@ -2007,7 +2009,7 @@ header_484 [label="3 : NAV"]
 
 prose_485 [label="prose"]
 
-codeblock_486 [label="code block 396-457"]
+codeblock_486 [label="code block 398-460"]
 
 
 // END RANK section_430
@@ -2042,6 +2044,7 @@ leaf_490  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function NAV.U
       modeS.hist:append(linestash)
    end
    if prev_result then
+      modeS.repl_line = #modeS.txtbuf.lines + 1
       modeS:printResults(prev_result)
    else
       modeS:clearResult()
@@ -2101,7 +2104,7 @@ prose_492 [label="prose"]
 
 prose_493 [label="prose"]
 
-codeblock_494 [label="code block 466-478"]
+codeblock_494 [label="code block 469-481"]
 
 
 // END RANK section_431
@@ -2160,11 +2163,11 @@ header_501 [label="3 : ModeS:eval()"]
 
 prose_502 [label="prose"]
 
-codeblock_503 [label="code block 484-489"]
+codeblock_503 [label="code block 487-492"]
 
-codeblock_504 [label="code block 491-495"]
+codeblock_504 [label="code block 494-498"]
 
-codeblock_505 [label="code block 497-551"]
+codeblock_505 [label="code block 500-554"]
 
 
 // END RANK section_432
@@ -2263,9 +2266,9 @@ header_512 [label="2 : new"]
 
 prose_513 [label="prose"]
 
-codeblock_514 [label="code block 558-574"]
+codeblock_514 [label="code block 561-577"]
 
-codeblock_515 [label="code block 576-578"]
+codeblock_515 [label="code block 579-581"]
 
 
 // END RANK section_7

@@ -138,7 +138,6 @@ function Txtbuf.advance(txtbuf)
    txtbuf.lines[#txtbuf.lines + 1] = {}
    txtbuf.cur_row = #txtbuf.lines
    txtbuf.cursor = 1
-   log("advanced %s", ts_bw(txtbuf))
 end
 ```
 ### Txtbuf:d_back()
