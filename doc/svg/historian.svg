@@ -13,13 +13,13 @@
 <g id="node1" class="node">
 <title>doc_0</title>
 <ellipse fill="none" stroke="#000000" cx="1806" cy="-2349.6036" rx="46.9581" ry="18"/>
-<text text-anchor="middle" x="1806" y="-2345.4036" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">doc &#45; 383</text>
+<text text-anchor="middle" x="1806" y="-2345.4036" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">doc &#45; 382</text>
 </g>
 <!-- section_1 -->
 <g id="node2" class="node">
 <title>section_1</title>
 <ellipse fill="none" stroke="#000000" cx="1806" cy="-2277.6036" rx="65.8187" ry="18"/>
-<text text-anchor="middle" x="1806" y="-2273.4036" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 1&#45;297</text>
+<text text-anchor="middle" x="1806" y="-2273.4036" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 1&#45;296</text>
 </g>
 <!-- doc_0&#45;&gt;section_1 -->
 <g id="edge1" class="edge">
@@ -115,7 +115,7 @@
 <g id="node10" class="node">
 <title>section_9</title>
 <ellipse fill="none" stroke="#000000" cx="5348" cy="-2205.6036" rx="70.655" ry="18"/>
-<text text-anchor="middle" x="5348" y="-2201.4036" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 32&#45;201</text>
+<text text-anchor="middle" x="5348" y="-2201.4036" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 32&#45;200</text>
 </g>
 <!-- section_1&#45;&gt;section_9 -->
 <g id="edge9" class="edge">
@@ -127,7 +127,7 @@
 <g id="node11" class="node">
 <title>section_10</title>
 <ellipse fill="none" stroke="#000000" cx="11087" cy="-2205.6036" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="11087" y="-2201.4036" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 252&#45;297</text>
+<text text-anchor="middle" x="11087" y="-2201.4036" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 251&#45;296</text>
 </g>
 <!-- section_1&#45;&gt;section_10 -->
 <g id="edge10" class="edge">
@@ -139,7 +139,7 @@
 <g id="node12" class="node">
 <title>section_11</title>
 <ellipse fill="none" stroke="#000000" cx="12119" cy="-2205.6036" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="12119" y="-2201.4036" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 298&#45;349</text>
+<text text-anchor="middle" x="12119" y="-2201.4036" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 297&#45;348</text>
 </g>
 <!-- section_1&#45;&gt;section_11 -->
 <g id="edge11" class="edge">
@@ -350,7 +350,7 @@
 <g id="node33" class="node">
 <title>section_32</title>
 <ellipse fill="none" stroke="#000000" cx="8865" cy="-2086.0034" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="8865" y="-2081.8034" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 143&#45;201</text>
+<text text-anchor="middle" x="8865" y="-2081.8034" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 143&#45;200</text>
 </g>
 <!-- section_9&#45;&gt;section_32 -->
 <g id="edge32" class="edge">
@@ -362,7 +362,7 @@
 <g id="node34" class="node">
 <title>section_33</title>
 <ellipse fill="none" stroke="#000000" cx="10128" cy="-2086.0034" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="10128" y="-2081.8034" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 202&#45;251</text>
+<text text-anchor="middle" x="10128" y="-2081.8034" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 201&#45;250</text>
 </g>
 <!-- section_9&#45;&gt;section_33 -->
 <g id="edge33" class="edge">
@@ -398,7 +398,7 @@
 <g id="node158" class="node">
 <title>codeblock_157</title>
 <ellipse fill="none" stroke="#000000" cx="11393" cy="-2086.0034" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="11393" y="-2081.8034" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 254&#45;295</text>
+<text text-anchor="middle" x="11393" y="-2081.8034" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 253&#45;294</text>
 </g>
 <!-- section_10&#45;&gt;codeblock_157 -->
 <g id="edge157" class="edge">
@@ -434,7 +434,7 @@
 <g id="node165" class="node">
 <title>codeblock_164</title>
 <ellipse fill="none" stroke="#000000" cx="12189" cy="-2086.0034" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="12189" y="-2081.8034" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 300&#45;313</text>
+<text text-anchor="middle" x="12189" y="-2081.8034" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 299&#45;312</text>
 </g>
 <!-- section_11&#45;&gt;codeblock_164 -->
 <g id="edge164" class="edge">
@@ -446,7 +446,7 @@
 <g id="node166" class="node">
 <title>section_165</title>
 <ellipse fill="none" stroke="#000000" cx="12633" cy="-2086.0034" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="12633" y="-2081.8034" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 316&#45;349</text>
+<text text-anchor="middle" x="12633" y="-2081.8034" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 315&#45;348</text>
 </g>
 <!-- section_11&#45;&gt;section_165 -->
 <g id="edge165" class="edge">
@@ -458,7 +458,7 @@
 <g id="node167" class="node">
 <title>section_166</title>
 <ellipse fill="none" stroke="#000000" cx="13566" cy="-2086.0034" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="13566" y="-2081.8034" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 350&#45;383</text>
+<text text-anchor="middle" x="13566" y="-2081.8034" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 349&#45;382</text>
 </g>
 <!-- section_11&#45;&gt;section_166 -->
 <g id="edge166" class="edge">
@@ -1037,7 +1037,7 @@
 <g id="node121" class="node">
 <title>codeblock_120</title>
 <ellipse fill="none" stroke="#000000" cx="9153" cy="-1671.5027" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="9153" y="-1667.3027" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 150&#45;199</text>
+<text text-anchor="middle" x="9153" y="-1667.3027" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 150&#45;198</text>
 </g>
 <!-- section_32&#45;&gt;codeblock_120 -->
 <g id="edge120" class="edge">
@@ -1109,7 +1109,7 @@
 <g id="node133" class="node">
 <title>codeblock_132</title>
 <ellipse fill="none" stroke="#000000" cx="10812" cy="-1671.5027" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="10812" y="-1667.3027" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 217&#45;249</text>
+<text text-anchor="middle" x="10812" y="-1667.3027" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 216&#45;248</text>
 </g>
 <!-- section_33&#45;&gt;codeblock_132 -->
 <g id="edge132" class="edge">
@@ -1743,61 +1743,60 @@
 <!-- leaf_126 -->
 <g id="node127" class="node">
 <title>leaf_126</title>
-<polygon fill="none" stroke="#c0c0c0" points="9460,-1088.1026 8982,-1088.1026 8982,-340.6996 9460,-340.6996 9460,-1088.1026"/>
-<text text-anchor="middle" x="9221" y="-1072.8019" font-family="Inconsolata" font-size="14.00" fill="#000000">function Historian.load(historian)</text>
-<text text-anchor="middle" x="9221" y="-1057.4018" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local conn = sql.open(historian.bridge_home)</text>
-<text text-anchor="middle" x="9221" y="-1042.0018" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;historian.conn = conn</text>
-<text text-anchor="middle" x="9221" y="-1026.6018" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#45;&#45; Set up bridge tables</text>
-<text text-anchor="middle" x="9221" y="-1011.2017" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;conn.pragma.foreign_keys(true)</text>
-<text text-anchor="middle" x="9221" y="-995.8017" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;conn:exec(create_result_table)</text>
-<text text-anchor="middle" x="9221" y="-980.4017" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;conn:exec(create_repl_table)</text>
-<text text-anchor="middle" x="9221" y="-965.0017" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#45;&#45; Create insert prepared statements</text>
-<text text-anchor="middle" x="9221" y="-949.6016" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;historian.insert_line_stmt = conn:prepare(insert_line_stmt)</text>
-<text text-anchor="middle" x="9221" y="-934.2016" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;historian.insert_result_stmt = conn:prepare(insert_result_stmt)</text>
-<text text-anchor="middle" x="9221" y="-918.8016" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#45;&#45; Retrieve history</text>
-<text text-anchor="middle" x="9221" y="-903.4015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local pop_str = sql.format(get_recent, historian.project,</text>
-<text text-anchor="middle" x="9221" y="-888.0015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;historian.HISTORY_LIMIT)</text>
-<text text-anchor="middle" x="9221" y="-872.6015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local repl_val, repl_row = sql.pexec(conn, pop_str, &quot;i&quot;)</text>
-<text text-anchor="middle" x="9221" y="-857.2014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local res_str = sql.format(get_reprs, historian.project,</text>
-<text text-anchor="middle" x="9221" y="-841.8014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;historian.HISTORY_LIMIT * 2)</text>
-<text text-anchor="middle" x="9221" y="-826.4014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local res_val, res_row = sql.pexec(conn, res_str, &quot;i&quot;)</text>
-<text text-anchor="middle" x="9221" y="-811.0013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if repl_val and res_val then</text>
-<text text-anchor="middle" x="9221" y="-795.6013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local lines = reverse(repl_val[2])</text>
-<text text-anchor="middle" x="9221" y="-780.2013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local line_ids = reverse(repl_val[1])</text>
-<text text-anchor="middle" x="9221" y="-764.8012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local repl_map = {}</text>
-<text text-anchor="middle" x="9221" y="-749.4012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;for i, v in ipairs(lines) do</text>
-<text text-anchor="middle" x="9221" y="-734.0012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;local buf = Txtbuf(v)</text>
-<text text-anchor="middle" x="9221" y="-718.6012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;historian[i] = buf</text>
-<text text-anchor="middle" x="9221" y="-703.2011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;repl_map[line_ids[i]] = buf</text>
-<text text-anchor="middle" x="9221" y="-687.8011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end</text>
-<text text-anchor="middle" x="9221" y="-672.4011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;historian.cursor = #historian</text>
-<text text-anchor="middle" x="9221" y="-657.001" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;historian.repl_map = repl_map &#45;&#45; remove</text>
-<text text-anchor="middle" x="9221" y="-641.601" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; reuse line_id var for foreign keys</text>
-<text text-anchor="middle" x="9221" y="-626.201" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;line_ids = res_val[1]</text>
-<text text-anchor="middle" x="9221" y="-610.8009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local reprs = res_val[2]</text>
-<text text-anchor="middle" x="9221" y="-595.4009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; This is keyed by txtbuf with a string value.</text>
-<text text-anchor="middle" x="9221" y="-580.0009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local result_map = {}</text>
-<text text-anchor="middle" x="9221" y="-564.6008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;for i = 1, #reprs do</text>
-<text text-anchor="middle" x="9221" y="-549.2008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;local buf = repl_map[line_ids[i]]</text>
-<text text-anchor="middle" x="9221" y="-533.8008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;if buf then</text>
-<text text-anchor="middle" x="9221" y="-518.4007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;local result = result_map[buf] or {frozen = true}</text>
-<text text-anchor="middle" x="9221" y="-503.0007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;result[#result + 1] = reprs[i]</text>
-<text text-anchor="middle" x="9221" y="-487.6007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;result.n = #result &#45;&#45; for compat with nil in live use</text>
-<text text-anchor="middle" x="9221" y="-472.2007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;result_map[buf] = result</text>
-<text text-anchor="middle" x="9221" y="-456.8006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;end</text>
-<text text-anchor="middle" x="9221" y="-441.4006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end</text>
-<text text-anchor="middle" x="9221" y="-426.0006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;historian.results = result_map</text>
-<text text-anchor="middle" x="9221" y="-410.6005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;else</text>
-<text text-anchor="middle" x="9221" y="-395.2005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; one of the &#39;row&#39; vals will have an error</text>
-<text text-anchor="middle" x="9221" y="-379.8005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;error(repr_row .. res_row)</text>
-<text text-anchor="middle" x="9221" y="-364.4004" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
-<text text-anchor="middle" x="9221" y="-349.0004" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
+<polygon fill="none" stroke="#c0c0c0" points="9460,-1080.2026 8982,-1080.2026 8982,-348.5996 9460,-348.5996 9460,-1080.2026"/>
+<text text-anchor="middle" x="9221" y="-1065.1019" font-family="Inconsolata" font-size="14.00" fill="#000000">function Historian.load(historian)</text>
+<text text-anchor="middle" x="9221" y="-1049.7018" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local conn = sql.open(historian.bridge_home)</text>
+<text text-anchor="middle" x="9221" y="-1034.3018" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;historian.conn = conn</text>
+<text text-anchor="middle" x="9221" y="-1018.9018" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#45;&#45; Set up bridge tables</text>
+<text text-anchor="middle" x="9221" y="-1003.5017" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;conn.pragma.foreign_keys(true)</text>
+<text text-anchor="middle" x="9221" y="-988.1017" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;conn:exec(create_result_table)</text>
+<text text-anchor="middle" x="9221" y="-972.7017" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;conn:exec(create_repl_table)</text>
+<text text-anchor="middle" x="9221" y="-957.3016" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#45;&#45; Create insert prepared statements</text>
+<text text-anchor="middle" x="9221" y="-941.9016" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;historian.insert_line_stmt = conn:prepare(insert_line_stmt)</text>
+<text text-anchor="middle" x="9221" y="-926.5016" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;historian.insert_result_stmt = conn:prepare(insert_result_stmt)</text>
+<text text-anchor="middle" x="9221" y="-911.1015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#45;&#45; Retrieve history</text>
+<text text-anchor="middle" x="9221" y="-895.7015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local pop_str = sql.format(get_recent, historian.project,</text>
+<text text-anchor="middle" x="9221" y="-880.3015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;historian.HISTORY_LIMIT)</text>
+<text text-anchor="middle" x="9221" y="-864.9015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local repl_val, repl_row = sql.pexec(conn, pop_str, &quot;i&quot;)</text>
+<text text-anchor="middle" x="9221" y="-849.5014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local res_str = sql.format(get_reprs, historian.project,</text>
+<text text-anchor="middle" x="9221" y="-834.1014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;historian.HISTORY_LIMIT * 2)</text>
+<text text-anchor="middle" x="9221" y="-818.7014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local res_val, res_row = sql.pexec(conn, res_str, &quot;i&quot;)</text>
+<text text-anchor="middle" x="9221" y="-803.3013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if repl_val and res_val then</text>
+<text text-anchor="middle" x="9221" y="-787.9013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local lines = reverse(repl_val[2])</text>
+<text text-anchor="middle" x="9221" y="-772.5013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local line_ids = reverse(repl_val[1])</text>
+<text text-anchor="middle" x="9221" y="-757.1012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local repl_map = {}</text>
+<text text-anchor="middle" x="9221" y="-741.7012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;for i, v in ipairs(lines) do</text>
+<text text-anchor="middle" x="9221" y="-726.3012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;local buf = Txtbuf(v)</text>
+<text text-anchor="middle" x="9221" y="-710.9011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;historian[i] = buf</text>
+<text text-anchor="middle" x="9221" y="-695.5011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;repl_map[line_ids[i]] = buf</text>
+<text text-anchor="middle" x="9221" y="-680.1011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end</text>
+<text text-anchor="middle" x="9221" y="-664.701" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;historian.cursor = #historian</text>
+<text text-anchor="middle" x="9221" y="-649.301" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; reuse line_id var for foreign keys</text>
+<text text-anchor="middle" x="9221" y="-633.901" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;line_ids = res_val[1]</text>
+<text text-anchor="middle" x="9221" y="-618.501" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local reprs = res_val[2]</text>
+<text text-anchor="middle" x="9221" y="-603.1009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; This is keyed by txtbuf with a string value.</text>
+<text text-anchor="middle" x="9221" y="-587.7009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local result_map = {}</text>
+<text text-anchor="middle" x="9221" y="-572.3009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;for i = 1, #reprs do</text>
+<text text-anchor="middle" x="9221" y="-556.9008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;local buf = repl_map[line_ids[i]]</text>
+<text text-anchor="middle" x="9221" y="-541.5008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;if buf then</text>
+<text text-anchor="middle" x="9221" y="-526.1008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;local result = result_map[buf] or {frozen = true}</text>
+<text text-anchor="middle" x="9221" y="-510.7007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;result[#result + 1] = reprs[i]</text>
+<text text-anchor="middle" x="9221" y="-495.3007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;result.n = #result &#45;&#45; for compat with nil in live use</text>
+<text text-anchor="middle" x="9221" y="-479.9007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;result_map[buf] = result</text>
+<text text-anchor="middle" x="9221" y="-464.5006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;end</text>
+<text text-anchor="middle" x="9221" y="-449.1006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end</text>
+<text text-anchor="middle" x="9221" y="-433.7006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;historian.results = result_map</text>
+<text text-anchor="middle" x="9221" y="-418.3005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;else</text>
+<text text-anchor="middle" x="9221" y="-402.9005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;historian.results = {}</text>
+<text text-anchor="middle" x="9221" y="-387.5005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;historian.cursor = 0</text>
+<text text-anchor="middle" x="9221" y="-372.1005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
+<text text-anchor="middle" x="9221" y="-356.7004" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
 </g>
 <!-- codeblock_120&#45;&gt;leaf_126 -->
 <g id="edge126" class="edge">
 <title>codeblock_120&#45;&gt;leaf_126</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M9154.2977,-1653.238C9159.2572,-1583.4319 9177.5483,-1325.985 9193.7242,-1098.3082"/>
-<polygon fill="#000000" stroke="#000000" points="9197.2266,-1098.3975 9194.4442,-1088.1746 9190.2442,-1097.9014 9197.2266,-1098.3975"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M9154.2977,-1653.238C9159.3138,-1582.6362 9177.9671,-1320.0909 9194.2766,-1090.5336"/>
+<polygon fill="#000000" stroke="#000000" points="9197.7848,-1090.5412 9195.0024,-1080.3183 9190.8024,-1090.0451 9197.7848,-1090.5412"/>
 </g>
 <!-- leaf_123 -->
 <g id="node124" class="node">
@@ -2234,7 +2233,7 @@
 <title>leaf_170</title>
 <polygon fill="none" stroke="#c0c0c0" points="12400,-1772.8831 12020,-1772.8831 12020,-1570.1224 12400,-1570.1224 12400,-1772.8831"/>
 <text text-anchor="middle" x="12210" y="-1757.7429" font-family="Inconsolata" font-size="14.00" fill="#000000">function Historian.prev(historian)</text>
-<text text-anchor="middle" x="12210" y="-1742.3428" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if historian.cursor == 0 then</text>
+<text text-anchor="middle" x="12210" y="-1742.3428" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if historian.cursor == 0 or #historian == 0 then</text>
 <text text-anchor="middle" x="12210" y="-1726.9428" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return Txtbuf()</text>
 <text text-anchor="middle" x="12210" y="-1711.5428" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
 <text text-anchor="middle" x="12210" y="-1696.1428" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local Δ = historian.cursor &gt; 1 and 1 or 0</text>
@@ -2292,7 +2291,7 @@
 <g id="node175" class="node">
 <title>codeblock_174</title>
 <ellipse fill="none" stroke="#000000" cx="12936" cy="-1671.5027" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="12936" y="-1667.3027" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 323&#45;347</text>
+<text text-anchor="middle" x="12936" y="-1667.3027" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 322&#45;346</text>
 </g>
 <!-- section_165&#45;&gt;codeblock_174 -->
 <g id="edge174" class="edge">
@@ -2340,7 +2339,7 @@
 <g id="node191" class="node">
 <title>codeblock_190</title>
 <ellipse fill="none" stroke="#000000" cx="13761" cy="-1671.5027" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="13761" y="-1667.3027" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 356&#45;370</text>
+<text text-anchor="middle" x="13761" y="-1667.3027" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 355&#45;369</text>
 </g>
 <!-- section_166&#45;&gt;codeblock_190 -->
 <g id="edge190" class="edge">
@@ -2352,7 +2351,7 @@
 <g id="node192" class="node">
 <title>codeblock_191</title>
 <ellipse fill="none" stroke="#000000" cx="14074" cy="-1671.5027" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="14074" y="-1667.3027" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 372&#45;379</text>
+<text text-anchor="middle" x="14074" y="-1667.3027" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 371&#45;378</text>
 </g>
 <!-- section_166&#45;&gt;codeblock_191 -->
 <g id="edge191" class="edge">
@@ -2364,7 +2363,7 @@
 <g id="node193" class="node">
 <title>codeblock_192</title>
 <ellipse fill="none" stroke="#000000" cx="14328" cy="-1671.5027" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="14328" y="-1667.3027" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 381&#45;383</text>
+<text text-anchor="middle" x="14328" y="-1667.3027" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 380&#45;382</text>
 </g>
 <!-- section_166&#45;&gt;codeblock_192 -->
 <g id="edge192" class="edge">
@@ -2461,7 +2460,7 @@
 <polygon fill="none" stroke="#c0c0c0" points="13197.4016,-902.0419 12808.5984,-902.0419 12808.5984,-526.7603 13197.4016,-526.7603 13197.4016,-902.0419"/>
 <text text-anchor="middle" x="13003" y="-887.0214" font-family="Inconsolata" font-size="14.00" fill="#000000">function Historian.next(historian)</text>
 <text text-anchor="middle" x="13003" y="-871.6214" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local Δ = historian.cursor &lt; #historian and 1 or 0</text>
-<text text-anchor="middle" x="13003" y="-852.8614" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if historian.cursor == 0 then</text>
+<text text-anchor="middle" x="13003" y="-852.8614" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if historian.cursor == 0 or #historian == 0 then</text>
 <text text-anchor="middle" x="13003" y="-837.4614" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return Txtbuf()</text>
 <text text-anchor="middle" x="13003" y="-822.0613" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
 <text text-anchor="middle" x="13003" y="-806.6613" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local txtbuf = historian[historian.cursor + Δ]</text>

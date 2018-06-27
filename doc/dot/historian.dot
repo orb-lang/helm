@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 383"]
+doc_0 [label="doc - 382"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-297"]
+section_1 [label="section: 1-296"]
 
 
 // END RANK doc_0
@@ -31,11 +31,11 @@ codeblock_7 [label="code block 16-25"]
 
 codeblock_8 [label="code block 27-29"]
 
-section_9 [label="section: 32-201"]
+section_9 [label="section: 32-200"]
 
-section_10 [label="section: 252-297"]
+section_10 [label="section: 251-296"]
 
-section_11 [label="section: 298-349"]
+section_11 [label="section: 297-348"]
 
 
 // END RANK section_1
@@ -142,9 +142,9 @@ prose_30 [label="prose"]
 
 section_31 [label="section: 59-142"]
 
-section_32 [label="section: 143-201"]
+section_32 [label="section: 143-200"]
 
-section_33 [label="section: 202-251"]
+section_33 [label="section: 201-250"]
 
 
 // END RANK section_9
@@ -568,7 +568,7 @@ prose_118 [label="prose"]
 
 prose_119 [label="prose"]
 
-codeblock_120 [label="code block 150-199"]
+codeblock_120 [label="code block 150-198"]
 
 
 // END RANK section_32
@@ -635,7 +635,6 @@ leaf_126  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histo
          repl_map[line_ids[i]] = buf
       end
       historian.cursor = #historian
-      historian.repl_map = repl_map -- remove
       -- reuse line_id var for foreign keys
       line_ids = res_val[1]
       local reprs = res_val[2]
@@ -652,8 +651,8 @@ leaf_126  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histo
       end
       historian.results = result_map
    else
-      -- one of the 'row' vals will have an error
-      error(repr_row .. res_row)
+      historian.results = {}
+      historian.cursor = 0
    end
 end"]
 // END RANK codeblock_120
@@ -671,7 +670,7 @@ prose_130 [label="prose"]
 
 prose_131 [label="prose"]
 
-codeblock_132 [label="code block 217-249"]
+codeblock_132 [label="code block 216-248"]
 
 
 // END RANK section_33
@@ -819,7 +818,7 @@ header_155 [label="2 : Historian:search(frag)"]
 
 prose_156 [label="prose"]
 
-codeblock_157 [label="code block 254-295"]
+codeblock_157 [label="code block 253-294"]
 
 
 // END RANK section_10
@@ -891,11 +890,11 @@ header_162 [label="2 : Historian:prev()"]
 
 prose_163 [label="prose"]
 
-codeblock_164 [label="code block 300-313"]
+codeblock_164 [label="code block 299-312"]
 
-section_165 [label="section: 316-349"]
+section_165 [label="section: 315-348"]
 
-section_166 [label="section: 350-383"]
+section_166 [label="section: 349-382"]
 
 
 // END RANK section_11
@@ -919,7 +918,7 @@ leaf_169  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 codeblock_164 -> leaf_170
 leaf_170  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.prev(historian)
-   if historian.cursor == 0 then
+   if historian.cursor == 0 or #historian == 0 then
       return Txtbuf()
    end
    local Δ = historian.cursor > 1 and 1 or 0
@@ -941,7 +940,7 @@ prose_172 [label="prose"]
 
 prose_173 [label="prose"]
 
-codeblock_174 [label="code block 323-347"]
+codeblock_174 [label="code block 322-346"]
 
 
 // END RANK section_165
@@ -1000,7 +999,7 @@ I'd like to stop buffering blank lines at some point.
 codeblock_174 -> leaf_186
 leaf_186  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.next(historian)
    local Δ = historian.cursor < #historian and 1 or 0
-   if historian.cursor == 0 then
+   if historian.cursor == 0 or #historian == 0 then
       return Txtbuf()
    end
    local txtbuf = historian[historian.cursor + Δ]
@@ -1032,11 +1031,11 @@ prose_188 [label="prose"]
 
 prose_189 [label="prose"]
 
-codeblock_190 [label="code block 356-370"]
+codeblock_190 [label="code block 355-369"]
 
-codeblock_191 [label="code block 372-379"]
+codeblock_191 [label="code block 371-378"]
 
-codeblock_192 [label="code block 381-383"]
+codeblock_192 [label="code block 380-382"]
 
 
 // END RANK section_166
