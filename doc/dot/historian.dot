@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 383"]
+doc_0 [label="doc - 415"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-297"]
+section_1 [label="section: 1-329"]
 
 
 // END RANK doc_0
@@ -31,11 +31,11 @@ codeblock_7 [label="code block 16-25"]
 
 codeblock_8 [label="code block 27-29"]
 
-section_9 [label="section: 32-201"]
+section_9 [label="section: 32-233"]
 
-section_10 [label="section: 252-297"]
+section_10 [label="section: 284-329"]
 
-section_11 [label="section: 298-349"]
+section_11 [label="section: 330-381"]
 
 
 // END RANK section_1
@@ -140,11 +140,11 @@ prose_29 [label="prose"]
 
 prose_30 [label="prose"]
 
-section_31 [label="section: 59-142"]
+section_31 [label="section: 59-174"]
 
-section_32 [label="section: 143-201"]
+section_32 [label="section: 175-233"]
 
-section_33 [label="section: 202-251"]
+section_33 [label="section: 234-283"]
 
 
 // END RANK section_9
@@ -456,7 +456,7 @@ header_110 [label="3 : SQLite battery"]
 
 prose_111 [label="prose"]
 
-codeblock_112 [label="code block 61-140"]
+codeblock_112 [label="code block 61-172"]
 
 
 // END RANK section_31
@@ -486,7 +486,26 @@ CREATE TABLE IF NOT EXISTS repl (
 line_id INTEGER PRIMARY KEY AUTOINCREMENT,
 project TEXT,
 line TEXT,
-time DATETIME DEFAULT CURRENT_TIMESTAMP);
+time DATETIME DEFAULT CURRENT_TIMESTAMP );
+]]
+
+local create_project_table = [[
+CREATE TABLE IF NOT EXISTS project (
+project_id INTEGER PRIMARY KEY AUTOINCREMENT,
+directory TEXT UNIQUE,
+time DATETIME DEFAULT CURRENT_TIMESTAMP );
+)
+]]
+
+local create_repl_table_v2 = [[
+CREATE TABLE IF NOT EXISTS repl (
+line_id INTEGER PRIMARY KEY AUTOINCREMENT,
+project INTEGER,
+line TEXT,
+time DATETIME DEFAULT CURRENT_TIMESTAMP,
+FOREIGN KEY (project)
+   REFERENCES project (project_id)
+   ON DELETE CASCADE );
 ]]
 
 local create_result_table = [[
@@ -497,19 +516,22 @@ repr text NOT NULL,
 value blob,
 FOREIGN KEY (line_id)
    REFERENCES repl (line_id)
-   ON DELETE CASCADE);
+   ON DELETE CASCADE );
 ]]
 
 local create_session_table = [[
 CREATE TABLE IF NOT EXISTS sessions (
 session_id INTEGER PRIMARY KEY AUTOINCREMENT,
 name TEXT,
+project INTEGER,
 -- These two are line_ids
 start INTEGER NOT NULL,
 end INTEGER,
 test BOOLEAN,
-commit TEXT;
-)
+commit TEXT,
+FOREIGN KEY (project)
+   REFERENCES project(project_id)
+   ON DELETE CASCADE );
 ]]
 
 local insert_line_stmt = [[
@@ -520,15 +542,25 @@ local insert_result_stmt = [[
 INSERT INTO results (line_id, repr) VALUES (:line_id, :repr);
 ]]
 
+local insert_project = [[
+INSERT INTO project (directory) VALUES (:dir)
+ON CONFLICT IGNORE;
+]]
+
 local get_tables = [[
 SELECT name FROM sqlite_master WHERE type='table';
 ]]
 
 local get_recent = [[
 SELECT CAST (line_id AS REAL), line FROM repl
-   WHERE project = %s
+   WHERE project = %d
    ORDER BY time
    DESC LIMIT %d;
+]]
+
+local get_project == [[
+SELECT CAST (project_id AS REAL) FROM project
+   WHERE directory = %s;
 ]]
 
 local get_reprs = [[
@@ -568,7 +600,7 @@ prose_118 [label="prose"]
 
 prose_119 [label="prose"]
 
-codeblock_120 [label="code block 150-199"]
+codeblock_120 [label="code block 182-231"]
 
 
 // END RANK section_32
@@ -671,7 +703,7 @@ prose_130 [label="prose"]
 
 prose_131 [label="prose"]
 
-codeblock_132 [label="code block 217-249"]
+codeblock_132 [label="code block 249-281"]
 
 
 // END RANK section_33
@@ -819,7 +851,7 @@ header_155 [label="2 : Historian:search(frag)"]
 
 prose_156 [label="prose"]
 
-codeblock_157 [label="code block 254-295"]
+codeblock_157 [label="code block 286-327"]
 
 
 // END RANK section_10
@@ -891,11 +923,11 @@ header_162 [label="2 : Historian:prev()"]
 
 prose_163 [label="prose"]
 
-codeblock_164 [label="code block 300-313"]
+codeblock_164 [label="code block 332-345"]
 
-section_165 [label="section: 316-349"]
+section_165 [label="section: 348-381"]
 
-section_166 [label="section: 350-383"]
+section_166 [label="section: 382-415"]
 
 
 // END RANK section_11
@@ -941,7 +973,7 @@ prose_172 [label="prose"]
 
 prose_173 [label="prose"]
 
-codeblock_174 [label="code block 323-347"]
+codeblock_174 [label="code block 355-379"]
 
 
 // END RANK section_165
@@ -1032,11 +1064,11 @@ prose_188 [label="prose"]
 
 prose_189 [label="prose"]
 
-codeblock_190 [label="code block 356-370"]
+codeblock_190 [label="code block 388-402"]
 
-codeblock_191 [label="code block 372-379"]
+codeblock_191 [label="code block 404-411"]
 
-codeblock_192 [label="code block 381-383"]
+codeblock_192 [label="code block 413-415"]
 
 
 // END RANK section_166

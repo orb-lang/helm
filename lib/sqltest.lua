@@ -76,7 +76,7 @@ conn:setaggregate("MYAF") -- Remove MYAF from SQLite3 and free callback.
 
 -- Prapare.
 local stmt = conn:prepare "INSERT INTO t VALUES(?, ?, ?, ?)"
-local stmt_kv = conn:prepare "INSERT INTO t VALUES(:r, :i, :s, :b)"
+
 
 do -- Bindings, reset, step.
 conn:exec "DELETE FROM t"
@@ -92,6 +92,8 @@ T_eqv(ret.s, ret[3])
 T_eqv(ret.i, {1LL, 2LL, 2LL, 4LL, 5LL})
 T_eqv(ret["typeof(b)"], {"text", "blob", "blob", "blob", "null"})
 end
+
+local stmt_kv = conn:prepare "INSERT INTO t VALUES(:r, :i, :s, :b)"
 
 -- Tests for bindkv
 do -- Bindings, reset, step.

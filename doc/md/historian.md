@@ -72,7 +72,26 @@ CREATE TABLE IF NOT EXISTS repl (
 line_id INTEGER PRIMARY KEY AUTOINCREMENT,
 project TEXT,
 line TEXT,
-time DATETIME DEFAULT CURRENT_TIMESTAMP);
+time DATETIME DEFAULT CURRENT_TIMESTAMP );
+]]
+
+local create_project_table = [[
+CREATE TABLE IF NOT EXISTS project (
+project_id INTEGER PRIMARY KEY AUTOINCREMENT,
+directory TEXT UNIQUE,
+time DATETIME DEFAULT CURRENT_TIMESTAMP );
+)
+]]
+
+local create_repl_table_v2 = [[
+CREATE TABLE IF NOT EXISTS repl (
+line_id INTEGER PRIMARY KEY AUTOINCREMENT,
+project INTEGER,
+line TEXT,
+time DATETIME DEFAULT CURRENT_TIMESTAMP,
+FOREIGN KEY (project)
+   REFERENCES project (project_id)
+   ON DELETE CASCADE );
 ]]
 
 local create_result_table = [[
@@ -83,19 +102,22 @@ repr text NOT NULL,
 value blob,
 FOREIGN KEY (line_id)
    REFERENCES repl (line_id)
-   ON DELETE CASCADE);
+   ON DELETE CASCADE );
 ]]
 
 local create_session_table = [[
 CREATE TABLE IF NOT EXISTS sessions (
 session_id INTEGER PRIMARY KEY AUTOINCREMENT,
 name TEXT,
+project INTEGER,
 -- These two are line_ids
 start INTEGER NOT NULL,
 end INTEGER,
 test BOOLEAN,
-commit TEXT;
-)
+commit TEXT,
+FOREIGN KEY (project)
+   REFERENCES project(project_id)
+   ON DELETE CASCADE );
 ]]
 
 local insert_line_stmt = [[
@@ -106,15 +128,25 @@ local insert_result_stmt = [[
 INSERT INTO results (line_id, repr) VALUES (:line_id, :repr);
 ]]
 
+local insert_project = [[
+INSERT INTO project (directory) VALUES (:dir)
+ON CONFLICT IGNORE;
+]]
+
 local get_tables = [[
 SELECT name FROM sqlite_master WHERE type='table';
 ]]
 
 local get_recent = [[
 SELECT CAST (line_id AS REAL), line FROM repl
-   WHERE project = %s
+   WHERE project = %d
    ORDER BY time
    DESC LIMIT %d;
+]]
+
+local get_project == [[
+SELECT CAST (project_id AS REAL) FROM project
+   WHERE directory = %s;
 ]]
 
 local get_reprs = [[

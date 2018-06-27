@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 611"]
+doc_0 [label="doc - 614"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-563"]
+section_1 [label="section: 1-566"]
 
 
 // END RANK doc_0
@@ -25,9 +25,9 @@ prose_4 [label="prose"]
 
 section_5 [label="section: 12-282"]
 
-section_6 [label="section: 341-495"]
+section_6 [label="section: 344-498"]
 
-section_7 [label="section: 564-611"]
+section_7 [label="section: 567-614"]
 
 
 // END RANK section_1
@@ -184,7 +184,7 @@ section_57 [label="section: 195-267"]
 
 section_58 [label="section: 268-282"]
 
-section_59 [label="section: 283-340"]
+section_59 [label="section: 283-343"]
 
 
 // END RANK section_5
@@ -1670,9 +1670,9 @@ codeblock_413 [label="code block 300-311"]
 
 codeblock_414 [label="code block 313-317"]
 
-codeblock_415 [label="code block 318-332"]
+codeblock_415 [label="code block 318-335"]
 
-codeblock_416 [label="code block 334-338"]
+codeblock_416 [label="code block 337-341"]
 
 
 // END RANK section_59
@@ -1730,6 +1730,8 @@ end"]
 codeblock_415 -> leaf_423
 leaf_423  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS.printResults(modeS, results, new)
    local rainbuf = {}
+   write(a.cursor.hide())
+   modeS:clearResult()
    local row = new and modeS.repl_top + 1 or modeS:replLine() + 1
    modeS:write(a.rc(row, modeS.l_margin))
    for i = 1, results.n do
@@ -1740,6 +1742,7 @@ leaf_423  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS
       end
    end
    modeS:write(concat(rainbuf, '   '))
+   write(a.cursor.show())
 end"]
 // END RANK codeblock_415
 
@@ -1758,19 +1761,19 @@ prose_426 [label="prose"]
 
 prose_427 [label="prose"]
 
-codeblock_428 [label="code block 351-383"]
+codeblock_428 [label="code block 354-386"]
 
 prose_429 [label="prose"]
 
-codeblock_430 [label="code block 387-391"]
+codeblock_430 [label="code block 390-394"]
 
-section_431 [label="section: 394-400"]
+section_431 [label="section: 397-403"]
 
-section_432 [label="section: 401-474"]
+section_432 [label="section: 404-477"]
 
-section_433 [label="section: 475-495"]
+section_433 [label="section: 478-498"]
 
-section_434 [label="section: 496-563"]
+section_434 [label="section: 499-566"]
 
 
 // END RANK section_6
@@ -2017,7 +2020,7 @@ header_486 [label="3 : NAV"]
 
 prose_487 [label="prose"]
 
-codeblock_488 [label="code block 403-472"]
+codeblock_488 [label="code block 406-475"]
 
 
 // END RANK section_432
@@ -2119,7 +2122,7 @@ prose_494 [label="prose"]
 
 prose_495 [label="prose"]
 
-codeblock_496 [label="code block 481-493"]
+codeblock_496 [label="code block 484-496"]
 
 
 // END RANK section_433
@@ -2178,11 +2181,11 @@ header_503 [label="3 : ModeS:eval()"]
 
 prose_504 [label="prose"]
 
-codeblock_505 [label="code block 499-504"]
+codeblock_505 [label="code block 502-507"]
 
-codeblock_506 [label="code block 506-510"]
+codeblock_506 [label="code block 509-513"]
 
-codeblock_507 [label="code block 512-561"]
+codeblock_507 [label="code block 515-564"]
 
 
 // END RANK section_434
@@ -2214,7 +2217,7 @@ end"]
 
 codeblock_506 -> leaf_512
 leaf_512  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS.clearResult(modeS)
-   write(a.erase.box(3, 1, modeS.max_row, modeS.r_margin))
+   write(a.erase.box(modeS.repl_top + 1, 1, modeS.max_row, modeS.r_margin))
 end"]
 // END RANK codeblock_506
 
@@ -2240,13 +2243,13 @@ leaf_513  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS
       success, results = gatherResults(xpcall(f, debug.traceback))
       if success then
       -- successful call
-         modeS:clearResult()
          if results.n > 0 then
-            modeS:printResults(results, success)
+            modeS:printResults(results)
          end
       else
       -- error
-         modeS:clearResult()
+         write(a.cursor.hide())
+         modeS:clearResults()
          modeS:write(results[1])
       end
    else
@@ -2276,9 +2279,9 @@ header_514 [label="2 : new"]
 
 prose_515 [label="prose"]
 
-codeblock_516 [label="code block 568-583"]
+codeblock_516 [label="code block 571-586"]
 
-codeblock_517 [label="code block 585-587"]
+codeblock_517 [label="code block 588-590"]
 
 
 // END RANK section_7
