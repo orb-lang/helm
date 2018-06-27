@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 231"]
+doc_0 [label="doc - 234"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-110"]
+section_1 [label="section: 1-113"]
 
 
 // END RANK doc_0
@@ -31,11 +31,11 @@ section_7 [label="section: 21-36"]
 
 section_8 [label="section: 37-49"]
 
-section_9 [label="section: 50-90"]
+section_9 [label="section: 50-93"]
 
-section_10 [label="section: 91-110"]
+section_10 [label="section: 94-113"]
 
-section_11 [label="section: 111-202"]
+section_11 [label="section: 114-205"]
 
 
 // END RANK section_1
@@ -263,7 +263,7 @@ prose_59 [label="prose"]
 
 prose_60 [label="prose"]
 
-codeblock_61 [label="code block 71-89"]
+codeblock_61 [label="code block 71-92"]
 
 
 // END RANK section_9
@@ -529,6 +529,9 @@ leaf_131  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function sql.f
    for i, v in ipairs(argv) do
       if type(v) == \"string\" then
          argv[i] = san(v)
+      elseif type(v) == \"cdata\" then
+         -- assume this is a number of some kind
+         argv[i] = tonumber(v)
       else
          argv[i] = v
       end
@@ -551,7 +554,7 @@ prose_133 [label="prose"]
 
 prose_134 [label="prose"]
 
-codeblock_135 [label="code block 97-108"]
+codeblock_135 [label="code block 100-111"]
 
 
 // END RANK section_10
@@ -629,11 +632,11 @@ prose_149 [label="prose"]
 
 prose_150 [label="prose"]
 
-codeblock_151 [label="code block 117-122"]
+codeblock_151 [label="code block 120-125"]
 
-section_152 [label="section: 125-202"]
+section_152 [label="section: 128-205"]
 
-section_153 [label="section: 203-211"]
+section_153 [label="section: 206-214"]
 
 
 // END RANK section_11
@@ -709,13 +712,13 @@ prose_169 [label="prose"]
 
 prose_170 [label="prose"]
 
-codeblock_171 [label="code block 136-177"]
+codeblock_171 [label="code block 139-180"]
 
 prose_172 [label="prose"]
 
-codeblock_173 [label="code block 182-195"]
+codeblock_173 [label="code block 185-198"]
 
-codeblock_174 [label="code block 198-200"]
+codeblock_174 [label="code block 201-203"]
 
 
 // END RANK section_152
@@ -956,9 +959,9 @@ header_219 [label="3 : Stretch goals"]
 
 prose_220 [label="prose"]
 
-section_221 [label="section: 207-211"]
+section_221 [label="section: 210-214"]
 
-section_222 [label="section: 212-231"]
+section_222 [label="section: 215-234"]
 
 
 // END RANK section_153

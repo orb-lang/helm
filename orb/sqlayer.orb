@@ -75,6 +75,9 @@ function sql.format(str, ...)
    for i, v in ipairs(argv) do
       if type(v) == "string" then
          argv[i] = san(v)
+      elseif type(v) == "cdata" then
+         -- assume this is a number of some kind
+         argv[i] = tonumber(v)
       else
          argv[i] = v
       end

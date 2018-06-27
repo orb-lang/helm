@@ -1794,10 +1794,10 @@
 <text text-anchor="middle" x="9260" y="-950.2016" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;historian.insert_line_stmt = conn:prepare(insert_line_stmt)</text>
 <text text-anchor="middle" x="9260" y="-934.8016" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;historian.insert_result_stmt = conn:prepare(insert_result_stmt)</text>
 <text text-anchor="middle" x="9260" y="-919.4015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#45;&#45; Retrieve history</text>
-<text text-anchor="middle" x="9260" y="-904.0015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local pop_str = sql.format(get_recent, tonumber(project_id),</text>
+<text text-anchor="middle" x="9260" y="-904.0015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local pop_str = sql.format(get_recent, project_id,</text>
 <text text-anchor="middle" x="9260" y="-888.6015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;historian.HISTORY_LIMIT)</text>
 <text text-anchor="middle" x="9260" y="-873.2014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local repl_val, repl_row = sql.pexec(conn, pop_str, &quot;i&quot;)</text>
-<text text-anchor="middle" x="9260" y="-857.8014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local res_str = sql.format(get_reprs, tonumber(project_id),</text>
+<text text-anchor="middle" x="9260" y="-857.8014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local res_str = sql.format(get_reprs, project_id,</text>
 <text text-anchor="middle" x="9260" y="-842.4014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;historian.HISTORY_LIMIT * 2)</text>
 <text text-anchor="middle" x="9260" y="-827.0013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local res_val, res_row = sql.pexec(conn, res_str, &quot;i&quot;)</text>
 <text text-anchor="middle" x="9260" y="-811.6013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if repl_val and res_val then</text>

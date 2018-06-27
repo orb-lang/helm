@@ -207,10 +207,10 @@ function Historian.load(historian)
    historian.insert_line_stmt = conn:prepare(insert_line_stmt)
    historian.insert_result_stmt = conn:prepare(insert_result_stmt)
    -- Retrieve history
-   local pop_str = sql.format(get_recent, tonumber(project_id),
+   local pop_str = sql.format(get_recent, project_id,
                         historian.HISTORY_LIMIT)
    local repl_val, repl_row = sql.pexec(conn, pop_str, "i")
-   local res_str = sql.format(get_reprs, tonumber(project_id),
+   local res_str = sql.format(get_reprs, project_id,
                        historian.HISTORY_LIMIT * 2)
    local res_val, res_row = sql.pexec(conn, res_str, "i")
    if repl_val and res_val then
