@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 426"]
+doc_0 [label="doc - 383"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-340"]
+section_1 [label="section: 1-297"]
 
 
 // END RANK doc_0
@@ -31,11 +31,11 @@ codeblock_7 [label="code block 16-25"]
 
 codeblock_8 [label="code block 27-29"]
 
-section_9 [label="section: 32-243"]
+section_9 [label="section: 32-201"]
 
-section_10 [label="section: 295-340"]
+section_10 [label="section: 252-297"]
 
-section_11 [label="section: 341-392"]
+section_11 [label="section: 298-349"]
 
 
 // END RANK section_1
@@ -140,11 +140,11 @@ prose_29 [label="prose"]
 
 prose_30 [label="prose"]
 
-section_31 [label="section: 59-164"]
+section_31 [label="section: 59-142"]
 
-section_32 [label="section: 165-243"]
+section_32 [label="section: 143-201"]
 
-section_33 [label="section: 244-294"]
+section_33 [label="section: 202-251"]
 
 
 // END RANK section_9
@@ -456,7 +456,7 @@ header_110 [label="3 : SQLite battery"]
 
 prose_111 [label="prose"]
 
-codeblock_112 [label="code block 61-162"]
+codeblock_112 [label="code block 61-140"]
 
 
 // END RANK section_31
@@ -481,48 +481,35 @@ leaf_115  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 codeblock_112 -> leaf_116
 leaf_116  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Historian.HISTORY_LIMIT = 1000
 
-local create_project_table = [[
-CREATE TABLE IF NOT EXISTS project (
-project_id INTEGER PRIMARY KEY AUTOINCREMENT,
-directory TEXT UNIQUE,
-time DATETIME DEFAULT CURRENT_TIMESTAMP );
-]]
-
 local create_repl_table = [[
 CREATE TABLE IF NOT EXISTS repl (
 line_id INTEGER PRIMARY KEY AUTOINCREMENT,
-project INTEGER,
+project TEXT,
 line TEXT,
-time DATETIME DEFAULT CURRENT_TIMESTAMP,
-FOREIGN KEY (project)
-   REFERENCES project (project_id)
-   ON DELETE CASCADE );
+time DATETIME DEFAULT CURRENT_TIMESTAMP);
 ]]
 
 local create_result_table = [[
-CREATE TABLE IF NOT EXISTS result (
+CREATE TABLE IF NOT EXISTS results (
 result_id INTEGER PRIMARY KEY AUTOINCREMENT,
 line_id INTEGER,
 repr text NOT NULL,
 value blob,
 FOREIGN KEY (line_id)
    REFERENCES repl (line_id)
-   ON DELETE CASCADE );
+   ON DELETE CASCADE);
 ]]
 
 local create_session_table = [[
-CREATE TABLE IF NOT EXISTS session (
+CREATE TABLE IF NOT EXISTS sessions (
 session_id INTEGER PRIMARY KEY AUTOINCREMENT,
 name TEXT,
-project INTEGER,
 -- These two are line_ids
 start INTEGER NOT NULL,
 end INTEGER,
 test BOOLEAN,
-sha TEXT,
-FOREIGN KEY (project)
-   REFERENCES project (project_id)
-   ON DELETE CASCADE );
+commit TEXT;
+)
 ]]
 
 local insert_line_stmt = [[
@@ -530,11 +517,7 @@ INSERT INTO repl (project, line) VALUES (:project, :line);
 ]]
 
 local insert_result_stmt = [[
-INSERT INTO result (line_id, repr) VALUES (:line_id, :repr);
-]]
-
-local insert_project = [[
-INSERT INTO project (directory) VALUES (:dir);
+INSERT INTO results (line_id, repr) VALUES (:line_id, :repr);
 ]]
 
 local get_tables = [[
@@ -543,23 +526,18 @@ SELECT name FROM sqlite_master WHERE type='table';
 
 local get_recent = [[
 SELECT CAST (line_id AS REAL), line FROM repl
-   WHERE project = %d
+   WHERE project = %s
    ORDER BY time
    DESC LIMIT %d;
 ]]
 
-local get_project = [[
-SELECT project_id FROM project
-   WHERE directory = %s;
-]]
-
 local get_reprs = [[
-SELECT CAST (repl.line_id AS REAL), result.repr
+SELECT CAST (repl.line_id AS REAL), results.repr
 FROM repl
-LEFT OUTER JOIN result
-ON repl.line_id = result.line_id
-WHERE repl.project = %d
-ORDER BY result.result_id
+LEFT OUTER JOIN results
+ON repl.line_id = results.line_id
+WHERE repl.project = '%s'
+ORDER BY repl.time
 DESC LIMIT %d;
 ]]
 
@@ -590,7 +568,7 @@ prose_118 [label="prose"]
 
 prose_119 [label="prose"]
 
-codeblock_120 [label="code block 172-241"]
+codeblock_120 [label="code block 150-199"]
 
 
 // END RANK section_32
@@ -635,37 +613,16 @@ leaf_126  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histo
    historian.conn = conn
    -- Set up bridge tables
    conn.pragma.foreign_keys(true)
-   conn:exec(create_project_table)
    conn:exec(create_result_table)
    conn:exec(create_repl_table)
-   conn:exec(create_session_table)
-   -- Retrive project id
-   local proj_val, proj_row = sql.pexec(conn,
-                                  sql.format(get_project, historian.project),
-                                  \"i\")
-   if not proj_val then
-      local ins_proj_stmt = conn:prepare(insert_project)
-      ins_proj_stmt:bindkv {dir = historian.project}
-      proj_val, proj_row = ins_proj_stmt:step()
-      -- retry
-      proj_val, proj_row = sql.pexec(conn,
-                                  sql.format(get_project, historian.project),
-                                  \"i\")
-      if not proj_val then
-         error \"no project\"
-      end
-   end
-   local project_id = proj_val[1][1]
-
-   historian.project_id = project_id
    -- Create insert prepared statements
    historian.insert_line_stmt = conn:prepare(insert_line_stmt)
    historian.insert_result_stmt = conn:prepare(insert_result_stmt)
    -- Retrieve history
-   local pop_str = sql.format(get_recent, tonumber(project_id),
+   local pop_str = sql.format(get_recent, historian.project,
                         historian.HISTORY_LIMIT)
    local repl_val, repl_row = sql.pexec(conn, pop_str, \"i\")
-   local res_str = sql.format(get_reprs, tonumber(project_id),
+   local res_str = sql.format(get_reprs, historian.project,
                        historian.HISTORY_LIMIT * 2)
    local res_val, res_row = sql.pexec(conn, res_str, \"i\")
    if repl_val and res_val then
@@ -678,6 +635,7 @@ leaf_126  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histo
          repl_map[line_ids[i]] = buf
       end
       historian.cursor = #historian
+      historian.repl_map = repl_map -- remove
       -- reuse line_id var for foreign keys
       line_ids = res_val[1]
       local reprs = res_val[2]
@@ -694,8 +652,8 @@ leaf_126  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histo
       end
       historian.results = result_map
    else
-      historian.results = {}
-      historian.cursor = 0
+      -- one of the 'row' vals will have an error
+      error(repr_row .. res_row)
    end
 end"]
 // END RANK codeblock_120
@@ -713,7 +671,7 @@ prose_130 [label="prose"]
 
 prose_131 [label="prose"]
 
-codeblock_132 [label="code block 259-292"]
+codeblock_132 [label="code block 217-249"]
 
 
 // END RANK section_33
@@ -824,8 +782,8 @@ codeblock_132 -> leaf_154
 leaf_154  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.persist(historian, txtbuf, results)
    local lb = tostring(txtbuf)
    if lb ~= \"\" then
-      historian.insert_line_stmt:bindkv { project = historian.project_id,
-                                          line    = lb }
+      historian.insert_line_stmt:bindkv { project = historian.project,
+                                     line    = lb }
       local err = historian.insert_line_stmt:step()
       if not err then
          historian.insert_line_stmt:clearbind():reset()
@@ -851,7 +809,6 @@ leaf_154  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histo
       -- A blank line can have no results and is uninteresting.
       return false
    end
-   --]]
 end"]
 // END RANK codeblock_132
 
@@ -862,7 +819,7 @@ header_155 [label="2 : Historian:search(frag)"]
 
 prose_156 [label="prose"]
 
-codeblock_157 [label="code block 297-338"]
+codeblock_157 [label="code block 254-295"]
 
 
 // END RANK section_10
@@ -934,11 +891,11 @@ header_162 [label="2 : Historian:prev()"]
 
 prose_163 [label="prose"]
 
-codeblock_164 [label="code block 343-356"]
+codeblock_164 [label="code block 300-313"]
 
-section_165 [label="section: 359-392"]
+section_165 [label="section: 316-349"]
 
-section_166 [label="section: 393-426"]
+section_166 [label="section: 350-383"]
 
 
 // END RANK section_11
@@ -962,7 +919,7 @@ leaf_169  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 codeblock_164 -> leaf_170
 leaf_170  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.prev(historian)
-   if historian.cursor == 0 or #historian == 0 then
+   if historian.cursor == 0 then
       return Txtbuf()
    end
    local Δ = historian.cursor > 1 and 1 or 0
@@ -984,7 +941,7 @@ prose_172 [label="prose"]
 
 prose_173 [label="prose"]
 
-codeblock_174 [label="code block 366-390"]
+codeblock_174 [label="code block 323-347"]
 
 
 // END RANK section_165
@@ -1043,7 +1000,7 @@ I'd like to stop buffering blank lines at some point.
 codeblock_174 -> leaf_186
 leaf_186  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.next(historian)
    local Δ = historian.cursor < #historian and 1 or 0
-   if historian.cursor == 0 or #historian == 0 then
+   if historian.cursor == 0 then
       return Txtbuf()
    end
    local txtbuf = historian[historian.cursor + Δ]
@@ -1075,11 +1032,11 @@ prose_188 [label="prose"]
 
 prose_189 [label="prose"]
 
-codeblock_190 [label="code block 399-413"]
+codeblock_190 [label="code block 356-370"]
 
-codeblock_191 [label="code block 415-422"]
+codeblock_191 [label="code block 372-379"]
 
-codeblock_192 [label="code block 424-426"]
+codeblock_192 [label="code block 381-383"]
 
 
 // END RANK section_166

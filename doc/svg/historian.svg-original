@@ -13,13 +13,13 @@
 <g id="node1" class="node">
 <title>doc_0</title>
 <ellipse fill="none" stroke="#000000" cx="1806" cy="-2690.2042" rx="46.9581" ry="18"/>
-<text text-anchor="middle" x="1806" y="-2686.0042" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">doc &#45; 426</text>
+<text text-anchor="middle" x="1806" y="-2686.0042" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">doc &#45; 424</text>
 </g>
 <!-- section_1 -->
 <g id="node2" class="node">
 <title>section_1</title>
 <ellipse fill="none" stroke="#000000" cx="1806" cy="-2618.2042" rx="65.8187" ry="18"/>
-<text text-anchor="middle" x="1806" y="-2614.0042" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 1&#45;340</text>
+<text text-anchor="middle" x="1806" y="-2614.0042" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 1&#45;338</text>
 </g>
 <!-- doc_0&#45;&gt;section_1 -->
 <g id="edge1" class="edge">
@@ -114,20 +114,20 @@
 <!-- section_9 -->
 <g id="node10" class="node">
 <title>section_9</title>
-<ellipse fill="none" stroke="#000000" cx="5580" cy="-2546.2042" rx="70.655" ry="18"/>
-<text text-anchor="middle" x="5580" y="-2542.0042" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 32&#45;243</text>
+<ellipse fill="none" stroke="#000000" cx="5347" cy="-2546.2042" rx="70.655" ry="18"/>
+<text text-anchor="middle" x="5347" y="-2542.0042" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 32&#45;242</text>
 </g>
 <!-- section_1&#45;&gt;section_9 -->
 <g id="edge9" class="edge">
 <title>section_1&#45;&gt;section_9</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1871.5048,-2616.9545C2325.3604,-2608.2958 4998.7564,-2557.2931 5499.2819,-2547.7441"/>
-<polygon fill="#000000" stroke="#000000" points="5499.3756,-2551.243 5509.307,-2547.5528 5499.242,-2544.2443 5499.3756,-2551.243"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1871.6345,-2616.8696C2307.8066,-2608.0008 4784.8896,-2557.6337 5266.0338,-2547.8505"/>
+<polygon fill="#000000" stroke="#000000" points="5266.4295,-2551.3432 5276.3562,-2547.6406 5266.2871,-2544.3447 5266.4295,-2551.3432"/>
 </g>
 <!-- section_10 -->
 <g id="node11" class="node">
 <title>section_10</title>
 <ellipse fill="none" stroke="#000000" cx="11096" cy="-2546.2042" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="11096" y="-2542.0042" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 295&#45;340</text>
+<text text-anchor="middle" x="11096" y="-2542.0042" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 293&#45;338</text>
 </g>
 <!-- section_1&#45;&gt;section_10 -->
 <g id="edge10" class="edge">
@@ -139,7 +139,7 @@
 <g id="node12" class="node">
 <title>section_11</title>
 <ellipse fill="none" stroke="#000000" cx="12128" cy="-2546.2042" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="12128" y="-2542.0042" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 341&#45;392</text>
+<text text-anchor="middle" x="12128" y="-2542.0042" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 339&#45;390</text>
 </g>
 <!-- section_1&#45;&gt;section_11 -->
 <g id="edge11" class="edge">
@@ -247,8 +247,8 @@
 <!-- section_9&#45;&gt;header_23 -->
 <g id="edge23" class="edge">
 <title>section_9&#45;&gt;header_23</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M5509.2303,-2545.6592C5046.2881,-2542.0153 2466.5211,-2520.4665 2391,-2492.2042 2368.9855,-2483.9656 2348.8148,-2466.6126 2334.5024,-2451.823"/>
-<polygon fill="#000000" stroke="#000000" points="2336.9503,-2449.316 2327.5732,-2444.3846 2331.8283,-2454.0874 2336.9503,-2449.316"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M5276.1258,-2545.5617C4833.0745,-2541.466 2460.7058,-2518.3433 2391,-2492.2042 2368.991,-2483.9509 2348.8201,-2466.5985 2334.5062,-2451.8129"/>
+<polygon fill="#000000" stroke="#000000" points="2336.9544,-2449.3061 2327.5761,-2444.3767 2331.8334,-2454.0785 2336.9544,-2449.3061"/>
 </g>
 <!-- prose_24 -->
 <g id="node25" class="node">
@@ -259,8 +259,8 @@
 <!-- section_9&#45;&gt;prose_24 -->
 <g id="edge24" class="edge">
 <title>section_9&#45;&gt;prose_24</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M5509.3808,-2545.6819C5097.9533,-2542.5301 3018.6702,-2525.0724 2736,-2492.2042 2639.3663,-2480.9678 2528.1644,-2453.0513 2470.7722,-2437.5011"/>
-<polygon fill="#000000" stroke="#000000" points="2471.6002,-2434.0991 2461.0313,-2434.8402 2469.7555,-2440.8517 2471.6002,-2434.0991"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M5276.2065,-2545.5519C4884.8171,-2541.8371 2994.1581,-2522.4438 2736,-2492.2042 2639.3759,-2480.886 2528.1701,-2453.0028 2470.7748,-2437.4796"/>
+<polygon fill="#000000" stroke="#000000" points="2471.6018,-2434.0774 2461.0332,-2434.8234 2469.7603,-2440.8308 2471.6018,-2434.0774"/>
 </g>
 <!-- prose_25 -->
 <g id="node26" class="node">
@@ -271,8 +271,8 @@
 <!-- section_9&#45;&gt;prose_25 -->
 <g id="edge25" class="edge">
 <title>section_9&#45;&gt;prose_25</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M5509.7741,-2543.8718C5300.0218,-2536.8449 4659.7798,-2514.957 4129,-2492.2042 3613.2369,-2470.095 2987.0848,-2437.625 2819.7817,-2428.8559"/>
-<polygon fill="#000000" stroke="#000000" points="2819.601,-2425.3417 2809.4313,-2428.313 2819.2342,-2432.3321 2819.601,-2425.3417"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M5277.3067,-2543.2163C5090.9994,-2535.207 4565.8844,-2512.4877 4129,-2492.2042 3613.3187,-2468.2623 2987.108,-2437.1049 2819.7866,-2428.7453"/>
+<polygon fill="#000000" stroke="#000000" points="2819.5974,-2425.2315 2809.4351,-2428.2279 2819.2479,-2432.2228 2819.5974,-2425.2315"/>
 </g>
 <!-- prose_26 -->
 <g id="node27" class="node">
@@ -283,8 +283,8 @@
 <!-- section_9&#45;&gt;prose_26 -->
 <g id="edge26" class="edge">
 <title>section_9&#45;&gt;prose_26</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M5512.9413,-2540.516C5266.1515,-2519.5826 4412.3799,-2447.1634 4212.2251,-2430.1857"/>
-<polygon fill="#000000" stroke="#000000" points="4212.3763,-2426.686 4202.1162,-2429.3282 4211.7846,-2433.661 4212.3763,-2426.686"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M5281.1973,-2539.5177C5066.1627,-2517.667 4387.9274,-2448.7486 4212.0113,-2430.873"/>
+<polygon fill="#000000" stroke="#000000" points="4212.1699,-2427.3712 4201.8673,-2429.8422 4211.4622,-2434.3353 4212.1699,-2427.3712"/>
 </g>
 <!-- prose_27 -->
 <g id="node28" class="node">
@@ -295,8 +295,8 @@
 <!-- section_9&#45;&gt;prose_27 -->
 <g id="edge27" class="edge">
 <title>section_9&#45;&gt;prose_27</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M5532.4115,-2532.717C5448.1412,-2508.8337 5274.2674,-2459.5557 5196.7596,-2437.589"/>
-<polygon fill="#000000" stroke="#000000" points="5197.4949,-2434.1596 5186.9194,-2434.8002 5195.5861,-2440.8943 5197.4949,-2434.1596"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M5320.3218,-2529.322C5285.5204,-2507.2995 5224.7819,-2468.8639 5188.2874,-2445.77"/>
+<polygon fill="#000000" stroke="#000000" points="5189.8838,-2442.6384 5179.562,-2440.2486 5186.1407,-2448.5535 5189.8838,-2442.6384"/>
 </g>
 <!-- prose_28 -->
 <g id="node29" class="node">
@@ -307,8 +307,8 @@
 <!-- section_9&#45;&gt;prose_28 -->
 <g id="edge28" class="edge">
 <title>section_9&#45;&gt;prose_28</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M5606.6782,-2529.322C5641.4796,-2507.2995 5702.2181,-2468.8639 5738.7126,-2445.77"/>
-<polygon fill="#000000" stroke="#000000" points="5740.8593,-2448.5535 5747.438,-2440.2486 5737.1162,-2442.6384 5740.8593,-2448.5535"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M5394.5885,-2532.717C5478.8588,-2508.8337 5652.7326,-2459.5557 5730.2404,-2437.589"/>
+<polygon fill="#000000" stroke="#000000" points="5731.4139,-2440.8943 5740.0806,-2434.8002 5729.5051,-2434.1596 5731.4139,-2440.8943"/>
 </g>
 <!-- prose_29 -->
 <g id="node30" class="node">
@@ -319,8 +319,8 @@
 <!-- section_9&#45;&gt;prose_29 -->
 <g id="edge29" class="edge">
 <title>section_9&#45;&gt;prose_29</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M5637.6164,-2535.7475C5768.3875,-2512.0142 6085.0382,-2454.5461 6198.0632,-2434.0335"/>
-<polygon fill="#000000" stroke="#000000" points="6198.8272,-2437.4521 6208.0415,-2432.2226 6197.5772,-2430.5646 6198.8272,-2437.4521"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M5412.2666,-2539.3333C5501.9949,-2529.7182 5668.4432,-2511.2759 5810,-2492.2042 5952.6318,-2472.9875 6121.2573,-2445.9254 6197.676,-2433.4245"/>
+<polygon fill="#000000" stroke="#000000" points="6198.5325,-2436.8309 6207.8347,-2431.7595 6197.4003,-2429.923 6198.5325,-2436.8309"/>
 </g>
 <!-- prose_30 -->
 <g id="node31" class="node">
@@ -331,8 +331,8 @@
 <!-- section_9&#45;&gt;prose_30 -->
 <g id="edge30" class="edge">
 <title>section_9&#45;&gt;prose_30</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M5648.4601,-2541.6979C5945.213,-2522.1648 7116.127,-2445.0919 7354.5055,-2429.4011"/>
-<polygon fill="#000000" stroke="#000000" points="7355.0808,-2432.8709 7364.8293,-2428.7216 7354.621,-2425.886 7355.0808,-2432.8709"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M5416.0582,-2542.2273C5570.7495,-2533.3147 5956.8595,-2511.0443 6280,-2492.2042 6699.0104,-2467.7745 7206.4124,-2437.8526 7354.5232,-2429.1117"/>
+<polygon fill="#000000" stroke="#000000" points="7354.7838,-2432.6025 7364.5602,-2428.5193 7354.3713,-2425.6146 7354.7838,-2432.6025"/>
 </g>
 <!-- section_31 -->
 <g id="node32" class="node">
@@ -343,32 +343,32 @@
 <!-- section_9&#45;&gt;section_31 -->
 <g id="edge31" class="edge">
 <title>section_9&#45;&gt;section_31</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M5650.7098,-2544.9732C5945.8601,-2539.7075 7080.7384,-2518.1603 7438,-2492.2042 7615.3216,-2479.3212 7822.7743,-2451.9483 7929.5073,-2436.9547"/>
-<polygon fill="#000000" stroke="#000000" points="7930.1042,-2440.4053 7939.5175,-2435.5433 7929.1268,-2433.4738 7930.1042,-2440.4053"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M5417.5648,-2545.2383C5734.9303,-2540.7627 7032.1899,-2521.0275 7438,-2492.2042 7615.3422,-2479.6081 7822.7864,-2452.1171 7929.5127,-2437.0292"/>
+<polygon fill="#000000" stroke="#000000" points="7930.1132,-2440.4792 7939.5222,-2435.6088 7929.1296,-2433.5486 7930.1132,-2440.4792"/>
 </g>
 <!-- section_32 -->
 <g id="node33" class="node">
 <title>section_32</title>
 <ellipse fill="none" stroke="#000000" cx="8865" cy="-2426.604" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="8865" y="-2422.404" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 165&#45;243</text>
+<text text-anchor="middle" x="8865" y="-2422.404" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 165&#45;242</text>
 </g>
 <!-- section_9&#45;&gt;section_32 -->
 <g id="edge32" class="edge">
 <title>section_9&#45;&gt;section_32</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M5650.6454,-2545.2709C6004.7583,-2540.5023 7589.0177,-2518.0736 8081,-2492.2042 8338.9861,-2478.6387 8643.7215,-2449.3089 8785.2975,-2434.9143"/>
-<polygon fill="#000000" stroke="#000000" points="8786.0231,-2438.3586 8795.6165,-2433.8622 8785.313,-2431.3947 8786.0231,-2438.3586"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M5417.6439,-2545.42C5791.2508,-2541.1801 7540.0665,-2520.1487 8081,-2492.2042 8339.1649,-2478.8674 8644.1209,-2449.3949 8785.5736,-2434.9349"/>
+<polygon fill="#000000" stroke="#000000" points="8786.2919,-2438.3797 8795.8827,-2433.878 8785.5779,-2431.4162 8786.2919,-2438.3797"/>
 </g>
 <!-- section_33 -->
 <g id="node34" class="node">
 <title>section_33</title>
 <ellipse fill="none" stroke="#000000" cx="10167" cy="-2426.604" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="10167" y="-2422.404" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 244&#45;294</text>
+<text text-anchor="middle" x="10167" y="-2422.404" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 243&#45;292</text>
 </g>
 <!-- section_9&#45;&gt;section_33 -->
 <g id="edge33" class="edge">
 <title>section_9&#45;&gt;section_33</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M5650.856,-2546.0616C6005.6437,-2545.1397 7624.483,-2538.4711 8949,-2492.2042 9376.2665,-2477.2792 9887.1356,-2445.0961 10084.0166,-2432.1574"/>
-<polygon fill="#000000" stroke="#000000" points="10084.5325,-2435.6311 10094.2809,-2431.4816 10084.0725,-2428.6462 10084.5325,-2435.6311"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M5417.6304,-2545.5202C5857.3215,-2541.2061 8224.3355,-2517.1415 8949,-2492.2042 9376.2742,-2477.5007 9887.1389,-2445.1897 10084.0176,-2432.1871"/>
+<polygon fill="#000000" stroke="#000000" points="10084.5347,-2435.6606 10094.2818,-2431.5079 10084.0725,-2428.6759 10084.5347,-2435.6606"/>
 </g>
 <!-- header_155 -->
 <g id="node156" class="node">
@@ -398,7 +398,7 @@
 <g id="node158" class="node">
 <title>codeblock_157</title>
 <ellipse fill="none" stroke="#000000" cx="11402" cy="-2426.604" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="11402" y="-2422.404" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 297&#45;338</text>
+<text text-anchor="middle" x="11402" y="-2422.404" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 295&#45;336</text>
 </g>
 <!-- section_10&#45;&gt;codeblock_157 -->
 <g id="edge157" class="edge">
@@ -434,7 +434,7 @@
 <g id="node165" class="node">
 <title>codeblock_164</title>
 <ellipse fill="none" stroke="#000000" cx="12198" cy="-2426.604" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="12198" y="-2422.404" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 343&#45;356</text>
+<text text-anchor="middle" x="12198" y="-2422.404" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 341&#45;354</text>
 </g>
 <!-- section_11&#45;&gt;codeblock_164 -->
 <g id="edge164" class="edge">
@@ -446,7 +446,7 @@
 <g id="node166" class="node">
 <title>section_165</title>
 <ellipse fill="none" stroke="#000000" cx="12642" cy="-2426.604" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="12642" y="-2422.404" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 359&#45;392</text>
+<text text-anchor="middle" x="12642" y="-2422.404" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 357&#45;390</text>
 </g>
 <!-- section_11&#45;&gt;section_165 -->
 <g id="edge165" class="edge">
@@ -458,7 +458,7 @@
 <g id="node167" class="node">
 <title>section_166</title>
 <ellipse fill="none" stroke="#000000" cx="13575" cy="-2426.604" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="13575" y="-2422.404" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 393&#45;426</text>
+<text text-anchor="middle" x="13575" y="-2422.404" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 391&#45;424</text>
 </g>
 <!-- section_11&#45;&gt;section_166 -->
 <g id="edge166" class="edge">
@@ -880,14 +880,14 @@
 <!-- raw_96 -->
 <g id="node97" class="node">
 <title>raw_96</title>
-<ellipse fill="none" stroke="#000000" cx="7079" cy="-2012.1033" rx="27" ry="18"/>
-<text text-anchor="middle" x="7079" y="-2007.9033" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">raw</text>
+<ellipse fill="none" stroke="#000000" cx="7084" cy="-2012.1033" rx="27" ry="18"/>
+<text text-anchor="middle" x="7084" y="-2007.9033" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">raw</text>
 </g>
 <!-- prose_30&#45;&gt;raw_96 -->
 <g id="edge96" class="edge">
 <title>prose_30&#45;&gt;raw_96</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M7365.1652,-2423.2915C7311.174,-2415.9007 7201.9765,-2392.9628 7145,-2325.0039 7074.4842,-2240.896 7073.5195,-2100.089 7076.7379,-2040.3135"/>
-<polygon fill="#000000" stroke="#000000" points="7080.2438,-2040.3251 7077.3716,-2030.1271 7073.2573,-2039.8904 7080.2438,-2040.3251"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M7365.0544,-2423.3836C7310.8961,-2416.1319 7201.4533,-2393.398 7145,-2325.0039 7075.3489,-2240.6206 7076.8952,-2099.9636 7081.2125,-2040.2707"/>
+<polygon fill="#000000" stroke="#000000" points="7084.7175,-2040.3481 7082.0343,-2030.0987 7077.7403,-2039.7843 7084.7175,-2040.3481"/>
 </g>
 <!-- prespace_97 -->
 <g id="node98" class="node">
@@ -1037,7 +1037,7 @@
 <g id="node121" class="node">
 <title>codeblock_120</title>
 <ellipse fill="none" stroke="#000000" cx="9173" cy="-2012.1033" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="9173" y="-2007.9033" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 172&#45;241</text>
+<text text-anchor="middle" x="9173" y="-2007.9033" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 172&#45;240</text>
 </g>
 <!-- section_32&#45;&gt;codeblock_120 -->
 <g id="edge120" class="edge">
@@ -1109,7 +1109,7 @@
 <g id="node133" class="node">
 <title>codeblock_132</title>
 <ellipse fill="none" stroke="#000000" cx="10821" cy="-2012.1033" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="10821" y="-2007.9033" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 259&#45;292</text>
+<text text-anchor="middle" x="10821" y="-2007.9033" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 258&#45;290</text>
 </g>
 <!-- section_33&#45;&gt;codeblock_132 -->
 <g id="edge132" class="edge">
@@ -1518,8 +1518,8 @@
 <!-- raw_96&#45;&gt;leaf_103 -->
 <g id="edge103" class="edge">
 <title>raw_96&#45;&gt;leaf_103</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M7078.5972,-1993.9379C7075.7209,-1864.2279 7058.3099,-1079.0588 7054.6677,-914.8109"/>
-<polygon fill="#000000" stroke="#000000" points="7058.1597,-914.408 7054.4388,-904.4881 7051.1614,-914.5632 7058.1597,-914.408"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M7083.5166,-1993.9379C7080.0651,-1864.2279 7059.1718,-1079.0588 7054.8012,-914.8109"/>
+<polygon fill="#000000" stroke="#000000" points="7058.2914,-914.3914 7054.5265,-904.4881 7051.2939,-914.5777 7058.2914,-914.3914"/>
 </g>
 <!-- leaf_104 -->
 <g id="node105" class="node">
@@ -1665,7 +1665,7 @@
 <text text-anchor="middle" x="8372" y="-921.2014" font-family="Inconsolata" font-size="14.00" fill="#000000">INSERT INTO repl (project, line) VALUES (:project, :line);</text>
 <text text-anchor="middle" x="8372" y="-905.8014" font-family="Inconsolata" font-size="14.00" fill="#000000">]]</text>
 <text text-anchor="middle" x="8372" y="-874.4014" font-family="Inconsolata" font-size="14.00" fill="#000000">local insert_result_stmt = [[</text>
-<text text-anchor="middle" x="8372" y="-859.0013" font-family="Inconsolata" font-size="14.00" fill="#000000">INSERT INTO result (line_id, repr) VALUES (:line_id, :repr);</text>
+<text text-anchor="middle" x="8372" y="-859.0013" font-family="Inconsolata" font-size="14.00" fill="#000000">INSERT INTO results (line_id, repr) VALUES (:line_id, :repr);</text>
 <text text-anchor="middle" x="8372" y="-843.6013" font-family="Inconsolata" font-size="14.00" fill="#000000">]]</text>
 <text text-anchor="middle" x="8372" y="-812.2013" font-family="Inconsolata" font-size="14.00" fill="#000000">local insert_project = [[</text>
 <text text-anchor="middle" x="8372" y="-796.8012" font-family="Inconsolata" font-size="14.00" fill="#000000">INSERT INTO project (directory) VALUES (:dir);</text>
@@ -1680,7 +1680,7 @@
 <text text-anchor="middle" x="8372" y="-626.201" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;DESC LIMIT %d;</text>
 <text text-anchor="middle" x="8372" y="-610.8009" font-family="Inconsolata" font-size="14.00" fill="#000000">]]</text>
 <text text-anchor="middle" x="8372" y="-579.4009" font-family="Inconsolata" font-size="14.00" fill="#000000">local get_project = [[</text>
-<text text-anchor="middle" x="8372" y="-564.0009" font-family="Inconsolata" font-size="14.00" fill="#000000">SELECT project_id FROM project</text>
+<text text-anchor="middle" x="8372" y="-564.0009" font-family="Inconsolata" font-size="14.00" fill="#000000">SELECT CAST (project_id AS REAL) FROM project</text>
 <text text-anchor="middle" x="8372" y="-548.6008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;WHERE directory = %s;</text>
 <text text-anchor="middle" x="8372" y="-533.2008" font-family="Inconsolata" font-size="14.00" fill="#000000">]]</text>
 <text text-anchor="middle" x="8372" y="-501.8008" font-family="Inconsolata" font-size="14.00" fill="#000000">local get_reprs = [[</text>
@@ -1689,7 +1689,7 @@
 <text text-anchor="middle" x="8372" y="-455.6007" font-family="Inconsolata" font-size="14.00" fill="#000000">LEFT OUTER JOIN result</text>
 <text text-anchor="middle" x="8372" y="-440.2007" font-family="Inconsolata" font-size="14.00" fill="#000000">ON repl.line_id = result.line_id</text>
 <text text-anchor="middle" x="8372" y="-424.8006" font-family="Inconsolata" font-size="14.00" fill="#000000">WHERE repl.project = %d</text>
-<text text-anchor="middle" x="8372" y="-409.4006" font-family="Inconsolata" font-size="14.00" fill="#000000">ORDER BY result.result_id</text>
+<text text-anchor="middle" x="8372" y="-409.4006" font-family="Inconsolata" font-size="14.00" fill="#000000">ORDER BY result.</text>
 <text text-anchor="middle" x="8372" y="-394.0006" font-family="Inconsolata" font-size="14.00" fill="#000000">DESC LIMIT %d;</text>
 <text text-anchor="middle" x="8372" y="-378.6005" font-family="Inconsolata" font-size="14.00" fill="#000000">]]</text>
 <text text-anchor="middle" x="8372" y="-347.2005" font-family="Inconsolata" font-size="14.00" fill="#000000">local home_dir = io.popen(&quot;echo $HOME&quot;, &quot;r&quot;):read(&quot;*a&quot;):sub(1, &#45;2)</text>
@@ -1762,80 +1762,80 @@
 <!-- leaf_126 -->
 <g id="node127" class="node">
 <title>leaf_126</title>
-<polygon fill="none" stroke="#c0c0c0" points="9537.5,-1412.5035 8982.5,-1412.5035 8982.5,-356.8993 9537.5,-356.8993 9537.5,-1412.5035"/>
-<text text-anchor="middle" x="9260" y="-1397.4025" font-family="Inconsolata" font-size="14.00" fill="#000000">function Historian.load(historian)</text>
-<text text-anchor="middle" x="9260" y="-1382.0024" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local conn = sql.open(historian.bridge_home)</text>
-<text text-anchor="middle" x="9260" y="-1366.6024" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;historian.conn = conn</text>
-<text text-anchor="middle" x="9260" y="-1351.2024" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#45;&#45; Set up bridge tables</text>
-<text text-anchor="middle" x="9260" y="-1335.8023" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;conn.pragma.foreign_keys(true)</text>
-<text text-anchor="middle" x="9260" y="-1320.4023" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;conn:exec(create_project_table)</text>
-<text text-anchor="middle" x="9260" y="-1305.0023" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;conn:exec(create_result_table)</text>
-<text text-anchor="middle" x="9260" y="-1289.6022" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;conn:exec(create_repl_table)</text>
-<text text-anchor="middle" x="9260" y="-1274.2022" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;conn:exec(create_session_table)</text>
-<text text-anchor="middle" x="9260" y="-1258.8022" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#45;&#45; Retrive project id</text>
-<text text-anchor="middle" x="9260" y="-1243.4022" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local proj_val, proj_row = sql.pexec(conn,</text>
-<text text-anchor="middle" x="9260" y="-1228.0021" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;sql.format(get_project, historian.project),</text>
-<text text-anchor="middle" x="9260" y="-1212.6021" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&quot;i&quot;)</text>
-<text text-anchor="middle" x="9260" y="-1197.2021" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if not proj_val then</text>
-<text text-anchor="middle" x="9260" y="-1181.802" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local ins_proj_stmt = conn:prepare(insert_project)</text>
-<text text-anchor="middle" x="9260" y="-1166.402" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;ins_proj_stmt:bindkv {dir = historian.project}</text>
-<text text-anchor="middle" x="9260" y="-1151.002" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;proj_val, proj_row = ins_proj_stmt:step()</text>
-<text text-anchor="middle" x="9260" y="-1135.6019" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; retry</text>
-<text text-anchor="middle" x="9260" y="-1120.2019" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;proj_val, proj_row = sql.pexec(conn,</text>
-<text text-anchor="middle" x="9260" y="-1104.8019" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;sql.format(get_project, historian.project),</text>
-<text text-anchor="middle" x="9260" y="-1089.4018" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&quot;i&quot;)</text>
-<text text-anchor="middle" x="9260" y="-1074.0018" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;if not proj_val then</text>
-<text text-anchor="middle" x="9260" y="-1058.6018" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;error &quot;no project&quot;</text>
-<text text-anchor="middle" x="9260" y="-1043.2017" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end</text>
-<text text-anchor="middle" x="9260" y="-1027.8017" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
-<text text-anchor="middle" x="9260" y="-1012.4017" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local project_id = proj_val[1][1]</text>
-<text text-anchor="middle" x="9260" y="-981.0017" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;historian.project_id = project_id</text>
-<text text-anchor="middle" x="9260" y="-965.6016" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#45;&#45; Create insert prepared statements</text>
-<text text-anchor="middle" x="9260" y="-950.2016" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;historian.insert_line_stmt = conn:prepare(insert_line_stmt)</text>
-<text text-anchor="middle" x="9260" y="-934.8016" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;historian.insert_result_stmt = conn:prepare(insert_result_stmt)</text>
-<text text-anchor="middle" x="9260" y="-919.4015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#45;&#45; Retrieve history</text>
-<text text-anchor="middle" x="9260" y="-904.0015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local pop_str = sql.format(get_recent, tonumber(project_id),</text>
-<text text-anchor="middle" x="9260" y="-888.6015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;historian.HISTORY_LIMIT)</text>
-<text text-anchor="middle" x="9260" y="-873.2014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local repl_val, repl_row = sql.pexec(conn, pop_str, &quot;i&quot;)</text>
-<text text-anchor="middle" x="9260" y="-857.8014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local res_str = sql.format(get_reprs, tonumber(project_id),</text>
-<text text-anchor="middle" x="9260" y="-842.4014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;historian.HISTORY_LIMIT * 2)</text>
-<text text-anchor="middle" x="9260" y="-827.0013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local res_val, res_row = sql.pexec(conn, res_str, &quot;i&quot;)</text>
-<text text-anchor="middle" x="9260" y="-811.6013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if repl_val and res_val then</text>
-<text text-anchor="middle" x="9260" y="-796.2013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local lines = reverse(repl_val[2])</text>
-<text text-anchor="middle" x="9260" y="-780.8012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local line_ids = reverse(repl_val[1])</text>
-<text text-anchor="middle" x="9260" y="-765.4012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local repl_map = {}</text>
-<text text-anchor="middle" x="9260" y="-750.0012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;for i, v in ipairs(lines) do</text>
-<text text-anchor="middle" x="9260" y="-734.6012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;local buf = Txtbuf(v)</text>
-<text text-anchor="middle" x="9260" y="-719.2011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;historian[i] = buf</text>
-<text text-anchor="middle" x="9260" y="-703.8011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;repl_map[line_ids[i]] = buf</text>
-<text text-anchor="middle" x="9260" y="-688.4011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end</text>
-<text text-anchor="middle" x="9260" y="-673.001" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;historian.cursor = #historian</text>
-<text text-anchor="middle" x="9260" y="-657.601" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; reuse line_id var for foreign keys</text>
-<text text-anchor="middle" x="9260" y="-642.201" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;line_ids = res_val[1]</text>
-<text text-anchor="middle" x="9260" y="-626.8009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local reprs = res_val[2]</text>
-<text text-anchor="middle" x="9260" y="-611.4009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; This is keyed by txtbuf with a string value.</text>
-<text text-anchor="middle" x="9260" y="-596.0009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local result_map = {}</text>
-<text text-anchor="middle" x="9260" y="-580.6008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;for i = 1, #reprs do</text>
-<text text-anchor="middle" x="9260" y="-565.2008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;local buf = repl_map[line_ids[i]]</text>
-<text text-anchor="middle" x="9260" y="-549.8008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;if buf then</text>
-<text text-anchor="middle" x="9260" y="-534.4007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;local result = result_map[buf] or {frozen = true}</text>
-<text text-anchor="middle" x="9260" y="-519.0007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;result[#result + 1] = reprs[i]</text>
-<text text-anchor="middle" x="9260" y="-503.6007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;result.n = #result &#45;&#45; for compat with nil in live use</text>
-<text text-anchor="middle" x="9260" y="-488.2007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;result_map[buf] = result</text>
-<text text-anchor="middle" x="9260" y="-472.8006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;end</text>
-<text text-anchor="middle" x="9260" y="-457.4006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end</text>
-<text text-anchor="middle" x="9260" y="-442.0006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;historian.results = result_map</text>
-<text text-anchor="middle" x="9260" y="-426.6005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;else</text>
-<text text-anchor="middle" x="9260" y="-411.2005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;historian.results = {}</text>
-<text text-anchor="middle" x="9260" y="-395.8005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;historian.cursor = 0</text>
-<text text-anchor="middle" x="9260" y="-380.4004" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
-<text text-anchor="middle" x="9260" y="-365.0004" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
+<polygon fill="none" stroke="#c0c0c0" points="9537.5,-1404.5035 8982.5,-1404.5035 8982.5,-364.8993 9537.5,-364.8993 9537.5,-1404.5035"/>
+<text text-anchor="middle" x="9260" y="-1389.4025" font-family="Inconsolata" font-size="14.00" fill="#000000">function Historian.load(historian)</text>
+<text text-anchor="middle" x="9260" y="-1374.0024" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local conn = sql.open(historian.bridge_home)</text>
+<text text-anchor="middle" x="9260" y="-1358.6024" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;historian.conn = conn</text>
+<text text-anchor="middle" x="9260" y="-1343.2024" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#45;&#45; Set up bridge tables</text>
+<text text-anchor="middle" x="9260" y="-1327.8023" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;conn.pragma.foreign_keys(true)</text>
+<text text-anchor="middle" x="9260" y="-1312.4023" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;conn:exec(create_project_table)</text>
+<text text-anchor="middle" x="9260" y="-1297.0023" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;conn:exec(create_result_table)</text>
+<text text-anchor="middle" x="9260" y="-1281.6022" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;conn:exec(create_repl_table)</text>
+<text text-anchor="middle" x="9260" y="-1266.2022" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;conn:exec(create_session_table)</text>
+<text text-anchor="middle" x="9260" y="-1250.8022" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#45;&#45; Retrive project id</text>
+<text text-anchor="middle" x="9260" y="-1235.4022" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local proj_val, proj_row = sql.pexec(conn,</text>
+<text text-anchor="middle" x="9260" y="-1220.0021" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;sql.format(get_project, historian.project),</text>
+<text text-anchor="middle" x="9260" y="-1204.6021" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&quot;i&quot;)</text>
+<text text-anchor="middle" x="9260" y="-1189.2021" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if not proj_val then</text>
+<text text-anchor="middle" x="9260" y="-1173.802" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local ins_proj_stmt = conn:prepare(insert_project)</text>
+<text text-anchor="middle" x="9260" y="-1158.402" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;ins_proj_stmt:bindkv {dir = historian.project}</text>
+<text text-anchor="middle" x="9260" y="-1143.002" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;proj_val, proj_row = ins_proj_stmt:step()</text>
+<text text-anchor="middle" x="9260" y="-1127.6019" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; retry</text>
+<text text-anchor="middle" x="9260" y="-1112.2019" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;proj_val, proj_row = sql.pexec(conn,</text>
+<text text-anchor="middle" x="9260" y="-1096.8019" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;sql.format(get_project, historian.project),</text>
+<text text-anchor="middle" x="9260" y="-1081.4018" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&quot;i&quot;)</text>
+<text text-anchor="middle" x="9260" y="-1066.0018" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;if not proj_val then</text>
+<text text-anchor="middle" x="9260" y="-1050.6018" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;error &quot;no project&quot;</text>
+<text text-anchor="middle" x="9260" y="-1035.2017" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end</text>
+<text text-anchor="middle" x="9260" y="-1019.8017" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
+<text text-anchor="middle" x="9260" y="-1004.4017" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local project_id = proj_val[1]</text>
+<text text-anchor="middle" x="9260" y="-989.0017" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#45;&#45; Create insert prepared statements</text>
+<text text-anchor="middle" x="9260" y="-973.6016" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;historian.insert_line_stmt = conn:prepare(insert_line_stmt)</text>
+<text text-anchor="middle" x="9260" y="-958.2016" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;historian.insert_result_stmt = conn:prepare(insert_result_stmt)</text>
+<text text-anchor="middle" x="9260" y="-942.8016" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#45;&#45; Retrieve history</text>
+<text text-anchor="middle" x="9260" y="-927.4015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local pop_str = sql.format(get_recent, project_id,</text>
+<text text-anchor="middle" x="9260" y="-912.0015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;historian.HISTORY_LIMIT)</text>
+<text text-anchor="middle" x="9260" y="-896.6015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local repl_val, repl_row = sql.pexec(conn, pop_str, &quot;i&quot;)</text>
+<text text-anchor="middle" x="9260" y="-881.2014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local res_str = sql.format(get_reprs, project_id,</text>
+<text text-anchor="middle" x="9260" y="-865.8014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;historian.HISTORY_LIMIT * 2)</text>
+<text text-anchor="middle" x="9260" y="-850.4014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local res_val, res_row = sql.pexec(conn, res_str, &quot;i&quot;)</text>
+<text text-anchor="middle" x="9260" y="-835.0013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if repl_val and res_val then</text>
+<text text-anchor="middle" x="9260" y="-819.6013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local lines = reverse(repl_val[2])</text>
+<text text-anchor="middle" x="9260" y="-804.2013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local line_ids = reverse(repl_val[1])</text>
+<text text-anchor="middle" x="9260" y="-788.8012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local repl_map = {}</text>
+<text text-anchor="middle" x="9260" y="-773.4012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;for i, v in ipairs(lines) do</text>
+<text text-anchor="middle" x="9260" y="-758.0012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;local buf = Txtbuf(v)</text>
+<text text-anchor="middle" x="9260" y="-742.6012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;historian[i] = buf</text>
+<text text-anchor="middle" x="9260" y="-727.2011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;repl_map[line_ids[i]] = buf</text>
+<text text-anchor="middle" x="9260" y="-711.8011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end</text>
+<text text-anchor="middle" x="9260" y="-696.4011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;historian.cursor = #historian</text>
+<text text-anchor="middle" x="9260" y="-681.001" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;historian.repl_map = repl_map &#45;&#45; remove</text>
+<text text-anchor="middle" x="9260" y="-665.601" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; reuse line_id var for foreign keys</text>
+<text text-anchor="middle" x="9260" y="-650.201" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;line_ids = res_val[1]</text>
+<text text-anchor="middle" x="9260" y="-634.8009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local reprs = res_val[2]</text>
+<text text-anchor="middle" x="9260" y="-619.4009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; This is keyed by txtbuf with a string value.</text>
+<text text-anchor="middle" x="9260" y="-604.0009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local result_map = {}</text>
+<text text-anchor="middle" x="9260" y="-588.6008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;for i = 1, #reprs do</text>
+<text text-anchor="middle" x="9260" y="-573.2008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;local buf = repl_map[line_ids[i]]</text>
+<text text-anchor="middle" x="9260" y="-557.8008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;if buf then</text>
+<text text-anchor="middle" x="9260" y="-542.4007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;local result = result_map[buf] or {frozen = true}</text>
+<text text-anchor="middle" x="9260" y="-527.0007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;result[#result + 1] = reprs[i]</text>
+<text text-anchor="middle" x="9260" y="-511.6007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;result.n = #result &#45;&#45; for compat with nil in live use</text>
+<text text-anchor="middle" x="9260" y="-496.2007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;result_map[buf] = result</text>
+<text text-anchor="middle" x="9260" y="-480.8006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;end</text>
+<text text-anchor="middle" x="9260" y="-465.4006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end</text>
+<text text-anchor="middle" x="9260" y="-450.0006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;historian.results = result_map</text>
+<text text-anchor="middle" x="9260" y="-434.6005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;else</text>
+<text text-anchor="middle" x="9260" y="-419.2005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; one of the &#39;row&#39; vals will have an error</text>
+<text text-anchor="middle" x="9260" y="-403.8005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;error(repr_row .. res_row)</text>
+<text text-anchor="middle" x="9260" y="-388.4004" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
+<text text-anchor="middle" x="9260" y="-373.0004" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
 </g>
 <!-- codeblock_120&#45;&gt;leaf_126 -->
 <g id="edge126" class="edge">
 <title>codeblock_120&#45;&gt;leaf_126</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M9174.4018,-1993.9379C9179.7237,-1924.973 9199.3443,-1670.7167 9218.4594,-1423.0114"/>
-<polygon fill="#000000" stroke="#000000" points="9221.9741,-1422.9547 9219.2539,-1412.715 9214.9948,-1422.4161 9221.9741,-1422.9547"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M9174.4018,-1993.9379C9179.783,-1924.2052 9199.783,-1665.0323 9219.0976,-1414.7408"/>
+<polygon fill="#000000" stroke="#000000" points="9222.5915,-1414.9542 9219.8713,-1404.7146 9215.6122,-1414.4156 9222.5915,-1414.9542"/>
 </g>
 <!-- leaf_123 -->
 <g id="node124" class="node">
@@ -1997,44 +1997,43 @@
 <!-- leaf_154 -->
 <g id="node155" class="node">
 <title>leaf_154</title>
-<polygon fill="none" stroke="#c0c0c0" points="11584.5,-1135.6025 11057.5,-1135.6025 11057.5,-633.8003 11584.5,-633.8003 11584.5,-1135.6025"/>
-<text text-anchor="middle" x="11321" y="-1120.2019" font-family="Inconsolata" font-size="14.00" fill="#000000">function Historian.persist(historian, txtbuf, results)</text>
-<text text-anchor="middle" x="11321" y="-1104.8019" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local lb = tostring(txtbuf)</text>
-<text text-anchor="middle" x="11321" y="-1089.4018" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if lb ~= &quot;&quot; then</text>
-<text text-anchor="middle" x="11321" y="-1074.0018" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;historian.insert_line_stmt:bindkv { project = historian.project_id,</text>
-<text text-anchor="middle" x="11321" y="-1058.6018" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;line &#160;&#160;&#160;= lb }</text>
-<text text-anchor="middle" x="11321" y="-1043.2017" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local err = historian.insert_line_stmt:step()</text>
-<text text-anchor="middle" x="11321" y="-1027.8017" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;if not err then</text>
-<text text-anchor="middle" x="11321" y="-1012.4017" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;historian.insert_line_stmt:clearbind():reset()</text>
-<text text-anchor="middle" x="11321" y="-997.0017" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;else</text>
-<text text-anchor="middle" x="11321" y="-981.6016" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;error(err)</text>
-<text text-anchor="middle" x="11321" y="-966.2016" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end</text>
-<text text-anchor="middle" x="11321" y="-950.8016" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local line_id = sql.lastRowId(historian.conn)</text>
-<text text-anchor="middle" x="11321" y="-935.4015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;if results and type(results) == &quot;table&quot; then</text>
-<text text-anchor="middle" x="11321" y="-920.0015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;for _,v in ipairs(results) do</text>
-<text text-anchor="middle" x="11321" y="-904.6015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#45;&#45; insert result repr</text>
-<text text-anchor="middle" x="11321" y="-889.2014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#45;&#45; tostring() just for compactness</text>
-<text text-anchor="middle" x="11321" y="-873.8014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;historian.insert_result_stmt:bindkv { line_id = line_id,</text>
-<text text-anchor="middle" x="11321" y="-858.4014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;repr = color.ts(v) }</text>
-<text text-anchor="middle" x="11321" y="-843.0013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;err = historian.insert_result_stmt:step()</text>
-<text text-anchor="middle" x="11321" y="-827.6013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;if not err then</text>
-<text text-anchor="middle" x="11321" y="-812.2013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;historian.insert_result_stmt:clearbind():reset()</text>
-<text text-anchor="middle" x="11321" y="-796.8012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;end</text>
-<text text-anchor="middle" x="11321" y="-781.4012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;end</text>
-<text text-anchor="middle" x="11321" y="-766.0012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end</text>
-<text text-anchor="middle" x="11321" y="-734.6012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return true</text>
-<text text-anchor="middle" x="11321" y="-719.2011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;else</text>
-<text text-anchor="middle" x="11321" y="-703.8011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; A blank line can have no results and is uninteresting.</text>
-<text text-anchor="middle" x="11321" y="-688.4011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return false</text>
-<text text-anchor="middle" x="11321" y="-673.001" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
-<text text-anchor="middle" x="11321" y="-657.601" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#45;&#45;]]</text>
-<text text-anchor="middle" x="11321" y="-642.201" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
+<polygon fill="none" stroke="#c0c0c0" points="11563,-1127.7024 11057,-1127.7024 11057,-641.7005 11563,-641.7005 11563,-1127.7024"/>
+<text text-anchor="middle" x="11310" y="-1112.5019" font-family="Inconsolata" font-size="14.00" fill="#000000">function Historian.persist(historian, txtbuf, results)</text>
+<text text-anchor="middle" x="11310" y="-1097.1019" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local lb = tostring(txtbuf)</text>
+<text text-anchor="middle" x="11310" y="-1081.7018" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if lb ~= &quot;&quot; then</text>
+<text text-anchor="middle" x="11310" y="-1066.3018" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;historian.insert_line_stmt:bindkv { project = historian.project,</text>
+<text text-anchor="middle" x="11310" y="-1050.9018" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;line &#160;&#160;&#160;= lb }</text>
+<text text-anchor="middle" x="11310" y="-1035.5017" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local err = historian.insert_line_stmt:step()</text>
+<text text-anchor="middle" x="11310" y="-1020.1017" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;if not err then</text>
+<text text-anchor="middle" x="11310" y="-1004.7017" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;historian.insert_line_stmt:clearbind():reset()</text>
+<text text-anchor="middle" x="11310" y="-989.3016" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;else</text>
+<text text-anchor="middle" x="11310" y="-973.9016" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;error(err)</text>
+<text text-anchor="middle" x="11310" y="-958.5016" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end</text>
+<text text-anchor="middle" x="11310" y="-943.1015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local line_id = sql.lastRowId(historian.conn)</text>
+<text text-anchor="middle" x="11310" y="-927.7015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;if results and type(results) == &quot;table&quot; then</text>
+<text text-anchor="middle" x="11310" y="-912.3015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;for _,v in ipairs(results) do</text>
+<text text-anchor="middle" x="11310" y="-896.9015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#45;&#45; insert result repr</text>
+<text text-anchor="middle" x="11310" y="-881.5014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#45;&#45; tostring() just for compactness</text>
+<text text-anchor="middle" x="11310" y="-866.1014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;historian.insert_result_stmt:bindkv { line_id = line_id,</text>
+<text text-anchor="middle" x="11310" y="-850.7014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;repr = color.ts(v) }</text>
+<text text-anchor="middle" x="11310" y="-835.3013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;err = historian.insert_result_stmt:step()</text>
+<text text-anchor="middle" x="11310" y="-819.9013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;if not err then</text>
+<text text-anchor="middle" x="11310" y="-804.5013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;historian.insert_result_stmt:clearbind():reset()</text>
+<text text-anchor="middle" x="11310" y="-789.1012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;end</text>
+<text text-anchor="middle" x="11310" y="-773.7012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;end</text>
+<text text-anchor="middle" x="11310" y="-758.3012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end</text>
+<text text-anchor="middle" x="11310" y="-726.9011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return true</text>
+<text text-anchor="middle" x="11310" y="-711.5011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;else</text>
+<text text-anchor="middle" x="11310" y="-696.1011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; A blank line can have no results and is uninteresting.</text>
+<text text-anchor="middle" x="11310" y="-680.701" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return false</text>
+<text text-anchor="middle" x="11310" y="-665.301" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
+<text text-anchor="middle" x="11310" y="-649.901" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
 </g>
 <!-- codeblock_132&#45;&gt;leaf_154 -->
 <g id="edge154" class="edge">
 <title>codeblock_132&#45;&gt;leaf_154</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M10820.8871,-1993.86C10821.5875,-1940.3793 10831.1841,-1782.5237 10917,-1699.2027 10960.3207,-1657.1416 11003.8553,-1704.3983 11048,-1663.2027 11191.6785,-1529.1227 11259.7653,-1315.1264 11292.0166,-1145.3993"/>
-<polygon fill="#000000" stroke="#000000" points="11295.4576,-1146.0385 11293.8546,-1135.5657 11288.5768,-1144.7523 11295.4576,-1146.0385"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M10820.8871,-1993.86C10821.5875,-1940.3793 10831.1841,-1782.5237 10917,-1699.2027 10960.3207,-1657.1416 11004.1165,-1704.6764 11048,-1663.2027 11192.2429,-1526.8807 11257.086,-1308.6939 11286.2289,-1137.9433"/>
+<polygon fill="#000000" stroke="#000000" points="11289.6853,-1138.4946 11287.8861,-1128.0537 11282.7815,-1137.3377 11289.6853,-1138.4946"/>
 </g>
 <!-- leaf_135 -->
 <g id="node136" class="node">
@@ -2236,13 +2235,13 @@
 <!-- leaf_160 -->
 <g id="node161" class="node">
 <title>leaf_160</title>
-<polygon fill="none" stroke="#c0c0c0" points="11657,-902.7014 11603,-902.7014 11603,-866.7014 11657,-866.7014 11657,-902.7014"/>
+<polygon fill="none" stroke="#c0c0c0" points="11635,-902.7014 11581,-902.7014 11581,-866.7014 11635,-866.7014 11635,-902.7014"/>
 </g>
 <!-- raw_159&#45;&gt;leaf_160 -->
 <g id="edge160" class="edge">
 <title>raw_159&#45;&gt;leaf_160</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M11166.3927,-1994.359C11153.6926,-1940.8986 11124.3458,-1780.0944 11207,-1699.2027 11268.5702,-1638.9455 11533.4844,-1725.4901 11593,-1663.2027 11799.4478,-1447.1404 11677.2224,-1024.4571 11639.7722,-912.4737"/>
-<polygon fill="#000000" stroke="#000000" points="11643.0544,-911.2539 11636.5252,-902.9099 11636.426,-913.5043 11643.0544,-911.2539"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M11166.3222,-1993.9983C11153.63,-1940.2158 11124.756,-1780.1221 11207,-1699.2027 11265.0985,-1642.04 11515.8883,-1722.3169 11572,-1663.2027 11777.7214,-1446.4735 11655.2787,-1024.274 11617.7825,-912.436"/>
+<polygon fill="#000000" stroke="#000000" points="11621.0672,-911.2238 11614.5317,-902.8848 11614.4405,-913.4793 11621.0672,-911.2238"/>
 </g>
 <!-- leaf_167 -->
 <g id="node168" class="node">
@@ -2273,7 +2272,7 @@
 <title>leaf_170</title>
 <polygon fill="none" stroke="#c0c0c0" points="12409,-2113.4836 12029,-2113.4836 12029,-1910.723 12409,-1910.723 12409,-2113.4836"/>
 <text text-anchor="middle" x="12219" y="-2098.3435" font-family="Inconsolata" font-size="14.00" fill="#000000">function Historian.prev(historian)</text>
-<text text-anchor="middle" x="12219" y="-2082.9434" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if historian.cursor == 0 or #historian == 0 then</text>
+<text text-anchor="middle" x="12219" y="-2082.9434" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if historian.cursor == 0 then</text>
 <text text-anchor="middle" x="12219" y="-2067.5434" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return Txtbuf()</text>
 <text text-anchor="middle" x="12219" y="-2052.1434" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
 <text text-anchor="middle" x="12219" y="-2036.7433" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local Δ = historian.cursor &gt; 1 and 1 or 0</text>
@@ -2331,7 +2330,7 @@
 <g id="node175" class="node">
 <title>codeblock_174</title>
 <ellipse fill="none" stroke="#000000" cx="12962" cy="-2012.1033" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="12962" y="-2007.9033" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 366&#45;390</text>
+<text text-anchor="middle" x="12962" y="-2007.9033" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 364&#45;388</text>
 </g>
 <!-- section_165&#45;&gt;codeblock_174 -->
 <g id="edge174" class="edge">
@@ -2378,38 +2377,38 @@
 <!-- codeblock_190 -->
 <g id="node191" class="node">
 <title>codeblock_190</title>
-<ellipse fill="none" stroke="#000000" cx="13770" cy="-2012.1033" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="13770" y="-2007.9033" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 399&#45;413</text>
+<ellipse fill="none" stroke="#000000" cx="13769" cy="-2012.1033" rx="86.7905" ry="18"/>
+<text text-anchor="middle" x="13769" y="-2007.9033" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 397&#45;411</text>
 </g>
 <!-- section_166&#45;&gt;codeblock_190 -->
 <g id="edge190" class="edge">
 <title>section_166&#45;&gt;codeblock_190</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M13583.5043,-2408.5269C13614.2948,-2343.0773 13720.0817,-2118.2119 13757.091,-2039.5433"/>
-<polygon fill="#000000" stroke="#000000" points="13760.361,-2040.8142 13761.4509,-2030.2756 13754.0269,-2037.8344 13760.361,-2040.8142"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M13583.4607,-2408.5269C13614.0932,-2343.0773 13719.3377,-2118.2119 13756.1572,-2039.5433"/>
+<polygon fill="#000000" stroke="#000000" points="13759.4257,-2040.8164 13760.4948,-2030.2756 13753.0857,-2037.849 13759.4257,-2040.8164"/>
 </g>
 <!-- codeblock_191 -->
 <g id="node192" class="node">
 <title>codeblock_191</title>
-<ellipse fill="none" stroke="#000000" cx="14083" cy="-2012.1033" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="14083" y="-2007.9033" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 415&#45;422</text>
+<ellipse fill="none" stroke="#000000" cx="14082" cy="-2012.1033" rx="87.0948" ry="18"/>
+<text text-anchor="middle" x="14082" y="-2007.9033" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 413&#45;420</text>
 </g>
 <!-- section_166&#45;&gt;codeblock_191 -->
 <g id="edge191" class="edge">
 <title>section_166&#45;&gt;codeblock_191</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M13637.7346,-2416.4408C13700.611,-2403.7285 13797.6366,-2376.9929 13866,-2325.0039 13970.9253,-2245.2104 14044.0492,-2099.8857 14071.2549,-2039.5249"/>
-<polygon fill="#000000" stroke="#000000" points="14074.5093,-2040.8199 14075.3691,-2030.26 14068.1118,-2037.9789 14074.5093,-2040.8199"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M13637.52,-2416.3896C13700.1811,-2403.637 13796.8737,-2376.8702 13865,-2325.0039 13969.8825,-2245.1541 14043.0302,-2099.8609 14070.2486,-2039.5167"/>
+<polygon fill="#000000" stroke="#000000" points="14073.5021,-2040.814 14074.3648,-2030.2543 14067.1053,-2037.9712 14073.5021,-2040.814"/>
 </g>
 <!-- codeblock_192 -->
 <g id="node193" class="node">
 <title>codeblock_192</title>
 <ellipse fill="none" stroke="#000000" cx="14337" cy="-2012.1033" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="14337" y="-2007.9033" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 424&#45;426</text>
+<text text-anchor="middle" x="14337" y="-2007.9033" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 422&#45;424</text>
 </g>
 <!-- section_166&#45;&gt;codeblock_192 -->
 <g id="edge192" class="edge">
 <title>section_166&#45;&gt;codeblock_192</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M13648.6857,-2422.4317C13790.7347,-2413.0866 14095.7962,-2386.2986 14179,-2325.0039 14276.9595,-2252.8388 14318.2796,-2102.5417 14331.68,-2040.1701"/>
-<polygon fill="#000000" stroke="#000000" points="14335.1316,-2040.7621 14333.7309,-2030.2603 14328.2768,-2039.3434 14335.1316,-2040.7621"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M13648.5509,-2422.3982C13790.3422,-2412.9937 14094.8607,-2386.1055 14178,-2325.0039 14276.1678,-2252.8573 14317.9808,-2102.5498 14331.5871,-2040.1728"/>
+<polygon fill="#000000" stroke="#000000" points="14335.0383,-2040.7682 14333.6707,-2030.262 14328.1881,-2039.328 14335.0383,-2040.7682"/>
 </g>
 <!-- leaf_169 -->
 <g id="node170" class="node">
@@ -2500,7 +2499,7 @@
 <polygon fill="none" stroke="#c0c0c0" points="13206.4016,-1072.3422 12817.5984,-1072.3422 12817.5984,-697.0606 13206.4016,-697.0606 13206.4016,-1072.3422"/>
 <text text-anchor="middle" x="13012" y="-1057.3217" font-family="Inconsolata" font-size="14.00" fill="#000000">function Historian.next(historian)</text>
 <text text-anchor="middle" x="13012" y="-1041.9217" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local Δ = historian.cursor &lt; #historian and 1 or 0</text>
-<text text-anchor="middle" x="13012" y="-1023.1617" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if historian.cursor == 0 or #historian == 0 then</text>
+<text text-anchor="middle" x="13012" y="-1023.1617" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if historian.cursor == 0 then</text>
 <text text-anchor="middle" x="13012" y="-1007.7617" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return Txtbuf()</text>
 <text text-anchor="middle" x="13012" y="-992.3616" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
 <text text-anchor="middle" x="13012" y="-976.9616" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local txtbuf = historian[historian.cursor + Δ]</text>
@@ -2644,8 +2643,8 @@
 <!-- codeblock_190&#45;&gt;leaf_198 -->
 <g id="edge198" class="edge">
 <title>codeblock_190&#45;&gt;leaf_198</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M13770.9184,-1993.9379C13776.6837,-1879.9061 13808.0613,-1259.2905 13821.2045,-999.3296"/>
-<polygon fill="#000000" stroke="#000000" points="13824.7119,-999.2698 13821.7214,-989.1058 13817.7209,-998.9163 13824.7119,-999.2698"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M13769.9345,-1993.9379C13775.801,-1879.9061 13807.729,-1259.2905 13821.1029,-999.3296"/>
+<polygon fill="#000000" stroke="#000000" points="13824.6103,-999.2725 13821.6288,-989.1058 13817.6196,-998.9127 13824.6103,-999.2725"/>
 </g>
 <!-- leaf_199 -->
 <g id="node200" class="node">
@@ -2661,8 +2660,8 @@
 <!-- codeblock_191&#45;&gt;leaf_199 -->
 <g id="edge199" class="edge">
 <title>codeblock_191&#45;&gt;leaf_199</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M14084.9496,-1993.9379C14098.1464,-1870.9791 14174.5587,-1159.017 14197.4936,-945.3239"/>
-<polygon fill="#000000" stroke="#000000" points="14200.9897,-945.5469 14198.5769,-935.2305 14194.0297,-944.7999 14200.9897,-945.5469"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M14083.9657,-1993.9379C14097.2715,-1870.9791 14174.3154,-1159.017 14197.4398,-945.3239"/>
+<polygon fill="#000000" stroke="#000000" points="14200.9358,-945.549 14198.5321,-935.2305 14193.9764,-944.7959 14200.9358,-945.549"/>
 </g>
 <!-- leaf_200 -->
 <g id="node201" class="node">

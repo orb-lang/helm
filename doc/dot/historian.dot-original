@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 426"]
+doc_0 [label="doc - 424"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-340"]
+section_1 [label="section: 1-338"]
 
 
 // END RANK doc_0
@@ -31,11 +31,11 @@ codeblock_7 [label="code block 16-25"]
 
 codeblock_8 [label="code block 27-29"]
 
-section_9 [label="section: 32-243"]
+section_9 [label="section: 32-242"]
 
-section_10 [label="section: 295-340"]
+section_10 [label="section: 293-338"]
 
-section_11 [label="section: 341-392"]
+section_11 [label="section: 339-390"]
 
 
 // END RANK section_1
@@ -142,9 +142,9 @@ prose_30 [label="prose"]
 
 section_31 [label="section: 59-164"]
 
-section_32 [label="section: 165-243"]
+section_32 [label="section: 165-242"]
 
-section_33 [label="section: 244-294"]
+section_33 [label="section: 243-292"]
 
 
 // END RANK section_9
@@ -530,7 +530,7 @@ INSERT INTO repl (project, line) VALUES (:project, :line);
 ]]
 
 local insert_result_stmt = [[
-INSERT INTO result (line_id, repr) VALUES (:line_id, :repr);
+INSERT INTO results (line_id, repr) VALUES (:line_id, :repr);
 ]]
 
 local insert_project = [[
@@ -549,7 +549,7 @@ SELECT CAST (line_id AS REAL), line FROM repl
 ]]
 
 local get_project = [[
-SELECT project_id FROM project
+SELECT CAST (project_id AS REAL) FROM project
    WHERE directory = %s;
 ]]
 
@@ -559,7 +559,7 @@ FROM repl
 LEFT OUTER JOIN result
 ON repl.line_id = result.line_id
 WHERE repl.project = %d
-ORDER BY result.result_id
+ORDER BY result.
 DESC LIMIT %d;
 ]]
 
@@ -590,7 +590,7 @@ prose_118 [label="prose"]
 
 prose_119 [label="prose"]
 
-codeblock_120 [label="code block 172-241"]
+codeblock_120 [label="code block 172-240"]
 
 
 // END RANK section_32
@@ -655,17 +655,15 @@ leaf_126  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histo
          error \"no project\"
       end
    end
-   local project_id = proj_val[1][1]
-
-   historian.project_id = project_id
+   local project_id = proj_val[1]
    -- Create insert prepared statements
    historian.insert_line_stmt = conn:prepare(insert_line_stmt)
    historian.insert_result_stmt = conn:prepare(insert_result_stmt)
    -- Retrieve history
-   local pop_str = sql.format(get_recent, tonumber(project_id),
+   local pop_str = sql.format(get_recent, project_id,
                         historian.HISTORY_LIMIT)
    local repl_val, repl_row = sql.pexec(conn, pop_str, \"i\")
-   local res_str = sql.format(get_reprs, tonumber(project_id),
+   local res_str = sql.format(get_reprs, project_id,
                        historian.HISTORY_LIMIT * 2)
    local res_val, res_row = sql.pexec(conn, res_str, \"i\")
    if repl_val and res_val then
@@ -678,6 +676,7 @@ leaf_126  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histo
          repl_map[line_ids[i]] = buf
       end
       historian.cursor = #historian
+      historian.repl_map = repl_map -- remove
       -- reuse line_id var for foreign keys
       line_ids = res_val[1]
       local reprs = res_val[2]
@@ -694,8 +693,8 @@ leaf_126  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histo
       end
       historian.results = result_map
    else
-      historian.results = {}
-      historian.cursor = 0
+      -- one of the 'row' vals will have an error
+      error(repr_row .. res_row)
    end
 end"]
 // END RANK codeblock_120
@@ -713,7 +712,7 @@ prose_130 [label="prose"]
 
 prose_131 [label="prose"]
 
-codeblock_132 [label="code block 259-292"]
+codeblock_132 [label="code block 258-290"]
 
 
 // END RANK section_33
@@ -824,8 +823,8 @@ codeblock_132 -> leaf_154
 leaf_154  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.persist(historian, txtbuf, results)
    local lb = tostring(txtbuf)
    if lb ~= \"\" then
-      historian.insert_line_stmt:bindkv { project = historian.project_id,
-                                          line    = lb }
+      historian.insert_line_stmt:bindkv { project = historian.project,
+                                     line    = lb }
       local err = historian.insert_line_stmt:step()
       if not err then
          historian.insert_line_stmt:clearbind():reset()
@@ -851,7 +850,6 @@ leaf_154  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histo
       -- A blank line can have no results and is uninteresting.
       return false
    end
-   --]]
 end"]
 // END RANK codeblock_132
 
@@ -862,7 +860,7 @@ header_155 [label="2 : Historian:search(frag)"]
 
 prose_156 [label="prose"]
 
-codeblock_157 [label="code block 297-338"]
+codeblock_157 [label="code block 295-336"]
 
 
 // END RANK section_10
@@ -934,11 +932,11 @@ header_162 [label="2 : Historian:prev()"]
 
 prose_163 [label="prose"]
 
-codeblock_164 [label="code block 343-356"]
+codeblock_164 [label="code block 341-354"]
 
-section_165 [label="section: 359-392"]
+section_165 [label="section: 357-390"]
 
-section_166 [label="section: 393-426"]
+section_166 [label="section: 391-424"]
 
 
 // END RANK section_11
@@ -962,7 +960,7 @@ leaf_169  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 codeblock_164 -> leaf_170
 leaf_170  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.prev(historian)
-   if historian.cursor == 0 or #historian == 0 then
+   if historian.cursor == 0 then
       return Txtbuf()
    end
    local Δ = historian.cursor > 1 and 1 or 0
@@ -984,7 +982,7 @@ prose_172 [label="prose"]
 
 prose_173 [label="prose"]
 
-codeblock_174 [label="code block 366-390"]
+codeblock_174 [label="code block 364-388"]
 
 
 // END RANK section_165
@@ -1043,7 +1041,7 @@ I'd like to stop buffering blank lines at some point.
 codeblock_174 -> leaf_186
 leaf_186  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.next(historian)
    local Δ = historian.cursor < #historian and 1 or 0
-   if historian.cursor == 0 or #historian == 0 then
+   if historian.cursor == 0 then
       return Txtbuf()
    end
    local txtbuf = historian[historian.cursor + Δ]
@@ -1075,11 +1073,11 @@ prose_188 [label="prose"]
 
 prose_189 [label="prose"]
 
-codeblock_190 [label="code block 399-413"]
+codeblock_190 [label="code block 397-411"]
 
-codeblock_191 [label="code block 415-422"]
+codeblock_191 [label="code block 413-420"]
 
-codeblock_192 [label="code block 424-426"]
+codeblock_192 [label="code block 422-424"]
 
 
 // END RANK section_166

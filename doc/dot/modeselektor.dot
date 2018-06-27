@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 614"]
+doc_0 [label="doc - 616"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-566"]
+section_1 [label="section: 1-568"]
 
 
 // END RANK doc_0
@@ -27,7 +27,7 @@ section_5 [label="section: 12-282"]
 
 section_6 [label="section: 344-498"]
 
-section_7 [label="section: 567-614"]
+section_7 [label="section: 569-616"]
 
 
 // END RANK section_1
@@ -1773,7 +1773,7 @@ section_432 [label="section: 404-477"]
 
 section_433 [label="section: 478-498"]
 
-section_434 [label="section: 499-566"]
+section_434 [label="section: 499-568"]
 
 
 // END RANK section_6
@@ -2185,7 +2185,7 @@ codeblock_505 [label="code block 502-507"]
 
 codeblock_506 [label="code block 509-513"]
 
-codeblock_507 [label="code block 515-564"]
+codeblock_507 [label="code block 515-566"]
 
 
 // END RANK section_434
@@ -2245,6 +2245,8 @@ leaf_513  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS
       -- successful call
          if results.n > 0 then
             modeS:printResults(results)
+         else
+            modeS:clearResult()
          end
       else
       -- error
@@ -2279,9 +2281,9 @@ header_514 [label="2 : new"]
 
 prose_515 [label="prose"]
 
-codeblock_516 [label="code block 571-586"]
+codeblock_516 [label="code block 573-588"]
 
-codeblock_517 [label="code block 588-590"]
+codeblock_517 [label="code block 590-592"]
 
 
 // END RANK section_7

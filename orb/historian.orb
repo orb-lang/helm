@@ -110,7 +110,7 @@ INSERT INTO repl (project, line) VALUES (:project, :line);
 ]]
 
 local insert_result_stmt = [[
-INSERT INTO results (line_id, repr) VALUES (:line_id, :repr);
+INSERT INTO result (line_id, repr) VALUES (:line_id, :repr);
 ]]
 
 local insert_project = [[
@@ -129,7 +129,7 @@ SELECT CAST (line_id AS REAL), line FROM repl
 ]]
 
 local get_project = [[
-SELECT CAST (project_id AS REAL) FROM project
+SELECT project_id FROM project
    WHERE directory = %s;
 ]]
 
@@ -139,7 +139,7 @@ FROM repl
 LEFT OUTER JOIN result
 ON repl.line_id = result.line_id
 WHERE repl.project = %d
-ORDER BY result.
+ORDER BY result.result_id
 DESC LIMIT %d;
 ]]
 
@@ -195,15 +195,17 @@ function Historian.load(historian)
          error "no project"
       end
    end
-   local project_id = proj_val[1]
+   local project_id = proj_val[1][1]
+
+   historian.project_id = project_id
    -- Create insert prepared statements
    historian.insert_line_stmt = conn:prepare(insert_line_stmt)
    historian.insert_result_stmt = conn:prepare(insert_result_stmt)
    -- Retrieve history
-   local pop_str = sql.format(get_recent, project_id,
+   local pop_str = sql.format(get_recent, tonumber(project_id),
                         historian.HISTORY_LIMIT)
    local repl_val, repl_row = sql.pexec(conn, pop_str, "i")
-   local res_str = sql.format(get_reprs, project_id,
+   local res_str = sql.format(get_reprs, tonumber(project_id),
                        historian.HISTORY_LIMIT * 2)
    local res_val, res_row = sql.pexec(conn, res_str, "i")
    if repl_val and res_val then
@@ -216,7 +218,6 @@ function Historian.load(historian)
          repl_map[line_ids[i]] = buf
       end
       historian.cursor = #historian
-      historian.repl_map = repl_map -- remove
       -- reuse line_id var for foreign keys
       line_ids = res_val[1]
       local reprs = res_val[2]
@@ -233,8 +234,8 @@ function Historian.load(historian)
       end
       historian.results = result_map
    else
-      -- one of the 'row' vals will have an error
-      error(repr_row .. res_row)
+      historian.results = {}
+      historian.cursor = 0
    end
 end
 #/lua
@@ -259,8 +260,8 @@ common value for any identical semantics.
 function Historian.persist(historian, txtbuf, results)
    local lb = tostring(txtbuf)
    if lb ~= "" then
-      historian.insert_line_stmt:bindkv { project = historian.project,
-                                     line    = lb }
+      historian.insert_line_stmt:bindkv { project = historian.project_id,
+                                          line    = lb }
       local err = historian.insert_line_stmt:step()
       if not err then
          historian.insert_line_stmt:clearbind():reset()
@@ -286,6 +287,7 @@ function Historian.persist(historian, txtbuf, results)
       -- A blank line can have no results and is uninteresting.
       return false
    end
+   --]]
 end
 #/lua
 
@@ -340,7 +342,7 @@ end
 
 #!lua
 function Historian.prev(historian)
-   if historian.cursor == 0 then
+   if historian.cursor == 0 or #historian == 0 then
       return Txtbuf()
    end
    local Δ = historian.cursor > 1 and 1 or 0
@@ -364,7 +366,7 @@ I'd like to stop buffering blank lines at some point.
 #!lua
 function Historian.next(historian)
    local Δ = historian.cursor < #historian and 1 or 0
-   if historian.cursor == 0 then
+   if historian.cursor == 0 or #historian == 0 then
       return Txtbuf()
    end
    local txtbuf = historian[historian.cursor + Δ]

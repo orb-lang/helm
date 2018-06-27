@@ -534,6 +534,8 @@ function ModeS.eval(modeS)
       -- successful call
          if results.n > 0 then
             modeS:printResults(results)
+         else
+            modeS:clearResult()
          end
       else
       -- error
