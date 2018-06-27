@@ -61,23 +61,14 @@ local Historian = meta {}
 
 Historian.HISTORY_LIMIT = 1000
 
-local create_repl_table = [[
-CREATE TABLE IF NOT EXISTS repl (
-line_id INTEGER PRIMARY KEY AUTOINCREMENT,
-project TEXT,
-line TEXT,
-time DATETIME DEFAULT CURRENT_TIMESTAMP );
-]]
-
 local create_project_table = [[
 CREATE TABLE IF NOT EXISTS project (
 project_id INTEGER PRIMARY KEY AUTOINCREMENT,
 directory TEXT UNIQUE,
 time DATETIME DEFAULT CURRENT_TIMESTAMP );
-)
 ]]
 
-local create_repl_table_v2 = [[
+local create_repl_table = [[
 CREATE TABLE IF NOT EXISTS repl (
 line_id INTEGER PRIMARY KEY AUTOINCREMENT,
 project INTEGER,
@@ -89,7 +80,7 @@ FOREIGN KEY (project)
 ]]
 
 local create_result_table = [[
-CREATE TABLE IF NOT EXISTS results (
+CREATE TABLE IF NOT EXISTS result (
 result_id INTEGER PRIMARY KEY AUTOINCREMENT,
 line_id INTEGER,
 repr text NOT NULL,
@@ -100,7 +91,7 @@ FOREIGN KEY (line_id)
 ]]
 
 local create_session_table = [[
-CREATE TABLE IF NOT EXISTS sessions (
+CREATE TABLE IF NOT EXISTS session (
 session_id INTEGER PRIMARY KEY AUTOINCREMENT,
 name TEXT,
 project INTEGER,
@@ -108,9 +99,9 @@ project INTEGER,
 start INTEGER NOT NULL,
 end INTEGER,
 test BOOLEAN,
-commit TEXT,
+sha TEXT,
 FOREIGN KEY (project)
-   REFERENCES project(project_id)
+   REFERENCES project (project_id)
    ON DELETE CASCADE );
 ]]
 
@@ -123,8 +114,7 @@ INSERT INTO results (line_id, repr) VALUES (:line_id, :repr);
 ]]
 
 local insert_project = [[
-INSERT INTO project (directory) VALUES (:dir)
-ON CONFLICT IGNORE;
+INSERT INTO project (directory) VALUES (:dir);
 ]]
 
 local get_tables = [[
@@ -138,18 +128,18 @@ SELECT CAST (line_id AS REAL), line FROM repl
    DESC LIMIT %d;
 ]]
 
-local get_project == [[
+local get_project = [[
 SELECT CAST (project_id AS REAL) FROM project
    WHERE directory = %s;
 ]]
 
 local get_reprs = [[
-SELECT CAST (repl.line_id AS REAL), results.repr
+SELECT CAST (repl.line_id AS REAL), result.repr
 FROM repl
-LEFT OUTER JOIN results
-ON repl.line_id = results.line_id
-WHERE repl.project = '%s'
-ORDER BY repl.time
+LEFT OUTER JOIN result
+ON repl.line_id = result.line_id
+WHERE repl.project = %d
+ORDER BY result.
 DESC LIMIT %d;
 ]]
 
@@ -185,16 +175,35 @@ function Historian.load(historian)
    historian.conn = conn
    -- Set up bridge tables
    conn.pragma.foreign_keys(true)
+   conn:exec(create_project_table)
    conn:exec(create_result_table)
    conn:exec(create_repl_table)
+   conn:exec(create_session_table)
+   -- Retrive project id
+   local proj_val, proj_row = sql.pexec(conn,
+                                  sql.format(get_project, historian.project),
+                                  "i")
+   if not proj_val then
+      local ins_proj_stmt = conn:prepare(insert_project)
+      ins_proj_stmt:bindkv {dir = historian.project}
+      proj_val, proj_row = ins_proj_stmt:step()
+      -- retry
+      proj_val, proj_row = sql.pexec(conn,
+                                  sql.format(get_project, historian.project),
+                                  "i")
+      if not proj_val then
+         error "no project"
+      end
+   end
+   local project_id = proj_val[1]
    -- Create insert prepared statements
    historian.insert_line_stmt = conn:prepare(insert_line_stmt)
    historian.insert_result_stmt = conn:prepare(insert_result_stmt)
    -- Retrieve history
-   local pop_str = sql.format(get_recent, historian.project,
+   local pop_str = sql.format(get_recent, project_id,
                         historian.HISTORY_LIMIT)
    local repl_val, repl_row = sql.pexec(conn, pop_str, "i")
-   local res_str = sql.format(get_reprs, historian.project,
+   local res_str = sql.format(get_reprs, project_id,
                        historian.HISTORY_LIMIT * 2)
    local res_val, res_row = sql.pexec(conn, res_str, "i")
    if repl_val and res_val then

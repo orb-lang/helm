@@ -102,7 +102,7 @@ function sql.pexec(conn, stmt, col_str)
    if success then
       return result, nrow
    else
-      return false, value
+      return false, result
    end
 end
 #/lua

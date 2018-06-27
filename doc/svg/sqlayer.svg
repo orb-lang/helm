@@ -1825,7 +1825,7 @@
 <text text-anchor="middle" x="8791.5" y="-1142.5016" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if success then</text>
 <text text-anchor="middle" x="8791.5" y="-1127.1015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return result, nrow</text>
 <text text-anchor="middle" x="8791.5" y="-1111.7015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;else</text>
-<text text-anchor="middle" x="8791.5" y="-1096.3015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return false, value</text>
+<text text-anchor="middle" x="8791.5" y="-1096.3015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return false, result</text>
 <text text-anchor="middle" x="8791.5" y="-1080.9015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
 <text text-anchor="middle" x="8791.5" y="-1065.5014" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
 </g>

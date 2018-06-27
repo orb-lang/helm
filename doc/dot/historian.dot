@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 415"]
+doc_0 [label="doc - 424"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-329"]
+section_1 [label="section: 1-338"]
 
 
 // END RANK doc_0
@@ -31,11 +31,11 @@ codeblock_7 [label="code block 16-25"]
 
 codeblock_8 [label="code block 27-29"]
 
-section_9 [label="section: 32-233"]
+section_9 [label="section: 32-242"]
 
-section_10 [label="section: 284-329"]
+section_10 [label="section: 293-338"]
 
-section_11 [label="section: 330-381"]
+section_11 [label="section: 339-390"]
 
 
 // END RANK section_1
@@ -140,11 +140,11 @@ prose_29 [label="prose"]
 
 prose_30 [label="prose"]
 
-section_31 [label="section: 59-174"]
+section_31 [label="section: 59-164"]
 
-section_32 [label="section: 175-233"]
+section_32 [label="section: 165-242"]
 
-section_33 [label="section: 234-283"]
+section_33 [label="section: 243-292"]
 
 
 // END RANK section_9
@@ -456,7 +456,7 @@ header_110 [label="3 : SQLite battery"]
 
 prose_111 [label="prose"]
 
-codeblock_112 [label="code block 61-172"]
+codeblock_112 [label="code block 61-162"]
 
 
 // END RANK section_31
@@ -481,23 +481,14 @@ leaf_115  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 codeblock_112 -> leaf_116
 leaf_116  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Historian.HISTORY_LIMIT = 1000
 
-local create_repl_table = [[
-CREATE TABLE IF NOT EXISTS repl (
-line_id INTEGER PRIMARY KEY AUTOINCREMENT,
-project TEXT,
-line TEXT,
-time DATETIME DEFAULT CURRENT_TIMESTAMP );
-]]
-
 local create_project_table = [[
 CREATE TABLE IF NOT EXISTS project (
 project_id INTEGER PRIMARY KEY AUTOINCREMENT,
 directory TEXT UNIQUE,
 time DATETIME DEFAULT CURRENT_TIMESTAMP );
-)
 ]]
 
-local create_repl_table_v2 = [[
+local create_repl_table = [[
 CREATE TABLE IF NOT EXISTS repl (
 line_id INTEGER PRIMARY KEY AUTOINCREMENT,
 project INTEGER,
@@ -509,7 +500,7 @@ FOREIGN KEY (project)
 ]]
 
 local create_result_table = [[
-CREATE TABLE IF NOT EXISTS results (
+CREATE TABLE IF NOT EXISTS result (
 result_id INTEGER PRIMARY KEY AUTOINCREMENT,
 line_id INTEGER,
 repr text NOT NULL,
@@ -520,7 +511,7 @@ FOREIGN KEY (line_id)
 ]]
 
 local create_session_table = [[
-CREATE TABLE IF NOT EXISTS sessions (
+CREATE TABLE IF NOT EXISTS session (
 session_id INTEGER PRIMARY KEY AUTOINCREMENT,
 name TEXT,
 project INTEGER,
@@ -528,9 +519,9 @@ project INTEGER,
 start INTEGER NOT NULL,
 end INTEGER,
 test BOOLEAN,
-commit TEXT,
+sha TEXT,
 FOREIGN KEY (project)
-   REFERENCES project(project_id)
+   REFERENCES project (project_id)
    ON DELETE CASCADE );
 ]]
 
@@ -543,8 +534,7 @@ INSERT INTO results (line_id, repr) VALUES (:line_id, :repr);
 ]]
 
 local insert_project = [[
-INSERT INTO project (directory) VALUES (:dir)
-ON CONFLICT IGNORE;
+INSERT INTO project (directory) VALUES (:dir);
 ]]
 
 local get_tables = [[
@@ -558,18 +548,18 @@ SELECT CAST (line_id AS REAL), line FROM repl
    DESC LIMIT %d;
 ]]
 
-local get_project == [[
+local get_project = [[
 SELECT CAST (project_id AS REAL) FROM project
    WHERE directory = %s;
 ]]
 
 local get_reprs = [[
-SELECT CAST (repl.line_id AS REAL), results.repr
+SELECT CAST (repl.line_id AS REAL), result.repr
 FROM repl
-LEFT OUTER JOIN results
-ON repl.line_id = results.line_id
-WHERE repl.project = '%s'
-ORDER BY repl.time
+LEFT OUTER JOIN result
+ON repl.line_id = result.line_id
+WHERE repl.project = %d
+ORDER BY result.
 DESC LIMIT %d;
 ]]
 
@@ -600,7 +590,7 @@ prose_118 [label="prose"]
 
 prose_119 [label="prose"]
 
-codeblock_120 [label="code block 182-231"]
+codeblock_120 [label="code block 172-240"]
 
 
 // END RANK section_32
@@ -645,16 +635,35 @@ leaf_126  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histo
    historian.conn = conn
    -- Set up bridge tables
    conn.pragma.foreign_keys(true)
+   conn:exec(create_project_table)
    conn:exec(create_result_table)
    conn:exec(create_repl_table)
+   conn:exec(create_session_table)
+   -- Retrive project id
+   local proj_val, proj_row = sql.pexec(conn,
+                                  sql.format(get_project, historian.project),
+                                  \"i\")
+   if not proj_val then
+      local ins_proj_stmt = conn:prepare(insert_project)
+      ins_proj_stmt:bindkv {dir = historian.project}
+      proj_val, proj_row = ins_proj_stmt:step()
+      -- retry
+      proj_val, proj_row = sql.pexec(conn,
+                                  sql.format(get_project, historian.project),
+                                  \"i\")
+      if not proj_val then
+         error \"no project\"
+      end
+   end
+   local project_id = proj_val[1]
    -- Create insert prepared statements
    historian.insert_line_stmt = conn:prepare(insert_line_stmt)
    historian.insert_result_stmt = conn:prepare(insert_result_stmt)
    -- Retrieve history
-   local pop_str = sql.format(get_recent, historian.project,
+   local pop_str = sql.format(get_recent, project_id,
                         historian.HISTORY_LIMIT)
    local repl_val, repl_row = sql.pexec(conn, pop_str, \"i\")
-   local res_str = sql.format(get_reprs, historian.project,
+   local res_str = sql.format(get_reprs, project_id,
                        historian.HISTORY_LIMIT * 2)
    local res_val, res_row = sql.pexec(conn, res_str, \"i\")
    if repl_val and res_val then
@@ -703,7 +712,7 @@ prose_130 [label="prose"]
 
 prose_131 [label="prose"]
 
-codeblock_132 [label="code block 249-281"]
+codeblock_132 [label="code block 258-290"]
 
 
 // END RANK section_33
@@ -851,7 +860,7 @@ header_155 [label="2 : Historian:search(frag)"]
 
 prose_156 [label="prose"]
 
-codeblock_157 [label="code block 286-327"]
+codeblock_157 [label="code block 295-336"]
 
 
 // END RANK section_10
@@ -923,11 +932,11 @@ header_162 [label="2 : Historian:prev()"]
 
 prose_163 [label="prose"]
 
-codeblock_164 [label="code block 332-345"]
+codeblock_164 [label="code block 341-354"]
 
-section_165 [label="section: 348-381"]
+section_165 [label="section: 357-390"]
 
-section_166 [label="section: 382-415"]
+section_166 [label="section: 391-424"]
 
 
 // END RANK section_11
@@ -973,7 +982,7 @@ prose_172 [label="prose"]
 
 prose_173 [label="prose"]
 
-codeblock_174 [label="code block 355-379"]
+codeblock_174 [label="code block 364-388"]
 
 
 // END RANK section_165
@@ -1064,11 +1073,11 @@ prose_188 [label="prose"]
 
 prose_189 [label="prose"]
 
-codeblock_190 [label="code block 388-402"]
+codeblock_190 [label="code block 397-411"]
 
-codeblock_191 [label="code block 404-411"]
+codeblock_191 [label="code block 413-420"]
 
-codeblock_192 [label="code block 413-415"]
+codeblock_192 [label="code block 422-424"]
 
 
 // END RANK section_166
