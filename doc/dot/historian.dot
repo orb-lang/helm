@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 426"]
+doc_0 [label="doc - 427"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-340"]
+section_1 [label="section: 1-341"]
 
 
 // END RANK doc_0
@@ -33,9 +33,9 @@ codeblock_8 [label="code block 27-29"]
 
 section_9 [label="section: 32-243"]
 
-section_10 [label="section: 295-340"]
+section_10 [label="section: 296-341"]
 
-section_11 [label="section: 341-392"]
+section_11 [label="section: 342-393"]
 
 
 // END RANK section_1
@@ -144,7 +144,7 @@ section_31 [label="section: 59-164"]
 
 section_32 [label="section: 165-243"]
 
-section_33 [label="section: 244-294"]
+section_33 [label="section: 244-295"]
 
 
 // END RANK section_9
@@ -713,7 +713,7 @@ prose_130 [label="prose"]
 
 prose_131 [label="prose"]
 
-codeblock_132 [label="code block 259-292"]
+codeblock_132 [label="code block 259-293"]
 
 
 // END RANK section_33
@@ -834,7 +834,8 @@ leaf_154  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histo
       end
       local line_id = sql.lastRowId(historian.conn)
       if results and type(results) == \"table\" then
-         for _,v in ipairs(results) do
+         cache(results)
+         for _,v in ipairs(table.reverse(results)) do
             -- insert result repr
             -- tostring() just for compactness
             historian.insert_result_stmt:bindkv { line_id = line_id,
@@ -862,7 +863,7 @@ header_155 [label="2 : Historian:search(frag)"]
 
 prose_156 [label="prose"]
 
-codeblock_157 [label="code block 297-338"]
+codeblock_157 [label="code block 298-339"]
 
 
 // END RANK section_10
@@ -934,11 +935,11 @@ header_162 [label="2 : Historian:prev()"]
 
 prose_163 [label="prose"]
 
-codeblock_164 [label="code block 343-356"]
+codeblock_164 [label="code block 344-357"]
 
-section_165 [label="section: 359-392"]
+section_165 [label="section: 360-393"]
 
-section_166 [label="section: 393-426"]
+section_166 [label="section: 394-427"]
 
 
 // END RANK section_11
@@ -984,7 +985,7 @@ prose_172 [label="prose"]
 
 prose_173 [label="prose"]
 
-codeblock_174 [label="code block 366-390"]
+codeblock_174 [label="code block 367-391"]
 
 
 // END RANK section_165
@@ -1075,11 +1076,11 @@ prose_188 [label="prose"]
 
 prose_189 [label="prose"]
 
-codeblock_190 [label="code block 399-413"]
+codeblock_190 [label="code block 400-414"]
 
-codeblock_191 [label="code block 415-422"]
+codeblock_191 [label="code block 416-423"]
 
-codeblock_192 [label="code block 424-426"]
+codeblock_192 [label="code block 425-427"]
 
 
 // END RANK section_166

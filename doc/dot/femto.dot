@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 269"]
+doc_0 [label="doc - 276"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-176"]
+section_1 [label="section: 1-183"]
 
 
 // END RANK doc_0
@@ -23,11 +23,11 @@ prose_3 [label="prose"]
 
 section_4 [label="section: 6-38"]
 
-section_5 [label="section: 45-150"]
+section_5 [label="section: 45-157"]
 
-section_6 [label="section: 164-176"]
+section_6 [label="section: 171-183"]
 
-section_7 [label="section: 177-182"]
+section_7 [label="section: 184-189"]
 
 
 // END RANK section_1
@@ -189,9 +189,9 @@ prose_35 [label="prose"]
 
 codeblock_36 [label="code block 84-91"]
 
-section_37 [label="section: 93-150"]
+section_37 [label="section: 93-157"]
 
-section_38 [label="section: 151-163"]
+section_38 [label="section: 158-170"]
 
 
 // END RANK section_5
@@ -374,19 +374,19 @@ header_74 [label="3 : Logging"]
 
 prose_75 [label="prose"]
 
-codeblock_76 [label="code block 97-107"]
+codeblock_76 [label="code block 97-114"]
 
 prose_77 [label="prose"]
 
 prose_78 [label="prose"]
 
-codeblock_79 [label="code block 112-129"]
+codeblock_79 [label="code block 119-136"]
 
 prose_80 [label="prose"]
 
-codeblock_81 [label="code block 133-137"]
+codeblock_81 [label="code block 140-144"]
 
-codeblock_82 [label="code block 139-148"]
+codeblock_82 [label="code block 146-155"]
 
 
 // END RANK section_37
@@ -419,7 +419,14 @@ local function __logger(_, fmtstr, ...)
    _log.vals[#_log.vals + 1] = table.pack(...)
 end
 
-log = setmeta(_log, {__call = __logger})"]
+log = setmeta(_log, {__call = __logger})
+
+log.cache = {}
+function cache(a,b,c)
+   local tuck = {a,b,c}
+   log.cache[#log.cache + 1] = tuck
+end
+"]
 // END RANK codeblock_76
 
 prose_77 -> { raw_87}
@@ -542,7 +549,7 @@ header_108 [label="3 : tty setup"]
 
 prose_109 [label="prose"]
 
-codeblock_110 [label="code block 153-161"]
+codeblock_110 [label="code block 160-168"]
 
 
 // END RANK section_38
@@ -581,7 +588,7 @@ header_115 [label="2 : Modeselektor"]
 
 prose_116 [label="prose"]
 
-codeblock_117 [label="code block 169-175"]
+codeblock_117 [label="code block 176-182"]
 
 
 // END RANK section_6
@@ -621,7 +628,7 @@ header_122 [label="2 : Reader"]
 
 prose_123 [label="prose"]
 
-section_124 [label="section: 183-269"]
+section_124 [label="section: 190-276"]
 
 
 // END RANK section_7
@@ -690,9 +697,9 @@ header_140 [label="3 : process_escapes(seq)"]
 
 prose_141 [label="prose"]
 
-codeblock_142 [label="code block 185-242"]
+codeblock_142 [label="code block 192-249"]
 
-codeblock_143 [label="code block 244-269"]
+codeblock_143 [label="code block 251-276"]
 
 
 // END RANK section_124

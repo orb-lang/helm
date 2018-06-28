@@ -325,7 +325,7 @@ end
 function ModeS.printResults(modeS, results, new)
    local rainbuf = {}
    write(a.cursor.hide())
-   modeS:clearResult()
+   modeS:clearResults()
    local row = new and modeS.repl_top + 1 or modeS:replLine() + 1
    modeS:write(a.rc(row, modeS.l_margin))
    for i = 1, results.n do
@@ -421,7 +421,7 @@ function NAV.UP(modeS, category, value)
       if linestash then
          modeS.hist:append(linestash)
       end
-      modeS:clearResult()
+      modeS:clearResults()
       if prev_result then
          modeS:printResults(prev_result)
       end
@@ -439,7 +439,7 @@ function NAV.DOWN(modeS, category, value)
       if next_p then
          modeS.txtbuf = Txtbuf()
       end
-      modeS:clearResult()
+      modeS:clearResults()
       if next_result then
          modeS:printResults(next_result)
       end
@@ -506,7 +506,7 @@ local function gatherResults(success, ...)
 end
 ```
 ```lua
-function ModeS.clearResult(modeS)
+function ModeS.clearResults(modeS)
    write(a.erase.box(modeS.repl_top + 1, 1, modeS.max_row, modeS.r_margin))
 end
 ```
@@ -535,7 +535,7 @@ function ModeS.eval(modeS)
          if results.n > 0 then
             modeS:printResults(results)
          else
-            modeS:clearResult()
+            modeS:clearResults()
          end
       else
       -- error
@@ -550,7 +550,7 @@ function ModeS.eval(modeS)
          write(a.col(1) .. "...")
          return true
       else
-         modeS:clearResult()
+         modeS:clearResults()
          modeS:write(err)
          -- pass through to default.
       end

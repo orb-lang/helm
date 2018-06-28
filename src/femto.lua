@@ -105,6 +105,13 @@ end
 
 log = setmeta(_log, {__call = __logger})
 
+log.cache = {}
+function cache(a,b,c)
+   local tuck = {a,b,c}
+   log.cache[#log.cache + 1] = tuck
+end
+
+
 
 
 

@@ -276,7 +276,8 @@ function Historian.persist(historian, txtbuf, results)
       end
       local line_id = sql.lastRowId(historian.conn)
       if results and type(results) == "table" then
-         for _,v in ipairs(results) do
+         cache(results)
+         for _,v in ipairs(table.reverse(results)) do
             -- insert result repr
             -- tostring() just for compactness
             historian.insert_result_stmt:bindkv { line_id = line_id,
