@@ -458,14 +458,16 @@ function NAV.RIGHT(modeS, category, value)
 end
 
 function NAV.RETURN(modeS, category, value)
-   -- eval etc.
-   modeS:nl()
-   local more = modeS:eval()
-   if not more then
-     modeS.txtbuf = Txtbuf()
+   -- eval or split line
+   local eval = modeS.txtbuf:nl()
+   if eval then
+     modeS:nl()
+     local more = modeS:eval()
+     if not more then
+       modeS.txtbuf = Txtbuf()
+     end
+     modeS.hist.cursor = modeS.hist.cursor + 1
    end
-   -- Question: is this wrong for an error?
-   modeS.hist.cursor = modeS.hist.cursor + 1
 end
 
 function NAV.BACKSPACE(modeS, category, value)

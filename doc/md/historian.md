@@ -31,36 +31,7 @@ local Historian = meta {}
 ```
 ## Persistence
 
-This is where we practice for ``codex``.
-
-
-Note: I'm not happy with how the existing SQLite binding is handling
-[three-valued logic](httk://).  Lua's ``nil`` is a frequent source of
-annoyance, true, but every union type system has a bottom value, and Lua's is
-implemented cleanly.
-
-
-But this is not the semantics of SQLite's NULL, which cleanly represents "no
-answer available for constraint".  Our bindings would appear to represent
-nulls on the right side of a left join as missing values, which breaks some of
-the conventions of Lua, such as ``#``, to no plausible benefit.
-
-
-It's also quite possible I'm trying to unwrap a data structure which is meant
-to be handled through method calls.
-
-
-Looks like there's a magic "hik" string where the ``i`` is index, ``k`` is key/value,
-and ``h`` is some weird object on the ``[0]`` index which has column-centered
-values.
-
-
-I've been getting back all three. Hmm.
-
-
-Also the return format is ``resultset, nrow`` which mitigates the damage from
-``NULL`` holes.
-
+This defines the persistence model for bridge.
 
 ### SQLite battery
 
@@ -111,11 +82,11 @@ FOREIGN KEY (project)
    ON DELETE CASCADE );
 ]]
 
-local insert_line_stmt = [[
+local insert_line = [[
 INSERT INTO repl (project, line) VALUES (:project, :line);
 ]]
 
-local insert_result_stmt = [[
+local insert_result = [[
 INSERT INTO result (line_id, repr) VALUES (:line_id, :repr);
 ]]
 
@@ -197,15 +168,15 @@ function Historian.load(historian)
                                   sql.format(get_project, historian.project),
                                   "i")
       if not proj_val then
-         error "no project"
+         error "Could not create project in .bridge"
       end
    end
-   local project_id = proj_val[1][1]
 
+   local project_id = proj_val[1][1]
    historian.project_id = project_id
    -- Create insert prepared statements
-   historian.insert_line_stmt = conn:prepare(insert_line_stmt)
-   historian.insert_result_stmt = conn:prepare(insert_result_stmt)
+   historian.insert_line = conn:prepare(insert_line)
+   historian.insert_result = conn:prepare(insert_result)
    -- Retrieve history
    local pop_str = sql.format(get_recent, project_id,
                         historian.HISTORY_LIMIT)
@@ -244,6 +215,16 @@ function Historian.load(historian)
    end
 end
 ```
+### Historian:restore_session(modeS, session)
+
+If there is an open session, we want to replay it.
+
+
+To do this, we need to borrow the modeselektor.
+
+```lua
+
+```
 ### Historian:persist(txtbuf)
 
 Persists a line and results to store.
@@ -266,25 +247,24 @@ common value for any identical semantics.
 function Historian.persist(historian, txtbuf, results)
    local lb = tostring(txtbuf)
    if lb ~= "" then
-      historian.insert_line_stmt:bindkv { project = historian.project_id,
+      historian.insert_line:bindkv { project = historian.project_id,
                                           line    = lb }
-      local err = historian.insert_line_stmt:step()
+      local err = historian.insert_line:step()
       if not err then
-         historian.insert_line_stmt:clearbind():reset()
+         historian.insert_line:clearbind():reset()
       else
          error(err)
       end
       local line_id = sql.lastRowId(historian.conn)
       if results and type(results) == "table" then
-         cache(results)
-         for _,v in ipairs(table.reverse(results)) do
+         for _,v in ipairs(reverse(results)) do
             -- insert result repr
             -- tostring() just for compactness
-            historian.insert_result_stmt:bindkv { line_id = line_id,
+            historian.insert_result:bindkv { line_id = line_id,
                                                   repr = color.ts(v) }
-            err = historian.insert_result_stmt:step()
+            err = historian.insert_result:step()
             if not err then
-               historian.insert_result_stmt:clearbind():reset()
+               historian.insert_result:clearbind():reset()
             end
          end
       end

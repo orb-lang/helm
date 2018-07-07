@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 427"]
+doc_0 [label="doc - 414"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-341"]
+section_1 [label="section: 1-328"]
 
 
 // END RANK doc_0
@@ -31,11 +31,11 @@ codeblock_7 [label="code block 16-25"]
 
 codeblock_8 [label="code block 27-29"]
 
-section_9 [label="section: 32-243"]
+section_9 [label="section: 32-231"]
 
-section_10 [label="section: 296-341"]
+section_10 [label="section: 283-328"]
 
-section_11 [label="section: 342-393"]
+section_11 [label="section: 329-380"]
 
 
 // END RANK section_1
@@ -121,365 +121,74 @@ codeblock_8 -> leaf_22
 leaf_22  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Historian = meta {}"]
 // END RANK codeblock_8
 
-section_9 -> { header_23 prose_24 prose_25 prose_26 prose_27 prose_28 prose_29 prose_30 section_31 section_32 section_33}
-{rank=same; header_23 prose_24 prose_25 prose_26 prose_27 prose_28 prose_29 prose_30 section_31 section_32 section_33}
+section_9 -> { header_23 prose_24 section_25 section_26 section_27 section_28}
+{rank=same; header_23 prose_24 section_25 section_26 section_27 section_28}
 
 header_23 [label="2 : Persistence"]
 
 prose_24 [label="prose"]
 
-prose_25 [label="prose"]
+section_25 [label="section: 36-141"]
 
-prose_26 [label="prose"]
+section_26 [label="section: 142-220"]
 
-prose_27 [label="prose"]
+section_27 [label="section: 221-231"]
 
-prose_28 [label="prose"]
-
-prose_29 [label="prose"]
-
-prose_30 [label="prose"]
-
-section_31 [label="section: 59-164"]
-
-section_32 [label="section: 165-243"]
-
-section_33 [label="section: 244-295"]
+section_28 [label="section: 232-282"]
 
 
 // END RANK section_9
 
-header_23 -> leaf_34
-leaf_34  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Persistence"]
+header_23 -> leaf_29
+leaf_29  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Persistence"]
 // END RANK header_23
 
-prose_24 -> { raw_35 prespace_36 literal_37 raw_38}
-{rank=same; raw_35 prespace_36 literal_37 raw_38}
+prose_24 -> { raw_30}
+{rank=same; raw_30}
 
-raw_35 [label="raw"]
-
-prespace_36 [label="prespace"]
-
-literal_37 [label="literal"]
-
-raw_38 [label="raw"]
+raw_30 [label="raw"]
 
 
 // END RANK prose_24
 
-raw_35 -> leaf_39
-leaf_39  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_30 -> leaf_31
+leaf_31  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
-This is where we practice for"]
-// END RANK raw_35
-
-prespace_36 -> leaf_40
-leaf_40  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_36
-
-literal_37 -> leaf_41
-leaf_41  [color=Gray,shape=rectangle,fontname=Inconsolata,label="codex"]
-// END RANK literal_37
-
-raw_38 -> leaf_42
-leaf_42  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
+This defines the persistence model for bridge.
 "]
-// END RANK raw_38
+// END RANK raw_30
 
-prose_25 -> { raw_43 link_44 raw_45 prespace_46 literal_47 raw_48}
-{rank=same; raw_43 link_44 raw_45 prespace_46 literal_47 raw_48}
+section_25 -> { header_32 prose_33 codeblock_34}
+{rank=same; header_32 prose_33 codeblock_34}
 
-raw_43 [label="raw"]
+header_32 [label="3 : SQLite battery"]
 
-link_44 [label="link"]
+prose_33 [label="prose"]
 
-raw_45 [label="raw"]
-
-prespace_46 [label="prespace"]
-
-literal_47 [label="literal"]
-
-raw_48 [label="raw"]
+codeblock_34 [label="code block 38-139"]
 
 
-// END RANK prose_25
+// END RANK section_25
 
-raw_43 -> leaf_49
-leaf_49  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-Note: I'm not happy with how the existing SQLite binding is handling"]
-// END RANK raw_43
+header_32 -> leaf_35
+leaf_35  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** SQLite battery"]
+// END RANK header_32
 
-link_44 -> { anchortext_50 url_51}
-{rank=same; anchortext_50 url_51}
+prose_33 -> { raw_36}
+{rank=same; raw_36}
 
-anchortext_50 [label="anchortext"]
-
-url_51 [label="url"]
+raw_36 [label="raw"]
 
 
-// END RANK link_44
+// END RANK prose_33
 
-anchortext_50 -> leaf_52
-leaf_52  [color=Gray,shape=rectangle,fontname=Inconsolata,label="three-valued logic"]
-// END RANK anchortext_50
-
-url_51 -> leaf_53
-leaf_53  [color=Gray,shape=rectangle,fontname=Inconsolata,label="httk://"]
-// END RANK url_51
-
-raw_45 -> leaf_54
-leaf_54  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".  Lua's"]
-// END RANK raw_45
-
-prespace_46 -> leaf_55
-leaf_55  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_46
-
-literal_47 -> leaf_56
-leaf_56  [color=Gray,shape=rectangle,fontname=Inconsolata,label="nil"]
-// END RANK literal_47
-
-raw_48 -> leaf_57
-leaf_57  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is a frequent source of
-annoyance, true, but every union type system has a bottom value, and Lua's is
-implemented cleanly.
+raw_36 -> leaf_37
+leaf_37  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 "]
-// END RANK raw_48
+// END RANK raw_36
 
-prose_26 -> { raw_58 prespace_59 literal_60 raw_61}
-{rank=same; raw_58 prespace_59 literal_60 raw_61}
-
-raw_58 [label="raw"]
-
-prespace_59 [label="prespace"]
-
-literal_60 [label="literal"]
-
-raw_61 [label="raw"]
-
-
-// END RANK prose_26
-
-raw_58 -> leaf_62
-leaf_62  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-But this is not the semantics of SQLite's NULL, which cleanly represents \"no
-answer available for constraint\".  Our bindings would appear to represent
-nulls on the right side of a left join as missing values, which breaks some of
-the conventions of Lua, such as"]
-// END RANK raw_58
-
-prespace_59 -> leaf_63
-leaf_63  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_59
-
-literal_60 -> leaf_64
-leaf_64  [color=Gray,shape=rectangle,fontname=Inconsolata,label="#"]
-// END RANK literal_60
-
-raw_61 -> leaf_65
-leaf_65  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", to no plausible benefit.
-"]
-// END RANK raw_61
-
-prose_27 -> { raw_66}
-{rank=same; raw_66}
-
-raw_66 [label="raw"]
-
-
-// END RANK prose_27
-
-raw_66 -> leaf_67
-leaf_67  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-It's also quite possible I'm trying to unwrap a data structure which is meant
-to be handled through method calls.
-"]
-// END RANK raw_66
-
-prose_28 -> { raw_68 prespace_69 literal_70 raw_71 prespace_72 literal_73 raw_74 prespace_75 literal_76 raw_77 prespace_78 literal_79 raw_80}
-{rank=same; raw_68 prespace_69 literal_70 raw_71 prespace_72 literal_73 raw_74 prespace_75 literal_76 raw_77 prespace_78 literal_79 raw_80}
-
-raw_68 [label="raw"]
-
-prespace_69 [label="prespace"]
-
-literal_70 [label="literal"]
-
-raw_71 [label="raw"]
-
-prespace_72 [label="prespace"]
-
-literal_73 [label="literal"]
-
-raw_74 [label="raw"]
-
-prespace_75 [label="prespace"]
-
-literal_76 [label="literal"]
-
-raw_77 [label="raw"]
-
-prespace_78 [label="prespace"]
-
-literal_79 [label="literal"]
-
-raw_80 [label="raw"]
-
-
-// END RANK prose_28
-
-raw_68 -> leaf_81
-leaf_81  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-Looks like there's a magic \"hik\" string where the"]
-// END RANK raw_68
-
-prespace_69 -> leaf_82
-leaf_82  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_69
-
-literal_70 -> leaf_83
-leaf_83  [color=Gray,shape=rectangle,fontname=Inconsolata,label="i"]
-// END RANK literal_70
-
-raw_71 -> leaf_84
-leaf_84  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is index,"]
-// END RANK raw_71
-
-prespace_72 -> leaf_85
-leaf_85  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_72
-
-literal_73 -> leaf_86
-leaf_86  [color=Gray,shape=rectangle,fontname=Inconsolata,label="k"]
-// END RANK literal_73
-
-raw_74 -> leaf_87
-leaf_87  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is key/value,
-and"]
-// END RANK raw_74
-
-prespace_75 -> leaf_88
-leaf_88  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_75
-
-literal_76 -> leaf_89
-leaf_89  [color=Gray,shape=rectangle,fontname=Inconsolata,label="h"]
-// END RANK literal_76
-
-raw_77 -> leaf_90
-leaf_90  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is some weird object on the"]
-// END RANK raw_77
-
-prespace_78 -> leaf_91
-leaf_91  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_78
-
-literal_79 -> leaf_92
-leaf_92  [color=Gray,shape=rectangle,fontname=Inconsolata,label="[0]"]
-// END RANK literal_79
-
-raw_80 -> leaf_93
-leaf_93  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" index which has column-centered
-values.
-"]
-// END RANK raw_80
-
-prose_29 -> { raw_94}
-{rank=same; raw_94}
-
-raw_94 [label="raw"]
-
-
-// END RANK prose_29
-
-raw_94 -> leaf_95
-leaf_95  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-I've been getting back all three. Hmm.
-"]
-// END RANK raw_94
-
-prose_30 -> { raw_96 prespace_97 literal_98 raw_99 prespace_100 literal_101 raw_102}
-{rank=same; raw_96 prespace_97 literal_98 raw_99 prespace_100 literal_101 raw_102}
-
-raw_96 [label="raw"]
-
-prespace_97 [label="prespace"]
-
-literal_98 [label="literal"]
-
-raw_99 [label="raw"]
-
-prespace_100 [label="prespace"]
-
-literal_101 [label="literal"]
-
-raw_102 [label="raw"]
-
-
-// END RANK prose_30
-
-raw_96 -> leaf_103
-leaf_103  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-Also the return format is"]
-// END RANK raw_96
-
-prespace_97 -> leaf_104
-leaf_104  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_97
-
-literal_98 -> leaf_105
-leaf_105  [color=Gray,shape=rectangle,fontname=Inconsolata,label="resultset, nrow"]
-// END RANK literal_98
-
-raw_99 -> leaf_106
-leaf_106  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" which mitigates the damage from"]
-// END RANK raw_99
-
-prespace_100 -> leaf_107
-leaf_107  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
-// END RANK prespace_100
-
-literal_101 -> leaf_108
-leaf_108  [color=Gray,shape=rectangle,fontname=Inconsolata,label="NULL"]
-// END RANK literal_101
-
-raw_102 -> leaf_109
-leaf_109  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" holes.
-
-"]
-// END RANK raw_102
-
-section_31 -> { header_110 prose_111 codeblock_112}
-{rank=same; header_110 prose_111 codeblock_112}
-
-header_110 [label="3 : SQLite battery"]
-
-prose_111 [label="prose"]
-
-codeblock_112 [label="code block 61-162"]
-
-
-// END RANK section_31
-
-header_110 -> leaf_113
-leaf_113  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** SQLite battery"]
-// END RANK header_110
-
-prose_111 -> { raw_114}
-{rank=same; raw_114}
-
-raw_114 [label="raw"]
-
-
-// END RANK prose_111
-
-raw_114 -> leaf_115
-leaf_115  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-"]
-// END RANK raw_114
-
-codeblock_112 -> leaf_116
-leaf_116  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Historian.HISTORY_LIMIT = 1000
+codeblock_34 -> leaf_38
+leaf_38  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Historian.HISTORY_LIMIT = 1000
 
 local create_project_table = [[
 CREATE TABLE IF NOT EXISTS project (
@@ -525,11 +234,11 @@ FOREIGN KEY (project)
    ON DELETE CASCADE );
 ]]
 
-local insert_line_stmt = [[
+local insert_line = [[
 INSERT INTO repl (project, line) VALUES (:project, :line);
 ]]
 
-local insert_result_stmt = [[
+local insert_result = [[
 INSERT INTO result (line_id, repr) VALUES (:line_id, :repr);
 ]]
 
@@ -579,58 +288,58 @@ local function has(table, name)
    end
    return false
 end"]
-// END RANK codeblock_112
+// END RANK codeblock_34
 
-section_32 -> { header_117 prose_118 prose_119 codeblock_120}
-{rank=same; header_117 prose_118 prose_119 codeblock_120}
+section_26 -> { header_39 prose_40 prose_41 codeblock_42}
+{rank=same; header_39 prose_40 prose_41 codeblock_42}
 
-header_117 [label="3 : Historian:load()"]
+header_39 [label="3 : Historian:load()"]
 
-prose_118 [label="prose"]
+prose_40 [label="prose"]
 
-prose_119 [label="prose"]
+prose_41 [label="prose"]
 
-codeblock_120 [label="code block 172-241"]
-
-
-// END RANK section_32
-
-header_117 -> leaf_121
-leaf_121  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Historian:load()"]
-// END RANK header_117
-
-prose_118 -> { raw_122}
-{rank=same; raw_122}
-
-raw_122 [label="raw"]
+codeblock_42 [label="code block 149-218"]
 
 
-// END RANK prose_118
+// END RANK section_26
 
-raw_122 -> leaf_123
-leaf_123  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_39 -> leaf_43
+leaf_43  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Historian:load()"]
+// END RANK header_39
+
+prose_40 -> { raw_44}
+{rank=same; raw_44}
+
+raw_44 [label="raw"]
+
+
+// END RANK prose_40
+
+raw_44 -> leaf_45
+leaf_45  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 Brings up the project history and (eventually) results and user config.
 "]
-// END RANK raw_122
+// END RANK raw_44
 
-prose_119 -> { raw_124}
-{rank=same; raw_124}
+prose_41 -> { raw_46}
+{rank=same; raw_46}
 
-raw_124 [label="raw"]
+raw_46 [label="raw"]
 
 
-// END RANK prose_119
+// END RANK prose_41
 
-raw_124 -> leaf_125
-leaf_125  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_46 -> leaf_47
+leaf_47  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 Most of the complexity serves to make a simple key/value relationship
 between the regenerated txtbufs and their associated result history.
 "]
-// END RANK raw_124
+// END RANK raw_46
 
-codeblock_120 -> leaf_126
-leaf_126  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.load(historian)
+codeblock_42 -> leaf_48
+leaf_48  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.load(historian)
    local conn = sql.open(historian.bridge_home)
    historian.conn = conn
    -- Set up bridge tables
@@ -652,15 +361,15 @@ leaf_126  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histo
                                   sql.format(get_project, historian.project),
                                   \"i\")
       if not proj_val then
-         error \"no project\"
+         error \"Could not create project in .bridge\"
       end
    end
-   local project_id = proj_val[1][1]
 
+   local project_id = proj_val[1][1]
    historian.project_id = project_id
    -- Create insert prepared statements
-   historian.insert_line_stmt = conn:prepare(insert_line_stmt)
-   historian.insert_result_stmt = conn:prepare(insert_result_stmt)
+   historian.insert_line = conn:prepare(insert_line)
+   historian.insert_result = conn:prepare(insert_result)
    -- Retrieve history
    local pop_str = sql.format(get_recent, project_id,
                         historian.HISTORY_LIMIT)
@@ -698,151 +407,201 @@ leaf_126  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histo
       historian.cursor = 0
    end
 end"]
-// END RANK codeblock_120
+// END RANK codeblock_42
 
-section_33 -> { header_127 prose_128 prose_129 prose_130 prose_131 codeblock_132}
-{rank=same; header_127 prose_128 prose_129 prose_130 prose_131 codeblock_132}
+section_27 -> { header_49 prose_50 prose_51 codeblock_52}
+{rank=same; header_49 prose_50 prose_51 codeblock_52}
 
-header_127 [label="3 : Historian:persist(txtbuf)"]
+header_49 [label="3 : Historian:restore_session(modeS, session)"]
 
-prose_128 [label="prose"]
+prose_50 [label="prose"]
 
-prose_129 [label="prose"]
+prose_51 [label="prose"]
 
-prose_130 [label="prose"]
-
-prose_131 [label="prose"]
-
-codeblock_132 [label="code block 259-293"]
+codeblock_52 [label="code block 227-229"]
 
 
-// END RANK section_33
+// END RANK section_27
 
-header_127 -> leaf_133
-leaf_133  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Historian:persist(txtbuf)"]
-// END RANK header_127
+header_49 -> leaf_53
+leaf_53  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Historian:restore_session(modeS, session)"]
+// END RANK header_49
 
-prose_128 -> { raw_134}
-{rank=same; raw_134}
+prose_50 -> { raw_54}
+{rank=same; raw_54}
 
-raw_134 [label="raw"]
+raw_54 [label="raw"]
 
 
-// END RANK prose_128
+// END RANK prose_50
 
-raw_134 -> leaf_135
-leaf_135  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_54 -> leaf_55
+leaf_55  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+If there is an open session, we want to replay it.
+"]
+// END RANK raw_54
+
+prose_51 -> { raw_56}
+{rank=same; raw_56}
+
+raw_56 [label="raw"]
+
+
+// END RANK prose_51
+
+raw_56 -> leaf_57
+leaf_57  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+To do this, we need to borrow the modeselektor.
+"]
+// END RANK raw_56
+
+codeblock_52 -> leaf_58
+leaf_58  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK codeblock_52
+
+section_28 -> { header_59 prose_60 prose_61 prose_62 prose_63 codeblock_64}
+{rank=same; header_59 prose_60 prose_61 prose_62 prose_63 codeblock_64}
+
+header_59 [label="3 : Historian:persist(txtbuf)"]
+
+prose_60 [label="prose"]
+
+prose_61 [label="prose"]
+
+prose_62 [label="prose"]
+
+prose_63 [label="prose"]
+
+codeblock_64 [label="code block 247-280"]
+
+
+// END RANK section_28
+
+header_59 -> leaf_65
+leaf_65  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Historian:persist(txtbuf)"]
+// END RANK header_59
+
+prose_60 -> { raw_66}
+{rank=same; raw_66}
+
+raw_66 [label="raw"]
+
+
+// END RANK prose_60
+
+raw_66 -> leaf_67
+leaf_67  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 Persists a line and results to store.
 "]
-// END RANK raw_134
+// END RANK raw_66
 
-prose_129 -> { raw_136}
-{rank=same; raw_136}
+prose_61 -> { raw_68}
+{rank=same; raw_68}
 
-raw_136 [label="raw"]
+raw_68 [label="raw"]
 
 
-// END RANK prose_129
+// END RANK prose_61
 
-raw_136 -> leaf_137
-leaf_137  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_68 -> leaf_69
+leaf_69  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 The hooks are in place to persist the results. I'm starting with a string
 representation; the goal is to provide the sense of persistence across
 sessions, and supplement that over time with better and better approximations.
 "]
-// END RANK raw_136
+// END RANK raw_68
 
-prose_130 -> { raw_138 prespace_139 literal_140 raw_141 prespace_142 literal_143 raw_144}
-{rank=same; raw_138 prespace_139 literal_140 raw_141 prespace_142 literal_143 raw_144}
+prose_62 -> { raw_70 prespace_71 literal_72 raw_73 prespace_74 literal_75 raw_76}
+{rank=same; raw_70 prespace_71 literal_72 raw_73 prespace_74 literal_75 raw_76}
 
-raw_138 [label="raw"]
+raw_70 [label="raw"]
 
-prespace_139 [label="prespace"]
+prespace_71 [label="prespace"]
 
-literal_140 [label="literal"]
+literal_72 [label="literal"]
 
-raw_141 [label="raw"]
+raw_73 [label="raw"]
 
-prespace_142 [label="prespace"]
+prespace_74 [label="prespace"]
 
-literal_143 [label="literal"]
+literal_75 [label="literal"]
 
-raw_144 [label="raw"]
+raw_76 [label="raw"]
 
 
-// END RANK prose_130
+// END RANK prose_62
 
-raw_138 -> leaf_145
-leaf_145  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_70 -> leaf_77
+leaf_77  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 To really nail it down will require semantic analysis and hence thorough
 parsing.  General-purpose persistence tools belong in"]
-// END RANK raw_138
+// END RANK raw_70
 
-prespace_139 -> leaf_146
-leaf_146  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_139
+prespace_71 -> leaf_78
+leaf_78  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_71
 
-literal_140 -> leaf_147
-leaf_147  [color=Gray,shape=rectangle,fontname=Inconsolata,label="sqlayer"]
-// END RANK literal_140
+literal_72 -> leaf_79
+leaf_79  [color=Gray,shape=rectangle,fontname=Inconsolata,label="sqlayer"]
+// END RANK literal_72
 
-raw_141 -> leaf_148
-leaf_148  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", which will
+raw_73 -> leaf_80
+leaf_80  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", which will
 merge with our increasingly-modified"]
-// END RANK raw_141
+// END RANK raw_73
 
-prespace_142 -> leaf_149
-leaf_149  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_142
+prespace_74 -> leaf_81
+leaf_81  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_74
 
-literal_143 -> leaf_150
-leaf_150  [color=Gray,shape=rectangle,fontname=Inconsolata,label="sqlite"]
-// END RANK literal_143
+literal_75 -> leaf_82
+leaf_82  [color=Gray,shape=rectangle,fontname=Inconsolata,label="sqlite"]
+// END RANK literal_75
 
-raw_144 -> leaf_151
-leaf_151  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" bindings.
+raw_76 -> leaf_83
+leaf_83  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" bindings.
 "]
-// END RANK raw_144
+// END RANK raw_76
 
-prose_131 -> { raw_152}
-{rank=same; raw_152}
+prose_63 -> { raw_84}
+{rank=same; raw_84}
 
-raw_152 [label="raw"]
+raw_84 [label="raw"]
 
 
-// END RANK prose_131
+// END RANK prose_63
 
-raw_152 -> leaf_153
-leaf_153  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_84 -> leaf_85
+leaf_85  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 Medium-term goal is to hash any Lua object in a way that will resolve to a
 common value for any identical semantics.
 "]
-// END RANK raw_152
+// END RANK raw_84
 
-codeblock_132 -> leaf_154
-leaf_154  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.persist(historian, txtbuf, results)
+codeblock_64 -> leaf_86
+leaf_86  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.persist(historian, txtbuf, results)
    local lb = tostring(txtbuf)
    if lb ~= \"\" then
-      historian.insert_line_stmt:bindkv { project = historian.project_id,
+      historian.insert_line:bindkv { project = historian.project_id,
                                           line    = lb }
-      local err = historian.insert_line_stmt:step()
+      local err = historian.insert_line:step()
       if not err then
-         historian.insert_line_stmt:clearbind():reset()
+         historian.insert_line:clearbind():reset()
       else
          error(err)
       end
       local line_id = sql.lastRowId(historian.conn)
       if results and type(results) == \"table\" then
-         cache(results)
-         for _,v in ipairs(table.reverse(results)) do
+         for _,v in ipairs(reverse(results)) do
             -- insert result repr
             -- tostring() just for compactness
-            historian.insert_result_stmt:bindkv { line_id = line_id,
+            historian.insert_result:bindkv { line_id = line_id,
                                                   repr = color.ts(v) }
-            err = historian.insert_result_stmt:step()
+            err = historian.insert_result:step()
             if not err then
-               historian.insert_result_stmt:clearbind():reset()
+               historian.insert_result:clearbind():reset()
             end
          end
       end
@@ -854,39 +613,39 @@ leaf_154  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histo
    end
    --]]
 end"]
-// END RANK codeblock_132
+// END RANK codeblock_64
 
-section_10 -> { header_155 prose_156 codeblock_157}
-{rank=same; header_155 prose_156 codeblock_157}
+section_10 -> { header_87 prose_88 codeblock_89}
+{rank=same; header_87 prose_88 codeblock_89}
 
-header_155 [label="2 : Historian:search(frag)"]
+header_87 [label="2 : Historian:search(frag)"]
 
-prose_156 [label="prose"]
+prose_88 [label="prose"]
 
-codeblock_157 [label="code block 298-339"]
+codeblock_89 [label="code block 285-326"]
 
 
 // END RANK section_10
 
-header_155 -> leaf_158
-leaf_158  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Historian:search(frag)"]
-// END RANK header_155
+header_87 -> leaf_90
+leaf_90  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Historian:search(frag)"]
+// END RANK header_87
 
-prose_156 -> { raw_159}
-{rank=same; raw_159}
+prose_88 -> { raw_91}
+{rank=same; raw_91}
 
-raw_159 [label="raw"]
+raw_91 [label="raw"]
 
 
-// END RANK prose_156
+// END RANK prose_88
 
-raw_159 -> leaf_160
-leaf_160  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_91 -> leaf_92
+leaf_92  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 "]
-// END RANK raw_159
+// END RANK raw_91
 
-codeblock_157 -> leaf_161
-leaf_161  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local P, match = L.P, L.match
+codeblock_89 -> leaf_93
+leaf_93  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local P, match = L.P, L.match
 
 -- second_best is broke and I don't know why
 -- also this fails on a single key search >.<
@@ -926,43 +685,43 @@ function Historian.search(historian, frag)
 
    return collection, best
 end"]
-// END RANK codeblock_157
+// END RANK codeblock_89
 
-section_11 -> { header_162 prose_163 codeblock_164 section_165 section_166}
-{rank=same; header_162 prose_163 codeblock_164 section_165 section_166}
+section_11 -> { header_94 prose_95 codeblock_96 section_97 section_98}
+{rank=same; header_94 prose_95 codeblock_96 section_97 section_98}
 
-header_162 [label="2 : Historian:prev()"]
+header_94 [label="2 : Historian:prev()"]
 
-prose_163 [label="prose"]
+prose_95 [label="prose"]
 
-codeblock_164 [label="code block 344-357"]
+codeblock_96 [label="code block 331-344"]
 
-section_165 [label="section: 360-393"]
+section_97 [label="section: 347-380"]
 
-section_166 [label="section: 394-427"]
+section_98 [label="section: 381-414"]
 
 
 // END RANK section_11
 
-header_162 -> leaf_167
-leaf_167  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Historian:prev()"]
-// END RANK header_162
+header_94 -> leaf_99
+leaf_99  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Historian:prev()"]
+// END RANK header_94
 
-prose_163 -> { raw_168}
-{rank=same; raw_168}
+prose_95 -> { raw_100}
+{rank=same; raw_100}
 
-raw_168 [label="raw"]
+raw_100 [label="raw"]
 
 
-// END RANK prose_163
+// END RANK prose_95
 
-raw_168 -> leaf_169
-leaf_169  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_100 -> leaf_101
+leaf_101  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 "]
-// END RANK raw_168
+// END RANK raw_100
 
-codeblock_164 -> leaf_170
-leaf_170  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.prev(historian)
+codeblock_96 -> leaf_102
+leaf_102  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.prev(historian)
    if historian.cursor == 0 or #historian == 0 then
       return Txtbuf()
    end
@@ -974,75 +733,75 @@ leaf_170  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histo
    txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
    return txtbuf:clone(), result
 end"]
-// END RANK codeblock_164
+// END RANK codeblock_96
 
-section_165 -> { header_171 prose_172 prose_173 codeblock_174}
-{rank=same; header_171 prose_172 prose_173 codeblock_174}
+section_97 -> { header_103 prose_104 prose_105 codeblock_106}
+{rank=same; header_103 prose_104 prose_105 codeblock_106}
 
-header_171 [label="3 : Historian:next()"]
+header_103 [label="3 : Historian:next()"]
 
-prose_172 [label="prose"]
+prose_104 [label="prose"]
 
-prose_173 [label="prose"]
+prose_105 [label="prose"]
 
-codeblock_174 [label="code block 367-391"]
-
-
-// END RANK section_165
-
-header_171 -> leaf_175
-leaf_175  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Historian:next()"]
-// END RANK header_171
-
-prose_172 -> { raw_176 prespace_177 literal_178 raw_179}
-{rank=same; raw_176 prespace_177 literal_178 raw_179}
-
-raw_176 [label="raw"]
-
-prespace_177 [label="prespace"]
-
-literal_178 [label="literal"]
-
-raw_179 [label="raw"]
+codeblock_106 [label="code block 354-378"]
 
 
-// END RANK prose_172
+// END RANK section_97
 
-raw_176 -> leaf_180
-leaf_180  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_103 -> leaf_107
+leaf_107  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Historian:next()"]
+// END RANK header_103
+
+prose_104 -> { raw_108 prespace_109 literal_110 raw_111}
+{rank=same; raw_108 prespace_109 literal_110 raw_111}
+
+raw_108 [label="raw"]
+
+prespace_109 [label="prespace"]
+
+literal_110 [label="literal"]
+
+raw_111 [label="raw"]
+
+
+// END RANK prose_104
+
+raw_108 -> leaf_112
+leaf_112  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 Returns the next txtbuf in history, and a second flag to tell the"]
-// END RANK raw_176
+// END RANK raw_108
 
-prespace_177 -> leaf_181
-leaf_181  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
-// END RANK prespace_177
+prespace_109 -> leaf_113
+leaf_113  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK prespace_109
 
-literal_178 -> leaf_182
-leaf_182  [color=Gray,shape=rectangle,fontname=Inconsolata,label="modeselektor"]
-// END RANK literal_178
+literal_110 -> leaf_114
+leaf_114  [color=Gray,shape=rectangle,fontname=Inconsolata,label="modeselektor"]
+// END RANK literal_110
 
-raw_179 -> leaf_183
-leaf_183  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" it might be time for a new one.
+raw_111 -> leaf_115
+leaf_115  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" it might be time for a new one.
 "]
-// END RANK raw_179
+// END RANK raw_111
 
-prose_173 -> { raw_184}
-{rank=same; raw_184}
+prose_105 -> { raw_116}
+{rank=same; raw_116}
 
-raw_184 [label="raw"]
+raw_116 [label="raw"]
 
 
-// END RANK prose_173
+// END RANK prose_105
 
-raw_184 -> leaf_185
-leaf_185  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_116 -> leaf_117
+leaf_117  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 I'd like to stop buffering blank lines at some point.
 "]
-// END RANK raw_184
+// END RANK raw_116
 
-codeblock_174 -> leaf_186
-leaf_186  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.next(historian)
+codeblock_106 -> leaf_118
+leaf_118  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.next(historian)
    local Δ = historian.cursor < #historian and 1 or 0
    if historian.cursor == 0 or #historian == 0 then
       return Txtbuf()
@@ -1065,61 +824,61 @@ leaf_186  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histo
       return txtbuf:clone(), result, false
    end
 end"]
-// END RANK codeblock_174
+// END RANK codeblock_106
 
-section_166 -> { header_187 prose_188 prose_189 codeblock_190 codeblock_191 codeblock_192}
-{rank=same; header_187 prose_188 prose_189 codeblock_190 codeblock_191 codeblock_192}
+section_98 -> { header_119 prose_120 prose_121 codeblock_122 codeblock_123 codeblock_124}
+{rank=same; header_119 prose_120 prose_121 codeblock_122 codeblock_123 codeblock_124}
 
-header_187 [label="3 : Historian:append()"]
+header_119 [label="3 : Historian:append()"]
 
-prose_188 [label="prose"]
+prose_120 [label="prose"]
 
-prose_189 [label="prose"]
+prose_121 [label="prose"]
 
-codeblock_190 [label="code block 400-414"]
+codeblock_122 [label="code block 387-401"]
 
-codeblock_191 [label="code block 416-423"]
+codeblock_123 [label="code block 403-410"]
 
-codeblock_192 [label="code block 425-427"]
-
-
-// END RANK section_166
-
-header_187 -> leaf_193
-leaf_193  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Historian:append()"]
-// END RANK header_187
-
-prose_188 -> { raw_194}
-{rank=same; raw_194}
-
-raw_194 [label="raw"]
+codeblock_124 [label="code block 412-414"]
 
 
-// END RANK prose_188
+// END RANK section_98
 
-raw_194 -> leaf_195
-leaf_195  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_119 -> leaf_125
+leaf_125  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Historian:append()"]
+// END RANK header_119
+
+prose_120 -> { raw_126}
+{rank=same; raw_126}
+
+raw_126 [label="raw"]
+
+
+// END RANK prose_120
+
+raw_126 -> leaf_127
+leaf_127  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 Appends a txtbuf to history and persists it.
 "]
-// END RANK raw_194
+// END RANK raw_126
 
-prose_189 -> { raw_196}
-{rank=same; raw_196}
+prose_121 -> { raw_128}
+{rank=same; raw_128}
 
-raw_196 [label="raw"]
+raw_128 [label="raw"]
 
 
-// END RANK prose_189
+// END RANK prose_121
 
-raw_196 -> leaf_197
-leaf_197  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_128 -> leaf_129
+leaf_129  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 Doesn't adjust the cursor.
 "]
-// END RANK raw_196
+// END RANK raw_128
 
-codeblock_190 -> leaf_198
-leaf_198  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.append(historian, txtbuf, results, success)
+codeblock_122 -> leaf_130
+leaf_130  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.append(historian, txtbuf, results, success)
    if tostring(historian[#historian]) == tostring(txtbuf) then
       -- don't bother
       return false
@@ -1132,20 +891,20 @@ leaf_198  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histo
    end
    return true
 end"]
-// END RANK codeblock_190
+// END RANK codeblock_122
 
-codeblock_191 -> leaf_199
-leaf_199  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new()
+codeblock_123 -> leaf_131
+leaf_131  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new()
    local historian = meta(Historian)
    historian:load()
    return historian
 end
 Historian.idEst = new"]
-// END RANK codeblock_191
+// END RANK codeblock_123
 
-codeblock_192 -> leaf_200
-leaf_200  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return new"]
-// END RANK codeblock_192
+codeblock_124 -> leaf_132
+leaf_132  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return new"]
+// END RANK codeblock_124
 
 
 }

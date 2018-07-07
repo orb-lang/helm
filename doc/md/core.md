@@ -118,32 +118,44 @@ local function _hasfield(field, tab)
    end
 end
 
-function _hf__index(_, field)
+local function _hf__index(_, field)
    return function(tab)
       return _hasfield(field, tab)
    end
 end
 
-function _hf__call(_, field, tab)
+local function _hf__call(_, field, tab)
    return _hasfield(field, tab)
 end
 
 core.hasfield = setmetatable({}, { __index = _hf__index,
                                    __call  = _hf__call })
 ```
-### clone(tab)
+### clone(tab, depth)
 
 Performs a shallow clone of table, attaching metatable if available.
 
+
+Will recurse to ``depth`` if provided.
+
+
+This will unroll circular references, which may not be what you want.
+
 ```lua
-function core.clone(tab)
+local function _clone(tab, depth)
+   depth = depth or 1
+   assert(depth > 0, "depth must be positive " .. tostring(depth))
    local _M = getmetatable(tab)
    local clone = _M and setmetatable({}, _M) or {}
    for k,v in pairs(tab) do
+      if depth > 1 and type(v) == "table" then
+        v = _clone(v, depth - 1)
+      end
       clone[k] = v
    end
    return clone
 end
+core.clone = _clone
 ```
 ### arrayof(tab)
 
@@ -202,6 +214,9 @@ Reverses (only) the array portion of a table, returning a new table.
 
 ```lua
 function core.reverse(tab)
+   if type(tab) ~= "table" or #tab == 0 then
+      return {}
+   end
    local bat = {}
    for i,v in ipairs(tab) do
       bat[#tab - i + 1] = v

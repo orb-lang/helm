@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 403"]
+doc_0 [label="doc - 404"]
 
 
 doc_0 -> { section_1}
@@ -33,7 +33,7 @@ codeblock_8 [label="code block 20-69"]
 
 section_9 [label="section: 72-99"]
 
-section_10 [label="section: 100-316"]
+section_10 [label="section: 100-315"]
 
 
 // END RANK section_1
@@ -355,11 +355,11 @@ section_72 [label="section: 103-118"]
 
 section_73 [label="section: 119-132"]
 
-section_74 [label="section: 133-196"]
+section_74 [label="section: 133-195"]
 
-section_75 [label="section: 197-316"]
+section_75 [label="section: 196-315"]
 
-section_76 [label="section: 317-403"]
+section_76 [label="section: 316-404"]
 
 
 // END RANK section_10
@@ -520,7 +520,7 @@ header_109 [label="3 : C.allNames()"]
 
 prose_110 [label="prose"]
 
-codeblock_111 [label="code block 138-194"]
+codeblock_111 [label="code block 138-193"]
 
 
 // END RANK section_74
@@ -603,8 +603,7 @@ leaf_121  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function
          end
       elseif T == \"function\" or
          T == \"thread\" or
-         T == \"userdata\" or
-         T == \"cdata\" then
+         T == \"userdata\" then
          aG[v] = pre .. k
       end
    end
@@ -630,13 +629,13 @@ prose_123 [label="prose"]
 
 prose_124 [label="prose"]
 
-codeblock_125 [label="code block 205-267"]
+codeblock_125 [label="code block 204-266"]
 
 prose_126 [label="prose"]
 
-codeblock_127 [label="code block 272-303"]
+codeblock_127 [label="code block 271-302"]
 
-codeblock_128 [label="code block 305-315"]
+codeblock_128 [label="code block 304-314"]
 
 
 // END RANK section_75
@@ -805,11 +804,11 @@ header_139 [label="3 : ts"]
 
 prose_140 [label="prose"]
 
-codeblock_141 [label="code block 321-390"]
+codeblock_141 [label="code block 320-391"]
 
-codeblock_142 [label="code block 392-399"]
+codeblock_142 [label="code block 393-400"]
 
-codeblock_143 [label="code block 401-403"]
+codeblock_143 [label="code block 402-404"]
 
 
 // END RANK section_76
@@ -853,15 +852,15 @@ leaf_147  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ts = function 
    end
 
    local typica = type(value)
-   if typica == \"number\" then
-      str = c.number(str)
-   elseif typica == \"table\" then
-      -- check for a repr
-      if value.__repr and not hint == \"raw\" then
-         return value:__repr()
-      end
 
-      str = tabulate(value)
+   if typica == \"table\" then
+      -- check for a __repr metamethod
+      local _M = getmetatable(value)
+      if _M and _M.__repr and not hint == \"raw\" then
+         str = value:__repr(c)
+      else
+         str = tabulate(value)
+      end
    elseif typica == \"function\" then
       local f_label = sub(str,11)
       f_label = sub(f_label,1,5) == \"built\"
@@ -873,6 +872,8 @@ leaf_147  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ts = function 
       str = value and c.truth(str) or c.falsehood(str)
    elseif typica == \"string\" then
       str = c.string(str)
+   elseif typica == \"number\" then
+      str = c.number(str)
    elseif typica == \"nil\" then
       str = c.nilness(str)
    elseif typica == \"thread\" then

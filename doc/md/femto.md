@@ -95,6 +95,9 @@ watch = require "watcher"
 
 I'm making the crudest possible logger here.
 
+
+This thing sucks tbh
+
 ```lua
 local _log = {}
 _log.vals = {}

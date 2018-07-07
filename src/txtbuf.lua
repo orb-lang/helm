@@ -226,6 +226,42 @@ end
 
 
 
+
+
+
+
+local sub = assert(string.sub)
+local insert = assert(table.insert)
+function Txtbuf.nl(txtbuf)
+   -- Most txtbufs are one line, so we always evaluate from
+   -- a one-liner, regardless of cursor location.
+   local linum = #txtbuf.lines
+   local cursor = txtbuf.cursor
+   local cur_row = txtbuf.cur_row
+   if linum == 1 then
+      return true
+   end
+   if cur_row == 1 and cursor > #txtbuf.lines[1] then
+      return true
+   end
+   if cur_row == linum and cursor > #txtbuf.lines[linum] then
+      return true
+   else
+      -- split the line
+      local cur_line = concat(txtbuf.lines[txtbuf.cur_row])
+      local first = sub(cur_line, 1, cursor - 1)
+      local second = sub(cur_line, cursor)
+      txtbuf.lines[cur_row] = codepoints(first)
+      insert(txtbuf.lines, cur_row + 1, codepoints(second))
+      txtbuf.cursor = 1
+      txtbuf.cur_row = cur_row + 1
+      return false
+   end
+end
+
+
+
+
 function Txtbuf.suspend(txtbuf)
    for i,v in ipairs(txtbuf.lines) do
       txtbuf.lines[i] = tostring(v)

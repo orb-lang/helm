@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 616"]
+doc_0 [label="doc - 618"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-568"]
+section_1 [label="section: 1-570"]
 
 
 // END RANK doc_0
@@ -25,9 +25,9 @@ prose_4 [label="prose"]
 
 section_5 [label="section: 12-282"]
 
-section_6 [label="section: 344-498"]
+section_6 [label="section: 344-500"]
 
-section_7 [label="section: 569-616"]
+section_7 [label="section: 571-618"]
 
 
 // END RANK section_1
@@ -1769,11 +1769,11 @@ codeblock_430 [label="code block 390-394"]
 
 section_431 [label="section: 397-403"]
 
-section_432 [label="section: 404-477"]
+section_432 [label="section: 404-479"]
 
-section_433 [label="section: 478-498"]
+section_433 [label="section: 480-500"]
 
-section_434 [label="section: 499-568"]
+section_434 [label="section: 501-570"]
 
 
 // END RANK section_6
@@ -2020,7 +2020,7 @@ header_486 [label="3 : NAV"]
 
 prose_487 [label="prose"]
 
-codeblock_488 [label="code block 406-475"]
+codeblock_488 [label="code block 406-477"]
 
 
 // END RANK section_432
@@ -2094,14 +2094,16 @@ function NAV.RIGHT(modeS, category, value)
 end
 
 function NAV.RETURN(modeS, category, value)
-   -- eval etc.
-   modeS:nl()
-   local more = modeS:eval()
-   if not more then
-     modeS.txtbuf = Txtbuf()
+   -- eval or split line
+   local eval = modeS.txtbuf:nl()
+   if eval then
+     modeS:nl()
+     local more = modeS:eval()
+     if not more then
+       modeS.txtbuf = Txtbuf()
+     end
+     modeS.hist.cursor = modeS.hist.cursor + 1
    end
-   -- Question: is this wrong for an error?
-   modeS.hist.cursor = modeS.hist.cursor + 1
 end
 
 function NAV.BACKSPACE(modeS, category, value)
@@ -2122,7 +2124,7 @@ prose_494 [label="prose"]
 
 prose_495 [label="prose"]
 
-codeblock_496 [label="code block 484-496"]
+codeblock_496 [label="code block 486-498"]
 
 
 // END RANK section_433
@@ -2181,11 +2183,11 @@ header_503 [label="3 : ModeS:eval()"]
 
 prose_504 [label="prose"]
 
-codeblock_505 [label="code block 502-507"]
+codeblock_505 [label="code block 504-509"]
 
-codeblock_506 [label="code block 509-513"]
+codeblock_506 [label="code block 511-515"]
 
-codeblock_507 [label="code block 515-566"]
+codeblock_507 [label="code block 517-568"]
 
 
 // END RANK section_434
@@ -2281,9 +2283,9 @@ header_514 [label="2 : new"]
 
 prose_515 [label="prose"]
 
-codeblock_516 [label="code block 573-588"]
+codeblock_516 [label="code block 575-590"]
 
-codeblock_517 [label="code block 590-592"]
+codeblock_517 [label="code block 592-594"]
 
 
 // END RANK section_7

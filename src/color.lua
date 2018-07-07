@@ -175,8 +175,7 @@ local function addName(t, aG, pre)
          end
       elseif T == "function" or
          T == "thread" or
-         T == "userdata" or
-         T == "cdata" then
+         T == "userdata" then
          aG[v] = pre .. k
       end
    end
@@ -338,15 +337,15 @@ ts = function (value, hint)
    end
 
    local typica = type(value)
-   if typica == "number" then
-      str = c.number(str)
-   elseif typica == "table" then
-      -- check for a repr
-      if value.__repr and not hint == "raw" then
-         return value:__repr()
-      end
 
-      str = tabulate(value)
+   if typica == "table" then
+      -- check for a __repr metamethod
+      local _M = getmetatable(value)
+      if _M and _M.__repr and not hint == "raw" then
+         str = value:__repr(c)
+      else
+         str = tabulate(value)
+      end
    elseif typica == "function" then
       local f_label = sub(str,11)
       f_label = sub(f_label,1,5) == "built"
@@ -358,6 +357,8 @@ ts = function (value, hint)
       str = value and c.truth(str) or c.falsehood(str)
    elseif typica == "string" then
       str = c.string(str)
+   elseif typica == "number" then
+      str = c.number(str)
    elseif typica == "nil" then
       str = c.nilness(str)
    elseif typica == "thread" then
