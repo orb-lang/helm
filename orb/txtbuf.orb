@@ -141,12 +141,30 @@ end
 
 *** Txtbuf:d_back()
 
+The return value tells us if we have one less line, since we need to
+clear it off the screen.
+
 #!lua
 local remove = assert(table.remove)
 
 function Txtbuf.d_back(txtbuf)
-   remove(txtbuf.lines[txtbuf.cur_row], txtbuf.cursor - 1)
-   txtbuf.cursor = txtbuf.cursor > 1 and txtbuf.cursor - 1 or 1
+   local cursor, cur_row = txtbuf.cursor, txtbuf.cur_row
+   if cursor > 1 then
+      remove(txtbuf.lines[cur_row], cursor - 1)
+      txtbuf.cursor = cursor - 1
+      return false
+   elseif cur_row == 1 then
+      return false
+   else
+      local new_line = concat(txtbuf.lines[cur_row - 1])
+                       .. concat(txtbuf.lines[cur_row])
+      local new_cursor = #txtbuf.lines[cur_row - 1]
+      txtbuf.lines[cur_row - 1] = codepoints(new_line)
+      remove(txtbuf.lines, cur_row)
+      txtbuf.cur_row = cur_row - 1
+      txtbuf.cursor = new_cursor
+      return true
+   end
 end
 #/lua
 

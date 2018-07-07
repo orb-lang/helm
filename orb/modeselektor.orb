@@ -468,7 +468,13 @@ function NAV.RETURN(modeS, category, value)
 end
 
 function NAV.BACKSPACE(modeS, category, value)
-   return modeS.txtbuf:d_back()
+   local shrunk =  modeS.txtbuf:d_back()
+   if shrunk then
+      write(a.stash())
+      write(a.rc(modeS:replLine() + 1, 1))
+      write(a.erase.line())
+      write(a.pop())
+   end
 end
 
 function NAV.DELETE(modeS, category, value)

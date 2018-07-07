@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 330"]
+doc_0 [label="doc - 348"]
 
 
 doc_0 -> { section_1}
@@ -31,7 +31,7 @@ prose_7 [label="prose"]
 
 section_8 [label="section: 17-21"]
 
-section_9 [label="section: 34-299"]
+section_9 [label="section: 34-317"]
 
 
 // END RANK section_1
@@ -247,19 +247,19 @@ section_48 [label="section: 94-128"]
 
 section_49 [label="section: 129-141"]
 
-section_50 [label="section: 142-153"]
+section_50 [label="section: 142-171"]
 
-section_51 [label="section: 154-162"]
+section_51 [label="section: 172-180"]
 
-section_52 [label="section: 163-178"]
+section_52 [label="section: 181-196"]
 
-section_53 [label="section: 179-195"]
+section_53 [label="section: 197-213"]
 
-section_54 [label="section: 196-227"]
+section_54 [label="section: 214-245"]
 
-section_55 [label="section: 228-299"]
+section_55 [label="section: 246-317"]
 
-section_56 [label="section: 300-330"]
+section_56 [label="section: 318-348"]
 
 
 // END RANK section_9
@@ -593,7 +593,7 @@ header_116 [label="3 : Txtbuf:d_back()"]
 
 prose_117 [label="prose"]
 
-codeblock_118 [label="code block 144-151"]
+codeblock_118 [label="code block 147-169"]
 
 
 // END RANK section_50
@@ -612,6 +612,9 @@ raw_120 [label="raw"]
 
 raw_120 -> leaf_121
 leaf_121  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+The return value tells us if we have one less line, since we need to
+clear it off the screen.
 "]
 // END RANK raw_120
 
@@ -619,8 +622,23 @@ codeblock_118 -> leaf_122
 leaf_122  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local remove = assert(table.remove)
 
 function Txtbuf.d_back(txtbuf)
-   remove(txtbuf.lines[txtbuf.cur_row], txtbuf.cursor - 1)
-   txtbuf.cursor = txtbuf.cursor > 1 and txtbuf.cursor - 1 or 1
+   local cursor, cur_row = txtbuf.cursor, txtbuf.cur_row
+   if cursor > 1 then
+      remove(txtbuf.lines[cur_row], cursor - 1)
+      txtbuf.cursor = cursor - 1
+      return false
+   elseif cur_row == 1 then
+      return false
+   else
+      local new_line = concat(txtbuf.lines[cur_row - 1])
+                       .. concat(txtbuf.lines[cur_row])
+      local new_cursor = #txtbuf.lines[cur_row - 1]
+      txtbuf.lines[cur_row - 1] = codepoints(new_line)
+      remove(txtbuf.lines, cur_row)
+      txtbuf.cur_row = cur_row - 1
+      txtbuf.cursor = new_cursor
+      return true
+   end
 end"]
 // END RANK codeblock_118
 
@@ -631,7 +649,7 @@ header_123 [label="3 : Txtbuf:d_fwd()"]
 
 prose_124 [label="prose"]
 
-codeblock_125 [label="code block 156-160"]
+codeblock_125 [label="code block 174-178"]
 
 
 // END RANK section_51
@@ -666,7 +684,7 @@ header_130 [label="3 : Txtbuf:left(disp)"]
 
 prose_131 [label="prose"]
 
-codeblock_132 [label="code block 165-176"]
+codeblock_132 [label="code block 183-194"]
 
 
 // END RANK section_52
@@ -708,7 +726,7 @@ header_137 [label="3 : Txtbuf:right(disp)"]
 
 prose_138 [label="prose"]
 
-codeblock_139 [label="code block 181-193"]
+codeblock_139 [label="code block 199-211"]
 
 
 // END RANK section_53
@@ -751,9 +769,9 @@ header_144 [label="3 : Txtbuf:up(), Txtbuf:down()"]
 
 prose_145 [label="prose"]
 
-codeblock_146 [label="code block 198-211"]
+codeblock_146 [label="code block 216-229"]
 
-codeblock_147 [label="code block 213-226"]
+codeblock_147 [label="code block 231-244"]
 
 
 // END RANK section_54
@@ -812,13 +830,13 @@ header_153 [label="3 : Txtbuf:nl()"]
 
 prose_154 [label="prose"]
 
-codeblock_155 [label="code block 232-261"]
+codeblock_155 [label="code block 250-279"]
 
-codeblock_156 [label="code block 264-272"]
+codeblock_156 [label="code block 282-290"]
 
-codeblock_157 [label="code block 274-284"]
+codeblock_157 [label="code block 292-302"]
 
-codeblock_158 [label="code block 286-297"]
+codeblock_158 [label="code block 304-315"]
 
 
 // END RANK section_55
@@ -915,9 +933,9 @@ header_166 [label="3 : new"]
 
 prose_167 [label="prose"]
 
-codeblock_168 [label="code block 302-326"]
+codeblock_168 [label="code block 320-344"]
 
-codeblock_169 [label="code block 328-330"]
+codeblock_169 [label="code block 346-348"]
 
 
 // END RANK section_56
