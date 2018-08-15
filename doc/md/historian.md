@@ -139,7 +139,7 @@ end
 ```
 ### Historian:load()
 
-Brings up the project history and (eventually) results and user config.
+Brings up the project history and results, and (eventually) user config.
 
 
 Most of the complexity serves to make a simple key/value relationship
@@ -165,8 +165,8 @@ function Historian.load(historian)
       proj_val, proj_row = ins_proj_stmt:step()
       -- retry
       proj_val, proj_row = sql.pexec(conn,
-                                  sql.format(get_project, historian.project),
-                                  "i")
+                              sql.format(get_project, historian.project),
+                              "i")
       if not proj_val then
          error "Could not create project in .bridge"
       end
@@ -259,7 +259,6 @@ function Historian.persist(historian, txtbuf, results)
       if results and type(results) == "table" then
          for _,v in ipairs(reverse(results)) do
             -- insert result repr
-            -- tostring() just for compactness
             historian.insert_result:bindkv { line_id = line_id,
                                                   repr = color.ts(v) }
             err = historian.insert_result:step()
@@ -299,7 +298,7 @@ function Historian.search(historian, frag)
    local collection = {}
    local best = true
    local patt = fuzz_patt(frag)
-   for i = #historian, 1, -1 do
+   for i = #historian - 1, 1, -1 do
       local score = match(patt, tostring(historian[i]))
       if score then
          collection[#collection + 1] = tostring(historian[i])

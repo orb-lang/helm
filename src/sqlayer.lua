@@ -30,6 +30,8 @@ local conn = sql.open ":memory:"
 local conn_mt = ffi.reflect.getmetatable(conn)
 local stmt = conn:prepare "CREATE TABLE IF NOT EXISTS test(a,b);"
 local stmt_mt = ffi.reflect.getmetatable(stmt)
+
+stmt:close()
 conn:close() -- polite
 conn, stmt = nil, nil
 
@@ -122,6 +124,9 @@ function sql.lastRowId(conn)
    local result = conn:rowexec "SELECT CAST(last_insert_rowid() AS REAL)"
    return result
 end
+
+
+
 
 
 

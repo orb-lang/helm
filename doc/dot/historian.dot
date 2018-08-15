@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 414"]
+doc_0 [label="doc - 413"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-328"]
+section_1 [label="section: 1-327"]
 
 
 // END RANK doc_0
@@ -33,9 +33,9 @@ codeblock_8 [label="code block 27-29"]
 
 section_9 [label="section: 32-231"]
 
-section_10 [label="section: 283-328"]
+section_10 [label="section: 282-327"]
 
-section_11 [label="section: 329-380"]
+section_11 [label="section: 328-379"]
 
 
 // END RANK section_1
@@ -134,7 +134,7 @@ section_26 [label="section: 142-220"]
 
 section_27 [label="section: 221-231"]
 
-section_28 [label="section: 232-282"]
+section_28 [label="section: 232-281"]
 
 
 // END RANK section_9
@@ -319,7 +319,7 @@ raw_44 [label="raw"]
 raw_44 -> leaf_45
 leaf_45  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
-Brings up the project history and (eventually) results and user config.
+Brings up the project history and results, and (eventually) user config.
 "]
 // END RANK raw_44
 
@@ -358,8 +358,8 @@ leaf_48  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histor
       proj_val, proj_row = ins_proj_stmt:step()
       -- retry
       proj_val, proj_row = sql.pexec(conn,
-                                  sql.format(get_project, historian.project),
-                                  \"i\")
+                              sql.format(get_project, historian.project),
+                              \"i\")
       if not proj_val then
          error \"Could not create project in .bridge\"
       end
@@ -473,7 +473,7 @@ prose_62 [label="prose"]
 
 prose_63 [label="prose"]
 
-codeblock_64 [label="code block 247-280"]
+codeblock_64 [label="code block 247-279"]
 
 
 // END RANK section_28
@@ -596,7 +596,6 @@ leaf_86  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histor
       if results and type(results) == \"table\" then
          for _,v in ipairs(reverse(results)) do
             -- insert result repr
-            -- tostring() just for compactness
             historian.insert_result:bindkv { line_id = line_id,
                                                   repr = color.ts(v) }
             err = historian.insert_result:step()
@@ -622,7 +621,7 @@ header_87 [label="2 : Historian:search(frag)"]
 
 prose_88 [label="prose"]
 
-codeblock_89 [label="code block 285-326"]
+codeblock_89 [label="code block 284-325"]
 
 
 // END RANK section_10
@@ -664,7 +663,7 @@ function Historian.search(historian, frag)
    local collection = {}
    local best = true
    local patt = fuzz_patt(frag)
-   for i = #historian, 1, -1 do
+   for i = #historian - 1, 1, -1 do
       local score = match(patt, tostring(historian[i]))
       if score then
          collection[#collection + 1] = tostring(historian[i])
@@ -694,11 +693,11 @@ header_94 [label="2 : Historian:prev()"]
 
 prose_95 [label="prose"]
 
-codeblock_96 [label="code block 331-344"]
+codeblock_96 [label="code block 330-343"]
 
-section_97 [label="section: 347-380"]
+section_97 [label="section: 346-379"]
 
-section_98 [label="section: 381-414"]
+section_98 [label="section: 380-413"]
 
 
 // END RANK section_11
@@ -744,7 +743,7 @@ prose_104 [label="prose"]
 
 prose_105 [label="prose"]
 
-codeblock_106 [label="code block 354-378"]
+codeblock_106 [label="code block 353-377"]
 
 
 // END RANK section_97
@@ -835,11 +834,11 @@ prose_120 [label="prose"]
 
 prose_121 [label="prose"]
 
-codeblock_122 [label="code block 387-401"]
+codeblock_122 [label="code block 386-400"]
 
-codeblock_123 [label="code block 403-410"]
+codeblock_123 [label="code block 402-409"]
 
-codeblock_124 [label="code block 412-414"]
+codeblock_124 [label="code block 411-413"]
 
 
 // END RANK section_98

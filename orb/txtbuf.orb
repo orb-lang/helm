@@ -254,27 +254,29 @@ function Txtbuf.nl(txtbuf)
    -- Most txtbufs are one line, so we always evaluate from
    -- a one-liner, regardless of cursor location.
    local linum = #txtbuf.lines
-   local cursor = txtbuf.cursor
-   local cur_row = txtbuf.cur_row
    if linum == 1 then
       return true
    end
+   local cursor = txtbuf.cursor
+   local cur_row = txtbuf.cur_row
+   -- these are the two default positions for up and down
+   -- history search
    if cur_row == 1 and cursor > #txtbuf.lines[1] then
       return true
    end
    if cur_row == linum and cursor > #txtbuf.lines[linum] then
       return true
-   else
-      -- split the line
-      local cur_line = concat(txtbuf.lines[txtbuf.cur_row])
-      local first = sub(cur_line, 1, cursor - 1)
-      local second = sub(cur_line, cursor)
-      txtbuf.lines[cur_row] = codepoints(first)
-      insert(txtbuf.lines, cur_row + 1, codepoints(second))
-      txtbuf.cursor = 1
-      txtbuf.cur_row = cur_row + 1
-      return false
    end
+   -- split the line
+   local cur_line = concat(txtbuf.lines[txtbuf.cur_row])
+   local first = sub(cur_line, 1, cursor - 1)
+   local second = sub(cur_line, cursor)
+   txtbuf.lines[cur_row] = codepoints(first)
+   insert(txtbuf.lines, cur_row + 1, codepoints(second))
+   txtbuf.cursor = 1
+   txtbuf.cur_row = cur_row + 1
+
+   return false
 end
 #/lua
 
@@ -305,8 +307,8 @@ end
 local cl = assert(table.clone, "table.clone must be provided")
 
 function Txtbuf.clone(txtbuf)
-   local tb = cl(txtbuf)
-   tb.lines = cl(txtbuf.lines)
+   -- Clone to depth of 3 to get tb, tb.lines, and each line
+   local tb = cl(txtbuf, 3)
    if type(tb.lines[1]) == "string" then
       return tb:resume()
    end
