@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 573"]
+doc_0 [label="doc - 571"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-528"]
+section_1 [label="section: 1-526"]
 
 
 // END RANK doc_0
@@ -27,11 +27,11 @@ codeblock_5 [label="code block 8-10"]
 
 section_6 [label="section: 13-67"]
 
-section_7 [label="section: 95-271"]
+section_7 [label="section: 95-269"]
 
-section_8 [label="section: 300-490"]
+section_8 [label="section: 298-488"]
 
-section_9 [label="section: 529-531"]
+section_9 [label="section: 527-529"]
 
 
 // END RANK section_1
@@ -602,13 +602,13 @@ section_147 [label="section: 178-194"]
 
 section_148 [label="section: 195-219"]
 
-section_149 [label="section: 220-239"]
+section_149 [label="section: 220-237"]
 
-section_150 [label="section: 240-256"]
+section_150 [label="section: 238-254"]
 
-section_151 [label="section: 257-271"]
+section_151 [label="section: 255-269"]
 
-section_152 [label="section: 272-299"]
+section_152 [label="section: 270-297"]
 
 
 // END RANK section_7
@@ -998,7 +998,7 @@ header_222 [label="3 : reverse(tab)"]
 
 prose_223 [label="prose"]
 
-codeblock_224 [label="code block 224-237"]
+codeblock_224 [label="code block 224-235"]
 
 
 // END RANK section_149
@@ -1031,8 +1031,6 @@ leaf_228  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function core.
    for i,v in ipairs(tab) do
       bat[#tab - i + 1] = v
    end
-   assert(bat[1])
-   assert(bat[#tab])
    return bat
 end"]
 // END RANK codeblock_224
@@ -1044,7 +1042,7 @@ header_229 [label="3 : keys(tab)"]
 
 prose_230 [label="prose"]
 
-codeblock_231 [label="code block 244-254"]
+codeblock_231 [label="code block 242-252"]
 
 
 // END RANK section_150
@@ -1087,7 +1085,7 @@ header_236 [label="3 : values(tab)"]
 
 prose_237 [label="prose"]
 
-codeblock_238 [label="code block 259-269"]
+codeblock_238 [label="code block 257-267"]
 
 
 // END RANK section_151
@@ -1128,7 +1126,7 @@ header_243 [label="3 : splice(tab, index, into)"]
 
 prose_244 [label="prose"]
 
-codeblock_245 [label="code block 277-297"]
+codeblock_245 [label="code block 275-295"]
 
 
 // END RANK section_152
@@ -1236,17 +1234,17 @@ header_268 [label="2 : String extensions"]
 
 prose_269 [label="prose"]
 
-codeblock_270 [label="code block 302-307"]
+codeblock_270 [label="code block 300-305"]
 
-section_271 [label="section: 309-358"]
+section_271 [label="section: 307-356"]
 
-section_272 [label="section: 359-419"]
+section_272 [label="section: 357-417"]
 
-section_273 [label="section: 420-449"]
+section_273 [label="section: 418-447"]
 
-section_274 [label="section: 450-490"]
+section_274 [label="section: 448-488"]
 
-section_275 [label="section: 491-528"]
+section_275 [label="section: 489-526"]
 
 
 // END RANK section_8
@@ -1284,7 +1282,7 @@ prose_281 [label="prose"]
 
 prose_282 [label="prose"]
 
-codeblock_283 [label="code block 317-356"]
+codeblock_283 [label="code block 315-354"]
 
 
 // END RANK section_271
@@ -1390,7 +1388,7 @@ prose_300 [label="prose"]
 
 prose_301 [label="prose"]
 
-codeblock_302 [label="code block 401-418"]
+codeblock_302 [label="code block 399-416"]
 
 
 // END RANK section_272
@@ -2171,7 +2169,7 @@ prose_520 [label="prose"]
 
 prose_521 [label="prose"]
 
-codeblock_522 [label="code block 426-447"]
+codeblock_522 [label="code block 424-445"]
 
 
 // END RANK section_273
@@ -2311,9 +2309,9 @@ prose_554 [label="prose"]
 
 prose_555 [label="prose"]
 
-codeblock_556 [label="code block 457-467"]
+codeblock_556 [label="code block 455-465"]
 
-codeblock_557 [label="code block 469-488"]
+codeblock_557 [label="code block 467-486"]
 
 
 // END RANK section_274
@@ -2428,7 +2426,7 @@ header_577 [label="3 : codepoints(str)"]
 
 prose_578 [label="prose"]
 
-codeblock_579 [label="code block 496-526"]
+codeblock_579 [label="code block 494-524"]
 
 
 // END RANK section_275
@@ -2510,7 +2508,7 @@ header_590 [label="2 : Errors and asserts"]
 
 prose_591 [label="prose"]
 
-section_592 [label="section: 532-573"]
+section_592 [label="section: 530-571"]
 
 
 // END RANK section_9
@@ -2542,9 +2540,9 @@ prose_597 [label="prose"]
 
 prose_598 [label="prose"]
 
-codeblock_599 [label="code block 539-549"]
+codeblock_599 [label="code block 537-547"]
 
-codeblock_600 [label="code block 551-553"]
+codeblock_600 [label="code block 549-551"]
 
 
 // END RANK section_592

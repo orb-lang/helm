@@ -282,13 +282,28 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local P, match = L.P, L.match
 
--- second_best is broke and I don't know why
--- also this fails on a single key search >.<
 local function fuzz_patt(frag)
    frag = type(frag) == "string" and codepoints(frag) or frag
-   local patt =        (P(1) - P(frag[1]))^0
+   local patt =  (P(1) - P(frag[1]))^0
    for i = 1 , #frag - 1 do
       local v = frag[i]
       patt = patt * (P(v) * (P(1) - P(frag[i + 1]))^0)
@@ -297,11 +312,13 @@ local function fuzz_patt(frag)
    return patt
 end
 
+local collect_M = {__repr = function() return "waaaaaaa!" end}
+
 function Historian.search(historian, frag)
-   local collection = {}
+   local collection = setmeta({}, collect_M)
    local best = true
    local patt = fuzz_patt(frag)
-   for i = #historian - 1, 1, -1 do
+   for i = #historian, 1, -1 do
       local score = match(patt, tostring(historian[i]))
       if score then
          collection[#collection + 1] = tostring(historian[i])

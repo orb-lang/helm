@@ -294,6 +294,7 @@ end
 local cl = assert(table.clone, "table.clone must be provided")
 
 function Txtbuf.clone(txtbuf)
+   -- Clone to depth of 3 to get tb, tb.lines, and each lines
    local tb = cl(txtbuf, 3)
    if type(tb.lines[1]) == "string" then
       return tb:resume()

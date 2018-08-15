@@ -221,8 +221,6 @@ function core.reverse(tab)
    for i,v in ipairs(tab) do
       bat[#tab - i + 1] = v
    end
-   assert(bat[1])
-   assert(bat[#tab])
    return bat
 end
 ```

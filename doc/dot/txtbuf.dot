@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 349"]
+doc_0 [label="doc - 350"]
 
 
 doc_0 -> { section_1}
@@ -31,7 +31,7 @@ prose_7 [label="prose"]
 
 section_8 [label="section: 17-21"]
 
-section_9 [label="section: 34-318"]
+section_9 [label="section: 34-319"]
 
 
 // END RANK section_1
@@ -257,9 +257,9 @@ section_53 [label="section: 197-213"]
 
 section_54 [label="section: 214-245"]
 
-section_55 [label="section: 246-318"]
+section_55 [label="section: 246-319"]
 
-section_56 [label="section: 319-349"]
+section_56 [label="section: 320-350"]
 
 
 // END RANK section_9
@@ -836,7 +836,7 @@ codeblock_156 [label="code block 284-292"]
 
 codeblock_157 [label="code block 294-304"]
 
-codeblock_158 [label="code block 306-316"]
+codeblock_158 [label="code block 306-317"]
 
 
 // END RANK section_55
@@ -919,6 +919,7 @@ codeblock_158 -> leaf_165
 leaf_165  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local cl = assert(table.clone, \"table.clone must be provided\")
 
 function Txtbuf.clone(txtbuf)
+   -- Clone to depth of 3 to get tb, tb.lines, and each lines
    local tb = cl(txtbuf, 3)
    if type(tb.lines[1]) == \"string\" then
       return tb:resume()
@@ -934,9 +935,9 @@ header_166 [label="3 : new"]
 
 prose_167 [label="prose"]
 
-codeblock_168 [label="code block 321-345"]
+codeblock_168 [label="code block 322-346"]
 
-codeblock_169 [label="code block 347-349"]
+codeblock_169 [label="code block 348-350"]
 
 
 // END RANK section_56

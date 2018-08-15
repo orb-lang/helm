@@ -333,8 +333,8 @@ ts = function (value, hint)
    if typica == "table" then
       -- check for a __repr metamethod
       local _M = getmetatable(value)
-      if _M and _M.__repr and not hint == "raw" then
-         str = value:__repr(c)
+      if _M and _M.__repr and not (hint == "raw") then
+         str = _M.__repr(value, c)
       else
          str = tabulate(value)
       end

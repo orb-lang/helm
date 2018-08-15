@@ -1985,8 +1985,8 @@
 <text text-anchor="middle" x="9726.5" y="-870.8016" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if typica == &quot;table&quot; then</text>
 <text text-anchor="middle" x="9726.5" y="-855.4015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; check for a __repr metamethod</text>
 <text text-anchor="middle" x="9726.5" y="-840.0015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local _M = getmetatable(value)</text>
-<text text-anchor="middle" x="9726.5" y="-824.6015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;if _M and _M.__repr and not hint == &quot;raw&quot; then</text>
-<text text-anchor="middle" x="9726.5" y="-809.2014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;str = value:__repr(c)</text>
+<text text-anchor="middle" x="9726.5" y="-824.6015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;if _M and _M.__repr and not (hint == &quot;raw&quot;) then</text>
+<text text-anchor="middle" x="9726.5" y="-809.2014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;str = _M.__repr(value, c)</text>
 <text text-anchor="middle" x="9726.5" y="-793.8014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;else</text>
 <text text-anchor="middle" x="9726.5" y="-778.4014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;str = tabulate(value)</text>
 <text text-anchor="middle" x="9726.5" y="-763.0013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end</text>
