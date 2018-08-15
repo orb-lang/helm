@@ -311,10 +311,54 @@ local function fuzz_patt(frag)
    return patt
 end
 
-local collect_M = {__repr = function() return "waaaaaaa!" end}
+```
+### __repr for collection
+
+We use a pseudo-metamethod called ``__repr`` to specify custom table
+representations.  These take the table as the first value and receive the
+local color palette for consistency.
+
+
+In this case we want to highlight the letters of the fragment, which we
+attach to the collection.
+
+```lua
+local concat = assert(table.concat)
+
+local function _highlight(line, frag, c)
+   local hl = {}
+   local og_line = line -- debugging
+   while #frag > 0 do
+      local char
+      char, frag = frag:sub(1,1), frag:sub(2)
+      local at = line:find(char)
+      if not at then
+         error ("can't find " .. char .. " in: " .. line)
+      end
+      hl[#hl + 1] = c.base(line:sub(1, at -1))
+      hl[#hl + 1] = c.alert(char)
+      line = line:sub(at + 1)
+   end
+   hl[#hl + 1] = c.base(line)
+   return concat(hl)
+end
+local function _collect_repr(collection, c)
+   if #collection == 0 then
+      return "{  }"
+   end
+   local phrase = ""
+   for i,v in ipairs(collection) do
+      phrase = phrase .. _highlight(v, collection.frag, c) .. "\n"
+   end
+   return phrase
+end
+
+local collect_M = {__repr = _collect_repr}
+
 
 function Historian.search(historian, frag)
    local collection = setmeta({}, collect_M)
+   collection.frag = frag
    local best = true
    local patt = fuzz_patt(frag)
    for i = #historian, 1, -1 do

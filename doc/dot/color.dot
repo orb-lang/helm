@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 404"]
+doc_0 [label="doc - 408"]
 
 
 doc_0 -> { section_1}
@@ -359,7 +359,7 @@ section_74 [label="section: 133-195"]
 
 section_75 [label="section: 196-315"]
 
-section_76 [label="section: 316-404"]
+section_76 [label="section: 316-408"]
 
 
 // END RANK section_10
@@ -804,11 +804,11 @@ header_139 [label="3 : ts"]
 
 prose_140 [label="prose"]
 
-codeblock_141 [label="code block 320-391"]
+codeblock_141 [label="code block 320-395"]
 
-codeblock_142 [label="code block 393-400"]
+codeblock_142 [label="code block 397-404"]
 
-codeblock_143 [label="code block 402-404"]
+codeblock_143 [label="code block 406-408"]
 
 
 // END RANK section_76
@@ -871,7 +871,11 @@ leaf_147  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ts = function 
    elseif typica == \"boolean\" then
       str = value and c.truth(str) or c.falsehood(str)
    elseif typica == \"string\" then
-      str = c.string(str)
+      if value == \"\" then
+         str = c.string('\"\"')
+      else
+         str = c.string(str)
+      end
    elseif typica == \"number\" then
       str = c.number(str)
    elseif typica == \"nil\" then

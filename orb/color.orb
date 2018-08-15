@@ -356,7 +356,11 @@ ts = function (value, hint)
    elseif typica == "boolean" then
       str = value and c.truth(str) or c.falsehood(str)
    elseif typica == "string" then
-      str = c.string(str)
+      if value == "" then
+         str = c.string('""')
+      else
+         str = c.string(str)
+      end
    elseif typica == "number" then
       str = c.number(str)
    elseif typica == "nil" then

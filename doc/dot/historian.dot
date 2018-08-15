@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 430"]
+doc_0 [label="doc - 475"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-344"]
+section_1 [label="section: 1-389"]
 
 
 // END RANK doc_0
@@ -33,9 +33,9 @@ codeblock_8 [label="code block 27-29"]
 
 section_9 [label="section: 32-231"]
 
-section_10 [label="section: 282-291"]
+section_10 [label="section: 282-317"]
 
-section_11 [label="section: 345-396"]
+section_11 [label="section: 390-441"]
 
 
 // END RANK section_1
@@ -614,8 +614,8 @@ leaf_86  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histor
 end"]
 // END RANK codeblock_64
 
-section_10 -> { header_87 prose_88 prose_89 section_90}
-{rank=same; header_87 prose_88 prose_89 section_90}
+section_10 -> { header_87 prose_88 prose_89 section_90 section_91}
+{rank=same; header_87 prose_88 prose_89 section_90 section_91}
 
 header_87 [label="2 : Historian:search(frag)"]
 
@@ -623,147 +623,149 @@ prose_88 [label="prose"]
 
 prose_89 [label="prose"]
 
-section_90 [label="section: 292-344"]
+section_90 [label="section: 292-317"]
+
+section_91 [label="section: 318-389"]
 
 
 // END RANK section_10
 
-header_87 -> leaf_91
-leaf_91  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Historian:search(frag)"]
+header_87 -> leaf_92
+leaf_92  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Historian:search(frag)"]
 // END RANK header_87
 
-prose_88 -> { raw_92}
-{rank=same; raw_92}
+prose_88 -> { raw_93}
+{rank=same; raw_93}
 
-raw_92 [label="raw"]
+raw_93 [label="raw"]
 
 
 // END RANK prose_88
 
-raw_92 -> leaf_93
-leaf_93  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_93 -> leaf_94
+leaf_94  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 This is a 'fuzzy search', that attempts to find a string containing the
 letters of the fragment in order.
 "]
-// END RANK raw_92
+// END RANK raw_93
 
-prose_89 -> { raw_94}
-{rank=same; raw_94}
+prose_89 -> { raw_95}
+{rank=same; raw_95}
 
-raw_94 [label="raw"]
+raw_95 [label="raw"]
 
 
 // END RANK prose_89
 
-raw_94 -> leaf_95
-leaf_95  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_95 -> leaf_96
+leaf_96  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 If it finds nothing, it switches the last two letters and tries again. This
 is an affordance for incremental searches, it's easy to make this mistake and
 harmless to suggest the alternative.
 
 "]
-// END RANK raw_94
+// END RANK raw_95
 
-section_90 -> { header_96 prose_97 prose_98 codeblock_99}
-{rank=same; header_96 prose_97 prose_98 codeblock_99}
+section_90 -> { header_97 prose_98 prose_99 codeblock_100}
+{rank=same; header_97 prose_98 prose_99 codeblock_100}
 
-header_96 [label="3 : fuss_patt"]
-
-prose_97 [label="prose"]
+header_97 [label="3 : fuss_patt"]
 
 prose_98 [label="prose"]
 
-codeblock_99 [label="code block 301-342"]
+prose_99 [label="prose"]
+
+codeblock_100 [label="code block 301-315"]
 
 
 // END RANK section_90
 
-header_96 -> leaf_100
-leaf_100  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** fuss_patt"]
-// END RANK header_96
+header_97 -> leaf_101
+leaf_101  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** fuss_patt"]
+// END RANK header_97
 
-prose_97 -> { raw_101 prespace_102 literal_103 raw_104}
-{rank=same; raw_101 prespace_102 literal_103 raw_104}
+prose_98 -> { raw_102 prespace_103 literal_104 raw_105}
+{rank=same; raw_102 prespace_103 literal_104 raw_105}
 
-raw_101 [label="raw"]
+raw_102 [label="raw"]
 
-prespace_102 [label="prespace"]
+prespace_103 [label="prespace"]
 
-literal_103 [label="literal"]
+literal_104 [label="literal"]
 
-raw_104 [label="raw"]
-
-
-// END RANK prose_97
-
-raw_101 -> leaf_105
-leaf_105  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-
-Here we incrementally build up a single"]
-// END RANK raw_101
-
-prespace_102 -> leaf_106
-leaf_106  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_102
-
-literal_103 -> leaf_107
-leaf_107  [color=Gray,shape=rectangle,fontname=Inconsolata,label="lpeg"]
-// END RANK literal_103
-
-raw_104 -> leaf_108
-leaf_108  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" pattern which will recognize
-our desired lines.
-"]
-// END RANK raw_104
-
-prose_98 -> { prespace_109 literal_110 raw_111 prespace_112 literal_113 raw_114}
-{rank=same; prespace_109 literal_110 raw_111 prespace_112 literal_113 raw_114}
-
-prespace_109 [label="prespace"]
-
-literal_110 [label="literal"]
-
-raw_111 [label="raw"]
-
-prespace_112 [label="prespace"]
-
-literal_113 [label="literal"]
-
-raw_114 [label="raw"]
+raw_105 [label="raw"]
 
 
 // END RANK prose_98
 
-prespace_109 -> leaf_115
-leaf_115  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
-// END RANK prespace_109
+raw_102 -> leaf_106
+leaf_106  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
-literal_110 -> leaf_116
-leaf_116  [color=Gray,shape=rectangle,fontname=Inconsolata,label="(P(1) - P(frag[n]))^0"]
-// END RANK literal_110
+Here we incrementally build up a single"]
+// END RANK raw_102
 
-raw_111 -> leaf_117
-leaf_117  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" matches anything that isn't the next fragment,
+prespace_103 -> leaf_107
+leaf_107  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_103
+
+literal_104 -> leaf_108
+leaf_108  [color=Gray,shape=rectangle,fontname=Inconsolata,label="lpeg"]
+// END RANK literal_104
+
+raw_105 -> leaf_109
+leaf_109  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" pattern which will recognize
+our desired lines.
+"]
+// END RANK raw_105
+
+prose_99 -> { prespace_110 literal_111 raw_112 prespace_113 literal_114 raw_115}
+{rank=same; prespace_110 literal_111 raw_112 prespace_113 literal_114 raw_115}
+
+prespace_110 [label="prespace"]
+
+literal_111 [label="literal"]
+
+raw_112 [label="raw"]
+
+prespace_113 [label="prespace"]
+
+literal_114 [label="literal"]
+
+raw_115 [label="raw"]
+
+
+// END RANK prose_99
+
+prespace_110 -> leaf_116
+leaf_116  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK prespace_110
+
+literal_111 -> leaf_117
+leaf_117  [color=Gray,shape=rectangle,fontname=Inconsolata,label="(P(1) - P(frag[n]))^0"]
+// END RANK literal_111
+
+raw_112 -> leaf_118
+leaf_118  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" matches anything that isn't the next fragment,
 including"]
-// END RANK raw_111
+// END RANK raw_112
 
-prespace_112 -> leaf_118
-leaf_118  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_112
+prespace_113 -> leaf_119
+leaf_119  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_113
 
-literal_113 -> leaf_119
-leaf_119  [color=Gray,shape=rectangle,fontname=Inconsolata,label="\"\""]
-// END RANK literal_113
+literal_114 -> leaf_120
+leaf_120  [color=Gray,shape=rectangle,fontname=Inconsolata,label="\"\""]
+// END RANK literal_114
 
-raw_114 -> leaf_120
-leaf_120  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".  We then require this to be followed by the next fragment,
+raw_115 -> leaf_121
+leaf_121  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".  We then require this to be followed by the next fragment,
 and so on.
 "]
-// END RANK raw_114
+// END RANK raw_115
 
-codeblock_99 -> leaf_121
-leaf_121  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local P, match = L.P, L.match
+codeblock_100 -> leaf_122
+leaf_122  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local P, match = L.P, L.match
 
 local function fuzz_patt(frag)
    frag = type(frag) == \"string\" and codepoints(frag) or frag
@@ -775,11 +777,114 @@ local function fuzz_patt(frag)
    patt = patt * P(frag[#frag])
    return patt
 end
+"]
+// END RANK codeblock_100
 
-local collect_M = {__repr = function() return \"waaaaaaa!\" end}
+section_91 -> { header_123 prose_124 prose_125 codeblock_126}
+{rank=same; header_123 prose_124 prose_125 codeblock_126}
+
+header_123 [label="3 : __repr for collection"]
+
+prose_124 [label="prose"]
+
+prose_125 [label="prose"]
+
+codeblock_126 [label="code block 327-387"]
+
+
+// END RANK section_91
+
+header_123 -> leaf_127
+leaf_127  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** __repr for collection"]
+// END RANK header_123
+
+prose_124 -> { raw_128 prespace_129 literal_130 raw_131}
+{rank=same; raw_128 prespace_129 literal_130 raw_131}
+
+raw_128 [label="raw"]
+
+prespace_129 [label="prespace"]
+
+literal_130 [label="literal"]
+
+raw_131 [label="raw"]
+
+
+// END RANK prose_124
+
+raw_128 -> leaf_132
+leaf_132  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+We use a pseudo-metamethod called"]
+// END RANK raw_128
+
+prespace_129 -> leaf_133
+leaf_133  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_129
+
+literal_130 -> leaf_134
+leaf_134  [color=Gray,shape=rectangle,fontname=Inconsolata,label="__repr"]
+// END RANK literal_130
+
+raw_131 -> leaf_135
+leaf_135  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" to specify custom table
+representations.  These take the table as the first value and receive the
+local color palette for consistency.
+"]
+// END RANK raw_131
+
+prose_125 -> { raw_136}
+{rank=same; raw_136}
+
+raw_136 [label="raw"]
+
+
+// END RANK prose_125
+
+raw_136 -> leaf_137
+leaf_137  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+In this case we want to highlight the letters of the fragment, which we
+attach to the collection.
+"]
+// END RANK raw_136
+
+codeblock_126 -> leaf_138
+leaf_138  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local concat = assert(table.concat)
+
+local function _highlight(line, frag, c)
+   local hl = {}
+   local og_line = line -- debugging
+   while #frag > 0 do
+      local char
+      char, frag = frag:sub(1,1), frag:sub(2)
+      local at = line:find(char)
+      if not at then
+         error (\"can't find \" .. char .. \" in: \" .. line)
+      end
+      hl[#hl + 1] = c.base(line:sub(1, at -1))
+      hl[#hl + 1] = c.alert(char)
+      line = line:sub(at + 1)
+   end
+   hl[#hl + 1] = c.base(line)
+   return concat(hl)
+end
+local function _collect_repr(collection, c)
+   if #collection == 0 then
+      return \"{  }\"
+   end
+   local phrase = \"\"
+   for i,v in ipairs(collection) do
+      phrase = phrase .. _highlight(v, collection.frag, c) .. \"\\n\"
+   end
+   return phrase
+end
+
+local collect_M = {__repr = _collect_repr}
+
 
 function Historian.search(historian, frag)
    local collection = setmeta({}, collect_M)
+   collection.frag = frag
    local best = true
    local patt = fuzz_patt(frag)
    for i = #historian, 1, -1 do
@@ -803,43 +908,43 @@ function Historian.search(historian, frag)
 
    return collection, best
 end"]
-// END RANK codeblock_99
+// END RANK codeblock_126
 
-section_11 -> { header_122 prose_123 codeblock_124 section_125 section_126}
-{rank=same; header_122 prose_123 codeblock_124 section_125 section_126}
+section_11 -> { header_139 prose_140 codeblock_141 section_142 section_143}
+{rank=same; header_139 prose_140 codeblock_141 section_142 section_143}
 
-header_122 [label="2 : Historian:prev()"]
+header_139 [label="2 : Historian:prev()"]
 
-prose_123 [label="prose"]
+prose_140 [label="prose"]
 
-codeblock_124 [label="code block 347-360"]
+codeblock_141 [label="code block 392-405"]
 
-section_125 [label="section: 363-396"]
+section_142 [label="section: 408-441"]
 
-section_126 [label="section: 397-430"]
+section_143 [label="section: 442-475"]
 
 
 // END RANK section_11
 
-header_122 -> leaf_127
-leaf_127  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Historian:prev()"]
-// END RANK header_122
+header_139 -> leaf_144
+leaf_144  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Historian:prev()"]
+// END RANK header_139
 
-prose_123 -> { raw_128}
-{rank=same; raw_128}
+prose_140 -> { raw_145}
+{rank=same; raw_145}
 
-raw_128 [label="raw"]
+raw_145 [label="raw"]
 
 
-// END RANK prose_123
+// END RANK prose_140
 
-raw_128 -> leaf_129
-leaf_129  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_145 -> leaf_146
+leaf_146  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 "]
-// END RANK raw_128
+// END RANK raw_145
 
-codeblock_124 -> leaf_130
-leaf_130  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.prev(historian)
+codeblock_141 -> leaf_147
+leaf_147  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.prev(historian)
    if historian.cursor == 0 or #historian == 0 then
       return Txtbuf()
    end
@@ -851,75 +956,75 @@ leaf_130  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histo
    txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
    return txtbuf:clone(), result
 end"]
-// END RANK codeblock_124
+// END RANK codeblock_141
 
-section_125 -> { header_131 prose_132 prose_133 codeblock_134}
-{rank=same; header_131 prose_132 prose_133 codeblock_134}
+section_142 -> { header_148 prose_149 prose_150 codeblock_151}
+{rank=same; header_148 prose_149 prose_150 codeblock_151}
 
-header_131 [label="3 : Historian:next()"]
+header_148 [label="3 : Historian:next()"]
 
-prose_132 [label="prose"]
+prose_149 [label="prose"]
 
-prose_133 [label="prose"]
+prose_150 [label="prose"]
 
-codeblock_134 [label="code block 370-394"]
-
-
-// END RANK section_125
-
-header_131 -> leaf_135
-leaf_135  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Historian:next()"]
-// END RANK header_131
-
-prose_132 -> { raw_136 prespace_137 literal_138 raw_139}
-{rank=same; raw_136 prespace_137 literal_138 raw_139}
-
-raw_136 [label="raw"]
-
-prespace_137 [label="prespace"]
-
-literal_138 [label="literal"]
-
-raw_139 [label="raw"]
+codeblock_151 [label="code block 415-439"]
 
 
-// END RANK prose_132
+// END RANK section_142
 
-raw_136 -> leaf_140
-leaf_140  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_148 -> leaf_152
+leaf_152  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Historian:next()"]
+// END RANK header_148
+
+prose_149 -> { raw_153 prespace_154 literal_155 raw_156}
+{rank=same; raw_153 prespace_154 literal_155 raw_156}
+
+raw_153 [label="raw"]
+
+prespace_154 [label="prespace"]
+
+literal_155 [label="literal"]
+
+raw_156 [label="raw"]
+
+
+// END RANK prose_149
+
+raw_153 -> leaf_157
+leaf_157  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 Returns the next txtbuf in history, and a second flag to tell the"]
-// END RANK raw_136
+// END RANK raw_153
 
-prespace_137 -> leaf_141
-leaf_141  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
-// END RANK prespace_137
+prespace_154 -> leaf_158
+leaf_158  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK prespace_154
 
-literal_138 -> leaf_142
-leaf_142  [color=Gray,shape=rectangle,fontname=Inconsolata,label="modeselektor"]
-// END RANK literal_138
+literal_155 -> leaf_159
+leaf_159  [color=Gray,shape=rectangle,fontname=Inconsolata,label="modeselektor"]
+// END RANK literal_155
 
-raw_139 -> leaf_143
-leaf_143  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" it might be time for a new one.
+raw_156 -> leaf_160
+leaf_160  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" it might be time for a new one.
 "]
-// END RANK raw_139
+// END RANK raw_156
 
-prose_133 -> { raw_144}
-{rank=same; raw_144}
+prose_150 -> { raw_161}
+{rank=same; raw_161}
 
-raw_144 [label="raw"]
+raw_161 [label="raw"]
 
 
-// END RANK prose_133
+// END RANK prose_150
 
-raw_144 -> leaf_145
-leaf_145  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_161 -> leaf_162
+leaf_162  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 I'd like to stop buffering blank lines at some point.
 "]
-// END RANK raw_144
+// END RANK raw_161
 
-codeblock_134 -> leaf_146
-leaf_146  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.next(historian)
+codeblock_151 -> leaf_163
+leaf_163  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.next(historian)
    local Δ = historian.cursor < #historian and 1 or 0
    if historian.cursor == 0 or #historian == 0 then
       return Txtbuf()
@@ -942,61 +1047,61 @@ leaf_146  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histo
       return txtbuf:clone(), result, false
    end
 end"]
-// END RANK codeblock_134
+// END RANK codeblock_151
 
-section_126 -> { header_147 prose_148 prose_149 codeblock_150 codeblock_151 codeblock_152}
-{rank=same; header_147 prose_148 prose_149 codeblock_150 codeblock_151 codeblock_152}
+section_143 -> { header_164 prose_165 prose_166 codeblock_167 codeblock_168 codeblock_169}
+{rank=same; header_164 prose_165 prose_166 codeblock_167 codeblock_168 codeblock_169}
 
-header_147 [label="3 : Historian:append()"]
+header_164 [label="3 : Historian:append()"]
 
-prose_148 [label="prose"]
+prose_165 [label="prose"]
 
-prose_149 [label="prose"]
+prose_166 [label="prose"]
 
-codeblock_150 [label="code block 403-417"]
+codeblock_167 [label="code block 448-462"]
 
-codeblock_151 [label="code block 419-426"]
+codeblock_168 [label="code block 464-471"]
 
-codeblock_152 [label="code block 428-430"]
-
-
-// END RANK section_126
-
-header_147 -> leaf_153
-leaf_153  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Historian:append()"]
-// END RANK header_147
-
-prose_148 -> { raw_154}
-{rank=same; raw_154}
-
-raw_154 [label="raw"]
+codeblock_169 [label="code block 473-475"]
 
 
-// END RANK prose_148
+// END RANK section_143
 
-raw_154 -> leaf_155
-leaf_155  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_164 -> leaf_170
+leaf_170  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Historian:append()"]
+// END RANK header_164
+
+prose_165 -> { raw_171}
+{rank=same; raw_171}
+
+raw_171 [label="raw"]
+
+
+// END RANK prose_165
+
+raw_171 -> leaf_172
+leaf_172  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 Appends a txtbuf to history and persists it.
 "]
-// END RANK raw_154
+// END RANK raw_171
 
-prose_149 -> { raw_156}
-{rank=same; raw_156}
+prose_166 -> { raw_173}
+{rank=same; raw_173}
 
-raw_156 [label="raw"]
+raw_173 [label="raw"]
 
 
-// END RANK prose_149
+// END RANK prose_166
 
-raw_156 -> leaf_157
-leaf_157  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_173 -> leaf_174
+leaf_174  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 Doesn't adjust the cursor.
 "]
-// END RANK raw_156
+// END RANK raw_173
 
-codeblock_150 -> leaf_158
-leaf_158  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.append(historian, txtbuf, results, success)
+codeblock_167 -> leaf_175
+leaf_175  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.append(historian, txtbuf, results, success)
    if tostring(historian[#historian]) == tostring(txtbuf) then
       -- don't bother
       return false
@@ -1009,20 +1114,20 @@ leaf_158  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histo
    end
    return true
 end"]
-// END RANK codeblock_150
+// END RANK codeblock_167
 
-codeblock_151 -> leaf_159
-leaf_159  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new()
+codeblock_168 -> leaf_176
+leaf_176  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new()
    local historian = meta(Historian)
    historian:load()
    return historian
 end
 Historian.idEst = new"]
-// END RANK codeblock_151
+// END RANK codeblock_168
 
-codeblock_152 -> leaf_160
-leaf_160  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return new"]
-// END RANK codeblock_152
+codeblock_169 -> leaf_177
+leaf_177  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return new"]
+// END RANK codeblock_169
 
 
 }
