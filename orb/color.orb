@@ -48,8 +48,6 @@ C.color.coro       = thread_color
 C.color.field      = a.fg(111)
 C.color.userdata   = a.fg24(230, 145, 23)
 C.color.cdata      = a.fg24(200, 115, 0)
-C.color.alert      = a.fg24(250, 0, 40)
-C.color.base       = a.fg24(200, 200, 200)
 C.color.metatable  = a.fg24(242, 0, 234)
 C.color.meta       = C.color.metatable
 
@@ -62,6 +60,10 @@ C.color.operator = a.fg24(220, 40, 150)
 C.color.keyword = a.fg24(100, 210, 100)
 C.color.comment = a.fg24(128,128,128)
 
+
+C.color.alert      = a.fg24(250, 0, 40)
+C.color.base       = a.fg24(200, 200, 200)
+C.color.search_hl = a.fg24(30, 230, 100)
 C.color.error = a.bg24(50,0,0)
 
 

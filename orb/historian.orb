@@ -327,7 +327,7 @@ attach to the collection.
 #!lua
 local concat = assert(table.concat)
 
-local function _highlight(line, frag, c)
+local function _highlight(line, frag, c, best)
    local hl = {}
    local og_line = line -- debugging
    while #frag > 0 do
@@ -337,20 +337,29 @@ local function _highlight(line, frag, c)
       if not at then
          error ("can't find " .. char .. " in: " .. line)
       end
+      local color
+      if not best and #frag <= 1 then
+         color = c.alert
+      else
+         color = c.search_hl
+      end
       hl[#hl + 1] = c.base(line:sub(1, at -1))
-      hl[#hl + 1] = c.alert(char)
+      hl[#hl + 1] = color(char)
       line = line:sub(at + 1)
    end
    hl[#hl + 1] = c.base(line)
-   return concat(hl)
+   return concat(hl):gsub("\n", c.stresc("\\n"))
 end
+
 local function _collect_repr(collection, c)
    if #collection == 0 then
       return "{  }"
    end
    local phrase = ""
    for i,v in ipairs(collection) do
-      phrase = phrase .. _highlight(v, collection.frag, c) .. "\n"
+      phrase = phrase
+               .. _highlight(v, collection.frag, c, collection.best)
+               .. "\n"
    end
    return phrase
 end
@@ -373,6 +382,7 @@ function Historian.search(historian, frag)
       -- try the transpose
       best = false
       local slip = sub(frag, 1, -3) .. sub(frag, -1, -1) .. sub(frag, -2, -2)
+      collection.frag = slip
       local second = fuzz_patt(slip)
       for i = #historian, 1, -1 do
          local score = match(second, tostring(historian[i]))
@@ -381,7 +391,7 @@ function Historian.search(historian, frag)
          end
       end
    end
-
+   collection.best = best
    return collection, best
 end
 #/lua

@@ -13,13 +13,13 @@
 <g id="node1" class="node">
 <title>doc_0</title>
 <ellipse fill="none" stroke="#000000" cx="1779" cy="-2267.2833" rx="46.9581" ry="18"/>
-<text text-anchor="middle" x="1779" y="-2263.0833" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">doc &#45; 475</text>
+<text text-anchor="middle" x="1779" y="-2263.0833" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">doc &#45; 485</text>
 </g>
 <!-- section_1 -->
 <g id="node2" class="node">
 <title>section_1</title>
 <ellipse fill="none" stroke="#000000" cx="1779" cy="-2195.2833" rx="65.8187" ry="18"/>
-<text text-anchor="middle" x="1779" y="-2191.0833" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 1&#45;389</text>
+<text text-anchor="middle" x="1779" y="-2191.0833" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 1&#45;399</text>
 </g>
 <!-- doc_0&#45;&gt;section_1 -->
 <g id="edge1" class="edge">
@@ -139,7 +139,7 @@
 <g id="node12" class="node">
 <title>section_11</title>
 <ellipse fill="none" stroke="#000000" cx="10931" cy="-2123.2833" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="10931" y="-2119.0833" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 390&#45;441</text>
+<text text-anchor="middle" x="10931" y="-2119.0833" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 400&#45;451</text>
 </g>
 <!-- section_1&#45;&gt;section_11 -->
 <g id="edge11" class="edge">
@@ -362,7 +362,7 @@
 <g id="node92" class="node">
 <title>section_91</title>
 <ellipse fill="none" stroke="#000000" cx="9674" cy="-2003.6832" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="9674" y="-1999.4832" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 318&#45;389</text>
+<text text-anchor="middle" x="9674" y="-1999.4832" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 318&#45;399</text>
 </g>
 <!-- section_10&#45;&gt;section_91 -->
 <g id="edge91" class="edge">
@@ -398,7 +398,7 @@
 <g id="node142" class="node">
 <title>codeblock_141</title>
 <ellipse fill="none" stroke="#000000" cx="11011" cy="-2003.6832" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="11011" y="-1999.4832" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 392&#45;405</text>
+<text text-anchor="middle" x="11011" y="-1999.4832" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 402&#45;415</text>
 </g>
 <!-- section_11&#45;&gt;codeblock_141 -->
 <g id="edge141" class="edge">
@@ -410,7 +410,7 @@
 <g id="node143" class="node">
 <title>section_142</title>
 <ellipse fill="none" stroke="#000000" cx="11445" cy="-2003.6832" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="11445" y="-1999.4832" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 408&#45;441</text>
+<text text-anchor="middle" x="11445" y="-1999.4832" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 418&#45;451</text>
 </g>
 <!-- section_11&#45;&gt;section_142 -->
 <g id="edge142" class="edge">
@@ -422,7 +422,7 @@
 <g id="node144" class="node">
 <title>section_143</title>
 <ellipse fill="none" stroke="#000000" cx="12427" cy="-2003.6832" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="12427" y="-1999.4832" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 442&#45;475</text>
+<text text-anchor="middle" x="12427" y="-1999.4832" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 452&#45;485</text>
 </g>
 <!-- section_11&#45;&gt;section_143 -->
 <g id="edge143" class="edge">
@@ -1484,7 +1484,7 @@
 <g id="node127" class="node">
 <title>codeblock_126</title>
 <ellipse fill="none" stroke="#000000" cx="10072" cy="-1800.6429" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="10072" y="-1796.4429" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 327&#45;387</text>
+<text text-anchor="middle" x="10072" y="-1796.4429" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 327&#45;397</text>
 </g>
 <!-- section_91&#45;&gt;codeblock_126 -->
 <g id="edge126" class="edge">
@@ -1870,67 +1870,77 @@
 <!-- leaf_138 -->
 <g id="node139" class="node">
 <title>leaf_138</title>
-<polygon fill="none" stroke="#c0c0c0" points="10470.5,-1344.3032 9915.5,-1344.3032 9915.5,-425.0996 10470.5,-425.0996 10470.5,-1344.3032"/>
-<text text-anchor="middle" x="10193" y="-1329.3023" font-family="Inconsolata" font-size="14.00" fill="#000000">local concat = assert(table.concat)</text>
-<text text-anchor="middle" x="10193" y="-1297.9022" font-family="Inconsolata" font-size="14.00" fill="#000000">local function _highlight(line, frag, c)</text>
-<text text-anchor="middle" x="10193" y="-1282.5022" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local hl = {}</text>
-<text text-anchor="middle" x="10193" y="-1267.1022" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local og_line = line &#45;&#45; debugging</text>
-<text text-anchor="middle" x="10193" y="-1251.7021" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;while #frag &gt; 0 do</text>
-<text text-anchor="middle" x="10193" y="-1236.3021" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local char</text>
-<text text-anchor="middle" x="10193" y="-1220.9021" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;char, frag = frag:sub(1,1), frag:sub(2)</text>
-<text text-anchor="middle" x="10193" y="-1205.502" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local at = line:find(char)</text>
-<text text-anchor="middle" x="10193" y="-1190.102" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;if not at then</text>
-<text text-anchor="middle" x="10193" y="-1174.702" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;error (&quot;can&#39;t find &quot; .. char .. &quot; in: &quot; .. line)</text>
-<text text-anchor="middle" x="10193" y="-1159.302" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end</text>
-<text text-anchor="middle" x="10193" y="-1143.9019" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;hl[#hl + 1] = c.base(line:sub(1, at &#45;1))</text>
-<text text-anchor="middle" x="10193" y="-1128.5019" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;hl[#hl + 1] = c.alert(char)</text>
-<text text-anchor="middle" x="10193" y="-1113.1019" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;line = line:sub(at + 1)</text>
-<text text-anchor="middle" x="10193" y="-1097.7018" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
-<text text-anchor="middle" x="10193" y="-1082.3018" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;hl[#hl + 1] = c.base(line)</text>
-<text text-anchor="middle" x="10193" y="-1066.9018" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return concat(hl)</text>
-<text text-anchor="middle" x="10193" y="-1051.5017" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
-<text text-anchor="middle" x="10193" y="-1036.1017" font-family="Inconsolata" font-size="14.00" fill="#000000">local function _collect_repr(collection, c)</text>
-<text text-anchor="middle" x="10193" y="-1020.7017" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if #collection == 0 then</text>
-<text text-anchor="middle" x="10193" y="-1005.3016" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return &quot;{ &#160;}&quot;</text>
-<text text-anchor="middle" x="10193" y="-989.9016" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
-<text text-anchor="middle" x="10193" y="-974.5016" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local phrase = &quot;&quot;</text>
-<text text-anchor="middle" x="10193" y="-959.1015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;for i,v in ipairs(collection) do</text>
-<text text-anchor="middle" x="10193" y="-943.7015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;phrase = phrase .. _highlight(v, collection.frag, c) .. &quot;\n&quot;</text>
-<text text-anchor="middle" x="10193" y="-928.3015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
-<text text-anchor="middle" x="10193" y="-912.9015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return phrase</text>
-<text text-anchor="middle" x="10193" y="-897.5014" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
-<text text-anchor="middle" x="10193" y="-866.1014" font-family="Inconsolata" font-size="14.00" fill="#000000">local collect_M = {__repr = _collect_repr}</text>
-<text text-anchor="middle" x="10193" y="-818.7014" font-family="Inconsolata" font-size="14.00" fill="#000000">function Historian.search(historian, frag)</text>
-<text text-anchor="middle" x="10193" y="-803.3013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local collection = setmeta({}, collect_M)</text>
-<text text-anchor="middle" x="10193" y="-787.9013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;collection.frag = frag</text>
-<text text-anchor="middle" x="10193" y="-772.5013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local best = true</text>
-<text text-anchor="middle" x="10193" y="-757.1012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local patt = fuzz_patt(frag)</text>
-<text text-anchor="middle" x="10193" y="-741.7012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;for i = #historian, 1, &#45;1 do</text>
-<text text-anchor="middle" x="10193" y="-726.3012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local score = match(patt, tostring(historian[i]))</text>
-<text text-anchor="middle" x="10193" y="-710.9011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;if score then</text>
-<text text-anchor="middle" x="10193" y="-695.5011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;collection[#collection + 1] = tostring(historian[i])</text>
-<text text-anchor="middle" x="10193" y="-680.1011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end</text>
-<text text-anchor="middle" x="10193" y="-664.701" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
-<text text-anchor="middle" x="10193" y="-649.301" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if #collection == 0 then</text>
-<text text-anchor="middle" x="10193" y="-633.901" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; try the transpose</text>
-<text text-anchor="middle" x="10193" y="-618.501" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;best = false</text>
-<text text-anchor="middle" x="10193" y="-603.1009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local slip = sub(frag, 1, &#45;3) .. sub(frag, &#45;1, &#45;1) .. sub(frag, &#45;2, &#45;2)</text>
-<text text-anchor="middle" x="10193" y="-587.7009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local second = fuzz_patt(slip)</text>
-<text text-anchor="middle" x="10193" y="-572.3009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;for i = #historian, 1, &#45;1 do</text>
-<text text-anchor="middle" x="10193" y="-556.9008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;local score = match(second, tostring(historian[i]))</text>
-<text text-anchor="middle" x="10193" y="-541.5008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;if score then</text>
-<text text-anchor="middle" x="10193" y="-526.1008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;collection[#collection + 1] = tostring(historian[i])</text>
-<text text-anchor="middle" x="10193" y="-510.7007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;end</text>
-<text text-anchor="middle" x="10193" y="-495.3007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end</text>
-<text text-anchor="middle" x="10193" y="-479.9007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
-<text text-anchor="middle" x="10193" y="-448.5006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return collection, best</text>
-<text text-anchor="middle" x="10193" y="-433.1006" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
+<polygon fill="none" stroke="#c0c0c0" points="10470.5,-1421.3035 9915.5,-1421.3035 9915.5,-348.0993 10470.5,-348.0993 10470.5,-1421.3035"/>
+<text text-anchor="middle" x="10193" y="-1406.3024" font-family="Inconsolata" font-size="14.00" fill="#000000">local concat = assert(table.concat)</text>
+<text text-anchor="middle" x="10193" y="-1374.9024" font-family="Inconsolata" font-size="14.00" fill="#000000">local function _highlight(line, frag, c, best)</text>
+<text text-anchor="middle" x="10193" y="-1359.5024" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local hl = {}</text>
+<text text-anchor="middle" x="10193" y="-1344.1023" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local og_line = line &#45;&#45; debugging</text>
+<text text-anchor="middle" x="10193" y="-1328.7023" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;while #frag &gt; 0 do</text>
+<text text-anchor="middle" x="10193" y="-1313.3023" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local char</text>
+<text text-anchor="middle" x="10193" y="-1297.9022" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;char, frag = frag:sub(1,1), frag:sub(2)</text>
+<text text-anchor="middle" x="10193" y="-1282.5022" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local at = line:find(char)</text>
+<text text-anchor="middle" x="10193" y="-1267.1022" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;if not at then</text>
+<text text-anchor="middle" x="10193" y="-1251.7021" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;error (&quot;can&#39;t find &quot; .. char .. &quot; in: &quot; .. line)</text>
+<text text-anchor="middle" x="10193" y="-1236.3021" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end</text>
+<text text-anchor="middle" x="10193" y="-1220.9021" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local color</text>
+<text text-anchor="middle" x="10193" y="-1205.502" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;if not best and #frag &lt;= 1 then</text>
+<text text-anchor="middle" x="10193" y="-1190.102" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;color = c.alert</text>
+<text text-anchor="middle" x="10193" y="-1174.702" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;else</text>
+<text text-anchor="middle" x="10193" y="-1159.302" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;color = c.search_hl</text>
+<text text-anchor="middle" x="10193" y="-1143.9019" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end</text>
+<text text-anchor="middle" x="10193" y="-1128.5019" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;hl[#hl + 1] = c.base(line:sub(1, at &#45;1))</text>
+<text text-anchor="middle" x="10193" y="-1113.1019" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;hl[#hl + 1] = color(char)</text>
+<text text-anchor="middle" x="10193" y="-1097.7018" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;line = line:sub(at + 1)</text>
+<text text-anchor="middle" x="10193" y="-1082.3018" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
+<text text-anchor="middle" x="10193" y="-1066.9018" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;hl[#hl + 1] = c.base(line)</text>
+<text text-anchor="middle" x="10193" y="-1051.5017" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return concat(hl):gsub(&quot;\n&quot;, c.stresc(&quot;\\n&quot;))</text>
+<text text-anchor="middle" x="10193" y="-1036.1017" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
+<text text-anchor="middle" x="10193" y="-1004.7017" font-family="Inconsolata" font-size="14.00" fill="#000000">local function _collect_repr(collection, c)</text>
+<text text-anchor="middle" x="10193" y="-989.3016" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if #collection == 0 then</text>
+<text text-anchor="middle" x="10193" y="-973.9016" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return &quot;{ &#160;}&quot;</text>
+<text text-anchor="middle" x="10193" y="-958.5016" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
+<text text-anchor="middle" x="10193" y="-943.1015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local phrase = &quot;&quot;</text>
+<text text-anchor="middle" x="10193" y="-927.7015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;for i,v in ipairs(collection) do</text>
+<text text-anchor="middle" x="10193" y="-912.3015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;phrase = phrase</text>
+<text text-anchor="middle" x="10193" y="-896.9015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;.. _highlight(v, collection.frag, c, collection.best)</text>
+<text text-anchor="middle" x="10193" y="-881.5014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;.. &quot;\n&quot;</text>
+<text text-anchor="middle" x="10193" y="-866.1014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
+<text text-anchor="middle" x="10193" y="-850.7014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return phrase</text>
+<text text-anchor="middle" x="10193" y="-835.3013" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
+<text text-anchor="middle" x="10193" y="-803.9013" font-family="Inconsolata" font-size="14.00" fill="#000000">local collect_M = {__repr = _collect_repr}</text>
+<text text-anchor="middle" x="10193" y="-756.5013" font-family="Inconsolata" font-size="14.00" fill="#000000">function Historian.search(historian, frag)</text>
+<text text-anchor="middle" x="10193" y="-741.1012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local collection = setmeta({}, collect_M)</text>
+<text text-anchor="middle" x="10193" y="-725.7012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;collection.frag = frag</text>
+<text text-anchor="middle" x="10193" y="-710.3012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local best = true</text>
+<text text-anchor="middle" x="10193" y="-694.9011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local patt = fuzz_patt(frag)</text>
+<text text-anchor="middle" x="10193" y="-679.5011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;for i = #historian, 1, &#45;1 do</text>
+<text text-anchor="middle" x="10193" y="-664.1011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local score = match(patt, tostring(historian[i]))</text>
+<text text-anchor="middle" x="10193" y="-648.701" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;if score then</text>
+<text text-anchor="middle" x="10193" y="-633.301" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;collection[#collection + 1] = tostring(historian[i])</text>
+<text text-anchor="middle" x="10193" y="-617.901" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end</text>
+<text text-anchor="middle" x="10193" y="-602.501" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
+<text text-anchor="middle" x="10193" y="-587.1009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if #collection == 0 then</text>
+<text text-anchor="middle" x="10193" y="-571.7009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; try the transpose</text>
+<text text-anchor="middle" x="10193" y="-556.3009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;best = false</text>
+<text text-anchor="middle" x="10193" y="-540.9008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local slip = sub(frag, 1, &#45;3) .. sub(frag, &#45;1, &#45;1) .. sub(frag, &#45;2, &#45;2)</text>
+<text text-anchor="middle" x="10193" y="-525.5008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;collection.frag = slip</text>
+<text text-anchor="middle" x="10193" y="-510.1008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local second = fuzz_patt(slip)</text>
+<text text-anchor="middle" x="10193" y="-494.7007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;for i = #historian, 1, &#45;1 do</text>
+<text text-anchor="middle" x="10193" y="-479.3007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;local score = match(second, tostring(historian[i]))</text>
+<text text-anchor="middle" x="10193" y="-463.9007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;if score then</text>
+<text text-anchor="middle" x="10193" y="-448.5006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;collection[#collection + 1] = tostring(historian[i])</text>
+<text text-anchor="middle" x="10193" y="-433.1006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;end</text>
+<text text-anchor="middle" x="10193" y="-417.7006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end</text>
+<text text-anchor="middle" x="10193" y="-402.3005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
+<text text-anchor="middle" x="10193" y="-386.9005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;collection.best = best</text>
+<text text-anchor="middle" x="10193" y="-371.5005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return collection, best</text>
+<text text-anchor="middle" x="10193" y="-356.1005" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
 </g>
 <!-- codeblock_126&#45;&gt;leaf_138 -->
 <g id="edge138" class="edge">
 <title>codeblock_126&#45;&gt;leaf_138</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M10074.417,-1782.3466C10082.0005,-1724.9416 10106.2882,-1541.0895 10130.9244,-1354.5987"/>
-<polygon fill="#000000" stroke="#000000" points="10134.4072,-1354.9587 10132.2471,-1344.5864 10127.4675,-1354.0419 10134.4072,-1354.9587"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M10074.417,-1782.3466C10080.9543,-1732.8613 10099.9046,-1589.4118 10120.7907,-1431.3085"/>
+<polygon fill="#000000" stroke="#000000" points="10124.2652,-1431.7315 10122.1051,-1421.3592 10117.3255,-1430.8147 10124.2652,-1431.7315"/>
 </g>
 <!-- leaf_132 -->
 <g id="node133" class="node">
@@ -2082,7 +2092,7 @@
 <g id="node152" class="node">
 <title>codeblock_151</title>
 <ellipse fill="none" stroke="#000000" cx="11765" cy="-1800.6429" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="11765" y="-1796.4429" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 415&#45;439</text>
+<text text-anchor="middle" x="11765" y="-1796.4429" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 425&#45;449</text>
 </g>
 <!-- section_142&#45;&gt;codeblock_151 -->
 <g id="edge151" class="edge">
@@ -2130,7 +2140,7 @@
 <g id="node168" class="node">
 <title>codeblock_167</title>
 <ellipse fill="none" stroke="#000000" cx="12623" cy="-1800.6429" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="12623" y="-1796.4429" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 448&#45;462</text>
+<text text-anchor="middle" x="12623" y="-1796.4429" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 458&#45;472</text>
 </g>
 <!-- section_143&#45;&gt;codeblock_167 -->
 <g id="edge167" class="edge">
@@ -2142,7 +2152,7 @@
 <g id="node169" class="node">
 <title>codeblock_168</title>
 <ellipse fill="none" stroke="#000000" cx="12937" cy="-1800.6429" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="12937" y="-1796.4429" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 464&#45;471</text>
+<text text-anchor="middle" x="12937" y="-1796.4429" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 474&#45;481</text>
 </g>
 <!-- section_143&#45;&gt;codeblock_168 -->
 <g id="edge168" class="edge">
@@ -2154,7 +2164,7 @@
 <g id="node170" class="node">
 <title>codeblock_169</title>
 <ellipse fill="none" stroke="#000000" cx="13251" cy="-1800.6429" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="13251" y="-1796.4429" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 473&#45;475</text>
+<text text-anchor="middle" x="13251" y="-1796.4429" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 483&#45;485</text>
 </g>
 <!-- section_143&#45;&gt;codeblock_169 -->
 <g id="edge169" class="edge">

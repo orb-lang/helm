@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 475"]
+doc_0 [label="doc - 485"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-389"]
+section_1 [label="section: 1-399"]
 
 
 // END RANK doc_0
@@ -35,7 +35,7 @@ section_9 [label="section: 32-231"]
 
 section_10 [label="section: 282-317"]
 
-section_11 [label="section: 390-441"]
+section_11 [label="section: 400-451"]
 
 
 // END RANK section_1
@@ -625,7 +625,7 @@ prose_89 [label="prose"]
 
 section_90 [label="section: 292-317"]
 
-section_91 [label="section: 318-389"]
+section_91 [label="section: 318-399"]
 
 
 // END RANK section_10
@@ -789,7 +789,7 @@ prose_124 [label="prose"]
 
 prose_125 [label="prose"]
 
-codeblock_126 [label="code block 327-387"]
+codeblock_126 [label="code block 327-397"]
 
 
 // END RANK section_91
@@ -851,7 +851,7 @@ attach to the collection.
 codeblock_126 -> leaf_138
 leaf_138  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local concat = assert(table.concat)
 
-local function _highlight(line, frag, c)
+local function _highlight(line, frag, c, best)
    local hl = {}
    local og_line = line -- debugging
    while #frag > 0 do
@@ -861,20 +861,29 @@ local function _highlight(line, frag, c)
       if not at then
          error (\"can't find \" .. char .. \" in: \" .. line)
       end
+      local color
+      if not best and #frag <= 1 then
+         color = c.alert
+      else
+         color = c.search_hl
+      end
       hl[#hl + 1] = c.base(line:sub(1, at -1))
-      hl[#hl + 1] = c.alert(char)
+      hl[#hl + 1] = color(char)
       line = line:sub(at + 1)
    end
    hl[#hl + 1] = c.base(line)
-   return concat(hl)
+   return concat(hl):gsub(\"\\n\", c.stresc(\"\\\\n\"))
 end
+
 local function _collect_repr(collection, c)
    if #collection == 0 then
       return \"{  }\"
    end
    local phrase = \"\"
    for i,v in ipairs(collection) do
-      phrase = phrase .. _highlight(v, collection.frag, c) .. \"\\n\"
+      phrase = phrase
+               .. _highlight(v, collection.frag, c, collection.best)
+               .. \"\\n\"
    end
    return phrase
 end
@@ -897,6 +906,7 @@ function Historian.search(historian, frag)
       -- try the transpose
       best = false
       local slip = sub(frag, 1, -3) .. sub(frag, -1, -1) .. sub(frag, -2, -2)
+      collection.frag = slip
       local second = fuzz_patt(slip)
       for i = #historian, 1, -1 do
          local score = match(second, tostring(historian[i]))
@@ -905,7 +915,7 @@ function Historian.search(historian, frag)
          end
       end
    end
-
+   collection.best = best
    return collection, best
 end"]
 // END RANK codeblock_126
@@ -917,11 +927,11 @@ header_139 [label="2 : Historian:prev()"]
 
 prose_140 [label="prose"]
 
-codeblock_141 [label="code block 392-405"]
+codeblock_141 [label="code block 402-415"]
 
-section_142 [label="section: 408-441"]
+section_142 [label="section: 418-451"]
 
-section_143 [label="section: 442-475"]
+section_143 [label="section: 452-485"]
 
 
 // END RANK section_11
@@ -967,7 +977,7 @@ prose_149 [label="prose"]
 
 prose_150 [label="prose"]
 
-codeblock_151 [label="code block 415-439"]
+codeblock_151 [label="code block 425-449"]
 
 
 // END RANK section_142
@@ -1058,11 +1068,11 @@ prose_165 [label="prose"]
 
 prose_166 [label="prose"]
 
-codeblock_167 [label="code block 448-462"]
+codeblock_167 [label="code block 458-472"]
 
-codeblock_168 [label="code block 464-471"]
+codeblock_168 [label="code block 474-481"]
 
-codeblock_169 [label="code block 473-475"]
+codeblock_169 [label="code block 483-485"]
 
 
 // END RANK section_143
