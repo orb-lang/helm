@@ -326,7 +326,7 @@ function ModeS.printResults(modeS, results, new)
       if results.frozen then
          rainbuf[i] = results[i]
       else
-         rainbuf[i] = ts(results[i], "raw")
+         rainbuf[i] = ts(results[i])
       end
    end
    modeS:write(concat(rainbuf, '   '))
