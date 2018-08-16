@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 485"]
+doc_0 [label="doc - 487"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-399"]
+section_1 [label="section: 1-401"]
 
 
 // END RANK doc_0
@@ -35,7 +35,7 @@ section_9 [label="section: 32-231"]
 
 section_10 [label="section: 282-317"]
 
-section_11 [label="section: 400-451"]
+section_11 [label="section: 402-453"]
 
 
 // END RANK section_1
@@ -625,7 +625,7 @@ prose_89 [label="prose"]
 
 section_90 [label="section: 292-317"]
 
-section_91 [label="section: 318-399"]
+section_91 [label="section: 318-401"]
 
 
 // END RANK section_10
@@ -789,7 +789,7 @@ prose_124 [label="prose"]
 
 prose_125 [label="prose"]
 
-codeblock_126 [label="code block 327-397"]
+codeblock_126 [label="code block 327-399"]
 
 
 // END RANK section_91
@@ -862,6 +862,8 @@ local function _highlight(line, frag, c, best)
          error (\"can't find \" .. char .. \" in: \" .. line)
       end
       local color
+      -- highlight the last two differently if this is a 'second best'
+      -- search
       if not best and #frag <= 1 then
          color = c.alert
       else
@@ -927,11 +929,11 @@ header_139 [label="2 : Historian:prev()"]
 
 prose_140 [label="prose"]
 
-codeblock_141 [label="code block 402-415"]
+codeblock_141 [label="code block 404-417"]
 
-section_142 [label="section: 418-451"]
+section_142 [label="section: 420-453"]
 
-section_143 [label="section: 452-485"]
+section_143 [label="section: 454-487"]
 
 
 // END RANK section_11
@@ -977,7 +979,7 @@ prose_149 [label="prose"]
 
 prose_150 [label="prose"]
 
-codeblock_151 [label="code block 425-449"]
+codeblock_151 [label="code block 427-451"]
 
 
 // END RANK section_142
@@ -1068,11 +1070,11 @@ prose_165 [label="prose"]
 
 prose_166 [label="prose"]
 
-codeblock_167 [label="code block 458-472"]
+codeblock_167 [label="code block 460-474"]
 
-codeblock_168 [label="code block 474-481"]
+codeblock_168 [label="code block 476-483"]
 
-codeblock_169 [label="code block 483-485"]
+codeblock_169 [label="code block 485-487"]
 
 
 // END RANK section_143

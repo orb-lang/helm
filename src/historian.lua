@@ -338,6 +338,8 @@ local function _highlight(line, frag, c, best)
          error ("can't find " .. char .. " in: " .. line)
       end
       local color
+      -- highlight the last two differently if this is a 'second best'
+      -- search
       if not best and #frag <= 1 then
          color = c.alert
       else
