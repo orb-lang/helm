@@ -142,12 +142,30 @@ end
 ```
 ### Txtbuf:d_back()
 
+The return value tells us if we have one less line, since we need to
+clear it off the screen.
+
 ```lua
 local remove = assert(table.remove)
 
 function Txtbuf.d_back(txtbuf)
-   remove(txtbuf.lines[txtbuf.cur_row], txtbuf.cursor - 1)
-   txtbuf.cursor = txtbuf.cursor > 1 and txtbuf.cursor - 1 or 1
+   local cursor, cur_row = txtbuf.cursor, txtbuf.cur_row
+   if cursor > 1 then
+      remove(txtbuf.lines[cur_row], cursor - 1)
+      txtbuf.cursor = cursor - 1
+      return false
+   elseif cur_row == 1 then
+      return false
+   else
+      local new_line = concat(txtbuf.lines[cur_row - 1])
+                       .. concat(txtbuf.lines[cur_row])
+      local new_cursor = #txtbuf.lines[cur_row - 1]
+      txtbuf.lines[cur_row - 1] = codepoints(new_line)
+      remove(txtbuf.lines, cur_row)
+      txtbuf.cur_row = cur_row - 1
+      txtbuf.cursor = new_cursor
+      return true
+   end
 end
 ```
 ### Txtbuf:d_fwd()
@@ -186,7 +204,7 @@ function Txtbuf.right(txtbuf, disp)
    return txtbuf.cursor
 end
 ```
-### Txtbuf:up()
+### Txtbuf:up(), Txtbuf:down()
 
 ```lua
 function Txtbuf.up(txtbuf)
@@ -216,6 +234,42 @@ function Txtbuf.down(txtbuf)
    end
 end
 ```
+### Txtbuf:nl()
+
+Either splits a line or (more usually) evaluates.
+
+```lua
+local sub = assert(string.sub)
+local insert = assert(table.insert)
+function Txtbuf.nl(txtbuf)
+   -- Most txtbufs are one line, so we always evaluate from
+   -- a one-liner, regardless of cursor location.
+   local linum = #txtbuf.lines
+   if linum == 1 then
+      return true
+   end
+   local cursor = txtbuf.cursor
+   local cur_row = txtbuf.cur_row
+   -- these are the two default positions for up and down
+   -- history search
+   if cur_row == 1 and cursor > #txtbuf.lines[1] then
+      return true
+   end
+   if cur_row == linum and cursor > #txtbuf.lines[linum] then
+      return true
+   end
+   -- split the line
+   local cur_line = concat(txtbuf.lines[txtbuf.cur_row])
+   local first = sub(cur_line, 1, cursor - 1)
+   local second = sub(cur_line, cursor)
+   txtbuf.lines[cur_row] = codepoints(first)
+   insert(txtbuf.lines, cur_row + 1, codepoints(second))
+   txtbuf.cursor = 1
+   txtbuf.cur_row = cur_row + 1
+
+   return false
+end
+```
 ```lua
 function Txtbuf.suspend(txtbuf)
    for i,v in ipairs(txtbuf.lines) do
@@ -240,8 +294,8 @@ end
 local cl = assert(table.clone, "table.clone must be provided")
 
 function Txtbuf.clone(txtbuf)
-   local tb = cl(txtbuf)
-   tb.lines = cl(txtbuf.lines)
+   -- Clone to depth of 3 to get tb, tb.lines, and each lines
+   local tb = cl(txtbuf, 3)
    if type(tb.lines[1]) == "string" then
       return tb:resume()
    end

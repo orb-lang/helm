@@ -31,79 +31,67 @@ local Historian = meta {}
 ```
 ## Persistence
 
-This is where we practice for ``codex``.
-
-
-Note: I'm not happy with how the existing SQLite binding is handling
-[three-valued logic](httk://).  Lua's ``nil`` is a frequent source of
-annoyance, true, but every union type system has a bottom value, and Lua's is
-implemented cleanly.
-
-
-But this is not the semantics of SQLite's NULL, which cleanly represents "no
-answer available for constraint".  Our bindings would appear to represent
-nulls on the right side of a left join as missing values, which breaks some of
-the conventions of Lua, such as ``#``, to no plausible benefit.
-
-
-It's also quite possible I'm trying to unwrap a data structure which is meant
-to be handled through method calls.
-
-
-Looks like there's a magic "hik" string where the ``i`` is index, ``k`` is key/value,
-and ``h`` is some weird object on the ``[0]`` index which has column-centered
-values.
-
-
-I've been getting back all three. Hmm.
-
-
-Also the return format is ``resultset, nrow`` which mitigates the damage from
-``NULL`` holes.
-
+This defines the persistence model for bridge.
 
 ### SQLite battery
 
 ```lua
 Historian.HISTORY_LIMIT = 1000
 
+local create_project_table = [[
+CREATE TABLE IF NOT EXISTS project (
+project_id INTEGER PRIMARY KEY AUTOINCREMENT,
+directory TEXT UNIQUE,
+time DATETIME DEFAULT CURRENT_TIMESTAMP );
+]]
+
 local create_repl_table = [[
 CREATE TABLE IF NOT EXISTS repl (
 line_id INTEGER PRIMARY KEY AUTOINCREMENT,
-project TEXT,
+project INTEGER,
 line TEXT,
-time DATETIME DEFAULT CURRENT_TIMESTAMP);
+time DATETIME DEFAULT CURRENT_TIMESTAMP,
+FOREIGN KEY (project)
+   REFERENCES project (project_id)
+   ON DELETE CASCADE );
 ]]
 
 local create_result_table = [[
-CREATE TABLE IF NOT EXISTS results (
+CREATE TABLE IF NOT EXISTS result (
 result_id INTEGER PRIMARY KEY AUTOINCREMENT,
 line_id INTEGER,
 repr text NOT NULL,
 value blob,
 FOREIGN KEY (line_id)
    REFERENCES repl (line_id)
-   ON DELETE CASCADE);
+   ON DELETE CASCADE );
 ]]
 
 local create_session_table = [[
-CREATE TABLE IF NOT EXISTS sessions (
+CREATE TABLE IF NOT EXISTS session (
 session_id INTEGER PRIMARY KEY AUTOINCREMENT,
 name TEXT,
+project INTEGER,
 -- These two are line_ids
 start INTEGER NOT NULL,
 end INTEGER,
 test BOOLEAN,
-commit TEXT;
-)
+sha TEXT,
+FOREIGN KEY (project)
+   REFERENCES project (project_id)
+   ON DELETE CASCADE );
 ]]
 
-local insert_line_stmt = [[
+local insert_line = [[
 INSERT INTO repl (project, line) VALUES (:project, :line);
 ]]
 
-local insert_result_stmt = [[
-INSERT INTO results (line_id, repr) VALUES (:line_id, :repr);
+local insert_result = [[
+INSERT INTO result (line_id, repr) VALUES (:line_id, :repr);
+]]
+
+local insert_project = [[
+INSERT INTO project (directory) VALUES (:dir);
 ]]
 
 local get_tables = [[
@@ -112,18 +100,23 @@ SELECT name FROM sqlite_master WHERE type='table';
 
 local get_recent = [[
 SELECT CAST (line_id AS REAL), line FROM repl
-   WHERE project = %s
+   WHERE project = %d
    ORDER BY time
    DESC LIMIT %d;
 ]]
 
+local get_project = [[
+SELECT project_id FROM project
+   WHERE directory = %s;
+]]
+
 local get_reprs = [[
-SELECT CAST (repl.line_id AS REAL), results.repr
+SELECT CAST (repl.line_id AS REAL), result.repr
 FROM repl
-LEFT OUTER JOIN results
-ON repl.line_id = results.line_id
-WHERE repl.project = '%s'
-ORDER BY repl.time
+LEFT OUTER JOIN result
+ON repl.line_id = result.line_id
+WHERE repl.project = %d
+ORDER BY result.result_id
 DESC LIMIT %d;
 ]]
 
@@ -146,7 +139,7 @@ end
 ```
 ### Historian:load()
 
-Brings up the project history and (eventually) results and user config.
+Brings up the project history and results, and (eventually) user config.
 
 
 Most of the complexity serves to make a simple key/value relationship
@@ -158,16 +151,37 @@ function Historian.load(historian)
    historian.conn = conn
    -- Set up bridge tables
    conn.pragma.foreign_keys(true)
+   conn:exec(create_project_table)
    conn:exec(create_result_table)
    conn:exec(create_repl_table)
+   conn:exec(create_session_table)
+   -- Retrive project id
+   local proj_val, proj_row = sql.pexec(conn,
+                                  sql.format(get_project, historian.project),
+                                  "i")
+   if not proj_val then
+      local ins_proj_stmt = conn:prepare(insert_project)
+      ins_proj_stmt:bindkv {dir = historian.project}
+      proj_val, proj_row = ins_proj_stmt:step()
+      -- retry
+      proj_val, proj_row = sql.pexec(conn,
+                              sql.format(get_project, historian.project),
+                              "i")
+      if not proj_val then
+         error "Could not create project in .bridge"
+      end
+   end
+
+   local project_id = proj_val[1][1]
+   historian.project_id = project_id
    -- Create insert prepared statements
-   historian.insert_line_stmt = conn:prepare(insert_line_stmt)
-   historian.insert_result_stmt = conn:prepare(insert_result_stmt)
+   historian.insert_line = conn:prepare(insert_line)
+   historian.insert_result = conn:prepare(insert_result)
    -- Retrieve history
-   local pop_str = sql.format(get_recent, historian.project,
+   local pop_str = sql.format(get_recent, project_id,
                         historian.HISTORY_LIMIT)
    local repl_val, repl_row = sql.pexec(conn, pop_str, "i")
-   local res_str = sql.format(get_reprs, historian.project,
+   local res_str = sql.format(get_reprs, project_id,
                        historian.HISTORY_LIMIT * 2)
    local res_val, res_row = sql.pexec(conn, res_str, "i")
    if repl_val and res_val then
@@ -201,6 +215,16 @@ function Historian.load(historian)
    end
 end
 ```
+### Historian:restore_session(modeS, session)
+
+If there is an open session, we want to replay it.
+
+
+To do this, we need to borrow the modeselektor.
+
+```lua
+
+```
 ### Historian:persist(txtbuf)
 
 Persists a line and results to store.
@@ -223,24 +247,23 @@ common value for any identical semantics.
 function Historian.persist(historian, txtbuf, results)
    local lb = tostring(txtbuf)
    if lb ~= "" then
-      historian.insert_line_stmt:bindkv { project = historian.project,
-                                     line    = lb }
-      local err = historian.insert_line_stmt:step()
+      historian.insert_line:bindkv { project = historian.project_id,
+                                          line    = lb }
+      local err = historian.insert_line:step()
       if not err then
-         historian.insert_line_stmt:clearbind():reset()
+         historian.insert_line:clearbind():reset()
       else
          error(err)
       end
       local line_id = sql.lastRowId(historian.conn)
       if results and type(results) == "table" then
-         for _,v in ipairs(results) do
+         for _,v in ipairs(reverse(results)) do
             -- insert result repr
-            -- tostring() just for compactness
-            historian.insert_result_stmt:bindkv { line_id = line_id,
+            historian.insert_result:bindkv { line_id = line_id,
                                                   repr = color.ts(v) }
-            err = historian.insert_result_stmt:step()
+            err = historian.insert_result:step()
             if not err then
-               historian.insert_result_stmt:clearbind():reset()
+               historian.insert_result:clearbind():reset()
             end
          end
       end
@@ -250,18 +273,36 @@ function Historian.persist(historian, txtbuf, results)
       -- A blank line can have no results and is uninteresting.
       return false
    end
+   --]]
 end
 ```
 ## Historian:search(frag)
 
+This is a 'fuzzy search', that attempts to find a string containing the
+letters of the fragment in order.
+
+
+If it finds nothing, it switches the last two letters and tries again. This
+is an affordance for incremental searches, it's easy to make this mistake and
+harmless to suggest the alternative.
+
+
+### fuss_patt
+
+Here we incrementally build up a single ``lpeg`` pattern which will recognize
+our desired lines.
+
+
+``(P(1) - P(frag[n]))^0`` matches anything that isn't the next fragment,
+including ``""``.  We then require this to be followed by the next fragment,
+and so on.
+
 ```lua
 local P, match = L.P, L.match
 
--- second_best is broke and I don't know why
--- also this fails on a single key search >.<
 local function fuzz_patt(frag)
    frag = type(frag) == "string" and codepoints(frag) or frag
-   local patt =        (P(1) - P(frag[1]))^0
+   local patt =  (P(1) - P(frag[1]))^0
    for i = 1 , #frag - 1 do
       local v = frag[i]
       patt = patt * (P(v) * (P(1) - P(frag[i + 1]))^0)
@@ -270,8 +311,89 @@ local function fuzz_patt(frag)
    return patt
 end
 
+```
+### __repr for collection
+
+We use a pseudo-metamethod called ``__repr`` to specify custom table
+representations.  These take the table as the first value and receive the
+local color palette for consistency.
+
+
+In this case we want to highlight the letters of the fragment, which we
+attach to the collection.
+
+```lua
+local concat = assert(table.concat)
+
+local function _highlight(line, frag, c, best)
+   local hl = {}
+   local og_line = line -- debugging
+   while #frag > 0 do
+      local char
+      char, frag = frag:sub(1,1), frag:sub(2)
+      local at = line:find(char)
+      if not at then
+         error ("can't find " .. char .. " in: " .. line)
+      end
+      local color
+      -- highlight the last two differently if this is a 'second best'
+      -- search
+      if not best and #frag <= 1 then
+         color = c.alert
+      else
+         color = c.search_hl
+      end
+      hl[#hl + 1] = c.base(line:sub(1, at -1))
+      hl[#hl + 1] = color(char)
+      line = line:sub(at + 1)
+   end
+   hl[#hl + 1] = c.base(line)
+   return concat(hl):gsub("\n", c.stresc("\\n"))
+end
+
+local function _collect_repr(collection, c)
+   if #collection == 0 then
+      return "{  }"
+   end
+   local phrase = ""
+   for i,v in ipairs(collection) do
+      phrase = phrase
+               .. _highlight(v, collection.frag, c, collection.best)
+               .. "\n"
+   end
+   return phrase
+end
+
+local collect_M = {__repr = _collect_repr}
+```
+## Historian:search(frag)
+
+This is an incremental 'fuzzy' search, returning a ``collection``.
+
+
+The array portion of a collection is any line which matches the search.
+
+
+The other fields are:
+
+
+- #fields
+  -  best :  Whether this is a best-fit collection, that is, one with all
+             codepoints in order.
+
+
+  -  frag :  The fragment, used to highlight the collection
+
+
+  -  cursors :  This is an array, each value is the cursor position of
+                the corresponding line in the history.
+
+```lua
+
 function Historian.search(historian, frag)
-   local collection = {}
+   local collection = setmeta({}, collect_M)
+   collection.frag = frag
+   local cursors = {}
    local best = true
    local patt = fuzz_patt(frag)
    for i = #historian, 1, -1 do
@@ -284,15 +406,18 @@ function Historian.search(historian, frag)
       -- try the transpose
       best = false
       local slip = sub(frag, 1, -3) .. sub(frag, -1, -1) .. sub(frag, -2, -2)
+      collection.frag = slip
       local second = fuzz_patt(slip)
       for i = #historian, 1, -1 do
          local score = match(second, tostring(historian[i]))
          if score then
             collection[#collection + 1] = tostring(historian[i])
+            cursors[#cursors + 1] = i
          end
       end
    end
-
+   collection.best = best
+   collection.cursors = cursorsß
    return collection, best
 end
 ```

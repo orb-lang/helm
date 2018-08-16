@@ -48,8 +48,6 @@ C.color.coro       = thread_color
 C.color.field      = a.fg(111)
 C.color.userdata   = a.fg24(230, 145, 23)
 C.color.cdata      = a.fg24(200, 115, 0)
-C.color.alert      = a.fg24(250, 0, 40)
-C.color.base       = a.fg24(200, 200, 200)
 C.color.metatable  = a.fg24(242, 0, 234)
 C.color.meta       = C.color.metatable
 
@@ -62,10 +60,14 @@ C.color.operator = a.fg24(220, 40, 150)
 C.color.keyword = a.fg24(100, 210, 100)
 C.color.comment = a.fg24(128,128,128)
 
+
+C.color.alert      = a.fg24(250, 0, 40)
+C.color.base       = a.fg24(200, 200, 200)
+C.color.search_hl = a.fg24(30, 230, 100)
 C.color.error = a.bg24(50,0,0)
 
 
-C.depth = 3 -- table print depth
+C.depth = 4 -- table print depth
 
 
 
@@ -175,8 +177,7 @@ local function addName(t, aG, pre)
          end
       elseif T == "function" or
          T == "thread" or
-         T == "userdata" or
-         T == "cdata" then
+         T == "userdata" then
          aG[v] = pre .. k
       end
    end
@@ -338,15 +339,15 @@ ts = function (value, hint)
    end
 
    local typica = type(value)
-   if typica == "number" then
-      str = c.number(str)
-   elseif typica == "table" then
-      -- check for a repr
-      if value.__repr and not hint == "raw" then
-         return value:__repr()
-      end
 
-      str = tabulate(value)
+   if typica == "table" then
+      -- check for a __repr metamethod
+      local _M = getmetatable(value)
+      if _M and _M.__repr and not (hint == "raw") then
+         str = _M.__repr(value, c)
+      else
+         str = tabulate(value)
+      end
    elseif typica == "function" then
       local f_label = sub(str,11)
       f_label = sub(f_label,1,5) == "built"
@@ -357,7 +358,13 @@ ts = function (value, hint)
    elseif typica == "boolean" then
       str = value and c.truth(str) or c.falsehood(str)
    elseif typica == "string" then
-      str = c.string(str)
+      if value == "" then
+         str = c.string('""')
+      else
+         str = c.string(str)
+      end
+   elseif typica == "number" then
+      str = c.number(str)
    elseif typica == "nil" then
       str = c.nilness(str)
    elseif typica == "thread" then

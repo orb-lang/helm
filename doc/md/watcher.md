@@ -29,6 +29,7 @@ local uv = require "luv"
 
 local function watch(watcher, dir, recur)
     watcher.dir = dir
+    -- default to a recursive watch
     if recur == nil then
         recur = true
     end
@@ -61,6 +62,10 @@ end
 ```lua
 local _W = {__call = watch}
 _W.__index = _W
+
+function _W.run(watcher)
+   uv.run()
+end
 
 local function Watcher(handlers)
    handlers = handlers or {}

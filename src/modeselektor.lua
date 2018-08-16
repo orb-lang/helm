@@ -318,16 +318,19 @@ end
 
 function ModeS.printResults(modeS, results, new)
    local rainbuf = {}
+   write(a.cursor.hide())
+   modeS:clearResults()
    local row = new and modeS.repl_top + 1 or modeS:replLine() + 1
    modeS:write(a.rc(row, modeS.l_margin))
    for i = 1, results.n do
       if results.frozen then
          rainbuf[i] = results[i]
       else
-         rainbuf[i] = ts(results[i])
+         rainbuf[i] = ts(results[i], "raw")
       end
    end
    modeS:write(concat(rainbuf, '   '))
+   write(a.cursor.show())
 end
 
 
@@ -415,7 +418,7 @@ function NAV.UP(modeS, category, value)
       if linestash then
          modeS.hist:append(linestash)
       end
-      modeS:clearResult()
+      modeS:clearResults()
       if prev_result then
          modeS:printResults(prev_result)
       end
@@ -433,7 +436,7 @@ function NAV.DOWN(modeS, category, value)
       if next_p then
          modeS.txtbuf = Txtbuf()
       end
-      modeS:clearResult()
+      modeS:clearResults()
       if next_result then
          modeS:printResults(next_result)
       end
@@ -452,18 +455,26 @@ function NAV.RIGHT(modeS, category, value)
 end
 
 function NAV.RETURN(modeS, category, value)
-   -- eval etc.
-   modeS:nl()
-   local more = modeS:eval()
-   if not more then
-     modeS.txtbuf = Txtbuf()
+   -- eval or split line
+   local eval = modeS.txtbuf:nl()
+   if eval then
+     modeS:nl()
+     local more = modeS:eval()
+     if not more then
+       modeS.txtbuf = Txtbuf()
+     end
+     modeS.hist.cursor = modeS.hist.cursor + 1
    end
-   -- Question: is this wrong for an error?
-   modeS.hist.cursor = modeS.hist.cursor + 1
 end
 
 function NAV.BACKSPACE(modeS, category, value)
-   return modeS.txtbuf:d_back()
+   local shrunk =  modeS.txtbuf:d_back()
+   if shrunk then
+      write(a.stash())
+      write(a.rc(modeS:replLine() + 1, 1))
+      write(a.erase.line())
+      write(a.pop())
+   end
 end
 
 function NAV.DELETE(modeS, category, value)
@@ -504,8 +515,8 @@ end
 
 
 
-function ModeS.clearResult(modeS)
-   write(a.erase.box(3, 1, modeS.max_row, modeS.r_margin))
+function ModeS.clearResults(modeS)
+   write(a.erase.box(modeS.repl_top + 1, 1, modeS.max_row, modeS.r_margin))
 end
 
 
@@ -531,13 +542,15 @@ function ModeS.eval(modeS)
       success, results = gatherResults(xpcall(f, debug.traceback))
       if success then
       -- successful call
-         modeS:clearResult()
          if results.n > 0 then
-            modeS:printResults(results, success)
+            modeS:printResults(results)
+         else
+            modeS:clearResults()
          end
       else
       -- error
-         modeS:clearResult()
+         write(a.cursor.hide())
+         modeS:clearResults()
          modeS:write(results[1])
       end
    else
@@ -547,7 +560,7 @@ function ModeS.eval(modeS)
          write(a.col(1) .. "...")
          return true
       else
-         modeS:clearResult()
+         modeS:clearResults()
          modeS:write(err)
          -- pass through to default.
       end

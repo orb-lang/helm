@@ -30,6 +30,8 @@ local conn = sql.open ":memory:"
 local conn_mt = ffi.reflect.getmetatable(conn)
 local stmt = conn:prepare "CREATE TABLE IF NOT EXISTS test(a,b);"
 local stmt_mt = ffi.reflect.getmetatable(stmt)
+
+stmt:close()
 conn:close() -- polite
 conn, stmt = nil, nil
 
@@ -75,6 +77,9 @@ function sql.format(str, ...)
    for i, v in ipairs(argv) do
       if type(v) == "string" then
          argv[i] = san(v)
+      elseif type(v) == "cdata" then
+         -- assume this is a number of some kind
+         argv[i] = tonumber(v)
       else
          argv[i] = v
       end
@@ -102,7 +107,7 @@ function sql.pexec(conn, stmt, col_str)
    if success then
       return result, nrow
    else
-      return false, value
+      return false, result
    end
 end
 
@@ -119,6 +124,9 @@ function sql.lastRowId(conn)
    local result = conn:rowexec "SELECT CAST(last_insert_rowid() AS REAL)"
    return result
 end
+
+
+
 
 
 

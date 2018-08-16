@@ -54,7 +54,9 @@ local function trim(s)
 end
 
 local function err(code, msg)
+  io.write(debug.traceback())
   error("ljsqlite3["..code.."] "..msg)
+
 end
 
 -- Codes -----------------------------------------------------------------------
