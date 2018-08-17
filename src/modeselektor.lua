@@ -100,9 +100,8 @@ assert(ts, "must have ts in _G")
 
 
 
-
 local Txtbuf   = require "txtbuf"
-local Resbuf    = require "resbuf"
+local Resbuf    = require "resbuf" -- Not currently used...
 local Historian = require "historian"
 local Lex       = require "lex"
 
@@ -197,6 +196,16 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
 local STATCOL = 81
 local STAT_TOP = 1
 local STAT_RUN = 2
@@ -266,10 +275,6 @@ end
 
 
 
-
-
-
-
 function ModeS.cur_col(modeS)
    return modeS.txtbuf.cursor + modeS.l_margin - 1
 end
@@ -277,6 +282,7 @@ end
 function ModeS.nl(modeS)
    write(a.col(modeS.l_margin).. a.jump.down(1))
 end
+
 
 
 
@@ -298,7 +304,12 @@ end
 
 
 
-function ModeS.paint_row(modeS)
+
+
+
+
+
+function ModeS.paint_txtbuf(modeS)
    local lb = Lex.lua_thor(tostring(modeS.txtbuf))
    write(a.cursor.hide())
    write(a.erase.box(modeS.repl_top, modeS.l_margin,
@@ -381,7 +392,7 @@ function ModeS.act(modeS, category, value)
    else
       icon_paint("NYI", category .. ":" .. value)
    end
-   return modeS:paint_row()
+   return modeS:paint_txtbuf()
 end
 
 

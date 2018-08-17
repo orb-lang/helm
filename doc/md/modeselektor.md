@@ -71,8 +71,8 @@ They must also have the same return type, with is either ``true`` or
 
 ``modeselektor`` passes any edit or movement commands to an internally-owned
 ``txtbuf``, which keeps all modeling of the line.  ``modeselektor`` decides when
-to repaint the screen, calling ``rainbuf`` with a region of ``txtbuf`` and
-instructions as to how to paint it.
+to repaint the screen, calling ``rainbuf`` (currently just ``lex``) with a region
+of ``txtbuf`` and instructions as to how to paint it.
 
 
 There is one ``deck`` instance member per screen, which tiles the available
@@ -87,7 +87,7 @@ will be more than enough for Clu and Lua, which have straightforward syntax.
 
 
 An intermediate step could just squeeze the txtbuf into a string, parse it
-with ``esplalier`` and emit a ``rainbuf`` through the usual recursive method
+with ``espalier`` and emit a ``rainbuf`` through the usual recursive method
 lookup.  The problem isn't speed, not for a REPL, it's not having error
 recovery parsing available.
 
@@ -113,12 +113,11 @@ assert(ts, "must have ts in _G")
 The easiest way to go mad in concurrent environments is to share memory.
 
 
-``modeselektor`` will own txtbuf, and eventually txtbuf, unless I come up with
-a better idea.
+``modeselektor`` will own txtbuf, historian, and the entire screen.
 
 ```lua
 local Txtbuf   = require "txtbuf"
-local Resbuf    = require "resbuf"
+local Resbuf    = require "resbuf" -- Not currently used...
 local Historian = require "historian"
 local Lex       = require "lex"
 
@@ -207,7 +206,19 @@ end
 ```
 ### status painter (colwrite)
 
-This is migrating to the paint module
+This is a grab-bag with many traces of the bootstrap process.
+
+
+It also contains the state-of-the-art renderers.
+
+
+#### bootstrappers
+
+A lot of this just paints mouse events, which we aren't using and won't be
+able to use until we rigorously keep track of what's printed where.
+
+
+Which is painstaking and annoying, but we'll get there...
 
 ```lua
 local STATCOL = 81
@@ -276,10 +287,6 @@ local function icon_paint(category, value)
    return colwrite(icon_map[category]("", ts(value)))
 end
 ```
-### ModeS:paint_row()
-
-Does what it says on the label.
-
 ```lua
 function ModeS.cur_col(modeS)
    return modeS.txtbuf.cursor + modeS.l_margin - 1
@@ -291,8 +298,10 @@ end
 ```
 ### ModeS:write(str)
 
-  This will let us phase out the colwrite business in favor of actual tiles in
-the terminal.
+This writes to the results window, and the results window only.
+
+
+It should therefore be called ``writeResults`` or something.
 
 ```lua
 function ModeS.write(modeS, str)
@@ -304,8 +313,12 @@ function ModeS.write(modeS, str)
    write(a.cursor.show())
 end
 ```
+### ModeS:paint_txtbuf()
+
+This renders our txtbuf,
+
 ```lua
-function ModeS.paint_row(modeS)
+function ModeS.paint_txtbuf(modeS)
    local lb = Lex.lua_thor(tostring(modeS.txtbuf))
    write(a.cursor.hide())
    write(a.erase.box(modeS.repl_top, modeS.l_margin,
@@ -385,7 +398,7 @@ function ModeS.act(modeS, category, value)
    else
       icon_paint("NYI", category .. ":" .. value)
    end
-   return modeS:paint_row()
+   return modeS:paint_txtbuf()
 end
 ```
 

@@ -325,7 +325,7 @@ In this case we want to highlight the letters of the fragment, which we
 attach to the collection.
 
 #!lua
-local concat = assert(table.concat)
+local concat, litpat = assert(table.concat), assert(string.litpat)
 
 local function _highlight(line, frag, c, best)
    local hl = {}
@@ -333,7 +333,7 @@ local function _highlight(line, frag, c, best)
    while #frag > 0 do
       local char
       char, frag = frag:sub(1,1), frag:sub(2)
-      local at = line:find(char)
+      local at = line:find(litpat(char))
       if not at then
          error ("can't find " .. char .. " in: " .. line)
       end
@@ -367,17 +367,43 @@ local function _collect_repr(collection, c)
 end
 
 local collect_M = {__repr = _collect_repr}
+#/lua
 
+
+** Historian:search(frag)
+
+This is an incremental 'fuzzy' search, returning a =collection=.
+
+The array portion of a collection is any line which matches the search.
+
+The other fields are:
+
+- #fields
+  -  best :  Whether this is a best-fit collection, that is, one with all
+             codepoints in order.
+
+  -  frag :  The fragment, used to highlight the collection
+
+  -  cursors :  This is an array, each value is the cursor position of
+                the corresponding line in the history.
+
+#!lua
 
 function Historian.search(historian, frag)
    local collection = setmeta({}, collect_M)
    collection.frag = frag
+   local cursors = {}
    local best = true
    local patt = fuzz_patt(frag)
+   local function addTo(index)
+   end
+
    for i = #historian, 1, -1 do
       local score = match(patt, tostring(historian[i]))
       if score then
          collection[#collection + 1] = tostring(historian[i])
+
+            cursors[#cursors + 1] = i
       end
    end
    if #collection == 0 then
@@ -385,15 +411,17 @@ function Historian.search(historian, frag)
       best = false
       local slip = sub(frag, 1, -3) .. sub(frag, -1, -1) .. sub(frag, -2, -2)
       collection.frag = slip
-      local second = fuzz_patt(slip)
+      patt = fuzz_patt(slip)
       for i = #historian, 1, -1 do
-         local score = match(second, tostring(historian[i]))
+         local score = match(patt, tostring(historian[i]))
          if score then
             collection[#collection + 1] = tostring(historian[i])
+            cursors[#cursors + 1] = i
          end
       end
    end
    collection.best = best
+   collection.cursors = cursors
    return collection, best
 end
 #/lua
