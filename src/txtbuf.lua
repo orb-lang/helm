@@ -31,28 +31,13 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 assert(meta)
 local collect = assert(table.collect)
 local lines = assert(string.lines)
 local codepoints = assert(string.codepoints)
+
+
+
 
 
 
@@ -183,13 +168,15 @@ end
 
 function Txtbuf.left(txtbuf, disp)
    local disp = disp or 1
+   local moved = false
    if txtbuf.cursor - disp >= 1 then
       txtbuf.cursor = txtbuf.cursor - disp
+      moved = true
    else
       txtbuf.cursor = 1
    end
 
-   return txtbuf.cursor
+   return moved
 end
 
 
@@ -199,14 +186,16 @@ end
 
 function Txtbuf.right(txtbuf, disp)
    disp = disp or 1
+   local moved = false
    local line = txtbuf.lines[txtbuf.cur_row]
    if txtbuf.cursor + disp <= #line + 1 then
       txtbuf.cursor = txtbuf.cursor + disp
+      moved = true
    else
       txtbuf.cursor = #line + 1
    end
 
-   return txtbuf.cursor
+   return moved
 end
 
 

@@ -1,7 +1,5 @@
 * Txtbuf
 
-We're not going to have one of these right away.
-
 This is not much more than an ordinary array of lines that has a bit of
 awareness, mostly about which lines have cursors and which don't.
 
@@ -16,9 +14,6 @@ A closed line is just a string.
 
 ** Interface
 
-  A txtbuf is a drop-in replacement for a txtbuf, used when there's more than
-one line to buffer.
-
 *** Instance fields
 
 - lines :  An array of arrays containing codepoints (string fragments).
@@ -31,19 +26,6 @@ one line to buffer.
           may be reached by printing the corresponding row.
 
 
-** Methods
-
-Initially these are only the methods of txtbuf.
-
-I think the way forward is to treat txtbuf as a special case until it's at
-feature parity, and we have the other aspects such as resizing the result
-field working correctly.
-
-Then we will simply switch to using =txtbuf=s of a single line instead of the
-two separate classes, and factor out =txtbuf=.
-
-This amounts to porting the existing =txtbuf=, as I think about it. A single
-line isn't even a special case for the logic.
 
 
 **** dependencies
@@ -54,6 +36,9 @@ local collect = assert(table.collect)
 local lines = assert(string.lines)
 local codepoints = assert(string.codepoints)
 #/lua
+
+
+** Methods
 
 #!lua
 local Txtbuf = meta {}
@@ -183,13 +168,15 @@ end
 #!lua
 function Txtbuf.left(txtbuf, disp)
    local disp = disp or 1
+   local moved = false
    if txtbuf.cursor - disp >= 1 then
       txtbuf.cursor = txtbuf.cursor - disp
+      moved = true
    else
       txtbuf.cursor = 1
    end
 
-   return txtbuf.cursor
+   return moved
 end
 #/lua
 
@@ -199,14 +186,16 @@ end
 #!lua
 function Txtbuf.right(txtbuf, disp)
    disp = disp or 1
+   local moved = false
    local line = txtbuf.lines[txtbuf.cur_row]
    if txtbuf.cursor + disp <= #line + 1 then
       txtbuf.cursor = txtbuf.cursor + disp
+      moved = true
    else
       txtbuf.cursor = #line + 1
    end
 
-   return txtbuf.cursor
+   return moved
 end
 #/lua
 

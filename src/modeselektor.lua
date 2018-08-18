@@ -458,11 +458,20 @@ function NAV.DOWN(modeS, category, value)
 end
 
 function NAV.LEFT(modeS, category, value)
-   return modeS.txtbuf:left()
+   local moved = modeS.txtbuf:left()
+   if not moved and modeS.txtbuf.cur_row ~= 1 then
+      local cur_row = modeS.txtbuf.cur_row - 1
+      modeS.txtbuf.cur_row = cur_row
+      modeS.txtbuf.cursor = #modeS.txtbuf.lines[cur_row] + 1
+   end
 end
 
 function NAV.RIGHT(modeS, category, value)
-   return modeS.txtbuf:right()
+   local moved = modeS.txtbuf:right()
+   if not moved and modeS.txtbuf.cur_row ~= #modeS.txtbuf.lines then
+      modeS.txtbuf.cur_row = modeS.txtbuf.cur_row + 1
+      modeS.txtbuf.cursor = 1
+   end
 end
 
 function NAV.RETURN(modeS, category, value)
