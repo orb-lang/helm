@@ -498,7 +498,13 @@ function NAV.BACKSPACE(modeS, category, value)
 end
 
 function NAV.DELETE(modeS, category, value)
-   return modeS.txtbuf:d_fwd()
+   local shrunk = modeS.txtbuf:d_fwd()
+   if shrunk then
+      write(a.stash())
+      write(a.rc(modeS:replLine() + 1, 1))
+      write(a.erase.line())
+      write(a.pop())
+   end
 end
 #/lua
 

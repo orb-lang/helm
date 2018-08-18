@@ -158,7 +158,19 @@ end
 
 
 function Txtbuf.d_fwd(txtbuf)
-   remove(txtbuf.lines[txtbuf.cur_row], txtbuf.cursor)
+   local cursor, cur_row = txtbuf.cursor, txtbuf.cur_row
+   if cursor <= #txtbuf.lines[cur_row] then
+      remove(txtbuf.lines[txtbuf.cur_row], txtbuf.cursor)
+      return false
+   elseif cur_row == #txtbuf.lines then
+      return false
+   else
+      local new_line = concat(txtbuf.lines[cur_row])
+                       .. concat(txtbuf.lines[cur_row + 1])
+      txtbuf.lines[cur_row] = codepoints(new_line)
+      remove(txtbuf.lines, cur_row + 1)
+      return true
+   end
 end
 
 
