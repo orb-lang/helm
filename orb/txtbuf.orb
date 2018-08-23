@@ -127,7 +127,7 @@ end
 *** Txtbuf:d_back()
 
 The return value tells us if we have one less line, since we need to
-clear it off the screen.
+clear it off the screen (true of d_fwd as well).
 
 #!lua
 local remove = assert(table.remove)
@@ -176,6 +176,12 @@ end
 
 
 *** Txtbuf:left(disp)
+
+This method and the next inform the modeSelektor if the cursor has moved,
+so as to wrap around otherwise.
+
+Arguably this logic should be completely internal to =left= and =right=
+themselves.
 
 #!lua
 function Txtbuf.left(txtbuf, disp)

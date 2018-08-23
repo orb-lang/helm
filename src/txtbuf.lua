@@ -178,6 +178,12 @@ end
 
 
 
+
+
+
+
+
+
 function Txtbuf.left(txtbuf, disp)
    local disp = disp or 1
    local moved = false

@@ -457,6 +457,14 @@ function NAV.DOWN(modeS, category, value)
    return modeS
 end
 
+
+
+
+
+
+
+
+
 function NAV.LEFT(modeS, category, value)
    local moved = modeS.txtbuf:left()
    if not moved and modeS.txtbuf.cur_row ~= 1 then
