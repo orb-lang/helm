@@ -501,7 +501,15 @@ function ModeS.act(modeS, category, value)
    else
       icon_paint("NYI", category .. ":" .. value)
    end
-   return modeS:paint_txtbuf()
+   modeS:paint_txtbuf()
+   -- Hack in painting and searching
+   if modeS.raga == "search" then
+      -- we need to fake this into a 'result'
+      local searchResult = {}
+      searchResult[1] = modeS.hist:search(tostring(modeS.txtbuf))
+      searchResult.n = 1
+      modeS:printResults(searchResult, false)
+   end
 end
 #/lua
 
