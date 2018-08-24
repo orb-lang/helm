@@ -313,12 +313,15 @@ This renders our txtbuf.
 
 #!lua
 function ModeS.paint_txtbuf(modeS)
-   local lb = Lex.lua_thor(tostring(modeS.txtbuf))
+   local lb = modeS.lex(tostring(modeS.txtbuf))
+   if type(lb) == "table" then
+      lb = concat(lb)
+   end
    write(a.cursor.hide())
    write(a.erase.box(modeS.repl_top, modeS.l_margin,
                      modeS:replLine(), modeS.r_margin))
    write(a.jump(modeS.repl_top, modeS.l_margin))
-   modeS:write(concat(lb))
+   modeS:write(lb)
    write(a.rc(modeS.txtbuf.cur_row + modeS.repl_top - 1, modeS:cur_col()))
    write(a.cursor.show())
 end
@@ -329,6 +332,7 @@ function ModeS.replLine(modeS)
    return modeS.repl_top + #modeS.txtbuf.lines - 1
 end
 #/lua
+
 #!lua
 function ModeS.printResults(modeS, results, new)
    local rainbuf = {}
@@ -348,12 +352,102 @@ function ModeS.printResults(modeS, results, new)
 end
 #/lua
 
-*** Prompts and modes
+*** Prompts and modes / raga
 
+Time to add modes to the =modeselektor=!
+
+Right now everything works on the default mode, "insert":
+
+#!lua
+ModeS.raga = "nerf"
+#/lua
+
+Yes, I'm calling it =raga= and that's a bit precious, but we have a =modes=
+table and use it heavily.  =modes= is kind of short for =modal selector=.
+
+We'll need several basic modes and some ways to do overlay, and we need a
+single source of truth as to what mode we're in.
+
+The entrance for that should be a single function, =ModeS:shiftMode(raga)=,
+which takes care of all stateful changes to =modeselektor= needed to enter
+the mode.  One thing it will do is set the field =raga= to the parameter.
+
+As a general rule, we want mode changes to work generically, by changing
+the functions attached to =(category, value)= pairs.
+
+But sometimes we'll want a bit of logic that dispatches on the mode directly,
+repainting is a good example of this.
+
+The next mode we're going to write is ="search"=.
+
+
+**** Prompts
+
+Let's add some:
+
+#!lua
+ModeS.prompts = { nerf   = "👉 ",
+                  search = "⁉️ " }
+#/lua
 
 #!lua
 function ModeS.prompt(modeS)
-   write(a.jump(modeS.repl_top, 1) .. "👉 ")
+   write(a.jump(modeS.repl_top, 1) .. modeS.prompts[modeS.raga])
+end
+#/lua
+
+
+*** ModeS:shiftMode(raga)
+
+The =modeselektor=, as described in the prelude, is a stateful and hypermodal
+=repl= environment.
+
+=shiftMode= is the gear stick which drives the state. It encapsulates the
+state changes needed to switch between them.
+
+I'm going to go ahead and weld on =search= before I start waxing eloquent.
+
+#!lua
+local closet = { nerf = {},
+                 search = {} }  -- place to keep modes we aren't using.
+
+
+function ModeS.shiftMode(modeS, raga)
+   if raga == "search" then
+      -- stash current lexer
+      closet[modeS.raga].lex = modeS.lex
+      modeS.lex = c.base
+   elseif raga == "nerf" then
+      -- do default nerfy things
+      modeS.lex = closet.nerf.lex
+   elseif raga == "vril-nav" then
+      -- do vimmy navigation
+   elseif raga == "vril-ins" then
+      -- do vimmy inserts
+   end
+   modeS.raga = raga
+   modeS:prompt()
+   return modeS
+end
+#/lua
+
+**** _firstCharHandler
+
+Our first character can trigger mode switches, notably we want an initial
+=/= to trigger search mode.
+
+#!lua
+local function _firstCharHandler(modeS, category, value)
+   local shifted = false
+   if category == "ASCII" then
+      if value == "/" then
+         modeS:shiftMode "search"
+         shifted = true
+      else
+         modeS.firstChar = false
+      end
+    end
+    return shifted
 end
 #/lua
 
@@ -362,8 +456,11 @@ end
 
   =act= simply dispatches. Note that our common interfaces is
 =method(modeS, category, value)=, we need to distinguish betwen the tuple
-=("INSERT", "SHIFT-LEFT")= (which could arrive from copy-paste) and
+=("INSERT", "SHIFT-LEFT")= (which could arrive from copy-paste[*]) and
 =("NAV", "SHIFT-LEFT")= and preserve information for our fall-through method.
+
+[*] We /should/ split up paste events into constituent codepoints, but we
+don't.
 
 =act= always succeeds, meaning we need some metatable action to absorb and
 log anything unexpected.
@@ -378,7 +475,13 @@ function ModeS.act(modeS, category, value)
       return modeS.special[value](modeS, category, value)
    end
    icon_paint(category, value)
-
+   -- Special first-character handling
+   if modeS.firstChar then
+      local shifted = _firstCharHandler(modeS, category, value)
+      if shifted then
+        return modeS:paint_txtbuf()
+      end
+   end
    -- Dispatch on value if possible
    if modeS.modes[category][value] then
       modeS.modes[category][value](modeS, category, value)
@@ -623,12 +726,15 @@ function new(cfg)
   local modeS = meta(ModeS)
   modeS.txtbuf = Txtbuf()
   modeS.hist  = Historian()
+  modeS.lex  = Lex.lua_thor
   modeS.hist.cursor = #modeS.hist + 1
   -- this will be more complex but
   modeS.l_margin = 4
   modeS.r_margin = 80
   modeS.row = 2
   modeS.repl_top  = ModeS.REPL_LINE
+  -- initial state
+  modeS.firstChar = true
   return modeS
 end
 

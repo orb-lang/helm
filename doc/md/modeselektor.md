@@ -287,6 +287,10 @@ local function icon_paint(category, value)
    return colwrite(icon_map[category]("", ts(value)))
 end
 ```
+#### dimensional getters
+
+We need to extend this pattern to get actual regions.
+
 ```lua
 function ModeS.cur_col(modeS)
    return modeS.txtbuf.cursor + modeS.l_margin - 1
@@ -315,7 +319,7 @@ end
 ```
 ### ModeS:paint_txtbuf()
 
-This renders our txtbuf,
+This renders our txtbuf.
 
 ```lua
 function ModeS.paint_txtbuf(modeS)
@@ -352,17 +356,64 @@ function ModeS.printResults(modeS, results, new)
    write(a.cursor.show())
 end
 ```
+### Prompts and modes / raga
+
+Time to add modes to the ``modeselektor``!
+
+
+Right now everything works on the default mode, "insert":
+
+```lua
+ModeS.raga = "nerf"
+```
+
+Yes, I'm calling it ``raga`` and that's a bit precious, but we have a ``modes``
+table and use it heavily.  ``modes`` is kind of short for ``modal selector``.
+
+
+We'll need several basic modes and some ways to do overlay, and we need a
+single source of truth as to what mode we're in.
+
+
+The entrance for that should be a single function, ``ModeS:shiftMode(raga)``,
+which takes care of all stateful changes to ``modeselektor`` needed to enter
+the mode.  One thing it will do is set the field ``raga`` to the parameter.
+
+
+As a general rule, we want mode changes to work generically, by changing
+the functions attached to ``(category, value)`` pairs.
+
+
+But sometimes we'll want a bit of logic that dispatches on the mode directly,
+repainting is a good example of this.
+
+
+The next mode we're going to write is ``"search"``.
+
+
+#### Prompts
+
+Let's add some:
+
+```lua
+ModeS.prompts = { nerf   = "👉 ",
+                  search = "⁉️ " }
+```
 ```lua
 function ModeS.prompt(modeS)
-   write(a.jump(modeS.repl_top, 1) .. "👉 ")
+   write(a.jump(modeS.repl_top, 1) .. modeS.prompts[modeS.raga])
 end
 ```
 ## act
 
   ``act`` simply dispatches. Note that our common interfaces is
 ``method(modeS, category, value)``, we need to distinguish betwen the tuple
-``("INSERT", "SHIFT-LEFT")`` (which could arrive from copy-paste) and
+``("INSERT", "SHIFT-LEFT")`` (which could arrive from copy-paste[*]) and
 ``("NAV", "SHIFT-LEFT")`` and preserve information for our fall-through method.
+
+
+[*] We _should_ split up paste events into constituent codepoints, but we
+don't.
 
 
 ``act`` always succeeds, meaning we need some metatable action to absorb and
@@ -462,12 +513,24 @@ function NAV.DOWN(modeS, category, value)
    return modeS
 end
 
+```
+```lua
+
 function NAV.LEFT(modeS, category, value)
-   return modeS.txtbuf:left()
+   local moved = modeS.txtbuf:left()
+   if not moved and modeS.txtbuf.cur_row ~= 1 then
+      local cur_row = modeS.txtbuf.cur_row - 1
+      modeS.txtbuf.cur_row = cur_row
+      modeS.txtbuf.cursor = #modeS.txtbuf.lines[cur_row] + 1
+   end
 end
 
 function NAV.RIGHT(modeS, category, value)
-   return modeS.txtbuf:right()
+   local moved = modeS.txtbuf:right()
+   if not moved and modeS.txtbuf.cur_row ~= #modeS.txtbuf.lines then
+      modeS.txtbuf.cur_row = modeS.txtbuf.cur_row + 1
+      modeS.txtbuf.cursor = 1
+   end
 end
 
 function NAV.RETURN(modeS, category, value)
@@ -494,7 +557,13 @@ function NAV.BACKSPACE(modeS, category, value)
 end
 
 function NAV.DELETE(modeS, category, value)
-   return modeS.txtbuf:d_fwd()
+   local shrunk = modeS.txtbuf:d_fwd()
+   if shrunk then
+      write(a.stash())
+      write(a.rc(modeS:replLine() + 1, 1))
+      write(a.erase.line())
+      write(a.pop())
+   end
 end
 ```
 ### CTRL

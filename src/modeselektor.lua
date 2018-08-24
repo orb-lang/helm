@@ -275,6 +275,9 @@ end
 
 
 
+
+
+
 function ModeS.cur_col(modeS)
    return modeS.txtbuf.cursor + modeS.l_margin - 1
 end
@@ -310,12 +313,15 @@ end
 
 
 function ModeS.paint_txtbuf(modeS)
-   local lb = Lex.lua_thor(tostring(modeS.txtbuf))
+   local lb = modeS.lex(tostring(modeS.txtbuf))
+   if type(lb) == "table" then
+      lb = concat(lb)
+   end
    write(a.cursor.hide())
    write(a.erase.box(modeS.repl_top, modeS.l_margin,
                      modeS:replLine(), modeS.r_margin))
    write(a.jump(modeS.repl_top, modeS.l_margin))
-   modeS:write(concat(lb))
+   modeS:write(lb)
    write(a.rc(modeS.txtbuf.cur_row + modeS.repl_top - 1, modeS:cur_col()))
    write(a.cursor.show())
 end
@@ -325,6 +331,7 @@ end
 function ModeS.replLine(modeS)
    return modeS.repl_top + #modeS.txtbuf.lines - 1
 end
+
 
 
 function ModeS.printResults(modeS, results, new)
@@ -346,9 +353,105 @@ end
 
 
 
+
+
+
+
+
+
+ModeS.raga = "nerf"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ModeS.prompts = { nerf   = "👉 ",
+                  search = "⁉️ " }
+
+
+
 function ModeS.prompt(modeS)
-   write(a.jump(modeS.repl_top, 1) .. "👉 ")
+   write(a.jump(modeS.repl_top, 1) .. modeS.prompts[modeS.raga])
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local closet = { nerf = {},
+                 search = {} }  -- place to keep modes we aren't using.
+
+
+function ModeS.shiftMode(modeS, raga)
+   if raga == "search" then
+      -- stash current lexer
+      closet[modeS.raga].lex = modeS.lex
+      modeS.lex = c.base
+   elseif raga == "nerf" then
+      -- do default nerfy things
+      modeS.lex = closet.nerf.lex
+   elseif raga == "vril-nav" then
+      -- do vimmy navigation
+   elseif raga == "vril-ins" then
+      -- do vimmy inserts
+   end
+   modeS.raga = raga
+   modeS:prompt()
+   return modeS
+end
+
+
+
+
+
+
+
+
+local function _firstCharHandler(modeS, category, value)
+   local shifted = false
+   if category == "ASCII" then
+      if value == "/" then
+         modeS:shiftMode "search"
+         shifted = true
+      else
+         modeS.firstChar = false
+      end
+    end
+    return shifted
+end
+
+
+
 
 
 
@@ -372,7 +475,13 @@ function ModeS.act(modeS, category, value)
       return modeS.special[value](modeS, category, value)
    end
    icon_paint(category, value)
-
+   -- Special first-character handling
+   if modeS.firstChar then
+      local shifted = _firstCharHandler(modeS, category, value)
+      if shifted then
+        return modeS:paint_txtbuf()
+      end
+   end
    -- Dispatch on value if possible
    if modeS.modes[category][value] then
       modeS.modes[category][value](modeS, category, value)
@@ -617,12 +726,15 @@ function new(cfg)
   local modeS = meta(ModeS)
   modeS.txtbuf = Txtbuf()
   modeS.hist  = Historian()
+  modeS.lex  = Lex.lua_thor
   modeS.hist.cursor = #modeS.hist + 1
   -- this will be more complex but
   modeS.l_margin = 4
   modeS.r_margin = 80
   modeS.row = 2
   modeS.repl_top  = ModeS.REPL_LINE
+  -- initial state
+  modeS.firstChar = true
   return modeS
 end
 
