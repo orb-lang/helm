@@ -355,7 +355,7 @@ end
 
 local function _collect_repr(collection, c)
    if #collection == 0 then
-      return "{  }"
+      return c.alert "No results found"
    end
    local phrase = ""
    for i,v in ipairs(collection) do
@@ -392,6 +392,9 @@ local collect_M = {__repr = _collect_repr}
 function Historian.search(historian, frag)
    local collection = setmeta({}, collect_M)
    collection.frag = frag
+   if frag == "" then
+      return collection, false
+   end
    local cursors = {}
    local best = true
    local patt = fuzz_patt(frag)
