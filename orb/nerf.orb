@@ -151,6 +151,7 @@ local function _modeShiftOnEmpty(modeS)
    local buf = tostring(modeS.txtbuf)
    if buf == "" then
       modeS:shiftMode(modeS.raga_default)
+      modeS.firstChar = true
       modeS:clearResults()
    end
 end
