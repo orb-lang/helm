@@ -359,12 +359,12 @@ local function _collect_repr(collection, c)
    end
    local phrase = ""
    for i,v in ipairs(collection) do
-      local ctrl_seq = "   "
+      local alt_seq = "         "
       if i < 10 then
-         ctrl_seq = "^" .. tostring(i) .. " "
+         alt_seq = a.bold("M-" .. tostring(i) .. " ")
       end
       phrase = phrase
-               .. ctrl_seq
+               .. alt_seq
                .. _highlight(v, collection.frag, c, collection.best)
                .. "\n"
    end
