@@ -105,7 +105,8 @@ local Resbuf    = require "resbuf" -- Not currently used...
 local Historian = require "historian"
 local Lex       = require "lex"
 
-local Nerf = require "nerf"
+local Nerf   = require "nerf"
+local Search = require "search"
 
 local concat         = assert(table.concat)
 local sub, gsub, rep = assert(string.sub),
@@ -344,6 +345,7 @@ end
 
 
 ModeS.raga = "nerf"
+ModeS.raga_default = "nerf"
 
 
 
@@ -392,18 +394,28 @@ end
 
 
 
-local closet = { nerf = {},
-                 search = {} }  -- place to keep modes we aren't using.
 
+
+
+
+
+
+local closet = { nerf = { modes = Nerf},
+                 search = { modes = Search} }
+
+ModeS.closet = closet
 
 function ModeS.shiftMode(modeS, raga)
    if raga == "search" then
       -- stash current lexer
-      closet[modeS.raga].lex = modeS.lex
+      -- #todo do this in a less dumb way
+      modeS.closet[modeS.raga].lex = modeS.lex
       modeS.lex = c.base
+      modeS.modes = modeS.closet.search.modes
    elseif raga == "nerf" then
       -- do default nerfy things
-      modeS.lex = closet.nerf.lex
+      modeS.lex = modeS.closet.nerf.lex
+      modeS.modes = modeS.closet.nerf.modes
    elseif raga == "vril-nav" then
       -- do vimmy navigation
    elseif raga == "vril-ins" then

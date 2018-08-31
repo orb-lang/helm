@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 638"]
+doc_0 [label="doc - 639"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-587"]
+section_1 [label="section: 1-588"]
 
 
 // END RANK doc_0
@@ -23,11 +23,11 @@ prose_3 [label="prose"]
 
 prose_4 [label="prose"]
 
-section_5 [label="section: 12-383"]
+section_5 [label="section: 12-384"]
 
-section_6 [label="section: 439-517"]
+section_6 [label="section: 440-518"]
 
-section_7 [label="section: 588-638"]
+section_7 [label="section: 589-639"]
 
 
 // END RANK section_1
@@ -184,9 +184,9 @@ section_57 [label="section: 275-293"]
 
 section_58 [label="section: 294-338"]
 
-section_59 [label="section: 339-367"]
+section_59 [label="section: 339-368"]
 
-section_60 [label="section: 384-417"]
+section_60 [label="section: 385-418"]
 
 
 // END RANK section_5
@@ -1860,7 +1860,7 @@ prose_451 [label="prose"]
 
 prose_452 [label="prose"]
 
-codeblock_453 [label="code block 345-347"]
+codeblock_453 [label="code block 345-348"]
 
 prose_454 [label="prose"]
 
@@ -1874,7 +1874,7 @@ prose_458 [label="prose"]
 
 prose_459 [label="prose"]
 
-section_460 [label="section: 368-383"]
+section_460 [label="section: 369-384"]
 
 
 // END RANK section_59
@@ -1931,7 +1931,8 @@ Right now everything works on the default mode, \"insert\":
 // END RANK raw_470
 
 codeblock_453 -> leaf_472
-leaf_472  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ModeS.raga = \"nerf\""]
+leaf_472  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ModeS.raga = \"nerf\"
+ModeS.ragaDefault = \"nerf\""]
 // END RANK codeblock_453
 
 prose_454 -> { raw_473 prespace_474 literal_475 raw_476 prespace_477 literal_478 raw_479 prespace_480 literal_481 raw_482 prespace_483 literal_484 raw_485}
@@ -2194,9 +2195,9 @@ header_539 [label="4 : Prompts"]
 
 prose_540 [label="prose"]
 
-codeblock_541 [label="code block 372-375"]
+codeblock_541 [label="code block 373-376"]
 
-codeblock_542 [label="code block 377-381"]
+codeblock_542 [label="code block 378-382"]
 
 
 // END RANK section_460
@@ -2242,9 +2243,9 @@ prose_550 [label="prose"]
 
 prose_551 [label="prose"]
 
-codeblock_552 [label="code block 394-416"]
+codeblock_552 [label="code block 395-417"]
 
-section_553 [label="section: 418-438"]
+section_553 [label="section: 419-439"]
 
 
 // END RANK section_60
@@ -2393,7 +2394,7 @@ header_584 [label="4 : _firstCharHandler"]
 
 prose_585 [label="prose"]
 
-codeblock_586 [label="code block 423-436"]
+codeblock_586 [label="code block 424-437"]
 
 
 // END RANK section_553
@@ -2461,15 +2462,15 @@ prose_599 [label="prose"]
 
 prose_600 [label="prose"]
 
-codeblock_601 [label="code block 452-498"]
+codeblock_601 [label="code block 453-499"]
 
 prose_602 [label="prose"]
 
-codeblock_603 [label="code block 502-506"]
+codeblock_603 [label="code block 503-507"]
 
-section_604 [label="section: 509-517"]
+section_604 [label="section: 510-518"]
 
-section_605 [label="section: 518-587"]
+section_605 [label="section: 519-588"]
 
 
 // END RANK section_6
@@ -2765,11 +2766,11 @@ header_665 [label="3 : ModeS:eval()"]
 
 prose_666 [label="prose"]
 
-codeblock_667 [label="code block 521-526"]
+codeblock_667 [label="code block 522-527"]
 
-codeblock_668 [label="code block 528-532"]
+codeblock_668 [label="code block 529-533"]
 
-codeblock_669 [label="code block 534-585"]
+codeblock_669 [label="code block 535-586"]
 
 
 // END RANK section_605
@@ -2865,9 +2866,9 @@ header_676 [label="2 : new"]
 
 prose_677 [label="prose"]
 
-codeblock_678 [label="code block 592-610"]
+codeblock_678 [label="code block 593-611"]
 
-codeblock_679 [label="code block 612-614"]
+codeblock_679 [label="code block 613-615"]
 
 
 // END RANK section_7

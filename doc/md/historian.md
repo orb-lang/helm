@@ -478,7 +478,25 @@ function Historian.next(historian)
    end
 end
 ```
-### Historian:append()
+### Historian:index(cursor)
+
+Loads the history to an exact index.
+
+```lua
+function Historian.index(historian, cursor)
+   if cursor < 0 or cursor > #historian + 1 then
+      return false
+   end
+   local txtbuf = historian[cursor]
+   local result = historian.results[txtbuf]
+   txtbuf = txtbuf:clone()
+   historian.cursor = cursor
+   txtbuf.cur_row = #txtbuf.lines
+   txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
+   return txtbuf, result
+end
+```
+### Historian:append(txtbuf, results, success)
 
 Appends a txtbuf to history and persists it.
 

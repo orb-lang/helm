@@ -352,6 +352,7 @@ Right now everything works on the default mode, "insert":
 
 ```lua
 ModeS.raga = "nerf"
+ModeS.ragaDefault = "nerf"
 ```
 
 Yes, I'm calling it ``raga`` and that's a bit precious, but we have a ``modes``

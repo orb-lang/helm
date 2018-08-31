@@ -36,7 +36,7 @@ local Historian = meta {}
 
 
 
-Historian.HISTORY_LIMIT = 1000
+Historian.HISTORY_LIMIT = 2000
 
 local create_project_table = [[
 CREATE TABLE IF NOT EXISTS project (
@@ -398,9 +398,6 @@ function Historian.search(historian, frag)
    local cursors = {}
    local best = true
    local patt = fuzz_patt(frag)
-   local function addTo(index)
-   end
-
    for i = #historian, 1, -1 do
       local score = match(patt, tostring(historian[i]))
       if score then
@@ -480,6 +477,25 @@ function Historian.next(historian)
    end
 end
 
+
+
+
+
+
+
+
+function Historian.index(historian, cursor)
+   if cursor < 0 or cursor > #historian + 1 then
+      return false
+   end
+   local txtbuf = historian[cursor]
+   local result = historian.results[txtbuf]
+   txtbuf = txtbuf:clone()
+   historian.cursor = cursor
+   txtbuf.cur_row = #txtbuf.lines
+   txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
+   return txtbuf, result
+end
 
 
 

@@ -1,0 +1,486 @@
+digraph lpegNode {
+
+node [fontname=Helvetica]
+edge [style=dashed]
+
+doc_0 [label="doc - 196"]
+
+
+doc_0 -> { section_1}
+{rank=same; section_1}
+
+section_1 [label="section: 1-37"]
+
+
+// END RANK doc_0
+
+section_1 -> { header_2 prose_3 prose_4 prose_5 prose_6 section_7 section_8}
+{rank=same; header_2 prose_3 prose_4 prose_5 prose_6 section_7 section_8}
+
+header_2 [label="1 : Nerf mode"]
+
+prose_3 [label="prose"]
+
+prose_4 [label="prose"]
+
+prose_5 [label="prose"]
+
+prose_6 [label="prose"]
+
+section_7 [label="section: 14-37"]
+
+section_8 [label="section: 38-171"]
+
+
+// END RANK section_1
+
+header_2 -> leaf_9
+leaf_9  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Nerf mode"]
+// END RANK header_2
+
+prose_3 -> { raw_10 prespace_11 literal_12 raw_13}
+{rank=same; raw_10 prespace_11 literal_12 raw_13}
+
+raw_10 [label="raw"]
+
+prespace_11 [label="prespace"]
+
+literal_12 [label="literal"]
+
+raw_13 [label="raw"]
+
+
+// END RANK prose_3
+
+raw_10 -> leaf_14
+leaf_14  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+"]
+// END RANK raw_10
+
+prespace_11 -> leaf_15
+leaf_15  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK prespace_11
+
+literal_12 -> leaf_16
+leaf_16  [color=Gray,shape=rectangle,fontname=Inconsolata,label="nerf"]
+// END RANK literal_12
+
+raw_13 -> leaf_17
+leaf_17  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is the default mode for the repl.
+"]
+// END RANK raw_13
+
+prose_4 -> { raw_18}
+{rank=same; raw_18}
+
+raw_18 [label="raw"]
+
+
+// END RANK prose_4
+
+raw_18 -> leaf_19
+leaf_19  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+-  #Todo
+"]
+// END RANK raw_18
+
+prose_5 -> { raw_20 prespace_21 literal_22 raw_23}
+{rank=same; raw_20 prespace_21 literal_22 raw_23}
+
+raw_20 [label="raw"]
+
+prespace_21 [label="prespace"]
+
+literal_22 [label="literal"]
+
+raw_23 [label="raw"]
+
+
+// END RANK prose_5
+
+raw_20 -> leaf_24
+leaf_24  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+  - [ ]  All of the content for the first draft is in"]
+// END RANK raw_20
+
+prespace_21 -> leaf_25
+leaf_25  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_21
+
+literal_22 -> leaf_26
+leaf_26  [color=Gray,shape=rectangle,fontname=Inconsolata,label="modeselektor"]
+// END RANK literal_22
+
+raw_23 -> leaf_27
+leaf_27  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", so
+         let's transfer that.
+"]
+// END RANK raw_23
+
+prose_6 -> { raw_28}
+{rank=same; raw_28}
+
+raw_28 [label="raw"]
+
+
+// END RANK prose_6
+
+raw_28 -> leaf_29
+leaf_29  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+  - [?]  There should probably be a metatable for Mode objects.
+
+"]
+// END RANK raw_28
+
+section_7 -> { header_30 prose_31 codeblock_32 codeblock_33}
+{rank=same; header_30 prose_31 codeblock_32 codeblock_33}
+
+header_30 [label="4 : includes"]
+
+prose_31 [label="prose"]
+
+codeblock_32 [label="code block 18-22"]
+
+codeblock_33 [label="code block 24-35"]
+
+
+// END RANK section_7
+
+header_30 -> leaf_34
+leaf_34  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** includes"]
+// END RANK header_30
+
+prose_31 -> { raw_35}
+{rank=same; raw_35}
+
+raw_35 [label="raw"]
+
+
+// END RANK prose_31
+
+raw_35 -> leaf_36
+leaf_36  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+This is copypasta from Modeselektor, but yeah, we'll need most of this.
+"]
+// END RANK raw_35
+
+codeblock_32 -> leaf_37
+leaf_37  [color=Gray,shape=rectangle,fontname=Inconsolata,label="assert(meta, \"must have meta in _G\")
+assert(write, \"must have write in _G\")
+assert(ts, \"must have ts in _G\")"]
+// END RANK codeblock_32
+
+codeblock_33 -> leaf_38
+leaf_38  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Txtbuf    = require \"txtbuf\"
+local Resbuf    = require \"resbuf\" -- Not currently used...
+local Historian = require \"historian\"
+local Lex       = require \"lex\"
+local a         = require \"anterm\"
+
+local concat         = assert(table.concat)
+local sub, gsub, rep = assert(string.sub),
+                       assert(string.gsub),
+                       assert(string.rep)"]
+// END RANK codeblock_33
+
+section_8 -> { header_39 prose_40 section_41 section_42 section_43}
+{rank=same; header_39 prose_40 section_41 section_42 section_43}
+
+header_39 [label="2 : Nerf"]
+
+prose_40 [label="prose"]
+
+section_41 [label="section: 41-66"]
+
+section_42 [label="section: 67-171"]
+
+section_43 [label="section: 172-196"]
+
+
+// END RANK section_8
+
+header_39 -> leaf_44
+leaf_44  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Nerf"]
+// END RANK header_39
+
+prose_40 -> { raw_45}
+{rank=same; raw_45}
+
+raw_45 [label="raw"]
+
+
+// END RANK prose_40
+
+raw_45 -> leaf_46
+leaf_46  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+"]
+// END RANK raw_45
+
+section_41 -> { header_47 prose_48 codeblock_49 prose_50 codeblock_51}
+{rank=same; header_47 prose_48 codeblock_49 prose_50 codeblock_51}
+
+header_47 [label="3 : Categories"]
+
+prose_48 [label="prose"]
+
+codeblock_49 [label="code block 45-53"]
+
+prose_50 [label="prose"]
+
+codeblock_51 [label="code block 57-64"]
+
+
+// END RANK section_41
+
+header_47 -> leaf_52
+leaf_52  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Categories"]
+// END RANK header_47
+
+prose_48 -> { raw_53}
+{rank=same; raw_53}
+
+raw_53 [label="raw"]
+
+
+// END RANK prose_48
+
+raw_53 -> leaf_54
+leaf_54  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+These are the broad types of event.
+"]
+// END RANK raw_53
+
+codeblock_49 -> leaf_55
+leaf_55  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local ASCII  = meta {}
+local NAV    = {}
+local CTRL   = {}
+local ALT    = {}
+local FN     = {}
+local MOUSE  = {}
+local NYI    = {}"]
+// END RANK codeblock_49
+
+prose_50 -> { raw_56}
+{rank=same; raw_56}
+
+raw_56 [label="raw"]
+
+
+// END RANK prose_50
+
+raw_56 -> leaf_57
+leaf_57  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+While we will likely want a metatable going forward, this will do for now:
+"]
+// END RANK raw_56
+
+codeblock_51 -> leaf_58
+leaf_58  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Nerf = { ASCII  = ASCII,
+                NAV    = NAV,
+                CTRL   = CTRL,
+                ALT    = ALT,
+                MOUSE  = MOUSE,
+                NYI    = NYI }"]
+// END RANK codeblock_51
+
+section_42 -> { header_59 prose_60 codeblock_61 codeblock_62}
+{rank=same; header_59 prose_60 codeblock_61 codeblock_62}
+
+header_59 [label="3 : NAV"]
+
+prose_60 [label="prose"]
+
+codeblock_61 [label="code block 69-112"]
+
+codeblock_62 [label="code block 118-169"]
+
+
+// END RANK section_42
+
+header_59 -> leaf_63
+leaf_63  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** NAV"]
+// END RANK header_59
+
+prose_60 -> { raw_64}
+{rank=same; raw_64}
+
+raw_64 [label="raw"]
+
+
+// END RANK prose_60
+
+raw_64 -> leaf_65
+leaf_65  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+"]
+// END RANK raw_64
+
+codeblock_61 -> leaf_66
+leaf_66  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local up1, down1 = a.jump.up(), a.jump.down()
+
+function NAV.UP(modeS, category, value)
+   local inline = modeS.txtbuf:up()
+   if not inline then
+      local prev_result, linestash
+      if tostring(modeS.txtbuf) ~= \"\"
+         and modeS.hist.cursor > #modeS.hist then
+         linestash = modeS.txtbuf
+      end
+      modeS.txtbuf, prev_result = modeS.hist:prev()
+      if linestash then
+         modeS.hist:append(linestash)
+      end
+      modeS:clearResults()
+      if prev_result then
+         modeS:printResults(prev_result)
+      end
+   else
+      write(up1)
+   end
+   return modeS
+end
+
+function NAV.DOWN(modeS, category, value)
+   local inline = modeS.txtbuf:down()
+   if not inline then
+      local next_p, next_result
+      modeS.txtbuf, next_result, next_p = modeS.hist:next()
+      if next_p then
+         modeS.txtbuf = Txtbuf()
+      end
+      modeS:clearResults()
+      if next_result then
+         modeS:printResults(next_result)
+      end
+   else
+      write(down1)
+   end
+   return modeS
+end
+"]
+// END RANK codeblock_61
+
+codeblock_62 -> leaf_67
+leaf_67  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+function NAV.LEFT(modeS, category, value)
+   local moved = modeS.txtbuf:left()
+   if not moved and modeS.txtbuf.cur_row ~= 1 then
+      local cur_row = modeS.txtbuf.cur_row - 1
+      modeS.txtbuf.cur_row = cur_row
+      modeS.txtbuf.cursor = #modeS.txtbuf.lines[cur_row] + 1
+   end
+end
+
+function NAV.RIGHT(modeS, category, value)
+   local moved = modeS.txtbuf:right()
+   if not moved and modeS.txtbuf.cur_row ~= #modeS.txtbuf.lines then
+      modeS.txtbuf.cur_row = modeS.txtbuf.cur_row + 1
+      modeS.txtbuf.cursor = 1
+   end
+end
+
+function NAV.RETURN(modeS, category, value)
+   -- eval or split line
+   local eval = modeS.txtbuf:nl()
+   if eval then
+     modeS:nl()
+     local more = modeS:eval()
+     if not more then
+       modeS.txtbuf = Txtbuf()
+     end
+     modeS.hist.cursor = modeS.hist.cursor + 1
+   end
+end
+
+function NAV.BACKSPACE(modeS, category, value)
+   local shrunk =  modeS.txtbuf:d_back()
+   if shrunk then
+      write(a.stash())
+      write(a.rc(modeS:replLine() + 1, 1))
+      write(a.erase.line())
+      write(a.pop())
+   end
+end
+
+function NAV.DELETE(modeS, category, value)
+   local shrunk = modeS.txtbuf:d_fwd()
+   if shrunk then
+      write(a.stash())
+      write(a.rc(modeS:replLine() + 1, 1))
+      write(a.erase.line())
+      write(a.pop())
+   end
+end"]
+// END RANK codeblock_62
+
+section_43 -> { header_68 prose_69 prose_70 codeblock_71 codeblock_72}
+{rank=same; header_68 prose_69 prose_70 codeblock_71 codeblock_72}
+
+header_68 [label="3 : CTRL"]
+
+prose_69 [label="prose"]
+
+prose_70 [label="prose"]
+
+codeblock_71 [label="code block 178-190"]
+
+codeblock_72 [label="code block 193-195"]
+
+
+// END RANK section_43
+
+header_68 -> leaf_73
+leaf_73  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** CTRL"]
+// END RANK header_68
+
+prose_69 -> { raw_74}
+{rank=same; raw_74}
+
+raw_74 [label="raw"]
+
+
+// END RANK prose_69
+
+raw_74 -> leaf_75
+leaf_75  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+Many/most of these will be re-used as e.g. \"^\" and \"$\" in vim mode.
+"]
+// END RANK raw_74
+
+prose_70 -> { raw_76}
+{rank=same; raw_76}
+
+raw_76 [label="raw"]
+
+
+// END RANK prose_70
+
+raw_76 -> leaf_77
+leaf_77  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Thus we will declare them as bare functions and assign them to slots.
+"]
+// END RANK raw_76
+
+codeblock_71 -> leaf_78
+leaf_78  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function cursor_begin(modeS, category, value)
+   modeS.txtbuf.cursor = 1
+end
+
+CTRL[\"^A\"] = cursor_begin
+
+local function cursor_end(modeS, category, value)
+   modeS.txtbuf.cursor = #modeS.txtbuf.lines[modeS.txtbuf.cur_row] + 1
+end
+
+CTRL[\"^E\"] = cursor_end"]
+// END RANK codeblock_71
+
+codeblock_72 -> leaf_79
+leaf_79  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return Nerf"]
+// END RANK codeblock_72
+
+
+}
