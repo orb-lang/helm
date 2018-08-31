@@ -31,28 +31,13 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 assert(meta)
 local collect = assert(table.collect)
 local lines = assert(string.lines)
 local codepoints = assert(string.codepoints)
+
+
+
 
 
 
@@ -173,8 +158,26 @@ end
 
 
 function Txtbuf.d_fwd(txtbuf)
-   remove(txtbuf.lines[txtbuf.cur_row], txtbuf.cursor)
+   local cursor, cur_row = txtbuf.cursor, txtbuf.cur_row
+   if cursor <= #txtbuf.lines[cur_row] then
+      remove(txtbuf.lines[txtbuf.cur_row], txtbuf.cursor)
+      return false
+   elseif cur_row == #txtbuf.lines then
+      return false
+   else
+      local new_line = concat(txtbuf.lines[cur_row])
+                       .. concat(txtbuf.lines[cur_row + 1])
+      txtbuf.lines[cur_row] = codepoints(new_line)
+      remove(txtbuf.lines, cur_row + 1)
+      return true
+   end
 end
+
+
+
+
+
+
 
 
 
@@ -183,13 +186,15 @@ end
 
 function Txtbuf.left(txtbuf, disp)
    local disp = disp or 1
+   local moved = false
    if txtbuf.cursor - disp >= 1 then
       txtbuf.cursor = txtbuf.cursor - disp
+      moved = true
    else
       txtbuf.cursor = 1
    end
 
-   return txtbuf.cursor
+   return moved
 end
 
 
@@ -199,14 +204,16 @@ end
 
 function Txtbuf.right(txtbuf, disp)
    disp = disp or 1
+   local moved = false
    local line = txtbuf.lines[txtbuf.cur_row]
    if txtbuf.cursor + disp <= #line + 1 then
       txtbuf.cursor = txtbuf.cursor + disp
+      moved = true
    else
       txtbuf.cursor = #line + 1
    end
 
-   return txtbuf.cursor
+   return moved
 end
 
 

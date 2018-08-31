@@ -51,7 +51,7 @@ In the meantime, we're going to have a "fat femto". It will be a nursery for
 techniques and libraries which will end up in =bridge= and =codex= and =ed=
 as time goes by.
 
-=femto= 1.0 will be around 200 lines of Lua, with a full graphical =anterm=
+=femto= 1.0 will be around 1000 lines of Lua, with a full graphical =anterm=
 protocol, about twice that.  I expect it will look a fair amount like it does
 now, just with all the modules living elsewhere.
 

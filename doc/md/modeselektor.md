@@ -71,8 +71,8 @@ They must also have the same return type, with is either ``true`` or
 
 ``modeselektor`` passes any edit or movement commands to an internally-owned
 ``txtbuf``, which keeps all modeling of the line.  ``modeselektor`` decides when
-to repaint the screen, calling ``rainbuf`` with a region of ``txtbuf`` and
-instructions as to how to paint it.
+to repaint the screen, calling ``rainbuf`` (currently just ``lex``) with a region
+of ``txtbuf`` and instructions as to how to paint it.
 
 
 There is one ``deck`` instance member per screen, which tiles the available
@@ -87,7 +87,7 @@ will be more than enough for Clu and Lua, which have straightforward syntax.
 
 
 An intermediate step could just squeeze the txtbuf into a string, parse it
-with ``esplalier`` and emit a ``rainbuf`` through the usual recursive method
+with ``espalier`` and emit a ``rainbuf`` through the usual recursive method
 lookup.  The problem isn't speed, not for a REPL, it's not having error
 recovery parsing available.
 
@@ -113,14 +113,15 @@ assert(ts, "must have ts in _G")
 The easiest way to go mad in concurrent environments is to share memory.
 
 
-``modeselektor`` will own txtbuf, and eventually txtbuf, unless I come up with
-a better idea.
+``modeselektor`` will own txtbuf, historian, and the entire screen.
 
 ```lua
-local Txtbuf   = require "txtbuf"
-local Resbuf    = require "resbuf"
+local Txtbuf    = require "txtbuf"
+local Resbuf    = require "resbuf" -- Not currently used...
 local Historian = require "historian"
 local Lex       = require "lex"
+
+local Nerf = require "nerf"
 
 local concat         = assert(table.concat)
 local sub, gsub, rep = assert(string.sub),
@@ -129,19 +130,6 @@ local sub, gsub, rep = assert(string.sub),
 ```
 ```lua
 local ModeS = meta()
-```
-### Categories
-
-These are the broad types of event.
-
-```lua
-local ASCII  = meta {}
-local NAV    = {}
-local CTRL   = {}
-local ALT    = {}
-local FN     = {}
-local MOUSE  = {}
-local NYI    = {}
 ```
 
 Color schemes are supposed to be one-and-done, and I strongly suspect we
@@ -168,12 +156,7 @@ Note also that everything is a method, our dispatch pattern will always
 include the ``modeS`` instance as the first argument.
 
 ```lua
-ModeS.modes = { ASCII  = ASCII,
-                NAV    = NAV,
-                CTRL   = CTRL,
-                ALT    = ALT,
-                MOUSE  = MOUSE,
-                NYI    = NYI }
+ModeS.modes = Nerf
 ```
 
 With some semi-constants:
@@ -207,7 +190,19 @@ end
 ```
 ### status painter (colwrite)
 
-This is migrating to the paint module
+This is a grab-bag with many traces of the bootstrap process.
+
+
+It also contains the state-of-the-art renderers.
+
+
+#### bootstrappers
+
+A lot of this just paints mouse events, which we aren't using and won't be
+able to use until we rigorously keep track of what's printed where.
+
+
+Which is painstaking and annoying, but we'll get there...
 
 ```lua
 local STATCOL = 81
@@ -276,9 +271,9 @@ local function icon_paint(category, value)
    return colwrite(icon_map[category]("", ts(value)))
 end
 ```
-### ModeS:paint_row()
+#### dimensional getters
 
-Does what it says on the label.
+We need to extend this pattern to get actual regions.
 
 ```lua
 function ModeS.cur_col(modeS)
@@ -291,8 +286,10 @@ end
 ```
 ### ModeS:write(str)
 
-  This will let us phase out the colwrite business in favor of actual tiles in
-the terminal.
+This writes to the results window, and the results window only.
+
+
+It should therefore be called ``writeResults`` or something.
 
 ```lua
 function ModeS.write(modeS, str)
@@ -304,14 +301,21 @@ function ModeS.write(modeS, str)
    write(a.cursor.show())
 end
 ```
+### ModeS:paint_txtbuf()
+
+This renders our txtbuf.
+
 ```lua
-function ModeS.paint_row(modeS)
-   local lb = Lex.lua_thor(tostring(modeS.txtbuf))
+function ModeS.paint_txtbuf(modeS)
+   local lb = modeS.lex(tostring(modeS.txtbuf))
+   if type(lb) == "table" then
+      lb = concat(lb)
+   end
    write(a.cursor.hide())
    write(a.erase.box(modeS.repl_top, modeS.l_margin,
                      modeS:replLine(), modeS.r_margin))
    write(a.jump(modeS.repl_top, modeS.l_margin))
-   modeS:write(concat(lb))
+   modeS:write(lb)
    write(a.rc(modeS.txtbuf.cur_row + modeS.repl_top - 1, modeS:cur_col()))
    write(a.cursor.show())
 end
@@ -339,17 +343,119 @@ function ModeS.printResults(modeS, results, new)
    write(a.cursor.show())
 end
 ```
+### Prompts and modes / raga
+
+Time to add modes to the ``modeselektor``!
+
+
+Right now everything works on the default mode, "insert":
+
+```lua
+ModeS.raga = "nerf"
+ModeS.ragaDefault = "nerf"
+```
+
+Yes, I'm calling it ``raga`` and that's a bit precious, but we have a ``modes``
+table and use it heavily.  ``modes`` is kind of short for ``modal selector``.
+
+
+We'll need several basic modes and some ways to do overlay, and we need a
+single source of truth as to what mode we're in.
+
+
+The entrance for that should be a single function, ``ModeS:shiftMode(raga)``,
+which takes care of all stateful changes to ``modeselektor`` needed to enter
+the mode.  One thing it will do is set the field ``raga`` to the parameter.
+
+
+As a general rule, we want mode changes to work generically, by changing
+the functions attached to ``(category, value)`` pairs.
+
+
+But sometimes we'll want a bit of logic that dispatches on the mode directly,
+repainting is a good example of this.
+
+
+The next mode we're going to write is ``"search"``.
+
+
+#### Prompts
+
+Let's add some:
+
+```lua
+ModeS.prompts = { nerf   = "👉 ",
+                  search = "⁉️ " }
+```
 ```lua
 function ModeS.prompt(modeS)
-   write(a.jump(modeS.repl_top, 1) .. "👉 ")
+   write(a.jump(modeS.repl_top, 1) .. modeS.prompts[modeS.raga])
+end
+```
+### ModeS:shiftMode(raga)
+
+The ``modeselektor``, as described in the prelude, is a stateful and hypermodal
+``repl`` environment.
+
+
+``shiftMode`` is the gear stick which drives the state. It encapsulates the
+state changes needed to switch between them.
+
+
+I'm going to go ahead and weld on ``search`` before I start waxing eloquent.
+
+```lua
+local closet = { nerf = {},
+                 search = {} }  -- place to keep modes we aren't using.
+
+
+function ModeS.shiftMode(modeS, raga)
+   if raga == "search" then
+      -- stash current lexer
+      closet[modeS.raga].lex = modeS.lex
+      modeS.lex = c.base
+   elseif raga == "nerf" then
+      -- do default nerfy things
+      modeS.lex = closet.nerf.lex
+   elseif raga == "vril-nav" then
+      -- do vimmy navigation
+   elseif raga == "vril-ins" then
+      -- do vimmy inserts
+   end
+   modeS.raga = raga
+   modeS:prompt()
+   return modeS
+end
+```
+#### _firstCharHandler
+
+Our first character can trigger mode switches, notably we want an initial
+``/`` to trigger search mode.
+
+```lua
+local function _firstCharHandler(modeS, category, value)
+   local shifted = false
+   if category == "ASCII" then
+      if value == "/" then
+         modeS:shiftMode "search"
+         shifted = true
+      else
+         modeS.firstChar = false
+      end
+    end
+    return shifted
 end
 ```
 ## act
 
   ``act`` simply dispatches. Note that our common interfaces is
 ``method(modeS, category, value)``, we need to distinguish betwen the tuple
-``("INSERT", "SHIFT-LEFT")`` (which could arrive from copy-paste) and
+``("INSERT", "SHIFT-LEFT")`` (which could arrive from copy-paste[*]) and
 ``("NAV", "SHIFT-LEFT")`` and preserve information for our fall-through method.
+
+
+[*] We _should_ split up paste events into constituent codepoints, but we
+don't.
 
 
 ``act`` always succeeds, meaning we need some metatable action to absorb and
@@ -365,7 +471,13 @@ function ModeS.act(modeS, category, value)
       return modeS.special[value](modeS, category, value)
    end
    icon_paint(category, value)
-
+   -- Special first-character handling
+   if modeS.firstChar then
+      local shifted = _firstCharHandler(modeS, category, value)
+      if shifted then
+        return modeS:paint_txtbuf()
+      end
+   end
    -- Dispatch on value if possible
    if modeS.modes[category][value] then
       modeS.modes[category][value](modeS, category, value)
@@ -385,7 +497,15 @@ function ModeS.act(modeS, category, value)
    else
       icon_paint("NYI", category .. ":" .. value)
    end
-   return modeS:paint_row()
+   modeS:paint_txtbuf()
+   -- Hack in painting and searching
+   if modeS.raga == "search" then
+      -- we need to fake this into a 'result'
+      local searchResult = {}
+      searchResult[1] = modeS.hist:search(tostring(modeS.txtbuf))
+      searchResult.n = 1
+      modeS:printResults(searchResult, false)
+   end
 end
 ```
 
@@ -404,106 +524,8 @@ Any printable 7 bit utf-8 sequence.
 Currently just self-inserts, but watch this space...
 
 
-### NAV
-
-```lua
-local up1, down1 = a.jump.up(), a.jump.down()
-
-function NAV.UP(modeS, category, value)
-   local inline = modeS.txtbuf:up()
-   if not inline then
-      local prev_result, linestash
-      if tostring(modeS.txtbuf) ~= ""
-         and modeS.hist.cursor > #modeS.hist then
-         linestash = modeS.txtbuf
-      end
-      modeS.txtbuf, prev_result = modeS.hist:prev()
-      if linestash then
-         modeS.hist:append(linestash)
-      end
-      modeS:clearResults()
-      if prev_result then
-         modeS:printResults(prev_result)
-      end
-   else
-      write(up1)
-   end
-   return modeS
-end
-
-function NAV.DOWN(modeS, category, value)
-   local inline = modeS.txtbuf:down()
-   if not inline then
-      local next_p, next_result
-      modeS.txtbuf, next_result, next_p = modeS.hist:next()
-      if next_p then
-         modeS.txtbuf = Txtbuf()
-      end
-      modeS:clearResults()
-      if next_result then
-         modeS:printResults(next_result)
-      end
-   else
-      write(down1)
-   end
-   return modeS
-end
-
-function NAV.LEFT(modeS, category, value)
-   return modeS.txtbuf:left()
-end
-
-function NAV.RIGHT(modeS, category, value)
-   return modeS.txtbuf:right()
-end
-
-function NAV.RETURN(modeS, category, value)
-   -- eval or split line
-   local eval = modeS.txtbuf:nl()
-   if eval then
-     modeS:nl()
-     local more = modeS:eval()
-     if not more then
-       modeS.txtbuf = Txtbuf()
-     end
-     modeS.hist.cursor = modeS.hist.cursor + 1
-   end
-end
-
-function NAV.BACKSPACE(modeS, category, value)
-   local shrunk =  modeS.txtbuf:d_back()
-   if shrunk then
-      write(a.stash())
-      write(a.rc(modeS:replLine() + 1, 1))
-      write(a.erase.line())
-      write(a.pop())
-   end
-end
-
-function NAV.DELETE(modeS, category, value)
-   return modeS.txtbuf:d_fwd()
-end
-```
-### CTRL
-
-Many/most of these will be re-used as e.g. "^" and "$" in vim mode.
 
 
-Thus we will declare them as bare functions and assign them to slots.
-
-```lua
-local function cursor_begin(modeS, category, value)
-   modeS.txtbuf.cursor = 1
-end
-
-CTRL["^A"] = cursor_begin
-
-local function cursor_end(modeS, category, value)
-   modeS.txtbuf.cursor = #modeS.txtbuf.lines[modeS.txtbuf.cur_row] + 1
-end
-
-CTRL["^E"] = cursor_end
-```
 ### ModeS:eval()
 
 
@@ -579,12 +601,15 @@ function new(cfg)
   local modeS = meta(ModeS)
   modeS.txtbuf = Txtbuf()
   modeS.hist  = Historian()
+  modeS.lex  = Lex.lua_thor
   modeS.hist.cursor = #modeS.hist + 1
   -- this will be more complex but
   modeS.l_margin = 4
   modeS.r_margin = 80
   modeS.row = 2
   modeS.repl_top  = ModeS.REPL_LINE
+  -- initial state
+  modeS.firstChar = true
   return modeS
 end
 
