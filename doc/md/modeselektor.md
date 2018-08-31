@@ -116,10 +116,12 @@ The easiest way to go mad in concurrent environments is to share memory.
 ``modeselektor`` will own txtbuf, historian, and the entire screen.
 
 ```lua
-local Txtbuf   = require "txtbuf"
+local Txtbuf    = require "txtbuf"
 local Resbuf    = require "resbuf" -- Not currently used...
 local Historian = require "historian"
 local Lex       = require "lex"
+
+local Nerf = require "nerf"
 
 local concat         = assert(table.concat)
 local sub, gsub, rep = assert(string.sub),
@@ -128,19 +130,6 @@ local sub, gsub, rep = assert(string.sub),
 ```
 ```lua
 local ModeS = meta()
-```
-### Categories
-
-These are the broad types of event.
-
-```lua
-local ASCII  = meta {}
-local NAV    = {}
-local CTRL   = {}
-local ALT    = {}
-local FN     = {}
-local MOUSE  = {}
-local NYI    = {}
 ```
 
 Color schemes are supposed to be one-and-done, and I strongly suspect we
@@ -167,12 +156,7 @@ Note also that everything is a method, our dispatch pattern will always
 include the ``modeS`` instance as the first argument.
 
 ```lua
-ModeS.modes = { ASCII  = ASCII,
-                NAV    = NAV,
-                CTRL   = CTRL,
-                ALT    = ALT,
-                MOUSE  = MOUSE,
-                NYI    = NYI }
+ModeS.modes = Nerf
 ```
 
 With some semi-constants:
@@ -323,12 +307,15 @@ This renders our txtbuf.
 
 ```lua
 function ModeS.paint_txtbuf(modeS)
-   local lb = Lex.lua_thor(tostring(modeS.txtbuf))
+   local lb = modeS.lex(tostring(modeS.txtbuf))
+   if type(lb) == "table" then
+      lb = concat(lb)
+   end
    write(a.cursor.hide())
    write(a.erase.box(modeS.repl_top, modeS.l_margin,
                      modeS:replLine(), modeS.r_margin))
    write(a.jump(modeS.repl_top, modeS.l_margin))
-   modeS:write(concat(lb))
+   modeS:write(lb)
    write(a.rc(modeS.txtbuf.cur_row + modeS.repl_top - 1, modeS:cur_col()))
    write(a.cursor.show())
 end
@@ -404,6 +391,60 @@ function ModeS.prompt(modeS)
    write(a.jump(modeS.repl_top, 1) .. modeS.prompts[modeS.raga])
 end
 ```
+### ModeS:shiftMode(raga)
+
+The ``modeselektor``, as described in the prelude, is a stateful and hypermodal
+``repl`` environment.
+
+
+``shiftMode`` is the gear stick which drives the state. It encapsulates the
+state changes needed to switch between them.
+
+
+I'm going to go ahead and weld on ``search`` before I start waxing eloquent.
+
+```lua
+local closet = { nerf = {},
+                 search = {} }  -- place to keep modes we aren't using.
+
+
+function ModeS.shiftMode(modeS, raga)
+   if raga == "search" then
+      -- stash current lexer
+      closet[modeS.raga].lex = modeS.lex
+      modeS.lex = c.base
+   elseif raga == "nerf" then
+      -- do default nerfy things
+      modeS.lex = closet.nerf.lex
+   elseif raga == "vril-nav" then
+      -- do vimmy navigation
+   elseif raga == "vril-ins" then
+      -- do vimmy inserts
+   end
+   modeS.raga = raga
+   modeS:prompt()
+   return modeS
+end
+```
+#### _firstCharHandler
+
+Our first character can trigger mode switches, notably we want an initial
+``/`` to trigger search mode.
+
+```lua
+local function _firstCharHandler(modeS, category, value)
+   local shifted = false
+   if category == "ASCII" then
+      if value == "/" then
+         modeS:shiftMode "search"
+         shifted = true
+      else
+         modeS.firstChar = false
+      end
+    end
+    return shifted
+end
+```
 ## act
 
   ``act`` simply dispatches. Note that our common interfaces is
@@ -429,7 +470,13 @@ function ModeS.act(modeS, category, value)
       return modeS.special[value](modeS, category, value)
    end
    icon_paint(category, value)
-
+   -- Special first-character handling
+   if modeS.firstChar then
+      local shifted = _firstCharHandler(modeS, category, value)
+      if shifted then
+        return modeS:paint_txtbuf()
+      end
+   end
    -- Dispatch on value if possible
    if modeS.modes[category][value] then
       modeS.modes[category][value](modeS, category, value)
@@ -449,7 +496,15 @@ function ModeS.act(modeS, category, value)
    else
       icon_paint("NYI", category .. ":" .. value)
    end
-   return modeS:paint_txtbuf()
+   modeS:paint_txtbuf()
+   -- Hack in painting and searching
+   if modeS.raga == "search" then
+      -- we need to fake this into a 'result'
+      local searchResult = {}
+      searchResult[1] = modeS.hist:search(tostring(modeS.txtbuf))
+      searchResult.n = 1
+      modeS:printResults(searchResult, false)
+   end
 end
 ```
 
@@ -468,124 +523,8 @@ Any printable 7 bit utf-8 sequence.
 Currently just self-inserts, but watch this space...
 
 
-### NAV
-
-```lua
-local up1, down1 = a.jump.up(), a.jump.down()
-
-function NAV.UP(modeS, category, value)
-   local inline = modeS.txtbuf:up()
-   if not inline then
-      local prev_result, linestash
-      if tostring(modeS.txtbuf) ~= ""
-         and modeS.hist.cursor > #modeS.hist then
-         linestash = modeS.txtbuf
-      end
-      modeS.txtbuf, prev_result = modeS.hist:prev()
-      if linestash then
-         modeS.hist:append(linestash)
-      end
-      modeS:clearResults()
-      if prev_result then
-         modeS:printResults(prev_result)
-      end
-   else
-      write(up1)
-   end
-   return modeS
-end
-
-function NAV.DOWN(modeS, category, value)
-   local inline = modeS.txtbuf:down()
-   if not inline then
-      local next_p, next_result
-      modeS.txtbuf, next_result, next_p = modeS.hist:next()
-      if next_p then
-         modeS.txtbuf = Txtbuf()
-      end
-      modeS:clearResults()
-      if next_result then
-         modeS:printResults(next_result)
-      end
-   else
-      write(down1)
-   end
-   return modeS
-end
-
-```
-```lua
-
-function NAV.LEFT(modeS, category, value)
-   local moved = modeS.txtbuf:left()
-   if not moved and modeS.txtbuf.cur_row ~= 1 then
-      local cur_row = modeS.txtbuf.cur_row - 1
-      modeS.txtbuf.cur_row = cur_row
-      modeS.txtbuf.cursor = #modeS.txtbuf.lines[cur_row] + 1
-   end
-end
-
-function NAV.RIGHT(modeS, category, value)
-   local moved = modeS.txtbuf:right()
-   if not moved and modeS.txtbuf.cur_row ~= #modeS.txtbuf.lines then
-      modeS.txtbuf.cur_row = modeS.txtbuf.cur_row + 1
-      modeS.txtbuf.cursor = 1
-   end
-end
-
-function NAV.RETURN(modeS, category, value)
-   -- eval or split line
-   local eval = modeS.txtbuf:nl()
-   if eval then
-     modeS:nl()
-     local more = modeS:eval()
-     if not more then
-       modeS.txtbuf = Txtbuf()
-     end
-     modeS.hist.cursor = modeS.hist.cursor + 1
-   end
-end
-
-function NAV.BACKSPACE(modeS, category, value)
-   local shrunk =  modeS.txtbuf:d_back()
-   if shrunk then
-      write(a.stash())
-      write(a.rc(modeS:replLine() + 1, 1))
-      write(a.erase.line())
-      write(a.pop())
-   end
-end
-
-function NAV.DELETE(modeS, category, value)
-   local shrunk = modeS.txtbuf:d_fwd()
-   if shrunk then
-      write(a.stash())
-      write(a.rc(modeS:replLine() + 1, 1))
-      write(a.erase.line())
-      write(a.pop())
-   end
-end
-```
-### CTRL
-
-Many/most of these will be re-used as e.g. "^" and "$" in vim mode.
 
 
-Thus we will declare them as bare functions and assign them to slots.
-
-```lua
-local function cursor_begin(modeS, category, value)
-   modeS.txtbuf.cursor = 1
-end
-
-CTRL["^A"] = cursor_begin
-
-local function cursor_end(modeS, category, value)
-   modeS.txtbuf.cursor = #modeS.txtbuf.lines[modeS.txtbuf.cur_row] + 1
-end
-
-CTRL["^E"] = cursor_end
-```
 ### ModeS:eval()
 
 
@@ -661,12 +600,15 @@ function new(cfg)
   local modeS = meta(ModeS)
   modeS.txtbuf = Txtbuf()
   modeS.hist  = Historian()
+  modeS.lex  = Lex.lua_thor
   modeS.hist.cursor = #modeS.hist + 1
   -- this will be more complex but
   modeS.l_margin = 4
   modeS.r_margin = 80
   modeS.row = 2
   modeS.repl_top  = ModeS.REPL_LINE
+  -- initial state
+  modeS.firstChar = true
   return modeS
 end
 

@@ -5,14 +5,7 @@
 
 ## includes
 
-This all goes into global space for now.  Our more sophisticated loader will
-handle namespace isolation. Meanwhile we're building a repl, so.
-
-
-First we load everything that might reasonable expect a stock namespace.
-
-
-All of these are exceedingly well-behaved.
+This
 
 ```lua
 L    = require "lpeg"

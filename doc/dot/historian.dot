@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 515"]
+doc_0 [label="doc - 518"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-429"]
+section_1 [label="section: 1-432"]
 
 
 // END RANK doc_0
@@ -35,9 +35,9 @@ section_9 [label="section: 32-231"]
 
 section_10 [label="section: 282-317"]
 
-section_11 [label="section: 373-429"]
+section_11 [label="section: 373-432"]
 
-section_12 [label="section: 430-481"]
+section_12 [label="section: 433-484"]
 
 
 // END RANK section_1
@@ -881,7 +881,7 @@ end
 
 local function _collect_repr(collection, c)
    if #collection == 0 then
-      return \"{  }\"
+      return c.alert \"No results found\"
    end
    local phrase = \"\"
    for i,v in ipairs(collection) do
@@ -912,7 +912,7 @@ prose_145 [label="prose"]
 
 prose_146 [label="prose"]
 
-codeblock_147 [label="code block 390-427"]
+codeblock_147 [label="code block 390-430"]
 
 
 // END RANK section_11
@@ -1032,6 +1032,9 @@ leaf_167  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 function Historian.search(historian, frag)
    local collection = setmeta({}, collect_M)
    collection.frag = frag
+   if frag == \"\" then
+      return collection, false
+   end
    local cursors = {}
    local best = true
    local patt = fuzz_patt(frag)
@@ -1073,11 +1076,11 @@ header_168 [label="2 : Historian:prev()"]
 
 prose_169 [label="prose"]
 
-codeblock_170 [label="code block 432-445"]
+codeblock_170 [label="code block 435-448"]
 
-section_171 [label="section: 448-481"]
+section_171 [label="section: 451-484"]
 
-section_172 [label="section: 482-515"]
+section_172 [label="section: 485-518"]
 
 
 // END RANK section_12
@@ -1123,7 +1126,7 @@ prose_178 [label="prose"]
 
 prose_179 [label="prose"]
 
-codeblock_180 [label="code block 455-479"]
+codeblock_180 [label="code block 458-482"]
 
 
 // END RANK section_171
@@ -1214,11 +1217,11 @@ prose_194 [label="prose"]
 
 prose_195 [label="prose"]
 
-codeblock_196 [label="code block 488-502"]
+codeblock_196 [label="code block 491-505"]
 
-codeblock_197 [label="code block 504-511"]
+codeblock_197 [label="code block 507-514"]
 
-codeblock_198 [label="code block 513-515"]
+codeblock_198 [label="code block 516-518"]
 
 
 // END RANK section_172
