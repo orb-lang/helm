@@ -1,8 +1,5 @@
 # Txtbuf
 
-We're not going to have one of these right away.
-
-
 This is not much more than an ordinary array of lines that has a bit of
 awareness, mostly about which lines have cursors and which don't.
 
@@ -20,9 +17,6 @@ A closed line is just a string.
 
 ## Interface
 
-  A txtbuf is a drop-in replacement for a txtbuf, used when there's more than
-one line to buffer.
-
 ### Instance fields
 
 - lines :  An array of arrays containing codepoints (string fragments).
@@ -38,22 +32,6 @@ one line to buffer.
           may be reached by printing the corresponding row.
 
 
-## Methods
-
-Initially these are only the methods of txtbuf.
-
-
-I think the way forward is to treat txtbuf as a special case until it's at
-feature parity, and we have the other aspects such as resizing the result
-field working correctly.
-
-
-Then we will simply switch to using ``txtbuf``s of a single line instead of the
-two separate classes, and factor out ``txtbuf``.
-
-
-This amounts to porting the existing ``txtbuf``, as I think about it. A single
-line isn't even a special case for the logic.
 
 
 #### dependencies
@@ -64,6 +42,8 @@ local collect = assert(table.collect)
 local lines = assert(string.lines)
 local codepoints = assert(string.codepoints)
 ```
+## Methods
+
 ```lua
 local Txtbuf = meta {}
 ```
@@ -143,7 +123,7 @@ end
 ### Txtbuf:d_back()
 
 The return value tells us if we have one less line, since we need to
-clear it off the screen.
+clear it off the screen (true of d_fwd as well).
 
 ```lua
 local remove = assert(table.remove)
@@ -172,21 +152,42 @@ end
 
 ```lua
 function Txtbuf.d_fwd(txtbuf)
-   remove(txtbuf.lines[txtbuf.cur_row], txtbuf.cursor)
+   local cursor, cur_row = txtbuf.cursor, txtbuf.cur_row
+   if cursor <= #txtbuf.lines[cur_row] then
+      remove(txtbuf.lines[txtbuf.cur_row], txtbuf.cursor)
+      return false
+   elseif cur_row == #txtbuf.lines then
+      return false
+   else
+      local new_line = concat(txtbuf.lines[cur_row])
+                       .. concat(txtbuf.lines[cur_row + 1])
+      txtbuf.lines[cur_row] = codepoints(new_line)
+      remove(txtbuf.lines, cur_row + 1)
+      return true
+   end
 end
 ```
 ### Txtbuf:left(disp)
 
+This method and the next inform the modeSelektor if the cursor has moved,
+so as to wrap around otherwise.
+
+
+Arguably this logic should be completely internal to ``left`` and ``right``
+themselves.
+
 ```lua
 function Txtbuf.left(txtbuf, disp)
    local disp = disp or 1
+   local moved = false
    if txtbuf.cursor - disp >= 1 then
       txtbuf.cursor = txtbuf.cursor - disp
+      moved = true
    else
       txtbuf.cursor = 1
    end
 
-   return txtbuf.cursor
+   return moved
 end
 ```
 ### Txtbuf:right(disp)
@@ -194,14 +195,16 @@ end
 ```lua
 function Txtbuf.right(txtbuf, disp)
    disp = disp or 1
+   local moved = false
    local line = txtbuf.lines[txtbuf.cur_row]
    if txtbuf.cursor + disp <= #line + 1 then
       txtbuf.cursor = txtbuf.cursor + disp
+      moved = true
    else
       txtbuf.cursor = #line + 1
    end
 
-   return txtbuf.cursor
+   return moved
 end
 ```
 ### Txtbuf:up(), Txtbuf:down()

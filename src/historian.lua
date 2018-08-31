@@ -36,7 +36,7 @@ local Historian = meta {}
 
 
 
-Historian.HISTORY_LIMIT = 1000
+Historian.HISTORY_LIMIT = 2000
 
 local create_project_table = [[
 CREATE TABLE IF NOT EXISTS project (
@@ -355,11 +355,16 @@ end
 
 local function _collect_repr(collection, c)
    if #collection == 0 then
-      return "{  }"
+      return c.alert "No results found"
    end
    local phrase = ""
    for i,v in ipairs(collection) do
+      local ctrl_seq = ""
+      if i < 10 then
+         ctrl_seq = "^" .. tostring(i) .. " "
+      end
       phrase = phrase
+               .. ctrl_seq
                .. _highlight(v, collection.frag, c, collection.best)
                .. "\n"
    end
@@ -392,12 +397,12 @@ local collect_M = {__repr = _collect_repr}
 function Historian.search(historian, frag)
    local collection = setmeta({}, collect_M)
    collection.frag = frag
+   if frag == "" then
+      return collection, false
+   end
    local cursors = {}
    local best = true
    local patt = fuzz_patt(frag)
-   local function addTo(index)
-   end
-
    for i = #historian, 1, -1 do
       local score = match(patt, tostring(historian[i]))
       if score then
@@ -477,6 +482,25 @@ function Historian.next(historian)
    end
 end
 
+
+
+
+
+
+
+
+function Historian.index(historian, cursor)
+   if cursor < 0 or cursor > #historian + 1 then
+      return false
+   end
+   local txtbuf = historian[cursor]
+   local result = historian.results[txtbuf]
+   txtbuf = txtbuf:clone()
+   historian.cursor = cursor
+   txtbuf.cur_row = #txtbuf.lines
+   txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
+   return txtbuf, result
+end
 
 
 

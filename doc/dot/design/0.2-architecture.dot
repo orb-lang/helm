@@ -578,7 +578,7 @@ leaf_149  [color=Gray,shape=rectangle,fontname=Inconsolata,label="femto"]
 // END RANK literal_143
 
 raw_144 -> leaf_150
-leaf_150  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" 1.0 will be around 200 lines of Lua, with a full graphical"]
+leaf_150  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" 1.0 will be around 1000 lines of Lua, with a full graphical"]
 // END RANK raw_144
 
 prespace_145 -> leaf_151

@@ -71,7 +71,7 @@ C.color.search_hl = a.fg24(30, 230, 100)
 C.color.error = a.bg24(50,0,0)
 
 
-C.depth = 3 -- table print depth
+C.depth = 4 -- table print depth
 ```
 ## no_color
 

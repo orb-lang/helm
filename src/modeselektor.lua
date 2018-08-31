@@ -100,11 +100,13 @@ assert(ts, "must have ts in _G")
 
 
 
-
-local Txtbuf   = require "txtbuf"
-local Resbuf    = require "resbuf"
+local Txtbuf    = require "txtbuf"
+local Resbuf    = require "resbuf" -- Not currently used...
 local Historian = require "historian"
 local Lex       = require "lex"
+
+local Nerf   = require "nerf"
+local Search = require "search"
 
 local concat         = assert(table.concat)
 local sub, gsub, rep = assert(string.sub),
@@ -122,13 +124,6 @@ local ModeS = meta()
 
 
 
-local ASCII  = meta {}
-local NAV    = {}
-local CTRL   = {}
-local ALT    = {}
-local FN     = {}
-local MOUSE  = {}
-local NYI    = {}
 
 
 
@@ -145,18 +140,7 @@ local NYI    = {}
 
 
 
-
-
-
-
-
-
-ModeS.modes = { ASCII  = ASCII,
-                NAV    = NAV,
-                CTRL   = CTRL,
-                ALT    = ALT,
-                MOUSE  = MOUSE,
-                NYI    = NYI }
+ModeS.modes = Nerf
 
 
 
@@ -189,6 +173,16 @@ end
 function ModeS.insert(modeS, category, value)
     local success =  modeS.txtbuf:insert(value)
 end
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -269,7 +263,6 @@ end
 
 
 
-
 function ModeS.cur_col(modeS)
    return modeS.txtbuf.cursor + modeS.l_margin - 1
 end
@@ -277,6 +270,7 @@ end
 function ModeS.nl(modeS)
    write(a.col(modeS.l_margin).. a.jump.down(1))
 end
+
 
 
 
@@ -298,13 +292,21 @@ end
 
 
 
-function ModeS.paint_row(modeS)
-   local lb = Lex.lua_thor(tostring(modeS.txtbuf))
+
+
+
+
+
+function ModeS.paint_txtbuf(modeS)
+   local lb = modeS.lex(tostring(modeS.txtbuf))
+   if type(lb) == "table" then
+      lb = concat(lb)
+   end
    write(a.cursor.hide())
    write(a.erase.box(modeS.repl_top, modeS.l_margin,
                      modeS:replLine(), modeS.r_margin))
    write(a.jump(modeS.repl_top, modeS.l_margin))
-   modeS:write(concat(lb))
+   modeS:write(lb)
    write(a.rc(modeS.txtbuf.cur_row + modeS.repl_top - 1, modeS:cur_col()))
    write(a.cursor.show())
 end
@@ -314,6 +316,7 @@ end
 function ModeS.replLine(modeS)
    return modeS.repl_top + #modeS.txtbuf.lines - 1
 end
+
 
 
 function ModeS.printResults(modeS, results, new)
@@ -335,9 +338,116 @@ end
 
 
 
+
+
+
+
+
+
+ModeS.raga = "nerf"
+ModeS.raga_default = "nerf"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ModeS.prompts = { nerf   = "👉 ",
+                  search = "⁉️ " }
+
+
+
 function ModeS.prompt(modeS)
-   write(a.jump(modeS.repl_top, 1) .. "👉 ")
+   write(a.jump(modeS.repl_top, 1) .. modeS.prompts[modeS.raga])
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local closet = { nerf = { modes = Nerf},
+                 search = { modes = Search} }
+
+ModeS.closet = closet
+
+function ModeS.shiftMode(modeS, raga)
+   if raga == "search" then
+      -- stash current lexer
+      -- #todo do this in a less dumb way
+      modeS.closet[modeS.raga].lex = modeS.lex
+      modeS.lex = c.base
+      modeS.modes = modeS.closet.search.modes
+   elseif raga == "nerf" then
+      -- do default nerfy things
+      modeS.lex = modeS.closet.nerf.lex
+      modeS.modes = modeS.closet.nerf.modes
+   elseif raga == "vril-nav" then
+      -- do vimmy navigation
+   elseif raga == "vril-ins" then
+      -- do vimmy inserts
+   end
+   modeS.raga = raga
+   modeS:prompt()
+   return modeS
+end
+
+
+
+
+
+
+
+
+local function _firstCharHandler(modeS, category, value)
+   local shifted = false
+   if category == "ASCII" then
+      if value == "/" then
+         modeS:shiftMode "search"
+         shifted = true
+      else
+         modeS.firstChar = false
+      end
+    end
+    return shifted
+end
+
+
+
 
 
 
@@ -361,7 +471,13 @@ function ModeS.act(modeS, category, value)
       return modeS.special[value](modeS, category, value)
    end
    icon_paint(category, value)
-
+   -- Special first-character handling
+   if modeS.firstChar then
+      local shifted = _firstCharHandler(modeS, category, value)
+      if shifted then
+        return modeS:paint_txtbuf()
+      end
+   end
    -- Dispatch on value if possible
    if modeS.modes[category][value] then
       modeS.modes[category][value](modeS, category, value)
@@ -381,7 +497,15 @@ function ModeS.act(modeS, category, value)
    else
       icon_paint("NYI", category .. ":" .. value)
    end
-   return modeS:paint_row()
+   modeS:paint_txtbuf()
+   -- Hack in painting and searching
+   if modeS.raga == "search" then
+      -- we need to fake this into a 'result'
+      local searchResult = {}
+      searchResult[1] = modeS.hist:search(tostring(modeS.txtbuf))
+      searchResult.n = 1
+      modeS:printResults(searchResult, false)
+   end
 end
 
 
@@ -400,107 +524,6 @@ end
 
 
 
-
-
-
-
-local up1, down1 = a.jump.up(), a.jump.down()
-
-function NAV.UP(modeS, category, value)
-   local inline = modeS.txtbuf:up()
-   if not inline then
-      local prev_result, linestash
-      if tostring(modeS.txtbuf) ~= ""
-         and modeS.hist.cursor > #modeS.hist then
-         linestash = modeS.txtbuf
-      end
-      modeS.txtbuf, prev_result = modeS.hist:prev()
-      if linestash then
-         modeS.hist:append(linestash)
-      end
-      modeS:clearResults()
-      if prev_result then
-         modeS:printResults(prev_result)
-      end
-   else
-      write(up1)
-   end
-   return modeS
-end
-
-function NAV.DOWN(modeS, category, value)
-   local inline = modeS.txtbuf:down()
-   if not inline then
-      local next_p, next_result
-      modeS.txtbuf, next_result, next_p = modeS.hist:next()
-      if next_p then
-         modeS.txtbuf = Txtbuf()
-      end
-      modeS:clearResults()
-      if next_result then
-         modeS:printResults(next_result)
-      end
-   else
-      write(down1)
-   end
-   return modeS
-end
-
-function NAV.LEFT(modeS, category, value)
-   return modeS.txtbuf:left()
-end
-
-function NAV.RIGHT(modeS, category, value)
-   return modeS.txtbuf:right()
-end
-
-function NAV.RETURN(modeS, category, value)
-   -- eval or split line
-   local eval = modeS.txtbuf:nl()
-   if eval then
-     modeS:nl()
-     local more = modeS:eval()
-     if not more then
-       modeS.txtbuf = Txtbuf()
-     end
-     modeS.hist.cursor = modeS.hist.cursor + 1
-   end
-end
-
-function NAV.BACKSPACE(modeS, category, value)
-   local shrunk =  modeS.txtbuf:d_back()
-   if shrunk then
-      write(a.stash())
-      write(a.rc(modeS:replLine() + 1, 1))
-      write(a.erase.line())
-      write(a.pop())
-   end
-end
-
-function NAV.DELETE(modeS, category, value)
-   return modeS.txtbuf:d_fwd()
-end
-
-
-
-
-
-
-
-
-
-
-local function cursor_begin(modeS, category, value)
-   modeS.txtbuf.cursor = 1
-end
-
-CTRL["^A"] = cursor_begin
-
-local function cursor_end(modeS, category, value)
-   modeS.txtbuf.cursor = #modeS.txtbuf.lines[modeS.txtbuf.cur_row] + 1
-end
-
-CTRL["^E"] = cursor_end
 
 
 
@@ -583,12 +606,15 @@ function new(cfg)
   local modeS = meta(ModeS)
   modeS.txtbuf = Txtbuf()
   modeS.hist  = Historian()
+  modeS.lex  = Lex.lua_thor
   modeS.hist.cursor = #modeS.hist + 1
   -- this will be more complex but
   modeS.l_margin = 4
   modeS.r_margin = 80
   modeS.row = 2
   modeS.repl_top  = ModeS.REPL_LINE
+  -- initial state
+  modeS.firstChar = true
   return modeS
 end
 

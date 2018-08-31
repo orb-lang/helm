@@ -487,7 +487,7 @@
 <text text-anchor="middle" x="4207.5" y="-1718.6389" font-family="Inconsolata" font-size="14.00" fill="#000000">C.color.base &#160;&#160;&#160;&#160;&#160;&#160;= a.fg24(200, 200, 200)</text>
 <text text-anchor="middle" x="4207.5" y="-1703.2388" font-family="Inconsolata" font-size="14.00" fill="#000000">C.color.search_hl = a.fg24(30, 230, 100)</text>
 <text text-anchor="middle" x="4207.5" y="-1687.8388" font-family="Inconsolata" font-size="14.00" fill="#000000">C.color.error = a.bg24(50,0,0)</text>
-<text text-anchor="middle" x="4207.5" y="-1640.4388" font-family="Inconsolata" font-size="14.00" fill="#000000">C.depth = 3 &#45;&#45; table print depth</text>
+<text text-anchor="middle" x="4207.5" y="-1640.4388" font-family="Inconsolata" font-size="14.00" fill="#000000">C.depth = 4 &#45;&#45; table print depth</text>
 </g>
 <!-- codeblock_8&#45;&gt;leaf_62 -->
 <g id="edge62" class="edge">

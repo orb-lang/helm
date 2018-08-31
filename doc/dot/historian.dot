@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 510"]
+doc_0 [label="doc - 537"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-424"]
+section_1 [label="section: 1-432"]
 
 
 // END RANK doc_0
@@ -35,9 +35,9 @@ section_9 [label="section: 32-231"]
 
 section_10 [label="section: 282-317"]
 
-section_11 [label="section: 373-424"]
+section_11 [label="section: 373-432"]
 
-section_12 [label="section: 425-476"]
+section_12 [label="section: 433-503"]
 
 
 // END RANK section_1
@@ -851,7 +851,7 @@ attach to the collection.
 // END RANK raw_137
 
 codeblock_127 -> leaf_139
-leaf_139  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local concat = assert(table.concat)
+leaf_139  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local concat, litpat = assert(table.concat), assert(string.litpat)
 
 local function _highlight(line, frag, c, best)
    local hl = {}
@@ -859,7 +859,7 @@ local function _highlight(line, frag, c, best)
    while #frag > 0 do
       local char
       char, frag = frag:sub(1,1), frag:sub(2)
-      local at = line:find(char)
+      local at = line:find(litpat(char))
       if not at then
          error (\"can't find \" .. char .. \" in: \" .. line)
       end
@@ -881,7 +881,7 @@ end
 
 local function _collect_repr(collection, c)
    if #collection == 0 then
-      return \"{  }\"
+      return c.alert \"No results found\"
    end
    local phrase = \"\"
    for i,v in ipairs(collection) do
@@ -912,7 +912,7 @@ prose_145 [label="prose"]
 
 prose_146 [label="prose"]
 
-codeblock_147 [label="code block 390-422"]
+codeblock_147 [label="code block 390-430"]
 
 
 // END RANK section_11
@@ -1032,13 +1032,21 @@ leaf_167  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 function Historian.search(historian, frag)
    local collection = setmeta({}, collect_M)
    collection.frag = frag
+   if frag == \"\" then
+      return collection, false
+   end
    local cursors = {}
    local best = true
    local patt = fuzz_patt(frag)
+   local function addTo(index)
+   end
+
    for i = #historian, 1, -1 do
       local score = match(patt, tostring(historian[i]))
       if score then
          collection[#collection + 1] = tostring(historian[i])
+
+            cursors[#cursors + 1] = i
       end
    end
    if #collection == 0 then
@@ -1046,9 +1054,9 @@ function Historian.search(historian, frag)
       best = false
       local slip = sub(frag, 1, -3) .. sub(frag, -1, -1) .. sub(frag, -2, -2)
       collection.frag = slip
-      local second = fuzz_patt(slip)
+      patt = fuzz_patt(slip)
       for i = #historian, 1, -1 do
-         local score = match(second, tostring(historian[i]))
+         local score = match(patt, tostring(historian[i]))
          if score then
             collection[#collection + 1] = tostring(historian[i])
             cursors[#cursors + 1] = i
@@ -1056,46 +1064,48 @@ function Historian.search(historian, frag)
       end
    end
    collection.best = best
-   collection.cursors = cursorsß
+   collection.cursors = cursors
    return collection, best
 end"]
 // END RANK codeblock_147
 
-section_12 -> { header_168 prose_169 codeblock_170 section_171 section_172}
-{rank=same; header_168 prose_169 codeblock_170 section_171 section_172}
+section_12 -> { header_168 prose_169 codeblock_170 section_171 section_172 section_173}
+{rank=same; header_168 prose_169 codeblock_170 section_171 section_172 section_173}
 
 header_168 [label="2 : Historian:prev()"]
 
 prose_169 [label="prose"]
 
-codeblock_170 [label="code block 427-440"]
+codeblock_170 [label="code block 435-448"]
 
-section_171 [label="section: 443-476"]
+section_171 [label="section: 451-484"]
 
-section_172 [label="section: 477-510"]
+section_172 [label="section: 485-503"]
+
+section_173 [label="section: 504-537"]
 
 
 // END RANK section_12
 
-header_168 -> leaf_173
-leaf_173  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Historian:prev()"]
+header_168 -> leaf_174
+leaf_174  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Historian:prev()"]
 // END RANK header_168
 
-prose_169 -> { raw_174}
-{rank=same; raw_174}
+prose_169 -> { raw_175}
+{rank=same; raw_175}
 
-raw_174 [label="raw"]
+raw_175 [label="raw"]
 
 
 // END RANK prose_169
 
-raw_174 -> leaf_175
-leaf_175  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_175 -> leaf_176
+leaf_176  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 "]
-// END RANK raw_174
+// END RANK raw_175
 
-codeblock_170 -> leaf_176
-leaf_176  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.prev(historian)
+codeblock_170 -> leaf_177
+leaf_177  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.prev(historian)
    if historian.cursor == 0 or #historian == 0 then
       return Txtbuf()
    end
@@ -1109,73 +1119,73 @@ leaf_176  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histo
 end"]
 // END RANK codeblock_170
 
-section_171 -> { header_177 prose_178 prose_179 codeblock_180}
-{rank=same; header_177 prose_178 prose_179 codeblock_180}
+section_171 -> { header_178 prose_179 prose_180 codeblock_181}
+{rank=same; header_178 prose_179 prose_180 codeblock_181}
 
-header_177 [label="3 : Historian:next()"]
-
-prose_178 [label="prose"]
+header_178 [label="3 : Historian:next()"]
 
 prose_179 [label="prose"]
 
-codeblock_180 [label="code block 450-474"]
+prose_180 [label="prose"]
+
+codeblock_181 [label="code block 458-482"]
 
 
 // END RANK section_171
 
-header_177 -> leaf_181
-leaf_181  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Historian:next()"]
-// END RANK header_177
+header_178 -> leaf_182
+leaf_182  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Historian:next()"]
+// END RANK header_178
 
-prose_178 -> { raw_182 prespace_183 literal_184 raw_185}
-{rank=same; raw_182 prespace_183 literal_184 raw_185}
+prose_179 -> { raw_183 prespace_184 literal_185 raw_186}
+{rank=same; raw_183 prespace_184 literal_185 raw_186}
 
-raw_182 [label="raw"]
+raw_183 [label="raw"]
 
-prespace_183 [label="prespace"]
+prespace_184 [label="prespace"]
 
-literal_184 [label="literal"]
+literal_185 [label="literal"]
 
-raw_185 [label="raw"]
-
-
-// END RANK prose_178
-
-raw_182 -> leaf_186
-leaf_186  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-
-Returns the next txtbuf in history, and a second flag to tell the"]
-// END RANK raw_182
-
-prespace_183 -> leaf_187
-leaf_187  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
-// END RANK prespace_183
-
-literal_184 -> leaf_188
-leaf_188  [color=Gray,shape=rectangle,fontname=Inconsolata,label="modeselektor"]
-// END RANK literal_184
-
-raw_185 -> leaf_189
-leaf_189  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" it might be time for a new one.
-"]
-// END RANK raw_185
-
-prose_179 -> { raw_190}
-{rank=same; raw_190}
-
-raw_190 [label="raw"]
+raw_186 [label="raw"]
 
 
 // END RANK prose_179
 
-raw_190 -> leaf_191
-leaf_191  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_183 -> leaf_187
+leaf_187  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+Returns the next txtbuf in history, and a second flag to tell the"]
+// END RANK raw_183
+
+prespace_184 -> leaf_188
+leaf_188  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK prespace_184
+
+literal_185 -> leaf_189
+leaf_189  [color=Gray,shape=rectangle,fontname=Inconsolata,label="modeselektor"]
+// END RANK literal_185
+
+raw_186 -> leaf_190
+leaf_190  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" it might be time for a new one.
+"]
+// END RANK raw_186
+
+prose_180 -> { raw_191}
+{rank=same; raw_191}
+
+raw_191 [label="raw"]
+
+
+// END RANK prose_180
+
+raw_191 -> leaf_192
+leaf_192  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 I'd like to stop buffering blank lines at some point.
 "]
-// END RANK raw_190
+// END RANK raw_191
 
-codeblock_180 -> leaf_192
-leaf_192  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.next(historian)
+codeblock_181 -> leaf_193
+leaf_193  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.next(historian)
    local Δ = historian.cursor < #historian and 1 or 0
    if historian.cursor == 0 or #historian == 0 then
       return Txtbuf()
@@ -1198,61 +1208,107 @@ leaf_192  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histo
       return txtbuf:clone(), result, false
    end
 end"]
-// END RANK codeblock_180
+// END RANK codeblock_181
 
-section_172 -> { header_193 prose_194 prose_195 codeblock_196 codeblock_197 codeblock_198}
-{rank=same; header_193 prose_194 prose_195 codeblock_196 codeblock_197 codeblock_198}
+section_172 -> { header_194 prose_195 codeblock_196}
+{rank=same; header_194 prose_195 codeblock_196}
 
-header_193 [label="3 : Historian:append()"]
-
-prose_194 [label="prose"]
+header_194 [label="3 : Historian:index(cursor)"]
 
 prose_195 [label="prose"]
 
-codeblock_196 [label="code block 483-497"]
-
-codeblock_197 [label="code block 499-506"]
-
-codeblock_198 [label="code block 508-510"]
+codeblock_196 [label="code block 489-502"]
 
 
 // END RANK section_172
 
-header_193 -> leaf_199
-leaf_199  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Historian:append()"]
-// END RANK header_193
+header_194 -> leaf_197
+leaf_197  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Historian:index(cursor)"]
+// END RANK header_194
 
-prose_194 -> { raw_200}
-{rank=same; raw_200}
+prose_195 -> { raw_198}
+{rank=same; raw_198}
 
-raw_200 [label="raw"]
-
-
-// END RANK prose_194
-
-raw_200 -> leaf_201
-leaf_201  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-
-Appends a txtbuf to history and persists it.
-"]
-// END RANK raw_200
-
-prose_195 -> { raw_202}
-{rank=same; raw_202}
-
-raw_202 [label="raw"]
+raw_198 [label="raw"]
 
 
 // END RANK prose_195
 
-raw_202 -> leaf_203
-leaf_203  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_198 -> leaf_199
+leaf_199  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+Loads the history to an exact index.
+"]
+// END RANK raw_198
+
+codeblock_196 -> leaf_200
+leaf_200  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.index(historian, cursor)
+   if cursor < 0 or cursor > #historian + 1 then
+      return false
+   end
+   local txtbuf = historian[cursor]
+   local result = historian.results[txtbuf]
+   txtbuf = txtbuf:clone()
+   historian.cursor = cursor
+   txtbuf.cur_row = #txtbuf.lines
+   txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
+   return txtbuf, result
+end"]
+// END RANK codeblock_196
+
+section_173 -> { header_201 prose_202 prose_203 codeblock_204 codeblock_205 codeblock_206}
+{rank=same; header_201 prose_202 prose_203 codeblock_204 codeblock_205 codeblock_206}
+
+header_201 [label="3 : Historian:append(txtbuf, results, success)"]
+
+prose_202 [label="prose"]
+
+prose_203 [label="prose"]
+
+codeblock_204 [label="code block 510-524"]
+
+codeblock_205 [label="code block 526-533"]
+
+codeblock_206 [label="code block 535-537"]
+
+
+// END RANK section_173
+
+header_201 -> leaf_207
+leaf_207  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Historian:append(txtbuf, results, success)"]
+// END RANK header_201
+
+prose_202 -> { raw_208}
+{rank=same; raw_208}
+
+raw_208 [label="raw"]
+
+
+// END RANK prose_202
+
+raw_208 -> leaf_209
+leaf_209  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+Appends a txtbuf to history and persists it.
+"]
+// END RANK raw_208
+
+prose_203 -> { raw_210}
+{rank=same; raw_210}
+
+raw_210 [label="raw"]
+
+
+// END RANK prose_203
+
+raw_210 -> leaf_211
+leaf_211  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 Doesn't adjust the cursor.
 "]
-// END RANK raw_202
+// END RANK raw_210
 
-codeblock_196 -> leaf_204
-leaf_204  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.append(historian, txtbuf, results, success)
+codeblock_204 -> leaf_212
+leaf_212  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.append(historian, txtbuf, results, success)
    if tostring(historian[#historian]) == tostring(txtbuf) then
       -- don't bother
       return false
@@ -1265,20 +1321,20 @@ leaf_204  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histo
    end
    return true
 end"]
-// END RANK codeblock_196
+// END RANK codeblock_204
 
-codeblock_197 -> leaf_205
-leaf_205  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new()
+codeblock_205 -> leaf_213
+leaf_213  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new()
    local historian = meta(Historian)
    historian:load()
    return historian
 end
 Historian.idEst = new"]
-// END RANK codeblock_197
+// END RANK codeblock_205
 
-codeblock_198 -> leaf_206
-leaf_206  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return new"]
-// END RANK codeblock_198
+codeblock_206 -> leaf_214
+leaf_214  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return new"]
+// END RANK codeblock_206
 
 
 }
