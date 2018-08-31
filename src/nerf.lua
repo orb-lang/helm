@@ -147,6 +147,14 @@ function NAV.RETURN(modeS, category, value)
    end
 end
 
+local function _modeShiftOnEmpty(modeS)
+   local buf = tostring(modeS.txtbuf)
+   if buf == "" then
+      modeS:shiftMode(modeS.raga_default)
+      modeS:clearResults()
+   end
+end
+
 function NAV.BACKSPACE(modeS, category, value)
    local shrunk =  modeS.txtbuf:d_back()
    if shrunk then
@@ -155,6 +163,7 @@ function NAV.BACKSPACE(modeS, category, value)
       write(a.erase.line())
       write(a.pop())
    end
+   _modeShiftOnEmpty(modeS)
 end
 
 function NAV.DELETE(modeS, category, value)
@@ -165,6 +174,7 @@ function NAV.DELETE(modeS, category, value)
       write(a.erase.line())
       write(a.pop())
    end
+   _modeShiftOnEmpty(modeS)
 end
 
 
