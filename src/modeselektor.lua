@@ -400,12 +400,10 @@ end
 
 
 
-local closet = { nerf = { modes = Nerf,
+ModeS.closet = { nerf = { modes = Nerf,
                           lex   = Lex.lua_thor },
                  search = { modes = Search,
                             lex   = c.base } }
-
-ModeS.closet = closet
 
 function ModeS.shiftMode(modeS, raga)
    if raga == "search" then
