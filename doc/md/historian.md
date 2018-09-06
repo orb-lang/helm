@@ -36,7 +36,7 @@ This defines the persistence model for bridge.
 ### SQLite battery
 
 ```lua
-Historian.HISTORY_LIMIT = 1000
+Historian.HISTORY_LIMIT = 2000
 
 local create_project_table = [[
 CREATE TABLE IF NOT EXISTS project (
@@ -357,7 +357,12 @@ local function _collect_repr(collection, c)
    end
    local phrase = ""
    for i,v in ipairs(collection) do
+      local alt_seq = "         "
+      if i < 10 then
+         alt_seq = a.bold("M-" .. tostring(i) .. " ")
+      end
       phrase = phrase
+               .. alt_seq
                .. _highlight(v, collection.frag, c, collection.best)
                .. "\n"
    end
@@ -399,9 +404,6 @@ function Historian.search(historian, frag)
    local cursors = {}
    local best = true
    local patt = fuzz_patt(frag)
-   local function addTo(index)
-   end
-
    for i = #historian, 1, -1 do
       local score = match(patt, tostring(historian[i]))
       if score then

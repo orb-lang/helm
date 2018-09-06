@@ -121,7 +121,8 @@ local Resbuf    = require "resbuf" -- Not currently used...
 local Historian = require "historian"
 local Lex       = require "lex"
 
-local Nerf = require "nerf"
+local Nerf   = require "nerf"
+local Search = require "search"
 
 local concat         = assert(table.concat)
 local sub, gsub, rep = assert(string.sub),
@@ -352,7 +353,7 @@ Right now everything works on the default mode, "insert":
 
 ```lua
 ModeS.raga = "nerf"
-ModeS.ragaDefault = "nerf"
+ModeS.raga_default = "nerf"
 ```
 
 Yes, I'm calling it ``raga`` and that's a bit precious, but we have a ``modes``
@@ -404,19 +405,29 @@ state changes needed to switch between them.
 
 I'm going to go ahead and weld on ``search`` before I start waxing eloquent.
 
-```lua
-local closet = { nerf = {},
-                 search = {} }  -- place to keep modes we aren't using.
 
+#### ModeS.closet
+
+A storage table for modes and other things we aren't using and need to
+retrieve.
+
+```lua
+ModeS.closet = { nerf = { modes = Nerf,
+                          lex   = Lex.lua_thor },
+                 search = { modes = Search,
+                            lex   = c.base } }
 
 function ModeS.shiftMode(modeS, raga)
    if raga == "search" then
       -- stash current lexer
-      closet[modeS.raga].lex = modeS.lex
-      modeS.lex = c.base
+      -- #todo do this in a less dumb way
+      modeS.closet[modeS.raga].lex = modeS.lex
+      modeS.lex = modeS.closet.search.lex
+      modeS.modes = modeS.closet.search.modes
    elseif raga == "nerf" then
       -- do default nerfy things
-      modeS.lex = closet.nerf.lex
+      modeS.lex = modeS.closet.nerf.lex
+      modeS.modes = modeS.closet.nerf.modes
    elseif raga == "vril-nav" then
       -- do vimmy navigation
    elseif raga == "vril-ins" then
@@ -497,7 +508,6 @@ function ModeS.act(modeS, category, value)
    else
       icon_paint("NYI", category .. ":" .. value)
    end
-   modeS:paint_txtbuf()
    -- Hack in painting and searching
    if modeS.raga == "search" then
       -- we need to fake this into a 'result'
@@ -506,6 +516,8 @@ function ModeS.act(modeS, category, value)
       searchResult.n = 1
       modeS:printResults(searchResult, false)
    end
+
+   modeS:paint_txtbuf()
 end
 ```
 

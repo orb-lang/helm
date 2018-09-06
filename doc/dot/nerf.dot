@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 196"]
+doc_0 [label="doc - 207"]
 
 
 doc_0 -> { section_1}
@@ -29,7 +29,7 @@ prose_6 [label="prose"]
 
 section_7 [label="section: 14-37"]
 
-section_8 [label="section: 38-171"]
+section_8 [label="section: 38-182"]
 
 
 // END RANK section_1
@@ -193,9 +193,9 @@ prose_40 [label="prose"]
 
 section_41 [label="section: 41-66"]
 
-section_42 [label="section: 67-171"]
+section_42 [label="section: 67-182"]
 
-section_43 [label="section: 172-196"]
+section_43 [label="section: 183-207"]
 
 
 // END RANK section_8
@@ -295,7 +295,7 @@ prose_60 [label="prose"]
 
 codeblock_61 [label="code block 69-112"]
 
-codeblock_62 [label="code block 118-169"]
+codeblock_62 [label="code block 118-180"]
 
 
 // END RANK section_42
@@ -394,6 +394,15 @@ function NAV.RETURN(modeS, category, value)
    end
 end
 
+local function _modeShiftOnEmpty(modeS)
+   local buf = tostring(modeS.txtbuf)
+   if buf == \"\" then
+      modeS:shiftMode(modeS.raga_default)
+      modeS.firstChar = true
+      modeS:clearResults()
+   end
+end
+
 function NAV.BACKSPACE(modeS, category, value)
    local shrunk =  modeS.txtbuf:d_back()
    if shrunk then
@@ -402,6 +411,7 @@ function NAV.BACKSPACE(modeS, category, value)
       write(a.erase.line())
       write(a.pop())
    end
+   _modeShiftOnEmpty(modeS)
 end
 
 function NAV.DELETE(modeS, category, value)
@@ -412,6 +422,7 @@ function NAV.DELETE(modeS, category, value)
       write(a.erase.line())
       write(a.pop())
    end
+   _modeShiftOnEmpty(modeS)
 end"]
 // END RANK codeblock_62
 
@@ -424,9 +435,9 @@ prose_69 [label="prose"]
 
 prose_70 [label="prose"]
 
-codeblock_71 [label="code block 178-190"]
+codeblock_71 [label="code block 189-201"]
 
-codeblock_72 [label="code block 193-195"]
+codeblock_72 [label="code block 204-206"]
 
 
 // END RANK section_43

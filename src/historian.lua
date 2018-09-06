@@ -20,6 +20,7 @@ local color   = require "color"
 local L       = require "lpeg"
 local format  = assert (string.format)
 local sub     = assert (string.sub)
+local codepoints = assert(string.codepoints, "must have string.codepoints")
 local reverse = assert (table.reverse)
 assert(meta)
 
@@ -359,7 +360,12 @@ local function _collect_repr(collection, c)
    end
    local phrase = ""
    for i,v in ipairs(collection) do
+      local alt_seq = "         "
+      if i < 10 then
+         alt_seq = a.bold("M-" .. tostring(i) .. " ")
+      end
       phrase = phrase
+               .. alt_seq
                .. _highlight(v, collection.frag, c, collection.best)
                .. "\n"
    end

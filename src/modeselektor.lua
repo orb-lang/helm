@@ -400,17 +400,17 @@ end
 
 
 
-local closet = { nerf = { modes = Nerf},
-                 search = { modes = Search} }
-
-ModeS.closet = closet
+ModeS.closet = { nerf = { modes = Nerf,
+                          lex   = Lex.lua_thor },
+                 search = { modes = Search,
+                            lex   = c.base } }
 
 function ModeS.shiftMode(modeS, raga)
    if raga == "search" then
       -- stash current lexer
       -- #todo do this in a less dumb way
       modeS.closet[modeS.raga].lex = modeS.lex
-      modeS.lex = c.base
+      modeS.lex = modeS.closet.search.lex
       modeS.modes = modeS.closet.search.modes
    elseif raga == "nerf" then
       -- do default nerfy things
@@ -473,6 +473,7 @@ function ModeS.act(modeS, category, value)
    icon_paint(category, value)
    -- Special first-character handling
    if modeS.firstChar then
+      modeS:clearResults()
       local shifted = _firstCharHandler(modeS, category, value)
       if shifted then
         return modeS:paint_txtbuf()
@@ -497,7 +498,6 @@ function ModeS.act(modeS, category, value)
    else
       icon_paint("NYI", category .. ":" .. value)
    end
-   modeS:paint_txtbuf()
    -- Hack in painting and searching
    if modeS.raga == "search" then
       -- we need to fake this into a 'result'
@@ -506,6 +506,8 @@ function ModeS.act(modeS, category, value)
       searchResult.n = 1
       modeS:printResults(searchResult, false)
    end
+
+   modeS:paint_txtbuf()
 end
 
 
