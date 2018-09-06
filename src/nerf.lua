@@ -142,6 +142,7 @@ function NAV.RETURN(modeS, category, value)
      local more = modeS:eval()
      if not more then
        modeS.txtbuf = Txtbuf()
+       modeS.firstChar = true
      end
      modeS.hist.cursor = modeS.hist.cursor + 1
    end

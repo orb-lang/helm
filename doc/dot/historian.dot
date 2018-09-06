@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 537"]
+doc_0 [label="doc - 539"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-432"]
+section_1 [label="section: 1-434"]
 
 
 // END RANK doc_0
@@ -35,9 +35,9 @@ section_9 [label="section: 32-231"]
 
 section_10 [label="section: 282-317"]
 
-section_11 [label="section: 373-432"]
+section_11 [label="section: 378-434"]
 
-section_12 [label="section: 433-503"]
+section_12 [label="section: 435-505"]
 
 
 // END RANK section_1
@@ -190,7 +190,7 @@ leaf_38  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 // END RANK raw_37
 
 codeblock_35 -> leaf_39
-leaf_39  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Historian.HISTORY_LIMIT = 1000
+leaf_39  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Historian.HISTORY_LIMIT = 2000
 
 local create_project_table = [[
 CREATE TABLE IF NOT EXISTS project (
@@ -627,7 +627,7 @@ prose_90 [label="prose"]
 
 section_91 [label="section: 292-317"]
 
-section_92 [label="section: 318-372"]
+section_92 [label="section: 318-377"]
 
 
 // END RANK section_10
@@ -791,7 +791,7 @@ prose_125 [label="prose"]
 
 prose_126 [label="prose"]
 
-codeblock_127 [label="code block 327-370"]
+codeblock_127 [label="code block 327-375"]
 
 
 // END RANK section_92
@@ -885,7 +885,12 @@ local function _collect_repr(collection, c)
    end
    local phrase = \"\"
    for i,v in ipairs(collection) do
+      local alt_seq = \"         \"
+      if i < 10 then
+         alt_seq = a.bold(\"M-\" .. tostring(i) .. \" \")
+      end
       phrase = phrase
+               .. alt_seq
                .. _highlight(v, collection.frag, c, collection.best)
                .. \"\\n\"
    end
@@ -912,7 +917,7 @@ prose_145 [label="prose"]
 
 prose_146 [label="prose"]
 
-codeblock_147 [label="code block 390-430"]
+codeblock_147 [label="code block 395-432"]
 
 
 // END RANK section_11
@@ -1038,9 +1043,6 @@ function Historian.search(historian, frag)
    local cursors = {}
    local best = true
    local patt = fuzz_patt(frag)
-   local function addTo(index)
-   end
-
    for i = #historian, 1, -1 do
       local score = match(patt, tostring(historian[i]))
       if score then
@@ -1076,13 +1078,13 @@ header_168 [label="2 : Historian:prev()"]
 
 prose_169 [label="prose"]
 
-codeblock_170 [label="code block 435-448"]
+codeblock_170 [label="code block 437-450"]
 
-section_171 [label="section: 451-484"]
+section_171 [label="section: 453-486"]
 
-section_172 [label="section: 485-503"]
+section_172 [label="section: 487-505"]
 
-section_173 [label="section: 504-537"]
+section_173 [label="section: 506-539"]
 
 
 // END RANK section_12
@@ -1128,7 +1130,7 @@ prose_179 [label="prose"]
 
 prose_180 [label="prose"]
 
-codeblock_181 [label="code block 458-482"]
+codeblock_181 [label="code block 460-484"]
 
 
 // END RANK section_171
@@ -1217,7 +1219,7 @@ header_194 [label="3 : Historian:index(cursor)"]
 
 prose_195 [label="prose"]
 
-codeblock_196 [label="code block 489-502"]
+codeblock_196 [label="code block 491-504"]
 
 
 // END RANK section_172
@@ -1265,11 +1267,11 @@ prose_202 [label="prose"]
 
 prose_203 [label="prose"]
 
-codeblock_204 [label="code block 510-524"]
+codeblock_204 [label="code block 512-526"]
 
-codeblock_205 [label="code block 526-533"]
+codeblock_205 [label="code block 528-535"]
 
-codeblock_206 [label="code block 535-537"]
+codeblock_206 [label="code block 537-539"]
 
 
 // END RANK section_173
