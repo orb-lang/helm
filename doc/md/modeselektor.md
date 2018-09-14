@@ -484,6 +484,7 @@ function ModeS.act(modeS, category, value)
    icon_paint(category, value)
    -- Special first-character handling
    if modeS.firstChar then
+      modeS:clearResults()
       local shifted = _firstCharHandler(modeS, category, value)
       if shifted then
         return modeS:paint_txtbuf()

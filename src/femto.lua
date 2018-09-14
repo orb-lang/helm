@@ -9,10 +9,16 @@
 
 
 
---_G = setmetatable({}, {__index = _G})
+__G = setmetatable({}, {__index = _G})
+
+setfenv(0, __G)
+local function _femto(_ENV)
 
 
 
+
+
+setfenv(1, _ENV)
 L    = require "lpeg"
 lfs  = require "lfs"
 ffi  = require "ffi"
@@ -257,7 +263,7 @@ color.allNames()
 
 -- Re-attach _G
 
-_G = getmetatable(_G)
+--setfenv(0, __G)
 
 print "an repl, plz reply uwu 👀"
 write '👉  '
@@ -280,4 +286,15 @@ if retcode ~= true then
 end
 
 print("kthxbye")
+return retcode
+
+
+
+
+
+
+
+end -- of wrapper
+local retcode = _femto(__G)
+
 return retcode

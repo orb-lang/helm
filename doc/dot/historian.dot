@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 539"]
+doc_0 [label="doc - 540"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-434"]
+section_1 [label="section: 1-435"]
 
 
 // END RANK doc_0
@@ -27,17 +27,17 @@ prose_5 [label="prose"]
 
 prose_6 [label="prose"]
 
-codeblock_7 [label="code block 16-25"]
+codeblock_7 [label="code block 16-26"]
 
-codeblock_8 [label="code block 27-29"]
+codeblock_8 [label="code block 28-30"]
 
-section_9 [label="section: 32-231"]
+section_9 [label="section: 33-232"]
 
-section_10 [label="section: 282-317"]
+section_10 [label="section: 283-318"]
 
-section_11 [label="section: 378-434"]
+section_11 [label="section: 379-435"]
 
-section_12 [label="section: 435-505"]
+section_12 [label="section: 436-506"]
 
 
 // END RANK section_1
@@ -115,6 +115,7 @@ local color   = require \"color\"
 local L       = require \"lpeg\"
 local format  = assert (string.format)
 local sub     = assert (string.sub)
+local codepoints = assert(string.codepoints, \"must have string.codepoints\")
 local reverse = assert (table.reverse)
 assert(meta)"]
 // END RANK codeblock_7
@@ -130,13 +131,13 @@ header_24 [label="2 : Persistence"]
 
 prose_25 [label="prose"]
 
-section_26 [label="section: 36-141"]
+section_26 [label="section: 37-142"]
 
-section_27 [label="section: 142-220"]
+section_27 [label="section: 143-221"]
 
-section_28 [label="section: 221-231"]
+section_28 [label="section: 222-232"]
 
-section_29 [label="section: 232-281"]
+section_29 [label="section: 233-282"]
 
 
 // END RANK section_9
@@ -167,7 +168,7 @@ header_33 [label="3 : SQLite battery"]
 
 prose_34 [label="prose"]
 
-codeblock_35 [label="code block 38-139"]
+codeblock_35 [label="code block 39-140"]
 
 
 // END RANK section_26
@@ -301,7 +302,7 @@ prose_41 [label="prose"]
 
 prose_42 [label="prose"]
 
-codeblock_43 [label="code block 149-218"]
+codeblock_43 [label="code block 150-219"]
 
 
 // END RANK section_27
@@ -420,7 +421,7 @@ prose_51 [label="prose"]
 
 prose_52 [label="prose"]
 
-codeblock_53 [label="code block 227-229"]
+codeblock_53 [label="code block 228-230"]
 
 
 // END RANK section_28
@@ -475,7 +476,7 @@ prose_63 [label="prose"]
 
 prose_64 [label="prose"]
 
-codeblock_65 [label="code block 247-279"]
+codeblock_65 [label="code block 248-280"]
 
 
 // END RANK section_29
@@ -625,9 +626,9 @@ prose_89 [label="prose"]
 
 prose_90 [label="prose"]
 
-section_91 [label="section: 292-317"]
+section_91 [label="section: 293-318"]
 
-section_92 [label="section: 318-377"]
+section_92 [label="section: 319-378"]
 
 
 // END RANK section_10
@@ -678,7 +679,7 @@ prose_99 [label="prose"]
 
 prose_100 [label="prose"]
 
-codeblock_101 [label="code block 301-315"]
+codeblock_101 [label="code block 302-316"]
 
 
 // END RANK section_91
@@ -791,7 +792,7 @@ prose_125 [label="prose"]
 
 prose_126 [label="prose"]
 
-codeblock_127 [label="code block 327-375"]
+codeblock_127 [label="code block 328-376"]
 
 
 // END RANK section_92
@@ -917,7 +918,7 @@ prose_145 [label="prose"]
 
 prose_146 [label="prose"]
 
-codeblock_147 [label="code block 395-432"]
+codeblock_147 [label="code block 396-433"]
 
 
 // END RANK section_11
@@ -1078,13 +1079,13 @@ header_168 [label="2 : Historian:prev()"]
 
 prose_169 [label="prose"]
 
-codeblock_170 [label="code block 437-450"]
+codeblock_170 [label="code block 438-451"]
 
-section_171 [label="section: 453-486"]
+section_171 [label="section: 454-487"]
 
-section_172 [label="section: 487-505"]
+section_172 [label="section: 488-506"]
 
-section_173 [label="section: 506-539"]
+section_173 [label="section: 507-540"]
 
 
 // END RANK section_12
@@ -1130,7 +1131,7 @@ prose_179 [label="prose"]
 
 prose_180 [label="prose"]
 
-codeblock_181 [label="code block 460-484"]
+codeblock_181 [label="code block 461-485"]
 
 
 // END RANK section_171
@@ -1219,7 +1220,7 @@ header_194 [label="3 : Historian:index(cursor)"]
 
 prose_195 [label="prose"]
 
-codeblock_196 [label="code block 491-504"]
+codeblock_196 [label="code block 492-505"]
 
 
 // END RANK section_172
@@ -1267,11 +1268,11 @@ prose_202 [label="prose"]
 
 prose_203 [label="prose"]
 
-codeblock_204 [label="code block 512-526"]
+codeblock_204 [label="code block 513-527"]
 
-codeblock_205 [label="code block 528-535"]
+codeblock_205 [label="code block 529-536"]
 
-codeblock_206 [label="code block 537-539"]
+codeblock_206 [label="code block 538-540"]
 
 
 // END RANK section_173

@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 207"]
+doc_0 [label="doc - 208"]
 
 
 doc_0 -> { section_1}
@@ -29,7 +29,7 @@ prose_6 [label="prose"]
 
 section_7 [label="section: 14-37"]
 
-section_8 [label="section: 38-182"]
+section_8 [label="section: 38-183"]
 
 
 // END RANK section_1
@@ -193,9 +193,9 @@ prose_40 [label="prose"]
 
 section_41 [label="section: 41-66"]
 
-section_42 [label="section: 67-182"]
+section_42 [label="section: 67-183"]
 
-section_43 [label="section: 183-207"]
+section_43 [label="section: 184-208"]
 
 
 // END RANK section_8
@@ -295,7 +295,7 @@ prose_60 [label="prose"]
 
 codeblock_61 [label="code block 69-112"]
 
-codeblock_62 [label="code block 118-180"]
+codeblock_62 [label="code block 118-181"]
 
 
 // END RANK section_42
@@ -389,6 +389,7 @@ function NAV.RETURN(modeS, category, value)
      local more = modeS:eval()
      if not more then
        modeS.txtbuf = Txtbuf()
+       modeS.firstChar = true
      end
      modeS.hist.cursor = modeS.hist.cursor + 1
    end
@@ -435,9 +436,9 @@ prose_69 [label="prose"]
 
 prose_70 [label="prose"]
 
-codeblock_71 [label="code block 189-201"]
+codeblock_71 [label="code block 190-202"]
 
-codeblock_72 [label="code block 204-206"]
+codeblock_72 [label="code block 205-207"]
 
 
 // END RANK section_43

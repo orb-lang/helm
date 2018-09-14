@@ -23,6 +23,7 @@ local color   = require "color"
 local L       = require "lpeg"
 local format  = assert (string.format)
 local sub     = assert (string.sub)
+local codepoints = assert(string.codepoints, "must have string.codepoints")
 local reverse = assert (table.reverse)
 assert(meta)
 ```

@@ -208,11 +208,9 @@ local ts
 
 local function tabulate(tab, depth, cycle)
    cycle = cycle or {}
+   depth = depth or 0
    if type(tab) ~= "table" then
       return ts(tab)
-   end
-   if type(depth) == "nil" then
-      depth = 0
    end
    if depth > C.depth or cycle[tab] then
       return ts(tab, "tab_name")

@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 651"]
+doc_0 [label="doc - 652"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-600"]
+section_1 [label="section: 1-601"]
 
 
 // END RANK doc_0
@@ -25,9 +25,9 @@ prose_4 [label="prose"]
 
 section_5 [label="section: 12-385"]
 
-section_6 [label="section: 451-530"]
+section_6 [label="section: 451-531"]
 
-section_7 [label="section: 601-651"]
+section_7 [label="section: 602-652"]
 
 
 // END RANK section_1
@@ -2500,15 +2500,15 @@ prose_605 [label="prose"]
 
 prose_606 [label="prose"]
 
-codeblock_607 [label="code block 464-511"]
+codeblock_607 [label="code block 464-512"]
 
 prose_608 [label="prose"]
 
-codeblock_609 [label="code block 515-519"]
+codeblock_609 [label="code block 516-520"]
 
-section_610 [label="section: 522-530"]
+section_610 [label="section: 523-531"]
 
-section_611 [label="section: 531-600"]
+section_611 [label="section: 532-601"]
 
 
 // END RANK section_6
@@ -2675,6 +2675,7 @@ function ModeS.act(modeS, category, value)
    icon_paint(category, value)
    -- Special first-character handling
    if modeS.firstChar then
+      modeS:clearResults()
       local shifted = _firstCharHandler(modeS, category, value)
       if shifted then
         return modeS:paint_txtbuf()
@@ -2805,11 +2806,11 @@ header_671 [label="3 : ModeS:eval()"]
 
 prose_672 [label="prose"]
 
-codeblock_673 [label="code block 534-539"]
+codeblock_673 [label="code block 535-540"]
 
-codeblock_674 [label="code block 541-545"]
+codeblock_674 [label="code block 542-546"]
 
-codeblock_675 [label="code block 547-598"]
+codeblock_675 [label="code block 548-599"]
 
 
 // END RANK section_611
@@ -2905,9 +2906,9 @@ header_682 [label="2 : new"]
 
 prose_683 [label="prose"]
 
-codeblock_684 [label="code block 605-623"]
+codeblock_684 [label="code block 606-624"]
 
-codeblock_685 [label="code block 625-627"]
+codeblock_685 [label="code block 626-628"]
 
 
 // END RANK section_7

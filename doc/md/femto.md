@@ -1,12 +1,17 @@
 # Femto
 
 
-
+``femto`` is our repl.
 
 ## includes
 
-This
 
+#### Intercept _G
+
+```lua
+__G = _G
+setfenv(0, setmetatable({}, {__index = _G}))
+```
 ```lua
 L    = require "lpeg"
 lfs  = require "lfs"
@@ -56,11 +61,11 @@ table.collect = core.collect
 table.select = core.select
 table.reverse = core.reverse
 table.hasfield = core.hasfield
+table.keys = core.keys
 
 table.pack = rawget(table, "pack") and table.pack or core.pack
 table.unpack = rawget(table, "unpack") and table.unpack or unpack
 
-codepoints = core.codepoints
 meta = core.meta
 getmeta, setmeta = getmetatable, setmetatable
 hasmetamethod, hasfield = core.hasmetamethod, core.hasfield
@@ -244,6 +249,10 @@ end
 -- into the colorizer
 color.allNames()
 
+-- Re-attach _G
+
+setfenv(0, __G)
+
 print "an repl, plz reply uwu 👀"
 write '👉  '
 
@@ -252,6 +261,8 @@ uv.tty_set_mode(stdin, 2)
 -- mouse mode
 write(a.mouse.track(true))
 uv.read_start(stdin, onseq)
+
+
 
 -- main loop
 local retcode =  uv.run('default')
