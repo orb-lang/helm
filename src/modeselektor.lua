@@ -495,6 +495,7 @@ function ModeS.act(modeS, category, value)
       end
    elseif category == "MOUSE" then
       colwrite(pr_mouse(value), STATCOL, STAT_RUN)
+      return "mouse" -- no repaint, yet
    else
       icon_paint("NYI", category .. ":" .. value)
    end

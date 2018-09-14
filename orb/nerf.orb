@@ -70,6 +70,7 @@ Nerf = { ASCII  = ASCII,
 local up1, down1 = a.jump.up(), a.jump.down()
 
 function NAV.UP(modeS, category, value)
+   modeS.firstChar = false
    local inline = modeS.txtbuf:up()
    if not inline then
       local prev_result, linestash
@@ -98,6 +99,7 @@ function NAV.DOWN(modeS, category, value)
       modeS.txtbuf, next_result, next_p = modeS.hist:next()
       if next_p then
          modeS.txtbuf = Txtbuf()
+         modeS.firstChar = true
       end
       modeS:clearResults()
       if next_result then
