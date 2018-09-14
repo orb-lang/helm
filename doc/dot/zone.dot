@@ -1,0 +1,494 @@
+digraph lpegNode {
+
+node [fontname=Helvetica]
+edge [style=dashed]
+
+doc_0 [label="doc - 48"]
+
+
+doc_0 -> { section_1}
+{rank=same; section_1}
+
+section_1 [label="section: 1-48"]
+
+
+// END RANK doc_0
+
+section_1 -> { header_2 prose_3 prose_4 prose_5 prose_6 prose_7 prose_8 prose_9 prose_10 prose_11 prose_12 prose_13}
+{rank=same; header_2 prose_3 prose_4 prose_5 prose_6 prose_7 prose_8 prose_9 prose_10 prose_11 prose_12 prose_13}
+
+header_2 [label="1 : Zone"]
+
+prose_3 [label="prose"]
+
+prose_4 [label="prose"]
+
+prose_5 [label="prose"]
+
+prose_6 [label="prose"]
+
+prose_7 [label="prose"]
+
+prose_8 [label="prose"]
+
+prose_9 [label="prose"]
+
+prose_10 [label="prose"]
+
+prose_11 [label="prose"]
+
+prose_12 [label="prose"]
+
+prose_13 [label="prose"]
+
+
+// END RANK section_1
+
+header_2 -> leaf_14
+leaf_14  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Zone"]
+// END RANK header_2
+
+prose_3 -> { raw_15}
+{rank=same; raw_15}
+
+raw_15 [label="raw"]
+
+
+// END RANK prose_3
+
+raw_15 -> leaf_16
+leaf_16  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+
+We need to get a lot more intelligent about how we write to the screen.
+"]
+// END RANK raw_15
+
+prose_4 -> { prespace_17 literal_18 raw_19}
+{rank=same; prespace_17 literal_18 raw_19}
+
+prespace_17 [label="prespace"]
+
+literal_18 [label="literal"]
+
+raw_19 [label="raw"]
+
+
+// END RANK prose_4
+
+prespace_17 -> leaf_20
+leaf_20  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK prespace_17
+
+literal_18 -> leaf_21
+leaf_21  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Zone"]
+// END RANK literal_18
+
+raw_19 -> leaf_22
+leaf_22  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is our metatable for handling these regions.  It's a tricky bit of
+engineering and something I've never really done before.
+"]
+// END RANK raw_19
+
+prose_5 -> { raw_23 prespace_24 literal_25 raw_26}
+{rank=same; raw_23 prespace_24 literal_25 raw_26}
+
+raw_23 [label="raw"]
+
+prespace_24 [label="prespace"]
+
+literal_25 [label="literal"]
+
+raw_26 [label="raw"]
+
+
+// END RANK prose_5
+
+raw_23 -> leaf_27
+leaf_27  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+The result we want is to have a single"]
+// END RANK raw_23
+
+prespace_24 -> leaf_28
+leaf_28  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_24
+
+literal_25 -> leaf_29
+leaf_29  [color=Gray,shape=rectangle,fontname=Inconsolata,label="modeS:refresh()"]
+// END RANK literal_25
+
+raw_26 -> leaf_30
+leaf_30  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" called at the end of
+each action, which repaints the screen.  A Zone is either affected or it
+isn't; if it is, we repaint the whole Zone, if not, nothing.
+"]
+// END RANK raw_26
+
+prose_6 -> { raw_31 prespace_32 literal_33 raw_34 prespace_35 literal_36 raw_37}
+{rank=same; raw_31 prespace_32 literal_33 raw_34 prespace_35 literal_36 raw_37}
+
+raw_31 [label="raw"]
+
+prespace_32 [label="prespace"]
+
+literal_33 [label="literal"]
+
+raw_34 [label="raw"]
+
+prespace_35 [label="prespace"]
+
+literal_36 [label="literal"]
+
+raw_37 [label="raw"]
+
+
+// END RANK prose_6
+
+raw_31 -> leaf_38
+leaf_38  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Zones have a"]
+// END RANK raw_31
+
+prespace_32 -> leaf_39
+leaf_39  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_32
+
+literal_33 -> leaf_40
+leaf_40  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".z"]
+// END RANK literal_33
+
+raw_34 -> leaf_41
+leaf_41  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" axis, starting with 1, and monotonically increasing. I
+expect to use"]
+// END RANK raw_34
+
+prespace_35 -> leaf_42
+leaf_42  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_35
+
+literal_36 -> leaf_43
+leaf_43  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".z == 2"]
+// END RANK literal_36
+
+raw_37 -> leaf_44
+leaf_44  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" and leave it at that, for now, but we want to
+be able to stack as well as tile, at some point.
+"]
+// END RANK raw_37
+
+prose_7 -> { raw_45 prespace_46 literal_47 raw_48 prespace_49 literal_50 raw_51}
+{rank=same; raw_45 prespace_46 literal_47 raw_48 prespace_49 literal_50 raw_51}
+
+raw_45 [label="raw"]
+
+prespace_46 [label="prespace"]
+
+literal_47 [label="literal"]
+
+raw_48 [label="raw"]
+
+prespace_49 [label="prespace"]
+
+literal_50 [label="literal"]
+
+raw_51 [label="raw"]
+
+
+// END RANK prose_7
+
+raw_45 -> leaf_52
+leaf_52  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+We'll want a"]
+// END RANK raw_45
+
+prespace_46 -> leaf_53
+leaf_53  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_46
+
+literal_47 -> leaf_54
+leaf_54  [color=Gray,shape=rectangle,fontname=Inconsolata,label="zoneherder"]
+// END RANK literal_47
+
+raw_48 -> leaf_55
+leaf_55  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" of some sort to manage zone changes. Each Z plane
+has to have non-overlapping Zones, and"]
+// END RANK raw_48
+
+prespace_49 -> leaf_56
+leaf_56  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_49
+
+literal_50 -> leaf_57
+leaf_57  [color=Gray,shape=rectangle,fontname=Inconsolata,label="1"]
+// END RANK literal_50
+
+raw_51 -> leaf_58
+leaf_58  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" should be completely tiled. The
+zoneherder propagates adjustments.
+"]
+// END RANK raw_51
+
+prose_8 -> { raw_59 prespace_60 literal_61 raw_62}
+{rank=same; raw_59 prespace_60 literal_61 raw_62}
+
+raw_59 [label="raw"]
+
+prespace_60 [label="prespace"]
+
+literal_61 [label="literal"]
+
+raw_62 [label="raw"]
+
+
+// END RANK prose_8
+
+raw_59 -> leaf_63
+leaf_63  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Man. I should read some"]
+// END RANK raw_59
+
+prespace_60 -> leaf_64
+leaf_64  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_60
+
+literal_61 -> leaf_65
+leaf_65  [color=Gray,shape=rectangle,fontname=Inconsolata,label="awesomewm"]
+// END RANK literal_61
+
+raw_62 -> leaf_66
+leaf_66  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" source code, huh.
+"]
+// END RANK raw_62
+
+prose_9 -> { raw_67 prespace_68 literal_69 raw_70}
+{rank=same; raw_67 prespace_68 literal_69 raw_70}
+
+raw_67 [label="raw"]
+
+prespace_68 [label="prespace"]
+
+literal_69 [label="literal"]
+
+raw_70 [label="raw"]
+
+
+// END RANK prose_9
+
+raw_67 -> leaf_71
+leaf_71  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+A paint message to a Zone will be a"]
+// END RANK raw_67
+
+prespace_68 -> leaf_72
+leaf_72  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_68
+
+literal_69 -> leaf_73
+leaf_73  [color=Gray,shape=rectangle,fontname=Inconsolata,label="rainbuf"]
+// END RANK literal_69
+
+raw_70 -> leaf_74
+leaf_74  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".  There are a few tricky things
+here, and ultimately we'll need a Unicode database to chase down all the
+edges.  We need to engineer the system so that it can use that info when the
+time comes.
+"]
+// END RANK raw_70
+
+prose_10 -> { raw_75}
+{rank=same; raw_75}
+
+raw_75 [label="raw"]
+
+
+// END RANK prose_10
+
+raw_75 -> leaf_76
+leaf_76  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+The Zone needs to stay in its lane, basically, so we need to know when we've
+reached the edges.  When we start to add mouse clicks, we have to know what
+the mouse has targeted, so Zones will receive mouse messages also.
+"]
+// END RANK raw_75
+
+prose_11 -> { raw_77 prespace_78 literal_79 raw_80}
+{rank=same; raw_77 prespace_78 literal_79 raw_80}
+
+raw_77 [label="raw"]
+
+prespace_78 [label="prespace"]
+
+literal_79 [label="literal"]
+
+raw_80 [label="raw"]
+
+
+// END RANK prose_11
+
+raw_77 -> leaf_81
+leaf_81  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+This is the next major push for"]
+// END RANK raw_77
+
+prespace_78 -> leaf_82
+leaf_82  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_78
+
+literal_79 -> leaf_83
+leaf_83  [color=Gray,shape=rectangle,fontname=Inconsolata,label="femto"]
+// END RANK literal_79
+
+raw_80 -> leaf_84
+leaf_84  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", and when it's complete I'll be ready
+to show it off.  It's a significant piece of engineering and I'm thinking I
+need to shore up Orb a bit to get there.
+"]
+// END RANK raw_80
+
+prose_12 -> { raw_85}
+{rank=same; raw_85}
+
+raw_85 [label="raw"]
+
+
+// END RANK prose_12
+
+raw_85 -> leaf_86
+leaf_86  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Specifically, I need the ability to add a plantUML pipeline to the doc
+generator, and maybe cut the apron strings with respect to Markdown and public
+hosting.
+"]
+// END RANK raw_85
+
+prose_13 -> { raw_87 prespace_88 literal_89 raw_90 prespace_91 literal_92 raw_93 prespace_94 literal_95 raw_96 prespace_97 literal_98 raw_99 prespace_100 literal_101 raw_102 prespace_103 literal_104 raw_105}
+{rank=same; raw_87 prespace_88 literal_89 raw_90 prespace_91 literal_92 raw_93 prespace_94 literal_95 raw_96 prespace_97 literal_98 raw_99 prespace_100 literal_101 raw_102 prespace_103 literal_104 raw_105}
+
+raw_87 [label="raw"]
+
+prespace_88 [label="prespace"]
+
+literal_89 [label="literal"]
+
+raw_90 [label="raw"]
+
+prespace_91 [label="prespace"]
+
+literal_92 [label="literal"]
+
+raw_93 [label="raw"]
+
+prespace_94 [label="prespace"]
+
+literal_95 [label="literal"]
+
+raw_96 [label="raw"]
+
+prespace_97 [label="prespace"]
+
+literal_98 [label="literal"]
+
+raw_99 [label="raw"]
+
+prespace_100 [label="prespace"]
+
+literal_101 [label="literal"]
+
+raw_102 [label="raw"]
+
+prespace_103 [label="prespace"]
+
+literal_104 [label="literal"]
+
+raw_105 [label="raw"]
+
+
+// END RANK prose_13
+
+raw_87 -> leaf_106
+leaf_106  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+This is a delicate point in the boot process. "]
+// END RANK raw_87
+
+prespace_88 -> leaf_107
+leaf_107  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_88
+
+literal_89 -> leaf_108
+leaf_108  [color=Gray,shape=rectangle,fontname=Inconsolata,label="femto"]
+// END RANK literal_89
+
+raw_90 -> leaf_109
+leaf_109  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" needs to be able to
+interact with an already-running bridge/luv process, as it stands the two
+event loops will collide. "]
+// END RANK raw_90
+
+prespace_91 -> leaf_110
+leaf_110  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_91
+
+literal_92 -> leaf_111
+leaf_111  [color=Gray,shape=rectangle,fontname=Inconsolata,label="orb"]
+// END RANK literal_92
+
+raw_93 -> leaf_112
+leaf_112  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" only runs an event loop with"]
+// END RANK raw_93
+
+prespace_94 -> leaf_113
+leaf_113  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_94
+
+literal_95 -> leaf_114
+leaf_114  [color=Gray,shape=rectangle,fontname=Inconsolata,label="orb serve"]
+// END RANK literal_95
+
+raw_96 -> leaf_115
+leaf_115  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" so
+the next step with"]
+// END RANK raw_96
+
+prespace_97 -> leaf_116
+leaf_116  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_97
+
+literal_98 -> leaf_117
+leaf_117  [color=Gray,shape=rectangle,fontname=Inconsolata,label="femto"]
+// END RANK literal_98
+
+raw_99 -> leaf_118
+leaf_118  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" proper is to set it up locally to run as a"]
+// END RANK raw_99
+
+prespace_100 -> leaf_119
+leaf_119  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_100
+
+literal_101 -> leaf_120
+leaf_120  [color=Gray,shape=rectangle,fontname=Inconsolata,label="repl"]
+// END RANK literal_101
+
+raw_102 -> leaf_121
+leaf_121  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+on plain ordinary"]
+// END RANK raw_102
+
+prespace_103 -> leaf_122
+leaf_122  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_103
+
+literal_104 -> leaf_123
+leaf_123  [color=Gray,shape=rectangle,fontname=Inconsolata,label="br"]
+// END RANK literal_104
+
+raw_105 -> leaf_124
+leaf_124  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" programs, so I can use all this carefully won tooling
+on the other parts of the programme.
+
+
+"]
+// END RANK raw_105
+
+
+}

@@ -56,6 +56,9 @@ for i = 1, 9 do
    Search.ALT["M-" ..tostring(i)] = _makeControl(i)
 end
 
+Search.NAV.UP = nil
+Search.NAV.DOWN = nil
+
 
 
 return Search

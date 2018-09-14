@@ -100,6 +100,8 @@ assert(ts, "must have ts in _G")
 
 
 
+local stacktrace = require "stacktrace" . stacktrace
+
 local Txtbuf    = require "txtbuf"
 local Resbuf    = require "resbuf" -- Not currently used...
 local Historian = require "historian"
@@ -495,7 +497,6 @@ function ModeS.act(modeS, category, value)
       end
    elseif category == "MOUSE" then
       colwrite(pr_mouse(value), STATCOL, STAT_RUN)
-      return "mouse" -- no repaint, yet
    else
       icon_paint("NYI", category .. ":" .. value)
    end
@@ -565,7 +566,7 @@ function ModeS.eval(modeS)
       end -- more special REPL prefix soon: /, ?, >(?)
    end
    if f then
-      success, results = gatherResults(xpcall(f, debug.traceback))
+      success, results = gatherResults(xpcall(f, stacktrace))
       if success then
       -- successful call
          if results.n > 0 then
@@ -587,7 +588,7 @@ function ModeS.eval(modeS)
          return true
       else
          modeS:clearResults()
-         modeS:write(err)
+         modeS:write(err .. "\n" .. stacktrace())
          -- pass through to default.
       end
    end

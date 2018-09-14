@@ -19,6 +19,7 @@ No sense wasting a level of indent on a wrapper imho
 
 #!lua
 setfenv(1, _ENV)
+
 L    = require "lpeg"
 lfs  = require "lfs"
 ffi  = require "ffi"
@@ -274,7 +275,13 @@ uv.tty_set_mode(stdin, 2)
 write(a.mouse.track(true))
 uv.read_start(stdin, onseq)
 
-
+-- read main programme
+-- faked for now
+---[[
+local chunk = loadstring "wobble = 1 + 1"
+setfenv(chunk, _G)
+chunk()
+--]]
 
 -- main loop
 local retcode =  uv.run('default')
