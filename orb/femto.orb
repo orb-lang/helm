@@ -262,10 +262,6 @@ end
 -- into the colorizer
 color.allNames()
 
--- Re-attach _G
-
---setfenv(0, __G)
-
 print "an repl, plz reply uwu 👀"
 write '👉  '
 
@@ -279,7 +275,7 @@ uv.read_start(stdin, onseq)
 -- faked for now
 ---[[
 local chunk = loadstring "wobble = 1 + 1"
-setfenv(chunk, _G)
+setfenv(chunk,  _G)
 chunk()
 --]]
 

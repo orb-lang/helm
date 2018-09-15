@@ -316,7 +316,7 @@ function core.safeget(tab, key)
          val = rawget(_M.__index, key)
       elseif index_t == "function" then
          local success
-         success, val = pcall(_M.__index, tab, key)
+         success, val = pcall(_M.__index, table, key)
          if success then
             return val
          else

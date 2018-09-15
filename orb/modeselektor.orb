@@ -282,12 +282,17 @@ This writes to the results window, and the results window only.
 It should therefore be called =writeResults= or something.
 
 #!lua
+local lines = assert(string.lines, "string.lines must be provided")
+
+
 function ModeS.write(modeS, str)
    local nl = a.col(modeS.l_margin) .. a.jump.down(1)
-   local phrase, num_subs
-   phrase, num_subs = gsub(str, "\n", nl)
    write(a.cursor.hide())
-   write(phrase)
+   local line_tab = core.collect(lines, str)
+   for line in lines(str) do
+       write(line)
+       write(nl)
+   end
    write(a.cursor.show())
 end
 #/lua
@@ -325,7 +330,7 @@ function ModeS.printResults(modeS, results, new)
    local rainbuf = {}
    write(a.cursor.hide())
    modeS:clearResults()
-   local row = new and modeS.repl_top + 1 or modeS:replLine() + 1
+   local row = new and modeS.repl_top or modeS:replLine()
    modeS:write(a.rc(row, modeS.l_margin))
    for i = 1, results.n do
       if results.frozen then
