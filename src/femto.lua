@@ -187,7 +187,7 @@ local stdin = uv.new_tty(0, true)
 -- then puts the cursor at 1,1.
 write "\x1b[?47h\x1b[2J\x1b[H"
 modeS = require "modeselektor" ()
-modeS.max_row, modeS.max_col = uv.tty_get_winsize(stdin)
+modeS.max_col, modeS.max_row = uv.tty_get_winsize(stdin)
 
 
 

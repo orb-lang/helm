@@ -287,11 +287,16 @@ local lines = assert(string.lines, "string.lines must be provided")
 
 function ModeS.write(modeS, str)
    local nl = a.col(modeS.l_margin) .. a.jump.down(1)
+   local pr_row = modeS:replLine() + 1
    write(a.cursor.hide())
    local line_tab = core.collect(lines, str)
    for line in lines(str) do
        write(line)
        write(nl)
+       pr_row = pr_row + 1
+       if pr_row > modeS.max_row then
+          break
+       end
    end
    write(a.cursor.show())
 end

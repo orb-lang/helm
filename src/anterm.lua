@@ -328,7 +328,7 @@ setmetatable(jump,J)
 
 anterm["jump"] = jump
 
-function anterm.rc (row, column)
+function anterm.rc(row, column)
    return CSI .. row .. ";" .. column .. "H"
 end
 
@@ -500,6 +500,24 @@ cursor.pop = anterm.pop
 
 
 
+
+
+
+local report = {}
+
+function report.area()
+   return "\x1b[18t"
+end
+anterm.report = report
+
+
+
+
+
+
+
+
+
 local totty = {}
 local lines = assert(core.lines)
 local collect = assert(core.collect)
@@ -637,7 +655,7 @@ for k,v in pairs(__alt_nav) do
    navigation[v] = k
 end
 
-__navigation, __alt_nav = nil, nil, nil
+__navigation, __alt_nav = nil, nil
 
 anterm.navigation = navigation
 

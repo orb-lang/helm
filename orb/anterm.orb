@@ -328,7 +328,7 @@ setmetatable(jump,J)
 
 anterm["jump"] = jump
 
-function anterm.rc (row, column)
+function anterm.rc(row, column)
    return CSI .. row .. ";" .. column .. "H"
 end
 
@@ -493,6 +493,24 @@ cursor.stash = anterm.stash
 cursor.pop = anterm.pop
 #/lua
 
+
+*** Reports
+
+Requests various statuses from the terminal.
+
+Responses must be parsed from stdin.
+
+**** report.area()
+
+#!lua
+local report = {}
+
+function report.area()
+   return "\x1b[18t"
+end
+anterm.report = report
+#/lua
+
 *** String Transformation
 
 Turns out I had some useful stuff in =termstring.lua=.
@@ -637,7 +655,7 @@ for k,v in pairs(__alt_nav) do
    navigation[v] = k
 end
 
-__navigation, __alt_nav = nil, nil, nil
+__navigation, __alt_nav = nil, nil
 
 anterm.navigation = navigation
 
