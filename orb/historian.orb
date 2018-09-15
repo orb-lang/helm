@@ -456,7 +456,6 @@ end
 Returns the next txtbuf in history, and a second flag to tell the
 =modeselektor= it might be time for a new one.
 
-I'd like to stop buffering blank lines at some point.
 
 #!lua
 function Historian.next(historian)
@@ -466,13 +465,10 @@ function Historian.next(historian)
    end
    local txtbuf = historian[historian.cursor + Δ]
    if not txtbuf then
-      return Txtbuf()
+      return Txtbuf(), nil, true
    end
    txtbuf.cur_row = #txtbuf.lines
    local result = historian.results[txtbuf]
-   if not txtbuf then
-      return Txtbuf()
-   end
    historian.cursor = historian.cursor + Δ
    txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
    if not (Δ > 0) and #txtbuf.lines > 0 then
@@ -512,7 +508,8 @@ Doesn't adjust the cursor.
 
 #!lua
 function Historian.append(historian, txtbuf, results, success)
-   if tostring(historian[#historian]) == tostring(txtbuf) then
+   if tostring(historian[#historian]) == tostring(txtbuf)
+      or tostring(txtbuf) == "" then
       -- don't bother
       return false
    end

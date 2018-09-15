@@ -195,7 +195,12 @@ modeS.max_col, modeS.max_row = uv.tty_get_winsize(stdin)
 local idle_win = uv.new_idle()
 
 idle_win:start(function()
-   modeS.max_col, modeS.max_row = uv.tty_get_winsize(stdin)
+   local max_col, max_row = uv.tty_get_winsize(stdin)
+   if max_col ~= modeS.max_col or max_row ~= modeS.max_row then
+      -- reflow screen.
+      -- for now:
+      modeS.max_col, modeS.max_row = max_col, max_row
+   end
 end)
 
 

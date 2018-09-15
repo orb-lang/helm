@@ -458,7 +458,6 @@ end
 
 
 
-
 function Historian.next(historian)
    local Δ = historian.cursor < #historian and 1 or 0
    if historian.cursor == 0 or #historian == 0 then
@@ -466,13 +465,10 @@ function Historian.next(historian)
    end
    local txtbuf = historian[historian.cursor + Δ]
    if not txtbuf then
-      return Txtbuf()
+      return Txtbuf(), nil, true
    end
    txtbuf.cur_row = #txtbuf.lines
    local result = historian.results[txtbuf]
-   if not txtbuf then
-      return Txtbuf()
-   end
    historian.cursor = historian.cursor + Δ
    txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
    if not (Δ > 0) and #txtbuf.lines > 0 then
@@ -512,7 +508,8 @@ end
 
 
 function Historian.append(historian, txtbuf, results, success)
-   if tostring(historian[#historian]) == tostring(txtbuf) then
+   if tostring(historian[#historian]) == tostring(txtbuf)
+      or tostring(txtbuf) == "" then
       -- don't bother
       return false
    end

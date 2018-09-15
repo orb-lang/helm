@@ -275,17 +275,14 @@ end
 #/lua
 
 
-*** ModeS:write(str)
+*** ModeS:writeResults(str)
 
-This writes to the results window, and the results window only.
-
-It should therefore be called =writeResults= or something.
+This writes =str= to the results zone.
 
 #!lua
 local lines = assert(string.lines, "string.lines must be provided")
 
-
-function ModeS.write(modeS, str)
+function ModeS.writeResults(modeS, str)
    local nl = a.col(modeS.l_margin) .. a.jump.down(1)
    local pr_row = modeS:replLine() + 1
    write(a.cursor.hide())
@@ -318,7 +315,7 @@ function ModeS.paint_txtbuf(modeS)
    write(a.erase.box(modeS.repl_top, modeS.l_margin,
                      modeS:replLine(), modeS.r_margin))
    write(a.jump(modeS.repl_top, modeS.l_margin))
-   modeS:write(lb)
+   modeS:writeResults(lb)
    write(a.rc(modeS.txtbuf.cur_row + modeS.repl_top - 1, modeS:cur_col()))
    write(a.cursor.show())
 end
@@ -336,7 +333,7 @@ function ModeS.printResults(modeS, results, new)
    write(a.cursor.hide())
    modeS:clearResults()
    local row = new and modeS.repl_top or modeS:replLine()
-   modeS:write(a.rc(row, modeS.l_margin))
+   modeS:writeResults(a.rc(row, modeS.l_margin))
    for i = 1, results.n do
       if results.frozen then
          rainbuf[i] = results[i]
@@ -344,7 +341,7 @@ function ModeS.printResults(modeS, results, new)
          rainbuf[i] = ts(results[i])
       end
    end
-   modeS:write(concat(rainbuf, '   '))
+   modeS:writeResults(concat(rainbuf, '   '))
    write(a.cursor.show())
 end
 #/lua
@@ -588,7 +585,7 @@ function ModeS.eval(modeS)
       -- error
          write(a.cursor.hide())
          modeS:clearResults()
-         modeS:write(results[1])
+         modeS:writeResults(results[1])
       end
    else
       if err:match "'<eof>'$" then
@@ -598,7 +595,7 @@ function ModeS.eval(modeS)
          return true
       else
          modeS:clearResults()
-         modeS:write(err .. "\n" .. stacktrace())
+         modeS:writeResults(err .. "\n" .. stacktrace())
          -- pass through to default.
       end
    end

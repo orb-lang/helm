@@ -95,11 +95,17 @@ end
 function NAV.DOWN(modeS, category, value)
    local inline = modeS.txtbuf:down()
    if not inline then
-      local next_p, next_result
-      modeS.txtbuf, next_result, next_p = modeS.hist:next()
+      local next_p, next_result, new_txtbuf
+      new_txtbuf, next_result, next_p = modeS.hist:next()
       if next_p then
-         modeS.txtbuf = Txtbuf()
          modeS.firstChar = true
+         local added = modeS.hist:append(modeS.txtbuf)
+         if added then
+            modeS.hist.cursor = #modeS.hist + 1
+         end
+         modeS.txtbuf = Txtbuf()
+      else
+         modeS.txtbuf = new_txtbuf
       end
       modeS:clearResults()
       if next_result then
