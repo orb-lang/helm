@@ -55,7 +55,14 @@ end
 for i = 1, 9 do
    Search.ALT["M-" ..tostring(i)] = _makeControl(i)
 end
+#/lua
 
+
+*** UP and DOWN
+
+Disabled for now, intended to choose among options
+
+#!lua
 Search.NAV.UP = nil
 Search.NAV.DOWN = nil
 #/lua
