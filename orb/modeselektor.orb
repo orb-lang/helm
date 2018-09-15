@@ -286,7 +286,6 @@ function ModeS.writeResults(modeS, str)
    local nl = a.col(modeS.l_margin) .. a.jump.down(1)
    local pr_row = modeS:replLine() + 1
    write(a.cursor.hide())
-   local line_tab = core.collect(lines, str)
    for line in lines(str) do
        write(line)
        write(nl)
@@ -481,7 +480,7 @@ function ModeS.act(modeS, category, value)
    end
    icon_paint(category, value)
    -- Special first-character handling
-   if modeS.firstChar then
+   if modeS.firstChar and not (category == "MOUSE") then
       modeS:clearResults()
       local shifted = _firstCharHandler(modeS, category, value)
       if shifted then
@@ -517,6 +516,7 @@ function ModeS.act(modeS, category, value)
    end
 
    modeS:paint_txtbuf()
+   collectgarbage()
 end
 #/lua
 

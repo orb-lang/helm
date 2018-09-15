@@ -191,10 +191,20 @@ modeS = require "modeselektor" ()
 -- Get window size and set up an idler to keep it refreshed
 
 modeS.max_col, modeS.max_row = uv.tty_get_winsize(stdin)
-
+--[[
 local idle_win = uv.new_idle()
 
 idle_win:start(function()
+   local max_col, max_row = uv.tty_get_winsize(stdin)
+   if max_col ~= modeS.max_col or max_row ~= modeS.max_row then
+      -- reflow screen.
+      -- for now:
+      modeS.max_col, modeS.max_row = max_col, max_row
+   end
+end)
+--]]
+local timer = uv.new_timer()
+uv.timer_start(timer, 500, 500, function()
    local max_col, max_row = uv.tty_get_winsize(stdin)
    if max_col ~= modeS.max_col or max_row ~= modeS.max_row then
       -- reflow screen.

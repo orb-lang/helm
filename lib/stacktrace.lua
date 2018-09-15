@@ -153,7 +153,7 @@ local function GuessFunctionName(info)
          line = file:read("*l")
       end
       if not line then
-         print("line not found") -- whoops!
+         -- print("Line not found") -- whoops!
          return "?"
       end
       return ParseLine(line)
@@ -168,7 +168,7 @@ local function GuessFunctionName(info)
          end
       end
       if not line then
-         print("line not found") -- whoops!
+         -- print("line not found") -- whoops!
          return "?"
       end
       return ParseLine(line)
