@@ -20,7 +20,8 @@ function Search.NAV.RETURN(modeS, category, value)
    local searchResult = modeS.hist:search(tostring(modeS.txtbuf))
    if #searchResult > 0 then
       local result
-      modeS.txtbuf, result = modeS.hist:index(searchResult.cursors[1])
+      local hl = searchResult.hl
+      modeS.txtbuf, result = modeS.hist:index(searchResult.cursors[hl])
       if not result then
          result = {n=1}
       end

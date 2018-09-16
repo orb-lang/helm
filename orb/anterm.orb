@@ -91,7 +91,11 @@ local colors = {
         underline = 4,
         reverse = 7,
         hidden = 8,
-        clear_bold = 22 },
+        clear_bold = 22,
+        clear_dim  = 22,
+        clear_underline = 24,
+        clear_inverse = 27,
+        clear_hidden = 28 },
     -- foreground
     fg = {
         black = 30,
@@ -150,8 +154,15 @@ local function reset(color)
     elseif color.kind == "bg" then
         return clear_bg
     elseif color.kind == "attribute" then
-       if color.name == "bold" then
+       local name = color.name
+       if name == "bold" or name == "dim" then
           return clear_bold
+       elseif name == "underscore" or name == "underline" then
+          return clear_underline
+       elseif name == "inverse" then
+          return clear_inverse
+       elseif name == "hidden" then
+          return clear_hidden
        else
           return clear
        end
