@@ -337,7 +337,12 @@ function ModeS.printResults(modeS, results, new)
       if results.frozen then
          rainbuf[i] = results[i]
       else
-         rainbuf[i] = ts(results[i])
+         local catch_val = ts(results[i])
+         if type(catch_val) == 'string' then
+            rainbuf[i] = catch_val
+         else
+            error("ts returned a " .. type(catch_val) .. "in printResults")
+         end
       end
    end
    modeS:writeResults(concat(rainbuf, '   '))

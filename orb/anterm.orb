@@ -90,7 +90,8 @@ local colors = {
         underscore = 4,
         underline = 4,
         reverse = 7,
-        hidden = 8},
+        hidden = 8,
+        clear_bold = 22 },
     -- foreground
     fg = {
         black = 30,
@@ -139,6 +140,7 @@ end
 
 local clear_fg, clear_bg, clear = anterm.clear_fg, anterm.clear_bg,
                                   anterm.clear
+local clear_bold = anterm.clear_bold
 
 local function reset(color)
     -- given a color, reset its action.
@@ -148,7 +150,11 @@ local function reset(color)
     elseif color.kind == "bg" then
         return clear_bg
     elseif color.kind == "attribute" then
-        return clear
+       if color.name == "bold" then
+          return clear_bold
+       else
+          return clear
+       end
     end
 end
 
@@ -162,13 +168,7 @@ function colormt.__call(color, str)
     end
 end
 
-function colormt.__repr(color, str)
-   if str then
-      return {__ts(color), str, reset(color)()}
-   else
-      return {__ts(color)}
-   end
-end
+
 #/lua
 
 

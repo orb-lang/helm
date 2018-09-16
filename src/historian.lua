@@ -327,6 +327,7 @@ end
 
 
 local concat, litpat = assert(table.concat), assert(string.litpat)
+local gsub = assert(string.gsub)
 
 local function _highlight(line, frag, c, best)
    local hl = {}
@@ -354,26 +355,30 @@ local function _highlight(line, frag, c, best)
    return concat(hl):gsub("\n", c.stresc("\\n"))
 end
 
+
 local function _collect_repr(collection, c)
    if #collection == 0 then
       return c.alert "No results found"
    end
    local phrase = ""
    for i,v in ipairs(collection) do
-      local alt_seq = "         "
+      local alt_seq = "    "
       if i < 10 then
          alt_seq = a.bold("M-" .. tostring(i) .. " ")
       end
-      phrase = phrase
-               .. alt_seq
-               .. _highlight(v, collection.frag, c, collection.best)
-               .. "\n"
+      local next_line = alt_seq
+                        .. _highlight(v, collection.frag, c, collection.best)
+                        .. "\n"
+      if i == collection.hl then
+         next_line = c.highlight(next_line)
+      end
+      phrase = phrase .. next_line
    end
+
    return phrase
 end
 
 local collect_M = {__repr = _collect_repr}
-
 
 
 
@@ -428,6 +433,7 @@ function Historian.search(historian, frag)
    end
    collection.best = best
    collection.cursors = cursors
+   collection.hl = 1
    return collection, best
 end
 

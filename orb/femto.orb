@@ -78,7 +78,7 @@ meta = core.meta
 getmeta, setmeta = getmetatable, setmetatable
 hasmetamethod, hasfield = core.hasmetamethod, core.hasfield
 coro = coroutine
-assert = core.assertfmt
+--assert = core.assertfmt
 
 local concat = assert(table.concat)
 #/lua
