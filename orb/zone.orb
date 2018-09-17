@@ -82,6 +82,8 @@ This creates a new Zone.
 
 #!lua
 local function newZone(tc, tr, bc, br, z, debug_mark)
+   assert(tc <= bc, "tc: " .. tc .. ", bc: " .. bc)
+   assert(tr <= br, "tr: " .. tr .. ", br: " .. br)
    local zone = meta(Zone)
    zone.tc = tc
    zone.tr = tr
@@ -105,18 +107,19 @@ checks =z= dimension.
 
 #!lua
 
-local function _inside(col, row, zone)
+function _inside(col, row, zone)
    return (col >= zone.tc)
-      and (col <= zone.bc)
-      and (row >= zone.tr)
-      and (row <= zone.br)
+     and  (col <= zone.bc)
+     and  (row >= zone.tr)
+     and  (row <= zone.br)
 end
 
 function _collide(z_a, z_b)
+   -- clockwise from top
    local z_a_corners = { {z_a.tc, z_a.tr},
-                         {z_a.tc, z_a.br},
                          {z_a.bc, z_a.tr},
-                         {z_a.bc, z_a.br} }
+                         {z_a.bc, z_a.br},
+                         {z_a.tc, z_a.br} }
    local hits = {}
    for i, corner in ipairs(z_a_corners) do
       hits[i] = _inside(corner[1], corner[2], z_b)
@@ -165,14 +168,14 @@ local function new(modeS, writer)
    zoneherd.write = writer
    -- make Zones
    -- (top_col, top_row, bottom_col, bottom_row, z, debug-mark)
-   zoneherd.command = newZone(modeS.l_margin,     modeS:replLine(),
-                              modeS.max_col - 20, 2,
+   zoneherd.command = newZone(modeS.l_margin,     modeS.repl_top,
+                              modeS.max_col - 20, modeS:replLine() + 2,
                               0, "|")
-   zoneherd[1] = zoneherd.command
-   zoneherd.results = newZone(modeS.l_margin,     modeS:replLine(),
+   --zoneherd[1] = zoneherd.command
+   zoneherd.results = newZone(modeS.l_margin,     modeS:replLine() + 2,
                               modeS.max_col - 20, modeS.max_row,
                               0, "~")
-   zoneherd[2] = zoneherd.results
+   --zoneherd[2] = zoneherd.results
    return zoneherd
 end
 #/lua
