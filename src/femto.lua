@@ -93,7 +93,7 @@ a = require "anterm"
 color = require "color"
 ts = color.ts
 c = color.color
-watch = require "watcher"
+--watch = require "watcher"
 
 
 
@@ -186,32 +186,43 @@ local stdin = uv.new_tty(0, true)
 -- This switches screens and does a wipe,
 -- then puts the cursor at 1,1.
 write "\x1b[?47h\x1b[2J\x1b[H"
-modeS = require "modeselektor" ()
 
 -- Get window size and set up an idler to keep it refreshed
 
-modeS.max_col, modeS.max_row = uv.tty_get_winsize(stdin)
---[[
-local idle_win = uv.new_idle()
+local max_col, max_row = uv.tty_get_winsize(stdin)
 
-idle_win:start(function()
-   local max_col, max_row = uv.tty_get_winsize(stdin)
-   if max_col ~= modeS.max_col or max_row ~= modeS.max_row then
-      -- reflow screen.
-      -- for now:
-      modeS.max_col, modeS.max_row = max_col, max_row
-   end
-end)
---]]
+modeS = require "modeselektor" (max_col, max_row)
+
 local timer = uv.new_timer()
 uv.timer_start(timer, 500, 500, function()
-   local max_col, max_row = uv.tty_get_winsize(stdin)
+   max_col, max_row = uv.tty_get_winsize(stdin)
    if max_col ~= modeS.max_col or max_row ~= modeS.max_row then
       -- reflow screen.
       -- for now:
       modeS.max_col, modeS.max_row = max_col, max_row
    end
 end)
+
+
+
+
+
+
+
+
+
+
+
+
+local Zoneherd = require "zone"
+
+modeS.zones = Zoneherd(modeS, write)
+
+
+
+
+
+
 
 
 

@@ -618,13 +618,15 @@ end
 This should be configurable via =cfg=.
 
 #!lua
-function new(cfg)
+function new(max_col, max_row)
   local modeS = meta(ModeS)
   modeS.txtbuf = Txtbuf()
   modeS.hist  = Historian()
   modeS.lex  = Lex.lua_thor
   modeS.hist.cursor = #modeS.hist + 1
-  -- this will be more complex but
+  modeS.max_col = max_col
+  modeS.max_row = max_row
+  -- this will be replaced with Zones
   modeS.l_margin = 4
   modeS.r_margin = 80
   modeS.row = 2

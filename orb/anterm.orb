@@ -75,7 +75,8 @@ colormt.__index = colormt
 
 Aka the angry fruit salad tier.
 
-The attributes are broadly useful.  Note the absence of =5=.
+The attributes are broadly useful.  Note the absence of =5=, or a way to
+clear it.
 
 #!lua
 local colors = {

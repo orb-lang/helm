@@ -45,3 +45,61 @@ on plain ordinary =br= programs, so I can use all this carefully won tooling
 on the other parts of the programme.
 
 
+** Design
+
+This file is going to have both the zone herder, called =modeS.zones=, and
+a =Zone= metatable for handling single Zones.
+
+The Zone herder will need to hold zones by name as well as by index, because
+we want to repaint in a specific order (pre-sorting by =.z=) and pass messages
+by name, so that we send a result to =modeS.zones.result=.
+
+We'll need methods for reflowing, for creating, and for refreshing.  Each
+=Zone= will have a =.touched= field and if it's flipped we repaint; if there's
+an overlapping Zone of higher =z= we flip its touched bit as well.
+
+A =Zone= needs an =onMouse= method that receives the whole packet and acts
+accordingly.  The flow hands every input including parsed mouse messages to
+the =modeselektor=, and some, particularly scrolls, are handled there. The
+rest are assigned by the zone herder, which sould probably normalize the
+action so, for example, a click in the upper left corner of a Zone is =1,1=.
+
+Since the hard part is repainting, I'll start with reflow, and just hard-
+switch the REPL to a 'reflow mode' that just draws characters to a screen,
+then add a popup.
+
+#!lua
+assert(meta)
+local Zone = meta {}
+
+local Zoneherd = meta {}
+#/lua
+
+
+*** new
+
+Makes a Zoneherd.  Borrows the modeselektor to get proportions, but returns
+the zoneherd, which is assigned to its slot on the modeselector at the call
+site for consistency.
+
+#!lua
+local function new(modeS, writer)
+   local zoneherd = meta(Zoneherd)
+   zoneherd.write = writer
+   -- make Zones
+   return zoneherd
+end
+#/lua
+
+#!lua
+return new
+#/lua
+
+
+
+
+
+
+
+
+
