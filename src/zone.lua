@@ -81,27 +81,6 @@ local Zoneherd = meta {}
 
 
 
-local function newZone(tc, tr, bc, br, z, debug_mark)
-   assert(tc <= bc, "tc: " .. tc .. ", bc: " .. bc)
-   assert(tr <= br, "tr: " .. tr .. ", br: " .. br)
-   local zone = meta(Zone)
-   zone.tc = tc
-   zone.tr = tr
-   zone.bc = bc
-   zone.br = br
-   zone.z = z
-   zone.debug_mark = debug_mark
-   return zone
-end
-
-
-
-
-
-
-
-
-
 
 
 
@@ -115,8 +94,13 @@ function _inside(col, row, zone)
 end
 
 function _collide(z_a, z_b)
-   -- clockwise from top
+   if z_a.z ~= z_b.z then
+      -- this is just 'false' but let's refactor that when it's time
+      return {false, false, false, false}, false, {false, false}
+   end
+
    local collision = false
+   -- clockwise from top left
    local z_a_corners = { {z_a.tc, z_a.tr},
                          {z_a.bc, z_a.tr},
                          {z_a.bc, z_a.br},
@@ -156,7 +140,42 @@ end
 
 
 
-function Zoneherd:newZone(zoneherd, name, tc, tr, bc, br, z, debug_mark)
+
+
+
+local function _collideAll(zoneherd, zone)
+   for i, z in ipairs(zoneherd) do
+      if zone ~= z then
+         _collide(zone, z)
+      end
+   end
+end
+
+
+
+
+
+
+
+
+function Zone.height(zone)
+   return zone.br - zone.tr + 1
+end
+
+function Zone.width(zone)
+   return zone.bc - zone.tc + 1
+end
+
+
+
+
+
+
+
+
+
+
+function Zoneherd.newZone(zoneherd, name, tc, tr, bc, br, z, debug_mark)
    zoneherd[name] = newZone(tc, tr, bc, br, z, debug_mark)
    -- this doesn't account for Z axis but for now:
    zoneherd[#zoneherd + 1] = zoneherd[name]
@@ -182,6 +201,70 @@ end
 
 
 
+function Zoneherd.adjust(zoneherd, zone, delta, bottom)
+   if not bottom then
+      zone.tc = zone.tc + delta[1]
+      zone.tr = zone.tr + delta[1]
+   else
+      zone.bc = zone.bc + delta[1]
+      zone.br = zone.br + delta[2]
+   end
+
+   _collideAll(zoneherd, zone)
+   return zoneherd
+end
+
+
+
+
+
+
+
+
+
+
+local a = require "anterm"
+
+function Zoneherd.paint(zoneherd)
+   zoneherd.write(a.cursor.hide())
+   for i, zone in ipairs(zoneherd) do
+      -- #todo remove the dash once box is refactored
+      zoneherd.write(a.erase._box( zone.tc,
+                                   zone.tr,
+                                   zone.bc,
+                                   zone.br,
+                                   zone.debug_mark ))
+   end
+   zoneherd.write(a.cursor.show())
+   zoneherd.painted = true -- just to fuck wit, #remove
+   return zoneherd
+end
+
+
+
+
+
+
+
+
+local function newZone(tc, tr, bc, br, z, debug_mark)
+   assert(tc <= bc, "tc: " .. tc .. ", bc: " .. bc)
+   assert(tr <= br, "tr: " .. tr .. ", br: " .. br)
+   local zone = meta(Zone)
+   zone.tc = tc
+   zone.tr = tr
+   zone.bc = bc
+   zone.br = br
+   zone.z = z
+   zone.debug_mark = debug_mark
+   return zone
+end
+
+
+
+
+
+
 
 
 
@@ -191,14 +274,30 @@ local function new(modeS, writer)
    zoneherd.write = writer
    -- make Zones
    -- (top_col, top_row, bottom_col, bottom_row, z, debug-mark)
-   zoneherd.command = newZone(modeS.l_margin,     modeS.repl_top,
-                              modeS.max_col - 20, modeS:replLine() + 1,
-                              0, "|")
-   --zoneherd[1] = zoneherd.command
-   zoneherd.results = newZone(modeS.l_margin,     modeS:replLine() + 1,
-                              modeS.max_col - 20, modeS.max_row,
-                              0, "~")
-   --zoneherd[2] = zoneherd.results
+   zoneherd.command = newZone( modeS.l_margin,
+                               modeS.repl_top,
+                               modeS.max_col - 20,
+                               modeS:replLine(),
+                               0, "|")
+   zoneherd[1] = zoneherd.command
+   zoneherd.results = newZone( modeS.l_margin,
+                               modeS:replLine() + 1,
+                               modeS.max_col - 20,
+                               modeS.max_row,
+                               0, "~")
+   zoneherd[2] = zoneherd.results
+   zoneherd.stat_col = newZone( modeS.max_col - 19,
+                                1,
+                                modeS.max_col,
+                                1,
+                                0, "!")
+   zoneherd[3] = zoneherd.stat_col
+   zoneherd.suggest = newZone( modeS.max_col - 19,
+                               3,
+                               modeS.max_col,
+                               modeS.max_row,
+                               0, "%")
+   zoneherd[4] = zoneherd.suggest
    return zoneherd
 end
 

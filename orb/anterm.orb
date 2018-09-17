@@ -401,6 +401,17 @@ function erase.box(tr, tc, br, bc, dash)
 end
 #/lua
 
+Great, I fucked this up and it takes row before column.
+
+Let's fix that a little at a time:
+
+#!lua
+function erase._box(tc, tr, bc, br, dash)
+   return erase.box(tr, tc, br, bc, dash)
+end
+#/lua
+
+G-d that feels dirty. wew.
 
 ** Mouse
 

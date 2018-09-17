@@ -405,6 +405,17 @@ end
 
 
 
+
+function erase._box(tc, tr, bc, br, dash)
+   return erase.box(tr, tc, br, bc, dash)
+end
+
+
+
+
+
+
+
 local mouse = {}
 anterm.mouse = mouse
 

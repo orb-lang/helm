@@ -519,8 +519,9 @@ function ModeS.act(modeS, category, value)
       searchResult.n = 1
       modeS:printResults(searchResult, false)
    end
-
-   modeS:paint_txtbuf()
+   if not modeS.zones.painted then
+      modeS:paint_txtbuf()
+   end
    collectgarbage()
 end
 
@@ -581,7 +582,7 @@ function ModeS.eval(modeS)
       success, results = gatherResults(xpcall(f, stacktrace))
       if success then
       -- successful call
-         if results.n > 0 then
+         if results.n > 0 and not modeS.zones.painted then
             modeS:printResults(results)
          else
             modeS:clearResults()
