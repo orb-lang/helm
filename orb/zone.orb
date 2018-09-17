@@ -168,6 +168,18 @@ end
 #/lua
 
 
+*** Zone:replace(zone, rainbuf)
+
+#!lua
+function Zone.replace(zone, rainbuf)
+   zone.contents = rainbuf
+   zone.touched = true
+
+   return zone
+end
+#/lua
+
+
 ** Zoneherd methods
 
 
@@ -228,12 +240,16 @@ local a = require "anterm"
 function Zoneherd.paint(zoneherd)
    zoneherd.write(a.cursor.hide())
    for i, zone in ipairs(zoneherd) do
+      -- if zone.touched then
+      --
       -- #todo remove the dash once box is refactored
       zoneherd.write(a.erase._box( zone.tc,
                                    zone.tr,
                                    zone.bc,
                                    zone.br,
                                    zone.debug_mark ))
+      -- actually render ze contents
+      -- zone.touched = false
    end
    zoneherd.write(a.cursor.show())
    zoneherd.painted = true -- just to fuck wit, #remove
@@ -257,6 +273,8 @@ local function newZone(tc, tr, bc, br, z, debug_mark)
    zone.br = br
    zone.z = z
    zone.debug_mark = debug_mark
+   zone.touched = false
+   -- zone.contents, a rainbuf, is provided later
    return zone
 end
 #/lua

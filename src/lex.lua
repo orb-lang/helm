@@ -162,6 +162,7 @@ end
 
 function Lex.lua_thor(txtbuf)
    local toks = {}
+   local wid = {}
    local lb = tostring(txtbuf)
    while lb ~= "" do
       local len = #lb
@@ -174,11 +175,15 @@ function Lex.lua_thor(txtbuf)
          local col = color_map[lex_map[tok_t]]
          if col then
             toks[#toks + 1] = col
+            wid[#wid + 1]   = 0
             toks[#toks + 1] = bite
+            wid[#wid + 1]   = #bite
          elseif tok_t == string_short then
             toks[#toks + 1] = _str_hl(bite)
+            wid[#wid + 1] = #bite
          else
             toks[#toks + 1] = bite
+            wid[#wid + 1] = #bite
          end
       end
       if len == #lb then
@@ -186,7 +191,8 @@ function Lex.lua_thor(txtbuf)
       end
    end
    toks[#toks + 1] = a.clear()
-   return toks
+   wid[#wid + 1] = 0
+   return toks, wid
 end
 
 
