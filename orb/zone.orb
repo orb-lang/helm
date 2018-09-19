@@ -18,8 +18,6 @@ We'll want a =zoneherder= of some sort to manage zone changes. Each Z plane
 has to have non-overlapping Zones, and =1= should be completely tiled. The
 zoneherder propagates adjustments.
 
-Man. I should read some =awesomewm= source code, huh.
-
 A paint message to a Zone will be a =rainbuf=.  There are a few tricky things
 here, and ultimately we'll need a Unicode database to chase down all the
 edges.  We need to engineer the system so that it can use that info when the
@@ -47,10 +45,10 @@ on the other parts of the programme.
 
 ** Design
 
-This file is going to have both the zone herder, called =modeS.zones=, and
+This file is going to have both the =zoneherd=, called =modeS.zones=, and
 a =Zone= metatable for handling single Zones.
 
-The Zone herder will need to hold zones by name as well as by index, because
+The Zone herd will need to hold zones by name as well as by index, because
 we want to repaint in a specific order (pre-sorting by =.z=) and pass messages
 by name, so that we send a result to =modeS.zones.result=.
 
@@ -243,11 +241,12 @@ function Zoneherd.paint(zoneherd)
       -- if zone.touched then
       --
       -- #todo remove the dash once box is refactored
-      zoneherd.write(a.erase._box( zone.tc,
+      zoneherd.write(a.erase.checker( zone.tc,
                                    zone.tr,
                                    zone.bc,
                                    zone.br,
-                                   zone.debug_mark ))
+                                   zone.debug_mark,
+                                   3))
       -- actually render ze contents
       -- zone.touched = false
    end

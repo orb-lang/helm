@@ -414,6 +414,37 @@ end
 
 
 
+local random = assert(math.random)
+
+function erase.checker(tc, tr, bc, br, dash, mod)
+   mod = mod or 3
+   dash = dash or "."
+   assert(tr <= br and tc <= bc, "box must be at least 1 by 1")
+   local skip = random(1, mod)
+   local phrase = anterm.stash()
+               .. Jump(nil, tr, tc)
+   br = br + 1
+   bc = bc + 1
+
+   local nl = anterm.col(tc) .. jump.down(1)
+   for i = 1, br - tr do
+      local checks = ""
+      for j = 1, bc - tc do
+         if skip % mod == 0 then
+            checks = checks .. dash
+         else
+            checks = checks .. " "
+         end
+         skip = skip + 1
+      end
+      phrase = phrase .. checks .. nl
+   end
+   return phrase .. anterm.pop()
+end
+
+
+
+
 
 
 local mouse = {}

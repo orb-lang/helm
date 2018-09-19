@@ -67,8 +67,6 @@
 
 
 
-
-
 assert(meta)
 local Zone = meta {}
 
@@ -243,11 +241,12 @@ function Zoneherd.paint(zoneherd)
       -- if zone.touched then
       --
       -- #todo remove the dash once box is refactored
-      zoneherd.write(a.erase._box( zone.tc,
+      zoneherd.write(a.erase.checker( zone.tc,
                                    zone.tr,
                                    zone.bc,
                                    zone.br,
-                                   zone.debug_mark ))
+                                   zone.debug_mark,
+                                   3))
       -- actually render ze contents
       -- zone.touched = false
    end
