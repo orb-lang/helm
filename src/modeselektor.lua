@@ -356,6 +356,17 @@ end
 
 
 
+function ModeS.paint(modeS)
+   modeS.zones:paint()
+end
+
+
+
+
+
+
+
+
 
 ModeS.raga = "nerf"
 ModeS.raga_default = "nerf"
@@ -519,9 +530,9 @@ function ModeS.act(modeS, category, value)
       searchResult.n = 1
       modeS:printResults(searchResult, false)
    end
-   if not modeS.zones.painted then
-      modeS:paint_txtbuf()
-   end
+   -- moving this to the zoneherd
+   modeS:paint_txtbuf()
+   modeS.zones:paint()
    collectgarbage()
 end
 

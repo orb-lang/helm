@@ -346,6 +346,10 @@ end
 
 anterm.rowcol = anterm.rc
 
+function anterm.colrow(col, row)
+   return CSI .. row .. ";" .. col .. "H"
+end
+
 function anterm.col(col)
    col = col or 1
    return CSI .. col .. "G"
@@ -419,6 +423,7 @@ local random = assert(math.random)
 function erase.checker(tc, tr, bc, br, dash, mod)
    mod = mod or 3
    dash = dash or "."
+   local space = jump.forward()
    assert(tr <= br and tc <= bc, "box must be at least 1 by 1")
    local skip = random(1, mod)
    local phrase = anterm.stash()
@@ -433,7 +438,7 @@ function erase.checker(tc, tr, bc, br, dash, mod)
          if skip % mod == 0 then
             checks = checks .. dash
          else
-            checks = checks .. " "
+            checks = checks .. space
          end
          skip = skip + 1
       end

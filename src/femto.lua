@@ -217,6 +217,7 @@ end)
 local Zoneherd = require "zone"
 
 modeS.zones = Zoneherd(modeS, write)
+modeS.zones.status:replace "an repl, plz reply uwu 👀"
 
 
 
@@ -297,8 +298,7 @@ end
 -- into the colorizer
 color.allNames()
 
-print "an repl, plz reply uwu 👀"
-write '👉  '
+write '\n👉  '
 
 -- raw mode
 uv.tty_set_mode(stdin, 2)
@@ -313,6 +313,10 @@ local chunk = loadstring "wobble = 1 + 1"
 setfenv(chunk,  _G)
 chunk()
 --]]
+
+-- paint screen
+
+modeS:paint()
 
 -- main loop
 local retcode =  uv.run('default')

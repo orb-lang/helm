@@ -350,6 +350,17 @@ function ModeS.printResults(modeS, results, new)
 end
 #/lua
 
+
+*** ModeS:paint()
+
+This simply calls the same method on the zoneherd.
+
+#!lua
+function ModeS.paint(modeS)
+   modeS.zones:paint()
+end
+#/lua
+
 *** Prompts and modes / raga
 
 Time to add modes to the =modeselektor=!
@@ -519,9 +530,9 @@ function ModeS.act(modeS, category, value)
       searchResult.n = 1
       modeS:printResults(searchResult, false)
    end
-   if not modeS.zones.painted then
-      modeS:paint_txtbuf()
-   end
+   -- moving this to the zoneherd
+   modeS:paint_txtbuf()
+   modeS.zones:paint()
    collectgarbage()
 end
 #/lua
