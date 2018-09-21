@@ -293,6 +293,9 @@ Makes a Zoneherd.  Borrows the modeselektor to get proportions, but returns
 the zoneherd, which is assigned to its slot on the modeselector at the call
 site, for consistency.
 
+Most of this code needs to be in the =reflow= method; =new= should allocate
+and then reflow.
+
 #!lua
 local function _zoneOffset(modeS)
    if modeS.max_col <= 80 then
@@ -318,26 +321,32 @@ local function new(modeS, writer)
                                modeS.repl_top,
                                right_col,
                                modeS:replLine(),
-                               1, "|")
-   zoneherd[2] = zoneherd.command
+                               1, "|" )
+   zoneherd[3] = zoneherd.command
+   zoneherd.prompt  = newZone( 1,
+                               modeS.repl_top,
+                               modeS.l_margin - 1,
+                               modeS.repl_top,
+                               1, ">" )
+   zoneherd[2] = zoneherd.prompt
    zoneherd.results = newZone( modeS.l_margin,
                                modeS:replLine() + 1,
                                right_col,
                                modeS.max_row,
-                               1, "~")
-   zoneherd[3] = zoneherd.results
+                               1, "~" )
+   zoneherd[4] = zoneherd.results
    zoneherd.stat_col = newZone( right_col + 1,
                                 1,
                                 modeS.max_col,
                                 1,
-                                1, "!")
-   zoneherd[4] = zoneherd.stat_col
+                                1, "!" )
+   zoneherd[5] = zoneherd.stat_col
    zoneherd.suggest = newZone( right_col + 1,
                                3,
                                modeS.max_col,
                                modeS.max_row,
-                               1, "%")
-   zoneherd[5] = zoneherd.suggest
+                               1, "%" )
+   zoneherd[6] = zoneherd.suggest
    return zoneherd
 end
 #/lua

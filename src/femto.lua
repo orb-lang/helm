@@ -218,6 +218,7 @@ local Zoneherd = require "zone"
 
 modeS.zones = Zoneherd(modeS, write)
 modeS.zones.status:replace "an repl, plz reply uwu 👀"
+modeS.zones.prompt:replace "👉  "
 
 
 
@@ -297,8 +298,6 @@ end
 -- Get names for as many values as possible
 -- into the colorizer
 color.allNames()
-
-write '\n👉  '
 
 -- raw mode
 uv.tty_set_mode(stdin, 2)
