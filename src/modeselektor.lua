@@ -402,7 +402,7 @@ ModeS.prompts = { nerf   = "👉 ",
 
 
 function ModeS.prompt(modeS)
-   write(a.jump(modeS.repl_top, 1) .. modeS.prompts[modeS.raga])
+   modeS.zones.prompt:replace(modeS.prompts[modeS.raga])
 end
 
 
@@ -500,6 +500,7 @@ function ModeS.act(modeS, category, value)
       modeS:clearResults()
       local shifted = _firstCharHandler(modeS, category, value)
       if shifted then
+        modeS:paint()
         return modeS:paint_txtbuf()
       end
    end
