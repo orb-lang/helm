@@ -178,6 +178,37 @@ end
 #/lua
 
 
+*** _paintResults
+
+We'll special-case the results buffer for now.
+
+#Todo make this function.
+
+#!lua
+local function _paintResults(modeS, results, new)
+   local rainbuf = {}
+   local write = modeS.zones.write
+   modeS:clearResults()
+   local row = new and modeS.repl_top or modeS:replLine()
+   modeS:writeResults(a.rc(row, modeS.l_margin))
+   for i = 1, results.n do
+      if results.frozen then
+         rainbuf[i] = results[i]
+      else
+         local catch_val = ts(results[i])
+         if type(catch_val) == 'string' then
+            rainbuf[i] = catch_val
+         else
+            error("ts returned a " .. type(catch_val) .. "in printResults")
+         end
+      end
+   end
+   modeS:writeResults(concat(rainbuf, '   '))
+   write(a.cursor.show())
+end
+#/lua
+
+
 ** Zoneherd methods
 
 

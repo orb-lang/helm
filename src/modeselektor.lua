@@ -193,23 +193,6 @@ end
 
 
 
-local STATCOL = 81
-local STAT_TOP = 1
-local STAT_RUN = 2
-
-local function colwrite(str, col, row)
-   col = col or STATCOL
-   row = row or STAT_TOP
-   local dash = a.stash()
-             .. a.cursor.hide()
-             .. a.jump(row, col)
-             .. a.erase.right()
-             .. str
-             .. a.pop()
-             .. a.cursor.show()
-   write(dash)
-end
-
 local STAT_ICON = "◉ "
 
 local function tf(bool)
@@ -251,12 +234,14 @@ local icon_map = { MOUSE = mk_paint(STAT_ICON, c.userdata),
                    ASCII = mk_paint(STAT_ICON, a.green),
                    NYI   = mk_paint(STAT_ICON .. "! ", a.red) }
 
-local function icon_paint(category, value)
-   assert(icon_map[category], "icon_paint NYI:" .. category)
+local function _make_icon(category, value)
+   local icon = ""
    if category == "MOUSE" then
-      return colwrite(icon_map[category]("", pr_mouse(value)))
+      phrase = icon_map[category]("", pr_mouse(value))
+   else
+      phrase = icon_map[category]("", ts(value))
    end
-   return colwrite(icon_map[category]("", ts(value)))
+   return phrase
 end
 
 
@@ -494,7 +479,7 @@ function ModeS.act(modeS, category, value)
    if modeS.special[value] then
       return modeS.special[value](modeS, category, value)
    end
-   icon_paint(category, value)
+   local icon = _make_icon(category, value)
    -- Special first-character handling
    if modeS.firstChar and not (category == "MOUSE") then
       modeS:clearResults()
@@ -516,12 +501,12 @@ function ModeS.act(modeS, category, value)
       if modeS.modes.NAV[value] then
          modeS.modes.NAV[value](modeS, category, value)
       else
-         icon_paint("NYI", "NAV::" .. value)
+         icon = _make_icon("NYI", "NAV::" .. value)
       end
    elseif category == "MOUSE" then
-      colwrite(pr_mouse(value), STATCOL, STAT_RUN)
+      -- do mouse stuff
    else
-      icon_paint("NYI", category .. ":" .. value)
+      icon = _make_icon("NYI", category .. ":" .. value)
    end
    -- Hack in painting and searching
    if modeS.raga == "search" then
@@ -533,6 +518,7 @@ function ModeS.act(modeS, category, value)
    end
    -- moving this to the zoneherd
    modeS:paint_txtbuf()
+   modeS.zones.stat_col:replace(icon)
    modeS.zones:paint()
    collectgarbage()
 end

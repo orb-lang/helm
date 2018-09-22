@@ -185,6 +185,37 @@ end
 
 
 
+local function _paintResults(modeS, results, new)
+   local rainbuf = {}
+   local write = modeS.zones.write
+   modeS:clearResults()
+   local row = new and modeS.repl_top or modeS:replLine()
+   modeS:writeResults(a.rc(row, modeS.l_margin))
+   for i = 1, results.n do
+      if results.frozen then
+         rainbuf[i] = results[i]
+      else
+         local catch_val = ts(results[i])
+         if type(catch_val) == 'string' then
+            rainbuf[i] = catch_val
+         else
+            error("ts returned a " .. type(catch_val) .. "in printResults")
+         end
+      end
+   end
+   modeS:writeResults(concat(rainbuf, '   '))
+   write(a.cursor.show())
+end
+
+
+
+
+
+
+
+
+
+
 function Zoneherd.newZone(zoneherd, name, tc, tr, bc, br, z, debug_mark)
    zoneherd[name] = newZone(tc, tr, bc, br, z, debug_mark)
    -- this doesn't account for Z axis but for now:
