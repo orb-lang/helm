@@ -211,23 +211,42 @@ local function _paintResults(modeS, results, new)
 end
 #/lua
 
+*** _writeLines(write, zone, str)
+
+#!lua
+local lines = assert(string.lines, "string.lines must be provided")
+
+local function _writeLines(write, zone, str)
+   local nl = a.col(zone.tc) .. a.jump.down(1)
+   local pr_row = zone.tr
+   for line in lines(str) do
+       write(line)
+       write(nl)
+       pr_row = pr_row + 1
+       if pr_row > zone.br then
+          break
+       end
+   end
+end
+#/lua
+
 *** _renderTxtbuf(modeS, zone)
 
 #!lua
 local concat = assert(table.concat)
-function _renderTxtbuf(modeS, zone, write)
+
+local function _renderTxtbuf(modeS, zone, write)
    local lb = modeS.lex(tostring(zone.contents))
    if type(lb) == "table" then
       lb = concat(lb)
    end
    write(a.colrow(zone.tc, zone.tr))
-   modeS:writeResults(lb)
+   _writeLines(write, zone, lb)
 end
 #/lua
 
 
 ** Zoneherd methods
-
 
 
 *** Zoneherd:newZone(name, tc, tr, bc, br, z, debug_mark)
@@ -293,12 +312,11 @@ function Zoneherd.paint(zoneherd, modeS)
    write(a.cursor.hide())
    for i, zone in ipairs(zoneherd) do
       if zone.touched then
-         -- "erase"
-         write(a.erase.checker( zone.tc,
+         -- erase
+         write(a.erase._box( zone.tc,
                                 zone.tr,
                                 zone.bc,
-                                zone.br,
-                                zone.debug_mark ))
+                                zone.br ))
          write(a.colrow(zone.tc, zone.tr))
          -- actually render ze contents
          if type(zone.contents) == "string" then

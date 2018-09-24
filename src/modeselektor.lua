@@ -288,28 +288,6 @@ end
 
 
 
-
-
-
-
-
-
-function ModeS.paint_txtbuf(modeS)
-   local lb = modeS.lex(tostring(modeS.txtbuf))
-   if type(lb) == "table" then
-      lb = concat(lb)
-   end
-   write(a.cursor.hide())
-   write(a.erase.box(modeS.repl_top, modeS.l_margin,
-                     modeS:replLine(), modeS.r_margin))
-   write(a.jump(modeS.repl_top, modeS.l_margin))
-   modeS:writeResults(lb)
-   write(a.rc(modeS.txtbuf.cur_row + modeS.repl_top - 1, modeS:cur_col()))
-   write(a.cursor.show())
-end
-
-
-
 function ModeS.replLine(modeS)
    return modeS.repl_top + #modeS.txtbuf.lines - 1
 end
@@ -346,7 +324,7 @@ end
 
 
 function ModeS.paint(modeS)
-   modeS.zones:paint()
+   modeS.zones:paint(modeS)
 end
 
 
@@ -520,11 +498,10 @@ function ModeS.act(modeS, category, value)
       searchResult.n = 1
       modeS:printResults(searchResult, false)
    end
-   -- moving this to the zoneherd
-   --modeS:paint_txtbuf()
+   -- Replace zones
    modeS.zones.stat_col:replace(icon)
    modeS.zones.command:replace(modeS.txtbuf)
-   modeS.zones:paint(modeS)
+   modeS:paint()
    collectgarbage()
 end
 
@@ -600,6 +577,7 @@ function ModeS.eval(modeS)
       if err:match "'<eof>'$" then
          -- Lua expects some more input, advance the txtbuf
          modeS.txtbuf:advance()
+         modeS.zones:adjust(modeS.zones.command, {0, 1}, true)
          write(a.col(1) .. "...")
          return true
       else
