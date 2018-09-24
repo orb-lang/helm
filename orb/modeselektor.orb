@@ -317,6 +317,16 @@ function ModeS.printResults(modeS, results, new)
 end
 #/lua
 
+*** ModeS:placeCursor()
+
+#!lua
+function ModeS.placeCursor(modeS)
+   local col = modeS.zones.command.tc + modeS.txtbuf.cursor - 1
+   local row = modeS.zones.command.tr + modeS.txtbuf.cur_row - 1
+   write(a.colrow(col, row))
+end
+#/lua
+
 
 *** ModeS:paint()
 
@@ -502,6 +512,7 @@ function ModeS.act(modeS, category, value)
    modeS.zones.stat_col:replace(icon)
    modeS.zones.command:replace(modeS.txtbuf)
    modeS:paint()
+   modeS:placeCursor()
    collectgarbage()
 end
 #/lua
