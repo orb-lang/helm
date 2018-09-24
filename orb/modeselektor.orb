@@ -335,6 +335,7 @@ This simply calls the same method on the zoneherd.
 #!lua
 function ModeS.paint(modeS)
    modeS.zones:paint(modeS)
+   modeS:placeCursor()
 end
 #/lua
 
@@ -512,7 +513,6 @@ function ModeS.act(modeS, category, value)
    modeS.zones.stat_col:replace(icon)
    modeS.zones.command:replace(modeS.txtbuf)
    modeS:paint()
-   modeS:placeCursor()
    collectgarbage()
 end
 #/lua
@@ -573,10 +573,10 @@ function ModeS.eval(modeS)
       success, results = gatherResults(xpcall(f, stacktrace))
       if success then
       -- successful call
-         if results.n > 0 and not modeS.zones.painted then
-            modeS:printResults(results)
+         if results.n > 0 then
+            modeS.zones.results:replace(results)
          else
-            modeS:clearResults()
+            modeS.zones.results:replace ""
          end
       else
       -- error

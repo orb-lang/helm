@@ -69,6 +69,8 @@ then add a popup.
 #!lua
 assert(meta)
 
+local concat = assert(table.concat)
+
 local Txtbuf = require "txtbuf"
 
 local Zone = meta {}
@@ -180,37 +182,6 @@ function Zone.replace(zone, rainbuf)
 end
 #/lua
 
-
-*** _paintResults
-
-We'll special-case the results buffer for now.
-
-#Todo make this function.
-
-#!lua
-local function _paintResults(modeS, results, new)
-   local rainbuf = {}
-   local write = modeS.zones.write
-   modeS:clearResults()
-   local row = new and modeS.repl_top or modeS:replLine()
-   modeS:writeResults(a.rc(row, modeS.l_margin))
-   for i = 1, results.n do
-      if results.frozen then
-         rainbuf[i] = results[i]
-      else
-         local catch_val = ts(results[i])
-         if type(catch_val) == 'string' then
-            rainbuf[i] = catch_val
-         else
-            error("ts returned a " .. type(catch_val) .. "in printResults")
-         end
-      end
-   end
-   modeS:writeResults(concat(rainbuf, '   '))
-   write(a.cursor.show())
-end
-#/lua
-
 *** _writeLines(write, zone, str)
 
 #!lua
@@ -230,11 +201,34 @@ local function _writeLines(write, zone, str)
 end
 #/lua
 
+*** _writeResults
+
+We'll special-case the results buffer for now.
+
+#!lua
+local function _writeResults(write, zone, new)
+   local rainbuf = {}
+   local row = zone.tr
+   local results = zone.contents
+   for i = 1, results.n do
+      if results.frozen then
+         rainbuf[i] = results[i]
+      else
+         local catch_val = ts(results[i])
+         if type(catch_val) == 'string' then
+            rainbuf[i] = catch_val
+         else
+            error("ts returned a " .. type(catch_val) .. " in printResults")
+         end
+      end
+   end
+   _writeLines(write, zone, concat(rainbuf, '   '))
+end
+#/lua
+
 *** _renderTxtbuf(modeS, zone)
 
 #!lua
-local concat = assert(table.concat)
-
 local function _renderTxtbuf(modeS, zone, write)
    local lb = modeS.lex(tostring(zone.contents))
    if type(lb) == "table" then
@@ -324,6 +318,8 @@ function Zoneherd.paint(zoneherd, modeS)
          elseif type(zone.contents) == "table"
             and zone.contents.idEst == Txtbuf then
             _renderTxtbuf(modeS, zone, write)
+         elseif zone == zoneherd.results then
+            _writeResults(write, zone)
          end
          zone.touched = false
       end
