@@ -193,6 +193,8 @@ end
 
 
 
+
+
 local STAT_ICON = "◉ "
 
 local function tf(bool)
@@ -254,6 +256,8 @@ function ModeS.cur_col(modeS)
    return modeS.txtbuf.cursor + modeS.l_margin - 1
 end
 
+-- This method needs to live on a zone-by-zone basis,
+-- and can even be pre-calculated and cached
 function ModeS.nl(modeS)
    write(a.col(modeS.l_margin).. a.jump.down(1))
 end
@@ -517,9 +521,10 @@ function ModeS.act(modeS, category, value)
       modeS:printResults(searchResult, false)
    end
    -- moving this to the zoneherd
-   modeS:paint_txtbuf()
+   --modeS:paint_txtbuf()
    modeS.zones.stat_col:replace(icon)
-   modeS.zones:paint()
+   modeS.zones.command:replace(modeS.txtbuf)
+   modeS.zones:paint(modeS)
    collectgarbage()
 end
 

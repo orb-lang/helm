@@ -68,6 +68,9 @@ then add a popup.
 
 #!lua
 assert(meta)
+
+local Txtbuf = require "txtbuf"
+
 local Zone = meta {}
 
 local Zoneherd = meta {}
@@ -208,6 +211,20 @@ local function _paintResults(modeS, results, new)
 end
 #/lua
 
+*** _renderTxtbuf(modeS, zone)
+
+#!lua
+local concat = assert(table.concat)
+function _renderTxtbuf(modeS, zone, write)
+   local lb = modeS.lex(tostring(zone.contents))
+   if type(lb) == "table" then
+      lb = concat(lb)
+   end
+   write(a.colrow(zone.tc, zone.tr))
+   modeS:writeResults(lb)
+end
+#/lua
+
 
 ** Zoneherd methods
 
@@ -260,16 +277,17 @@ end
 *** Zoneherd:reflow(max_col, max_row)
 
 
-*** Zoneherd:paint()
+*** Zoneherd:paint(modeS)
 
-quick and dirty for now.
+Once again we pass a reference to the =modeselektor= to get access to things
+like the lexer.
 
 
 
 #!lua
 local a = require "anterm"
 
-function Zoneherd.paint(zoneherd)
+function Zoneherd.paint(zoneherd, modeS)
    local write = zoneherd.write
    write(a.cursor.stash())
    write(a.cursor.hide())
@@ -285,6 +303,9 @@ function Zoneherd.paint(zoneherd)
          -- actually render ze contents
          if type(zone.contents) == "string" then
             zoneherd.write(zone.contents)
+         elseif type(zone.contents) == "table"
+            and zone.contents.idEst == Txtbuf then
+            _renderTxtbuf(modeS, zone, write)
          end
          zone.touched = false
       end
