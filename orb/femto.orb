@@ -200,6 +200,7 @@ uv.timer_start(timer, 500, 500, function()
       -- reflow screen.
       -- for now:
       modeS.max_col, modeS.max_row = max_col, max_row
+      modeS:reflow()
    end
 end)
 #/lua

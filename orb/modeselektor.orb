@@ -335,7 +335,17 @@ This simply calls the same method on the zoneherd.
 #!lua
 function ModeS.paint(modeS)
    modeS.zones:paint(modeS)
-   modeS:placeCursor()
+   return modeS
+end
+#/lua
+
+
+*** ModeS:reflow()
+
+#!lua
+function ModeS.reflow(modeS)
+   modeS.zones:reflow(modeS)
+   modeS:paint()
 end
 #/lua
 

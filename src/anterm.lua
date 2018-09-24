@@ -391,7 +391,9 @@ function erase.line()  return e__line  end
 local cursor = {}
 function erase.box(tr, tc, br, bc, dash)
    dash = dash or " "
-   assert(tr <= br and tc <= bc, "box must be at least 1 by 1")
+   assert(tr <= br and tc <= bc, "box must be at least 1 by 1: "
+          .. " tc: " .. tc .. " tr: " .. tr
+          .. " bc: " .. bc .. " br: " .. br)
    local phrase = anterm.stash()
                .. Jump(nil, tr, tc)
    br = br + 1

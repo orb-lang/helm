@@ -335,7 +335,17 @@ end
 
 function ModeS.paint(modeS)
    modeS.zones:paint(modeS)
-   modeS:placeCursor()
+   return modeS
+end
+
+
+
+
+
+
+function ModeS.reflow(modeS)
+   modeS.zones:reflow(modeS)
+   modeS:paint()
 end
 
 

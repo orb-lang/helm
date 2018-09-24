@@ -89,6 +89,10 @@ local Zoneherd = meta {}
 
 
 
+
+
+
+
 function _inside(col, row, zone)
    return (col >= zone.tc)
      and  (col <= zone.bc)
@@ -185,6 +189,19 @@ end
 
 
 
+function Zone.set(zone, tc, tr, bc, br)
+   zone.tc = tc
+   zone.tr = tr
+   zone.bc = bc
+   zone.br = br
+   return zone
+end
+
+
+
+
+
+
 local lines = assert(string.lines, "string.lines must be provided")
 
 local function _writeLines(write, zone, str)
@@ -210,6 +227,9 @@ local function _writeResults(write, zone, new)
    local rainbuf = {}
    local row = zone.tr
    local results = zone.contents
+   if not results then
+      return nil
+   end
    for i = 1, results.n do
       if results.frozen then
          rainbuf[i] = results[i]
@@ -289,6 +309,50 @@ end
 
 
 
+local function _zoneOffset(modeS)
+   if modeS.max_col <= 80 then
+      return 20
+   elseif modeS.max_col <= 100 then
+      return 30
+   elseif modeS.max_col <= 120 then
+      return 40
+   else
+      return 50
+   end
+end
+
+
+
+
+
+
+function Zoneherd.reflow(zoneherd, modeS)
+   local right_col = modeS.max_col - _zoneOffset(modeS)
+   local txt_off = modeS.txtbuf and #modeS.txtbuf.lines - 1 or 0
+   zoneherd.status:set(1, 1, right_col, 1)
+   zoneherd.command:set( modeS.l_margin,
+                         modeS.repl_top,
+                         right_col,
+                         modeS.repl_top + txt_off )
+   zoneherd.results:set( modeS.l_margin,
+                         modeS.repl_top + txt_off + 1,
+                         right_col,
+                         modeS.max_row )
+   zoneherd.stat_col:set( right_col + 1,
+                          1,
+                          modeS.max_col,
+                          1 )
+   zoneherd.suggest:set( right_col + 1,
+                         3,
+                         modeS.max_col,
+                         modeS.max_row )
+   for _,z in ipairs(zoneherd) do
+      z.touched = true
+   end
+   return zoneherd
+end
+
+
 
 
 
@@ -302,12 +366,12 @@ local a = require "anterm"
 
 function Zoneherd.paint(zoneherd, modeS)
    local write = zoneherd.write
-   write(a.cursor.stash())
    write(a.cursor.hide())
+   write(a.clear())
    for i, zone in ipairs(zoneherd) do
       if zone.touched then
          -- erase
-         write(a.erase._box( zone.tc,
+         write(a.erase._box(    zone.tc,
                                 zone.tr,
                                 zone.bc,
                                 zone.br ))
@@ -324,8 +388,8 @@ function Zoneherd.paint(zoneherd, modeS)
          zone.touched = false
       end
    end
-   zoneherd.write(a.cursor.pop())
    zoneherd.write(a.cursor.show())
+   modeS:placeCursor()
    return zoneherd
 end
 
@@ -340,14 +404,11 @@ local function newZone(tc, tr, bc, br, z, debug_mark)
    assert(tc <= bc, "tc: " .. tc .. ", bc: " .. bc)
    assert(tr <= br, "tr: " .. tr .. ", br: " .. br)
    local zone = meta(Zone)
-   zone.tc = tc
-   zone.tr = tr
-   zone.bc = bc
-   zone.br = br
-   zone.z = z
+   zone:set(tc, tr, bc, br)
    zone.debug_mark = debug_mark
+   zone.z = z
    zone.touched = false
-   -- zone.contents, a rainbuf, is provided later
+   -- zone.contents, aspirationally a rainbuf, is provided later
    return zone
 end
 
@@ -362,18 +423,6 @@ end
 
 
 
-
-local function _zoneOffset(modeS)
-   if modeS.max_col <= 80 then
-      return 20
-   elseif modeS.max_col <= 100 then
-      return 30
-   elseif modeS.max_col <= 120 then
-      return 40
-   else
-      return 50
-   end
-end
 
 local function new(modeS, writer)
    local zoneherd = meta(Zoneherd)
