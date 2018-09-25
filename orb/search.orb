@@ -25,11 +25,11 @@ function Search.NAV.RETURN(modeS, category, value)
       if not result then
          result = {n=1}
       end
-      modeS:printResults(result)
+      modeS.zones.results:replace(result)
       modeS:shiftMode(modeS.raga_default)
    else
       modeS:shiftMode(modeS.raga_default)
-      modeS:clearResults()
+      modeS.zones.results:replace ""
    end
 end
 #/lua
@@ -44,11 +44,11 @@ local function _makeControl(num)
           if not result then
              result = {n=1}
           end
-          modeS:printResults(result)
+          modeS.zones.results:replace(result)
           modeS:shiftMode(modeS.raga_default)
        else
           modeS:shiftMode(modeS.raga_default)
-          modeS:clearResults()
+          modeS.zones.results:replace ""
        end
     end
 end

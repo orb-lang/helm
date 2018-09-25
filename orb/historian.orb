@@ -493,8 +493,8 @@ Loads the history to an exact index.
 
 #!lua
 function Historian.index(historian, cursor)
-   if cursor < 0 or cursor > #historian + 1 then
-      return false
+   if (not cursor) or cursor < 0 or cursor > #historian + 1 then
+      return Txtbuf()
    end
    local txtbuf = historian[cursor]
    local result = historian.results[txtbuf]

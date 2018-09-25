@@ -364,10 +364,13 @@ like the lexer.
 #!lua
 local a = require "anterm"
 
-function Zoneherd.paint(zoneherd, modeS)
+function Zoneherd.paint(zoneherd, modeS, all)
    local write = zoneherd.write
    write(a.cursor.hide())
    write(a.clear())
+   if all then
+      write(a.erase.all())
+   end
    for i, zone in ipairs(zoneherd) do
       if zone.touched then
          -- erase

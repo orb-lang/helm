@@ -82,9 +82,8 @@ function NAV.UP(modeS, category, value)
       if linestash then
          modeS.hist:append(linestash)
       end
-      modeS:clearResults()
       if prev_result then
-         modeS:printResults(prev_result)
+         modeS.zones.results:replace(prev_result)
       end
    else
       write(up1)
@@ -109,7 +108,7 @@ function NAV.DOWN(modeS, category, value)
       end
       modeS:clearResults()
       if next_result then
-         modeS:printResults(next_result)
+         modeS.zones.results:replace(next_result)
       end
    else
       write(down1)

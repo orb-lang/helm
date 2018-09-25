@@ -161,6 +161,7 @@ ModeS.special = {}
 
 
 
+
 function ModeS.default(modeS, category, value)
     return write(ts(value))
 end
@@ -256,6 +257,14 @@ function ModeS.cur_col(modeS)
    return modeS.txtbuf.cursor + modeS.l_margin - 1
 end
 
+
+
+
+
+
+
+
+
 -- This method needs to live on a zone-by-zone basis,
 -- and can even be pre-calculated and cached
 function ModeS.nl(modeS)
@@ -265,55 +274,8 @@ end
 
 
 
-
-
-
-
-local lines = assert(string.lines, "string.lines must be provided")
-
-function ModeS.writeResults(modeS, str)
-   local nl = a.col(modeS.l_margin) .. a.jump.down(1)
-   local pr_row = modeS:replLine() + 1
-   write(a.cursor.hide())
-   for line in lines(str) do
-       write(line)
-       write(nl)
-       pr_row = pr_row + 1
-       if pr_row > modeS.max_row then
-          break
-       end
-   end
-   write(a.cursor.show())
-end
-
-
-
 function ModeS.replLine(modeS)
    return modeS.repl_top + #modeS.txtbuf.lines - 1
-end
-
-
-
-function ModeS.printResults(modeS, results, new)
-   local rainbuf = {}
-   write(a.cursor.hide())
-   modeS:clearResults()
-   local row = new and modeS.repl_top or modeS:replLine()
-   modeS:writeResults(a.rc(row, modeS.l_margin))
-   for i = 1, results.n do
-      if results.frozen then
-         rainbuf[i] = results[i]
-      else
-         local catch_val = ts(results[i])
-         if type(catch_val) == 'string' then
-            rainbuf[i] = catch_val
-         else
-            error("ts returned a " .. type(catch_val) .. "in printResults")
-         end
-      end
-   end
-   modeS:writeResults(concat(rainbuf, '   '))
-   write(a.cursor.show())
 end
 
 
@@ -333,8 +295,8 @@ end
 
 
 
-function ModeS.paint(modeS)
-   modeS.zones:paint(modeS)
+function ModeS.paint(modeS, all)
+   modeS.zones:paint(modeS, all)
    return modeS
 end
 
@@ -345,7 +307,7 @@ end
 
 function ModeS.reflow(modeS)
    modeS.zones:reflow(modeS)
-   modeS:paint()
+   modeS:paint(true)
 end
 
 
@@ -451,11 +413,10 @@ local function _firstCharHandler(modeS, category, value)
       if value == "/" then
          modeS:shiftMode "search"
          shifted = true
-      else
-         modeS.firstChar = false
       end
-    end
-    return shifted
+   end
+   modeS.firstChar = false
+   return shifted
 end
 
 
@@ -485,11 +446,10 @@ function ModeS.act(modeS, category, value)
    local icon = _make_icon(category, value)
    -- Special first-character handling
    if modeS.firstChar and not (category == "MOUSE") then
-      modeS:clearResults()
+      modeS.zones.results:replace ""
       local shifted = _firstCharHandler(modeS, category, value)
       if shifted then
-        modeS:paint()
-        return modeS:paint_txtbuf()
+        goto final
       end
    end
    -- Dispatch on value if possible
@@ -511,13 +471,14 @@ function ModeS.act(modeS, category, value)
    else
       icon = _make_icon("NYI", category .. ":" .. value)
    end
-   -- Hack in painting and searching
+
+   ::final::
    if modeS.raga == "search" then
       -- we need to fake this into a 'result'
       local searchResult = {}
       searchResult[1] = modeS.hist:search(tostring(modeS.txtbuf))
       searchResult.n = 1
-      modeS:printResults(searchResult, false)
+      modeS.zones.results:replace(searchResult)
    end
    -- Replace zones
    modeS.zones.stat_col:replace(icon)
@@ -590,9 +551,9 @@ function ModeS.eval(modeS)
          end
       else
       -- error
-         write(a.cursor.hide())
-         modeS:clearResults()
-         modeS:writeResults(results[1])
+         results.frozen = true
+         modeS.zones.results:replace(results)
+
       end
    else
       if err:match "'<eof>'$" then
