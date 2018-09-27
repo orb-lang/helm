@@ -341,7 +341,7 @@ leaf_83  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
 // END RANK prespace_76
 
 literal_77 -> leaf_84
-leaf_84  [color=Gray,shape=rectangle,fontname=Inconsolata,label="r.disp"]
+leaf_84  [color=Gray,shape=rectangle,fontname=Inconsolata,label="r.wid"]
 // END RANK literal_77
 
 raw_78 -> leaf_85
@@ -426,7 +426,7 @@ leaf_108  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
 // END RANK prespace_95
 
 literal_96 -> leaf_109
-leaf_109  [color=Gray,shape=rectangle,fontname=Inconsolata,label="disp"]
+leaf_109  [color=Gray,shape=rectangle,fontname=Inconsolata,label="wid"]
 // END RANK literal_96
 
 raw_97 -> leaf_110
@@ -439,7 +439,7 @@ leaf_111  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
 // END RANK prespace_98
 
 literal_99 -> leaf_112
-leaf_112  [color=Gray,shape=rectangle,fontname=Inconsolata,label="disp[0]"]
+leaf_112  [color=Gray,shape=rectangle,fontname=Inconsolata,label="wid[0]"]
 // END RANK literal_99
 
 raw_100 -> leaf_113
@@ -451,7 +451,7 @@ leaf_114  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
 // END RANK prespace_101
 
 literal_102 -> leaf_115
-leaf_115  [color=Gray,shape=rectangle,fontname=Inconsolata,label="disp[1]"]
+leaf_115  [color=Gray,shape=rectangle,fontname=Inconsolata,label="wid[1]"]
 // END RANK literal_102
 
 raw_103 -> leaf_116
@@ -464,7 +464,7 @@ leaf_117  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
 // END RANK prespace_104
 
 literal_105 -> leaf_118
-leaf_118  [color=Gray,shape=rectangle,fontname=Inconsolata,label="disp"]
+leaf_118  [color=Gray,shape=rectangle,fontname=Inconsolata,label="wid"]
 // END RANK literal_105
 
 raw_106 -> leaf_119
@@ -559,7 +559,7 @@ raw_143 [label="raw"]
 
 raw_140 -> leaf_144
 leaf_144  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-Rainbufs can contain sequences of unknown displacement.  In such a case, the
+Rainbufs can contain sequences of unknown widlacement.  In such a case, the
 displacement is"]
 // END RANK raw_140
 
@@ -604,8 +604,8 @@ leaf_154  [color=Gray,shape=rectangle,fontname=Inconsolata,label="#"]
 // END RANK literal_150
 
 raw_151 -> leaf_155
-leaf_155  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" of 8. So the disp will be \"?8\",
-and the actual displacement turns out to be 6, correctly, and 5 on my tty,
+leaf_155  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" of 8. So the wid will be \"?8\",
+and the actual widlacement turns out to be 6, correctly, and 5 on my tty,
 which will double-print the emoji and the closing string!
 "]
 // END RANK raw_151
@@ -827,8 +827,8 @@ local Rainbuf = meta {}"]
 codeblock_69 -> leaf_205
 leaf_205  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new(txtbuf)
    local rainbuf = meta(Rainbuf)
-   local disp = {}
-   rainbuf.disp = disp
+   local wid = {}
+   rainbuf.wid = wid
    if type(txtbuf) == \"string\" then
       txtbuf = Txtbuf(txtbuf)
    elseif type(txtbuf) == \"table\" then
@@ -839,9 +839,9 @@ leaf_205  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function
             if type(v) == \"string\" then
                rainbuf[i] = v
                if byte(v) == 0x1b then
-                  disp[i] = 0
+                  wid[i] = 0
                else
-                  disp[i] = v
+                  wid[i] = v
                end
             else
                error(\"content of table in Rainbuf must be strings\")

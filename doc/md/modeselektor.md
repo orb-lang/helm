@@ -116,6 +116,8 @@ The easiest way to go mad in concurrent environments is to share memory.
 ``modeselektor`` will own txtbuf, historian, and the entire screen.
 
 ```lua
+local stacktrace = require "stacktrace" . stacktrace
+
 local Txtbuf    = require "txtbuf"
 local Resbuf    = require "resbuf" -- Not currently used...
 local Historian = require "historian"
@@ -205,24 +207,10 @@ able to use until we rigorously keep track of what's printed where.
 
 Which is painstaking and annoying, but we'll get there...
 
+
+This will continue to exist for awhile.
+
 ```lua
-local STATCOL = 81
-local STAT_TOP = 1
-local STAT_RUN = 2
-
-local function colwrite(str, col, row)
-   col = col or STATCOL
-   row = row or STAT_TOP
-   local dash = a.stash()
-             .. a.cursor.hide()
-             .. a.jump(row, col)
-             .. a.erase.right()
-             .. str
-             .. a.pop()
-             .. a.cursor.show()
-   write(dash)
-end
-
 local STAT_ICON = "◉ "
 
 local function tf(bool)
@@ -264,84 +252,65 @@ local icon_map = { MOUSE = mk_paint(STAT_ICON, c.userdata),
                    ASCII = mk_paint(STAT_ICON, a.green),
                    NYI   = mk_paint(STAT_ICON .. "! ", a.red) }
 
-local function icon_paint(category, value)
-   assert(icon_map[category], "icon_paint NYI:" .. category)
+local function _make_icon(category, value)
+   local icon = ""
    if category == "MOUSE" then
-      return colwrite(icon_map[category]("", pr_mouse(value)))
+      phrase = icon_map[category]("", pr_mouse(value))
+   else
+      phrase = icon_map[category]("", ts(value))
    end
-   return colwrite(icon_map[category]("", ts(value)))
+   return phrase
 end
 ```
 #### dimensional getters
 
-We need to extend this pattern to get actual regions.
+Any of this business needs to move to the ``zoneherd``.
+
+
+Ideally, ``modeS`` will hold values needed to reflow the ``zones`` and everything
+else will be both calculated and accessed (internally) from ``modeS.zones``.
 
 ```lua
 function ModeS.cur_col(modeS)
    return modeS.txtbuf.cursor + modeS.l_margin - 1
 end
-
-function ModeS.nl(modeS)
-   write(a.col(modeS.l_margin).. a.jump.down(1))
-end
 ```
-### ModeS:write(str)
-
-This writes to the results window, and the results window only.
-
-
-It should therefore be called ``writeResults`` or something.
-
-```lua
-function ModeS.write(modeS, str)
-   local nl = a.col(modeS.l_margin) .. a.jump.down(1)
-   local phrase, num_subs
-   phrase, num_subs = gsub(str, "\n", nl)
-   write(a.cursor.hide())
-   write(phrase)
-   write(a.cursor.show())
-end
-```
-### ModeS:paint_txtbuf()
-
-This renders our txtbuf.
-
-```lua
-function ModeS.paint_txtbuf(modeS)
-   local lb = modeS.lex(tostring(modeS.txtbuf))
-   if type(lb) == "table" then
-      lb = concat(lb)
-   end
-   write(a.cursor.hide())
-   write(a.erase.box(modeS.repl_top, modeS.l_margin,
-                     modeS:replLine(), modeS.r_margin))
-   write(a.jump(modeS.repl_top, modeS.l_margin))
-   modeS:write(lb)
-   write(a.rc(modeS.txtbuf.cur_row + modeS.repl_top - 1, modeS:cur_col()))
-   write(a.cursor.show())
-end
-```
-```lua
+#deprecated```lua
 function ModeS.replLine(modeS)
    return modeS.repl_top + #modeS.txtbuf.lines - 1
 end
 ```
+### ModeS:placeCursor()
+
+Places the cursor where it belongs within the ``command`` zone.
+
 ```lua
-function ModeS.printResults(modeS, results, new)
-   local rainbuf = {}
-   write(a.cursor.hide())
-   modeS:clearResults()
-   local row = new and modeS.repl_top + 1 or modeS:replLine() + 1
-   modeS:write(a.rc(row, modeS.l_margin))
-   for i = 1, results.n do
-      if results.frozen then
-         rainbuf[i] = results[i]
-      else
-         rainbuf[i] = ts(results[i])
-      end
-   end
-   modeS:write(concat(rainbuf, '   '))
-   write(a.cursor.show())
+function ModeS.placeCursor(modeS)
+   local col = modeS.zones.command.tc + modeS.txtbuf.cursor - 1
+   local row = modeS.zones.command.tr + modeS.txtbuf.cur_row - 1
+   write(a.colrow(col, row))
+end
+```
+### ModeS:paint()
+
+This simply calls the same method on the zoneherd.
+
+
+``all`` is a boolean which, if ``true``, repaints everything whether ``.touched``
+or no.
+
+```lua
+function ModeS.paint(modeS, all)
+   modeS.zones:paint(modeS, all)
+   return modeS
+end
+```
+### ModeS:reflow()
+
+```lua
+function ModeS.reflow(modeS)
+   modeS.zones:reflow(modeS)
+   modeS:paint(true)
 end
 ```
 ### Prompts and modes / raga
@@ -390,7 +359,7 @@ ModeS.prompts = { nerf   = "👉 ",
 ```
 ```lua
 function ModeS.prompt(modeS)
-   write(a.jump(modeS.repl_top, 1) .. modeS.prompts[modeS.raga])
+   modeS.zones.prompt:replace(modeS.prompts[modeS.raga])
 end
 ```
 ### ModeS:shiftMode(raga)
@@ -450,11 +419,10 @@ local function _firstCharHandler(modeS, category, value)
       if value == "/" then
          modeS:shiftMode "search"
          shifted = true
-      else
-         modeS.firstChar = false
       end
-    end
-    return shifted
+   end
+   modeS.firstChar = false
+   return shifted
 end
 ```
 ## act
@@ -481,12 +449,13 @@ function ModeS.act(modeS, category, value)
    if modeS.special[value] then
       return modeS.special[value](modeS, category, value)
    end
-   icon_paint(category, value)
+   local icon = _make_icon(category, value)
    -- Special first-character handling
-   if modeS.firstChar then
+   if modeS.firstChar and not (category == "MOUSE") then
+      modeS.zones.results:replace ""
       local shifted = _firstCharHandler(modeS, category, value)
       if shifted then
-        return modeS:paint_txtbuf()
+        goto final
       end
    end
    -- Dispatch on value if possible
@@ -501,23 +470,27 @@ function ModeS.act(modeS, category, value)
       if modeS.modes.NAV[value] then
          modeS.modes.NAV[value](modeS, category, value)
       else
-         icon_paint("NYI", "NAV::" .. value)
+         icon = _make_icon("NYI", "NAV::" .. value)
       end
    elseif category == "MOUSE" then
-      colwrite(pr_mouse(value), STATCOL, STAT_RUN)
+      -- do mouse stuff
    else
-      icon_paint("NYI", category .. ":" .. value)
+      icon = _make_icon("NYI", category .. ":" .. value)
    end
-   -- Hack in painting and searching
+
+   ::final::
    if modeS.raga == "search" then
       -- we need to fake this into a 'result'
       local searchResult = {}
       searchResult[1] = modeS.hist:search(tostring(modeS.txtbuf))
       searchResult.n = 1
-      modeS:printResults(searchResult, false)
+      modeS.zones.results:replace(searchResult)
    end
-
-   modeS:paint_txtbuf()
+   -- Replace zones
+   modeS.zones.stat_col:replace(icon)
+   modeS.zones.command:replace(modeS.txtbuf)
+   modeS:paint()
+   collectgarbage()
 end
 ```
 
@@ -571,29 +544,32 @@ function ModeS.eval(modeS)
       end -- more special REPL prefix soon: /, ?, >(?)
    end
    if f then
-      success, results = gatherResults(xpcall(f, debug.traceback))
+      success, results = gatherResults(xpcall(f, stacktrace))
       if success then
       -- successful call
          if results.n > 0 then
-            modeS:printResults(results)
+            modeS.zones.results:replace(results)
          else
-            modeS:clearResults()
+            modeS.zones.results:replace ""
          end
       else
       -- error
-         write(a.cursor.hide())
-         modeS:clearResults()
-         modeS:write(results[1])
+         results.frozen = true
+         modeS.zones.results:replace(results)
+
       end
    else
       if err:match "'<eof>'$" then
          -- Lua expects some more input, advance the txtbuf
          modeS.txtbuf:advance()
+         modeS.zones:adjustCommand()
          write(a.col(1) .. "...")
          return true
       else
-         modeS:clearResults()
-         modeS:write(err)
+         local to_err = { err.. "\n" .. stacktrace(),
+                          [n] = 1,
+                          frozen = true}
+         modeS.zones.results:replace(to_err)
          -- pass through to default.
       end
    end
@@ -609,13 +585,15 @@ end
 This should be configurable via ``cfg``.
 
 ```lua
-function new(cfg)
+function new(max_col, max_row)
   local modeS = meta(ModeS)
   modeS.txtbuf = Txtbuf()
   modeS.hist  = Historian()
   modeS.lex  = Lex.lua_thor
   modeS.hist.cursor = #modeS.hist + 1
-  -- this will be more complex but
+  modeS.max_col = max_col
+  modeS.max_row = max_row
+  -- this will be replaced with Zones
   modeS.l_margin = 4
   modeS.r_margin = 80
   modeS.row = 2

@@ -1,13 +1,22 @@
 # Femto
 
 
-
+``femto`` is our repl.
 
 ## includes
 
-This
+
+#### Intercept _G
 
 ```lua
+__G = setmetatable({}, {__index = _G})
+
+setfenv(0, __G)
+local function _femto(_ENV)
+```
+```lua
+setfenv(1, _ENV)
+
 L    = require "lpeg"
 lfs  = require "lfs"
 ffi  = require "ffi"
@@ -24,6 +33,9 @@ end
 
 jit.vmdef = require "vmdef"
 jit.p = require "ljprof"
+
+--apparently this is a hidden, undocumented LuaJIT thing?
+require "table.clear"
 
 -- sqlayer uses this monkey patch:
 ffi.reflect = require "reflect"
@@ -56,16 +68,16 @@ table.collect = core.collect
 table.select = core.select
 table.reverse = core.reverse
 table.hasfield = core.hasfield
+table.keys = core.keys
 
 table.pack = rawget(table, "pack") and table.pack or core.pack
 table.unpack = rawget(table, "unpack") and table.unpack or unpack
 
-codepoints = core.codepoints
 meta = core.meta
 getmeta, setmeta = getmetatable, setmetatable
 hasmetamethod, hasfield = core.hasmetamethod, core.hasfield
 coro = coroutine
-assert = core.assertfmt
+--assert = core.assertfmt
 
 local concat = assert(table.concat)
 ```
@@ -81,7 +93,7 @@ a = require "anterm"
 color = require "color"
 ts = color.ts
 c = color.color
-watch = require "watcher"
+--watch = require "watcher"
 
 ```
 ### Logging
@@ -170,9 +182,46 @@ This should start with a read which saves the cursor location.
 -- This switches screens and does a wipe,
 -- then puts the cursor at 1,1.
 write "\x1b[?47h\x1b[2J\x1b[H"
-modeS = require "modeselektor" ()
-modeS.max_row, modeS.max_col = uv.tty_get_winsize(stdin)
+
+-- Get window size and set up an idler to keep it refreshed
+
+local max_col, max_row = uv.tty_get_winsize(stdin)
+
+modeS = require "modeselektor" (max_col, max_row)
+
+local timer = uv.new_timer()
+uv.timer_start(timer, 500, 500, function()
+   max_col, max_row = uv.tty_get_winsize(stdin)
+   if max_col ~= modeS.max_col or max_row ~= modeS.max_row then
+      -- reflow screen.
+      -- for now:
+      modeS.max_col, modeS.max_row = max_col, max_row
+      modeS:reflow()
+   end
+end)
 ```
+## Zoneherd
+
+We instantiate this after the Modeselektor, rather than within it, because
+setup uses the tty dimensions.
+
+
+It might be better to pass those as parameters to the ``modeS`` and move
+``require "zone"`` accordingly.
+
+```lua
+
+local Zoneherd = require "zone"
+
+modeS.zones = Zoneherd(modeS, write)
+modeS.zones.status:replace "an repl, plz reply uwu 👀"
+modeS.zones.prompt:replace "👉  "
+```
+#### Zoneherd:start()
+
+This is intended as a shim to start migrating screen painting to the
+Zoneherder
+
 ## Reader
 
 The reader takes a stream of data from ``stdin``, asynchronously, and
@@ -244,14 +293,23 @@ end
 -- into the colorizer
 color.allNames()
 
-print "an repl, plz reply uwu 👀"
-write '👉  '
-
 -- raw mode
 uv.tty_set_mode(stdin, 2)
 -- mouse mode
 write(a.mouse.track(true))
 uv.read_start(stdin, onseq)
+
+-- read main programme
+-- faked for now
+---[[
+local chunk = loadstring "wobble = 1 + 1"
+setfenv(chunk,  _G)
+chunk()
+--]]
+
+-- paint screen
+
+modeS:paint()
 
 -- main loop
 local retcode =  uv.run('default')
@@ -263,5 +321,15 @@ if retcode ~= true then
 end
 
 print("kthxbye")
+return retcode
+```
+#### Launch femto
+
+Here we assign our function a wrapper and get down to business
+
+```lua
+end -- of wrapper
+local retcode = _femto(__G)
+
 return retcode
 ```

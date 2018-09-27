@@ -7,7 +7,6 @@ We're going to do this will straight el peg, and fold in ``espalier`` ASAP.
 local L = require "lpeg"
 local P, R, S, match = L.P, L.R, L.S, L.match
 local Lex = meta {}
-local Rainbuf = require "rainbuf"
 local sub, gsub = assert(string.sub), assert(string.gsub)
 local concat = assert(table.concat)
 local c = require "color"
@@ -16,7 +15,7 @@ local codepoints = assert(string.codepoints)
 ### Lua lexers
 
 ```lua
-local WS = (P" ")^0
+local WS = (P" ")^1
 
 local NL = P"\n"
 
@@ -41,14 +40,13 @@ local _decimal = P"-"^0 * ((digit^1 * P"."^-1 * digit^0
 
 local higit = R"09" + R"af" + R"AF"
 
--- hexadecimal floats. are a thing. that exists.
+-- hexadecimal floats. are a thing. that exists. in luajit.
 local _hexadecimal = P"-"^0 * P"0" * (P"x" + P"X")
                         * ((higit^1 * P"."^-1 * higit^0
                            * ((P"p" + P"P")^-1 * P"-"^-1 * higit^1)^-1
                         + higit^1)^1 + higit^1)
 
 -- long strings, straight from the LPEG docs
-
 local _equals = P"="^0
 local _open = "[" * L.Cg(_equals, "init") * "[" * P"\n"^-1
 local _close = "]" * L.C(_equals) * "]"
@@ -64,7 +62,7 @@ local str_esc = P"\\" * (S"abfnrtvz\\\"'[]\n"
 local double_str = P"\"" * (P(1) - (P"\"" + P"\\") + str_esc)^0 * P"\""
 local single_str = P"\'" * (P(1) - (P"\'" + P"\\") + str_esc)^0 * P"\'"
 
-local string_esc = double_str + single_str
+local string_short = double_str + single_str
 
 local string_long = long_str
 
@@ -81,7 +79,7 @@ local comment = P"--" * long_str
 
 local ERR = P(1)
 
-local lua_toks = {comment, KW, string_long, string_esc, number, OP, symbol,
+local lua_toks = {comment, KW, string_long, string_short, number, OP, symbol,
                   WS, NL, ERR}
 
 local lex_kv = { KW = KW,
@@ -89,7 +87,7 @@ local lex_kv = { KW = KW,
                  OP = OP,
                  symbol = symbol,
                  string_long = string_long,
-                 string_esc = string_esc,
+                 string_short = string_short,
                  comment = comment,
                  WS = WS,
                  NL = NL,
@@ -100,7 +98,7 @@ local color_map = {
    OP = c.color.operator(),
    number = c.color.number(),
    symbol = c.color.field(),
-   string_esc = c.color.string(),
+   string_short = c.color.string(),
    string_long = c.color.string(),
    comment = c.color.comment(),
    ERR = c.color.error(),
@@ -145,8 +143,9 @@ end
 Lex.chomp = chomp_token
 
 
--- Not using this. Want to replace it with a less-dumb match-based
--- lpeg system but kind over it for now.
+-- a bit of finesse to mark up strings with quotemarks.
+--
+
 local function _str_hl(str)
    local mark = sub(str,1,1) == "'" and "'" or '"'
    mark = c.color.string(mark)
@@ -156,6 +155,7 @@ end
 
 function Lex.lua_thor(txtbuf)
    local toks = {}
+   local wid = {}
    local lb = tostring(txtbuf)
    while lb ~= "" do
       local len = #lb
@@ -168,26 +168,24 @@ function Lex.lua_thor(txtbuf)
          local col = color_map[lex_map[tok_t]]
          if col then
             toks[#toks + 1] = col
+            wid[#wid + 1]   = 0
             toks[#toks + 1] = bite
-         elseif tok_t == string_esc then
+            wid[#wid + 1]   = #bite
+         elseif tok_t == string_short then
             toks[#toks + 1] = _str_hl(bite)
+            wid[#wid + 1] = #bite
          else
             toks[#toks + 1] = bite
+            wid[#wid + 1] = #bite
          end
       end
       if len == #lb then
-         bite = sub(lb, 1, 1) -- take a piece anyhow
-         -- this is a bad hack because for some reason
-         -- we're not picking up newlines correctly
-         if bite ~= "\n" then
-            toks[#toks + 1] = a.clear .. color_map.ERR
-         end
-         toks[#toks + 1] = bite
-         lb = sub(lb,2)
+         error "lua-thor has failed you"
       end
    end
    toks[#toks + 1] = a.clear()
-   return toks
+   wid[#wid + 1] = 0
+   return toks, wid
 end
 ```
 ```lua

@@ -1,0 +1,1966 @@
+digraph lpegNode {
+
+node [fontname=Helvetica]
+edge [style=dashed]
+
+doc_0 [label="doc - 504"]
+
+
+doc_0 -> { section_1}
+{rank=same; section_1}
+
+section_1 [label="section: 1-262"]
+
+
+// END RANK doc_0
+
+section_1 -> { header_2 prose_3 prose_4 prose_5 prose_6 prose_7 prose_8 prose_9 prose_10 prose_11 prose_12 section_13 section_14 section_15}
+{rank=same; header_2 prose_3 prose_4 prose_5 prose_6 prose_7 prose_8 prose_9 prose_10 prose_11 prose_12 section_13 section_14 section_15}
+
+header_2 [label="1 : Zone"]
+
+prose_3 [label="prose"]
+
+prose_4 [label="prose"]
+
+prose_5 [label="prose"]
+
+prose_6 [label="prose"]
+
+prose_7 [label="prose"]
+
+prose_8 [label="prose"]
+
+prose_9 [label="prose"]
+
+prose_10 [label="prose"]
+
+prose_11 [label="prose"]
+
+prose_12 [label="prose"]
+
+section_13 [label="section: 46-145"]
+
+section_14 [label="section: 162-248"]
+
+section_15 [label="section: 263-439"]
+
+
+// END RANK section_1
+
+header_2 -> leaf_16
+leaf_16  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Zone"]
+// END RANK header_2
+
+prose_3 -> { raw_17}
+{rank=same; raw_17}
+
+raw_17 [label="raw"]
+
+
+// END RANK prose_3
+
+raw_17 -> leaf_18
+leaf_18  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+
+We need to get a lot more intelligent about how we write to the screen.
+"]
+// END RANK raw_17
+
+prose_4 -> { prespace_19 literal_20 raw_21}
+{rank=same; prespace_19 literal_20 raw_21}
+
+prespace_19 [label="prespace"]
+
+literal_20 [label="literal"]
+
+raw_21 [label="raw"]
+
+
+// END RANK prose_4
+
+prespace_19 -> leaf_22
+leaf_22  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK prespace_19
+
+literal_20 -> leaf_23
+leaf_23  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Zone"]
+// END RANK literal_20
+
+raw_21 -> leaf_24
+leaf_24  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is our metatable for handling these regions.  It's a tricky bit of
+engineering and something I've never really done before.
+"]
+// END RANK raw_21
+
+prose_5 -> { raw_25 prespace_26 literal_27 raw_28}
+{rank=same; raw_25 prespace_26 literal_27 raw_28}
+
+raw_25 [label="raw"]
+
+prespace_26 [label="prespace"]
+
+literal_27 [label="literal"]
+
+raw_28 [label="raw"]
+
+
+// END RANK prose_5
+
+raw_25 -> leaf_29
+leaf_29  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+The result we want is to have a single"]
+// END RANK raw_25
+
+prespace_26 -> leaf_30
+leaf_30  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_26
+
+literal_27 -> leaf_31
+leaf_31  [color=Gray,shape=rectangle,fontname=Inconsolata,label="modeS:refresh()"]
+// END RANK literal_27
+
+raw_28 -> leaf_32
+leaf_32  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" called at the end of
+each action, which repaints the screen.  A Zone is either affected or it
+isn't; if it is, we repaint the whole Zone, if not, nothing.
+"]
+// END RANK raw_28
+
+prose_6 -> { raw_33 prespace_34 literal_35 raw_36 prespace_37 literal_38 raw_39}
+{rank=same; raw_33 prespace_34 literal_35 raw_36 prespace_37 literal_38 raw_39}
+
+raw_33 [label="raw"]
+
+prespace_34 [label="prespace"]
+
+literal_35 [label="literal"]
+
+raw_36 [label="raw"]
+
+prespace_37 [label="prespace"]
+
+literal_38 [label="literal"]
+
+raw_39 [label="raw"]
+
+
+// END RANK prose_6
+
+raw_33 -> leaf_40
+leaf_40  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Zones have a"]
+// END RANK raw_33
+
+prespace_34 -> leaf_41
+leaf_41  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_34
+
+literal_35 -> leaf_42
+leaf_42  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".z"]
+// END RANK literal_35
+
+raw_36 -> leaf_43
+leaf_43  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" axis, starting with 1, and monotonically increasing. I
+expect to use"]
+// END RANK raw_36
+
+prespace_37 -> leaf_44
+leaf_44  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_37
+
+literal_38 -> leaf_45
+leaf_45  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".z == 2"]
+// END RANK literal_38
+
+raw_39 -> leaf_46
+leaf_46  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" and leave it at that, for now, but we want to
+be able to stack as well as tile, at some point.
+"]
+// END RANK raw_39
+
+prose_7 -> { raw_47 prespace_48 literal_49 raw_50 prespace_51 literal_52 raw_53}
+{rank=same; raw_47 prespace_48 literal_49 raw_50 prespace_51 literal_52 raw_53}
+
+raw_47 [label="raw"]
+
+prespace_48 [label="prespace"]
+
+literal_49 [label="literal"]
+
+raw_50 [label="raw"]
+
+prespace_51 [label="prespace"]
+
+literal_52 [label="literal"]
+
+raw_53 [label="raw"]
+
+
+// END RANK prose_7
+
+raw_47 -> leaf_54
+leaf_54  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+We'll want a"]
+// END RANK raw_47
+
+prespace_48 -> leaf_55
+leaf_55  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_48
+
+literal_49 -> leaf_56
+leaf_56  [color=Gray,shape=rectangle,fontname=Inconsolata,label="zoneherder"]
+// END RANK literal_49
+
+raw_50 -> leaf_57
+leaf_57  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" of some sort to manage zone changes. Each Z plane
+has to have non-overlapping Zones, and"]
+// END RANK raw_50
+
+prespace_51 -> leaf_58
+leaf_58  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_51
+
+literal_52 -> leaf_59
+leaf_59  [color=Gray,shape=rectangle,fontname=Inconsolata,label="1"]
+// END RANK literal_52
+
+raw_53 -> leaf_60
+leaf_60  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" should be completely tiled. The
+zoneherder propagates adjustments.
+"]
+// END RANK raw_53
+
+prose_8 -> { raw_61 prespace_62 literal_63 raw_64}
+{rank=same; raw_61 prespace_62 literal_63 raw_64}
+
+raw_61 [label="raw"]
+
+prespace_62 [label="prespace"]
+
+literal_63 [label="literal"]
+
+raw_64 [label="raw"]
+
+
+// END RANK prose_8
+
+raw_61 -> leaf_65
+leaf_65  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+A paint message to a Zone will be a"]
+// END RANK raw_61
+
+prespace_62 -> leaf_66
+leaf_66  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_62
+
+literal_63 -> leaf_67
+leaf_67  [color=Gray,shape=rectangle,fontname=Inconsolata,label="rainbuf"]
+// END RANK literal_63
+
+raw_64 -> leaf_68
+leaf_68  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".  There are a few tricky things
+here, and ultimately we'll need a Unicode database to chase down all the
+edges.  We need to engineer the system so that it can use that info when the
+time comes.
+"]
+// END RANK raw_64
+
+prose_9 -> { raw_69}
+{rank=same; raw_69}
+
+raw_69 [label="raw"]
+
+
+// END RANK prose_9
+
+raw_69 -> leaf_70
+leaf_70  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+The Zone needs to stay in its lane, basically, so we need to know when we've
+reached the edges.  When we start to add mouse clicks, we have to know what
+the mouse has targeted, so Zones will receive mouse messages also.
+"]
+// END RANK raw_69
+
+prose_10 -> { raw_71 prespace_72 literal_73 raw_74}
+{rank=same; raw_71 prespace_72 literal_73 raw_74}
+
+raw_71 [label="raw"]
+
+prespace_72 [label="prespace"]
+
+literal_73 [label="literal"]
+
+raw_74 [label="raw"]
+
+
+// END RANK prose_10
+
+raw_71 -> leaf_75
+leaf_75  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+This is the next major push for"]
+// END RANK raw_71
+
+prespace_72 -> leaf_76
+leaf_76  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_72
+
+literal_73 -> leaf_77
+leaf_77  [color=Gray,shape=rectangle,fontname=Inconsolata,label="femto"]
+// END RANK literal_73
+
+raw_74 -> leaf_78
+leaf_78  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", and when it's complete I'll be ready
+to show it off.  It's a significant piece of engineering and I'm thinking I
+need to shore up Orb a bit to get there.
+"]
+// END RANK raw_74
+
+prose_11 -> { raw_79}
+{rank=same; raw_79}
+
+raw_79 [label="raw"]
+
+
+// END RANK prose_11
+
+raw_79 -> leaf_80
+leaf_80  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Specifically, I need the ability to add a plantUML pipeline to the doc
+generator, and maybe cut the apron strings with respect to Markdown and public
+hosting.
+"]
+// END RANK raw_79
+
+prose_12 -> { raw_81 prespace_82 literal_83 raw_84 prespace_85 literal_86 raw_87 prespace_88 literal_89 raw_90 prespace_91 literal_92 raw_93 prespace_94 literal_95 raw_96 prespace_97 literal_98 raw_99}
+{rank=same; raw_81 prespace_82 literal_83 raw_84 prespace_85 literal_86 raw_87 prespace_88 literal_89 raw_90 prespace_91 literal_92 raw_93 prespace_94 literal_95 raw_96 prespace_97 literal_98 raw_99}
+
+raw_81 [label="raw"]
+
+prespace_82 [label="prespace"]
+
+literal_83 [label="literal"]
+
+raw_84 [label="raw"]
+
+prespace_85 [label="prespace"]
+
+literal_86 [label="literal"]
+
+raw_87 [label="raw"]
+
+prespace_88 [label="prespace"]
+
+literal_89 [label="literal"]
+
+raw_90 [label="raw"]
+
+prespace_91 [label="prespace"]
+
+literal_92 [label="literal"]
+
+raw_93 [label="raw"]
+
+prespace_94 [label="prespace"]
+
+literal_95 [label="literal"]
+
+raw_96 [label="raw"]
+
+prespace_97 [label="prespace"]
+
+literal_98 [label="literal"]
+
+raw_99 [label="raw"]
+
+
+// END RANK prose_12
+
+raw_81 -> leaf_100
+leaf_100  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+This is a delicate point in the boot process. "]
+// END RANK raw_81
+
+prespace_82 -> leaf_101
+leaf_101  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_82
+
+literal_83 -> leaf_102
+leaf_102  [color=Gray,shape=rectangle,fontname=Inconsolata,label="femto"]
+// END RANK literal_83
+
+raw_84 -> leaf_103
+leaf_103  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" needs to be able to
+interact with an already-running bridge/luv process, as it stands the two
+event loops will collide. "]
+// END RANK raw_84
+
+prespace_85 -> leaf_104
+leaf_104  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_85
+
+literal_86 -> leaf_105
+leaf_105  [color=Gray,shape=rectangle,fontname=Inconsolata,label="orb"]
+// END RANK literal_86
+
+raw_87 -> leaf_106
+leaf_106  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" only runs an event loop with"]
+// END RANK raw_87
+
+prespace_88 -> leaf_107
+leaf_107  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_88
+
+literal_89 -> leaf_108
+leaf_108  [color=Gray,shape=rectangle,fontname=Inconsolata,label="orb serve"]
+// END RANK literal_89
+
+raw_90 -> leaf_109
+leaf_109  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" so
+the next step with"]
+// END RANK raw_90
+
+prespace_91 -> leaf_110
+leaf_110  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_91
+
+literal_92 -> leaf_111
+leaf_111  [color=Gray,shape=rectangle,fontname=Inconsolata,label="femto"]
+// END RANK literal_92
+
+raw_93 -> leaf_112
+leaf_112  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" proper is to set it up locally to run as a"]
+// END RANK raw_93
+
+prespace_94 -> leaf_113
+leaf_113  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_94
+
+literal_95 -> leaf_114
+leaf_114  [color=Gray,shape=rectangle,fontname=Inconsolata,label="repl"]
+// END RANK literal_95
+
+raw_96 -> leaf_115
+leaf_115  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+on plain ordinary"]
+// END RANK raw_96
+
+prespace_97 -> leaf_116
+leaf_116  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_97
+
+literal_98 -> leaf_117
+leaf_117  [color=Gray,shape=rectangle,fontname=Inconsolata,label="br"]
+// END RANK literal_98
+
+raw_99 -> leaf_118
+leaf_118  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" programs, so I can use all this carefully won tooling
+on the other parts of the programme.
+
+"]
+// END RANK raw_99
+
+section_13 -> { header_119 prose_120 prose_121 prose_122 prose_123 prose_124 codeblock_125 section_126 section_127}
+{rank=same; header_119 prose_120 prose_121 prose_122 prose_123 prose_124 codeblock_125 section_126 section_127}
+
+header_119 [label="2 : Design"]
+
+prose_120 [label="prose"]
+
+prose_121 [label="prose"]
+
+prose_122 [label="prose"]
+
+prose_123 [label="prose"]
+
+prose_124 [label="prose"]
+
+codeblock_125 [label="code block 69-79"]
+
+section_126 [label="section: 82-145"]
+
+section_127 [label="section: 146-161"]
+
+
+// END RANK section_13
+
+header_119 -> leaf_128
+leaf_128  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Design"]
+// END RANK header_119
+
+prose_120 -> { raw_129 prespace_130 literal_131 raw_132 prespace_133 literal_134 raw_135 prespace_136 literal_137 raw_138}
+{rank=same; raw_129 prespace_130 literal_131 raw_132 prespace_133 literal_134 raw_135 prespace_136 literal_137 raw_138}
+
+raw_129 [label="raw"]
+
+prespace_130 [label="prespace"]
+
+literal_131 [label="literal"]
+
+raw_132 [label="raw"]
+
+prespace_133 [label="prespace"]
+
+literal_134 [label="literal"]
+
+raw_135 [label="raw"]
+
+prespace_136 [label="prespace"]
+
+literal_137 [label="literal"]
+
+raw_138 [label="raw"]
+
+
+// END RANK prose_120
+
+raw_129 -> leaf_139
+leaf_139  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+This file is going to have both the"]
+// END RANK raw_129
+
+prespace_130 -> leaf_140
+leaf_140  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_130
+
+literal_131 -> leaf_141
+leaf_141  [color=Gray,shape=rectangle,fontname=Inconsolata,label="zoneherd"]
+// END RANK literal_131
+
+raw_132 -> leaf_142
+leaf_142  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", called"]
+// END RANK raw_132
+
+prespace_133 -> leaf_143
+leaf_143  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_133
+
+literal_134 -> leaf_144
+leaf_144  [color=Gray,shape=rectangle,fontname=Inconsolata,label="modeS.zones"]
+// END RANK literal_134
+
+raw_135 -> leaf_145
+leaf_145  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", and
+a"]
+// END RANK raw_135
+
+prespace_136 -> leaf_146
+leaf_146  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_136
+
+literal_137 -> leaf_147
+leaf_147  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Zone"]
+// END RANK literal_137
+
+raw_138 -> leaf_148
+leaf_148  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" metatable for handling single Zones.
+"]
+// END RANK raw_138
+
+prose_121 -> { raw_149 prespace_150 literal_151 raw_152 prespace_153 literal_154 raw_155}
+{rank=same; raw_149 prespace_150 literal_151 raw_152 prespace_153 literal_154 raw_155}
+
+raw_149 [label="raw"]
+
+prespace_150 [label="prespace"]
+
+literal_151 [label="literal"]
+
+raw_152 [label="raw"]
+
+prespace_153 [label="prespace"]
+
+literal_154 [label="literal"]
+
+raw_155 [label="raw"]
+
+
+// END RANK prose_121
+
+raw_149 -> leaf_156
+leaf_156  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+The Zone herd will need to hold zones by name as well as by index, because
+we want to repaint in a specific order (pre-sorting by"]
+// END RANK raw_149
+
+prespace_150 -> leaf_157
+leaf_157  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_150
+
+literal_151 -> leaf_158
+leaf_158  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".z"]
+// END RANK literal_151
+
+raw_152 -> leaf_159
+leaf_159  [color=Gray,shape=rectangle,fontname=Inconsolata,label=") and pass messages
+by name, so that we send a result to"]
+// END RANK raw_152
+
+prespace_153 -> leaf_160
+leaf_160  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_153
+
+literal_154 -> leaf_161
+leaf_161  [color=Gray,shape=rectangle,fontname=Inconsolata,label="modeS.zones.result"]
+// END RANK literal_154
+
+raw_155 -> leaf_162
+leaf_162  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
+"]
+// END RANK raw_155
+
+prose_122 -> { raw_163 prespace_164 literal_165 raw_166 prespace_167 literal_168 raw_169 prespace_170 literal_171 raw_172}
+{rank=same; raw_163 prespace_164 literal_165 raw_166 prespace_167 literal_168 raw_169 prespace_170 literal_171 raw_172}
+
+raw_163 [label="raw"]
+
+prespace_164 [label="prespace"]
+
+literal_165 [label="literal"]
+
+raw_166 [label="raw"]
+
+prespace_167 [label="prespace"]
+
+literal_168 [label="literal"]
+
+raw_169 [label="raw"]
+
+prespace_170 [label="prespace"]
+
+literal_171 [label="literal"]
+
+raw_172 [label="raw"]
+
+
+// END RANK prose_122
+
+raw_163 -> leaf_173
+leaf_173  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+We'll need methods for reflowing, for creating, and for refreshing.  Each"]
+// END RANK raw_163
+
+prespace_164 -> leaf_174
+leaf_174  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK prespace_164
+
+literal_165 -> leaf_175
+leaf_175  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Zone"]
+// END RANK literal_165
+
+raw_166 -> leaf_176
+leaf_176  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" will have a"]
+// END RANK raw_166
+
+prespace_167 -> leaf_177
+leaf_177  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_167
+
+literal_168 -> leaf_178
+leaf_178  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".touched"]
+// END RANK literal_168
+
+raw_169 -> leaf_179
+leaf_179  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" field and if it's flipped we repaint; if there's
+an overlapping Zone of higher"]
+// END RANK raw_169
+
+prespace_170 -> leaf_180
+leaf_180  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_170
+
+literal_171 -> leaf_181
+leaf_181  [color=Gray,shape=rectangle,fontname=Inconsolata,label="z"]
+// END RANK literal_171
+
+raw_172 -> leaf_182
+leaf_182  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" we flip its touched bit as well.
+"]
+// END RANK raw_172
+
+prose_123 -> { raw_183 prespace_184 literal_185 raw_186 prespace_187 literal_188 raw_189 prespace_190 literal_191 raw_192 prespace_193 literal_194 raw_195}
+{rank=same; raw_183 prespace_184 literal_185 raw_186 prespace_187 literal_188 raw_189 prespace_190 literal_191 raw_192 prespace_193 literal_194 raw_195}
+
+raw_183 [label="raw"]
+
+prespace_184 [label="prespace"]
+
+literal_185 [label="literal"]
+
+raw_186 [label="raw"]
+
+prespace_187 [label="prespace"]
+
+literal_188 [label="literal"]
+
+raw_189 [label="raw"]
+
+prespace_190 [label="prespace"]
+
+literal_191 [label="literal"]
+
+raw_192 [label="raw"]
+
+prespace_193 [label="prespace"]
+
+literal_194 [label="literal"]
+
+raw_195 [label="raw"]
+
+
+// END RANK prose_123
+
+raw_183 -> leaf_196
+leaf_196  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+A"]
+// END RANK raw_183
+
+prespace_184 -> leaf_197
+leaf_197  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_184
+
+literal_185 -> leaf_198
+leaf_198  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Zone"]
+// END RANK literal_185
+
+raw_186 -> leaf_199
+leaf_199  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" needs an"]
+// END RANK raw_186
+
+prespace_187 -> leaf_200
+leaf_200  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_187
+
+literal_188 -> leaf_201
+leaf_201  [color=Gray,shape=rectangle,fontname=Inconsolata,label="onMouse"]
+// END RANK literal_188
+
+raw_189 -> leaf_202
+leaf_202  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" method that receives the whole packet and acts
+accordingly.  The flow hands every input including parsed mouse messages to
+the"]
+// END RANK raw_189
+
+prespace_190 -> leaf_203
+leaf_203  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_190
+
+literal_191 -> leaf_204
+leaf_204  [color=Gray,shape=rectangle,fontname=Inconsolata,label="modeselektor"]
+// END RANK literal_191
+
+raw_192 -> leaf_205
+leaf_205  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", and some, particularly scrolls, are handled there. The
+rest are assigned by the zone herder, which sould probably normalize the
+action so, for example, a click in the upper left corner of a Zone is"]
+// END RANK raw_192
+
+prespace_193 -> leaf_206
+leaf_206  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_193
+
+literal_194 -> leaf_207
+leaf_207  [color=Gray,shape=rectangle,fontname=Inconsolata,label="1,1"]
+// END RANK literal_194
+
+raw_195 -> leaf_208
+leaf_208  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
+"]
+// END RANK raw_195
+
+prose_124 -> { raw_209}
+{rank=same; raw_209}
+
+raw_209 [label="raw"]
+
+
+// END RANK prose_124
+
+raw_209 -> leaf_210
+leaf_210  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Since the hard part is repainting, I'll start with reflow, and just hard-
+switch the REPL to a 'reflow mode' that just draws characters to a screen,
+then add a popup.
+"]
+// END RANK raw_209
+
+codeblock_125 -> leaf_211
+leaf_211  [color=Gray,shape=rectangle,fontname=Inconsolata,label="assert(meta)
+
+local concat = assert(table.concat)
+
+local Txtbuf = require \"txtbuf\"
+
+local Zone = meta {}
+
+local Zoneherd = meta {}"]
+// END RANK codeblock_125
+
+section_126 -> { header_212 prose_213 prose_214 structure_215 codeblock_216}
+{rank=same; header_212 prose_213 prose_214 structure_215 codeblock_216}
+
+header_212 [label="3 : _collide(zone_a, zone_b)"]
+
+prose_213 [label="prose"]
+
+prose_214 [label="prose"]
+
+structure_215 [label="structure"]
+
+codeblock_216 [label="code block 95-143"]
+
+
+// END RANK section_126
+
+header_212 -> leaf_217
+leaf_217  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** _collide(zone_a, zone_b)"]
+// END RANK header_212
+
+prose_213 -> { raw_218 prespace_219 literal_220 raw_221}
+{rank=same; raw_218 prespace_219 literal_220 raw_221}
+
+raw_218 [label="raw"]
+
+prespace_219 [label="prespace"]
+
+literal_220 [label="literal"]
+
+raw_221 [label="raw"]
+
+
+// END RANK prose_213
+
+raw_218 -> leaf_222
+leaf_222  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+Takes two zones, determines if there is overlap, if so, alters"]
+// END RANK raw_218
+
+prespace_219 -> leaf_223
+leaf_223  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_219
+
+literal_220 -> leaf_224
+leaf_224  [color=Gray,shape=rectangle,fontname=Inconsolata,label="zone_b"]
+// END RANK literal_220
+
+raw_221 -> leaf_225
+leaf_225  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" so
+that there is not.
+"]
+// END RANK raw_221
+
+prose_214 -> { raw_226 prespace_227 literal_228 raw_229}
+{rank=same; raw_226 prespace_227 literal_228 raw_229}
+
+raw_226 [label="raw"]
+
+prespace_227 [label="prespace"]
+
+literal_228 [label="literal"]
+
+raw_229 [label="raw"]
+
+
+// END RANK prose_214
+
+raw_226 -> leaf_230
+leaf_230  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+checks"]
+// END RANK raw_226
+
+prespace_227 -> leaf_231
+leaf_231  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_227
+
+literal_228 -> leaf_232
+leaf_232  [color=Gray,shape=rectangle,fontname=Inconsolata,label="z"]
+// END RANK literal_228
+
+raw_229 -> leaf_233
+leaf_233  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" dimension.
+"]
+// END RANK raw_229
+
+structure_215 -> { hashline_234}
+{rank=same; hashline_234}
+
+hashline_234 [label="hashline"]
+
+
+// END RANK structure_215
+
+hashline_234 -> { hashtag_235}
+{rank=same; hashtag_235}
+
+hashtag_235 [label="hashtag"]
+
+
+// END RANK hashline_234
+
+hashtag_235 -> leaf_236
+leaf_236  [color=Gray,shape=rectangle,fontname=Inconsolata,label="NB"]
+// END RANK hashtag_235
+
+codeblock_216 -> leaf_237
+leaf_237  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function _inside(col, row, zone)
+   return (col >= zone.tc)
+     and  (col <= zone.bc)
+     and  (row >= zone.tr)
+     and  (row <= zone.br)
+end
+
+function _collide(z_a, z_b)
+   if z_a.z ~= z_b.z then
+      -- this is just 'false' but let's refactor that when it's time
+      return {false, false, false, false}, false, {false, false}
+   end
+
+   local collision = false
+   -- clockwise from top left
+   local z_a_corners = { {z_a.tc, z_a.tr},
+                         {z_a.bc, z_a.tr},
+                         {z_a.bc, z_a.br},
+                         {z_a.tc, z_a.br} }
+   local hits = {}
+   for i, corner in ipairs(z_a_corners) do
+      local hit = _inside(corner[1], corner[2], z_b)
+      if hit then
+         collision = true
+      end
+      hits[i] = hit
+   end
+   local a_left_of_b = z_a.tc < z_b.tc
+   local a_above_b = z_a.tr < z_b.tr
+   -- bottom of a over top of b
+   if (hits[3] or hits[4]) and a_above_b then
+      z_b.tr = z_a.br + 1
+   end
+   -- right of a over left of b
+   if (hits[2] or hits[3]) and a_left_of_b then
+      z_b.tc = z_a.bc + 1
+   end
+   -- top of a over bottom of b
+   if (hits[1] or hits[2]) and not a_above_b then
+      z_b.br = z_a.tr - 1
+   end
+   -- left of a over right of b
+   if (hits[1] or hits[4]) and not a_left_of_b then
+      z_b.bc = z_a.tc - 1
+   end
+   return hits, collision, {a_left_of_b, a_above_b}
+end"]
+// END RANK codeblock_216
+
+section_127 -> { header_238 prose_239 prose_240 codeblock_241}
+{rank=same; header_238 prose_239 prose_240 codeblock_241}
+
+header_238 [label="3 : _collideAll(zoneherd, zone)"]
+
+prose_239 [label="prose"]
+
+prose_240 [label="prose"]
+
+codeblock_241 [label="code block 152-160"]
+
+
+// END RANK section_127
+
+header_238 -> leaf_242
+leaf_242  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** _collideAll(zoneherd, zone)"]
+// END RANK header_238
+
+prose_239 -> { raw_243}
+{rank=same; raw_243}
+
+raw_243 [label="raw"]
+
+
+// END RANK prose_239
+
+raw_243 -> leaf_244
+leaf_244  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+Collides a given zone with the rest of the herd.
+"]
+// END RANK raw_243
+
+prose_240 -> { raw_245 prespace_246 literal_247 raw_248}
+{rank=same; raw_245 prespace_246 literal_247 raw_248}
+
+raw_245 [label="raw"]
+
+prespace_246 [label="prespace"]
+
+literal_247 [label="literal"]
+
+raw_248 [label="raw"]
+
+
+// END RANK prose_240
+
+raw_245 -> leaf_249
+leaf_249  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Called after an"]
+// END RANK raw_245
+
+prespace_246 -> leaf_250
+leaf_250  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_246
+
+literal_247 -> leaf_251
+leaf_251  [color=Gray,shape=rectangle,fontname=Inconsolata,label="adjust"]
+// END RANK literal_247
+
+raw_248 -> leaf_252
+leaf_252  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" to resettle matters.
+"]
+// END RANK raw_248
+
+codeblock_241 -> leaf_253
+leaf_253  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function _collideAll(zoneherd, zone)
+   for i, z in ipairs(zoneherd) do
+      if zone ~= z then
+         _collide(zone, z)
+      end
+   end
+end"]
+// END RANK codeblock_241
+
+section_14 -> { header_254 prose_255 section_256 section_257 section_258 section_259 section_260 section_261}
+{rank=same; header_254 prose_255 section_256 section_257 section_258 section_259 section_260 section_261}
+
+header_254 [label="2 : Zone methods"]
+
+prose_255 [label="prose"]
+
+section_256 [label="section: 165-177"]
+
+section_257 [label="section: 178-188"]
+
+section_258 [label="section: 189-201"]
+
+section_259 [label="section: 202-220"]
+
+section_260 [label="section: 221-248"]
+
+section_261 [label="section: 249-262"]
+
+
+// END RANK section_14
+
+header_254 -> leaf_262
+leaf_262  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Zone methods"]
+// END RANK header_254
+
+prose_255 -> { raw_263}
+{rank=same; raw_263}
+
+raw_263 [label="raw"]
+
+
+// END RANK prose_255
+
+raw_263 -> leaf_264
+leaf_264  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+"]
+// END RANK raw_263
+
+section_256 -> { header_265 prose_266 codeblock_267}
+{rank=same; header_265 prose_266 codeblock_267}
+
+header_265 [label="3 : Zone:height(), Zone:width()"]
+
+prose_266 [label="prose"]
+
+codeblock_267 [label="code block 167-175"]
+
+
+// END RANK section_256
+
+header_265 -> leaf_268
+leaf_268  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Zone:height(), Zone:width()"]
+// END RANK header_265
+
+prose_266 -> { raw_269}
+{rank=same; raw_269}
+
+raw_269 [label="raw"]
+
+
+// END RANK prose_266
+
+raw_269 -> leaf_270
+leaf_270  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+"]
+// END RANK raw_269
+
+codeblock_267 -> leaf_271
+leaf_271  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Zone.height(zone)
+   return zone.br - zone.tr + 1
+end
+
+function Zone.width(zone)
+   return zone.bc - zone.tc + 1
+end"]
+// END RANK codeblock_267
+
+section_257 -> { header_272 prose_273 codeblock_274}
+{rank=same; header_272 prose_273 codeblock_274}
+
+header_272 [label="3 : Zone:replace(zone, rainbuf)"]
+
+prose_273 [label="prose"]
+
+codeblock_274 [label="code block 180-187"]
+
+
+// END RANK section_257
+
+header_272 -> leaf_275
+leaf_275  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Zone:replace(zone, rainbuf)"]
+// END RANK header_272
+
+prose_273 -> { raw_276}
+{rank=same; raw_276}
+
+raw_276 [label="raw"]
+
+
+// END RANK prose_273
+
+raw_276 -> leaf_277
+leaf_277  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+"]
+// END RANK raw_276
+
+codeblock_274 -> leaf_278
+leaf_278  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Zone.replace(zone, rainbuf)
+   zone.contents = rainbuf
+   zone.touched = true
+
+   return zone
+end"]
+// END RANK codeblock_274
+
+section_258 -> { header_279 prose_280 codeblock_281}
+{rank=same; header_279 prose_280 codeblock_281}
+
+header_279 [label="3 : Zone:set(tc, tr, bc, br)"]
+
+prose_280 [label="prose"]
+
+codeblock_281 [label="code block 191-199"]
+
+
+// END RANK section_258
+
+header_279 -> leaf_282
+leaf_282  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Zone:set(tc, tr, bc, br)"]
+// END RANK header_279
+
+prose_280 -> { raw_283}
+{rank=same; raw_283}
+
+raw_283 [label="raw"]
+
+
+// END RANK prose_280
+
+raw_283 -> leaf_284
+leaf_284  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+"]
+// END RANK raw_283
+
+codeblock_281 -> leaf_285
+leaf_285  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Zone.set(zone, tc, tr, bc, br)
+   zone.tc = tc
+   zone.tr = tr
+   zone.bc = bc
+   zone.br = br
+   return zone
+end"]
+// END RANK codeblock_281
+
+section_259 -> { header_286 prose_287 codeblock_288}
+{rank=same; header_286 prose_287 codeblock_288}
+
+header_286 [label="3 : _writeLines(write, zone, str)"]
+
+prose_287 [label="prose"]
+
+codeblock_288 [label="code block 204-219"]
+
+
+// END RANK section_259
+
+header_286 -> leaf_289
+leaf_289  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** _writeLines(write, zone, str)"]
+// END RANK header_286
+
+prose_287 -> { raw_290}
+{rank=same; raw_290}
+
+raw_290 [label="raw"]
+
+
+// END RANK prose_287
+
+raw_290 -> leaf_291
+leaf_291  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+"]
+// END RANK raw_290
+
+codeblock_288 -> leaf_292
+leaf_292  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local lines = assert(string.lines, \"string.lines must be provided\")
+
+local function _writeLines(write, zone, str)
+   local nl = a.col(zone.tc) .. a.jump.down(1)
+   local pr_row = zone.tr
+   for line in lines(str) do
+       write(line)
+       write(nl)
+       pr_row = pr_row + 1
+       if pr_row > zone.br then
+          break
+       end
+   end
+end"]
+// END RANK codeblock_288
+
+section_260 -> { header_293 prose_294 codeblock_295}
+{rank=same; header_293 prose_294 codeblock_295}
+
+header_293 [label="3 : _writeResults"]
+
+prose_294 [label="prose"]
+
+codeblock_295 [label="code block 225-247"]
+
+
+// END RANK section_260
+
+header_293 -> leaf_296
+leaf_296  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** _writeResults"]
+// END RANK header_293
+
+prose_294 -> { raw_297}
+{rank=same; raw_297}
+
+raw_297 [label="raw"]
+
+
+// END RANK prose_294
+
+raw_297 -> leaf_298
+leaf_298  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+We'll special-case the results buffer for now.
+"]
+// END RANK raw_297
+
+codeblock_295 -> leaf_299
+leaf_299  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function _writeResults(write, zone, new)
+   local rainbuf = {}
+   local row = zone.tr
+   local results = zone.contents
+   if not results then
+      return nil
+   end
+   for i = 1, results.n do
+      if results.frozen then
+         rainbuf[i] = results[i]
+      else
+         local catch_val = ts(results[i])
+         if type(catch_val) == 'string' then
+            rainbuf[i] = catch_val
+         else
+            error(\"ts returned a \" .. type(catch_val) .. \" in printResults\")
+         end
+      end
+   end
+   _writeLines(write, zone, concat(rainbuf, '   '))
+end"]
+// END RANK codeblock_295
+
+section_261 -> { header_300 prose_301 codeblock_302}
+{rank=same; header_300 prose_301 codeblock_302}
+
+header_300 [label="3 : _renderTxtbuf(modeS, zone)"]
+
+prose_301 [label="prose"]
+
+codeblock_302 [label="code block 251-260"]
+
+
+// END RANK section_261
+
+header_300 -> leaf_303
+leaf_303  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** _renderTxtbuf(modeS, zone)"]
+// END RANK header_300
+
+prose_301 -> { raw_304}
+{rank=same; raw_304}
+
+raw_304 [label="raw"]
+
+
+// END RANK prose_301
+
+raw_304 -> leaf_305
+leaf_305  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+"]
+// END RANK raw_304
+
+codeblock_302 -> leaf_306
+leaf_306  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function _renderTxtbuf(modeS, zone, write)
+   local lb = modeS.lex(tostring(zone.contents))
+   if type(lb) == \"table\" then
+      lb = concat(lb)
+   end
+   write(a.colrow(zone.tc, zone.tr))
+   _writeLines(write, zone, lb)
+end"]
+// END RANK codeblock_302
+
+section_15 -> { header_307 prose_308 section_309 section_310 section_311 section_312 section_313 section_314 section_315}
+{rank=same; header_307 prose_308 section_309 section_310 section_311 section_312 section_313 section_314 section_315}
+
+header_307 [label="2 : Zoneherd methods"]
+
+prose_308 [label="prose"]
+
+section_309 [label="section: 266-279"]
+
+section_310 [label="section: 280-312"]
+
+section_311 [label="section: 330-345"]
+
+section_312 [label="section: 346-376"]
+
+section_313 [label="section: 377-420"]
+
+section_314 [label="section: 421-439"]
+
+section_315 [label="section: 440-504"]
+
+
+// END RANK section_15
+
+header_307 -> leaf_316
+leaf_316  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Zoneherd methods"]
+// END RANK header_307
+
+prose_308 -> { raw_317}
+{rank=same; raw_317}
+
+raw_317 [label="raw"]
+
+
+// END RANK prose_308
+
+raw_317 -> leaf_318
+leaf_318  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+"]
+// END RANK raw_317
+
+section_309 -> { header_319 prose_320 codeblock_321}
+{rank=same; header_319 prose_320 codeblock_321}
+
+header_319 [label="3 : Zoneherd:newZone(name, tc, tr, bc, br, z, debug_mark)"]
+
+prose_320 [label="prose"]
+
+codeblock_321 [label="code block 268-277"]
+
+
+// END RANK section_309
+
+header_319 -> leaf_322
+leaf_322  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Zoneherd:newZone(name, tc, tr, bc, br, z, debug_mark)"]
+// END RANK header_319
+
+prose_320 -> { raw_323}
+{rank=same; raw_323}
+
+raw_323 [label="raw"]
+
+
+// END RANK prose_320
+
+raw_323 -> leaf_324
+leaf_324  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+"]
+// END RANK raw_323
+
+codeblock_321 -> leaf_325
+leaf_325  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Zoneherd.newZone(zoneherd, name, tc, tr, bc, br, z, debug_mark)
+   zoneherd[name] = newZone(tc, tr, bc, br, z, debug_mark)
+   -- this doesn't account for Z axis but for now:
+   zoneherd[#zoneherd + 1] = zoneherd[name]
+   -- todo: make a Zoneherd:add(zone, name) that handles z-ordering
+   -- and auto-adjusts proportionally.
+   return zoneherd
+end"]
+// END RANK codeblock_321
+
+section_310 -> { header_326 prose_327 prose_328 structure_329 prose_330 codeblock_331 section_332}
+{rank=same; header_326 prose_327 prose_328 structure_329 prose_330 codeblock_331 section_332}
+
+header_326 [label="3 : Zoneherd:adjust(zoneherd, zone, delta, bottom)"]
+
+prose_327 [label="prose"]
+
+prose_328 [label="prose"]
+
+structure_329 [label="structure"]
+
+prose_330 [label="prose"]
+
+codeblock_331 [label="code block 298-311"]
+
+section_332 [label="section: 313-329"]
+
+
+// END RANK section_310
+
+header_326 -> leaf_333
+leaf_333  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Zoneherd:adjust(zoneherd, zone, delta, bottom)"]
+// END RANK header_326
+
+prose_327 -> { raw_334}
+{rank=same; raw_334}
+
+raw_334 [label="raw"]
+
+
+// END RANK prose_327
+
+raw_334 -> leaf_335
+leaf_335  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+This adjusts the boundaries of a specific zone.
+"]
+// END RANK raw_334
+
+prose_328 -> { raw_336}
+{rank=same; raw_336}
+
+raw_336 [label="raw"]
+
+
+// END RANK prose_328
+
+raw_336 -> leaf_337
+leaf_337  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Collides as well
+"]
+// END RANK raw_336
+
+structure_329 -> { hashline_338}
+{rank=same; hashline_338}
+
+hashline_338 [label="hashline"]
+
+
+// END RANK structure_329
+
+hashline_338 -> { hashtag_339}
+{rank=same; hashtag_339}
+
+hashtag_339 [label="hashtag"]
+
+
+// END RANK hashline_338
+
+hashtag_339 -> leaf_340
+leaf_340  [color=Gray,shape=rectangle,fontname=Inconsolata,label="deprecated"]
+// END RANK hashtag_339
+
+prose_330 -> { raw_341 prespace_342 literal_343 raw_344 prespace_345 literal_346 raw_347}
+{rank=same; raw_341 prespace_342 literal_343 raw_344 prespace_345 literal_346 raw_347}
+
+raw_341 [label="raw"]
+
+prespace_342 [label="prespace"]
+
+literal_343 [label="literal"]
+
+raw_344 [label="raw"]
+
+prespace_345 [label="prespace"]
+
+literal_346 [label="literal"]
+
+raw_347 [label="raw"]
+
+
+// END RANK prose_330
+
+raw_341 -> leaf_348
+leaf_348  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+  - zoneherd: The"]
+// END RANK raw_341
+
+prespace_342 -> leaf_349
+leaf_349  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_342
+
+literal_343 -> leaf_350
+leaf_350  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Zoneherd"]
+// END RANK literal_343
+
+raw_344 -> leaf_351
+leaf_351  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+  - zone:  The"]
+// END RANK raw_344
+
+prespace_345 -> leaf_352
+leaf_352  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_345
+
+literal_346 -> leaf_353
+leaf_353  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Zone"]
+// END RANK literal_346
+
+raw_347 -> leaf_354
+leaf_354  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+  - delta:  A table, {col, row}, may be positive or negative
+  - bottom:  A boolean, if true, delta is for the bottom right,
+             false or nil, top left.
+- #Return: zoneherd
+"]
+// END RANK raw_347
+
+codeblock_331 -> leaf_355
+leaf_355  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Zoneherd.adjust(zoneherd, zone, delta, bottom)
+   if not bottom then
+      zone.tc = zone.tc + delta[1]
+      zone.tr = zone.tr + delta[1]
+   else
+      zone.bc = zone.bc + delta[1]
+      zone.br = zone.br + delta[2]
+   end
+
+   _collideAll(zoneherd, zone)
+   return zoneherd
+end"]
+// END RANK codeblock_331
+
+section_332 -> { header_356 prose_357 codeblock_358}
+{rank=same; header_356 prose_357 codeblock_358}
+
+header_356 [label="4 : _zoneOffset(modes)"]
+
+prose_357 [label="prose"]
+
+codeblock_358 [label="code block 315-327"]
+
+
+// END RANK section_332
+
+header_356 -> leaf_359
+leaf_359  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** _zoneOffset(modes)"]
+// END RANK header_356
+
+prose_357 -> { raw_360}
+{rank=same; raw_360}
+
+raw_360 [label="raw"]
+
+
+// END RANK prose_357
+
+raw_360 -> leaf_361
+leaf_361  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+"]
+// END RANK raw_360
+
+codeblock_358 -> leaf_362
+leaf_362  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function _zoneOffset(modeS)
+   if modeS.max_col <= 80 then
+      return 20
+   elseif modeS.max_col <= 100 then
+      return 30
+   elseif modeS.max_col <= 120 then
+      return 40
+   else
+      return 50
+   end
+end"]
+// END RANK codeblock_358
+
+section_311 -> { header_363 prose_364 codeblock_365}
+{rank=same; header_363 prose_364 codeblock_365}
+
+header_363 [label="3 : Zoneherd:adjustCommand(zoneherd, delta)"]
+
+prose_364 [label="prose"]
+
+codeblock_365 [label="code block 332-344"]
+
+
+// END RANK section_311
+
+header_363 -> leaf_366
+leaf_366  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Zoneherd:adjustCommand(zoneherd, delta)"]
+// END RANK header_363
+
+prose_364 -> { raw_367}
+{rank=same; raw_367}
+
+raw_367 [label="raw"]
+
+
+// END RANK prose_364
+
+raw_367 -> leaf_368
+leaf_368  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+"]
+// END RANK raw_367
+
+codeblock_365 -> leaf_369
+leaf_369  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Zoneherd:adjustCommand(zoneherd, delta)
+   assert(type(delta) == \"number\" or delta == nil,
+            \"optional delta must be a number\")
+   delta =  delta or 1
+   zoneherd.command.br = zoneherd.command.br + delta
+   zoneherd.results.tr = zoneherd.results.tr - delta
+   zoneherd.command.touched = true
+   zoneherd.results.touched = true
+
+   return zoneherd
+end"]
+// END RANK codeblock_365
+
+section_312 -> { header_370 prose_371 codeblock_372}
+{rank=same; header_370 prose_371 codeblock_372}
+
+header_370 [label="3 : Zoneherd:reflow(modeS)"]
+
+prose_371 [label="prose"]
+
+codeblock_372 [label="code block 348-374"]
+
+
+// END RANK section_312
+
+header_370 -> leaf_373
+leaf_373  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Zoneherd:reflow(modeS)"]
+// END RANK header_370
+
+prose_371 -> { raw_374}
+{rank=same; raw_374}
+
+raw_374 [label="raw"]
+
+
+// END RANK prose_371
+
+raw_374 -> leaf_375
+leaf_375  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+"]
+// END RANK raw_374
+
+codeblock_372 -> leaf_376
+leaf_376  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Zoneherd.reflow(zoneherd, modeS)
+   local right_col = modeS.max_col - _zoneOffset(modeS)
+   local txt_off = modeS.txtbuf and #modeS.txtbuf.lines - 1 or 0
+   zoneherd.status:set(1, 1, right_col, 1)
+   zoneherd.command:set( modeS.l_margin,
+                         modeS.repl_top,
+                         right_col,
+                         modeS.repl_top + txt_off )
+   zoneherd.results:set( modeS.l_margin,
+                         modeS.repl_top + txt_off + 1,
+                         right_col,
+                         modeS.max_row )
+   zoneherd.stat_col:set( right_col + 1,
+                          1,
+                          modeS.max_col,
+                          1 )
+   zoneherd.suggest:set( right_col + 1,
+                         3,
+                         modeS.max_col,
+                         modeS.max_row )
+   for _,z in ipairs(zoneherd) do
+      z.touched = true
+   end
+   return zoneherd
+end"]
+// END RANK codeblock_372
+
+section_313 -> { header_377 prose_378 codeblock_379}
+{rank=same; header_377 prose_378 codeblock_379}
+
+header_377 [label="3 : Zoneherd:paint(modeS)"]
+
+prose_378 [label="prose"]
+
+codeblock_379 [label="code block 384-418"]
+
+
+// END RANK section_313
+
+header_377 -> leaf_380
+leaf_380  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Zoneherd:paint(modeS)"]
+// END RANK header_377
+
+prose_378 -> { raw_381 prespace_382 literal_383 raw_384}
+{rank=same; raw_381 prespace_382 literal_383 raw_384}
+
+raw_381 [label="raw"]
+
+prespace_382 [label="prespace"]
+
+literal_383 [label="literal"]
+
+raw_384 [label="raw"]
+
+
+// END RANK prose_378
+
+raw_381 -> leaf_385
+leaf_385  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+Once again we pass a reference to the"]
+// END RANK raw_381
+
+prespace_382 -> leaf_386
+leaf_386  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_382
+
+literal_383 -> leaf_387
+leaf_387  [color=Gray,shape=rectangle,fontname=Inconsolata,label="modeselektor"]
+// END RANK literal_383
+
+raw_384 -> leaf_388
+leaf_388  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" to get access to things
+like the lexer.
+
+
+"]
+// END RANK raw_384
+
+codeblock_379 -> leaf_389
+leaf_389  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local a = require \"anterm\"
+
+function Zoneherd.paint(zoneherd, modeS, all)
+   local write = zoneherd.write
+   write(a.cursor.hide())
+   write(a.clear())
+   if all then
+      write(a.erase.all())
+   end
+   for i, zone in ipairs(zoneherd) do
+      if zone.touched then
+         -- erase
+         write(a.erase._box(    zone.tc,
+                                zone.tr,
+                                zone.bc,
+                                zone.br ))
+         write(a.colrow(zone.tc, zone.tr))
+         -- actually render ze contents
+         if type(zone.contents) == \"string\" then
+            zoneherd.write(zone.contents)
+         elseif type(zone.contents) == \"table\"
+            and zone.contents.idEst == Txtbuf then
+            _renderTxtbuf(modeS, zone, write)
+         elseif zone == zoneherd.results then
+            _writeResults(write, zone)
+         end
+         zone.touched = false
+      end
+   end
+   zoneherd.write(a.cursor.show())
+   modeS:placeCursor()
+   return zoneherd
+end"]
+// END RANK codeblock_379
+
+section_314 -> { header_390 prose_391 codeblock_392}
+{rank=same; header_390 prose_391 codeblock_392}
+
+header_390 [label="3 : newZone(tr, tc, br, bc, z, debug_mark)"]
+
+prose_391 [label="prose"]
+
+codeblock_392 [label="code block 425-437"]
+
+
+// END RANK section_314
+
+header_390 -> leaf_393
+leaf_393  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** newZone(tr, tc, br, bc, z, debug_mark)"]
+// END RANK header_390
+
+prose_391 -> { raw_394}
+{rank=same; raw_394}
+
+raw_394 [label="raw"]
+
+
+// END RANK prose_391
+
+raw_394 -> leaf_395
+leaf_395  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+This creates a new Zone.
+"]
+// END RANK raw_394
+
+codeblock_392 -> leaf_396
+leaf_396  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function newZone(tc, tr, bc, br, z, debug_mark)
+   assert(tc <= bc, \"tc: \" .. tc .. \", bc: \" .. bc)
+   assert(tr <= br, \"tr: \" .. tr .. \", br: \" .. br)
+   local zone = meta(Zone)
+   zone:set(tc, tr, bc, br)
+   zone.debug_mark = debug_mark
+   zone.z = z
+   zone.touched = false
+   -- zone.contents, aspirationally a rainbuf, is provided later
+   return zone
+end"]
+// END RANK codeblock_392
+
+section_315 -> { header_397 prose_398 prose_399 codeblock_400 codeblock_401}
+{rank=same; header_397 prose_398 prose_399 codeblock_400 codeblock_401}
+
+header_397 [label="3 : new"]
+
+prose_398 [label="prose"]
+
+prose_399 [label="prose"]
+
+codeblock_400 [label="code block 449-490"]
+
+codeblock_401 [label="code block 492-494"]
+
+
+// END RANK section_315
+
+header_397 -> leaf_402
+leaf_402  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** new"]
+// END RANK header_397
+
+prose_398 -> { raw_403}
+{rank=same; raw_403}
+
+raw_403 [label="raw"]
+
+
+// END RANK prose_398
+
+raw_403 -> leaf_404
+leaf_404  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+Makes a Zoneherd.  Borrows the modeselektor to get proportions, but returns
+the zoneherd, which is assigned to its slot on the modeselector at the call
+site, for consistency.
+"]
+// END RANK raw_403
+
+prose_399 -> { raw_405 prespace_406 literal_407 raw_408 prespace_409 literal_410 raw_411}
+{rank=same; raw_405 prespace_406 literal_407 raw_408 prespace_409 literal_410 raw_411}
+
+raw_405 [label="raw"]
+
+prespace_406 [label="prespace"]
+
+literal_407 [label="literal"]
+
+raw_408 [label="raw"]
+
+prespace_409 [label="prespace"]
+
+literal_410 [label="literal"]
+
+raw_411 [label="raw"]
+
+
+// END RANK prose_399
+
+raw_405 -> leaf_412
+leaf_412  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Most of this code needs to be in the"]
+// END RANK raw_405
+
+prespace_406 -> leaf_413
+leaf_413  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_406
+
+literal_407 -> leaf_414
+leaf_414  [color=Gray,shape=rectangle,fontname=Inconsolata,label="reflow"]
+// END RANK literal_407
+
+raw_408 -> leaf_415
+leaf_415  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" method;"]
+// END RANK raw_408
+
+prespace_409 -> leaf_416
+leaf_416  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_409
+
+literal_410 -> leaf_417
+leaf_417  [color=Gray,shape=rectangle,fontname=Inconsolata,label="new"]
+// END RANK literal_410
+
+raw_411 -> leaf_418
+leaf_418  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" should allocate
+and then reflow.
+"]
+// END RANK raw_411
+
+codeblock_400 -> leaf_419
+leaf_419  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new(modeS, writer)
+   local zoneherd = meta(Zoneherd)
+   local right_col = modeS.max_col - _zoneOffset(modeS)
+   zoneherd.write = writer
+   -- make Zones
+   -- (top_col, top_row, bottom_col, bottom_row, z, debug-mark)
+   zoneherd.status  = newZone( 1, 1, right_col, 1, 1, \".\")
+   zoneherd[1] = zoneherd.status
+   zoneherd.command = newZone( modeS.l_margin,
+                               modeS.repl_top,
+                               right_col,
+                               modeS:replLine(),
+                               1, \"|\" )
+   zoneherd[3] = zoneherd.command
+   zoneherd.prompt  = newZone( 1,
+                               modeS.repl_top,
+                               modeS.l_margin - 1,
+                               modeS.repl_top,
+                               1, \">\" )
+   zoneherd[2] = zoneherd.prompt
+   zoneherd.results = newZone( modeS.l_margin,
+                               modeS:replLine() + 1,
+                               right_col,
+                               modeS.max_row,
+                               1, \"~\" )
+   zoneherd[4] = zoneherd.results
+   zoneherd.stat_col = newZone( right_col + 1,
+                                1,
+                                modeS.max_col,
+                                1,
+                                1, \"!\" )
+   zoneherd[5] = zoneherd.stat_col
+   zoneherd.suggest = newZone( right_col + 1,
+                               3,
+                               modeS.max_col,
+                               modeS.max_row,
+                               1, \"%\" )
+   zoneherd[6] = zoneherd.suggest
+   return zoneherd
+end"]
+// END RANK codeblock_400
+
+codeblock_401 -> leaf_420
+leaf_420  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return new"]
+// END RANK codeblock_401
+
+
+}

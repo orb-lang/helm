@@ -143,7 +143,7 @@ function Txtbuf.d_back(txtbuf)
    else
       local new_line = concat(txtbuf.lines[cur_row - 1])
                        .. concat(txtbuf.lines[cur_row])
-      local new_cursor = #txtbuf.lines[cur_row - 1]
+      local new_cursor = #txtbuf.lines[cur_row - 1] + 1
       txtbuf.lines[cur_row - 1] = codepoints(new_line)
       remove(txtbuf.lines, cur_row)
       txtbuf.cur_row = cur_row - 1

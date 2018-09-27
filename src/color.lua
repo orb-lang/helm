@@ -66,6 +66,8 @@ C.color.base       = a.fg24(200, 200, 200)
 C.color.search_hl = a.fg24(30, 230, 100)
 C.color.error = a.bg24(50,0,0)
 
+C.color.highlight = a.bg24(70, 70, 70)
+
 
 C.depth = 4 -- table print depth
 
@@ -208,11 +210,9 @@ local ts
 
 local function tabulate(tab, depth, cycle)
    cycle = cycle or {}
+   depth = depth or 0
    if type(tab) ~= "table" then
       return ts(tab)
-   end
-   if type(depth) == "nil" then
-      depth = 0
    end
    if depth > C.depth or cycle[tab] then
       return ts(tab, "tab_name")
@@ -345,6 +345,8 @@ ts = function (value, hint)
       local _M = getmetatable(value)
       if _M and _M.__repr and not (hint == "raw") then
          str = _M.__repr(value, c)
+
+         assert(type(str) == "string")
       else
          str = tabulate(value)
       end

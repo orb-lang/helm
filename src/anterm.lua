@@ -78,6 +78,7 @@ colormt.__index = colormt
 
 
 
+
 local colors = {
     -- attributes
     attribute = {
@@ -90,7 +91,12 @@ local colors = {
         underscore = 4,
         underline = 4,
         reverse = 7,
-        hidden = 8},
+        hidden = 8,
+        clear_bold = 22,
+        clear_dim  = 22,
+        clear_underline = 24,
+        clear_inverse = 27,
+        clear_hidden = 28 },
     -- foreground
     fg = {
         black = 30,
@@ -139,6 +145,7 @@ end
 
 local clear_fg, clear_bg, clear = anterm.clear_fg, anterm.clear_bg,
                                   anterm.clear
+local clear_bold = anterm.clear_bold
 
 local function reset(color)
     -- given a color, reset its action.
@@ -148,7 +155,18 @@ local function reset(color)
     elseif color.kind == "bg" then
         return clear_bg
     elseif color.kind == "attribute" then
-        return clear
+       local name = color.name
+       if name == "bold" or name == "dim" then
+          return clear_bold
+       elseif name == "underscore" or name == "underline" then
+          return clear_underline
+       elseif name == "inverse" then
+          return clear_inverse
+       elseif name == "hidden" then
+          return clear_hidden
+       else
+          return clear
+       end
     end
 end
 
@@ -162,13 +180,7 @@ function colormt.__call(color, str)
     end
 end
 
-function colormt.__repr(color, str)
-   if str then
-      return {__ts(color), str, reset(color)()}
-   else
-      return {__ts(color)}
-   end
-end
+
 
 
 
@@ -328,11 +340,15 @@ setmetatable(jump,J)
 
 anterm["jump"] = jump
 
-function anterm.rc (row, column)
+function anterm.rc(row, column)
    return CSI .. row .. ";" .. column .. "H"
 end
 
 anterm.rowcol = anterm.rc
+
+function anterm.colrow(col, row)
+   return CSI .. row .. ";" .. col .. "H"
+end
 
 function anterm.col(col)
    col = col or 1
@@ -375,7 +391,9 @@ function erase.line()  return e__line  end
 local cursor = {}
 function erase.box(tr, tc, br, bc, dash)
    dash = dash or " "
-   assert(tr <= br and tc <= bc, "box must be at least 1 by 1")
+   assert(tr <= br and tc <= bc, "box must be at least 1 by 1: "
+          .. " tc: " .. tc .. " tr: " .. tr
+          .. " bc: " .. bc .. " br: " .. br)
    local phrase = anterm.stash()
                .. Jump(nil, tr, tc)
    br = br + 1
@@ -384,6 +402,49 @@ function erase.box(tr, tc, br, bc, dash)
    local nl = anterm.col(tc) .. jump.down(1)
    for i = 1, br - tr do
       phrase = phrase .. blanks .. nl
+   end
+   return phrase .. anterm.pop()
+end
+
+
+
+
+
+
+
+function erase._box(tc, tr, bc, br, dash)
+   return erase.box(tr, tc, br, bc, dash)
+end
+
+
+
+
+
+local random = assert(math.random)
+
+function erase.checker(tc, tr, bc, br, dash, mod)
+   mod = mod or 3
+   dash = dash or "."
+   local space = jump.forward()
+   assert(tr <= br and tc <= bc, "box must be at least 1 by 1")
+   local skip = random(1, mod)
+   local phrase = anterm.stash()
+               .. Jump(nil, tr, tc)
+   br = br + 1
+   bc = bc + 1
+
+   local nl = anterm.col(tc) .. jump.down(1)
+   for i = 1, br - tr do
+      local checks = ""
+      for j = 1, bc - tc do
+         if skip % mod == 0 then
+            checks = checks .. dash
+         else
+            checks = checks .. space
+         end
+         skip = skip + 1
+      end
+      phrase = phrase .. checks .. nl
    end
    return phrase .. anterm.pop()
 end
@@ -491,6 +552,24 @@ end
 
 cursor.stash = anterm.stash
 cursor.pop = anterm.pop
+
+
+
+
+
+
+
+
+
+
+
+
+local report = {}
+
+function report.area()
+   return "\x1b[18t"
+end
+anterm.report = report
 
 
 
@@ -637,7 +716,7 @@ for k,v in pairs(__alt_nav) do
    navigation[v] = k
 end
 
-__navigation, __alt_nav = nil, nil, nil
+__navigation, __alt_nav = nil, nil
 
 anterm.navigation = navigation
 
