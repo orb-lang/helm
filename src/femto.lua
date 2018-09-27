@@ -218,28 +218,6 @@ end)
 
 
 
-local Zoneherd = require "zone"
-
-modeS.zones = Zoneherd(modeS, write)
-modeS.zones.status:replace "an repl, plz reply uwu 👀"
-modeS.zones.prompt:replace "👉  "
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 local byte, sub = string.byte, string.sub
 local m_parse, is_mouse = a.mouse.parse_fast, a.mouse.ismousemove

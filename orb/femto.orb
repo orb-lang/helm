@@ -208,28 +208,6 @@ uv.timer_start(timer, 500, 500, function()
 end)
 #/lua
 
-** Zoneherd
-
-We instantiate this after the Modeselektor, rather than within it, because
-setup uses the tty dimensions.
-
-It might be better to pass those as parameters to the =modeS= and move
-=require "zone"= accordingly.
-
-#!lua
-
-local Zoneherd = require "zone"
-
-modeS.zones = Zoneherd(modeS, write)
-modeS.zones.status:replace "an repl, plz reply uwu 👀"
-modeS.zones.prompt:replace "👉  "
-#/lua
-
-
-**** Zoneherd:start()
-
-This is intended as a shim to start migrating screen painting to the
-Zoneherder
 
 ** Reader
 

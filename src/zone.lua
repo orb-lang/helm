@@ -223,6 +223,7 @@ end
 
 
 
+
 local function _writeResults(write, zone, new)
    local rainbuf = {}
    local row = zone.tr
@@ -296,18 +297,18 @@ end
 
 
 
-function Zoneherd.adjust(zoneherd, zone, delta, bottom)
-   if not bottom then
-      zone.tc = zone.tc + delta[1]
-      zone.tr = zone.tr + delta[1]
-   else
-      zone.bc = zone.bc + delta[1]
-      zone.br = zone.br + delta[2]
-   end
 
-   _collideAll(zoneherd, zone)
-   return zoneherd
-end
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -388,7 +389,7 @@ function Zoneherd.paint(zoneherd, modeS, all)
       write(a.erase.all())
    end
    for i, zone in ipairs(zoneherd) do
-      if zone.touched then
+      if zone.touched or all then
          -- erase
          write(a.erase._box(    zone.tc,
                                 zone.tr,

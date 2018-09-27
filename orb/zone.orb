@@ -218,6 +218,7 @@ local function _writeLines(write, zone, str)
 end
 #/lua
 
+
 *** _writeResults
 
 We'll special-case the results buffer for now.
@@ -295,7 +296,7 @@ simpler for now.
              false or nil, top left.
 - #Return: zoneherd
 
-#!lua
+#!lua-noknit
 function Zoneherd.adjust(zoneherd, zone, delta, bottom)
    if not bottom then
       zone.tc = zone.tc + delta[1]
@@ -388,7 +389,7 @@ function Zoneherd.paint(zoneherd, modeS, all)
       write(a.erase.all())
    end
    for i, zone in ipairs(zoneherd) do
-      if zone.touched then
+      if zone.touched or all then
          -- erase
          write(a.erase._box(    zone.tc,
                                 zone.tr,

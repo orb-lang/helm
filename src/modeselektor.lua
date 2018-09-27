@@ -106,6 +106,7 @@ local Txtbuf    = require "txtbuf"
 local Resbuf    = require "resbuf" -- Not currently used...
 local Historian = require "historian"
 local Lex       = require "lex"
+local Zoneherd  = require "zone"
 
 local Nerf   = require "nerf"
 local Search = require "search"
@@ -557,7 +558,7 @@ function ModeS.eval(modeS)
       if err:match "'<eof>'$" then
          -- Lua expects some more input, advance the txtbuf
          modeS.txtbuf:advance()
-         write(a.col(1) .. "...")
+         write(a.colrow(1, modeS.repl_top + 1) .. "...")
          return true
       else
          local to_err = { err.. "\n" .. stacktrace(),
@@ -580,7 +581,6 @@ end
 
 
 
-
 function new(max_col, max_row)
   local modeS = meta(ModeS)
   modeS.txtbuf = Txtbuf()
@@ -594,6 +594,9 @@ function new(max_col, max_row)
   modeS.r_margin = 80
   modeS.row = 2
   modeS.repl_top  = ModeS.REPL_LINE
+  modeS.zones = Zoneherd(modeS, write)
+  modeS.zones.status:replace "an repl, plz reply uwu 👀"
+  modeS.zones.prompt:replace "👉  "
   -- initial state
   modeS.firstChar = true
   return modeS
