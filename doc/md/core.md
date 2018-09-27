@@ -97,7 +97,7 @@ endowment or inheritance it's now out of the picture.
 
 ### pack(...)
 
-A 5.2 shim we won't need forever.
+A 5.2 shim.
 
 ```lua
 function core.pack(...)
@@ -187,9 +187,9 @@ end
 ```
 ### select(tab, key)
 
-Recursively return all ``v`` for ``key`` in all subtables of tab
+Recursively return all ``v`` for ``key`` in all subtables of tab.
 
-```lua
+#NB: this is not being used and collides with a core library name.```lua
 local function _select(collection, tab, key, cycle)
    cycle = cycle or {}
    for k,v in pairs(tab) do
@@ -276,6 +276,41 @@ function core.splice(tab, idx, into)
         i = i + 1
     end
     return tab
+end
+```
+### safeget(tab, key)
+
+This will retrieve a value, given a key, without causing errors if the table
+has been made strict.
+
+```lua
+function core.safeget(tab, key)
+   local val = rawget(tab, key)
+   if val ~= nil then
+      return val
+   end
+   local _M = getmetatable(tab)
+   while _M ~= nil and rawget(_M, "__index") ~= nil do
+      local index_t = type(_M.__index)
+      if index_t == "table" then
+         val = rawget(_M.__index, key)
+      elseif index_t == "function" then
+         local success
+         success, val = pcall(_M.__index, table, key)
+         if success then
+            return val
+         else
+            val = nil
+         end
+      else
+         error("somehow, __index is of type " .. index_t)
+      end
+      if val ~= nil then
+         return val
+      end
+      _M = index_t == "table" and getmetatable(_M.__index) or nil
+   end
+   return nil
 end
 ```
 ## String extensions

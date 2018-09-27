@@ -253,23 +253,15 @@ end
 
 
 
+
+
+
+
 function ModeS.cur_col(modeS)
    return modeS.txtbuf.cursor + modeS.l_margin - 1
 end
 
 
-
-
-
-
-
-
-
--- This method needs to live on a zone-by-zone basis,
--- and can even be pre-calculated and cached
-function ModeS.nl(modeS)
-   write(a.col(modeS.l_margin).. a.jump.down(1))
-end
 
 
 
@@ -282,11 +274,16 @@ end
 
 
 
+
+
 function ModeS.placeCursor(modeS)
    local col = modeS.zones.command.tc + modeS.txtbuf.cursor - 1
    local row = modeS.zones.command.tr + modeS.txtbuf.cur_row - 1
    write(a.colrow(col, row))
 end
+
+
+
 
 
 
@@ -483,6 +480,7 @@ function ModeS.act(modeS, category, value)
    -- Replace zones
    modeS.zones.stat_col:replace(icon)
    modeS.zones.command:replace(modeS.txtbuf)
+   modeS.zones:adjustCommand()
    modeS:paint()
    collectgarbage()
 end
@@ -559,12 +557,13 @@ function ModeS.eval(modeS)
       if err:match "'<eof>'$" then
          -- Lua expects some more input, advance the txtbuf
          modeS.txtbuf:advance()
-         modeS.zones:adjust(modeS.zones.command, {0, 1}, true)
          write(a.col(1) .. "...")
          return true
       else
-         modeS:clearResults()
-         modeS:writeResults(err .. "\n" .. stacktrace())
+         local to_err = { err.. "\n" .. stacktrace(),
+                          n = 1,
+                          frozen = true}
+         modeS.zones.results:replace(to_err)
          -- pass through to default.
       end
    end
@@ -572,7 +571,7 @@ function ModeS.eval(modeS)
    modeS.hist:append(modeS.txtbuf, results, success)
    modeS.hist.cursor = #modeS.hist
    if success then modeS.hist.results[modeS.txtbuf] = results end
-   modeS:prompt()
+   -- modeS:prompt()
 end
 
 

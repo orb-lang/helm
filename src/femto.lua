@@ -37,6 +37,9 @@ end
 jit.vmdef = require "vmdef"
 jit.p = require "ljprof"
 
+--apparently this is a hidden, undocumented LuaJIT thing?
+require "table.clear"
+
 -- sqlayer uses this monkey patch:
 ffi.reflect = require "reflect"
 sql = require "sqlayer"

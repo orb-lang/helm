@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 410"]
+doc_0 [label="doc - 412"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-101"]
+section_1 [label="section: 1-103"]
 
 
 // END RANK doc_0
@@ -29,11 +29,11 @@ prose_6 [label="prose"]
 
 prose_7 [label="prose"]
 
-codeblock_8 [label="code block 20-71"]
+codeblock_8 [label="code block 20-73"]
 
-section_9 [label="section: 74-101"]
+section_9 [label="section: 76-103"]
 
-section_10 [label="section: 102-317"]
+section_10 [label="section: 104-317"]
 
 
 // END RANK section_1
@@ -288,6 +288,8 @@ C.color.base       = a.fg24(200, 200, 200)
 C.color.search_hl = a.fg24(30, 230, 100)
 C.color.error = a.bg24(50,0,0)
 
+C.color.highlight = a.bg24(70, 70, 70)
+
 
 C.depth = 4 -- table print depth"]
 // END RANK codeblock_8
@@ -299,7 +301,7 @@ header_63 [label="2 : no_color"]
 
 prose_64 [label="prose"]
 
-codeblock_65 [label="code block 79-99"]
+codeblock_65 [label="code block 81-101"]
 
 
 // END RANK section_9
@@ -353,15 +355,15 @@ header_70 [label="2 : ts(value)"]
 
 prose_71 [label="prose"]
 
-section_72 [label="section: 105-120"]
+section_72 [label="section: 107-122"]
 
-section_73 [label="section: 121-134"]
+section_73 [label="section: 123-136"]
 
-section_74 [label="section: 135-197"]
+section_74 [label="section: 137-199"]
 
-section_75 [label="section: 198-317"]
+section_75 [label="section: 200-317"]
 
-section_76 [label="section: 318-410"]
+section_76 [label="section: 318-412"]
 
 
 // END RANK section_10
@@ -391,7 +393,7 @@ header_80 [label="4 : setup"]
 
 prose_81 [label="prose"]
 
-codeblock_82 [label="code block 109-118"]
+codeblock_82 [label="code block 111-120"]
 
 
 // END RANK section_72
@@ -453,7 +455,7 @@ prose_94 [label="prose"]
 
 prose_95 [label="prose"]
 
-codeblock_96 [label="code block 128-132"]
+codeblock_96 [label="code block 130-134"]
 
 
 // END RANK section_73
@@ -522,7 +524,7 @@ header_109 [label="3 : C.allNames()"]
 
 prose_110 [label="prose"]
 
-codeblock_111 [label="code block 140-195"]
+codeblock_111 [label="code block 142-197"]
 
 
 // END RANK section_74
@@ -631,7 +633,7 @@ prose_123 [label="prose"]
 
 prose_124 [label="prose"]
 
-codeblock_125 [label="code block 206-268"]
+codeblock_125 [label="code block 208-268"]
 
 prose_126 [label="prose"]
 
@@ -680,11 +682,9 @@ leaf_134  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local ts
 
 local function tabulate(tab, depth, cycle)
    cycle = cycle or {}
+   depth = depth or 0
    if type(tab) ~= \"table\" then
       return ts(tab)
-   end
-   if type(depth) == \"nil\" then
-      depth = 0
    end
    if depth > C.depth or cycle[tab] then
       return ts(tab, \"tab_name\")
@@ -806,11 +806,11 @@ header_139 [label="3 : ts"]
 
 prose_140 [label="prose"]
 
-codeblock_141 [label="code block 322-397"]
+codeblock_141 [label="code block 322-399"]
 
-codeblock_142 [label="code block 399-406"]
+codeblock_142 [label="code block 401-408"]
 
-codeblock_143 [label="code block 408-410"]
+codeblock_143 [label="code block 410-412"]
 
 
 // END RANK section_76
@@ -860,6 +860,8 @@ leaf_147  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ts = function 
       local _M = getmetatable(value)
       if _M and _M.__repr and not (hint == \"raw\") then
          str = _M.__repr(value, c)
+
+         assert(type(str) == \"string\")
       else
          str = tabulate(value)
       end

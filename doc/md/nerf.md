@@ -68,6 +68,7 @@ Nerf = { ASCII  = ASCII,
 local up1, down1 = a.jump.up(), a.jump.down()
 
 function NAV.UP(modeS, category, value)
+   modeS.firstChar = false
    local inline = modeS.txtbuf:up()
    if not inline then
       local prev_result, linestash
@@ -79,9 +80,8 @@ function NAV.UP(modeS, category, value)
       if linestash then
          modeS.hist:append(linestash)
       end
-      modeS:clearResults()
       if prev_result then
-         modeS:printResults(prev_result)
+         modeS.zones.results:replace(prev_result)
       end
    else
       write(up1)
@@ -92,14 +92,21 @@ end
 function NAV.DOWN(modeS, category, value)
    local inline = modeS.txtbuf:down()
    if not inline then
-      local next_p, next_result
-      modeS.txtbuf, next_result, next_p = modeS.hist:next()
+      local next_p, next_result, new_txtbuf
+      new_txtbuf, next_result, next_p = modeS.hist:next()
       if next_p then
+         modeS.firstChar = true
+         local added = modeS.hist:append(modeS.txtbuf)
+         if added then
+            modeS.hist.cursor = #modeS.hist + 1
+         end
          modeS.txtbuf = Txtbuf()
+      else
+         modeS.txtbuf = new_txtbuf
       end
       modeS:clearResults()
       if next_result then
-         modeS:printResults(next_result)
+         modeS.zones.results:replace(next_result)
       end
    else
       write(down1)
@@ -131,7 +138,6 @@ function NAV.RETURN(modeS, category, value)
    -- eval or split line
    local eval = modeS.txtbuf:nl()
    if eval then
-     modeS:nl()
      local more = modeS:eval()
      if not more then
        modeS.txtbuf = Txtbuf()
@@ -152,23 +158,11 @@ end
 
 function NAV.BACKSPACE(modeS, category, value)
    local shrunk =  modeS.txtbuf:d_back()
-   if shrunk then
-      write(a.stash())
-      write(a.rc(modeS:replLine() + 1, 1))
-      write(a.erase.line())
-      write(a.pop())
-   end
    _modeShiftOnEmpty(modeS)
 end
 
 function NAV.DELETE(modeS, category, value)
    local shrunk = modeS.txtbuf:d_fwd()
-   if shrunk then
-      write(a.stash())
-      write(a.rc(modeS:replLine() + 1, 1))
-      write(a.erase.line())
-      write(a.pop())
-   end
    _modeShiftOnEmpty(modeS)
 end
 ```

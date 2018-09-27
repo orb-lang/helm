@@ -292,6 +292,10 @@ end
 
 
 
+
+
+
+
 function Zoneherd.adjust(zoneherd, zone, delta, bottom)
    if not bottom then
       zone.tc = zone.tc + delta[1]
@@ -321,6 +325,18 @@ local function _zoneOffset(modeS)
    end
 end
 
+
+
+
+
+
+function Zoneherd.adjustCommand(zoneherd)
+   local lines = zoneherd.command.contents and zoneherd.command.contents.lines
+   local txt_off = lines and #lines -1 or 0
+   zoneherd.command.br = zoneherd.command.tr + txt_off
+   zoneherd.results.tr = zoneherd.command.br + 1
+   return zoneherd
+end
 
 
 

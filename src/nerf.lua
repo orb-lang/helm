@@ -145,7 +145,6 @@ function NAV.RETURN(modeS, category, value)
    -- eval or split line
    local eval = modeS.txtbuf:nl()
    if eval then
-     modeS:nl()
      local more = modeS:eval()
      if not more then
        modeS.txtbuf = Txtbuf()
@@ -166,23 +165,11 @@ end
 
 function NAV.BACKSPACE(modeS, category, value)
    local shrunk =  modeS.txtbuf:d_back()
-   if shrunk then
-      write(a.stash())
-      write(a.rc(modeS:replLine() + 1, 1))
-      write(a.erase.line())
-      write(a.pop())
-   end
    _modeShiftOnEmpty(modeS)
 end
 
 function NAV.DELETE(modeS, category, value)
    local shrunk = modeS.txtbuf:d_fwd()
-   if shrunk then
-      write(a.stash())
-      write(a.rc(modeS:replLine() + 1, 1))
-      write(a.erase.line())
-      write(a.pop())
-   end
    _modeShiftOnEmpty(modeS)
 end
 

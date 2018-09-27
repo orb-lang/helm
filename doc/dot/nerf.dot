@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 208"]
+doc_0 [label="doc - 202"]
 
 
 doc_0 -> { section_1}
@@ -29,7 +29,7 @@ prose_6 [label="prose"]
 
 section_7 [label="section: 14-37"]
 
-section_8 [label="section: 38-183"]
+section_8 [label="section: 38-177"]
 
 
 // END RANK section_1
@@ -193,9 +193,9 @@ prose_40 [label="prose"]
 
 section_41 [label="section: 41-66"]
 
-section_42 [label="section: 67-183"]
+section_42 [label="section: 67-177"]
 
-section_43 [label="section: 184-208"]
+section_43 [label="section: 178-202"]
 
 
 // END RANK section_8
@@ -293,9 +293,9 @@ header_59 [label="3 : NAV"]
 
 prose_60 [label="prose"]
 
-codeblock_61 [label="code block 69-112"]
+codeblock_61 [label="code block 69-119"]
 
-codeblock_62 [label="code block 118-181"]
+codeblock_62 [label="code block 125-175"]
 
 
 // END RANK section_42
@@ -321,6 +321,7 @@ codeblock_61 -> leaf_66
 leaf_66  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local up1, down1 = a.jump.up(), a.jump.down()
 
 function NAV.UP(modeS, category, value)
+   modeS.firstChar = false
    local inline = modeS.txtbuf:up()
    if not inline then
       local prev_result, linestash
@@ -332,9 +333,8 @@ function NAV.UP(modeS, category, value)
       if linestash then
          modeS.hist:append(linestash)
       end
-      modeS:clearResults()
       if prev_result then
-         modeS:printResults(prev_result)
+         modeS.zones.results:replace(prev_result)
       end
    else
       write(up1)
@@ -345,14 +345,21 @@ end
 function NAV.DOWN(modeS, category, value)
    local inline = modeS.txtbuf:down()
    if not inline then
-      local next_p, next_result
-      modeS.txtbuf, next_result, next_p = modeS.hist:next()
+      local next_p, next_result, new_txtbuf
+      new_txtbuf, next_result, next_p = modeS.hist:next()
       if next_p then
+         modeS.firstChar = true
+         local added = modeS.hist:append(modeS.txtbuf)
+         if added then
+            modeS.hist.cursor = #modeS.hist + 1
+         end
          modeS.txtbuf = Txtbuf()
+      else
+         modeS.txtbuf = new_txtbuf
       end
       modeS:clearResults()
       if next_result then
-         modeS:printResults(next_result)
+         modeS.zones.results:replace(next_result)
       end
    else
       write(down1)
@@ -385,7 +392,6 @@ function NAV.RETURN(modeS, category, value)
    -- eval or split line
    local eval = modeS.txtbuf:nl()
    if eval then
-     modeS:nl()
      local more = modeS:eval()
      if not more then
        modeS.txtbuf = Txtbuf()
@@ -406,23 +412,11 @@ end
 
 function NAV.BACKSPACE(modeS, category, value)
    local shrunk =  modeS.txtbuf:d_back()
-   if shrunk then
-      write(a.stash())
-      write(a.rc(modeS:replLine() + 1, 1))
-      write(a.erase.line())
-      write(a.pop())
-   end
    _modeShiftOnEmpty(modeS)
 end
 
 function NAV.DELETE(modeS, category, value)
    local shrunk = modeS.txtbuf:d_fwd()
-   if shrunk then
-      write(a.stash())
-      write(a.rc(modeS:replLine() + 1, 1))
-      write(a.erase.line())
-      write(a.pop())
-   end
    _modeShiftOnEmpty(modeS)
 end"]
 // END RANK codeblock_62
@@ -436,9 +430,9 @@ prose_69 [label="prose"]
 
 prose_70 [label="prose"]
 
-codeblock_71 [label="code block 190-202"]
+codeblock_71 [label="code block 184-196"]
 
-codeblock_72 [label="code block 205-207"]
+codeblock_72 [label="code block 199-201"]
 
 
 // END RANK section_43

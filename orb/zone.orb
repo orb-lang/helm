@@ -283,6 +283,10 @@ This adjusts the boundaries of a specific zone.
 
 Collides as well
 
+#deprecated there are subtle logic bugs (that probably aren't subtle once
+spotted) in the collision code, and I'm proceeding with something much
+simpler for now.
+
 - #Params
   - zoneherd: The =Zoneherd=
   - zone:  The =Zone=
@@ -322,6 +326,18 @@ local function _zoneOffset(modeS)
 end
 #/lua
 
+
+*** Zoneherd:adjustCommand(zoneherd, delta)
+
+#!lua
+function Zoneherd.adjustCommand(zoneherd)
+   local lines = zoneherd.command.contents and zoneherd.command.contents.lines
+   local txt_off = lines and #lines -1 or 0
+   zoneherd.command.br = zoneherd.command.tr + txt_off
+   zoneherd.results.tr = zoneherd.command.br + 1
+   return zoneherd
+end
+#/lua
 
 *** Zoneherd:reflow(modeS)
 

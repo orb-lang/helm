@@ -23,9 +23,6 @@ has to have non-overlapping Zones, and ``1`` should be completely tiled. The
 zoneherder propagates adjustments.
 
 
-Man. I should read some ``awesomewm`` source code, huh.
-
-
 A paint message to a Zone will be a ``rainbuf``.  There are a few tricky things
 here, and ultimately we'll need a Unicode database to chase down all the
 edges.  We need to engineer the system so that it can use that info when the
@@ -55,4 +52,423 @@ on plain ordinary ``br`` programs, so I can use all this carefully won tooling
 on the other parts of the programme.
 
 
+## Design
 
+This file is going to have both the ``zoneherd``, called ``modeS.zones``, and
+a ``Zone`` metatable for handling single Zones.
+
+
+The Zone herd will need to hold zones by name as well as by index, because
+we want to repaint in a specific order (pre-sorting by ``.z``) and pass messages
+by name, so that we send a result to ``modeS.zones.result``.
+
+
+We'll need methods for reflowing, for creating, and for refreshing.  Each
+``Zone`` will have a ``.touched`` field and if it's flipped we repaint; if there's
+an overlapping Zone of higher ``z`` we flip its touched bit as well.
+
+
+A ``Zone`` needs an ``onMouse`` method that receives the whole packet and acts
+accordingly.  The flow hands every input including parsed mouse messages to
+the ``modeselektor``, and some, particularly scrolls, are handled there. The
+rest are assigned by the zone herder, which sould probably normalize the
+action so, for example, a click in the upper left corner of a Zone is ``1,1``.
+
+
+Since the hard part is repainting, I'll start with reflow, and just hard-
+switch the REPL to a 'reflow mode' that just draws characters to a screen,
+then add a popup.
+
+```lua
+assert(meta)
+
+local concat = assert(table.concat)
+
+local Txtbuf = require "txtbuf"
+
+local Zone = meta {}
+
+local Zoneherd = meta {}
+```
+### _collide(zone_a, zone_b)
+
+Takes two zones, determines if there is overlap, if so, alters ``zone_b`` so
+that there is not.
+
+
+checks ``z`` dimension.
+
+#NB I'm starting to think this entire notion is ill-conceived, this is```lua
+function _inside(col, row, zone)
+   return (col >= zone.tc)
+     and  (col <= zone.bc)
+     and  (row >= zone.tr)
+     and  (row <= zone.br)
+end
+
+function _collide(z_a, z_b)
+   if z_a.z ~= z_b.z then
+      -- this is just 'false' but let's refactor that when it's time
+      return {false, false, false, false}, false, {false, false}
+   end
+
+   local collision = false
+   -- clockwise from top left
+   local z_a_corners = { {z_a.tc, z_a.tr},
+                         {z_a.bc, z_a.tr},
+                         {z_a.bc, z_a.br},
+                         {z_a.tc, z_a.br} }
+   local hits = {}
+   for i, corner in ipairs(z_a_corners) do
+      local hit = _inside(corner[1], corner[2], z_b)
+      if hit then
+         collision = true
+      end
+      hits[i] = hit
+   end
+   local a_left_of_b = z_a.tc < z_b.tc
+   local a_above_b = z_a.tr < z_b.tr
+   -- bottom of a over top of b
+   if (hits[3] or hits[4]) and a_above_b then
+      z_b.tr = z_a.br + 1
+   end
+   -- right of a over left of b
+   if (hits[2] or hits[3]) and a_left_of_b then
+      z_b.tc = z_a.bc + 1
+   end
+   -- top of a over bottom of b
+   if (hits[1] or hits[2]) and not a_above_b then
+      z_b.br = z_a.tr - 1
+   end
+   -- left of a over right of b
+   if (hits[1] or hits[4]) and not a_left_of_b then
+      z_b.bc = z_a.tc - 1
+   end
+   return hits, collision, {a_left_of_b, a_above_b}
+end
+```
+### _collideAll(zoneherd, zone)
+
+Collides a given zone with the rest of the herd.
+
+
+Called after an ``adjust`` to resettle matters.
+
+```lua
+local function _collideAll(zoneherd, zone)
+   for i, z in ipairs(zoneherd) do
+      if zone ~= z then
+         _collide(zone, z)
+      end
+   end
+end
+```
+## Zone methods
+
+
+### Zone:height(), Zone:width()
+
+```lua
+function Zone.height(zone)
+   return zone.br - zone.tr + 1
+end
+
+function Zone.width(zone)
+   return zone.bc - zone.tc + 1
+end
+```
+### Zone:replace(zone, rainbuf)
+
+```lua
+function Zone.replace(zone, rainbuf)
+   zone.contents = rainbuf
+   zone.touched = true
+
+   return zone
+end
+```
+### Zone:set(tc, tr, bc, br)
+
+```lua
+function Zone.set(zone, tc, tr, bc, br)
+   zone.tc = tc
+   zone.tr = tr
+   zone.bc = bc
+   zone.br = br
+   return zone
+end
+```
+### _writeLines(write, zone, str)
+
+```lua
+local lines = assert(string.lines, "string.lines must be provided")
+
+local function _writeLines(write, zone, str)
+   local nl = a.col(zone.tc) .. a.jump.down(1)
+   local pr_row = zone.tr
+   for line in lines(str) do
+       write(line)
+       write(nl)
+       pr_row = pr_row + 1
+       if pr_row > zone.br then
+          break
+       end
+   end
+end
+```
+### _writeResults
+
+We'll special-case the results buffer for now.
+
+```lua
+local function _writeResults(write, zone, new)
+   local rainbuf = {}
+   local row = zone.tr
+   local results = zone.contents
+   if not results then
+      return nil
+   end
+   for i = 1, results.n do
+      if results.frozen then
+         rainbuf[i] = results[i]
+      else
+         local catch_val = ts(results[i])
+         if type(catch_val) == 'string' then
+            rainbuf[i] = catch_val
+         else
+            error("ts returned a " .. type(catch_val) .. " in printResults")
+         end
+      end
+   end
+   _writeLines(write, zone, concat(rainbuf, '   '))
+end
+```
+### _renderTxtbuf(modeS, zone)
+
+```lua
+local function _renderTxtbuf(modeS, zone, write)
+   local lb = modeS.lex(tostring(zone.contents))
+   if type(lb) == "table" then
+      lb = concat(lb)
+   end
+   write(a.colrow(zone.tc, zone.tr))
+   _writeLines(write, zone, lb)
+end
+```
+## Zoneherd methods
+
+
+### Zoneherd:newZone(name, tc, tr, bc, br, z, debug_mark)
+
+```lua
+function Zoneherd.newZone(zoneherd, name, tc, tr, bc, br, z, debug_mark)
+   zoneherd[name] = newZone(tc, tr, bc, br, z, debug_mark)
+   -- this doesn't account for Z axis but for now:
+   zoneherd[#zoneherd + 1] = zoneherd[name]
+   -- todo: make a Zoneherd:add(zone, name) that handles z-ordering
+   -- and auto-adjusts proportionally.
+   return zoneherd
+end
+```
+### Zoneherd:adjust(zoneherd, zone, delta, bottom)
+
+This adjusts the boundaries of a specific zone.
+
+
+Collides as well
+
+#deprecated there are subtle logic bugs (that probably aren't subtle once
+  - zoneherd: The ``Zoneherd``
+  - zone:  The ``Zone``
+  - delta:  A table, {col, row}, may be positive or negative
+  - bottom:  A boolean, if true, delta is for the bottom right,
+             false or nil, top left.
+- #Return: zoneherd
+
+```lua
+function Zoneherd.adjust(zoneherd, zone, delta, bottom)
+   if not bottom then
+      zone.tc = zone.tc + delta[1]
+      zone.tr = zone.tr + delta[1]
+   else
+      zone.bc = zone.bc + delta[1]
+      zone.br = zone.br + delta[2]
+   end
+
+   _collideAll(zoneherd, zone)
+   return zoneherd
+end
+```
+#### _zoneOffset(modes)
+
+```lua
+local function _zoneOffset(modeS)
+   if modeS.max_col <= 80 then
+      return 20
+   elseif modeS.max_col <= 100 then
+      return 30
+   elseif modeS.max_col <= 120 then
+      return 40
+   else
+      return 50
+   end
+end
+```
+### Zoneherd:adjustCommand(zoneherd, delta)
+
+```lua
+function Zoneherd:adjustCommand(zoneherd, delta)
+   assert(type(delta) == "number" or delta == nil,
+            "optional delta must be a number")
+   delta =  delta or 1
+   zoneherd.command.br = zoneherd.command.br + delta
+   zoneherd.results.tr = zoneherd.results.tr - delta
+   zoneherd.command.touched = true
+   zoneherd.results.touched = true
+
+   return zoneherd
+end
+```
+### Zoneherd:reflow(modeS)
+
+```lua
+function Zoneherd.reflow(zoneherd, modeS)
+   local right_col = modeS.max_col - _zoneOffset(modeS)
+   local txt_off = modeS.txtbuf and #modeS.txtbuf.lines - 1 or 0
+   zoneherd.status:set(1, 1, right_col, 1)
+   zoneherd.command:set( modeS.l_margin,
+                         modeS.repl_top,
+                         right_col,
+                         modeS.repl_top + txt_off )
+   zoneherd.results:set( modeS.l_margin,
+                         modeS.repl_top + txt_off + 1,
+                         right_col,
+                         modeS.max_row )
+   zoneherd.stat_col:set( right_col + 1,
+                          1,
+                          modeS.max_col,
+                          1 )
+   zoneherd.suggest:set( right_col + 1,
+                         3,
+                         modeS.max_col,
+                         modeS.max_row )
+   for _,z in ipairs(zoneherd) do
+      z.touched = true
+   end
+   return zoneherd
+end
+```
+### Zoneherd:paint(modeS)
+
+Once again we pass a reference to the ``modeselektor`` to get access to things
+like the lexer.
+
+
+
+```lua
+local a = require "anterm"
+
+function Zoneherd.paint(zoneherd, modeS, all)
+   local write = zoneherd.write
+   write(a.cursor.hide())
+   write(a.clear())
+   if all then
+      write(a.erase.all())
+   end
+   for i, zone in ipairs(zoneherd) do
+      if zone.touched then
+         -- erase
+         write(a.erase._box(    zone.tc,
+                                zone.tr,
+                                zone.bc,
+                                zone.br ))
+         write(a.colrow(zone.tc, zone.tr))
+         -- actually render ze contents
+         if type(zone.contents) == "string" then
+            zoneherd.write(zone.contents)
+         elseif type(zone.contents) == "table"
+            and zone.contents.idEst == Txtbuf then
+            _renderTxtbuf(modeS, zone, write)
+         elseif zone == zoneherd.results then
+            _writeResults(write, zone)
+         end
+         zone.touched = false
+      end
+   end
+   zoneherd.write(a.cursor.show())
+   modeS:placeCursor()
+   return zoneherd
+end
+```
+### newZone(tr, tc, br, bc, z, debug_mark)
+
+This creates a new Zone.
+
+```lua
+local function newZone(tc, tr, bc, br, z, debug_mark)
+   assert(tc <= bc, "tc: " .. tc .. ", bc: " .. bc)
+   assert(tr <= br, "tr: " .. tr .. ", br: " .. br)
+   local zone = meta(Zone)
+   zone:set(tc, tr, bc, br)
+   zone.debug_mark = debug_mark
+   zone.z = z
+   zone.touched = false
+   -- zone.contents, aspirationally a rainbuf, is provided later
+   return zone
+end
+```
+### new
+
+Makes a Zoneherd.  Borrows the modeselektor to get proportions, but returns
+the zoneherd, which is assigned to its slot on the modeselector at the call
+site, for consistency.
+
+
+Most of this code needs to be in the ``reflow`` method; ``new`` should allocate
+and then reflow.
+
+```lua
+local function new(modeS, writer)
+   local zoneherd = meta(Zoneherd)
+   local right_col = modeS.max_col - _zoneOffset(modeS)
+   zoneherd.write = writer
+   -- make Zones
+   -- (top_col, top_row, bottom_col, bottom_row, z, debug-mark)
+   zoneherd.status  = newZone( 1, 1, right_col, 1, 1, ".")
+   zoneherd[1] = zoneherd.status
+   zoneherd.command = newZone( modeS.l_margin,
+                               modeS.repl_top,
+                               right_col,
+                               modeS:replLine(),
+                               1, "|" )
+   zoneherd[3] = zoneherd.command
+   zoneherd.prompt  = newZone( 1,
+                               modeS.repl_top,
+                               modeS.l_margin - 1,
+                               modeS.repl_top,
+                               1, ">" )
+   zoneherd[2] = zoneherd.prompt
+   zoneherd.results = newZone( modeS.l_margin,
+                               modeS:replLine() + 1,
+                               right_col,
+                               modeS.max_row,
+                               1, "~" )
+   zoneherd[4] = zoneherd.results
+   zoneherd.stat_col = newZone( right_col + 1,
+                                1,
+                                modeS.max_col,
+                                1,
+                                1, "!" )
+   zoneherd[5] = zoneherd.stat_col
+   zoneherd.suggest = newZone( right_col + 1,
+                               3,
+                               modeS.max_col,
+                               modeS.max_row,
+                               1, "%" )
+   zoneherd[6] = zoneherd.suggest
+   return zoneherd
+end
+```
+```lua
+return new
+```

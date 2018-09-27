@@ -37,7 +37,7 @@ really, since any "blagh " is the same string but a "blagh whuppy" and a
 ### Structure
 
 Rainbufs are database-shaped.  The simplest ``r.idEst = Rainbuf`` is an
-array of strings, with a second array, keyed as ``r.disp``, showing the expected
+array of strings, with a second array, keyed as ``r.wid``, showing the expected
 displacement of the string: That is, how far left (positive) or right
 (negative) the cursor is expected to move on a given print.
 
@@ -46,9 +46,9 @@ This is equivalent to ``#tostring(r)`` for printable ASCII, and then starts to
 diverge wildly.  Notably, any ANSI color sequence is of zero displacement.
 
 
-Values of ``disp`` can either be numbers, in which case it is displacement by
-column, or an array, in which case ``disp[0]`` is by column and ``disp[1]`` is by
-row.  ``disp`` can also be a string. If so it must start with "?". If there are
+Values of ``wid`` can either be numbers, in which case it is displacement by
+column, or an array, in which case ``wid[0]`` is by column and ``wid[1]`` is by
+row.  ``wid`` can also be a string. If so it must start with "?". If there are
 additional characters it must be a signed integer value.
 
 
@@ -57,12 +57,12 @@ perform newlining at the end of each rainbuf, respecting local context.  There
 is no guarantee that the 1 position in a rainbuf is the 1 position on-screen.
 
 
-Rainbufs can contain sequences of unknown displacement.  In such a case, the
+Rainbufs can contain sequences of unknown widlacement.  In such a case, the
 displacement is _measured_ and recorded persistently in a database.
 
 
-If we get the string "Hi! 🤪" it has a ``#`` of 8. So the disp will be "?8",
-and the actual displacement turns out to be 6, correctly, and 5 on my tty,
+If we get the string "Hi! 🤪" it has a ``#`` of 8. So the wid will be "?8",
+and the actual widlacement turns out to be 6, correctly, and 5 on my tty,
 which will double-print the emoji and the closing string!
 
 
@@ -107,8 +107,8 @@ local Rainbuf = meta {}
 ```lua
 local function new(txtbuf)
    local rainbuf = meta(Rainbuf)
-   local disp = {}
-   rainbuf.disp = disp
+   local wid = {}
+   rainbuf.wid = wid
    if type(txtbuf) == "string" then
       txtbuf = Txtbuf(txtbuf)
    elseif type(txtbuf) == "table" then
@@ -119,9 +119,9 @@ local function new(txtbuf)
             if type(v) == "string" then
                rainbuf[i] = v
                if byte(v) == 0x1b then
-                  disp[i] = 0
+                  wid[i] = 0
                else
-                  disp[i] = v
+                  wid[i] = v
                end
             else
                error("content of table in Rainbuf must be strings")
