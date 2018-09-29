@@ -401,6 +401,12 @@ local collect_M = {__repr = _collect_repr}
 
 
 function Historian.search(historian, frag)
+   if historian.last_collection
+      and historian.last_collection.frag == frag then
+      -- move the hl to check that this works correctly
+      historian.last_collection.hl = historian.last_collection.hl + 1
+      return historian.last_collection
+   end
    local collection = setmeta({}, collect_M)
    collection.frag = frag
    if frag == "" then
@@ -434,6 +440,7 @@ function Historian.search(historian, frag)
    collection.best = best
    collection.cursors = cursors
    collection.hl = 1
+   historian.last_collection = collection
    return collection, best
 end
 
