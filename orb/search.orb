@@ -35,6 +35,33 @@ end
 #/lua
 
 #!lua
+function Search.NAV.SHIFT_DOWN(modeS, category, value)
+   -- This is a bit janky, storing the result pointer in the zone
+   local search_result = modeS.hist.last_collection
+   if not search_result then return end
+   if search_result.hl < #search_result then
+      search_result.hl = search_result.hl + 1
+   end
+end
+#/lua
+
+#!lua
+function Search.NAV.SHIFT_UP(modeS, category, value)
+   local search_result = modeS.hist.last_collection
+   if not search_result then return end
+   if search_result.hl > 1 then
+      search_result.hl = search_result.hl - 1
+   end
+end
+#/lua
+
+#!lua
+Search.NAV.UP = Search.NAV.SHIFT_UP
+Search.NAV.DOWN = Search.NAV.SHIFT_DOWN
+
+#/lua
+
+#!lua
 local function _makeControl(num)
     return function(modeS, category, value)
        local searchResult = modeS.hist:search(tostring(modeS.txtbuf))
@@ -56,16 +83,6 @@ end
 for i = 1, 9 do
    Search.ALT["M-" ..tostring(i)] = _makeControl(i)
 end
-#/lua
-
-
-*** UP and DOWN
-
-Disabled for now, intended to choose among options
-
-#!lua
-Search.NAV.UP = nil
-Search.NAV.DOWN = nil
 #/lua
 
 #!lua

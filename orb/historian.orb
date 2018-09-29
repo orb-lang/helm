@@ -403,8 +403,6 @@ The other fields are:
 function Historian.search(historian, frag)
    if historian.last_collection
       and historian.last_collection.frag == frag then
-      -- move the hl to check that this works correctly
-      historian.last_collection.hl = historian.last_collection.hl + 1
       return historian.last_collection
    end
    local collection = setmeta({}, collect_M)
