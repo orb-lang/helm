@@ -35,3 +35,110 @@ wide respectively.
 
 There are libraries/databases which purport to answer this question.  We plan
 to link one of those in.
+
+Results, as we currently manifest them, use an array for the raw objects and
+=n= rather than =#res= to represent the length.  That's a remnant of the
+original repl from =luv=.  The =.n= is neceessary because =nil= can be a
+positional result.
+
+A =txtbuf= keeps its contents in a =.lines= table, and so we can reuse this
+field for cached textual representations.  All internals should support both
+strings and array-of-strings as possible values of the =lines= array.
+
+We also need a =.wids= array of arrays of numbers and should probably hide
+this behind methods so as to fake it when we just have strings.
+
+Later, we add a =.targets=, this is a dense array for the number of lines,
+each with a sparse array containing handlers for mouse events.  If a mouse
+event doesn't hit a =target= then the default handler is engaged.
+
+We also have =offset=, a number, and =more=, which is =true= if the buffer
+continues past the edge of the zone and otherwise falsy.
+
+**** Rainbuf metatable
+
+#!lua
+local Rainbuf = meta {}
+#/lua
+
+** Methods
+
+
+*** Rainbuf:lineGen(rows, offset)
+
+This is a generator which yields =rows= number of lines at =offset=.
+
+I need to do some empirical profiling as to whether, given =luv=, we should
+iterate over an array of tokens and =write= them individually, or use
+=table.concat= to efficiently stringify them first.
+
+It's non-blocking, but it is a syscall, and those are expensive. I suspect
+more expensive than =concat= which is efficient C.
+
+Given this more likely scenario, =lines= should emit pure strings.
+
+The default method, provided here, can be overridden for other data types.
+I intend to substitute a =lines= method instead of the use of =__repr= at
+some point in the relatively near future, for search results and the like.
+
+We're going to do this the easy way, and generate a full representation,
+yielding only afterward.  But the interface is designed so that we can do this
+lazily once we're motivated to do so.
+
+#!lua
+function Rainbuf.lineGen(rainbuf, rows, offset)
+   offset = offset or 0
+   -- #todo generate rainbuf.lines if empty
+   rows = rows or #rainbuf.lines
+   local cursor = 1 + offset
+   rows = rows + offset
+   return function()
+      if cursor <= rows then
+         local line = rainbuf.lines[cursor]
+         if not line then
+            return nil
+         end
+         cursor = cursor + 1
+         return line
+      else
+         if cursor < #rainbuf.lines then
+            rainbuf.more = true
+         end
+         return nil
+      end
+   end
+end
+#/lua
+
+
+*** Rainbuf:__tostring()
+
+#!lua
+function Rainbuf.__tostring(rainbuf)
+end
+#/lua
+
+
+*** new(res?)
+
+#!lua
+local function new(res)
+   local rainbuf = meta(Rainbuf)
+   if res then
+      for i = 1, res.n do
+         rainbuf[i] = res[i]
+      end
+      rainbuf.n = res.n
+   end
+   rainbuf.lines = {}
+   rainbuf.wids  = {}
+   rainbuf.offset = 0
+   return rainbuf
+end
+
+Rainbuf.idEst = new
+
+return new
+#/lua
+
+

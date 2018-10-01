@@ -321,7 +321,8 @@ end
 
 
 ts = function (value, hint)
-   local str = scrub(tostring(value))
+   local strval = tostring(value) or ""
+   local str = scrub(strval)
    -- For cases more specific than mere type,
    -- we have hints:
    if hint then
