@@ -84,10 +84,11 @@ function NAV.UP(modeS, category, value)
       end
       if prev_result then
          modeS.zones.results:replace(prev_result)
+      else
+         modeS.zones.results:replace ""
       end
-   else
-      write(up1)
    end
+
    return modeS
 end
 
@@ -109,14 +110,13 @@ function NAV.DOWN(modeS, category, value)
       modeS:clearResults()
       if next_result then
          modeS.zones.results:replace(next_result)
+      else
+         modeS.zones.results:replace ""
       end
-   else
-      write(down1)
    end
+
    return modeS
 end
-
-
 
 
 

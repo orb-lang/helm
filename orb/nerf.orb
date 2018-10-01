@@ -84,10 +84,11 @@ function NAV.UP(modeS, category, value)
       end
       if prev_result then
          modeS.zones.results:replace(prev_result)
+      else
+         modeS.zones.results:replace ""
       end
-   else
-      write(up1)
    end
+
    return modeS
 end
 
@@ -109,13 +110,13 @@ function NAV.DOWN(modeS, category, value)
       modeS:clearResults()
       if next_result then
          modeS.zones.results:replace(next_result)
+      else
+         modeS.zones.results:replace ""
       end
-   else
-      write(down1)
    end
+
    return modeS
 end
-
 #/lua
 
 #todo The logic for adjusting the cursor really belongs in the
@@ -123,7 +124,6 @@ txtbuf methods called in =LEFT= and =RIGHT=, rather than in the
 methods themselves.
 
 #!lua
-
 function NAV.LEFT(modeS, category, value)
    local moved = modeS.txtbuf:left()
    if not moved and modeS.txtbuf.cur_row ~= 1 then

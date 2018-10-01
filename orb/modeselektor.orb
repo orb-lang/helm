@@ -540,7 +540,7 @@ function ModeS.eval(modeS)
       end -- more special REPL prefix soon: /, ?, >(?)
    end
    if f then
-      success, results = gatherResults(xpcall(f, stacktrace))
+      success, results = gatherResults(xpcall(f, debug.traceback))
       if success then
       -- successful call
          if results.n > 0 then
