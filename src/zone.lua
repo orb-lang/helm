@@ -95,6 +95,8 @@ local Zoneherd = meta {}
 
 
 
+
+
 function _inside(col, row, zone)
    return (col >= zone.tc)
      and  (col <= zone.bc)
@@ -391,6 +393,11 @@ local function _paintGutter(zoneherd)
       write "..."
       write(_hard_nl)
       lines = lines - 1
+   end
+   local results = zoneherd.results.contents
+   if type(results) == "table" and results.more then
+      write(a.colrow(1, zoneherd.results.br))
+      write(a.red "...")
    end
 end
 

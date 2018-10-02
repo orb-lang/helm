@@ -117,7 +117,7 @@ function Rainbuf.lineGen(rainbuf, rows)
    rows = rows + offset
 
    return function()
-      if cursor <= rows then
+      if cursor < rows then
          local line = rainbuf.lines[cursor]
          if not line then
             rainbuf.more = false
