@@ -414,7 +414,9 @@ local function _firstCharHandler(modeS, category, value)
          shifted = true
       end
    end
-   modeS.firstChar = false
+   if not category == "NAV" then
+     modeS.firstChar = false
+   end
    return shifted
 end
 
@@ -444,7 +446,7 @@ function ModeS.act(modeS, category, value)
    end
    local icon = _make_icon(category, value)
    -- Special first-character handling
-   if modeS.firstChar and not (category == "MOUSE") then
+   if modeS.firstChar and not (category == "MOUSE" or category == "NAV") then
       modeS.zones.results:replace ""
       local shifted = _firstCharHandler(modeS, category, value)
       if shifted then
@@ -474,7 +476,7 @@ function ModeS.act(modeS, category, value)
    ::final::
    if modeS.raga == "search" then
       -- we need to fake this into a 'result'
-      local searchResult = {}
+      local searchResult = Rainbuf()
       searchResult[1] = modeS.hist:search(tostring(modeS.txtbuf))
       searchResult.n = 1
       modeS.zones.results:replace(searchResult)

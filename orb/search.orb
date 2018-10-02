@@ -10,6 +10,7 @@ local clone = assert(table.clone, "requires table.clone")
 
 #!lua
 local Nerf = require "nerf"
+local Rainbuf = require "rainbuf"
 
 local Search = clone(Nerf, 3)
 #/lua
@@ -25,7 +26,7 @@ function Search.NAV.RETURN(modeS, category, value)
       if not result then
          result = {n=1}
       end
-      modeS.zones.results:replace(result)
+      modeS.zones.results:replace(Rainbuf(result))
       modeS:shiftMode(modeS.raga_default)
    else
       modeS:shiftMode(modeS.raga_default)
@@ -36,7 +37,6 @@ end
 
 #!lua
 function Search.NAV.SHIFT_DOWN(modeS, category, value)
-   -- This is a bit janky, storing the result pointer in the zone
    local search_result = modeS.hist.last_collection
    if not search_result then return end
    if search_result.hl < #search_result then
@@ -71,7 +71,7 @@ local function _makeControl(num)
           if not result then
              result = {n=1}
           end
-          modeS.zones.results:replace(result)
+          modeS.zones.results:replace(Rainbuf(result))
           modeS:shiftMode(modeS.raga_default)
        else
           modeS:shiftMode(modeS.raga_default)
