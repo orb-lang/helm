@@ -14,7 +14,8 @@
 
 
 
-local Txtbuf = require "txtbuf"
+local Txtbuf  = require "txtbuf"
+local Rainbuf = require "rainbuf"
 local sql     = require "sqlayer"
 local color   = require "color"
 local L       = require "lpeg"
@@ -246,6 +247,7 @@ end
 
 
 
+local concat = table.concat
 function Historian.persist(historian, txtbuf, results)
    local lb = tostring(txtbuf)
    if lb ~= "" then

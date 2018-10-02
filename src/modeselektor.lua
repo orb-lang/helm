@@ -104,6 +104,7 @@ local stacktrace = require "stacktrace" . stacktrace
 
 local Txtbuf    = require "txtbuf"
 local Resbuf    = require "resbuf" -- Not currently used...
+local Rainbuf   = require "rainbuf"
 local Historian = require "historian"
 local Lex       = require "lex"
 local Zoneherd  = require "zone"
@@ -544,7 +545,8 @@ function ModeS.eval(modeS)
       if success then
       -- successful call
          if results.n > 0 then
-            modeS.zones.results:replace(results)
+            local rb = Rainbuf(results)
+            modeS.zones.results:replace(rb)
          else
             modeS.zones.results:replace ""
          end

@@ -55,6 +55,14 @@ event doesn't hit a =target= then the default handler is engaged.
 We also have =offset=, a number, and =more=, which is =true= if the buffer
 continues past the edge of the zone and otherwise falsy.
 
+**** includes
+
+#!lua
+local color = require "color"
+local ts = color.ts
+#/lua
+
+
 **** Rainbuf metatable
 
 #!lua
@@ -86,9 +94,24 @@ yielding only afterward.  But the interface is designed so that we can do this
 lazily once we're motivated to do so.
 
 #!lua
-function Rainbuf.lineGen(rainbuf, rows, offset)
-   offset = offset or 0
-   -- #todo generate rainbuf.lines if empty
+function Rainbuf.lineGen(rainbuf, rows)
+   offset = rainbuf.offset or 0
+   if not rainbuf.lines then
+      local phrase = ""
+      for i = 1, rainbuf.n do
+         local piece
+         if rainbuf.frozen then
+            piece = rainbuf[i]
+         else
+            piece = ts(rainbuf[i])
+         end
+         phrase = phrase .. piece
+         if i < rainbuf.n then
+            phrase = phrase .. "   "
+         end
+      end
+      rainbuf.lines = table.collect(string.lines, phrase)
+   end
    rows = rows or #rainbuf.lines
    local cursor = 1 + offset
    rows = rows + offset
@@ -129,8 +152,8 @@ local function new(res)
          rainbuf[i] = res[i]
       end
       rainbuf.n = res.n
+      rainbuf.frozen = res.frozen
    end
-   rainbuf.lines = {}
    rainbuf.wids  = {}
    rainbuf.offset = 0
    return rainbuf

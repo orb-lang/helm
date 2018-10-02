@@ -73,6 +73,8 @@ local concat = assert(table.concat)
 
 local Txtbuf = require "txtbuf"
 
+local Rainbuf = require "rainbuf"
+
 local Zone = meta {}
 
 local Zoneherd = meta {}
@@ -231,19 +233,28 @@ local function _writeResults(write, zone, new)
    if not results then
       return nil
    end
-   for i = 1, results.n do
-      if results.frozen then
-         rainbuf[i] = results[i]
-      else
-         local catch_val = ts(results[i])
-         if type(catch_val) == 'string' then
-            rainbuf[i] = catch_val
+   if results.idEst == Rainbuf then
+      local nl = a.col(zone.tc) .. a.jump.down(1)
+      for line in results:lineGen(zone:height() + 1) do
+         write(line)
+         write(nl)
+      end
+   else
+      -- #deprecated
+      for i = 1, results.n do
+         if results.frozen then
+            rainbuf[i] = results[i]
          else
-            error("ts returned a " .. type(catch_val) .. " in printResults")
+            local catch_val = ts(results[i])
+            if type(catch_val) == 'string' then
+               rainbuf[i] = catch_val
+            else
+               error("ts returned a " .. type(catch_val) .. " in printResults")
+            end
          end
       end
+      _writeLines(write, zone, concat(rainbuf, '   '))
    end
-   _writeLines(write, zone, concat(rainbuf, '   '))
 end
 
 

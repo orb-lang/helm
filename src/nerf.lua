@@ -23,7 +23,7 @@ assert(ts, "must have ts in _G")
 
 
 local Txtbuf    = require "txtbuf"
-local Resbuf    = require "resbuf" -- Not currently used...
+local Rainbuf   = require "rainbuf"
 local Historian = require "historian"
 local Lex       = require "lex"
 local a         = require "anterm"
@@ -83,7 +83,7 @@ function NAV.UP(modeS, category, value)
          modeS.hist:append(linestash)
       end
       if prev_result then
-         modeS.zones.results:replace(prev_result)
+         modeS.zones.results:replace(Rainbuf(prev_result))
       else
          modeS.zones.results:replace ""
       end
@@ -109,7 +109,7 @@ function NAV.DOWN(modeS, category, value)
       end
       modeS:clearResults()
       if next_result then
-         modeS.zones.results:replace(next_result)
+         modeS.zones.results:replace(Rainbuf(next_result))
       else
          modeS.zones.results:replace ""
       end
@@ -172,6 +172,17 @@ function NAV.DELETE(modeS, category, value)
    local shrunk = modeS.txtbuf:d_fwd()
    _modeShiftOnEmpty(modeS)
 end
+
+function NAV.SHIFT_DOWN(modeS, category, value)
+   local results = modeS.zones.results.contents
+   if results.more then
+      results.offset = results.offset + 1
+      modeS.zones.results.touched = true
+   end
+end
+
+
+
 
 
 
