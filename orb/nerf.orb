@@ -181,6 +181,13 @@ function NAV.SHIFT_DOWN(modeS, category, value)
    end
 end
 
+function NAV.SHIFT_UP(modeS, category, value)
+   local results = modeS.zones.results.contents
+   if results.offset > 0 then
+      results.offset = results.offset - 1
+      modeS.zones.results.touched = true
+   end
+end
 #/lua
 
 

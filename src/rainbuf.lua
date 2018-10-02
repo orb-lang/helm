@@ -115,19 +115,24 @@ function Rainbuf.lineGen(rainbuf, rows)
    rows = rows or #rainbuf.lines
    local cursor = 1 + offset
    rows = rows + offset
+
    return function()
       if cursor <= rows then
          local line = rainbuf.lines[cursor]
          if not line then
+            rainbuf.more = false
             return nil
          end
          cursor = cursor + 1
          return line
       else
-         if cursor < #rainbuf.lines then
+         if cursor <= #rainbuf.lines then
             rainbuf.more = true
+            return nil
+         else
+            rainbuf.more = false
+            return nil
          end
-         return nil
       end
    end
 end
