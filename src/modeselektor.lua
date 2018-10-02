@@ -454,7 +454,8 @@ function ModeS.act(modeS, category, value)
       end
    end
    -- Dispatch on value if possible
-   if modeS.modes[category][value] then
+   if type(modeS.modes[category]) == "table"
+      and modeS.modes[category][value] then
       modeS.modes[category][value](modeS, category, value)
 
    -- otherwise fall back:
@@ -469,6 +470,9 @@ function ModeS.act(modeS, category, value)
       end
    elseif category == "MOUSE" then
       -- do mouse stuff
+      if modeS.modes.MOUSE then
+         modeS.modes.MOUSE(modeS, category, value)
+      end
    else
       icon = _make_icon("NYI", category .. ":" .. value)
    end

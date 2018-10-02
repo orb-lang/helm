@@ -153,8 +153,7 @@ end
 local function new(res)
    -- #todo this should be an error
    if type(res) == "table" and res.idEst == Rainbuf then
-      assert(res.offset, "no offset on Rainbuf")
-      return res
+      error "made a Rainbuf from a Rainbuf"
    end
    local rainbuf = meta(Rainbuf)
    if res then
