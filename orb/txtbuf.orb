@@ -82,6 +82,11 @@ end
 local t_insert, splice = assert(table.insert), assert(table.splice)
 local utf8, codepoints, gsub = string.utf8, string.codepoints, string.gsub
 
+local _frag_sub = { ["("] = {"(", ")"},
+                    ['"'] = {'"', '"'},
+                    ["{"] = {"{", "}"},
+                    ["["] = {"[", "]"} }
+
 function Txtbuf.insert(txtbuf, frag)
    local line = txtbuf.lines[txtbuf.cur_row]
    if type(line) == "string" then
@@ -89,6 +94,8 @@ function Txtbuf.insert(txtbuf, frag)
       txtbuf.line = line
    end
    local wide_frag = utf8(frag)
+   -- #deprecated, this shouldn't happen any longer,
+   -- since we break up wide inputs in femto main
    if wide_frag < #frag then -- a paste
       -- Normalize whitespace
       frag = gsub(frag, "\r\n", "\n"):gsub("\r", "\n"):gsub("\t", "   ")
@@ -96,8 +103,13 @@ function Txtbuf.insert(txtbuf, frag)
    else
       wide_frag = false
    end
+   -- #/deprecated
    if not wide_frag then
-      t_insert(line, txtbuf.cursor, frag)
+      if _frag_sub[frag] then
+         splice(line, txtbuf.cursor, _frag_sub[frag])
+      else
+         t_insert(line, txtbuf.cursor, frag)
+      end
       txtbuf.cursor = txtbuf.cursor + 1
       return true
    else
