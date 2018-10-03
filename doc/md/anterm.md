@@ -654,6 +654,7 @@ local __navigation = {  UP       = "\x1b[A",
                         TAB        = "\t",
                         BACKSPACE  = "\127",
                         DELETE     = "\x1b[3~",
+                        ESC        = "\x1b",
                      }
 ```
 

@@ -17,7 +17,8 @@ record.  We should store the line as a string, to facilitate fuzzy matching.
 
 
 ```lua
-local Txtbuf = require "txtbuf"
+local Txtbuf  = require "txtbuf"
+local Rainbuf = require "rainbuf"
 local sql     = require "sqlayer"
 local color   = require "color"
 local L       = require "lpeg"
@@ -146,6 +147,9 @@ Brings up the project history and results, and (eventually) user config.
 Most of the complexity serves to make a simple key/value relationship
 between the regenerated txtbufs and their associated result history.
 
+#todo There's actually no reason to load all the results, as we don't use the
+the results never get used.
+
 ```lua
 function Historian.load(historian)
    local conn = sql.open(historian.bridge_home)
@@ -245,6 +249,7 @@ Medium-term goal is to hash any Lua object in a way that will resolve to a
 common value for any identical semantics.
 
 ```lua
+local concat = table.concat
 function Historian.persist(historian, txtbuf, results)
    local lb = tostring(txtbuf)
    if lb ~= "" then
@@ -288,7 +293,7 @@ is an affordance for incremental searches, it's easy to make this mistake and
 harmless to suggest the alternative.
 
 
-### fuss_patt
+### fuzz_patt
 
 Here we incrementally build up a single ``lpeg`` pattern which will recognize
 our desired lines.
@@ -402,6 +407,10 @@ The other fields are:
 
 ```lua
 function Historian.search(historian, frag)
+   if historian.last_collection
+      and historian.last_collection.frag == frag then
+      return historian.last_collection
+   end
    local collection = setmeta({}, collect_M)
    collection.frag = frag
    if frag == "" then
@@ -435,6 +444,7 @@ function Historian.search(historian, frag)
    collection.best = best
    collection.cursors = cursors
    collection.hl = 1
+   historian.last_collection = collection
    return collection, best
 end
 ```

@@ -23,7 +23,7 @@ assert(ts, "must have ts in _G")
 
 
 local Txtbuf    = require "txtbuf"
-local Resbuf    = require "resbuf" -- Not currently used...
+local Rainbuf   = require "rainbuf"
 local Historian = require "historian"
 local Lex       = require "lex"
 local a         = require "anterm"
@@ -48,7 +48,6 @@ local NAV    = {}
 local CTRL   = {}
 local ALT    = {}
 local FN     = {}
-local MOUSE  = {}
 local NYI    = {}
 
 
@@ -59,7 +58,6 @@ Nerf = { ASCII  = ASCII,
                 NAV    = NAV,
                 CTRL   = CTRL,
                 ALT    = ALT,
-                MOUSE  = MOUSE,
                 NYI    = NYI }
 
 
@@ -83,11 +81,12 @@ function NAV.UP(modeS, category, value)
          modeS.hist:append(linestash)
       end
       if prev_result then
-         modeS.zones.results:replace(prev_result)
+         modeS.zones.results:replace(Rainbuf(prev_result))
+      else
+         modeS.zones.results:replace ""
       end
-   else
-      write(up1)
    end
+
    return modeS
 end
 
@@ -108,15 +107,14 @@ function NAV.DOWN(modeS, category, value)
       end
       modeS:clearResults()
       if next_result then
-         modeS.zones.results:replace(next_result)
+         modeS.zones.results:replace(Rainbuf(next_result))
+      else
+         modeS.zones.results:replace ""
       end
-   else
-      write(down1)
    end
+
    return modeS
 end
-
-
 
 
 
@@ -173,6 +171,24 @@ function NAV.DELETE(modeS, category, value)
    _modeShiftOnEmpty(modeS)
 end
 
+function NAV.SHIFT_DOWN(modeS, category, value)
+   local results = modeS.zones.results.contents
+   if results.more then
+      results.offset = results.offset + 1
+      modeS.zones.results.touched = true
+   end
+end
+
+function NAV.SHIFT_UP(modeS, category, value)
+   local results = modeS.zones.results.contents
+   if results.offset > 0 then
+      results.offset = results.offset - 1
+      modeS.zones.results.touched = true
+   end
+end
+
+
+
 
 
 
@@ -194,6 +210,20 @@ end
 
 CTRL["^E"] = cursor_end
 
+
+
+
+
+
+function Nerf.MOUSE(modeS, category, value)
+   if value.scrolling then
+      if value.button == "MB0" then
+         modeS.modes.NAV.SHIFT_UP(modeS, category, value)
+      elseif value.button == "MB1" then
+         modeS.modes.NAV.SHIFT_DOWN(modeS, category, value)
+      end
+   end
+end
 
 
 

@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 412"]
+doc_0 [label="doc - 450"]
 
 
 doc_0 -> { section_1}
@@ -33,7 +33,7 @@ codeblock_8 [label="code block 20-73"]
 
 section_9 [label="section: 76-103"]
 
-section_10 [label="section: 104-317"]
+section_10 [label="section: 104-354"]
 
 
 // END RANK section_1
@@ -361,9 +361,9 @@ section_73 [label="section: 123-136"]
 
 section_74 [label="section: 137-199"]
 
-section_75 [label="section: 200-317"]
+section_75 [label="section: 200-354"]
 
-section_76 [label="section: 318-412"]
+section_76 [label="section: 355-450"]
 
 
 // END RANK section_10
@@ -633,13 +633,13 @@ prose_123 [label="prose"]
 
 prose_124 [label="prose"]
 
-codeblock_125 [label="code block 208-268"]
+codeblock_125 [label="code block 208-305"]
 
 prose_126 [label="prose"]
 
-codeblock_127 [label="code block 273-304"]
+codeblock_127 [label="code block 310-341"]
 
-codeblock_128 [label="code block 306-316"]
+codeblock_128 [label="code block 343-353"]
 
 
 // END RANK section_75
@@ -680,6 +680,21 @@ I've dressed it up a bit.
 codeblock_125 -> leaf_134
 leaf_134  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local ts
 
+local SORT_LIMIT = 500
+
+local function _keysort(a, b)
+   if type(a) == \"number\" and type(b) == \"string\" then
+      return true
+   elseif type(a) == \"string\" and type(b) == \"number\" then
+      return false
+   elseif (type(a) == \"string\" and type(b) == \"string\")
+      or (type(a) == \"number\" and type(b) == \"number\") then
+      return a < b
+   else
+      return false
+   end
+end
+
 local function tabulate(tab, depth, cycle)
    cycle = cycle or {}
    depth = depth or 0
@@ -713,7 +728,29 @@ local function tabulate(tab, depth, cycle)
       i = 1
    end
    local estimated = 0
-   for k,v in (is_array and ipairs or pairs)(tab) do
+   local keys
+   if not is_array then
+      keys = table.keys(tab)
+      if #keys < SORT_LIMIT then
+         table.sort(keys, _keysort)
+      else
+         -- bail
+         return \"{ !!! }\"
+      end
+   else
+      keys = tab
+   end
+   for j, k in ipairs(keys) do
+      -- this looks dumb but
+      -- the result is that k is key
+      -- and v is value for either type of table
+      local v
+      if is_array then
+         v = k
+         k = j
+      else
+         v = tab[k]
+      end
       local s
       if is_array then
          s = \"\"
@@ -730,9 +767,9 @@ local function tabulate(tab, depth, cycle)
       i = i + 1
    end
    if estimated > WIDE_TABLE then
-      return c.base(\"{\\n  \") .. indent
+      return c.base(\"{ \") .. indent
          .. table.concat(lines, \",\\n  \" .. indent)
-         ..  c.base(\"}\")
+         ..  c.base(\" }\")
    else
       return c.base(\"{ \") .. table.concat(lines, c.base(\", \")) .. c.base(\" }\")
    end
@@ -806,11 +843,11 @@ header_139 [label="3 : ts"]
 
 prose_140 [label="prose"]
 
-codeblock_141 [label="code block 322-399"]
+codeblock_141 [label="code block 359-437"]
 
-codeblock_142 [label="code block 401-408"]
+codeblock_142 [label="code block 439-446"]
 
-codeblock_143 [label="code block 410-412"]
+codeblock_143 [label="code block 448-450"]
 
 
 // END RANK section_76
@@ -836,7 +873,8 @@ Lots of small, nice things in this one.
 
 codeblock_141 -> leaf_147
 leaf_147  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ts = function (value, hint)
-   local str = scrub(tostring(value))
+   local strval = tostring(value) or \"\"
+   local str = scrub(strval)
    -- For cases more specific than mere type,
    -- we have hints:
    if hint then

@@ -9,6 +9,7 @@ local clone = assert(table.clone, "requires table.clone")
 ```
 ```lua
 local Nerf = require "nerf"
+local Rainbuf = require "rainbuf"
 
 local Search = clone(Nerf, 3)
 ```
@@ -22,13 +23,36 @@ function Search.NAV.RETURN(modeS, category, value)
       if not result then
          result = {n=1}
       end
-      modeS.zones.results:replace(result)
+      modeS.zones.results:replace(Rainbuf(result))
       modeS:shiftMode(modeS.raga_default)
    else
       modeS:shiftMode(modeS.raga_default)
       modeS.zones.results:replace ""
    end
 end
+```
+```lua
+function Search.NAV.SHIFT_DOWN(modeS, category, value)
+   local search_result = modeS.hist.last_collection
+   if not search_result then return end
+   if search_result.hl < #search_result then
+      search_result.hl = search_result.hl + 1
+   end
+end
+```
+```lua
+function Search.NAV.SHIFT_UP(modeS, category, value)
+   local search_result = modeS.hist.last_collection
+   if not search_result then return end
+   if search_result.hl > 1 then
+      search_result.hl = search_result.hl - 1
+   end
+end
+```
+```lua
+Search.NAV.UP = Search.NAV.SHIFT_UP
+Search.NAV.DOWN = Search.NAV.SHIFT_DOWN
+
 ```
 ```lua
 local function _makeControl(num)
@@ -40,7 +64,7 @@ local function _makeControl(num)
           if not result then
              result = {n=1}
           end
-          modeS.zones.results:replace(result)
+          modeS.zones.results:replace(Rainbuf(result))
           modeS:shiftMode(modeS.raga_default)
        else
           modeS:shiftMode(modeS.raga_default)
@@ -52,14 +76,6 @@ end
 for i = 1, 9 do
    Search.ALT["M-" ..tostring(i)] = _makeControl(i)
 end
-```
-### UP and DOWN
-
-Disabled for now, intended to choose among options
-
-```lua
-Search.NAV.UP = nil
-Search.NAV.DOWN = nil
 ```
 ```lua
 return Search

@@ -202,6 +202,21 @@ I've dressed it up a bit.
 ```lua
 local ts
 
+local SORT_LIMIT = 500
+
+local function _keysort(a, b)
+   if type(a) == "number" and type(b) == "string" then
+      return true
+   elseif type(a) == "string" and type(b) == "number" then
+      return false
+   elseif (type(a) == "string" and type(b) == "string")
+      or (type(a) == "number" and type(b) == "number") then
+      return a < b
+   else
+      return false
+   end
+end
+
 local function tabulate(tab, depth, cycle)
    cycle = cycle or {}
    depth = depth or 0
@@ -235,7 +250,29 @@ local function tabulate(tab, depth, cycle)
       i = 1
    end
    local estimated = 0
-   for k,v in (is_array and ipairs or pairs)(tab) do
+   local keys
+   if not is_array then
+      keys = table.keys(tab)
+      if #keys < SORT_LIMIT then
+         table.sort(keys, _keysort)
+      else
+         -- bail
+         return "{ !!! }"
+      end
+   else
+      keys = tab
+   end
+   for j, k in ipairs(keys) do
+      -- this looks dumb but
+      -- the result is that k is key
+      -- and v is value for either type of table
+      local v
+      if is_array then
+         v = k
+         k = j
+      else
+         v = tab[k]
+      end
       local s
       if is_array then
          s = ""
@@ -252,9 +289,9 @@ local function tabulate(tab, depth, cycle)
       i = i + 1
    end
    if estimated > WIDE_TABLE then
-      return c.base("{\n  ") .. indent
+      return c.base("{ ") .. indent
          .. table.concat(lines, ",\n  " .. indent)
-         ..  c.base("}")
+         ..  c.base(" }")
    else
       return c.base("{ ") .. table.concat(lines, c.base(", ")) .. c.base(" }")
    end
@@ -313,7 +350,8 @@ Lots of small, nice things in this one.
 
 ```lua
 ts = function (value, hint)
-   local str = scrub(tostring(value))
+   local strval = tostring(value) or ""
+   local str = scrub(strval)
    -- For cases more specific than mere type,
    -- we have hints:
    if hint then

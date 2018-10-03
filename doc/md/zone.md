@@ -86,19 +86,15 @@ local concat = assert(table.concat)
 
 local Txtbuf = require "txtbuf"
 
+local Rainbuf = require "rainbuf"
+
 local Zone = meta {}
 
 local Zoneherd = meta {}
 ```
 ### _collide(zone_a, zone_b)
 
-Takes two zones, determines if there is overlap, if so, alters ``zone_b`` so
-that there is not.
-
-
-checks ``z`` dimension.
-
-#NB I'm starting to think this entire notion is ill-conceived, this is```lua
+#Deprecated#NB I'm starting to think this entire notion is ill-conceived, this is```lua
 function _inside(col, row, zone)
    return (col >= zone.tc)
      and  (col <= zone.bc)
@@ -228,19 +224,14 @@ local function _writeResults(write, zone, new)
    if not results then
       return nil
    end
-   for i = 1, results.n do
-      if results.frozen then
-         rainbuf[i] = results[i]
-      else
-         local catch_val = ts(results[i])
-         if type(catch_val) == 'string' then
-            rainbuf[i] = catch_val
-         else
-            error("ts returned a " .. type(catch_val) .. " in printResults")
-         end
-      end
+   if results.idEst ~= Rainbuf then
+      results = Rainbuf(results)
    end
-   _writeLines(write, zone, concat(rainbuf, '   '))
+   local nl = a.col(zone.tc) .. a.jump.down(1)
+   for line in results:lineGen(zone:height() + 1) do
+      write(line)
+      write(nl)
+   end
 end
 ```
 ### _renderTxtbuf(modeS, zone)
@@ -285,7 +276,7 @@ Collides as well
              false or nil, top left.
 - #Return: zoneherd
 
-```lua
+```lua-noknit
 function Zoneherd.adjust(zoneherd, zone, delta, bottom)
    if not bottom then
       zone.tc = zone.tc + delta[1]
@@ -317,15 +308,11 @@ end
 ### Zoneherd:adjustCommand(zoneherd, delta)
 
 ```lua
-function Zoneherd:adjustCommand(zoneherd, delta)
-   assert(type(delta) == "number" or delta == nil,
-            "optional delta must be a number")
-   delta =  delta or 1
-   zoneherd.command.br = zoneherd.command.br + delta
-   zoneherd.results.tr = zoneherd.results.tr - delta
-   zoneherd.command.touched = true
-   zoneherd.results.touched = true
-
+function Zoneherd.adjustCommand(zoneherd)
+   local lines = zoneherd.command.contents and zoneherd.command.contents.lines
+   local txt_off = lines and #lines -1 or 0
+   zoneherd.command.br = zoneherd.command.tr + txt_off
+   zoneherd.results.tr = zoneherd.command.br + 1
    return zoneherd
 end
 ```
@@ -340,6 +327,7 @@ function Zoneherd.reflow(zoneherd, modeS)
                          modeS.repl_top,
                          right_col,
                          modeS.repl_top + txt_off )
+   zoneherd.prompt:set(1, 2, modeS.l_margin - 1, 2)
    zoneherd.results:set( modeS.l_margin,
                          modeS.repl_top + txt_off + 1,
                          right_col,
@@ -368,6 +356,26 @@ like the lexer.
 ```lua
 local a = require "anterm"
 
+local _hard_nl = a.col(1) .. a.jump.down()
+
+local function _paintGutter(zoneherd)
+   local write = zoneherd.write
+   local lines = zoneherd.command.contents
+                 and #zoneherd.command.contents.lines - 1 or 0
+   write(a.erase._box(1, 3, zoneherd.results.tc - 1, zoneherd.results.br))
+   write(a.colrow(1,3))
+   while lines > 0 do
+      write "..."
+      write(_hard_nl)
+      lines = lines - 1
+   end
+   local results = zoneherd.results.contents
+   if type(results) == "table" and results.more then
+      write(a.colrow(1, zoneherd.results.br))
+      write(a.red "...")
+   end
+end
+
 function Zoneherd.paint(zoneherd, modeS, all)
    local write = zoneherd.write
    write(a.cursor.hide())
@@ -376,7 +384,7 @@ function Zoneherd.paint(zoneherd, modeS, all)
       write(a.erase.all())
    end
    for i, zone in ipairs(zoneherd) do
-      if zone.touched then
+      if zone.touched or all then
          -- erase
          write(a.erase._box(    zone.tc,
                                 zone.tr,
@@ -396,6 +404,7 @@ function Zoneherd.paint(zoneherd, modeS, all)
       end
    end
    zoneherd.write(a.cursor.show())
+   _paintGutter(zoneherd)
    modeS:placeCursor()
    return zoneherd
 end
@@ -433,39 +442,21 @@ local function new(modeS, writer)
    local right_col = modeS.max_col - _zoneOffset(modeS)
    zoneherd.write = writer
    -- make Zones
-   -- (top_col, top_row, bottom_col, bottom_row, z, debug-mark)
-   zoneherd.status  = newZone( 1, 1, right_col, 1, 1, ".")
+   -- correct values are provided by reflow
+   zoneherd.status  = newZone(-1, -1, -1, -1, 1, ".")
    zoneherd[1] = zoneherd.status
-   zoneherd.command = newZone( modeS.l_margin,
-                               modeS.repl_top,
-                               right_col,
-                               modeS:replLine(),
-                               1, "|" )
+   zoneherd.command = newZone(-1, -1, -1, -1, 1, "|")
    zoneherd[3] = zoneherd.command
-   zoneherd.prompt  = newZone( 1,
-                               modeS.repl_top,
-                               modeS.l_margin - 1,
-                               modeS.repl_top,
-                               1, ">" )
+   zoneherd.prompt  = newZone(-1, -1, -1, -1, 1, ">")
    zoneherd[2] = zoneherd.prompt
-   zoneherd.results = newZone( modeS.l_margin,
-                               modeS:replLine() + 1,
-                               right_col,
-                               modeS.max_row,
-                               1, "~" )
+   zoneherd.results = newZone(-1, -1, -1, -1, 1, "~")
    zoneherd[4] = zoneherd.results
-   zoneherd.stat_col = newZone( right_col + 1,
-                                1,
-                                modeS.max_col,
-                                1,
-                                1, "!" )
+   zoneherd.stat_col = newZone(-1, -1, -1, -1, 1, "!")
    zoneherd[5] = zoneherd.stat_col
-   zoneherd.suggest = newZone( right_col + 1,
-                               3,
-                               modeS.max_col,
-                               modeS.max_row,
-                               1, "%" )
+   zoneherd.suggest = newZone(-1, -1, -1, -1, 1, "%")
    zoneherd[6] = zoneherd.suggest
+   zoneherd:reflow(modeS)
+
    return zoneherd
 end
 ```

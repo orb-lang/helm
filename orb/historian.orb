@@ -14,7 +14,8 @@ record.  We should store the line as a string, to facilitate fuzzy matching.
 
 
 #!lua
-local Txtbuf = require "txtbuf"
+local Txtbuf  = require "txtbuf"
+local Rainbuf = require "rainbuf"
 local sql     = require "sqlayer"
 local color   = require "color"
 local L       = require "lpeg"
@@ -147,6 +148,13 @@ Brings up the project history and results, and (eventually) user config.
 Most of the complexity serves to make a simple key/value relationship
 between the regenerated txtbufs and their associated result history.
 
+#todo There's actually no reason to load all the results, as we don't use the
+vast majority of them.  If we stash the line_id for each line, we can
+retrieve its results 'just in time' and get faster loads.
+
+We want as much history as practical, because we search in it, but most of
+the results never get used.
+
 #!lua
 function Historian.load(historian)
    local conn = sql.open(historian.bridge_home)
@@ -246,6 +254,7 @@ Medium-term goal is to hash any Lua object in a way that will resolve to a
 common value for any identical semantics.
 
 #!lua
+local concat = table.concat
 function Historian.persist(historian, txtbuf, results)
    local lb = tostring(txtbuf)
    if lb ~= "" then

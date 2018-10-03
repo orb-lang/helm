@@ -39,11 +39,11 @@ prose_11 [label="prose"]
 
 prose_12 [label="prose"]
 
-section_13 [label="section: 46-145"]
+section_13 [label="section: 46-149"]
 
-section_14 [label="section: 162-248"]
+section_14 [label="section: 166-248"]
 
-section_15 [label="section: 263-439"]
+section_15 [label="section: 263-457"]
 
 
 // END RANK section_1
@@ -476,11 +476,11 @@ prose_123 [label="prose"]
 
 prose_124 [label="prose"]
 
-codeblock_125 [label="code block 69-79"]
+codeblock_125 [label="code block 69-81"]
 
-section_126 [label="section: 82-145"]
+section_126 [label="section: 84-149"]
 
-section_127 [label="section: 146-161"]
+section_127 [label="section: 150-165"]
 
 
 // END RANK section_13
@@ -793,23 +793,25 @@ local concat = assert(table.concat)
 
 local Txtbuf = require \"txtbuf\"
 
+local Rainbuf = require \"rainbuf\"
+
 local Zone = meta {}
 
 local Zoneherd = meta {}"]
 // END RANK codeblock_125
 
-section_126 -> { header_212 prose_213 prose_214 structure_215 codeblock_216}
-{rank=same; header_212 prose_213 prose_214 structure_215 codeblock_216}
+section_126 -> { header_212 prose_213 structure_214 structure_215 codeblock_216}
+{rank=same; header_212 prose_213 structure_214 structure_215 codeblock_216}
 
 header_212 [label="3 : _collide(zone_a, zone_b)"]
 
 prose_213 [label="prose"]
 
-prose_214 [label="prose"]
+structure_214 [label="structure"]
 
 structure_215 [label="structure"]
 
-codeblock_216 [label="code block 95-143"]
+codeblock_216 [label="code block 99-147"]
 
 
 // END RANK section_126
@@ -818,94 +820,61 @@ header_212 -> leaf_217
 leaf_217  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** _collide(zone_a, zone_b)"]
 // END RANK header_212
 
-prose_213 -> { raw_218 prespace_219 literal_220 raw_221}
-{rank=same; raw_218 prespace_219 literal_220 raw_221}
+prose_213 -> { raw_218}
+{rank=same; raw_218}
 
 raw_218 [label="raw"]
-
-prespace_219 [label="prespace"]
-
-literal_220 [label="literal"]
-
-raw_221 [label="raw"]
 
 
 // END RANK prose_213
 
-raw_218 -> leaf_222
-leaf_222  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-
-Takes two zones, determines if there is overlap, if so, alters"]
+raw_218 -> leaf_219
+leaf_219  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+"]
 // END RANK raw_218
 
-prespace_219 -> leaf_223
-leaf_223  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_219
+structure_214 -> { hashline_220}
+{rank=same; hashline_220}
 
-literal_220 -> leaf_224
-leaf_224  [color=Gray,shape=rectangle,fontname=Inconsolata,label="zone_b"]
-// END RANK literal_220
-
-raw_221 -> leaf_225
-leaf_225  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" so
-that there is not.
-"]
-// END RANK raw_221
-
-prose_214 -> { raw_226 prespace_227 literal_228 raw_229}
-{rank=same; raw_226 prespace_227 literal_228 raw_229}
-
-raw_226 [label="raw"]
-
-prespace_227 [label="prespace"]
-
-literal_228 [label="literal"]
-
-raw_229 [label="raw"]
+hashline_220 [label="hashline"]
 
 
-// END RANK prose_214
+// END RANK structure_214
 
-raw_226 -> leaf_230
-leaf_230  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-checks"]
-// END RANK raw_226
+hashline_220 -> { hashtag_221}
+{rank=same; hashtag_221}
 
-prespace_227 -> leaf_231
-leaf_231  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_227
+hashtag_221 [label="hashtag"]
 
-literal_228 -> leaf_232
-leaf_232  [color=Gray,shape=rectangle,fontname=Inconsolata,label="z"]
-// END RANK literal_228
 
-raw_229 -> leaf_233
-leaf_233  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" dimension.
-"]
-// END RANK raw_229
+// END RANK hashline_220
 
-structure_215 -> { hashline_234}
-{rank=same; hashline_234}
+hashtag_221 -> leaf_222
+leaf_222  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Deprecated"]
+// END RANK hashtag_221
 
-hashline_234 [label="hashline"]
+structure_215 -> { hashline_223}
+{rank=same; hashline_223}
+
+hashline_223 [label="hashline"]
 
 
 // END RANK structure_215
 
-hashline_234 -> { hashtag_235}
-{rank=same; hashtag_235}
+hashline_223 -> { hashtag_224}
+{rank=same; hashtag_224}
 
-hashtag_235 [label="hashtag"]
+hashtag_224 [label="hashtag"]
 
 
-// END RANK hashline_234
+// END RANK hashline_223
 
-hashtag_235 -> leaf_236
-leaf_236  [color=Gray,shape=rectangle,fontname=Inconsolata,label="NB"]
-// END RANK hashtag_235
+hashtag_224 -> leaf_225
+leaf_225  [color=Gray,shape=rectangle,fontname=Inconsolata,label="NB"]
+// END RANK hashtag_224
 
-codeblock_216 -> leaf_237
-leaf_237  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function _inside(col, row, zone)
+codeblock_216 -> leaf_226
+leaf_226  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function _inside(col, row, zone)
    return (col >= zone.tc)
      and  (col <= zone.bc)
      and  (row >= zone.tr)
@@ -954,268 +923,268 @@ function _collide(z_a, z_b)
 end"]
 // END RANK codeblock_216
 
-section_127 -> { header_238 prose_239 prose_240 codeblock_241}
-{rank=same; header_238 prose_239 prose_240 codeblock_241}
+section_127 -> { header_227 prose_228 prose_229 codeblock_230}
+{rank=same; header_227 prose_228 prose_229 codeblock_230}
 
-header_238 [label="3 : _collideAll(zoneherd, zone)"]
+header_227 [label="3 : _collideAll(zoneherd, zone)"]
 
-prose_239 [label="prose"]
+prose_228 [label="prose"]
 
-prose_240 [label="prose"]
+prose_229 [label="prose"]
 
-codeblock_241 [label="code block 152-160"]
+codeblock_230 [label="code block 156-164"]
 
 
 // END RANK section_127
 
-header_238 -> leaf_242
-leaf_242  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** _collideAll(zoneherd, zone)"]
-// END RANK header_238
+header_227 -> leaf_231
+leaf_231  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** _collideAll(zoneherd, zone)"]
+// END RANK header_227
 
-prose_239 -> { raw_243}
-{rank=same; raw_243}
+prose_228 -> { raw_232}
+{rank=same; raw_232}
 
-raw_243 [label="raw"]
+raw_232 [label="raw"]
 
 
-// END RANK prose_239
+// END RANK prose_228
 
-raw_243 -> leaf_244
-leaf_244  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_232 -> leaf_233
+leaf_233  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 Collides a given zone with the rest of the herd.
 "]
-// END RANK raw_243
+// END RANK raw_232
 
-prose_240 -> { raw_245 prespace_246 literal_247 raw_248}
-{rank=same; raw_245 prespace_246 literal_247 raw_248}
+prose_229 -> { raw_234 prespace_235 literal_236 raw_237}
+{rank=same; raw_234 prespace_235 literal_236 raw_237}
 
-raw_245 [label="raw"]
+raw_234 [label="raw"]
 
-prespace_246 [label="prespace"]
+prespace_235 [label="prespace"]
 
-literal_247 [label="literal"]
+literal_236 [label="literal"]
 
-raw_248 [label="raw"]
+raw_237 [label="raw"]
 
 
-// END RANK prose_240
+// END RANK prose_229
 
-raw_245 -> leaf_249
-leaf_249  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_234 -> leaf_238
+leaf_238  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 Called after an"]
-// END RANK raw_245
+// END RANK raw_234
 
-prespace_246 -> leaf_250
-leaf_250  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_246
+prespace_235 -> leaf_239
+leaf_239  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_235
 
-literal_247 -> leaf_251
-leaf_251  [color=Gray,shape=rectangle,fontname=Inconsolata,label="adjust"]
-// END RANK literal_247
+literal_236 -> leaf_240
+leaf_240  [color=Gray,shape=rectangle,fontname=Inconsolata,label="adjust"]
+// END RANK literal_236
 
-raw_248 -> leaf_252
-leaf_252  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" to resettle matters.
+raw_237 -> leaf_241
+leaf_241  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" to resettle matters.
 "]
-// END RANK raw_248
+// END RANK raw_237
 
-codeblock_241 -> leaf_253
-leaf_253  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function _collideAll(zoneherd, zone)
+codeblock_230 -> leaf_242
+leaf_242  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function _collideAll(zoneherd, zone)
    for i, z in ipairs(zoneherd) do
       if zone ~= z then
          _collide(zone, z)
       end
    end
 end"]
-// END RANK codeblock_241
+// END RANK codeblock_230
 
-section_14 -> { header_254 prose_255 section_256 section_257 section_258 section_259 section_260 section_261}
-{rank=same; header_254 prose_255 section_256 section_257 section_258 section_259 section_260 section_261}
+section_14 -> { header_243 prose_244 section_245 section_246 section_247 section_248 section_249 section_250}
+{rank=same; header_243 prose_244 section_245 section_246 section_247 section_248 section_249 section_250}
 
-header_254 [label="2 : Zone methods"]
+header_243 [label="2 : Zone methods"]
 
-prose_255 [label="prose"]
+prose_244 [label="prose"]
 
-section_256 [label="section: 165-177"]
+section_245 [label="section: 169-181"]
 
-section_257 [label="section: 178-188"]
+section_246 [label="section: 182-192"]
 
-section_258 [label="section: 189-201"]
+section_247 [label="section: 193-205"]
 
-section_259 [label="section: 202-220"]
+section_248 [label="section: 206-225"]
 
-section_260 [label="section: 221-248"]
+section_249 [label="section: 226-248"]
 
-section_261 [label="section: 249-262"]
+section_250 [label="section: 249-262"]
 
 
 // END RANK section_14
 
-header_254 -> leaf_262
-leaf_262  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Zone methods"]
+header_243 -> leaf_251
+leaf_251  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Zone methods"]
+// END RANK header_243
+
+prose_244 -> { raw_252}
+{rank=same; raw_252}
+
+raw_252 [label="raw"]
+
+
+// END RANK prose_244
+
+raw_252 -> leaf_253
+leaf_253  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+"]
+// END RANK raw_252
+
+section_245 -> { header_254 prose_255 codeblock_256}
+{rank=same; header_254 prose_255 codeblock_256}
+
+header_254 [label="3 : Zone:height(), Zone:width()"]
+
+prose_255 [label="prose"]
+
+codeblock_256 [label="code block 171-179"]
+
+
+// END RANK section_245
+
+header_254 -> leaf_257
+leaf_257  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Zone:height(), Zone:width()"]
 // END RANK header_254
 
-prose_255 -> { raw_263}
-{rank=same; raw_263}
+prose_255 -> { raw_258}
+{rank=same; raw_258}
 
-raw_263 [label="raw"]
+raw_258 [label="raw"]
 
 
 // END RANK prose_255
 
-raw_263 -> leaf_264
-leaf_264  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-
+raw_258 -> leaf_259
+leaf_259  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 "]
-// END RANK raw_263
+// END RANK raw_258
 
-section_256 -> { header_265 prose_266 codeblock_267}
-{rank=same; header_265 prose_266 codeblock_267}
-
-header_265 [label="3 : Zone:height(), Zone:width()"]
-
-prose_266 [label="prose"]
-
-codeblock_267 [label="code block 167-175"]
-
-
-// END RANK section_256
-
-header_265 -> leaf_268
-leaf_268  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Zone:height(), Zone:width()"]
-// END RANK header_265
-
-prose_266 -> { raw_269}
-{rank=same; raw_269}
-
-raw_269 [label="raw"]
-
-
-// END RANK prose_266
-
-raw_269 -> leaf_270
-leaf_270  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-"]
-// END RANK raw_269
-
-codeblock_267 -> leaf_271
-leaf_271  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Zone.height(zone)
+codeblock_256 -> leaf_260
+leaf_260  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Zone.height(zone)
    return zone.br - zone.tr + 1
 end
 
 function Zone.width(zone)
    return zone.bc - zone.tc + 1
 end"]
-// END RANK codeblock_267
+// END RANK codeblock_256
 
-section_257 -> { header_272 prose_273 codeblock_274}
-{rank=same; header_272 prose_273 codeblock_274}
+section_246 -> { header_261 prose_262 codeblock_263}
+{rank=same; header_261 prose_262 codeblock_263}
 
-header_272 [label="3 : Zone:replace(zone, rainbuf)"]
+header_261 [label="3 : Zone:replace(zone, rainbuf)"]
 
-prose_273 [label="prose"]
+prose_262 [label="prose"]
 
-codeblock_274 [label="code block 180-187"]
-
-
-// END RANK section_257
-
-header_272 -> leaf_275
-leaf_275  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Zone:replace(zone, rainbuf)"]
-// END RANK header_272
-
-prose_273 -> { raw_276}
-{rank=same; raw_276}
-
-raw_276 [label="raw"]
+codeblock_263 [label="code block 184-191"]
 
 
-// END RANK prose_273
+// END RANK section_246
 
-raw_276 -> leaf_277
-leaf_277  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_261 -> leaf_264
+leaf_264  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Zone:replace(zone, rainbuf)"]
+// END RANK header_261
+
+prose_262 -> { raw_265}
+{rank=same; raw_265}
+
+raw_265 [label="raw"]
+
+
+// END RANK prose_262
+
+raw_265 -> leaf_266
+leaf_266  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 "]
-// END RANK raw_276
+// END RANK raw_265
 
-codeblock_274 -> leaf_278
-leaf_278  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Zone.replace(zone, rainbuf)
+codeblock_263 -> leaf_267
+leaf_267  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Zone.replace(zone, rainbuf)
    zone.contents = rainbuf
    zone.touched = true
 
    return zone
 end"]
-// END RANK codeblock_274
+// END RANK codeblock_263
 
-section_258 -> { header_279 prose_280 codeblock_281}
-{rank=same; header_279 prose_280 codeblock_281}
+section_247 -> { header_268 prose_269 codeblock_270}
+{rank=same; header_268 prose_269 codeblock_270}
 
-header_279 [label="3 : Zone:set(tc, tr, bc, br)"]
+header_268 [label="3 : Zone:set(tc, tr, bc, br)"]
 
-prose_280 [label="prose"]
+prose_269 [label="prose"]
 
-codeblock_281 [label="code block 191-199"]
-
-
-// END RANK section_258
-
-header_279 -> leaf_282
-leaf_282  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Zone:set(tc, tr, bc, br)"]
-// END RANK header_279
-
-prose_280 -> { raw_283}
-{rank=same; raw_283}
-
-raw_283 [label="raw"]
+codeblock_270 [label="code block 195-203"]
 
 
-// END RANK prose_280
+// END RANK section_247
 
-raw_283 -> leaf_284
-leaf_284  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_268 -> leaf_271
+leaf_271  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Zone:set(tc, tr, bc, br)"]
+// END RANK header_268
+
+prose_269 -> { raw_272}
+{rank=same; raw_272}
+
+raw_272 [label="raw"]
+
+
+// END RANK prose_269
+
+raw_272 -> leaf_273
+leaf_273  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 "]
-// END RANK raw_283
+// END RANK raw_272
 
-codeblock_281 -> leaf_285
-leaf_285  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Zone.set(zone, tc, tr, bc, br)
+codeblock_270 -> leaf_274
+leaf_274  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Zone.set(zone, tc, tr, bc, br)
    zone.tc = tc
    zone.tr = tr
    zone.bc = bc
    zone.br = br
    return zone
 end"]
-// END RANK codeblock_281
+// END RANK codeblock_270
 
-section_259 -> { header_286 prose_287 codeblock_288}
-{rank=same; header_286 prose_287 codeblock_288}
+section_248 -> { header_275 prose_276 codeblock_277}
+{rank=same; header_275 prose_276 codeblock_277}
 
-header_286 [label="3 : _writeLines(write, zone, str)"]
+header_275 [label="3 : _writeLines(write, zone, str)"]
 
-prose_287 [label="prose"]
+prose_276 [label="prose"]
 
-codeblock_288 [label="code block 204-219"]
-
-
-// END RANK section_259
-
-header_286 -> leaf_289
-leaf_289  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** _writeLines(write, zone, str)"]
-// END RANK header_286
-
-prose_287 -> { raw_290}
-{rank=same; raw_290}
-
-raw_290 [label="raw"]
+codeblock_277 [label="code block 208-223"]
 
 
-// END RANK prose_287
+// END RANK section_248
 
-raw_290 -> leaf_291
-leaf_291  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_275 -> leaf_278
+leaf_278  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** _writeLines(write, zone, str)"]
+// END RANK header_275
+
+prose_276 -> { raw_279}
+{rank=same; raw_279}
+
+raw_279 [label="raw"]
+
+
+// END RANK prose_276
+
+raw_279 -> leaf_280
+leaf_280  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 "]
-// END RANK raw_290
+// END RANK raw_279
 
-codeblock_288 -> leaf_292
-leaf_292  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local lines = assert(string.lines, \"string.lines must be provided\")
+codeblock_277 -> leaf_281
+leaf_281  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local lines = assert(string.lines, \"string.lines must be provided\")
 
 local function _writeLines(write, zone, str)
    local nl = a.col(zone.tc) .. a.jump.down(1)
@@ -1229,94 +1198,89 @@ local function _writeLines(write, zone, str)
        end
    end
 end"]
-// END RANK codeblock_288
+// END RANK codeblock_277
 
-section_260 -> { header_293 prose_294 codeblock_295}
-{rank=same; header_293 prose_294 codeblock_295}
+section_249 -> { header_282 prose_283 codeblock_284}
+{rank=same; header_282 prose_283 codeblock_284}
 
-header_293 [label="3 : _writeResults"]
+header_282 [label="3 : _writeResults"]
 
-prose_294 [label="prose"]
+prose_283 [label="prose"]
 
-codeblock_295 [label="code block 225-247"]
-
-
-// END RANK section_260
-
-header_293 -> leaf_296
-leaf_296  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** _writeResults"]
-// END RANK header_293
-
-prose_294 -> { raw_297}
-{rank=same; raw_297}
-
-raw_297 [label="raw"]
+codeblock_284 [label="code block 230-247"]
 
 
-// END RANK prose_294
+// END RANK section_249
 
-raw_297 -> leaf_298
-leaf_298  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_282 -> leaf_285
+leaf_285  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** _writeResults"]
+// END RANK header_282
+
+prose_283 -> { raw_286}
+{rank=same; raw_286}
+
+raw_286 [label="raw"]
+
+
+// END RANK prose_283
+
+raw_286 -> leaf_287
+leaf_287  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 We'll special-case the results buffer for now.
 "]
-// END RANK raw_297
+// END RANK raw_286
 
-codeblock_295 -> leaf_299
-leaf_299  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function _writeResults(write, zone, new)
+codeblock_284 -> leaf_288
+leaf_288  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function _writeResults(write, zone, new)
    local rainbuf = {}
    local row = zone.tr
    local results = zone.contents
    if not results then
       return nil
    end
-   for i = 1, results.n do
-      if results.frozen then
-         rainbuf[i] = results[i]
-      else
-         local catch_val = ts(results[i])
-         if type(catch_val) == 'string' then
-            rainbuf[i] = catch_val
-         else
-            error(\"ts returned a \" .. type(catch_val) .. \" in printResults\")
-         end
-      end
+   if results.idEst ~= Rainbuf then
+      results = Rainbuf(results)
    end
-   _writeLines(write, zone, concat(rainbuf, '   '))
+   local nl = a.col(zone.tc) .. a.jump.down(1)
+   for line in results:lineGen(zone:height() + 1) do
+      write(line)
+      write(nl)
+   end
 end"]
-// END RANK codeblock_295
+// END RANK codeblock_284
 
-section_261 -> { header_300 prose_301 codeblock_302}
-{rank=same; header_300 prose_301 codeblock_302}
+section_250 -> { header_289 prose_290 codeblock_291}
+{rank=same; header_289 prose_290 codeblock_291}
 
-header_300 [label="3 : _renderTxtbuf(modeS, zone)"]
+header_289 [label="3 : _renderTxtbuf(modeS, zone)"]
 
-prose_301 [label="prose"]
+prose_290 [label="prose"]
 
-codeblock_302 [label="code block 251-260"]
-
-
-// END RANK section_261
-
-header_300 -> leaf_303
-leaf_303  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** _renderTxtbuf(modeS, zone)"]
-// END RANK header_300
-
-prose_301 -> { raw_304}
-{rank=same; raw_304}
-
-raw_304 [label="raw"]
+codeblock_291 [label="code block 251-260"]
 
 
-// END RANK prose_301
+// END RANK section_250
 
-raw_304 -> leaf_305
-leaf_305  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_289 -> leaf_292
+leaf_292  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** _renderTxtbuf(modeS, zone)"]
+// END RANK header_289
+
+prose_290 -> { raw_293}
+{rank=same; raw_293}
+
+raw_293 [label="raw"]
+
+
+// END RANK prose_290
+
+raw_293 -> leaf_294
+leaf_294  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 "]
-// END RANK raw_304
+// END RANK raw_293
 
-codeblock_302 -> leaf_306
-leaf_306  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function _renderTxtbuf(modeS, zone, write)
+codeblock_291 -> leaf_295
+leaf_295  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function _renderTxtbuf(modeS, zone, write)
    local lb = modeS.lex(tostring(zone.contents))
    if type(lb) == \"table\" then
       lb = concat(lb)
@@ -1324,81 +1288,81 @@ leaf_306  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function
    write(a.colrow(zone.tc, zone.tr))
    _writeLines(write, zone, lb)
 end"]
-// END RANK codeblock_302
+// END RANK codeblock_291
 
-section_15 -> { header_307 prose_308 section_309 section_310 section_311 section_312 section_313 section_314 section_315}
-{rank=same; header_307 prose_308 section_309 section_310 section_311 section_312 section_313 section_314 section_315}
+section_15 -> { header_296 prose_297 section_298 section_299 section_300 section_301 section_302 section_303 section_304}
+{rank=same; header_296 prose_297 section_298 section_299 section_300 section_301 section_302 section_303 section_304}
 
-header_307 [label="2 : Zoneherd methods"]
+header_296 [label="2 : Zoneherd methods"]
 
-prose_308 [label="prose"]
+prose_297 [label="prose"]
 
-section_309 [label="section: 266-279"]
+section_298 [label="section: 266-279"]
 
-section_310 [label="section: 280-312"]
+section_299 [label="section: 280-312"]
 
-section_311 [label="section: 330-345"]
+section_300 [label="section: 330-341"]
 
-section_312 [label="section: 346-376"]
+section_301 [label="section: 342-373"]
 
-section_313 [label="section: 377-420"]
+section_302 [label="section: 374-438"]
 
-section_314 [label="section: 421-439"]
+section_303 [label="section: 439-457"]
 
-section_315 [label="section: 440-504"]
+section_304 [label="section: 458-504"]
 
 
 // END RANK section_15
 
-header_307 -> leaf_316
-leaf_316  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Zoneherd methods"]
-// END RANK header_307
+header_296 -> leaf_305
+leaf_305  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Zoneherd methods"]
+// END RANK header_296
 
-prose_308 -> { raw_317}
-{rank=same; raw_317}
+prose_297 -> { raw_306}
+{rank=same; raw_306}
 
-raw_317 [label="raw"]
+raw_306 [label="raw"]
 
 
-// END RANK prose_308
+// END RANK prose_297
 
-raw_317 -> leaf_318
-leaf_318  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_306 -> leaf_307
+leaf_307  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 "]
-// END RANK raw_317
+// END RANK raw_306
 
-section_309 -> { header_319 prose_320 codeblock_321}
-{rank=same; header_319 prose_320 codeblock_321}
+section_298 -> { header_308 prose_309 codeblock_310}
+{rank=same; header_308 prose_309 codeblock_310}
 
-header_319 [label="3 : Zoneherd:newZone(name, tc, tr, bc, br, z, debug_mark)"]
+header_308 [label="3 : Zoneherd:newZone(name, tc, tr, bc, br, z, debug_mark)"]
 
-prose_320 [label="prose"]
+prose_309 [label="prose"]
 
-codeblock_321 [label="code block 268-277"]
-
-
-// END RANK section_309
-
-header_319 -> leaf_322
-leaf_322  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Zoneherd:newZone(name, tc, tr, bc, br, z, debug_mark)"]
-// END RANK header_319
-
-prose_320 -> { raw_323}
-{rank=same; raw_323}
-
-raw_323 [label="raw"]
+codeblock_310 [label="code block 268-277"]
 
 
-// END RANK prose_320
+// END RANK section_298
 
-raw_323 -> leaf_324
-leaf_324  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_308 -> leaf_311
+leaf_311  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Zoneherd:newZone(name, tc, tr, bc, br, z, debug_mark)"]
+// END RANK header_308
+
+prose_309 -> { raw_312}
+{rank=same; raw_312}
+
+raw_312 [label="raw"]
+
+
+// END RANK prose_309
+
+raw_312 -> leaf_313
+leaf_313  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 "]
-// END RANK raw_323
+// END RANK raw_312
 
-codeblock_321 -> leaf_325
-leaf_325  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Zoneherd.newZone(zoneherd, name, tc, tr, bc, br, z, debug_mark)
+codeblock_310 -> leaf_314
+leaf_314  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Zoneherd.newZone(zoneherd, name, tc, tr, bc, br, z, debug_mark)
    zoneherd[name] = newZone(tc, tr, bc, br, z, debug_mark)
    -- this doesn't account for Z axis but for now:
    zoneherd[#zoneherd + 1] = zoneherd[name]
@@ -1406,138 +1370,138 @@ leaf_325  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Zoneh
    -- and auto-adjusts proportionally.
    return zoneherd
 end"]
-// END RANK codeblock_321
+// END RANK codeblock_310
 
-section_310 -> { header_326 prose_327 prose_328 structure_329 prose_330 codeblock_331 section_332}
-{rank=same; header_326 prose_327 prose_328 structure_329 prose_330 codeblock_331 section_332}
+section_299 -> { header_315 prose_316 prose_317 structure_318 prose_319 codeblock_320 section_321}
+{rank=same; header_315 prose_316 prose_317 structure_318 prose_319 codeblock_320 section_321}
 
-header_326 [label="3 : Zoneherd:adjust(zoneherd, zone, delta, bottom)"]
+header_315 [label="3 : Zoneherd:adjust(zoneherd, zone, delta, bottom)"]
 
-prose_327 [label="prose"]
+prose_316 [label="prose"]
 
-prose_328 [label="prose"]
+prose_317 [label="prose"]
 
-structure_329 [label="structure"]
+structure_318 [label="structure"]
 
-prose_330 [label="prose"]
+prose_319 [label="prose"]
 
-codeblock_331 [label="code block 298-311"]
+codeblock_320 [label="code block 298-311"]
 
-section_332 [label="section: 313-329"]
-
-
-// END RANK section_310
-
-header_326 -> leaf_333
-leaf_333  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Zoneherd:adjust(zoneherd, zone, delta, bottom)"]
-// END RANK header_326
-
-prose_327 -> { raw_334}
-{rank=same; raw_334}
-
-raw_334 [label="raw"]
+section_321 [label="section: 313-329"]
 
 
-// END RANK prose_327
+// END RANK section_299
 
-raw_334 -> leaf_335
-leaf_335  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_315 -> leaf_322
+leaf_322  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Zoneherd:adjust(zoneherd, zone, delta, bottom)"]
+// END RANK header_315
+
+prose_316 -> { raw_323}
+{rank=same; raw_323}
+
+raw_323 [label="raw"]
+
+
+// END RANK prose_316
+
+raw_323 -> leaf_324
+leaf_324  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 This adjusts the boundaries of a specific zone.
 "]
-// END RANK raw_334
+// END RANK raw_323
 
-prose_328 -> { raw_336}
-{rank=same; raw_336}
+prose_317 -> { raw_325}
+{rank=same; raw_325}
+
+raw_325 [label="raw"]
+
+
+// END RANK prose_317
+
+raw_325 -> leaf_326
+leaf_326  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Collides as well
+"]
+// END RANK raw_325
+
+structure_318 -> { hashline_327}
+{rank=same; hashline_327}
+
+hashline_327 [label="hashline"]
+
+
+// END RANK structure_318
+
+hashline_327 -> { hashtag_328}
+{rank=same; hashtag_328}
+
+hashtag_328 [label="hashtag"]
+
+
+// END RANK hashline_327
+
+hashtag_328 -> leaf_329
+leaf_329  [color=Gray,shape=rectangle,fontname=Inconsolata,label="deprecated"]
+// END RANK hashtag_328
+
+prose_319 -> { raw_330 prespace_331 literal_332 raw_333 prespace_334 literal_335 raw_336}
+{rank=same; raw_330 prespace_331 literal_332 raw_333 prespace_334 literal_335 raw_336}
+
+raw_330 [label="raw"]
+
+prespace_331 [label="prespace"]
+
+literal_332 [label="literal"]
+
+raw_333 [label="raw"]
+
+prespace_334 [label="prespace"]
+
+literal_335 [label="literal"]
 
 raw_336 [label="raw"]
 
 
-// END RANK prose_328
+// END RANK prose_319
 
-raw_336 -> leaf_337
+raw_330 -> leaf_337
 leaf_337  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-Collides as well
-"]
-// END RANK raw_336
-
-structure_329 -> { hashline_338}
-{rank=same; hashline_338}
-
-hashline_338 [label="hashline"]
-
-
-// END RANK structure_329
-
-hashline_338 -> { hashtag_339}
-{rank=same; hashtag_339}
-
-hashtag_339 [label="hashtag"]
-
-
-// END RANK hashline_338
-
-hashtag_339 -> leaf_340
-leaf_340  [color=Gray,shape=rectangle,fontname=Inconsolata,label="deprecated"]
-// END RANK hashtag_339
-
-prose_330 -> { raw_341 prespace_342 literal_343 raw_344 prespace_345 literal_346 raw_347}
-{rank=same; raw_341 prespace_342 literal_343 raw_344 prespace_345 literal_346 raw_347}
-
-raw_341 [label="raw"]
-
-prespace_342 [label="prespace"]
-
-literal_343 [label="literal"]
-
-raw_344 [label="raw"]
-
-prespace_345 [label="prespace"]
-
-literal_346 [label="literal"]
-
-raw_347 [label="raw"]
-
-
-// END RANK prose_330
-
-raw_341 -> leaf_348
-leaf_348  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
   - zoneherd: The"]
-// END RANK raw_341
+// END RANK raw_330
 
-prespace_342 -> leaf_349
-leaf_349  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_342
+prespace_331 -> leaf_338
+leaf_338  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_331
 
-literal_343 -> leaf_350
-leaf_350  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Zoneherd"]
-// END RANK literal_343
+literal_332 -> leaf_339
+leaf_339  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Zoneherd"]
+// END RANK literal_332
 
-raw_344 -> leaf_351
-leaf_351  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_333 -> leaf_340
+leaf_340  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
   - zone:  The"]
-// END RANK raw_344
+// END RANK raw_333
 
-prespace_345 -> leaf_352
-leaf_352  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_345
+prespace_334 -> leaf_341
+leaf_341  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_334
 
-literal_346 -> leaf_353
-leaf_353  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Zone"]
-// END RANK literal_346
+literal_335 -> leaf_342
+leaf_342  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Zone"]
+// END RANK literal_335
 
-raw_347 -> leaf_354
-leaf_354  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_336 -> leaf_343
+leaf_343  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
   - delta:  A table, {col, row}, may be positive or negative
   - bottom:  A boolean, if true, delta is for the bottom right,
              false or nil, top left.
 - #Return: zoneherd
 "]
-// END RANK raw_347
+// END RANK raw_336
 
-codeblock_331 -> leaf_355
-leaf_355  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Zoneherd.adjust(zoneherd, zone, delta, bottom)
+codeblock_320 -> leaf_344
+leaf_344  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Zoneherd.adjust(zoneherd, zone, delta, bottom)
    if not bottom then
       zone.tc = zone.tc + delta[1]
       zone.tr = zone.tr + delta[1]
@@ -1549,39 +1513,39 @@ leaf_355  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Zoneh
    _collideAll(zoneherd, zone)
    return zoneherd
 end"]
-// END RANK codeblock_331
+// END RANK codeblock_320
 
-section_332 -> { header_356 prose_357 codeblock_358}
-{rank=same; header_356 prose_357 codeblock_358}
+section_321 -> { header_345 prose_346 codeblock_347}
+{rank=same; header_345 prose_346 codeblock_347}
 
-header_356 [label="4 : _zoneOffset(modes)"]
+header_345 [label="4 : _zoneOffset(modes)"]
 
-prose_357 [label="prose"]
+prose_346 [label="prose"]
 
-codeblock_358 [label="code block 315-327"]
-
-
-// END RANK section_332
-
-header_356 -> leaf_359
-leaf_359  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** _zoneOffset(modes)"]
-// END RANK header_356
-
-prose_357 -> { raw_360}
-{rank=same; raw_360}
-
-raw_360 [label="raw"]
+codeblock_347 [label="code block 315-327"]
 
 
-// END RANK prose_357
+// END RANK section_321
 
-raw_360 -> leaf_361
-leaf_361  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_345 -> leaf_348
+leaf_348  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** _zoneOffset(modes)"]
+// END RANK header_345
+
+prose_346 -> { raw_349}
+{rank=same; raw_349}
+
+raw_349 [label="raw"]
+
+
+// END RANK prose_346
+
+raw_349 -> leaf_350
+leaf_350  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 "]
-// END RANK raw_360
+// END RANK raw_349
 
-codeblock_358 -> leaf_362
-leaf_362  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function _zoneOffset(modeS)
+codeblock_347 -> leaf_351
+leaf_351  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function _zoneOffset(modeS)
    if modeS.max_col <= 80 then
       return 20
    elseif modeS.max_col <= 100 then
@@ -1592,82 +1556,78 @@ leaf_362  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function
       return 50
    end
 end"]
-// END RANK codeblock_358
+// END RANK codeblock_347
 
-section_311 -> { header_363 prose_364 codeblock_365}
-{rank=same; header_363 prose_364 codeblock_365}
+section_300 -> { header_352 prose_353 codeblock_354}
+{rank=same; header_352 prose_353 codeblock_354}
 
-header_363 [label="3 : Zoneherd:adjustCommand(zoneherd, delta)"]
+header_352 [label="3 : Zoneherd:adjustCommand(zoneherd, delta)"]
 
-prose_364 [label="prose"]
+prose_353 [label="prose"]
 
-codeblock_365 [label="code block 332-344"]
-
-
-// END RANK section_311
-
-header_363 -> leaf_366
-leaf_366  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Zoneherd:adjustCommand(zoneherd, delta)"]
-// END RANK header_363
-
-prose_364 -> { raw_367}
-{rank=same; raw_367}
-
-raw_367 [label="raw"]
+codeblock_354 [label="code block 332-340"]
 
 
-// END RANK prose_364
+// END RANK section_300
 
-raw_367 -> leaf_368
-leaf_368  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_352 -> leaf_355
+leaf_355  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Zoneherd:adjustCommand(zoneherd, delta)"]
+// END RANK header_352
+
+prose_353 -> { raw_356}
+{rank=same; raw_356}
+
+raw_356 [label="raw"]
+
+
+// END RANK prose_353
+
+raw_356 -> leaf_357
+leaf_357  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 "]
-// END RANK raw_367
+// END RANK raw_356
 
-codeblock_365 -> leaf_369
-leaf_369  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Zoneherd:adjustCommand(zoneherd, delta)
-   assert(type(delta) == \"number\" or delta == nil,
-            \"optional delta must be a number\")
-   delta =  delta or 1
-   zoneherd.command.br = zoneherd.command.br + delta
-   zoneherd.results.tr = zoneherd.results.tr - delta
-   zoneherd.command.touched = true
-   zoneherd.results.touched = true
-
+codeblock_354 -> leaf_358
+leaf_358  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Zoneherd.adjustCommand(zoneherd)
+   local lines = zoneherd.command.contents and zoneherd.command.contents.lines
+   local txt_off = lines and #lines -1 or 0
+   zoneherd.command.br = zoneherd.command.tr + txt_off
+   zoneherd.results.tr = zoneherd.command.br + 1
    return zoneherd
 end"]
-// END RANK codeblock_365
+// END RANK codeblock_354
 
-section_312 -> { header_370 prose_371 codeblock_372}
-{rank=same; header_370 prose_371 codeblock_372}
+section_301 -> { header_359 prose_360 codeblock_361}
+{rank=same; header_359 prose_360 codeblock_361}
 
-header_370 [label="3 : Zoneherd:reflow(modeS)"]
+header_359 [label="3 : Zoneherd:reflow(modeS)"]
 
-prose_371 [label="prose"]
+prose_360 [label="prose"]
 
-codeblock_372 [label="code block 348-374"]
-
-
-// END RANK section_312
-
-header_370 -> leaf_373
-leaf_373  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Zoneherd:reflow(modeS)"]
-// END RANK header_370
-
-prose_371 -> { raw_374}
-{rank=same; raw_374}
-
-raw_374 [label="raw"]
+codeblock_361 [label="code block 344-371"]
 
 
-// END RANK prose_371
+// END RANK section_301
 
-raw_374 -> leaf_375
-leaf_375  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_359 -> leaf_362
+leaf_362  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Zoneherd:reflow(modeS)"]
+// END RANK header_359
+
+prose_360 -> { raw_363}
+{rank=same; raw_363}
+
+raw_363 [label="raw"]
+
+
+// END RANK prose_360
+
+raw_363 -> leaf_364
+leaf_364  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 "]
-// END RANK raw_374
+// END RANK raw_363
 
-codeblock_372 -> leaf_376
-leaf_376  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Zoneherd.reflow(zoneherd, modeS)
+codeblock_361 -> leaf_365
+leaf_365  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Zoneherd.reflow(zoneherd, modeS)
    local right_col = modeS.max_col - _zoneOffset(modeS)
    local txt_off = modeS.txtbuf and #modeS.txtbuf.lines - 1 or 0
    zoneherd.status:set(1, 1, right_col, 1)
@@ -1675,6 +1635,7 @@ leaf_376  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Zoneh
                          modeS.repl_top,
                          right_col,
                          modeS.repl_top + txt_off )
+   zoneherd.prompt:set(1, 2, modeS.l_margin - 1, 2)
    zoneherd.results:set( modeS.l_margin,
                          modeS.repl_top + txt_off + 1,
                          right_col,
@@ -1692,62 +1653,82 @@ leaf_376  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Zoneh
    end
    return zoneherd
 end"]
-// END RANK codeblock_372
+// END RANK codeblock_361
 
-section_313 -> { header_377 prose_378 codeblock_379}
-{rank=same; header_377 prose_378 codeblock_379}
+section_302 -> { header_366 prose_367 codeblock_368}
+{rank=same; header_366 prose_367 codeblock_368}
 
-header_377 [label="3 : Zoneherd:paint(modeS)"]
+header_366 [label="3 : Zoneherd:paint(modeS)"]
 
-prose_378 [label="prose"]
+prose_367 [label="prose"]
 
-codeblock_379 [label="code block 384-418"]
-
-
-// END RANK section_313
-
-header_377 -> leaf_380
-leaf_380  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Zoneherd:paint(modeS)"]
-// END RANK header_377
-
-prose_378 -> { raw_381 prespace_382 literal_383 raw_384}
-{rank=same; raw_381 prespace_382 literal_383 raw_384}
-
-raw_381 [label="raw"]
-
-prespace_382 [label="prespace"]
-
-literal_383 [label="literal"]
-
-raw_384 [label="raw"]
+codeblock_368 [label="code block 381-436"]
 
 
-// END RANK prose_378
+// END RANK section_302
 
-raw_381 -> leaf_385
-leaf_385  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_366 -> leaf_369
+leaf_369  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Zoneherd:paint(modeS)"]
+// END RANK header_366
+
+prose_367 -> { raw_370 prespace_371 literal_372 raw_373}
+{rank=same; raw_370 prespace_371 literal_372 raw_373}
+
+raw_370 [label="raw"]
+
+prespace_371 [label="prespace"]
+
+literal_372 [label="literal"]
+
+raw_373 [label="raw"]
+
+
+// END RANK prose_367
+
+raw_370 -> leaf_374
+leaf_374  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 Once again we pass a reference to the"]
-// END RANK raw_381
+// END RANK raw_370
 
-prespace_382 -> leaf_386
-leaf_386  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_382
+prespace_371 -> leaf_375
+leaf_375  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_371
 
-literal_383 -> leaf_387
-leaf_387  [color=Gray,shape=rectangle,fontname=Inconsolata,label="modeselektor"]
-// END RANK literal_383
+literal_372 -> leaf_376
+leaf_376  [color=Gray,shape=rectangle,fontname=Inconsolata,label="modeselektor"]
+// END RANK literal_372
 
-raw_384 -> leaf_388
-leaf_388  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" to get access to things
+raw_373 -> leaf_377
+leaf_377  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" to get access to things
 like the lexer.
 
 
 "]
-// END RANK raw_384
+// END RANK raw_373
 
-codeblock_379 -> leaf_389
-leaf_389  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local a = require \"anterm\"
+codeblock_368 -> leaf_378
+leaf_378  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local a = require \"anterm\"
+
+local _hard_nl = a.col(1) .. a.jump.down()
+
+local function _paintGutter(zoneherd)
+   local write = zoneherd.write
+   local lines = zoneherd.command.contents
+                 and #zoneherd.command.contents.lines - 1 or 0
+   write(a.erase._box(1, 3, zoneherd.results.tc - 1, zoneherd.results.br))
+   write(a.colrow(1,3))
+   while lines > 0 do
+      write \"...\"
+      write(_hard_nl)
+      lines = lines - 1
+   end
+   local results = zoneherd.results.contents
+   if type(results) == \"table\" and results.more then
+      write(a.colrow(1, zoneherd.results.br))
+      write(a.red \"...\")
+   end
+end
 
 function Zoneherd.paint(zoneherd, modeS, all)
    local write = zoneherd.write
@@ -1757,7 +1738,7 @@ function Zoneherd.paint(zoneherd, modeS, all)
       write(a.erase.all())
    end
    for i, zone in ipairs(zoneherd) do
-      if zone.touched then
+      if zone.touched or all then
          -- erase
          write(a.erase._box(    zone.tc,
                                 zone.tr,
@@ -1777,44 +1758,45 @@ function Zoneherd.paint(zoneherd, modeS, all)
       end
    end
    zoneherd.write(a.cursor.show())
+   _paintGutter(zoneherd)
    modeS:placeCursor()
    return zoneherd
 end"]
-// END RANK codeblock_379
+// END RANK codeblock_368
 
-section_314 -> { header_390 prose_391 codeblock_392}
-{rank=same; header_390 prose_391 codeblock_392}
+section_303 -> { header_379 prose_380 codeblock_381}
+{rank=same; header_379 prose_380 codeblock_381}
 
-header_390 [label="3 : newZone(tr, tc, br, bc, z, debug_mark)"]
+header_379 [label="3 : newZone(tr, tc, br, bc, z, debug_mark)"]
 
-prose_391 [label="prose"]
+prose_380 [label="prose"]
 
-codeblock_392 [label="code block 425-437"]
-
-
-// END RANK section_314
-
-header_390 -> leaf_393
-leaf_393  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** newZone(tr, tc, br, bc, z, debug_mark)"]
-// END RANK header_390
-
-prose_391 -> { raw_394}
-{rank=same; raw_394}
-
-raw_394 [label="raw"]
+codeblock_381 [label="code block 443-455"]
 
 
-// END RANK prose_391
+// END RANK section_303
 
-raw_394 -> leaf_395
-leaf_395  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_379 -> leaf_382
+leaf_382  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** newZone(tr, tc, br, bc, z, debug_mark)"]
+// END RANK header_379
+
+prose_380 -> { raw_383}
+{rank=same; raw_383}
+
+raw_383 [label="raw"]
+
+
+// END RANK prose_380
+
+raw_383 -> leaf_384
+leaf_384  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 This creates a new Zone.
 "]
-// END RANK raw_394
+// END RANK raw_383
 
-codeblock_392 -> leaf_396
-leaf_396  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function newZone(tc, tr, bc, br, z, debug_mark)
+codeblock_381 -> leaf_385
+leaf_385  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function newZone(tc, tr, bc, br, z, debug_mark)
    assert(tc <= bc, \"tc: \" .. tc .. \", bc: \" .. bc)
    assert(tr <= br, \"tr: \" .. tr .. \", br: \" .. br)
    local zone = meta(Zone)
@@ -1825,142 +1807,124 @@ leaf_396  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function
    -- zone.contents, aspirationally a rainbuf, is provided later
    return zone
 end"]
-// END RANK codeblock_392
+// END RANK codeblock_381
 
-section_315 -> { header_397 prose_398 prose_399 codeblock_400 codeblock_401}
-{rank=same; header_397 prose_398 prose_399 codeblock_400 codeblock_401}
+section_304 -> { header_386 prose_387 prose_388 codeblock_389 codeblock_390}
+{rank=same; header_386 prose_387 prose_388 codeblock_389 codeblock_390}
 
-header_397 [label="3 : new"]
+header_386 [label="3 : new"]
 
-prose_398 [label="prose"]
+prose_387 [label="prose"]
 
-prose_399 [label="prose"]
+prose_388 [label="prose"]
 
-codeblock_400 [label="code block 449-490"]
+codeblock_389 [label="code block 467-490"]
 
-codeblock_401 [label="code block 492-494"]
-
-
-// END RANK section_315
-
-header_397 -> leaf_402
-leaf_402  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** new"]
-// END RANK header_397
-
-prose_398 -> { raw_403}
-{rank=same; raw_403}
-
-raw_403 [label="raw"]
+codeblock_390 [label="code block 492-494"]
 
 
-// END RANK prose_398
+// END RANK section_304
 
-raw_403 -> leaf_404
-leaf_404  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_386 -> leaf_391
+leaf_391  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** new"]
+// END RANK header_386
+
+prose_387 -> { raw_392}
+{rank=same; raw_392}
+
+raw_392 [label="raw"]
+
+
+// END RANK prose_387
+
+raw_392 -> leaf_393
+leaf_393  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 Makes a Zoneherd.  Borrows the modeselektor to get proportions, but returns
 the zoneherd, which is assigned to its slot on the modeselector at the call
 site, for consistency.
 "]
-// END RANK raw_403
+// END RANK raw_392
 
-prose_399 -> { raw_405 prespace_406 literal_407 raw_408 prespace_409 literal_410 raw_411}
-{rank=same; raw_405 prespace_406 literal_407 raw_408 prespace_409 literal_410 raw_411}
+prose_388 -> { raw_394 prespace_395 literal_396 raw_397 prespace_398 literal_399 raw_400}
+{rank=same; raw_394 prespace_395 literal_396 raw_397 prespace_398 literal_399 raw_400}
 
-raw_405 [label="raw"]
+raw_394 [label="raw"]
 
-prespace_406 [label="prespace"]
+prespace_395 [label="prespace"]
 
-literal_407 [label="literal"]
+literal_396 [label="literal"]
 
-raw_408 [label="raw"]
+raw_397 [label="raw"]
 
-prespace_409 [label="prespace"]
+prespace_398 [label="prespace"]
 
-literal_410 [label="literal"]
+literal_399 [label="literal"]
 
-raw_411 [label="raw"]
+raw_400 [label="raw"]
 
 
-// END RANK prose_399
+// END RANK prose_388
 
-raw_405 -> leaf_412
-leaf_412  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_394 -> leaf_401
+leaf_401  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 Most of this code needs to be in the"]
-// END RANK raw_405
+// END RANK raw_394
 
-prespace_406 -> leaf_413
-leaf_413  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_406
+prespace_395 -> leaf_402
+leaf_402  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_395
 
-literal_407 -> leaf_414
-leaf_414  [color=Gray,shape=rectangle,fontname=Inconsolata,label="reflow"]
-// END RANK literal_407
+literal_396 -> leaf_403
+leaf_403  [color=Gray,shape=rectangle,fontname=Inconsolata,label="reflow"]
+// END RANK literal_396
 
-raw_408 -> leaf_415
-leaf_415  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" method;"]
-// END RANK raw_408
+raw_397 -> leaf_404
+leaf_404  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" method;"]
+// END RANK raw_397
 
-prespace_409 -> leaf_416
-leaf_416  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_409
+prespace_398 -> leaf_405
+leaf_405  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_398
 
-literal_410 -> leaf_417
-leaf_417  [color=Gray,shape=rectangle,fontname=Inconsolata,label="new"]
-// END RANK literal_410
+literal_399 -> leaf_406
+leaf_406  [color=Gray,shape=rectangle,fontname=Inconsolata,label="new"]
+// END RANK literal_399
 
-raw_411 -> leaf_418
-leaf_418  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" should allocate
+raw_400 -> leaf_407
+leaf_407  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" should allocate
 and then reflow.
 "]
-// END RANK raw_411
+// END RANK raw_400
 
-codeblock_400 -> leaf_419
-leaf_419  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new(modeS, writer)
+codeblock_389 -> leaf_408
+leaf_408  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new(modeS, writer)
    local zoneherd = meta(Zoneherd)
    local right_col = modeS.max_col - _zoneOffset(modeS)
    zoneherd.write = writer
    -- make Zones
-   -- (top_col, top_row, bottom_col, bottom_row, z, debug-mark)
-   zoneherd.status  = newZone( 1, 1, right_col, 1, 1, \".\")
+   -- correct values are provided by reflow
+   zoneherd.status  = newZone(-1, -1, -1, -1, 1, \".\")
    zoneherd[1] = zoneherd.status
-   zoneherd.command = newZone( modeS.l_margin,
-                               modeS.repl_top,
-                               right_col,
-                               modeS:replLine(),
-                               1, \"|\" )
+   zoneherd.command = newZone(-1, -1, -1, -1, 1, \"|\")
    zoneherd[3] = zoneherd.command
-   zoneherd.prompt  = newZone( 1,
-                               modeS.repl_top,
-                               modeS.l_margin - 1,
-                               modeS.repl_top,
-                               1, \">\" )
+   zoneherd.prompt  = newZone(-1, -1, -1, -1, 1, \">\")
    zoneherd[2] = zoneherd.prompt
-   zoneherd.results = newZone( modeS.l_margin,
-                               modeS:replLine() + 1,
-                               right_col,
-                               modeS.max_row,
-                               1, \"~\" )
+   zoneherd.results = newZone(-1, -1, -1, -1, 1, \"~\")
    zoneherd[4] = zoneherd.results
-   zoneherd.stat_col = newZone( right_col + 1,
-                                1,
-                                modeS.max_col,
-                                1,
-                                1, \"!\" )
+   zoneherd.stat_col = newZone(-1, -1, -1, -1, 1, \"!\")
    zoneherd[5] = zoneherd.stat_col
-   zoneherd.suggest = newZone( right_col + 1,
-                               3,
-                               modeS.max_col,
-                               modeS.max_row,
-                               1, \"%\" )
+   zoneherd.suggest = newZone(-1, -1, -1, -1, 1, \"%\")
    zoneherd[6] = zoneherd.suggest
+   zoneherd:reflow(modeS)
+
    return zoneherd
 end"]
-// END RANK codeblock_400
+// END RANK codeblock_389
 
-codeblock_401 -> leaf_420
-leaf_420  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return new"]
-// END RANK codeblock_401
+codeblock_390 -> leaf_409
+leaf_409  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return new"]
+// END RANK codeblock_390
 
 
 }

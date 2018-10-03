@@ -1,138 +1,185 @@
 # Rainbuf
 
 
-#NB In need of substantial revision in light of new classes.
-``status = uv.write(table.concat(rainbuf))``.
+This class encapsulates data to be written to the screen.
 
 
-Additionally, we want good estimates of size (but see below).  Displacement,
-really, which is why we want to figure those things out as late as possible.
+As it stands, we have two special cases, the ``txtbuf`` and ``results``.
 
 
-Rainbuf is a Phrase-like class with some awareness of what's an ANSI code and
-what isn't.  Each array is a line, and also includes an array with the
-displacement estimate.
+We need to extend the functionality of ``results``, so we're building this as a
+root metatable for those methods.
 
 
-Which is 0 for an ANSI sequence and otherwise varies.  Here we will pretend
-that it's 1 cell per byte, which is unlikely to get us in trouble right away.
+Plausibly, we can make this a 'mixin' for ``txtbuf`` as well, since they have
+the additional complexity of receiving input.
 
 
-The utilities to determine displacement will probably go in ``anterm``. I have
-a very general solution in mind.
+## Design
+
+We're aiming for complex interactivity with data.
 
 
-To assist in this, we'll want to patch the ``anterm`` color metatable to return
-a rainbuf.  The Phrase class takes whatever shape it's formed into, convenient
-for AST generators.  A rainbuf is for painting an terminal, so concatenating
-them always fills the leftmost.
+Our current renderer is crude: it converts the entire table into a string
+representation, including newlines, and returns it.
 
 
-I suspect I'm going to find, working with ``uv``, that there's seldom any
-advantage in concatenating strings further out than about tokens.  Downsides,
-really, since any "blagh " is the same string but a "blagh whuppy" and a
-"blagh winkedy" are unique strings.
+One sophistication we've added is a ``__repr`` metamethod, which overrides the
+default use of ``ts()``.  It still returns a dumb block of strings, using
+concatenation at the moment of combination.  This is inefficient and also
+impedes more intelligent rendering.  But it's a start.
 
 
-### Structure
-
-Rainbufs are database-shaped.  The simplest ``r.idEst = Rainbuf`` is an
-array of strings, with a second array, keyed as ``r.wid``, showing the expected
-displacement of the string: That is, how far left (positive) or right
-(negative) the cursor is expected to move on a given print.
+``rainbuf`` needs to have a cell-by-cell understanding of what's rendered and
+what's not, must calculate a printable representation given the constraints of
+the ``zone``, and, eventually, will respond to mouse and cursor events.
 
 
-This is equivalent to ``#tostring(r)`` for printable ASCII, and then starts to
-diverge wildly.  Notably, any ANSI color sequence is of zero displacement.
+Doing this correctly is extraordinarily complex but we can fake it adequately
+as long as the engineering is correct.  Everything we're currently using is
+ASCII-range or emojis and both of those are predictable, narrow/ordinary and
+wide respectively.
 
 
-Values of ``wid`` can either be numbers, in which case it is displacement by
-column, or an array, in which case ``wid[0]`` is by column and ``wid[1]`` is by
-row.  ``wid`` can also be a string. If so it must start with "?". If there are
-additional characters it must be a signed integer value.
+There are libraries/databases which purport to answer this question.  We plan
+to link one of those in.
 
 
-Rainbufs do **not** contain ``\n`` or ``\r``.  A rainbuf printer is expected to
-perform newlining at the end of each rainbuf, respecting local context.  There
-is no guarantee that the 1 position in a rainbuf is the 1 position on-screen.
+Results, as we currently manifest them, use an array for the raw objects and
+``n`` rather than ``#res`` to represent the length.  That's a remnant of the
+original repl from ``luv``.  The ``.n`` is neceessary because ``nil`` can be a
+positional result.
 
 
-Rainbufs can contain sequences of unknown widlacement.  In such a case, the
-displacement is _measured_ and recorded persistently in a database.
+A ``txtbuf`` keeps its contents in a ``.lines`` table, and so we can reuse this
+field for cached textual representations.  All internals should support both
+strings and array-of-strings as possible values of the ``lines`` array.
 
 
-If we get the string "Hi! 🤪" it has a ``#`` of 8. So the wid will be "?8",
-and the actual widlacement turns out to be 6, correctly, and 5 on my tty,
-which will double-print the emoji and the closing string!
+We also need a ``.wids`` array of arrays of numbers and should probably hide
+this behind methods so as to fake it when we just have strings.
 
 
-Solving that quirk is a bit out of scope; the point is that we'll have an
-estimation engine, and that all it needs to do right now is distinguish color
-sequences (0) and text (#str).  Usually the ``wc_width()`` will be correct, and
-measurement will be to compensate for terminals not knowing what they've done.
+Later, we add a ``.targets``, this is a dense array for the number of lines,
+each with a sparse array containing handlers for mouse events.  If a mouse
+event doesn't hit a ``target`` then the default handler is engaged.
 
 
-A rainbuf that contains strings as array members may **only** have strings as
-array members.  This is called a line, and a rainbuf which contains a line
-as an array member may **only** have lines as members.
+We also have ``offset``, a number, and ``more``, which is ``true`` if the buffer
+continues past the edge of the zone and otherwise falsy.
 
-
-These we call blocks. Every aggregate beyond this is also a block, and there
-is no limit on these levels of detail, but every rainbuf member of a block
-must have the same depth, so that in all cases, the same number of lookups
-lead to a string.
-
-
-In code these distinctions are made with a single field ``d``, an unsigned
-integer.  Lines have a ``d`` of one, ``d = 0`` is the strings themselves.
-
-
-There will be other fields; rainbuf is the last stop before the terminal, and
-needs to convey various hints to the renderer so that e.g. mouse targets line
-up with the correct regions.  It is cleaner for things like elided blocks to
-live in the rainbuf than to be synced by the renderer.
-
-
-I think.  Because we're operating on an event loop, the rainbuf has to both
-soley own write access to itself, and only lend out one read pointer after
-an atomic update.  That implies two different views must be separate rainbufs
-fed from the same quipu, and renderers are rainbuf interpreters.
+#### includes
 
 ```lua
-local Txtbuf = require "txtbuf"
-local byte = assert(string.byte)
+local color = require "color"
+local ts = color.ts
+```
+#### Rainbuf metatable
 
+```lua
 local Rainbuf = meta {}
 ```
+## Methods
+
+
+### Rainbuf:lineGen(rows, offset)
+
+This is a generator which yields ``rows`` number of lines.
+
+
+I need to do some empirical profiling as to whether, given ``luv``, we should
+iterate over an array of tokens and ``write`` them individually, or use
+``table.concat`` to efficiently stringify them first.
+
+
+It's non-blocking, but it is a syscall, and those are expensive. I suspect
+more expensive than ``concat`` which is efficient C.
+
+
+Given this more likely scenario, ``lines`` should emit pure strings.
+
+
+The default method, provided here, can be overridden for other data types.
+I intend to substitute a ``lines`` method instead of the use of ``__repr`` at
+some point in the relatively near future, for search results and the like.
+
+
+We're going to do this the easy way, and generate a full representation,
+yielding only afterward.  But the interface is designed so that we can do this
+lazily once we're motivated to do so.
+
 ```lua
-local function new(txtbuf)
-   local rainbuf = meta(Rainbuf)
-   local wid = {}
-   rainbuf.wid = wid
-   if type(txtbuf) == "string" then
-      txtbuf = Txtbuf(txtbuf)
-   elseif type(txtbuf) == "table" then
-      if txtbuf.idEst == Txtbuf then
-         _from_txtbuf(rainbuf, txtbuf)
+function Rainbuf.lineGen(rainbuf, rows)
+   offset = rainbuf.offset or 0
+   if not rainbuf.lines then
+      local phrase = ""
+      for i = 1, rainbuf.n do
+         local piece
+         if rainbuf.frozen then
+            piece = rainbuf[i]
+         else
+            piece = ts(rainbuf[i])
+         end
+         phrase = phrase .. piece
+         if i < rainbuf.n then
+            phrase = phrase .. "   "
+         end
+      end
+      rainbuf.lines = table.collect(string.lines, phrase)
+   end
+   rows = rows or #rainbuf.lines
+   local cursor = 1 + offset
+   rows = rows + offset
+
+   return function()
+      if cursor < rows then
+         local line = rainbuf.lines[cursor]
+         if not line then
+            rainbuf.more = false
+            return nil
+         end
+         cursor = cursor + 1
+         return line
       else
-         for i,v in ipairs(txtbuf) do
-            if type(v) == "string" then
-               rainbuf[i] = v
-               if byte(v) == 0x1b then
-                  wid[i] = 0
-               else
-                  wid[i] = v
-               end
-            else
-               error("content of table in Rainbuf must be strings")
-            end
+         if cursor <= #rainbuf.lines then
+            rainbuf.more = true
+            return nil
+         else
+            rainbuf.more = false
+            return nil
          end
       end
    end
+end
+```
+### Rainbuf:__tostring()
+
+```lua
+function Rainbuf.__tostring(rainbuf)
+end
+```
+### new(res?)
+
+```lua
+local function new(res)
+   -- #todo this should be an error
+   if type(res) == "table" and res.idEst == Rainbuf then
+      error "made a Rainbuf from a Rainbuf"
+   end
+   local rainbuf = meta(Rainbuf)
+   if res then
+      for i = 1, res.n do
+         rainbuf[i] = res[i]
+      end
+      rainbuf.n = res.n
+      rainbuf.frozen = res.frozen
+   end
+   rainbuf.wids  = {}
+   rainbuf.offset = 0
    return rainbuf
 end
+
 Rainbuf.idEst = new
-```
-```lua
+
 return new
 ```

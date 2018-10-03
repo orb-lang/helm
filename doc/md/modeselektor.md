@@ -120,8 +120,10 @@ local stacktrace = require "stacktrace" . stacktrace
 
 local Txtbuf    = require "txtbuf"
 local Resbuf    = require "resbuf" -- Not currently used...
+local Rainbuf   = require "rainbuf"
 local Historian = require "historian"
 local Lex       = require "lex"
+local Zoneherd  = require "zone"
 
 local Nerf   = require "nerf"
 local Search = require "search"
@@ -421,7 +423,9 @@ local function _firstCharHandler(modeS, category, value)
          shifted = true
       end
    end
-   modeS.firstChar = false
+   if not category == "NAV" then
+     modeS.firstChar = false
+   end
    return shifted
 end
 ```
@@ -451,7 +455,7 @@ function ModeS.act(modeS, category, value)
    end
    local icon = _make_icon(category, value)
    -- Special first-character handling
-   if modeS.firstChar and not (category == "MOUSE") then
+   if modeS.firstChar and not (category == "MOUSE" or category == "NAV") then
       modeS.zones.results:replace ""
       local shifted = _firstCharHandler(modeS, category, value)
       if shifted then
@@ -459,7 +463,8 @@ function ModeS.act(modeS, category, value)
       end
    end
    -- Dispatch on value if possible
-   if modeS.modes[category][value] then
+   if type(modeS.modes[category]) == "table"
+      and modeS.modes[category][value] then
       modeS.modes[category][value](modeS, category, value)
 
    -- otherwise fall back:
@@ -474,6 +479,9 @@ function ModeS.act(modeS, category, value)
       end
    elseif category == "MOUSE" then
       -- do mouse stuff
+      if modeS.modes.MOUSE then
+         modeS.modes.MOUSE(modeS, category, value)
+      end
    else
       icon = _make_icon("NYI", category .. ":" .. value)
    end
@@ -481,7 +489,7 @@ function ModeS.act(modeS, category, value)
    ::final::
    if modeS.raga == "search" then
       -- we need to fake this into a 'result'
-      local searchResult = {}
+      local searchResult = Rainbuf()
       searchResult[1] = modeS.hist:search(tostring(modeS.txtbuf))
       searchResult.n = 1
       modeS.zones.results:replace(searchResult)
@@ -489,6 +497,7 @@ function ModeS.act(modeS, category, value)
    -- Replace zones
    modeS.zones.stat_col:replace(icon)
    modeS.zones.command:replace(modeS.txtbuf)
+   modeS.zones:adjustCommand()
    modeS:paint()
    collectgarbage()
 end
@@ -544,11 +553,12 @@ function ModeS.eval(modeS)
       end -- more special REPL prefix soon: /, ?, >(?)
    end
    if f then
-      success, results = gatherResults(xpcall(f, stacktrace))
+      success, results = gatherResults(xpcall(f, debug.traceback))
       if success then
       -- successful call
          if results.n > 0 then
-            modeS.zones.results:replace(results)
+            local rb = Rainbuf(results)
+            modeS.zones.results:replace(rb)
          else
             modeS.zones.results:replace ""
          end
@@ -562,12 +572,11 @@ function ModeS.eval(modeS)
       if err:match "'<eof>'$" then
          -- Lua expects some more input, advance the txtbuf
          modeS.txtbuf:advance()
-         modeS.zones:adjustCommand()
-         write(a.col(1) .. "...")
+         write(a.colrow(1, modeS.repl_top + 1) .. "...")
          return true
       else
          local to_err = { err.. "\n" .. stacktrace(),
-                          [n] = 1,
+                          n = 1,
                           frozen = true}
          modeS.zones.results:replace(to_err)
          -- pass through to default.
@@ -577,12 +586,11 @@ function ModeS.eval(modeS)
    modeS.hist:append(modeS.txtbuf, results, success)
    modeS.hist.cursor = #modeS.hist
    if success then modeS.hist.results[modeS.txtbuf] = results end
-   modeS:prompt()
+   -- modeS:prompt()
 end
 ```
 ## new
 
-This should be configurable via ``cfg``.
 
 ```lua
 function new(max_col, max_row)
@@ -598,6 +606,9 @@ function new(max_col, max_row)
   modeS.r_margin = 80
   modeS.row = 2
   modeS.repl_top  = ModeS.REPL_LINE
+  modeS.zones = Zoneherd(modeS, write)
+  modeS.zones.status:replace "an repl, plz reply uwu 👀"
+  modeS.zones.prompt:replace "👉  "
   -- initial state
   modeS.firstChar = true
   return modeS

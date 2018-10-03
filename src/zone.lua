@@ -73,9 +73,13 @@ local concat = assert(table.concat)
 
 local Txtbuf = require "txtbuf"
 
+local Rainbuf = require "rainbuf"
+
 local Zone = meta {}
 
 local Zoneherd = meta {}
+
+
 
 
 
@@ -231,19 +235,14 @@ local function _writeResults(write, zone, new)
    if not results then
       return nil
    end
-   for i = 1, results.n do
-      if results.frozen then
-         rainbuf[i] = results[i]
-      else
-         local catch_val = ts(results[i])
-         if type(catch_val) == 'string' then
-            rainbuf[i] = catch_val
-         else
-            error("ts returned a " .. type(catch_val) .. " in printResults")
-         end
-      end
+   if results.idEst ~= Rainbuf then
+      results = Rainbuf(results)
    end
-   _writeLines(write, zone, concat(rainbuf, '   '))
+   local nl = a.col(zone.tc) .. a.jump.down(1)
+   for line in results:lineGen(zone:height() + 1) do
+      write(line)
+      write(nl)
+   end
 end
 
 
@@ -394,6 +393,11 @@ local function _paintGutter(zoneherd)
       write "..."
       write(_hard_nl)
       lines = lines - 1
+   end
+   local results = zoneherd.results.contents
+   if type(results) == "table" and results.more then
+      write(a.colrow(1, zoneherd.results.br))
+      write(a.red "...")
    end
 end
 

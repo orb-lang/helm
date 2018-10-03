@@ -13,7 +13,7 @@
 <g id="node1" class="node">
 <title>doc_0</title>
 <ellipse fill="none" stroke="#000000" cx="3156" cy="-3476.6053" rx="46.9581" ry="18"/>
-<text text-anchor="middle" x="3156" y="-3472.4053" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">doc &#45; 765</text>
+<text text-anchor="middle" x="3156" y="-3472.4053" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">doc &#45; 766</text>
 </g>
 <!-- section_1 -->
 <g id="node2" class="node">
@@ -163,7 +163,7 @@
 <g id="node14" class="node">
 <title>section_13</title>
 <ellipse fill="none" stroke="#000000" cx="15398" cy="-3332.6053" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="15398" y="-3328.4053" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 454&#45;695</text>
+<text text-anchor="middle" x="15398" y="-3328.4053" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 454&#45;696</text>
 </g>
 <!-- section_1&#45;&gt;section_13 -->
 <g id="edge13" class="edge">
@@ -823,7 +823,7 @@
 <g id="node207" class="node">
 <title>section_206</title>
 <ellipse fill="none" stroke="#000000" cx="19747" cy="-3260.6053" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="19747" y="-3256.4053" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 639&#45;695</text>
+<text text-anchor="middle" x="19747" y="-3256.4053" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 639&#45;696</text>
 </g>
 <!-- section_13&#45;&gt;section_206 -->
 <g id="edge206" class="edge">
@@ -835,7 +835,7 @@
 <g id="node208" class="node">
 <title>section_207</title>
 <ellipse fill="none" stroke="#000000" cx="21613" cy="-3260.6053" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="21613" y="-3256.4053" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 696&#45;704</text>
+<text text-anchor="middle" x="21613" y="-3256.4053" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 697&#45;705</text>
 </g>
 <!-- section_13&#45;&gt;section_207 -->
 <g id="edge207" class="edge">
@@ -3098,7 +3098,7 @@
 <g id="node303" class="node">
 <title>codeblock_302</title>
 <ellipse fill="none" stroke="#000000" cx="19830" cy="-2774.6047" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="19830" y="-2770.4047" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 648&#45;677</text>
+<text text-anchor="middle" x="19830" y="-2770.4047" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 648&#45;678</text>
 </g>
 <!-- section_206&#45;&gt;codeblock_302 -->
 <g id="edge302" class="edge">
@@ -3122,7 +3122,7 @@
 <g id="node305" class="node">
 <title>codeblock_304</title>
 <ellipse fill="none" stroke="#000000" cx="20257" cy="-2774.6047" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="20257" y="-2770.4047" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 681&#45;687</text>
+<text text-anchor="middle" x="20257" y="-2770.4047" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 682&#45;688</text>
 </g>
 <!-- section_206&#45;&gt;codeblock_304 -->
 <g id="edge304" class="edge">
@@ -3182,7 +3182,7 @@
 <g id="node331" class="node">
 <title>codeblock_330</title>
 <ellipse fill="none" stroke="#000000" cx="21751" cy="-2774.6047" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="21751" y="-2770.4047" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 700&#45;702</text>
+<text text-anchor="middle" x="21751" y="-2770.4047" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 701&#45;703</text>
 </g>
 <!-- section_207&#45;&gt;codeblock_330 -->
 <g id="edge330" class="edge">
@@ -3194,7 +3194,7 @@
 <g id="node332" class="node">
 <title>section_331</title>
 <ellipse fill="none" stroke="#000000" cx="21946" cy="-2774.6047" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="21946" y="-2770.4047" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 705&#45;765</text>
+<text text-anchor="middle" x="21946" y="-2770.4047" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 706&#45;766</text>
 </g>
 <!-- section_207&#45;&gt;section_331 -->
 <g id="edge331" class="edge">
@@ -4179,41 +4179,42 @@
 <!-- leaf_320 -->
 <g id="node321" class="node">
 <title>leaf_320</title>
-<polygon fill="none" stroke="#c0c0c0" points="20084.5,-1741.9035 19683.5,-1741.9035 19683.5,-1302.5017 20084.5,-1302.5017 20084.5,-1741.9035"/>
-<text text-anchor="middle" x="19884" y="-1726.603" font-family="Inconsolata" font-size="14.00" fill="#000000">local __navigation = { &#160;UP &#160;&#160;&#160;&#160;&#160;&#160;= &quot;\x1b[A&quot;,</text>
-<text text-anchor="middle" x="19884" y="-1711.203" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;DOWN &#160;&#160;&#160;&#160;= &quot;\x1b[B&quot;,</text>
-<text text-anchor="middle" x="19884" y="-1695.803" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;RIGHT &#160;&#160;&#160;= &quot;\x1b[C&quot;,</text>
-<text text-anchor="middle" x="19884" y="-1680.4029" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;LEFT &#160;&#160;&#160;&#160;= &quot;\x1b[D&quot;,</text>
-<text text-anchor="middle" x="19884" y="-1665.0029" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;SHIFT_UP = &quot;\x1b[1;2A&quot;,</text>
-<text text-anchor="middle" x="19884" y="-1649.6029" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;SHIFT_DOWN = &quot;\x1b[1;2B&quot;,</text>
-<text text-anchor="middle" x="19884" y="-1634.2028" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;SHIFT_RIGHT = &quot;\x1b[1;2C&quot;,</text>
-<text text-anchor="middle" x="19884" y="-1618.8028" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;SHIFT_LEFT &#160;= &quot;\x1b[1;2D&quot;,</text>
-<text text-anchor="middle" x="19884" y="-1603.4028" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;HYPER_UP &#160;&#160;&#160;= &quot;\x1b[5~&quot;,</text>
-<text text-anchor="middle" x="19884" y="-1588.0027" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;HYPER_DOWN &#160;= &quot;\x1b[6~&quot;,</text>
-<text text-anchor="middle" x="19884" y="-1572.6027" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;HYPER_RIGHT = &quot;\x1b[F&quot;,</text>
-<text text-anchor="middle" x="19884" y="-1557.2027" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;HYPER_LEFT &#160;= &quot;\x1b[H&quot;,</text>
-<text text-anchor="middle" x="19884" y="-1541.8027" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;ALT_UP &#160;&#160;&#160;= &quot;\x1b\x1b[A&quot;,</text>
-<text text-anchor="middle" x="19884" y="-1526.4026" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;ALT_DOWN &#160;= &quot;\x1b\x1b[B&quot;,</text>
-<text text-anchor="middle" x="19884" y="-1511.0026" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;ALT_RIGHT = &quot;\x1bf&quot;, &#45;&#45; heh</text>
-<text text-anchor="middle" x="19884" y="-1495.6026" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;ALT_LEFT &#160;= &quot;\x1bb&quot;,</text>
-<text text-anchor="middle" x="19884" y="-1480.2025" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;SHIFT_ALT_UP = &quot;\x1b[1;10A&quot;,</text>
-<text text-anchor="middle" x="19884" y="-1464.8025" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;SHIFT_ALT_DOWN = &quot;\x1b[1;10B&quot;,</text>
-<text text-anchor="middle" x="19884" y="-1449.4025" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;SHIFT_ALT_RIGHT = &quot;\x1b[1;10C&quot;,</text>
-<text text-anchor="middle" x="19884" y="-1434.0024" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;SHIFT_ALT_LEFT &#160;= &quot;\x1b[1;10D&quot;,</text>
-<text text-anchor="middle" x="19884" y="-1418.6024" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;SHIFT_TAB &#160;= &quot;\x1b[Z&quot;,</text>
-<text text-anchor="middle" x="19884" y="-1403.2024" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;ALT_TAB &#160;&#160;&#160;= &quot;\x1b\t&quot;,</text>
-<text text-anchor="middle" x="19884" y="-1387.8023" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;NEWLINE &#160;&#160;&#160;= &quot;\n&quot;,</text>
-<text text-anchor="middle" x="19884" y="-1372.4023" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;RETURN &#160;&#160;&#160;&#160;= &quot;\r&quot;,</text>
-<text text-anchor="middle" x="19884" y="-1357.0023" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;TAB &#160;&#160;&#160;&#160;&#160;&#160;&#160;= &quot;\t&quot;,</text>
-<text text-anchor="middle" x="19884" y="-1341.6022" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;BACKSPACE &#160;= &quot;\127&quot;,</text>
-<text text-anchor="middle" x="19884" y="-1326.2022" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;DELETE &#160;&#160;&#160;&#160;= &quot;\x1b[3~&quot;,</text>
-<text text-anchor="middle" x="19884" y="-1310.8022" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;}</text>
+<polygon fill="none" stroke="#c0c0c0" points="20084.5,-1749.3037 19683.5,-1749.3037 19683.5,-1295.1015 20084.5,-1295.1015 20084.5,-1749.3037"/>
+<text text-anchor="middle" x="19884" y="-1734.303" font-family="Inconsolata" font-size="14.00" fill="#000000">local __navigation = { &#160;UP &#160;&#160;&#160;&#160;&#160;&#160;= &quot;\x1b[A&quot;,</text>
+<text text-anchor="middle" x="19884" y="-1718.903" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;DOWN &#160;&#160;&#160;&#160;= &quot;\x1b[B&quot;,</text>
+<text text-anchor="middle" x="19884" y="-1703.503" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;RIGHT &#160;&#160;&#160;= &quot;\x1b[C&quot;,</text>
+<text text-anchor="middle" x="19884" y="-1688.1029" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;LEFT &#160;&#160;&#160;&#160;= &quot;\x1b[D&quot;,</text>
+<text text-anchor="middle" x="19884" y="-1672.7029" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;SHIFT_UP = &quot;\x1b[1;2A&quot;,</text>
+<text text-anchor="middle" x="19884" y="-1657.3029" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;SHIFT_DOWN = &quot;\x1b[1;2B&quot;,</text>
+<text text-anchor="middle" x="19884" y="-1641.9029" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;SHIFT_RIGHT = &quot;\x1b[1;2C&quot;,</text>
+<text text-anchor="middle" x="19884" y="-1626.5028" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;SHIFT_LEFT &#160;= &quot;\x1b[1;2D&quot;,</text>
+<text text-anchor="middle" x="19884" y="-1611.1028" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;HYPER_UP &#160;&#160;&#160;= &quot;\x1b[5~&quot;,</text>
+<text text-anchor="middle" x="19884" y="-1595.7028" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;HYPER_DOWN &#160;= &quot;\x1b[6~&quot;,</text>
+<text text-anchor="middle" x="19884" y="-1580.3027" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;HYPER_RIGHT = &quot;\x1b[F&quot;,</text>
+<text text-anchor="middle" x="19884" y="-1564.9027" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;HYPER_LEFT &#160;= &quot;\x1b[H&quot;,</text>
+<text text-anchor="middle" x="19884" y="-1549.5027" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;ALT_UP &#160;&#160;&#160;= &quot;\x1b\x1b[A&quot;,</text>
+<text text-anchor="middle" x="19884" y="-1534.1026" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;ALT_DOWN &#160;= &quot;\x1b\x1b[B&quot;,</text>
+<text text-anchor="middle" x="19884" y="-1518.7026" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;ALT_RIGHT = &quot;\x1bf&quot;, &#45;&#45; heh</text>
+<text text-anchor="middle" x="19884" y="-1503.3026" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;ALT_LEFT &#160;= &quot;\x1bb&quot;,</text>
+<text text-anchor="middle" x="19884" y="-1487.9025" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;SHIFT_ALT_UP = &quot;\x1b[1;10A&quot;,</text>
+<text text-anchor="middle" x="19884" y="-1472.5025" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;SHIFT_ALT_DOWN = &quot;\x1b[1;10B&quot;,</text>
+<text text-anchor="middle" x="19884" y="-1457.1025" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;SHIFT_ALT_RIGHT = &quot;\x1b[1;10C&quot;,</text>
+<text text-anchor="middle" x="19884" y="-1441.7024" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;SHIFT_ALT_LEFT &#160;= &quot;\x1b[1;10D&quot;,</text>
+<text text-anchor="middle" x="19884" y="-1426.3024" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;SHIFT_TAB &#160;= &quot;\x1b[Z&quot;,</text>
+<text text-anchor="middle" x="19884" y="-1410.9024" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;ALT_TAB &#160;&#160;&#160;= &quot;\x1b\t&quot;,</text>
+<text text-anchor="middle" x="19884" y="-1395.5024" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;NEWLINE &#160;&#160;&#160;= &quot;\n&quot;,</text>
+<text text-anchor="middle" x="19884" y="-1380.1023" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;RETURN &#160;&#160;&#160;&#160;= &quot;\r&quot;,</text>
+<text text-anchor="middle" x="19884" y="-1364.7023" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;TAB &#160;&#160;&#160;&#160;&#160;&#160;&#160;= &quot;\t&quot;,</text>
+<text text-anchor="middle" x="19884" y="-1349.3023" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;BACKSPACE &#160;= &quot;\127&quot;,</text>
+<text text-anchor="middle" x="19884" y="-1333.9022" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;DELETE &#160;&#160;&#160;&#160;= &quot;\x1b[3~&quot;,</text>
+<text text-anchor="middle" x="19884" y="-1318.5022" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;ESC &#160;&#160;&#160;&#160;&#160;&#160;&#160;= &quot;\x1b&quot;,</text>
+<text text-anchor="middle" x="19884" y="-1303.1022" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;}</text>
 </g>
 <!-- codeblock_302&#45;&gt;leaf_320 -->
 <g id="edge320" class="edge">
 <title>codeblock_302&#45;&gt;leaf_320</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M19830.7842,-2756.4175C19835.4697,-2647.7488 19860.0364,-2077.9825 19874.096,-1751.9019"/>
-<polygon fill="#000000" stroke="#000000" points="19877.5955,-1751.9879 19874.5296,-1741.8464 19870.602,-1751.6863 19877.5955,-1751.9879"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M19830.7842,-2756.4175C19835.4328,-2648.6048 19859.6506,-2086.9297 19873.7619,-1759.6522"/>
+<polygon fill="#000000" stroke="#000000" points="19877.263,-1759.698 19874.1971,-1749.5565 19870.2695,-1759.3964 19877.263,-1759.698"/>
 </g>
 <!-- raw_321 -->
 <g id="node322" class="node">
@@ -4438,7 +4439,7 @@
 <g id="node339" class="node">
 <title>codeblock_338</title>
 <ellipse fill="none" stroke="#000000" cx="22135" cy="-1522.2026" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="22135" y="-1518.0026" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 709&#45;730</text>
+<text text-anchor="middle" x="22135" y="-1518.0026" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 710&#45;731</text>
 </g>
 <!-- section_331&#45;&gt;codeblock_338 -->
 <g id="edge338" class="edge">
@@ -4450,7 +4451,7 @@
 <g id="node340" class="node">
 <title>codeblock_339</title>
 <ellipse fill="none" stroke="#000000" cx="22414" cy="-1522.2026" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="22414" y="-1518.0026" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 732&#45;734</text>
+<text text-anchor="middle" x="22414" y="-1518.0026" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 733&#45;735</text>
 </g>
 <!-- section_331&#45;&gt;codeblock_339 -->
 <g id="edge339" class="edge">

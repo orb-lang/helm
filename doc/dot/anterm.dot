@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 765"]
+doc_0 [label="doc - 766"]
 
 
 doc_0 -> { section_1}
@@ -39,7 +39,7 @@ section_11 [label="section: 299-359"]
 
 section_12 [label="section: 360-419"]
 
-section_13 [label="section: 454-695"]
+section_13 [label="section: 454-696"]
 
 
 // END RANK section_1
@@ -1199,9 +1199,9 @@ section_204 [label="section: 558-563"]
 
 section_205 [label="section: 575-587"]
 
-section_206 [label="section: 639-695"]
+section_206 [label="section: 639-696"]
 
-section_207 [label="section: 696-704"]
+section_207 [label="section: 697-705"]
 
 
 // END RANK section_13
@@ -1739,11 +1739,11 @@ prose_300 [label="prose"]
 
 prose_301 [label="prose"]
 
-codeblock_302 [label="code block 648-677"]
+codeblock_302 [label="code block 648-678"]
 
 prose_303 [label="prose"]
 
-codeblock_304 [label="code block 681-687"]
+codeblock_304 [label="code block 682-688"]
 
 prose_305 [label="prose"]
 
@@ -1844,6 +1844,7 @@ leaf_320  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local __naviga
                         TAB        = \"\\t\",
                         BACKSPACE  = \"\\127\",
                         DELETE     = \"\\x1b[3~\",
+                        ESC        = \"\\x1b\",
                      }"]
 // END RANK codeblock_302
 
@@ -1906,9 +1907,9 @@ header_328 [label="3 : #todo function keys"]
 
 prose_329 [label="prose"]
 
-codeblock_330 [label="code block 700-702"]
+codeblock_330 [label="code block 701-703"]
 
-section_331 [label="section: 705-765"]
+section_331 [label="section: 706-766"]
 
 
 // END RANK section_207
@@ -1943,9 +1944,9 @@ header_336 [label="4 : flip"]
 
 prose_337 [label="prose"]
 
-codeblock_338 [label="code block 709-730"]
+codeblock_338 [label="code block 710-731"]
 
-codeblock_339 [label="code block 732-734"]
+codeblock_339 [label="code block 733-735"]
 
 
 // END RANK section_331

@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 631"]
+doc_0 [label="doc - 642"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-578"]
+section_1 [label="section: 1-587"]
 
 
 // END RANK doc_0
@@ -23,11 +23,11 @@ prose_3 [label="prose"]
 
 prose_4 [label="prose"]
 
-section_5 [label="section: 12-356"]
+section_5 [label="section: 12-358"]
 
-section_6 [label="section: 421-505"]
+section_6 [label="section: 425-514"]
 
-section_7 [label="section: 579-631"]
+section_7 [label="section: 588-642"]
 
 
 // END RANK section_1
@@ -174,21 +174,21 @@ prose_52 [label="prose"]
 
 section_53 [label="section: 84-95"]
 
-section_54 [label="section: 96-170"]
+section_54 [label="section: 96-172"]
 
-section_55 [label="section: 171-181"]
+section_55 [label="section: 173-183"]
 
-section_56 [label="section: 182-250"]
+section_56 [label="section: 184-252"]
 
-section_57 [label="section: 274-286"]
+section_57 [label="section: 276-288"]
 
-section_58 [label="section: 287-301"]
+section_58 [label="section: 289-303"]
 
-section_59 [label="section: 302-310"]
+section_59 [label="section: 304-312"]
 
-section_60 [label="section: 311-340"]
+section_60 [label="section: 313-342"]
 
-section_61 [label="section: 357-400"]
+section_61 [label="section: 359-402"]
 
 
 // END RANK section_5
@@ -1105,9 +1105,9 @@ prose_303 [label="prose"]
 
 prose_304 [label="prose"]
 
-codeblock_305 [label="code block 102-117"]
+codeblock_305 [label="code block 102-119"]
 
-codeblock_306 [label="code block 119-121"]
+codeblock_306 [label="code block 121-123"]
 
 prose_307 [label="prose"]
 
@@ -1119,19 +1119,19 @@ prose_310 [label="prose"]
 
 prose_311 [label="prose"]
 
-codeblock_312 [label="code block 144-146"]
+codeblock_312 [label="code block 146-148"]
 
 prose_313 [label="prose"]
 
-codeblock_314 [label="code block 150-152"]
+codeblock_314 [label="code block 152-154"]
 
 prose_315 [label="prose"]
 
-codeblock_316 [label="code block 157-159"]
+codeblock_316 [label="code block 159-161"]
 
 prose_317 [label="prose"]
 
-codeblock_318 [label="code block 164-168"]
+codeblock_318 [label="code block 166-170"]
 
 
 // END RANK section_54
@@ -1185,8 +1185,10 @@ leaf_328  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local stacktra
 
 local Txtbuf    = require \"txtbuf\"
 local Resbuf    = require \"resbuf\" -- Not currently used...
+local Rainbuf   = require \"rainbuf\"
 local Historian = require \"historian\"
 local Lex       = require \"lex\"
+local Zoneherd  = require \"zone\"
 
 local Nerf   = require \"nerf\"
 local Search = require \"search\"
@@ -1467,7 +1469,7 @@ header_390 [label="3 : self-insert(modeS, category, value)"]
 
 prose_391 [label="prose"]
 
-codeblock_392 [label="code block 175-179"]
+codeblock_392 [label="code block 177-181"]
 
 
 // END RANK section_55
@@ -1506,9 +1508,9 @@ prose_398 [label="prose"]
 
 prose_399 [label="prose"]
 
-section_400 [label="section: 189-250"]
+section_400 [label="section: 191-252"]
 
-section_401 [label="section: 251-273"]
+section_401 [label="section: 253-275"]
 
 
 // END RANK section_56
@@ -1558,7 +1560,7 @@ prose_409 [label="prose"]
 
 prose_410 [label="prose"]
 
-codeblock_411 [label="code block 198-249"]
+codeblock_411 [label="code block 200-251"]
 
 
 // END RANK section_400
@@ -1673,11 +1675,11 @@ prose_421 [label="prose"]
 
 prose_422 [label="prose"]
 
-codeblock_423 [label="code block 259-263"]
+codeblock_423 [label="code block 261-265"]
 
 structure_424 [label="structure"]
 
-codeblock_425 [label="code block 268-272"]
+codeblock_425 [label="code block 270-274"]
 
 
 // END RANK section_401
@@ -1827,7 +1829,7 @@ header_460 [label="3 : ModeS:placeCursor()"]
 
 prose_461 [label="prose"]
 
-codeblock_462 [label="code block 278-284"]
+codeblock_462 [label="code block 280-286"]
 
 
 // END RANK section_57
@@ -1886,7 +1888,7 @@ prose_474 [label="prose"]
 
 prose_475 [label="prose"]
 
-codeblock_476 [label="code block 294-299"]
+codeblock_476 [label="code block 296-301"]
 
 
 // END RANK section_58
@@ -1986,7 +1988,7 @@ header_499 [label="3 : ModeS:reflow()"]
 
 prose_500 [label="prose"]
 
-codeblock_501 [label="code block 304-309"]
+codeblock_501 [label="code block 306-311"]
 
 
 // END RANK section_59
@@ -2024,7 +2026,7 @@ prose_507 [label="prose"]
 
 prose_508 [label="prose"]
 
-codeblock_509 [label="code block 317-320"]
+codeblock_509 [label="code block 319-322"]
 
 prose_510 [label="prose"]
 
@@ -2038,7 +2040,7 @@ prose_514 [label="prose"]
 
 prose_515 [label="prose"]
 
-section_516 [label="section: 341-356"]
+section_516 [label="section: 343-358"]
 
 
 // END RANK section_60
@@ -2359,9 +2361,9 @@ header_595 [label="4 : Prompts"]
 
 prose_596 [label="prose"]
 
-codeblock_597 [label="code block 345-348"]
+codeblock_597 [label="code block 347-350"]
 
-codeblock_598 [label="code block 350-354"]
+codeblock_598 [label="code block 352-356"]
 
 
 // END RANK section_516
@@ -2407,9 +2409,9 @@ prose_606 [label="prose"]
 
 prose_607 [label="prose"]
 
-section_608 [label="section: 368-400"]
+section_608 [label="section: 370-402"]
 
-section_609 [label="section: 401-420"]
+section_609 [label="section: 403-424"]
 
 
 // END RANK section_61
@@ -2535,7 +2537,7 @@ header_639 [label="4 : ModeS.closet"]
 
 prose_640 [label="prose"]
 
-codeblock_641 [label="code block 373-399"]
+codeblock_641 [label="code block 375-401"]
 
 
 // END RANK section_608
@@ -2595,7 +2597,7 @@ header_646 [label="4 : _firstCharHandler"]
 
 prose_647 [label="prose"]
 
-codeblock_648 [label="code block 406-418"]
+codeblock_648 [label="code block 408-422"]
 
 
 // END RANK section_609
@@ -2646,7 +2648,9 @@ leaf_658  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function
          shifted = true
       end
    end
-   modeS.firstChar = false
+   if not category == \"NAV\" then
+     modeS.firstChar = false
+   end
    return shifted
 end"]
 // END RANK codeblock_648
@@ -2662,15 +2666,15 @@ prose_661 [label="prose"]
 
 prose_662 [label="prose"]
 
-codeblock_663 [label="code block 434-486"]
+codeblock_663 [label="code block 438-495"]
 
 prose_664 [label="prose"]
 
-codeblock_665 [label="code block 490-494"]
+codeblock_665 [label="code block 499-503"]
 
-section_666 [label="section: 497-505"]
+section_666 [label="section: 506-514"]
 
-section_667 [label="section: 506-578"]
+section_667 [label="section: 515-587"]
 
 
 // END RANK section_6
@@ -2836,7 +2840,7 @@ function ModeS.act(modeS, category, value)
    end
    local icon = _make_icon(category, value)
    -- Special first-character handling
-   if modeS.firstChar and not (category == \"MOUSE\") then
+   if modeS.firstChar and not (category == \"MOUSE\" or category == \"NAV\") then
       modeS.zones.results:replace \"\"
       local shifted = _firstCharHandler(modeS, category, value)
       if shifted then
@@ -2844,7 +2848,8 @@ function ModeS.act(modeS, category, value)
       end
    end
    -- Dispatch on value if possible
-   if modeS.modes[category][value] then
+   if type(modeS.modes[category]) == \"table\"
+      and modeS.modes[category][value] then
       modeS.modes[category][value](modeS, category, value)
 
    -- otherwise fall back:
@@ -2859,6 +2864,9 @@ function ModeS.act(modeS, category, value)
       end
    elseif category == \"MOUSE\" then
       -- do mouse stuff
+      if modeS.modes.MOUSE then
+         modeS.modes.MOUSE(modeS, category, value)
+      end
    else
       icon = _make_icon(\"NYI\", category .. \":\" .. value)
    end
@@ -2866,7 +2874,7 @@ function ModeS.act(modeS, category, value)
    ::final::
    if modeS.raga == \"search\" then
       -- we need to fake this into a 'result'
-      local searchResult = {}
+      local searchResult = Rainbuf()
       searchResult[1] = modeS.hist:search(tostring(modeS.txtbuf))
       searchResult.n = 1
       modeS.zones.results:replace(searchResult)
@@ -2874,6 +2882,7 @@ function ModeS.act(modeS, category, value)
    -- Replace zones
    modeS.zones.stat_col:replace(icon)
    modeS.zones.command:replace(modeS.txtbuf)
+   modeS.zones:adjustCommand()
    modeS:paint()
    collectgarbage()
 end"]
@@ -2972,11 +2981,11 @@ header_727 [label="3 : ModeS:eval()"]
 
 prose_728 [label="prose"]
 
-codeblock_729 [label="code block 509-514"]
+codeblock_729 [label="code block 518-523"]
 
-codeblock_730 [label="code block 516-520"]
+codeblock_730 [label="code block 525-529"]
 
-codeblock_731 [label="code block 522-576"]
+codeblock_731 [label="code block 531-585"]
 
 
 // END RANK section_667
@@ -3031,11 +3040,12 @@ leaf_737  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS
       end -- more special REPL prefix soon: /, ?, >(?)
    end
    if f then
-      success, results = gatherResults(xpcall(f, stacktrace))
+      success, results = gatherResults(xpcall(f, debug.traceback))
       if success then
       -- successful call
          if results.n > 0 then
-            modeS.zones.results:replace(results)
+            local rb = Rainbuf(results)
+            modeS.zones.results:replace(rb)
          else
             modeS.zones.results:replace \"\"
          end
@@ -3049,12 +3059,11 @@ leaf_737  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS
       if err:match \"'<eof>'$\" then
          -- Lua expects some more input, advance the txtbuf
          modeS.txtbuf:advance()
-         modeS.zones:adjustCommand()
-         write(a.col(1) .. \"...\")
+         write(a.colrow(1, modeS.repl_top + 1) .. \"...\")
          return true
       else
          local to_err = { err.. \"\\n\" .. stacktrace(),
-                          [n] = 1,
+                          n = 1,
                           frozen = true}
          modeS.zones.results:replace(to_err)
          -- pass through to default.
@@ -3064,7 +3073,7 @@ leaf_737  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS
    modeS.hist:append(modeS.txtbuf, results, success)
    modeS.hist.cursor = #modeS.hist
    if success then modeS.hist.results[modeS.txtbuf] = results end
-   modeS:prompt()
+   -- modeS:prompt()
 end"]
 // END RANK codeblock_731
 
@@ -3075,9 +3084,9 @@ header_738 [label="2 : new"]
 
 prose_739 [label="prose"]
 
-codeblock_740 [label="code block 583-603"]
+codeblock_740 [label="code block 591-614"]
 
-codeblock_741 [label="code block 605-607"]
+codeblock_741 [label="code block 616-618"]
 
 
 // END RANK section_7
@@ -3086,41 +3095,22 @@ header_738 -> leaf_742
 leaf_742  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** new"]
 // END RANK header_738
 
-prose_739 -> { raw_743 prespace_744 literal_745 raw_746}
-{rank=same; raw_743 prespace_744 literal_745 raw_746}
+prose_739 -> { raw_743}
+{rank=same; raw_743}
 
 raw_743 [label="raw"]
-
-prespace_744 [label="prespace"]
-
-literal_745 [label="literal"]
-
-raw_746 [label="raw"]
 
 
 // END RANK prose_739
 
-raw_743 -> leaf_747
-leaf_747  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_743 -> leaf_744
+leaf_744  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
-This should be configurable via"]
+"]
 // END RANK raw_743
 
-prespace_744 -> leaf_748
-leaf_748  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_744
-
-literal_745 -> leaf_749
-leaf_749  [color=Gray,shape=rectangle,fontname=Inconsolata,label="cfg"]
-// END RANK literal_745
-
-raw_746 -> leaf_750
-leaf_750  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
-"]
-// END RANK raw_746
-
-codeblock_740 -> leaf_751
-leaf_751  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function new(max_col, max_row)
+codeblock_740 -> leaf_745
+leaf_745  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function new(max_col, max_row)
   local modeS = meta(ModeS)
   modeS.txtbuf = Txtbuf()
   modeS.hist  = Historian()
@@ -3133,6 +3123,9 @@ leaf_751  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function new(m
   modeS.r_margin = 80
   modeS.row = 2
   modeS.repl_top  = ModeS.REPL_LINE
+  modeS.zones = Zoneherd(modeS, write)
+  modeS.zones.status:replace \"an repl, plz reply uwu 👀\"
+  modeS.zones.prompt:replace \"👉  \"
   -- initial state
   modeS.firstChar = true
   return modeS
@@ -3141,8 +3134,8 @@ end
 ModeS.idEst = new"]
 // END RANK codeblock_740
 
-codeblock_741 -> leaf_752
-leaf_752  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return new"]
+codeblock_741 -> leaf_746
+leaf_746  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return new"]
 // END RANK codeblock_741
 
 

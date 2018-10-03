@@ -200,28 +200,6 @@ uv.timer_start(timer, 500, 500, function()
    end
 end)
 ```
-## Zoneherd
-
-We instantiate this after the Modeselektor, rather than within it, because
-setup uses the tty dimensions.
-
-
-It might be better to pass those as parameters to the ``modeS`` and move
-``require "zone"`` accordingly.
-
-```lua
-
-local Zoneherd = require "zone"
-
-modeS.zones = Zoneherd(modeS, write)
-modeS.zones.status:replace "an repl, plz reply uwu 👀"
-modeS.zones.prompt:replace "👉  "
-```
-#### Zoneherd:start()
-
-This is intended as a shim to start migrating screen painting to the
-Zoneherder
-
 ## Reader
 
 The reader takes a stream of data from ``stdin``, asynchronously, and
@@ -231,16 +209,13 @@ processes it into tokens, which stream to the ``modeselektor``.
 ### process_escapes(seq)
 
 ```lua
-
-local byte, sub = string.byte, string.sub
+local byte, sub, codepoints = string.byte, string.sub, string.codepoints
 local m_parse, is_mouse = a.mouse.parse_fast, a.mouse.ismousemove
 local navigation, is_nav = a.navigation, a.is_nav
 
 local function process_escapes(seq)
    if is_nav(seq) then
-      return modeS("NAV", navigation[seq] )
-   elseif #seq == 1 then
-      modeS("NAV", "ESC") -- I think of escape as navigation in modal systems
+      return modeS("NAV", navigation[seq])
    end
    if is_mouse(seq) then
       local m = m_parse(seq)
@@ -253,8 +228,6 @@ local function process_escapes(seq)
       return modeS("NYI", seq)
    end
 end
-
-local navigation = a.navigation
 
 local function onseq(err,seq)
    if err then error(err) end
@@ -279,9 +252,15 @@ local function onseq(err,seq)
    end
    -- Printables
    if head > 31 and head < 127 then
-      -- This also includes pastes, and I should probably
-      -- signal the distinction at some point
-      return modeS("ASCII", seq)
+      if #seq > 1 then
+         -- break it up and feed it
+         local points = codepoints(seq)
+         for _, pt in ipairs(points) do
+            onseq(nil, pt)
+         end
+      else
+         return modeS("ASCII", seq)
+      end
    else
       -- wchars go here
       return modeS("NYI", seq)

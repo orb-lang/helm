@@ -3,19 +3,19 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 73"]
+doc_0 [label="doc - 90"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-61"]
+section_1 [label="section: 1-90"]
 
 
 // END RANK doc_0
 
-section_1 -> { header_2 prose_3 codeblock_4 codeblock_5 codeblock_6 codeblock_7 section_8}
-{rank=same; header_2 prose_3 codeblock_4 codeblock_5 codeblock_6 codeblock_7 section_8}
+section_1 -> { header_2 prose_3 codeblock_4 codeblock_5 codeblock_6 codeblock_7 codeblock_8 codeblock_9 codeblock_10 codeblock_11}
+{rank=same; header_2 prose_3 codeblock_4 codeblock_5 codeblock_6 codeblock_7 codeblock_8 codeblock_9 codeblock_10 codeblock_11}
 
 header_2 [label="1 : Search"]
 
@@ -23,68 +23,75 @@ prose_3 [label="prose"]
 
 codeblock_4 [label="code block 7-9"]
 
-codeblock_5 [label="code block 11-15"]
+codeblock_5 [label="code block 11-16"]
 
-codeblock_6 [label="code block 18-35"]
+codeblock_6 [label="code block 19-36"]
 
-codeblock_7 [label="code block 37-59"]
+codeblock_7 [label="code block 38-46"]
 
-section_8 [label="section: 62-73"]
+codeblock_8 [label="code block 48-56"]
+
+codeblock_9 [label="code block 58-62"]
+
+codeblock_10 [label="code block 64-86"]
+
+codeblock_11 [label="code block 88-90"]
 
 
 // END RANK section_1
 
-header_2 -> leaf_9
-leaf_9  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Search"]
+header_2 -> leaf_12
+leaf_12  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Search"]
 // END RANK header_2
 
-prose_3 -> { raw_10 prespace_11 literal_12 raw_13}
-{rank=same; raw_10 prespace_11 literal_12 raw_13}
-
-raw_10 [label="raw"]
-
-prespace_11 [label="prespace"]
-
-literal_12 [label="literal"]
+prose_3 -> { raw_13 prespace_14 literal_15 raw_16}
+{rank=same; raw_13 prespace_14 literal_15 raw_16}
 
 raw_13 [label="raw"]
+
+prespace_14 [label="prespace"]
+
+literal_15 [label="literal"]
+
+raw_16 [label="raw"]
 
 
 // END RANK prose_3
 
-raw_10 -> leaf_14
-leaf_14  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_13 -> leaf_17
+leaf_17  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 
 A light wrapper over"]
-// END RANK raw_10
-
-prespace_11 -> leaf_15
-leaf_15  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_11
-
-literal_12 -> leaf_16
-leaf_16  [color=Gray,shape=rectangle,fontname=Inconsolata,label="nerf"]
-// END RANK literal_12
-
-raw_13 -> leaf_17
-leaf_17  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
-
-"]
 // END RANK raw_13
 
-codeblock_4 -> leaf_18
-leaf_18  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local clone = assert(table.clone, \"requires table.clone\")"]
+prespace_14 -> leaf_18
+leaf_18  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_14
+
+literal_15 -> leaf_19
+leaf_19  [color=Gray,shape=rectangle,fontname=Inconsolata,label="nerf"]
+// END RANK literal_15
+
+raw_16 -> leaf_20
+leaf_20  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
+
+"]
+// END RANK raw_16
+
+codeblock_4 -> leaf_21
+leaf_21  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local clone = assert(table.clone, \"requires table.clone\")"]
 // END RANK codeblock_4
 
-codeblock_5 -> leaf_19
-leaf_19  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Nerf = require \"nerf\"
+codeblock_5 -> leaf_22
+leaf_22  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Nerf = require \"nerf\"
+local Rainbuf = require \"rainbuf\"
 
 local Search = clone(Nerf, 3)"]
 // END RANK codeblock_5
 
-codeblock_6 -> leaf_20
-leaf_20  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Search.NAV.RETURN(modeS, category, value)
+codeblock_6 -> leaf_23
+leaf_23  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Search.NAV.RETURN(modeS, category, value)
    local searchResult = modeS.hist:search(tostring(modeS.txtbuf))
    if #searchResult > 0 then
       local result
@@ -93,7 +100,7 @@ leaf_20  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Search
       if not result then
          result = {n=1}
       end
-      modeS.zones.results:replace(result)
+      modeS.zones.results:replace(Rainbuf(result))
       modeS:shiftMode(modeS.raga_default)
    else
       modeS:shiftMode(modeS.raga_default)
@@ -102,8 +109,34 @@ leaf_20  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Search
 end"]
 // END RANK codeblock_6
 
-codeblock_7 -> leaf_21
-leaf_21  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function _makeControl(num)
+codeblock_7 -> leaf_24
+leaf_24  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Search.NAV.SHIFT_DOWN(modeS, category, value)
+   local search_result = modeS.hist.last_collection
+   if not search_result then return end
+   if search_result.hl < #search_result then
+      search_result.hl = search_result.hl + 1
+   end
+end"]
+// END RANK codeblock_7
+
+codeblock_8 -> leaf_25
+leaf_25  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Search.NAV.SHIFT_UP(modeS, category, value)
+   local search_result = modeS.hist.last_collection
+   if not search_result then return end
+   if search_result.hl > 1 then
+      search_result.hl = search_result.hl - 1
+   end
+end"]
+// END RANK codeblock_8
+
+codeblock_9 -> leaf_26
+leaf_26  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Search.NAV.UP = Search.NAV.SHIFT_UP
+Search.NAV.DOWN = Search.NAV.SHIFT_DOWN
+"]
+// END RANK codeblock_9
+
+codeblock_10 -> leaf_27
+leaf_27  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function _makeControl(num)
     return function(modeS, category, value)
        local searchResult = modeS.hist:search(tostring(modeS.txtbuf))
        if #searchResult > 0 then
@@ -112,7 +145,7 @@ leaf_21  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function 
           if not result then
              result = {n=1}
           end
-          modeS.zones.results:replace(result)
+          modeS.zones.results:replace(Rainbuf(result))
           modeS:shiftMode(modeS.raga_default)
        else
           modeS:shiftMode(modeS.raga_default)
@@ -124,49 +157,11 @@ end
 for i = 1, 9 do
    Search.ALT[\"M-\" ..tostring(i)] = _makeControl(i)
 end"]
-// END RANK codeblock_7
+// END RANK codeblock_10
 
-section_8 -> { header_22 prose_23 codeblock_24 codeblock_25}
-{rank=same; header_22 prose_23 codeblock_24 codeblock_25}
-
-header_22 [label="3 : UP and DOWN"]
-
-prose_23 [label="prose"]
-
-codeblock_24 [label="code block 66-69"]
-
-codeblock_25 [label="code block 71-73"]
-
-
-// END RANK section_8
-
-header_22 -> leaf_26
-leaf_26  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** UP and DOWN"]
-// END RANK header_22
-
-prose_23 -> { raw_27}
-{rank=same; raw_27}
-
-raw_27 [label="raw"]
-
-
-// END RANK prose_23
-
-raw_27 -> leaf_28
-leaf_28  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-
-Disabled for now, intended to choose among options
-"]
-// END RANK raw_27
-
-codeblock_24 -> leaf_29
-leaf_29  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Search.NAV.UP = nil
-Search.NAV.DOWN = nil"]
-// END RANK codeblock_24
-
-codeblock_25 -> leaf_30
-leaf_30  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return Search"]
-// END RANK codeblock_25
+codeblock_11 -> leaf_28
+leaf_28  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return Search"]
+// END RANK codeblock_11
 
 
 }

@@ -80,7 +80,7 @@ end
 
 
 local t_insert, splice = assert(table.insert), assert(table.splice)
-local utf8, codepoints = string.utf8, string.codepoints
+local utf8, codepoints, gsub = string.utf8, string.codepoints, string.gsub
 
 function Txtbuf.insert(txtbuf, frag)
    local line = txtbuf.lines[txtbuf.cur_row]
