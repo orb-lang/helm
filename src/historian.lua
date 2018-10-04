@@ -116,7 +116,7 @@ local get_results = [[
 SELECT result.repr
 FROM result
 WHERE result.line_id = :line_id
-ORDER BY result.result_id DESC;
+ORDER BY result.result_id;
 ]]
 
 local home_dir = io.popen("echo $HOME", "r"):read("*a"):sub(1, -2)
@@ -255,10 +255,11 @@ function Historian.persist(historian, txtbuf, results)
       local line_id = sql.lastRowId(historian.conn)
       table.insert(historian.line_ids, line_id)
       if results and type(results) == "table" then
-         for _,v in ipairs(reverse(results)) do
+         for i = 1, results.n do
             -- insert result repr
+            local res = results[i]
             historian.insert_result:bindkv { line_id = line_id,
-                                                  repr = color.ts(v) }
+                                                  repr = color.ts(res) }
             err = historian.insert_result:step()
             if not err then
                historian.insert_result:clearbind():reset()
