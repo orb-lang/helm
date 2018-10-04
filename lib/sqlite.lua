@@ -579,6 +579,20 @@ function stmt_mt:step(row, header) T_open(self)
   return self:_step(row, header)
 end
 
+
+-- iterator for rows
+function stmt_mt:rows() T_open(self)
+  return function()
+    local row = self:step()
+    if row then
+      return row
+    else
+      self:clearbind():reset()
+      return nil
+    end
+  end
+end
+
 function stmt_mt:resultset(get, maxrecords) T_open(self)
   get = get or "hik"
   maxrecords = maxrecords or math.huge
