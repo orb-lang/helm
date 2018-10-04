@@ -112,14 +112,11 @@ SELECT project_id FROM project
    WHERE directory = %s;
 ]]
 
-local get_reprs = [[
-SELECT CAST (repl.line_id AS REAL), result.repr
-FROM repl
-LEFT OUTER JOIN result
-ON repl.line_id = result.line_id
-WHERE repl.project = %d
-ORDER BY result.result_id
-DESC LIMIT %d;
+local get_results = [[
+SELECT result.repr
+FROM result
+WHERE result.line_id = :line_id
+ORDER BY result.result_id DESC;
 ]]
 
 local home_dir = io.popen("echo $HOME", "r"):read("*a"):sub(1, -2)
@@ -187,16 +184,16 @@ function Historian.load(historian)
    -- Create insert prepared statements
    historian.insert_line = conn:prepare(insert_line)
    historian.insert_result = conn:prepare(insert_result)
+   -- Create result retrieval prepared statement
+   historian.get_results = conn:prepare(get_results)
    -- Retrieve history
    local pop_str = sql.format(get_recent, project_id,
                         historian.HISTORY_LIMIT)
-   local repl_val, repl_row = sql.pexec(conn, pop_str, "i")
-   local res_str = sql.format(get_reprs, project_id,
-                       historian.HISTORY_LIMIT * 2)
-   local res_val, res_row = sql.pexec(conn, res_str, "i")
-   if repl_val and res_val then
+   local repl_val  = sql.pexec(conn, pop_str, "i")
+   if repl_val then
       local lines = reverse(repl_val[2])
       local line_ids = reverse(repl_val[1])
+      historian.line_ids = line_ids
       local repl_map = {}
       for i, v in ipairs(lines) do
          local buf = Txtbuf(v)
@@ -204,21 +201,6 @@ function Historian.load(historian)
          repl_map[line_ids[i]] = buf
       end
       historian.cursor = #historian
-      -- reuse line_id var for foreign keys
-      line_ids = res_val[1]
-      local reprs = res_val[2]
-      -- This is keyed by txtbuf with a string value.
-      local result_map = {}
-      for i = 1, #reprs do
-         local buf = repl_map[line_ids[i]]
-         if buf then
-            local result = result_map[buf] or {frozen = true}
-            result[#result + 1] = reprs[i]
-            result.n = #result -- for compat with nil in live use
-            result_map[buf] = result
-         end
-      end
-      historian.results = result_map
    else
       historian.results = {}
       historian.cursor = 0
@@ -246,6 +228,10 @@ The hooks are in place to persist the results. I'm starting with a string
 representation; the goal is to provide the sense of persistence across
 sessions, and supplement that over time with better and better approximations.
 
+#todo storing the colorized results is lazy and they should be greyed-out in
+any case to show that they're frozen.  Switch to a line-by-line persistence
+strategy, in plain text.
+
 To really nail it down will require semantic analysis and hence thorough
 parsing.  General-purpose persistence tools belong in =sqlayer=, which will
 merge with our increasingly-modified =sqlite= bindings.
@@ -267,6 +253,7 @@ function Historian.persist(historian, txtbuf, results)
          error(err)
       end
       local line_id = sql.lastRowId(historian.conn)
+      table.insert(historian.line_ids, line_id)
       if results and type(results) == "table" then
          for _,v in ipairs(reverse(results)) do
             -- insert result repr
@@ -403,7 +390,11 @@ The other fields are:
   -  best :  Whether this is a best-fit collection, that is, one with all
              codepoints in order.
 
-  -  frag :  The fragment, used to highlight the collection
+  -  frag :  The fragment, used to highlight the collection.  Is transposed
+             in a next-best search.
+
+  -  lit_frag :  The literal fragment passed as the =frag= parameter.  Used to
+                 compare to the last search.
 
   -  cursors :  This is an array, each value is the cursor position of
                 the corresponding line in the history.
@@ -412,6 +403,7 @@ The other fields are:
 function Historian.search(historian, frag)
    if historian.last_collection
       and historian.last_collection.lit_frag == frag then
+      -- don't repeat a search
       return historian.last_collection
    end
    local collection = setmeta({}, collect_M)
@@ -454,6 +446,26 @@ end
 #/lua
 
 
+**** _resultsFrom(historian, line_id)
+
+Retrieve a set of results reprs from the database, given a line_id.
+
+#!lua
+local function _resultsFrom(historian, line_id)
+   local stmt = historian.get_results
+   stmt:bindkv {line_id = line_id}
+   local results = stmt:resultset()
+   if results then
+      results = results[1]
+      results.n = #results
+      results.frozen = true
+   end
+   historian.get_results:clearbind():reset()
+   return results
+end
+#/lua
+
+
 ** Historian:prev()
 
 #!lua
@@ -461,11 +473,12 @@ function Historian.prev(historian)
    if historian.cursor == 0 or #historian == 0 then
       return Txtbuf()
    end
-   local Δ = historian.cursor > 1 and 1 or 0
-   local txtbuf = historian[historian.cursor - Δ]
+   local Δ = historian.cursor > 1 and historian.cursor - 1 or historian.cursor
+   local txtbuf = historian[Δ]
    txtbuf.cur_row = 1
-   local result = historian.results[txtbuf]
-   historian.cursor = historian.cursor - Δ
+   local result = _resultsFrom(historian, historian.line_ids[Δ])
+   --local result = historian.results[txtbuf]
+   historian.cursor = Δ
    txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
    return txtbuf:clone(), result
 end
@@ -480,19 +493,22 @@ Returns the next txtbuf in history, and a second flag to tell the
 
 #!lua
 function Historian.next(historian)
-   local Δ = historian.cursor < #historian and 1 or 0
+   local Δ = historian.cursor < #historian
+             and historian.cursor + 1
+             or  historian.cursor
+   local fwd = historian.cursor >= #historian
    if historian.cursor == 0 or #historian == 0 then
       return Txtbuf()
    end
-   local txtbuf = historian[historian.cursor + Δ]
+   local txtbuf = historian[Δ]
    if not txtbuf then
       return Txtbuf(), nil, true
    end
    txtbuf.cur_row = #txtbuf.lines
-   local result = historian.results[txtbuf]
-   historian.cursor = historian.cursor + Δ
+   local result = _resultsFrom(historian, historian.line_ids[Δ])
+   historian.cursor = Δ
    txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
-   if not (Δ > 0) and #txtbuf.lines > 0 then
+   if fwd and #txtbuf.lines > 0 then
       historian.cursor = #historian + 1
       return txtbuf:clone(), nil, true
    else
@@ -512,7 +528,7 @@ function Historian.index(historian, cursor)
       return Txtbuf()
    end
    local txtbuf = historian[cursor]
-   local result = historian.results[txtbuf]
+   local result = _resultsFrom(historian, historian.line_ids[cursor])
    txtbuf = txtbuf:clone()
    historian.cursor = cursor
    txtbuf.cur_row = #txtbuf.lines

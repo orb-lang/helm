@@ -579,7 +579,6 @@ function ModeS.eval(modeS)
 
    modeS.hist:append(modeS.txtbuf, results, success)
    modeS.hist.cursor = #modeS.hist
-   if success then modeS.hist.results[modeS.txtbuf] = results end
    -- modeS:prompt()
 end
 
