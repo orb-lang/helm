@@ -411,11 +411,12 @@ local collect_M = {__repr = _collect_repr}
 
 function Historian.search(historian, frag)
    if historian.last_collection
-      and historian.last_collection.frag == frag then
+      and historian.last_collection.lit_frag == frag then
       return historian.last_collection
    end
    local collection = setmeta({}, collect_M)
    collection.frag = frag
+   collection.lit_frag = frag
    if frag == "" then
       return collection, false
    end

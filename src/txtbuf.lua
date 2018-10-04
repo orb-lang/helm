@@ -84,12 +84,14 @@ local utf8, codepoints, gsub = string.utf8, string.codepoints, string.gsub
 
 local _frag_sub = { ["("] = {"(", ")"},
                     ['"'] = {'"', '"'},
+                    ["'"] = {"'", "'"},
                     ["{"] = {"{", "}"},
                     ["["] = {"[", "]"} }
 
 local _no_double = { ['"'] = true,
                      [")"] = true,
-                     ["}"] = true, }
+                     ["}"] = true,
+                     ["'"] = true }
 
 local function _no_skip(line, cursor, frag)
    if frag == line[cursor] then
