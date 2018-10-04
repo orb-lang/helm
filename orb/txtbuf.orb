@@ -87,6 +87,18 @@ local _frag_sub = { ["("] = {"(", ")"},
                     ["{"] = {"{", "}"},
                     ["["] = {"[", "]"} }
 
+local _no_double = { ['"'] = true,
+                     [")"] = true,
+                     ["}"] = true, }
+
+local function _no_skip(line, cursor, frag)
+   if frag == line[cursor] then
+      return false
+   else
+      return true
+   end
+end
+
 function Txtbuf.insert(txtbuf, frag)
    local line = txtbuf.lines[txtbuf.cur_row]
    if type(line) == "string" then
@@ -105,9 +117,9 @@ function Txtbuf.insert(txtbuf, frag)
    end
    -- #/deprecated
    if not wide_frag then
-      if _frag_sub[frag] then
+      if _frag_sub[frag] and _no_skip(line, txtbuf.cursor, frag) then
          splice(line, txtbuf.cursor, _frag_sub[frag])
-      else
+      elseif _no_skip(line, txtbuf.cursor, frag) then
          t_insert(line, txtbuf.cursor, frag)
       end
       txtbuf.cursor = txtbuf.cursor + 1
