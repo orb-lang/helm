@@ -210,6 +210,14 @@ end
 
 CTRL["^E"] = cursor_end
 
+local function clear_txtbuf(modeS, category, value)
+   modeS.txtbuf = Txtbuf()
+   modeS.hist.cursor = #modeS.hist + 1
+   modeS.zones.results:replace ""
+end
+
+CTRL ["^L"] = clear_txtbuf
+
 
 
 
