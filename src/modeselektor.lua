@@ -414,9 +414,7 @@ local function _firstCharHandler(modeS, category, value)
          shifted = true
       end
    end
-   if not category == "NAV" then
-     modeS.firstChar = false
-   end
+   modeS.firstChar = false
    return shifted
 end
 
