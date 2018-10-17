@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 326"]
+doc_0 [label="doc - 328"]
 
 
 doc_0 -> { section_1}
@@ -684,7 +684,7 @@ header_133 [label="2 : Reader"]
 
 prose_134 [label="prose"]
 
-section_135 [label="section: 218-315"]
+section_135 [label="section: 218-317"]
 
 
 // END RANK section_7
@@ -755,9 +755,9 @@ prose_152 [label="prose"]
 
 codeblock_153 [label="code block 220-278"]
 
-codeblock_154 [label="code block 280-314"]
+codeblock_154 [label="code block 280-316"]
 
-section_155 [label="section: 316-326"]
+section_155 [label="section: 318-328"]
 
 
 // END RANK section_135
@@ -853,9 +853,11 @@ uv.read_start(stdin, onseq)
 -- read main programme
 -- faked for now
 ---[[
-local chunk = loadstring \"wobble = 1 + 1\"
-setfenv(chunk,  _G)
-chunk()
+if arg[1] then
+  local chunk = loadfile(arg[1])
+  setfenv(chunk,  _G)
+  chunk()
+end
 --]]
 
 -- paint screen
@@ -882,7 +884,7 @@ header_161 [label="4 : Launch femto"]
 
 prose_162 [label="prose"]
 
-codeblock_163 [label="code block 320-325"]
+codeblock_163 [label="code block 322-327"]
 
 
 // END RANK section_155

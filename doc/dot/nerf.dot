@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 232"]
+doc_0 [label="doc - 241"]
 
 
 doc_0 -> { section_1}
@@ -29,7 +29,7 @@ prose_6 [label="prose"]
 
 section_7 [label="section: 14-37"]
 
-section_8 [label="section: 38-214"]
+section_8 [label="section: 38-223"]
 
 
 // END RANK section_1
@@ -195,9 +195,9 @@ section_41 [label="section: 41-64"]
 
 section_42 [label="section: 65-193"]
 
-section_43 [label="section: 194-214"]
+section_43 [label="section: 194-223"]
 
-section_44 [label="section: 215-232"]
+section_44 [label="section: 224-241"]
 
 
 // END RANK section_8
@@ -446,7 +446,7 @@ prose_70 [label="prose"]
 
 prose_71 [label="prose"]
 
-codeblock_72 [label="code block 200-212"]
+codeblock_72 [label="code block 200-221"]
 
 
 // END RANK section_43
@@ -495,7 +495,16 @@ local function cursor_end(modeS, category, value)
    modeS.txtbuf.cursor = #modeS.txtbuf.lines[modeS.txtbuf.cur_row] + 1
 end
 
-CTRL[\"^E\"] = cursor_end"]
+CTRL[\"^E\"] = cursor_end
+
+local function clear_txtbuf(modeS, category, value)
+   modeS.txtbuf = Txtbuf()
+   modeS.hist.cursor = #modeS.hist + 1
+   modeS.firstChar = true
+   modeS.zones.results:replace \"\"
+end
+
+CTRL [\"^L\"] = clear_txtbuf"]
 // END RANK codeblock_72
 
 section_44 -> { header_79 prose_80 codeblock_81 codeblock_82}
@@ -505,9 +514,9 @@ header_79 [label="3 : MOUSE"]
 
 prose_80 [label="prose"]
 
-codeblock_81 [label="code block 217-227"]
+codeblock_81 [label="code block 226-236"]
 
-codeblock_82 [label="code block 229-231"]
+codeblock_82 [label="code block 238-240"]
 
 
 // END RANK section_44

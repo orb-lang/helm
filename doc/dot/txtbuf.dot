@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 357"]
+doc_0 [label="doc - 383"]
 
 
 doc_0 -> { section_1}
@@ -29,7 +29,7 @@ prose_6 [label="prose"]
 
 section_7 [label="section: 15-16"]
 
-section_8 [label="section: 41-326"]
+section_8 [label="section: 41-352"]
 
 
 // END RANK section_1
@@ -258,23 +258,23 @@ codeblock_48 [label="code block 43-45"]
 
 section_49 [label="section: 47-78"]
 
-section_50 [label="section: 79-113"]
+section_50 [label="section: 79-139"]
 
-section_51 [label="section: 114-126"]
+section_51 [label="section: 140-152"]
 
-section_52 [label="section: 127-156"]
+section_52 [label="section: 153-182"]
 
-section_53 [label="section: 157-177"]
+section_53 [label="section: 183-203"]
 
-section_54 [label="section: 178-201"]
+section_54 [label="section: 204-227"]
 
-section_55 [label="section: 202-220"]
+section_55 [label="section: 228-246"]
 
-section_56 [label="section: 221-252"]
+section_56 [label="section: 247-278"]
 
-section_57 [label="section: 253-326"]
+section_57 [label="section: 279-352"]
 
-section_58 [label="section: 327-357"]
+section_58 [label="section: 353-383"]
 
 
 // END RANK section_8
@@ -367,7 +367,7 @@ header_72 [label="3 : Txtbuf:insert(frag)"]
 
 prose_73 [label="prose"]
 
-codeblock_74 [label="code block 81-111"]
+codeblock_74 [label="code block 81-137"]
 
 
 // END RANK section_50
@@ -393,6 +393,25 @@ codeblock_74 -> leaf_78
 leaf_78  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local t_insert, splice = assert(table.insert), assert(table.splice)
 local utf8, codepoints, gsub = string.utf8, string.codepoints, string.gsub
 
+local _frag_sub = { [\"(\"] = {\"(\", \")\"},
+                    ['\"'] = {'\"', '\"'},
+                    [\"'\"] = {\"'\", \"'\"},
+                    [\"{\"] = {\"{\", \"}\"},
+                    [\"[\"] = {\"[\", \"]\"} }
+
+local _no_double = { ['\"'] = true,
+                     [\")\"] = true,
+                     [\"}\"] = true,
+                     [\"'\"] = true }
+
+local function _no_skip(line, cursor, frag)
+   if frag == line[cursor] then
+      return false
+   else
+      return true
+   end
+end
+
 function Txtbuf.insert(txtbuf, frag)
    local line = txtbuf.lines[txtbuf.cur_row]
    if type(line) == \"string\" then
@@ -400,6 +419,8 @@ function Txtbuf.insert(txtbuf, frag)
       txtbuf.line = line
    end
    local wide_frag = utf8(frag)
+   -- #deprecated, this shouldn't happen any longer,
+   -- since we break up wide inputs in femto main
    if wide_frag < #frag then -- a paste
       -- Normalize whitespace
       frag = gsub(frag, \"\\r\\n\", \"\\n\"):gsub(\"\\r\", \"\\n\"):gsub(\"\\t\", \"   \")
@@ -407,8 +428,13 @@ function Txtbuf.insert(txtbuf, frag)
    else
       wide_frag = false
    end
+   -- #/deprecated
    if not wide_frag then
-      t_insert(line, txtbuf.cursor, frag)
+      if _frag_sub[frag] and _no_skip(line, txtbuf.cursor, frag) then
+         splice(line, txtbuf.cursor, _frag_sub[frag])
+      elseif _no_skip(line, txtbuf.cursor, frag) then
+         t_insert(line, txtbuf.cursor, frag)
+      end
       txtbuf.cursor = txtbuf.cursor + 1
       return true
    else
@@ -428,7 +454,7 @@ header_79 [label="3 : Txtbuf:advance()"]
 
 prose_80 [label="prose"]
 
-codeblock_81 [label="code block 116-124"]
+codeblock_81 [label="code block 142-150"]
 
 
 // END RANK section_51
@@ -467,7 +493,7 @@ header_86 [label="3 : Txtbuf:d_back()"]
 
 prose_87 [label="prose"]
 
-codeblock_88 [label="code block 132-154"]
+codeblock_88 [label="code block 158-180"]
 
 
 // END RANK section_52
@@ -523,7 +549,7 @@ header_93 [label="3 : Txtbuf:d_fwd()"]
 
 prose_94 [label="prose"]
 
-codeblock_95 [label="code block 159-175"]
+codeblock_95 [label="code block 185-201"]
 
 
 // END RANK section_53
@@ -572,7 +598,7 @@ prose_101 [label="prose"]
 
 prose_102 [label="prose"]
 
-codeblock_103 [label="code block 186-199"]
+codeblock_103 [label="code block 212-225"]
 
 
 // END RANK section_54
@@ -670,7 +696,7 @@ header_122 [label="3 : Txtbuf:right(disp)"]
 
 prose_123 [label="prose"]
 
-codeblock_124 [label="code block 204-218"]
+codeblock_124 [label="code block 230-244"]
 
 
 // END RANK section_55
@@ -715,9 +741,9 @@ header_129 [label="3 : Txtbuf:up(), Txtbuf:down()"]
 
 prose_130 [label="prose"]
 
-codeblock_131 [label="code block 223-236"]
+codeblock_131 [label="code block 249-262"]
 
-codeblock_132 [label="code block 238-251"]
+codeblock_132 [label="code block 264-277"]
 
 
 // END RANK section_56
@@ -776,13 +802,13 @@ header_138 [label="3 : Txtbuf:nl()"]
 
 prose_139 [label="prose"]
 
-codeblock_140 [label="code block 257-288"]
+codeblock_140 [label="code block 283-314"]
 
-codeblock_141 [label="code block 291-299"]
+codeblock_141 [label="code block 317-325"]
 
-codeblock_142 [label="code block 301-311"]
+codeblock_142 [label="code block 327-337"]
 
-codeblock_143 [label="code block 313-324"]
+codeblock_143 [label="code block 339-350"]
 
 
 // END RANK section_57
@@ -881,9 +907,9 @@ header_151 [label="3 : new"]
 
 prose_152 [label="prose"]
 
-codeblock_153 [label="code block 329-353"]
+codeblock_153 [label="code block 355-379"]
 
-codeblock_154 [label="code block 355-357"]
+codeblock_154 [label="code block 381-383"]
 
 
 // END RANK section_58

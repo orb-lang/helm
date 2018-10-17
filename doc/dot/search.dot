@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 90"]
+doc_0 [label="doc - 91"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-90"]
+section_1 [label="section: 1-91"]
 
 
 // END RANK doc_0
@@ -27,15 +27,15 @@ codeblock_5 [label="code block 11-16"]
 
 codeblock_6 [label="code block 19-36"]
 
-codeblock_7 [label="code block 38-46"]
+codeblock_7 [label="code block 38-47"]
 
-codeblock_8 [label="code block 48-56"]
+codeblock_8 [label="code block 49-57"]
 
-codeblock_9 [label="code block 58-62"]
+codeblock_9 [label="code block 59-63"]
 
-codeblock_10 [label="code block 64-86"]
+codeblock_10 [label="code block 65-87"]
 
-codeblock_11 [label="code block 88-90"]
+codeblock_11 [label="code block 89-91"]
 
 
 // END RANK section_1
@@ -111,6 +111,7 @@ end"]
 
 codeblock_7 -> leaf_24
 leaf_24  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Search.NAV.SHIFT_DOWN(modeS, category, value)
+   -- #temporary drop into global namespace
    local search_result = modeS.hist.last_collection
    if not search_result then return end
    if search_result.hl < #search_result then

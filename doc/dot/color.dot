@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 450"]
+doc_0 [label="doc - 453"]
 
 
 doc_0 -> { section_1}
@@ -33,7 +33,7 @@ codeblock_8 [label="code block 20-73"]
 
 section_9 [label="section: 76-103"]
 
-section_10 [label="section: 104-354"]
+section_10 [label="section: 104-357"]
 
 
 // END RANK section_1
@@ -361,9 +361,9 @@ section_73 [label="section: 123-136"]
 
 section_74 [label="section: 137-199"]
 
-section_75 [label="section: 200-354"]
+section_75 [label="section: 200-357"]
 
-section_76 [label="section: 355-450"]
+section_76 [label="section: 358-453"]
 
 
 // END RANK section_10
@@ -633,13 +633,13 @@ prose_123 [label="prose"]
 
 prose_124 [label="prose"]
 
-codeblock_125 [label="code block 208-305"]
+codeblock_125 [label="code block 208-308"]
 
 prose_126 [label="prose"]
 
-codeblock_127 [label="code block 310-341"]
+codeblock_127 [label="code block 313-344"]
 
-codeblock_128 [label="code block 343-353"]
+codeblock_128 [label="code block 346-356"]
 
 
 // END RANK section_75
@@ -731,13 +731,16 @@ local function tabulate(tab, depth, cycle)
    local keys
    if not is_array then
       keys = table.keys(tab)
-      if #keys < SORT_LIMIT then
+      if #keys <= SORT_LIMIT then
          table.sort(keys, _keysort)
       else
          -- bail
          return \"{ !!! }\"
       end
    else
+      if #tab > SORT_LIMIT then
+         return \"{ #!!! }\"
+      end
       keys = tab
    end
    for j, k in ipairs(keys) do
@@ -843,11 +846,11 @@ header_139 [label="3 : ts"]
 
 prose_140 [label="prose"]
 
-codeblock_141 [label="code block 359-437"]
+codeblock_141 [label="code block 362-440"]
 
-codeblock_142 [label="code block 439-446"]
+codeblock_142 [label="code block 442-449"]
 
-codeblock_143 [label="code block 448-450"]
+codeblock_143 [label="code block 451-453"]
 
 
 // END RANK section_76

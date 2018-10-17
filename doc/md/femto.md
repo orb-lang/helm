@@ -281,9 +281,11 @@ uv.read_start(stdin, onseq)
 -- read main programme
 -- faked for now
 ---[[
-local chunk = loadstring "wobble = 1 + 1"
-setfenv(chunk,  _G)
-chunk()
+if arg[1] then
+  local chunk = loadfile(arg[1])
+  setfenv(chunk,  _G)
+  chunk()
+end
 --]]
 
 -- paint screen

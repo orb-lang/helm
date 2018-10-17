@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 642"]
+doc_0 [label="doc - 639"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-587"]
+section_1 [label="section: 1-584"]
 
 
 // END RANK doc_0
@@ -25,9 +25,9 @@ prose_4 [label="prose"]
 
 section_5 [label="section: 12-358"]
 
-section_6 [label="section: 425-514"]
+section_6 [label="section: 423-512"]
 
-section_7 [label="section: 588-642"]
+section_7 [label="section: 585-639"]
 
 
 // END RANK section_1
@@ -2411,7 +2411,7 @@ prose_607 [label="prose"]
 
 section_608 [label="section: 370-402"]
 
-section_609 [label="section: 403-424"]
+section_609 [label="section: 403-422"]
 
 
 // END RANK section_61
@@ -2597,7 +2597,7 @@ header_646 [label="4 : _firstCharHandler"]
 
 prose_647 [label="prose"]
 
-codeblock_648 [label="code block 408-422"]
+codeblock_648 [label="code block 408-420"]
 
 
 // END RANK section_609
@@ -2648,9 +2648,7 @@ leaf_658  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function
          shifted = true
       end
    end
-   if not category == \"NAV\" then
-     modeS.firstChar = false
-   end
+   modeS.firstChar = false
    return shifted
 end"]
 // END RANK codeblock_648
@@ -2666,15 +2664,15 @@ prose_661 [label="prose"]
 
 prose_662 [label="prose"]
 
-codeblock_663 [label="code block 438-495"]
+codeblock_663 [label="code block 436-493"]
 
 prose_664 [label="prose"]
 
-codeblock_665 [label="code block 499-503"]
+codeblock_665 [label="code block 497-501"]
 
-section_666 [label="section: 506-514"]
+section_666 [label="section: 504-512"]
 
-section_667 [label="section: 515-587"]
+section_667 [label="section: 513-584"]
 
 
 // END RANK section_6
@@ -2981,11 +2979,11 @@ header_727 [label="3 : ModeS:eval()"]
 
 prose_728 [label="prose"]
 
-codeblock_729 [label="code block 518-523"]
+codeblock_729 [label="code block 516-521"]
 
-codeblock_730 [label="code block 525-529"]
+codeblock_730 [label="code block 523-527"]
 
-codeblock_731 [label="code block 531-585"]
+codeblock_731 [label="code block 529-582"]
 
 
 // END RANK section_667
@@ -3072,7 +3070,6 @@ leaf_737  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS
 
    modeS.hist:append(modeS.txtbuf, results, success)
    modeS.hist.cursor = #modeS.hist
-   if success then modeS.hist.results[modeS.txtbuf] = results end
    -- modeS:prompt()
 end"]
 // END RANK codeblock_731
@@ -3084,9 +3081,9 @@ header_738 [label="2 : new"]
 
 prose_739 [label="prose"]
 
-codeblock_740 [label="code block 591-614"]
+codeblock_740 [label="code block 588-611"]
 
-codeblock_741 [label="code block 616-618"]
+codeblock_741 [label="code block 613-615"]
 
 
 // END RANK section_7

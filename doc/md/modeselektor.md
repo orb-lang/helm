@@ -423,9 +423,7 @@ local function _firstCharHandler(modeS, category, value)
          shifted = true
       end
    end
-   if not category == "NAV" then
-     modeS.firstChar = false
-   end
+   modeS.firstChar = false
    return shifted
 end
 ```
@@ -585,7 +583,6 @@ function ModeS.eval(modeS)
 
    modeS.hist:append(modeS.txtbuf, results, success)
    modeS.hist.cursor = #modeS.hist
-   if success then modeS.hist.results[modeS.txtbuf] = results end
    -- modeS:prompt()
 end
 ```

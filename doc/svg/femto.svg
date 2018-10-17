@@ -13,7 +13,7 @@
 <g id="node1" class="node">
 <title>doc_0</title>
 <ellipse fill="none" stroke="#000000" cx="2097" cy="-1786.0025" rx="46.9581" ry="18"/>
-<text text-anchor="middle" x="2097" y="-1781.8025" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">doc &#45; 326</text>
+<text text-anchor="middle" x="2097" y="-1781.8025" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">doc &#45; 328</text>
 </g>
 <!-- section_1 -->
 <g id="node2" class="node">
@@ -379,7 +379,7 @@
 <g id="node136" class="node">
 <title>section_135</title>
 <ellipse fill="none" stroke="#000000" cx="8924" cy="-1570.0025" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="8924" y="-1565.8025" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 218&#45;315</text>
+<text text-anchor="middle" x="8924" y="-1565.8025" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 218&#45;317</text>
 </g>
 <!-- section_7&#45;&gt;section_135 -->
 <g id="edge135" class="edge">
@@ -1869,7 +1869,7 @@
 <g id="node155" class="node">
 <title>codeblock_154</title>
 <ellipse fill="none" stroke="#000000" cx="9347" cy="-1326.3022" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="9347" y="-1322.1022" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 280&#45;314</text>
+<text text-anchor="middle" x="9347" y="-1322.1022" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 280&#45;316</text>
 </g>
 <!-- section_135&#45;&gt;codeblock_154 -->
 <g id="edge154" class="edge">
@@ -1881,7 +1881,7 @@
 <g id="node156" class="node">
 <title>section_155</title>
 <ellipse fill="none" stroke="#000000" cx="9814" cy="-1326.3022" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="9814" y="-1322.1022" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 316&#45;326</text>
+<text text-anchor="middle" x="9814" y="-1322.1022" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 318&#45;328</text>
 </g>
 <!-- section_135&#45;&gt;section_155 -->
 <g id="edge155" class="edge">
@@ -2067,39 +2067,41 @@
 <!-- leaf_160 -->
 <g id="node161" class="node">
 <title>leaf_160</title>
-<polygon fill="none" stroke="#c0c0c0" points="9657.5,-917.5019 9340.5,-917.5019 9340.5,-396.7 9657.5,-396.7 9657.5,-917.5019"/>
-<text text-anchor="middle" x="9499" y="-902.1014" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; Get names for as many values as possible</text>
-<text text-anchor="middle" x="9499" y="-886.7014" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; into the colorizer</text>
-<text text-anchor="middle" x="9499" y="-871.3013" font-family="Inconsolata" font-size="14.00" fill="#000000">color.allNames()</text>
-<text text-anchor="middle" x="9499" y="-839.9013" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; raw mode</text>
-<text text-anchor="middle" x="9499" y="-824.5013" font-family="Inconsolata" font-size="14.00" fill="#000000">uv.tty_set_mode(stdin, 2)</text>
-<text text-anchor="middle" x="9499" y="-809.1012" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; mouse mode</text>
-<text text-anchor="middle" x="9499" y="-793.7012" font-family="Inconsolata" font-size="14.00" fill="#000000">write(a.mouse.track(true))</text>
-<text text-anchor="middle" x="9499" y="-778.3012" font-family="Inconsolata" font-size="14.00" fill="#000000">uv.read_start(stdin, onseq)</text>
-<text text-anchor="middle" x="9499" y="-746.9011" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; read main programme</text>
-<text text-anchor="middle" x="9499" y="-731.5011" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; faked for now</text>
-<text text-anchor="middle" x="9499" y="-716.1011" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45;&#45;[[</text>
-<text text-anchor="middle" x="9499" y="-700.701" font-family="Inconsolata" font-size="14.00" fill="#000000">local chunk = loadstring &quot;wobble = 1 + 1&quot;</text>
-<text text-anchor="middle" x="9499" y="-685.301" font-family="Inconsolata" font-size="14.00" fill="#000000">setfenv(chunk, &#160;_G)</text>
-<text text-anchor="middle" x="9499" y="-669.901" font-family="Inconsolata" font-size="14.00" fill="#000000">chunk()</text>
-<text text-anchor="middle" x="9499" y="-654.501" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45;]]</text>
-<text text-anchor="middle" x="9499" y="-623.1009" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; paint screen</text>
-<text text-anchor="middle" x="9499" y="-591.7009" font-family="Inconsolata" font-size="14.00" fill="#000000">modeS:paint()</text>
-<text text-anchor="middle" x="9499" y="-560.3009" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; main loop</text>
-<text text-anchor="middle" x="9499" y="-544.9008" font-family="Inconsolata" font-size="14.00" fill="#000000">local retcode = &#160;uv.run(&#39;default&#39;)</text>
-<text text-anchor="middle" x="9499" y="-529.5008" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; Restore main screen</text>
-<text text-anchor="middle" x="9499" y="-514.1008" font-family="Inconsolata" font-size="14.00" fill="#000000">print &#39;\x1b[?47l&#39;</text>
-<text text-anchor="middle" x="9499" y="-482.7007" font-family="Inconsolata" font-size="14.00" fill="#000000">if retcode ~= true then</text>
-<text text-anchor="middle" x="9499" y="-467.3007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;error(retcode)</text>
-<text text-anchor="middle" x="9499" y="-451.9007" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
-<text text-anchor="middle" x="9499" y="-420.5006" font-family="Inconsolata" font-size="14.00" fill="#000000">print(&quot;kthxbye&quot;)</text>
-<text text-anchor="middle" x="9499" y="-405.1006" font-family="Inconsolata" font-size="14.00" fill="#000000">return retcode</text>
+<polygon fill="none" stroke="#c0c0c0" points="9657.5,-932.8019 9340.5,-932.8019 9340.5,-381.4001 9657.5,-381.4001 9657.5,-932.8019"/>
+<text text-anchor="middle" x="9499" y="-917.5014" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; Get names for as many values as possible</text>
+<text text-anchor="middle" x="9499" y="-902.1014" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; into the colorizer</text>
+<text text-anchor="middle" x="9499" y="-886.7014" font-family="Inconsolata" font-size="14.00" fill="#000000">color.allNames()</text>
+<text text-anchor="middle" x="9499" y="-855.3013" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; raw mode</text>
+<text text-anchor="middle" x="9499" y="-839.9013" font-family="Inconsolata" font-size="14.00" fill="#000000">uv.tty_set_mode(stdin, 2)</text>
+<text text-anchor="middle" x="9499" y="-824.5013" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; mouse mode</text>
+<text text-anchor="middle" x="9499" y="-809.1012" font-family="Inconsolata" font-size="14.00" fill="#000000">write(a.mouse.track(true))</text>
+<text text-anchor="middle" x="9499" y="-793.7012" font-family="Inconsolata" font-size="14.00" fill="#000000">uv.read_start(stdin, onseq)</text>
+<text text-anchor="middle" x="9499" y="-762.3012" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; read main programme</text>
+<text text-anchor="middle" x="9499" y="-746.9011" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; faked for now</text>
+<text text-anchor="middle" x="9499" y="-731.5011" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45;&#45;[[</text>
+<text text-anchor="middle" x="9499" y="-716.1011" font-family="Inconsolata" font-size="14.00" fill="#000000">if arg[1] then</text>
+<text text-anchor="middle" x="9499" y="-700.701" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;local chunk = loadfile(arg[1])</text>
+<text text-anchor="middle" x="9499" y="-685.301" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;setfenv(chunk, &#160;_G)</text>
+<text text-anchor="middle" x="9499" y="-669.901" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;chunk()</text>
+<text text-anchor="middle" x="9499" y="-654.501" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
+<text text-anchor="middle" x="9499" y="-639.1009" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45;]]</text>
+<text text-anchor="middle" x="9499" y="-607.7009" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; paint screen</text>
+<text text-anchor="middle" x="9499" y="-576.3009" font-family="Inconsolata" font-size="14.00" fill="#000000">modeS:paint()</text>
+<text text-anchor="middle" x="9499" y="-544.9008" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; main loop</text>
+<text text-anchor="middle" x="9499" y="-529.5008" font-family="Inconsolata" font-size="14.00" fill="#000000">local retcode = &#160;uv.run(&#39;default&#39;)</text>
+<text text-anchor="middle" x="9499" y="-514.1008" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; Restore main screen</text>
+<text text-anchor="middle" x="9499" y="-498.7007" font-family="Inconsolata" font-size="14.00" fill="#000000">print &#39;\x1b[?47l&#39;</text>
+<text text-anchor="middle" x="9499" y="-467.3007" font-family="Inconsolata" font-size="14.00" fill="#000000">if retcode ~= true then</text>
+<text text-anchor="middle" x="9499" y="-451.9007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;error(retcode)</text>
+<text text-anchor="middle" x="9499" y="-436.5006" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
+<text text-anchor="middle" x="9499" y="-405.1006" font-family="Inconsolata" font-size="14.00" fill="#000000">print(&quot;kthxbye&quot;)</text>
+<text text-anchor="middle" x="9499" y="-389.7006" font-family="Inconsolata" font-size="14.00" fill="#000000">return retcode</text>
 </g>
 <!-- codeblock_154&#45;&gt;leaf_160 -->
 <g id="edge160" class="edge">
 <title>codeblock_154&#45;&gt;leaf_160</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M9351.1445,-1308.0556C9363.7268,-1252.66 9402.7543,-1080.836 9437.553,-927.6298"/>
-<polygon fill="#000000" stroke="#000000" points="9441.0368,-928.0936 9439.8387,-917.5667 9434.2106,-926.5431 9441.0368,-928.0936"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M9351.1445,-1308.0556C9363.3194,-1254.4536 9400.2548,-1091.8404 9434.1607,-942.565"/>
+<polygon fill="#000000" stroke="#000000" points="9437.5874,-943.28 9436.3894,-932.7531 9430.7613,-941.7294 9437.5874,-943.28"/>
 </g>
 <!-- header_161 -->
 <g id="node162" class="node">
@@ -2129,7 +2131,7 @@
 <g id="node164" class="node">
 <title>codeblock_163</title>
 <ellipse fill="none" stroke="#000000" cx="10020" cy="-657.101" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="10020" y="-652.901" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 320&#45;325</text>
+<text text-anchor="middle" x="10020" y="-652.901" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 322&#45;327</text>
 </g>
 <!-- section_155&#45;&gt;codeblock_163 -->
 <g id="edge163" class="edge">

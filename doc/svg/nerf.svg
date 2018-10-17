@@ -13,7 +13,7 @@
 <g id="node1" class="node">
 <title>doc_0</title>
 <ellipse fill="none" stroke="#000000" cx="1155.5" cy="-1557.8021" rx="46.9581" ry="18"/>
-<text text-anchor="middle" x="1155.5" y="-1553.6021" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">doc &#45; 232</text>
+<text text-anchor="middle" x="1155.5" y="-1553.6021" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">doc &#45; 241</text>
 </g>
 <!-- section_1 -->
 <g id="node2" class="node">
@@ -103,7 +103,7 @@
 <g id="node9" class="node">
 <title>section_8</title>
 <ellipse fill="none" stroke="#000000" cx="3280.5" cy="-1413.8021" rx="70.655" ry="18"/>
-<text text-anchor="middle" x="3280.5" y="-1409.6021" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 38&#45;214</text>
+<text text-anchor="middle" x="3280.5" y="-1409.6021" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 38&#45;223</text>
 </g>
 <!-- section_1&#45;&gt;section_8 -->
 <g id="edge8" class="edge">
@@ -343,7 +343,7 @@
 <g id="node44" class="node">
 <title>section_43</title>
 <ellipse fill="none" stroke="#000000" cx="4907.5" cy="-1341.8021" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="4907.5" y="-1337.6021" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 194&#45;214</text>
+<text text-anchor="middle" x="4907.5" y="-1337.6021" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 194&#45;223</text>
 </g>
 <!-- section_8&#45;&gt;section_43 -->
 <g id="edge43" class="edge">
@@ -355,7 +355,7 @@
 <g id="node45" class="node">
 <title>section_44</title>
 <ellipse fill="none" stroke="#000000" cx="5698.5" cy="-1341.8021" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="5698.5" y="-1337.6021" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 215&#45;232</text>
+<text text-anchor="middle" x="5698.5" y="-1337.6021" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 224&#45;241</text>
 </g>
 <!-- section_8&#45;&gt;section_44 -->
 <g id="edge44" class="edge">
@@ -724,7 +724,7 @@
 <g id="node73" class="node">
 <title>codeblock_72</title>
 <ellipse fill="none" stroke="#000000" cx="5205.5" cy="-1206.502" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="5205.5" y="-1202.302" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 200&#45;212</text>
+<text text-anchor="middle" x="5205.5" y="-1202.302" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 200&#45;221</text>
 </g>
 <!-- section_43&#45;&gt;codeblock_72 -->
 <g id="edge72" class="edge">
@@ -760,7 +760,7 @@
 <g id="node82" class="node">
 <title>codeblock_81</title>
 <ellipse fill="none" stroke="#000000" cx="5887.5" cy="-1206.502" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="5887.5" y="-1202.302" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 217&#45;227</text>
+<text text-anchor="middle" x="5887.5" y="-1202.302" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 226&#45;236</text>
 </g>
 <!-- section_44&#45;&gt;codeblock_81 -->
 <g id="edge81" class="edge">
@@ -772,7 +772,7 @@
 <g id="node83" class="node">
 <title>codeblock_82</title>
 <ellipse fill="none" stroke="#000000" cx="6174.5" cy="-1206.502" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="6174.5" y="-1202.302" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 229&#45;231</text>
+<text text-anchor="middle" x="6174.5" y="-1202.302" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 238&#45;240</text>
 </g>
 <!-- section_44&#45;&gt;codeblock_82 -->
 <g id="edge82" class="edge">
@@ -1083,21 +1083,28 @@
 <!-- leaf_78 -->
 <g id="node79" class="node">
 <title>leaf_78</title>
-<polygon fill="none" stroke="#c0c0c0" points="5535.5,-680.0013 5029.5,-680.0013 5029.5,-500.6006 5535.5,-500.6006 5535.5,-680.0013"/>
-<text text-anchor="middle" x="5282.5" y="-664.701" font-family="Inconsolata" font-size="14.00" fill="#000000">local function cursor_begin(modeS, category, value)</text>
-<text text-anchor="middle" x="5282.5" y="-649.301" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;modeS.txtbuf.cursor = 1</text>
-<text text-anchor="middle" x="5282.5" y="-633.901" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
-<text text-anchor="middle" x="5282.5" y="-602.501" font-family="Inconsolata" font-size="14.00" fill="#000000">CTRL[&quot;^A&quot;] = cursor_begin</text>
-<text text-anchor="middle" x="5282.5" y="-571.1009" font-family="Inconsolata" font-size="14.00" fill="#000000">local function cursor_end(modeS, category, value)</text>
-<text text-anchor="middle" x="5282.5" y="-555.7009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;modeS.txtbuf.cursor = #modeS.txtbuf.lines[modeS.txtbuf.cur_row] + 1</text>
-<text text-anchor="middle" x="5282.5" y="-540.3009" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
-<text text-anchor="middle" x="5282.5" y="-508.9008" font-family="Inconsolata" font-size="14.00" fill="#000000">CTRL[&quot;^E&quot;] = cursor_end</text>
+<polygon fill="none" stroke="#c0c0c0" points="5535.5,-749.8014 5029.5,-749.8014 5029.5,-430.8005 5535.5,-430.8005 5535.5,-749.8014"/>
+<text text-anchor="middle" x="5282.5" y="-734.6012" font-family="Inconsolata" font-size="14.00" fill="#000000">local function cursor_begin(modeS, category, value)</text>
+<text text-anchor="middle" x="5282.5" y="-719.2011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;modeS.txtbuf.cursor = 1</text>
+<text text-anchor="middle" x="5282.5" y="-703.8011" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
+<text text-anchor="middle" x="5282.5" y="-672.4011" font-family="Inconsolata" font-size="14.00" fill="#000000">CTRL[&quot;^A&quot;] = cursor_begin</text>
+<text text-anchor="middle" x="5282.5" y="-641.001" font-family="Inconsolata" font-size="14.00" fill="#000000">local function cursor_end(modeS, category, value)</text>
+<text text-anchor="middle" x="5282.5" y="-625.601" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;modeS.txtbuf.cursor = #modeS.txtbuf.lines[modeS.txtbuf.cur_row] + 1</text>
+<text text-anchor="middle" x="5282.5" y="-610.201" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
+<text text-anchor="middle" x="5282.5" y="-578.8009" font-family="Inconsolata" font-size="14.00" fill="#000000">CTRL[&quot;^E&quot;] = cursor_end</text>
+<text text-anchor="middle" x="5282.5" y="-547.4009" font-family="Inconsolata" font-size="14.00" fill="#000000">local function clear_txtbuf(modeS, category, value)</text>
+<text text-anchor="middle" x="5282.5" y="-532.0009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;modeS.txtbuf = Txtbuf()</text>
+<text text-anchor="middle" x="5282.5" y="-516.6008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;modeS.hist.cursor = #modeS.hist + 1</text>
+<text text-anchor="middle" x="5282.5" y="-501.2008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;modeS.firstChar = true</text>
+<text text-anchor="middle" x="5282.5" y="-485.8008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;modeS.zones.results:replace &quot;&quot;</text>
+<text text-anchor="middle" x="5282.5" y="-470.4007" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
+<text text-anchor="middle" x="5282.5" y="-439.0007" font-family="Inconsolata" font-size="14.00" fill="#000000">CTRL [&quot;^L&quot;] = clear_txtbuf</text>
 </g>
 <!-- codeblock_72&#45;&gt;leaf_78 -->
 <g id="edge78" class="edge">
 <title>codeblock_72&#45;&gt;leaf_78</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M5207.7628,-1188.3939C5216.8629,-1115.5692 5251.2012,-840.7733 5270.0035,-690.3056"/>
-<polygon fill="#000000" stroke="#000000" points="5273.5074,-690.4914 5271.2745,-680.1346 5266.5614,-689.6234 5273.5074,-690.4914"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M5207.7628,-1188.3939C5215.5898,-1125.7576 5242.0871,-913.7093 5261.3114,-759.8647"/>
+<polygon fill="#000000" stroke="#000000" points="5264.7999,-760.1744 5262.5669,-749.8176 5257.8539,-759.3064 5264.7999,-760.1744"/>
 </g>
 <!-- leaf_75 -->
 <g id="node76" class="node">

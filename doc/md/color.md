@@ -253,13 +253,16 @@ local function tabulate(tab, depth, cycle)
    local keys
    if not is_array then
       keys = table.keys(tab)
-      if #keys < SORT_LIMIT then
+      if #keys <= SORT_LIMIT then
          table.sort(keys, _keysort)
       else
          -- bail
          return "{ !!! }"
       end
    else
+      if #tab > SORT_LIMIT then
+         return "{ #!!! }"
+      end
       keys = tab
    end
    for j, k in ipairs(keys) do
