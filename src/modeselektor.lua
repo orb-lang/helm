@@ -112,10 +112,11 @@ local Zoneherd  = require "zone"
 local Nerf   = require "nerf"
 local Search = require "search"
 
-local concat         = assert(table.concat)
-local sub, gsub, rep = assert(string.sub),
-                       assert(string.gsub),
-                       assert(string.rep)
+local concat               = assert(table.concat)
+local sub, gsub, rep, find = assert(string.sub),
+                             assert(string.gsub),
+                             assert(string.rep),
+                             assert(string.find)
 
 
 
@@ -545,7 +546,9 @@ function ModeS.eval(modeS)
       end -- more special REPL prefix soon: /, ?, >(?)
    end
    if f then
+      setfenv(f, _G)
       success, results = gatherResults(xpcall(f, debug.traceback))
+      :: succession ::  -- yesssss the power of goto compels you
       if success then
       -- successful call
          if results.n > 0 then
@@ -554,11 +557,15 @@ function ModeS.eval(modeS)
          else
             modeS.zones.results:replace ""
          end
+      elseif string.find(results[1], "is not declared") then
+         -- let's try it with __G what could go wrong?
+         setfenv(f, __G)
+         success, results = gatherResults(xpcall(f, debug.traceback))
+         goto succession
       else
-      -- error
+         -- error
          results.frozen = true
          modeS.zones.results:replace(results)
-
       end
    else
       if err:match "'<eof>'$" then

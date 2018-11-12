@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 639"]
+doc_0 [label="doc - 646"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-584"]
+section_1 [label="section: 1-591"]
 
 
 // END RANK doc_0
@@ -23,11 +23,11 @@ prose_3 [label="prose"]
 
 prose_4 [label="prose"]
 
-section_5 [label="section: 12-358"]
+section_5 [label="section: 12-359"]
 
-section_6 [label="section: 423-512"]
+section_6 [label="section: 424-513"]
 
-section_7 [label="section: 585-639"]
+section_7 [label="section: 592-646"]
 
 
 // END RANK section_1
@@ -174,21 +174,21 @@ prose_52 [label="prose"]
 
 section_53 [label="section: 84-95"]
 
-section_54 [label="section: 96-172"]
+section_54 [label="section: 96-173"]
 
-section_55 [label="section: 173-183"]
+section_55 [label="section: 174-184"]
 
-section_56 [label="section: 184-252"]
+section_56 [label="section: 185-253"]
 
-section_57 [label="section: 276-288"]
+section_57 [label="section: 277-289"]
 
-section_58 [label="section: 289-303"]
+section_58 [label="section: 290-304"]
 
-section_59 [label="section: 304-312"]
+section_59 [label="section: 305-313"]
 
-section_60 [label="section: 313-342"]
+section_60 [label="section: 314-343"]
 
-section_61 [label="section: 359-402"]
+section_61 [label="section: 360-403"]
 
 
 // END RANK section_5
@@ -1105,9 +1105,9 @@ prose_303 [label="prose"]
 
 prose_304 [label="prose"]
 
-codeblock_305 [label="code block 102-119"]
+codeblock_305 [label="code block 102-120"]
 
-codeblock_306 [label="code block 121-123"]
+codeblock_306 [label="code block 122-124"]
 
 prose_307 [label="prose"]
 
@@ -1119,19 +1119,19 @@ prose_310 [label="prose"]
 
 prose_311 [label="prose"]
 
-codeblock_312 [label="code block 146-148"]
+codeblock_312 [label="code block 147-149"]
 
 prose_313 [label="prose"]
 
-codeblock_314 [label="code block 152-154"]
+codeblock_314 [label="code block 153-155"]
 
 prose_315 [label="prose"]
 
-codeblock_316 [label="code block 159-161"]
+codeblock_316 [label="code block 160-162"]
 
 prose_317 [label="prose"]
 
-codeblock_318 [label="code block 166-170"]
+codeblock_318 [label="code block 167-171"]
 
 
 // END RANK section_54
@@ -1193,10 +1193,11 @@ local Zoneherd  = require \"zone\"
 local Nerf   = require \"nerf\"
 local Search = require \"search\"
 
-local concat         = assert(table.concat)
-local sub, gsub, rep = assert(string.sub),
-                       assert(string.gsub),
-                       assert(string.rep)"]
+local concat               = assert(table.concat)
+local sub, gsub, rep, find = assert(string.sub),
+                             assert(string.gsub),
+                             assert(string.rep),
+                             assert(string.find)"]
 // END RANK codeblock_305
 
 codeblock_306 -> leaf_329
@@ -1469,7 +1470,7 @@ header_390 [label="3 : self-insert(modeS, category, value)"]
 
 prose_391 [label="prose"]
 
-codeblock_392 [label="code block 177-181"]
+codeblock_392 [label="code block 178-182"]
 
 
 // END RANK section_55
@@ -1508,9 +1509,9 @@ prose_398 [label="prose"]
 
 prose_399 [label="prose"]
 
-section_400 [label="section: 191-252"]
+section_400 [label="section: 192-253"]
 
-section_401 [label="section: 253-275"]
+section_401 [label="section: 254-276"]
 
 
 // END RANK section_56
@@ -1560,7 +1561,7 @@ prose_409 [label="prose"]
 
 prose_410 [label="prose"]
 
-codeblock_411 [label="code block 200-251"]
+codeblock_411 [label="code block 201-252"]
 
 
 // END RANK section_400
@@ -1675,11 +1676,11 @@ prose_421 [label="prose"]
 
 prose_422 [label="prose"]
 
-codeblock_423 [label="code block 261-265"]
+codeblock_423 [label="code block 262-266"]
 
 structure_424 [label="structure"]
 
-codeblock_425 [label="code block 270-274"]
+codeblock_425 [label="code block 271-275"]
 
 
 // END RANK section_401
@@ -1829,7 +1830,7 @@ header_460 [label="3 : ModeS:placeCursor()"]
 
 prose_461 [label="prose"]
 
-codeblock_462 [label="code block 280-286"]
+codeblock_462 [label="code block 281-287"]
 
 
 // END RANK section_57
@@ -1888,7 +1889,7 @@ prose_474 [label="prose"]
 
 prose_475 [label="prose"]
 
-codeblock_476 [label="code block 296-301"]
+codeblock_476 [label="code block 297-302"]
 
 
 // END RANK section_58
@@ -1988,7 +1989,7 @@ header_499 [label="3 : ModeS:reflow()"]
 
 prose_500 [label="prose"]
 
-codeblock_501 [label="code block 306-311"]
+codeblock_501 [label="code block 307-312"]
 
 
 // END RANK section_59
@@ -2026,7 +2027,7 @@ prose_507 [label="prose"]
 
 prose_508 [label="prose"]
 
-codeblock_509 [label="code block 319-322"]
+codeblock_509 [label="code block 320-323"]
 
 prose_510 [label="prose"]
 
@@ -2040,7 +2041,7 @@ prose_514 [label="prose"]
 
 prose_515 [label="prose"]
 
-section_516 [label="section: 343-358"]
+section_516 [label="section: 344-359"]
 
 
 // END RANK section_60
@@ -2361,9 +2362,9 @@ header_595 [label="4 : Prompts"]
 
 prose_596 [label="prose"]
 
-codeblock_597 [label="code block 347-350"]
+codeblock_597 [label="code block 348-351"]
 
-codeblock_598 [label="code block 352-356"]
+codeblock_598 [label="code block 353-357"]
 
 
 // END RANK section_516
@@ -2409,9 +2410,9 @@ prose_606 [label="prose"]
 
 prose_607 [label="prose"]
 
-section_608 [label="section: 370-402"]
+section_608 [label="section: 371-403"]
 
-section_609 [label="section: 403-422"]
+section_609 [label="section: 404-423"]
 
 
 // END RANK section_61
@@ -2537,7 +2538,7 @@ header_639 [label="4 : ModeS.closet"]
 
 prose_640 [label="prose"]
 
-codeblock_641 [label="code block 375-401"]
+codeblock_641 [label="code block 376-402"]
 
 
 // END RANK section_608
@@ -2597,7 +2598,7 @@ header_646 [label="4 : _firstCharHandler"]
 
 prose_647 [label="prose"]
 
-codeblock_648 [label="code block 408-420"]
+codeblock_648 [label="code block 409-421"]
 
 
 // END RANK section_609
@@ -2664,15 +2665,15 @@ prose_661 [label="prose"]
 
 prose_662 [label="prose"]
 
-codeblock_663 [label="code block 436-493"]
+codeblock_663 [label="code block 437-494"]
 
 prose_664 [label="prose"]
 
-codeblock_665 [label="code block 497-501"]
+codeblock_665 [label="code block 498-502"]
 
-section_666 [label="section: 504-512"]
+section_666 [label="section: 505-513"]
 
-section_667 [label="section: 513-584"]
+section_667 [label="section: 514-591"]
 
 
 // END RANK section_6
@@ -2979,11 +2980,11 @@ header_727 [label="3 : ModeS:eval()"]
 
 prose_728 [label="prose"]
 
-codeblock_729 [label="code block 516-521"]
+codeblock_729 [label="code block 517-522"]
 
-codeblock_730 [label="code block 523-527"]
+codeblock_730 [label="code block 524-528"]
 
-codeblock_731 [label="code block 529-582"]
+codeblock_731 [label="code block 530-589"]
 
 
 // END RANK section_667
@@ -3038,7 +3039,9 @@ leaf_737  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS
       end -- more special REPL prefix soon: /, ?, >(?)
    end
    if f then
+      setfenv(f, _G)
       success, results = gatherResults(xpcall(f, debug.traceback))
+      :: succession ::  -- yesssss the power of goto compels you
       if success then
       -- successful call
          if results.n > 0 then
@@ -3047,11 +3050,15 @@ leaf_737  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS
          else
             modeS.zones.results:replace \"\"
          end
+      elseif string.find(results[1], \"is not declared\") then
+         -- let's try it with __G what could go wrong?
+         setfenv(f, __G)
+         success, results = gatherResults(xpcall(f, debug.traceback))
+         goto succession
       else
-      -- error
+         -- error
          results.frozen = true
          modeS.zones.results:replace(results)
-
       end
    else
       if err:match \"'<eof>'$\" then
@@ -3081,9 +3088,9 @@ header_738 [label="2 : new"]
 
 prose_739 [label="prose"]
 
-codeblock_740 [label="code block 588-611"]
+codeblock_740 [label="code block 595-618"]
 
-codeblock_741 [label="code block 613-615"]
+codeblock_741 [label="code block 620-622"]
 
 
 // END RANK section_7
