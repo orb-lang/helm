@@ -1,0 +1,1032 @@
+digraph lpegNode {
+
+node [fontname=Helvetica]
+edge [style=dashed]
+
+doc_0 [label="doc - 410"]
+
+
+doc_0 -> { section_1}
+{rank=same; section_1}
+
+section_1 [label="section: 1-311"]
+
+
+// END RANK doc_0
+
+section_1 -> { header_2 prose_3 prose_4 prose_5 prose_6 section_7 section_8 section_9 section_10 section_11 section_12 section_13}
+{rank=same; header_2 prose_3 prose_4 prose_5 prose_6 section_7 section_8 section_9 section_10 section_11 section_12 section_13}
+
+header_2 [label="1 : Repr"]
+
+prose_3 [label="prose"]
+
+prose_4 [label="prose"]
+
+prose_5 [label="prose"]
+
+prose_6 [label="prose"]
+
+section_7 [label="section: 18-31"]
+
+section_8 [label="section: 32-45"]
+
+section_9 [label="section: 46-57"]
+
+section_10 [label="section: 67-129"]
+
+section_11 [label="section: 146-261"]
+
+section_12 [label="section: 262-311"]
+
+section_13 [label="section: 312-410"]
+
+
+// END RANK section_1
+
+header_2 -> leaf_14
+leaf_14  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Repr"]
+// END RANK header_2
+
+prose_3 -> { raw_15 prespace_16 literal_17 raw_18 prespace_19 literal_20 raw_21 prespace_22 literal_23 raw_24}
+{rank=same; raw_15 prespace_16 literal_17 raw_18 prespace_19 literal_20 raw_21 prespace_22 literal_23 raw_24}
+
+raw_15 [label="raw"]
+
+prespace_16 [label="prespace"]
+
+literal_17 [label="literal"]
+
+raw_18 [label="raw"]
+
+prespace_19 [label="prespace"]
+
+literal_20 [label="literal"]
+
+raw_21 [label="raw"]
+
+prespace_22 [label="prespace"]
+
+literal_23 [label="literal"]
+
+raw_24 [label="raw"]
+
+
+// END RANK prose_3
+
+raw_15 -> leaf_25
+leaf_25  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+
+Our"]
+// END RANK raw_15
+
+prespace_16 -> leaf_26
+leaf_26  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_16
+
+literal_17 -> leaf_27
+leaf_27  [color=Gray,shape=rectangle,fontname=Inconsolata,label="color"]
+// END RANK literal_17
+
+raw_18 -> leaf_28
+leaf_28  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" library currently is dominated by"]
+// END RANK raw_18
+
+prespace_19 -> leaf_29
+leaf_29  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_19
+
+literal_20 -> leaf_30
+leaf_30  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ts(obj)"]
+// END RANK literal_20
+
+raw_21 -> leaf_31
+leaf_31  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", a heavily-modified
+table printer based on Tim Caswell's example repl from"]
+// END RANK raw_21
+
+prespace_22 -> leaf_32
+leaf_32  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_22
+
+literal_23 -> leaf_33
+leaf_33  [color=Gray,shape=rectangle,fontname=Inconsolata,label="luv"]
+// END RANK literal_23
+
+raw_24 -> leaf_34
+leaf_34  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
+"]
+// END RANK raw_24
+
+prose_4 -> { raw_35}
+{rank=same; raw_35}
+
+raw_35 [label="raw"]
+
+
+// END RANK prose_4
+
+raw_35 -> leaf_36
+leaf_36  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+We need to make it some changes to it, so it can handle large tables without
+destruction.  Mostly, this is a change from string concatenation to a line-by-
+line iterator.
+"]
+// END RANK raw_35
+
+prose_5 -> { raw_37 prespace_38 literal_39 raw_40}
+{rank=same; raw_37 prespace_38 literal_39 raw_40}
+
+raw_37 [label="raw"]
+
+prespace_38 [label="prespace"]
+
+literal_39 [label="literal"]
+
+raw_40 [label="raw"]
+
+
+// END RANK prose_5
+
+raw_37 -> leaf_41
+leaf_41  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+There will likely be some further refactors to make it more compatible with"]
+// END RANK raw_37
+
+prespace_38 -> leaf_42
+leaf_42  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK prespace_38
+
+literal_39 -> leaf_43
+leaf_43  [color=Gray,shape=rectangle,fontname=Inconsolata,label="rainbuf"]
+// END RANK literal_39
+
+raw_40 -> leaf_44
+leaf_44  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" and the rest of the system, but the first thing we need to do is
+make it iterable.
+"]
+// END RANK raw_40
+
+prose_6 -> { raw_45 prespace_46 italic_47 raw_48}
+{rank=same; raw_45 prespace_46 italic_47 raw_48}
+
+raw_45 [label="raw"]
+
+prespace_46 [label="prespace"]
+
+italic_47 [label="italic"]
+
+raw_48 [label="raw"]
+
+
+// END RANK prose_6
+
+raw_45 -> leaf_49
+leaf_49  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Well, the"]
+// END RANK raw_45
+
+prespace_46 -> leaf_50
+leaf_50  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_46
+
+italic_47 -> leaf_51
+leaf_51  [color=Gray,shape=rectangle,fontname=Inconsolata,label="very"]
+// END RANK italic_47
+
+raw_48 -> leaf_52
+leaf_52  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" first thing we need to do is move it...
+
+"]
+// END RANK raw_48
+
+section_7 -> { header_53 prose_54 codeblock_55}
+{rank=same; header_53 prose_54 codeblock_55}
+
+header_53 [label="4 : imports"]
+
+prose_54 [label="prose"]
+
+codeblock_55 [label="code block 20-29"]
+
+
+// END RANK section_7
+
+header_53 -> leaf_56
+leaf_56  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** imports"]
+// END RANK header_53
+
+prose_54 -> { raw_57}
+{rank=same; raw_57}
+
+raw_57 [label="raw"]
+
+
+// END RANK prose_54
+
+raw_57 -> leaf_58
+leaf_58  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+"]
+// END RANK raw_57
+
+codeblock_55 -> leaf_59
+leaf_59  [color=Gray,shape=rectangle,fontname=Inconsolata,label="#!lua
+local a = require \"anterm\"
+
+local core = require \"core\"
+
+local reflect = require \"reflect\"
+
+local C = require \"color\""]
+// END RANK codeblock_55
+
+section_8 -> { header_60 prose_61 codeblock_62}
+{rank=same; header_60 prose_61 codeblock_62}
+
+header_60 [label="4 : setup"]
+
+prose_61 [label="prose"]
+
+codeblock_62 [label="code block 34-43"]
+
+
+// END RANK section_8
+
+header_60 -> leaf_63
+leaf_63  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** setup"]
+// END RANK header_60
+
+prose_61 -> { raw_64}
+{rank=same; raw_64}
+
+raw_64 [label="raw"]
+
+
+// END RANK prose_61
+
+raw_64 -> leaf_65
+leaf_65  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+"]
+// END RANK raw_64
+
+codeblock_62 -> leaf_66
+leaf_66  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+local repr = {}
+
+local WIDE_TABLE = 200 -- #todo make this configurable by tty (zone) width.
+
+local hints = C.color.hints
+
+local c = C.color"]
+// END RANK codeblock_62
+
+section_9 -> { header_67 prose_68 codeblock_69 prose_70 section_71}
+{rank=same; header_67 prose_68 codeblock_69 prose_70 section_71}
+
+header_67 [label="3 : anti_G"]
+
+prose_68 [label="prose"]
+
+codeblock_69 [label="code block 52-54"]
+
+prose_70 [label="prose"]
+
+section_71 [label="section: 58-66"]
+
+
+// END RANK section_9
+
+header_67 -> leaf_72
+leaf_72  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** anti_G"]
+// END RANK header_67
+
+prose_68 -> { raw_73 prespace_74 literal_75 raw_76 prespace_77 literal_78 raw_79 prespace_80 literal_81 raw_82}
+{rank=same; raw_73 prespace_74 literal_75 raw_76 prespace_77 literal_78 raw_79 prespace_80 literal_81 raw_82}
+
+raw_73 [label="raw"]
+
+prespace_74 [label="prespace"]
+
+literal_75 [label="literal"]
+
+raw_76 [label="raw"]
+
+prespace_77 [label="prespace"]
+
+literal_78 [label="literal"]
+
+raw_79 [label="raw"]
+
+prespace_80 [label="prespace"]
+
+literal_81 [label="literal"]
+
+raw_82 [label="raw"]
+
+
+// END RANK prose_68
+
+raw_73 -> leaf_83
+leaf_83  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+In order to provide names for values, we want to trawl through"]
+// END RANK raw_73
+
+prespace_74 -> leaf_84
+leaf_84  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_74
+
+literal_75 -> leaf_85
+leaf_85  [color=Gray,shape=rectangle,fontname=Inconsolata,label="_G"]
+// END RANK literal_75
+
+raw_76 -> leaf_86
+leaf_86  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" and
+acquire them.  This table is from value to key where"]
+// END RANK raw_76
+
+prespace_77 -> leaf_87
+leaf_87  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_77
+
+literal_78 -> leaf_88
+leaf_88  [color=Gray,shape=rectangle,fontname=Inconsolata,label="_G"]
+// END RANK literal_78
+
+raw_79 -> leaf_89
+leaf_89  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is key to value,
+hence,"]
+// END RANK raw_79
+
+prespace_80 -> leaf_90
+leaf_90  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_80
+
+literal_81 -> leaf_91
+leaf_91  [color=Gray,shape=rectangle,fontname=Inconsolata,label="anti_G"]
+// END RANK literal_81
+
+raw_82 -> leaf_92
+leaf_92  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
+"]
+// END RANK raw_82
+
+codeblock_69 -> leaf_93
+leaf_93  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local anti_G = { _G = \"_G\" }"]
+// END RANK codeblock_69
+
+prose_70 -> { raw_94}
+{rank=same; raw_94}
+
+raw_94 [label="raw"]
+
+
+// END RANK prose_70
+
+raw_94 -> leaf_95
+leaf_95  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Now to populate it:
+"]
+// END RANK raw_94
+
+section_71 -> { header_96 prose_97 codeblock_98}
+{rank=same; header_96 prose_97 codeblock_98}
+
+header_96 [label="4 : tie_break(old, new)"]
+
+prose_97 [label="prose"]
+
+codeblock_98 [label="code block 63-64"]
+
+
+// END RANK section_71
+
+header_96 -> leaf_99
+leaf_99  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** tie_break(old, new)"]
+// END RANK header_96
+
+prose_97 -> { raw_100}
+{rank=same; raw_100}
+
+raw_100 [label="raw"]
+
+
+// END RANK prose_97
+
+raw_100 -> leaf_101
+leaf_101  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+A helper function to decide which name is better.
+
+"]
+// END RANK raw_100
+
+codeblock_98 -> leaf_102
+leaf_102  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK codeblock_98
+
+section_10 -> { header_103 prose_104 prose_105 codeblock_106 section_107}
+{rank=same; header_103 prose_104 prose_105 codeblock_106 section_107}
+
+header_103 [label="3 : C.allNames()"]
+
+prose_104 [label="prose"]
+
+prose_105 [label="prose"]
+
+codeblock_106 [label="code block 76-127"]
+
+section_107 [label="section: 130-145"]
+
+
+// END RANK section_10
+
+header_103 -> leaf_108
+leaf_108  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** C.allNames()"]
+// END RANK header_103
+
+prose_104 -> { raw_109 prespace_110 literal_111 raw_112}
+{rank=same; raw_109 prespace_110 literal_111 raw_112}
+
+raw_109 [label="raw"]
+
+prespace_110 [label="prespace"]
+
+literal_111 [label="literal"]
+
+raw_112 [label="raw"]
+
+
+// END RANK prose_104
+
+raw_109 -> leaf_113
+leaf_113  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+
+Ransacks"]
+// END RANK raw_109
+
+prespace_110 -> leaf_114
+leaf_114  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_110
+
+literal_111 -> leaf_115
+leaf_115  [color=Gray,shape=rectangle,fontname=Inconsolata,label="_G"]
+// END RANK literal_111
+
+raw_112 -> leaf_116
+leaf_116  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" looking for names to put on things.
+"]
+// END RANK raw_112
+
+prose_105 -> { raw_117}
+{rank=same; raw_117}
+
+raw_117 [label="raw"]
+
+
+// END RANK prose_105
+
+raw_117 -> leaf_118
+leaf_118  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+To really dig out a good name for metatables we're going to need to write
+some kind of reflection function that will dig around in upvalues to find
+local names for things.
+"]
+// END RANK raw_117
+
+codeblock_106 -> leaf_119
+leaf_119  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function tie_break(old, new)
+   return #old > #new
+end
+
+
+local function addName(t, aG, pre)
+   pre = pre or \"\"
+   aG = aG or anti_G
+   if pre ~= \"\" then
+      pre = pre .. \".\"
+   end
+   for k, v in pairs(t) do
+      local T = type(v)
+      if (T == \"table\") then
+         local key = pre .. (type(k) == \"string\" and k or \"<\" .. type(k) .. \">\")
+         if not aG[v] then
+            aG[v] = key
+            if not (pre == \"\" and k == \"package\") then
+               addName(v, aG, key)
+            end
+         else
+            local kv = aG[v]
+            if tie_break(kv, key) then
+               -- quadradic lol
+               aG[v] = key
+               addName(v, aG, key)
+            end
+         end
+         local _M = getmetatable(v)
+         local _M_id = _M and \"⟨\" .. key.. \"⟩\" or \"\"
+         if _M then
+            if not aG[_M] then
+               addName(_M, aG, _M_id)
+               aG[_M] = _M_id
+            else
+               local aG_M_id = aG[_M]
+               if tie_break(aG_M_id, _M_id) then
+                  addName(_M, aG, _M_id)
+                  aG[_M] = _M_id
+               end
+            end
+         end
+      elseif T == \"function\" or
+         T == \"thread\" or
+         T == \"userdata\" then
+         aG[v] = pre .. k
+      end
+   end
+   return aG
+end"]
+// END RANK codeblock_106
+
+section_107 -> { header_120 prose_121 codeblock_122}
+{rank=same; header_120 prose_121 codeblock_122}
+
+header_120 [label="4 : repr.allNames(), repr.clearNames()"]
+
+prose_121 [label="prose"]
+
+codeblock_122 [label="code block 135-144"]
+
+
+// END RANK section_107
+
+header_120 -> leaf_123
+leaf_123  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** repr.allNames(), repr.clearNames()"]
+// END RANK header_120
+
+prose_121 -> { raw_124 prespace_125 literal_126 raw_127 prespace_128 literal_129 raw_130}
+{rank=same; raw_124 prespace_125 literal_126 raw_127 prespace_128 literal_129 raw_130}
+
+raw_124 [label="raw"]
+
+prespace_125 [label="prespace"]
+
+literal_126 [label="literal"]
+
+raw_127 [label="raw"]
+
+prespace_128 [label="prespace"]
+
+literal_129 [label="literal"]
+
+raw_130 [label="raw"]
+
+
+// END RANK prose_121
+
+raw_124 -> leaf_131
+leaf_131  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+The trick here is that we scan"]
+// END RANK raw_124
+
+prespace_125 -> leaf_132
+leaf_132  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_125
+
+literal_126 -> leaf_133
+leaf_133  [color=Gray,shape=rectangle,fontname=Inconsolata,label="package.loaded"]
+// END RANK literal_126
+
+raw_127 -> leaf_134
+leaf_134  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" after"]
+// END RANK raw_127
+
+prespace_128 -> leaf_135
+leaf_135  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_128
+
+literal_129 -> leaf_136
+leaf_136  [color=Gray,shape=rectangle,fontname=Inconsolata,label="_G"]
+// END RANK literal_129
+
+raw_130 -> leaf_137
+leaf_137  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", which gives
+better names for things.
+"]
+// END RANK raw_130
+
+codeblock_122 -> leaf_138
+leaf_138  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function repr.allNames()
+   return addName(package.loaded, addName(_G))
+end
+
+function repr.clearNames()
+   anti_G = {_G = \"_G\"}
+   return anti_G
+end"]
+// END RANK codeblock_122
+
+section_11 -> { header_139 prose_140 prose_141 structure_142 structure_143 codeblock_144}
+{rank=same; header_139 prose_140 prose_141 structure_142 structure_143 codeblock_144}
+
+header_139 [label="3 : tabulator"]
+
+prose_140 [label="prose"]
+
+prose_141 [label="prose"]
+
+structure_142 [label="structure"]
+
+structure_143 [label="structure"]
+
+codeblock_144 [label="code block 159-259"]
+
+
+// END RANK section_11
+
+header_139 -> leaf_145
+leaf_145  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** tabulator"]
+// END RANK header_139
+
+prose_140 -> { raw_146}
+{rank=same; raw_146}
+
+raw_146 [label="raw"]
+
+
+// END RANK prose_140
+
+raw_146 -> leaf_147
+leaf_147  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+This is fundamentally [[Tim Caswell's][https://github.com/creationix]] code.
+"]
+// END RANK raw_146
+
+prose_141 -> { raw_148}
+{rank=same; raw_148}
+
+raw_148 [label="raw"]
+
+
+// END RANK prose_141
+
+raw_148 -> leaf_149
+leaf_149  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+I've dressed it up a bit.
+"]
+// END RANK raw_148
+
+structure_142 -> { hashline_150}
+{rank=same; hashline_150}
+
+hashline_150 [label="hashline"]
+
+
+// END RANK structure_142
+
+hashline_150 -> { hashtag_151}
+{rank=same; hashtag_151}
+
+hashtag_151 [label="hashtag"]
+
+
+// END RANK hashline_150
+
+hashtag_151 -> leaf_152
+leaf_152  [color=Gray,shape=rectangle,fontname=Inconsolata,label="todo"]
+// END RANK hashtag_151
+
+structure_143 -> { hashline_153}
+{rank=same; hashline_153}
+
+hashline_153 [label="hashline"]
+
+
+// END RANK structure_143
+
+hashline_153 -> { hashtag_154}
+{rank=same; hashtag_154}
+
+hashtag_154 [label="hashtag"]
+
+
+// END RANK hashline_153
+
+hashtag_154 -> leaf_155
+leaf_155  [color=Gray,shape=rectangle,fontname=Inconsolata,label="todo"]
+// END RANK hashtag_154
+
+codeblock_144 -> leaf_156
+leaf_156  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local ts
+
+local SORT_LIMIT = 500  -- This won't be necessary #todo remove
+
+local function _keysort(a, b)
+   if type(a) == \"number\" and type(b) == \"string\" then
+      return true
+   elseif type(a) == \"string\" and type(b) == \"number\" then
+      return false
+   elseif (type(a) == \"string\" and type(b) == \"string\")
+      or (type(a) == \"number\" and type(b) == \"number\") then
+      return a < b
+   else
+      return false
+   end
+end
+
+local function tabulate(tab, depth, cycle)
+   cycle = cycle or {}
+   depth = depth or 0
+   if type(tab) ~= \"table\" then
+      return ts(tab)
+   end
+   if depth > C.depth or cycle[tab] then
+      return ts(tab, \"tab_name\")
+   end
+   cycle[tab] = true
+   local indent = (\"  \"):rep(depth)
+   -- Check to see if this is an array
+   local is_array = true
+   local i = 1
+   for k,v in pairs(tab) do
+      if not (k == i) then
+         is_array = false
+      end
+      i = i + 1
+   end
+   local first = true
+   local lines = {}
+   -- if we have a metatable, get it first
+   local mt = \"\"
+   local _M = getmetatable(tab)
+   if _M then
+      mt = ts(tab, \"mt\") .. c.base(\" = \") .. tabulate(_M, depth + 1, cycle)
+      lines[1] = mt
+      i = 2
+   else
+      i = 1
+   end
+   local estimated = 0
+   local keys
+   if not is_array then
+      keys = table.keys(tab)
+      if #keys <= SORT_LIMIT then
+         table.sort(keys, _keysort)
+      else
+         -- bail
+         return \"{ !!! }\"
+      end
+   else
+      if #tab > SORT_LIMIT then
+         return \"{ #!!! }\"
+      end
+      keys = tab
+   end
+   for j, k in ipairs(keys) do
+      -- this looks dumb but
+      -- the result is that k is key
+      -- and v is value for either type of table
+      local v
+      if is_array then
+         v = k
+         k = j
+      else
+         v = tab[k]
+      end
+      local s
+      if is_array then
+         s = \"\"
+      else
+         if type(k) == \"string\" and k:find(\"^[%a_][%a%d_]*$\") then
+            s = ts(k) .. c.base(\" = \")
+         else
+            s = c.base(\"[\") .. tabulate(k, 100, cycle) .. c.base(\"] = \")
+         end
+      end
+      s = s .. tabulate(v, depth + 1, cycle)
+      lines[i] = s
+      estimated = estimated + #s
+      i = i + 1
+   end
+   if estimated > WIDE_TABLE then
+      return c.base(\"{ \") .. indent
+         .. table.concat(lines, \",\\n  \" .. indent)
+         ..  c.base(\" }\")
+   else
+      return c.base(\"{ \") .. table.concat(lines, c.base(\", \")) .. c.base(\" }\")
+   end
+end"]
+// END RANK codeblock_144
+
+section_12 -> { header_157 prose_158 codeblock_159 codeblock_160}
+{rank=same; header_157 prose_158 codeblock_159 codeblock_160}
+
+header_157 [label="3 : string and cdata pretty-printing"]
+
+prose_158 [label="prose"]
+
+codeblock_159 [label="code block 267-298"]
+
+codeblock_160 [label="code block 300-310"]
+
+
+// END RANK section_12
+
+header_157 -> leaf_161
+leaf_161  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** string and cdata pretty-printing"]
+// END RANK header_157
+
+prose_158 -> { raw_162}
+{rank=same; raw_162}
+
+raw_162 [label="raw"]
+
+
+// END RANK prose_158
+
+raw_162 -> leaf_163
+leaf_163  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+We make a small wrapper function which resets string color in between
+escapes, then gsub the daylights out of it.
+"]
+// END RANK raw_162
+
+codeblock_159 -> leaf_164
+leaf_164  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local find, sub, gsub, byte = string.find, string.sub,
+                              string.gsub, string.byte
+
+local e = function(str)
+   return c.stresc .. str .. c.string
+end
+
+-- Turn control characters into their byte rep,
+-- preserving escapes
+local function ctrl_pr(str)
+   if byte(str) ~= 27 then
+      return e(\"\\\\\" .. byte(str))
+   else
+      return str
+   end
+end
+
+local function scrub (str)
+   return str:gsub(\"\\27\", e \"\\\\x1b\")
+             :gsub('\"',  e '\\\\\"')
+             :gsub(\"'\",  e \"\\\\'\")
+             :gsub(\"\\a\", e \"\\\\a\")
+             :gsub(\"\\b\", e \"\\\\b\")
+             :gsub(\"\\f\", e \"\\\\f\")
+             :gsub(\"\\n\", e \"\\\\n\")
+             :gsub(\"\\r\", e \"\\\\r\")
+             :gsub(\"\\t\", e \"\\\\t\")
+             :gsub(\"\\v\", e \"\\\\v\")
+             :gsub(\"%c\", ctrl_pr)
+end"]
+// END RANK codeblock_159
+
+codeblock_160 -> leaf_165
+leaf_165  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function c_data(value, str)
+   local meta = reflect.getmetatable(value)
+   if meta then
+      local mt_str = ts(meta)
+      return str .. \" = \" .. mt_str
+   else
+      return str
+   end
+end"]
+// END RANK codeblock_160
+
+section_13 -> { header_166 prose_167 codeblock_168 codeblock_169 codeblock_170}
+{rank=same; header_166 prose_167 codeblock_168 codeblock_169 codeblock_170}
+
+header_166 [label="3 : ts"]
+
+prose_167 [label="prose"]
+
+codeblock_168 [label="code block 316-394"]
+
+codeblock_169 [label="code block 396-403"]
+
+codeblock_170 [label="code block 405-407"]
+
+
+// END RANK section_13
+
+header_166 -> leaf_171
+leaf_171  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** ts"]
+// END RANK header_166
+
+prose_167 -> { raw_172}
+{rank=same; raw_172}
+
+raw_172 [label="raw"]
+
+
+// END RANK prose_167
+
+raw_172 -> leaf_173
+leaf_173  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+Lots of small, nice things in this one.
+"]
+// END RANK raw_172
+
+codeblock_168 -> leaf_174
+leaf_174  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ts = function (value, hint)
+   local strval = tostring(value) or \"\"
+   local str = scrub(strval)
+   -- For cases more specific than mere type,
+   -- we have hints:
+   if hint then
+      if hint == \"tab_name\" then
+         local tab_name = anti_G[value] or \"t:\" .. sub(str, -6)
+         return c.table(tab_name)
+      elseif hint == \"mt\" then
+         local mt_name = anti_G[value] or \"mt:\" .. sub(str, -6)
+         return c.metatable(\"⟨\" .. mt_name .. \"⟩\")
+      elseif hints[hint] then
+         return hints[hint](str)
+      elseif c[hint] then
+         return c[hint](str)
+      end
+   end
+
+   local typica = type(value)
+
+   if typica == \"table\" then
+      -- check for a __repr metamethod
+      local _M = getmetatable(value)
+      if _M and _M.__repr and not (hint == \"raw\") then
+         str = _M.__repr(value, c)
+
+         assert(type(str) == \"string\")
+      else
+         str = tabulate(value)
+      end
+   elseif typica == \"function\" then
+      local f_label = sub(str,11)
+      f_label = sub(f_label,1,5) == \"built\"
+                and f_label
+                or \"f:\" .. sub(str, -6)
+      local func_name = anti_G[value] or f_label
+      str = c.func(func_name)
+   elseif typica == \"boolean\" then
+      str = value and c.truth(str) or c.falsehood(str)
+   elseif typica == \"string\" then
+      if value == \"\" then
+         str = c.string('\"\"')
+      else
+         str = c.string(str)
+      end
+   elseif typica == \"number\" then
+      str = c.number(str)
+   elseif typica == \"nil\" then
+      str = c.nilness(str)
+   elseif typica == \"thread\" then
+      local coro_name = anti_G[value] and \"coro:\" .. anti_G[value]
+                                      or  \"coro:\" .. sub(str, -6)
+      str = c.thread(coro_name)
+   elseif typica == \"userdata\" then
+      if anti_G[value] then
+         str = c.userdata(anti_G[value])
+      else
+         local name = find(str, \":\")
+         if name then
+            str = c.userdata(sub(str, 1, name - 1))
+         else
+            str = c.userdata(str)
+         end
+      end
+   elseif typica == \"cdata\" then
+      if anti_G[value] then
+         str = c.cdata(anti_G[value])
+      else
+         str = c.cdata(str)
+      end
+      str = c_data(value, str)
+   end
+   return str
+end
+
+repr.ts = ts"]
+// END RANK codeblock_168
+
+codeblock_169 -> leaf_175
+leaf_175  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function repr.ts_bw(value)
+   c = C.no_color
+   local to_string = ts(value)
+   c = C.color
+   return to_string
+end"]
+// END RANK codeblock_169
+
+codeblock_170 -> leaf_176
+leaf_176  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return repr"]
+// END RANK codeblock_170
+
+
+}

@@ -8,12 +8,22 @@
 
 #### Intercept _G
 
+We don't want to put ``femto`` into the environment of the codebase under
+examination, so we replace the global environment with a table which falls
+back to ``_G``.
+
+
+Man.  I really like having first-class environments.
+
 ```lua
 __G = setmetatable({}, {__index = _G})
 
 setfenv(0, __G)
 local function _femto(_ENV)
 ```
+
+No sense wasting a level of indent on a wrapper imho
+
 ```lua
 setfenv(1, _ENV)
 

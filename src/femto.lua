@@ -9,6 +9,12 @@
 
 
 
+
+
+
+
+
+
 __G = setmetatable({}, {__index = _G})
 
 setfenv(0, __G)
