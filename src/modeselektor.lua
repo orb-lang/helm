@@ -89,7 +89,6 @@
 
 assert(meta, "must have meta in _G")
 assert(write, "must have write in _G")
-assert(ts, "must have ts in _G")
 
 
 
@@ -108,6 +107,7 @@ local Rainbuf   = require "rainbuf"
 local Historian = require "historian"
 local Lex       = require "lex"
 local Zoneherd  = require "zone"
+local repr      = require "repr"
 
 local Nerf   = require "nerf"
 local Search = require "search"
@@ -117,6 +117,9 @@ local sub, gsub, rep, find = assert(string.sub),
                              assert(string.gsub),
                              assert(string.rep),
                              assert(string.find)
+
+local ts = repr.ts
+
 
 
 

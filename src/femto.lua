@@ -100,7 +100,6 @@ local concat = assert(table.concat)
 
 a = require "anterm"
 color = require "color"
-ts = color.ts
 c = color.color
 --watch = require "watcher"
 

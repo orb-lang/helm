@@ -18,7 +18,6 @@
 
 assert(meta, "must have meta in _G")
 assert(write, "must have write in _G")
-assert(ts, "must have ts in _G")
 
 
 

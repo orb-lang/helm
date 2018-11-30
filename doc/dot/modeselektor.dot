@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 646"]
+doc_0 [label="doc - 650"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-591"]
+section_1 [label="section: 1-595"]
 
 
 // END RANK doc_0
@@ -23,11 +23,11 @@ prose_3 [label="prose"]
 
 prose_4 [label="prose"]
 
-section_5 [label="section: 12-359"]
+section_5 [label="section: 12-363"]
 
-section_6 [label="section: 424-513"]
+section_6 [label="section: 428-517"]
 
-section_7 [label="section: 592-646"]
+section_7 [label="section: 596-650"]
 
 
 // END RANK section_1
@@ -174,21 +174,21 @@ prose_52 [label="prose"]
 
 section_53 [label="section: 84-95"]
 
-section_54 [label="section: 96-173"]
+section_54 [label="section: 96-177"]
 
-section_55 [label="section: 174-184"]
+section_55 [label="section: 178-188"]
 
-section_56 [label="section: 185-253"]
+section_56 [label="section: 189-257"]
 
-section_57 [label="section: 277-289"]
+section_57 [label="section: 281-293"]
 
-section_58 [label="section: 290-304"]
+section_58 [label="section: 294-308"]
 
-section_59 [label="section: 305-313"]
+section_59 [label="section: 309-317"]
 
-section_60 [label="section: 314-343"]
+section_60 [label="section: 318-347"]
 
-section_61 [label="section: 360-403"]
+section_61 [label="section: 364-407"]
 
 
 // END RANK section_5
@@ -1105,9 +1105,9 @@ prose_303 [label="prose"]
 
 prose_304 [label="prose"]
 
-codeblock_305 [label="code block 102-120"]
+codeblock_305 [label="code block 102-124"]
 
-codeblock_306 [label="code block 122-124"]
+codeblock_306 [label="code block 126-128"]
 
 prose_307 [label="prose"]
 
@@ -1119,19 +1119,19 @@ prose_310 [label="prose"]
 
 prose_311 [label="prose"]
 
-codeblock_312 [label="code block 147-149"]
+codeblock_312 [label="code block 151-153"]
 
 prose_313 [label="prose"]
 
-codeblock_314 [label="code block 153-155"]
+codeblock_314 [label="code block 157-159"]
 
 prose_315 [label="prose"]
 
-codeblock_316 [label="code block 160-162"]
+codeblock_316 [label="code block 164-166"]
 
 prose_317 [label="prose"]
 
-codeblock_318 [label="code block 167-171"]
+codeblock_318 [label="code block 171-175"]
 
 
 // END RANK section_54
@@ -1189,6 +1189,7 @@ local Rainbuf   = require \"rainbuf\"
 local Historian = require \"historian\"
 local Lex       = require \"lex\"
 local Zoneherd  = require \"zone\"
+local repr      = require \"repr\"
 
 local Nerf   = require \"nerf\"
 local Search = require \"search\"
@@ -1197,7 +1198,10 @@ local concat               = assert(table.concat)
 local sub, gsub, rep, find = assert(string.sub),
                              assert(string.gsub),
                              assert(string.rep),
-                             assert(string.find)"]
+                             assert(string.find)
+
+local ts = repr.ts
+"]
 // END RANK codeblock_305
 
 codeblock_306 -> leaf_329
@@ -1470,7 +1474,7 @@ header_390 [label="3 : self-insert(modeS, category, value)"]
 
 prose_391 [label="prose"]
 
-codeblock_392 [label="code block 178-182"]
+codeblock_392 [label="code block 182-186"]
 
 
 // END RANK section_55
@@ -1509,9 +1513,9 @@ prose_398 [label="prose"]
 
 prose_399 [label="prose"]
 
-section_400 [label="section: 192-253"]
+section_400 [label="section: 196-257"]
 
-section_401 [label="section: 254-276"]
+section_401 [label="section: 258-280"]
 
 
 // END RANK section_56
@@ -1561,7 +1565,7 @@ prose_409 [label="prose"]
 
 prose_410 [label="prose"]
 
-codeblock_411 [label="code block 201-252"]
+codeblock_411 [label="code block 205-256"]
 
 
 // END RANK section_400
@@ -1676,11 +1680,11 @@ prose_421 [label="prose"]
 
 prose_422 [label="prose"]
 
-codeblock_423 [label="code block 262-266"]
+codeblock_423 [label="code block 266-270"]
 
 structure_424 [label="structure"]
 
-codeblock_425 [label="code block 271-275"]
+codeblock_425 [label="code block 275-279"]
 
 
 // END RANK section_401
@@ -1830,7 +1834,7 @@ header_460 [label="3 : ModeS:placeCursor()"]
 
 prose_461 [label="prose"]
 
-codeblock_462 [label="code block 281-287"]
+codeblock_462 [label="code block 285-291"]
 
 
 // END RANK section_57
@@ -1889,7 +1893,7 @@ prose_474 [label="prose"]
 
 prose_475 [label="prose"]
 
-codeblock_476 [label="code block 297-302"]
+codeblock_476 [label="code block 301-306"]
 
 
 // END RANK section_58
@@ -1989,7 +1993,7 @@ header_499 [label="3 : ModeS:reflow()"]
 
 prose_500 [label="prose"]
 
-codeblock_501 [label="code block 307-312"]
+codeblock_501 [label="code block 311-316"]
 
 
 // END RANK section_59
@@ -2027,7 +2031,7 @@ prose_507 [label="prose"]
 
 prose_508 [label="prose"]
 
-codeblock_509 [label="code block 320-323"]
+codeblock_509 [label="code block 324-327"]
 
 prose_510 [label="prose"]
 
@@ -2041,7 +2045,7 @@ prose_514 [label="prose"]
 
 prose_515 [label="prose"]
 
-section_516 [label="section: 344-359"]
+section_516 [label="section: 348-363"]
 
 
 // END RANK section_60
@@ -2362,9 +2366,9 @@ header_595 [label="4 : Prompts"]
 
 prose_596 [label="prose"]
 
-codeblock_597 [label="code block 348-351"]
+codeblock_597 [label="code block 352-355"]
 
-codeblock_598 [label="code block 353-357"]
+codeblock_598 [label="code block 357-361"]
 
 
 // END RANK section_516
@@ -2410,9 +2414,9 @@ prose_606 [label="prose"]
 
 prose_607 [label="prose"]
 
-section_608 [label="section: 371-403"]
+section_608 [label="section: 375-407"]
 
-section_609 [label="section: 404-423"]
+section_609 [label="section: 408-427"]
 
 
 // END RANK section_61
@@ -2538,7 +2542,7 @@ header_639 [label="4 : ModeS.closet"]
 
 prose_640 [label="prose"]
 
-codeblock_641 [label="code block 376-402"]
+codeblock_641 [label="code block 380-406"]
 
 
 // END RANK section_608
@@ -2598,7 +2602,7 @@ header_646 [label="4 : _firstCharHandler"]
 
 prose_647 [label="prose"]
 
-codeblock_648 [label="code block 409-421"]
+codeblock_648 [label="code block 413-425"]
 
 
 // END RANK section_609
@@ -2665,15 +2669,15 @@ prose_661 [label="prose"]
 
 prose_662 [label="prose"]
 
-codeblock_663 [label="code block 437-494"]
+codeblock_663 [label="code block 441-498"]
 
 prose_664 [label="prose"]
 
-codeblock_665 [label="code block 498-502"]
+codeblock_665 [label="code block 502-506"]
 
-section_666 [label="section: 505-513"]
+section_666 [label="section: 509-517"]
 
-section_667 [label="section: 514-591"]
+section_667 [label="section: 518-595"]
 
 
 // END RANK section_6
@@ -2980,11 +2984,11 @@ header_727 [label="3 : ModeS:eval()"]
 
 prose_728 [label="prose"]
 
-codeblock_729 [label="code block 517-522"]
+codeblock_729 [label="code block 521-526"]
 
-codeblock_730 [label="code block 524-528"]
+codeblock_730 [label="code block 528-532"]
 
-codeblock_731 [label="code block 530-589"]
+codeblock_731 [label="code block 534-593"]
 
 
 // END RANK section_667
@@ -3088,9 +3092,9 @@ header_738 [label="2 : new"]
 
 prose_739 [label="prose"]
 
-codeblock_740 [label="code block 595-618"]
+codeblock_740 [label="code block 599-622"]
 
-codeblock_741 [label="code block 620-622"]
+codeblock_741 [label="code block 624-626"]
 
 
 // END RANK section_7

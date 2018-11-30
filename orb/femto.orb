@@ -100,7 +100,6 @@ in Orb relatively soon.
 #!lua
 a = require "anterm"
 color = require "color"
-ts = color.ts
 c = color.color
 --watch = require "watcher"
 

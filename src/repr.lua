@@ -18,7 +18,6 @@
 
 
 
-#!lua
 local a = require "anterm"
 
 local core = require "core"
