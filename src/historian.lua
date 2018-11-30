@@ -19,6 +19,7 @@ local Rainbuf = require "rainbuf"
 local sql     = require "sqlayer"
 local color   = require "color"
 local L       = require "lpeg"
+local repr    = require "repr"
 local format  = assert (string.format)
 local sub     = assert (string.sub)
 local codepoints = assert(string.codepoints, "must have string.codepoints")
@@ -259,7 +260,7 @@ function Historian.persist(historian, txtbuf, results)
             -- insert result repr
             local res = results[i]
             historian.insert_result:bindkv { line_id = line_id,
-                                                  repr = color.ts(res) }
+                                                  repr = repr.ts(res) }
             err = historian.insert_result:step()
             if not err then
                historian.insert_result:clearbind():reset()

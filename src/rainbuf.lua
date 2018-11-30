@@ -58,8 +58,8 @@
 
 
 
-local color = require "color"
-local ts = color.ts
+local repr = require "repr"
+local ts = repr.ts
 
 
 
