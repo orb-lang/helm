@@ -21,7 +21,6 @@ This is copypasta from Modeselektor, but yeah, we'll need most of this.
 ```lua
 assert(meta, "must have meta in _G")
 assert(write, "must have write in _G")
-assert(ts, "must have ts in _G")
 ```
 ```lua
 local Txtbuf    = require "txtbuf"

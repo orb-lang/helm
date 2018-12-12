@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 410"]
+doc_0 [label="doc - 409"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-311"]
+section_1 [label="section: 1-310"]
 
 
 // END RANK doc_0
@@ -27,19 +27,19 @@ prose_5 [label="prose"]
 
 prose_6 [label="prose"]
 
-section_7 [label="section: 18-31"]
+section_7 [label="section: 18-30"]
 
-section_8 [label="section: 32-45"]
+section_8 [label="section: 31-44"]
 
-section_9 [label="section: 46-57"]
+section_9 [label="section: 45-56"]
 
-section_10 [label="section: 67-129"]
+section_10 [label="section: 66-128"]
 
-section_11 [label="section: 146-261"]
+section_11 [label="section: 145-260"]
 
-section_12 [label="section: 262-311"]
+section_12 [label="section: 261-310"]
 
-section_13 [label="section: 312-410"]
+section_13 [label="section: 311-409"]
 
 
 // END RANK section_1
@@ -208,7 +208,7 @@ header_53 [label="4 : imports"]
 
 prose_54 [label="prose"]
 
-codeblock_55 [label="code block 20-29"]
+codeblock_55 [label="code block 20-28"]
 
 
 // END RANK section_7
@@ -231,8 +231,7 @@ leaf_58  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 // END RANK raw_57
 
 codeblock_55 -> leaf_59
-leaf_59  [color=Gray,shape=rectangle,fontname=Inconsolata,label="#!lua
-local a = require \"anterm\"
+leaf_59  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local a = require \"anterm\"
 
 local core = require \"core\"
 
@@ -248,7 +247,7 @@ header_60 [label="4 : setup"]
 
 prose_61 [label="prose"]
 
-codeblock_62 [label="code block 34-43"]
+codeblock_62 [label="code block 33-42"]
 
 
 // END RANK section_8
@@ -288,11 +287,11 @@ header_67 [label="3 : anti_G"]
 
 prose_68 [label="prose"]
 
-codeblock_69 [label="code block 52-54"]
+codeblock_69 [label="code block 51-53"]
 
 prose_70 [label="prose"]
 
-section_71 [label="section: 58-66"]
+section_71 [label="section: 57-65"]
 
 
 // END RANK section_9
@@ -397,7 +396,7 @@ header_96 [label="4 : tie_break(old, new)"]
 
 prose_97 [label="prose"]
 
-codeblock_98 [label="code block 63-64"]
+codeblock_98 [label="code block 62-63"]
 
 
 // END RANK section_71
@@ -435,9 +434,9 @@ prose_104 [label="prose"]
 
 prose_105 [label="prose"]
 
-codeblock_106 [label="code block 76-127"]
+codeblock_106 [label="code block 75-126"]
 
-section_107 [label="section: 130-145"]
+section_107 [label="section: 129-144"]
 
 
 // END RANK section_10
@@ -556,7 +555,7 @@ header_120 [label="4 : repr.allNames(), repr.clearNames()"]
 
 prose_121 [label="prose"]
 
-codeblock_122 [label="code block 135-144"]
+codeblock_122 [label="code block 134-143"]
 
 
 // END RANK section_107
@@ -641,7 +640,7 @@ structure_142 [label="structure"]
 
 structure_143 [label="structure"]
 
-codeblock_144 [label="code block 159-259"]
+codeblock_144 [label="code block 158-258"]
 
 
 // END RANK section_11
@@ -828,9 +827,9 @@ header_157 [label="3 : string and cdata pretty-printing"]
 
 prose_158 [label="prose"]
 
-codeblock_159 [label="code block 267-298"]
+codeblock_159 [label="code block 266-297"]
 
-codeblock_160 [label="code block 300-310"]
+codeblock_160 [label="code block 299-309"]
 
 
 // END RANK section_12
@@ -907,11 +906,11 @@ header_166 [label="3 : ts"]
 
 prose_167 [label="prose"]
 
-codeblock_168 [label="code block 316-394"]
+codeblock_168 [label="code block 315-393"]
 
-codeblock_169 [label="code block 396-403"]
+codeblock_169 [label="code block 395-402"]
 
-codeblock_170 [label="code block 405-407"]
+codeblock_170 [label="code block 404-406"]
 
 
 // END RANK section_13

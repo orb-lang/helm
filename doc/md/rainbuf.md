@@ -71,8 +71,8 @@ continues past the edge of the zone and otherwise falsy.
 #### includes
 
 ```lua
-local color = require "color"
-local ts = color.ts
+local repr = require "repr"
+local ts = repr.ts
 ```
 #### Rainbuf metatable
 

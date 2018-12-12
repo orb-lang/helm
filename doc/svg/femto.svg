@@ -1119,7 +1119,7 @@
 <polygon fill="none" stroke="#c0c0c0" points="4766.5,-1368.8023 4561.5,-1368.8023 4561.5,-1283.802 4766.5,-1283.802 4766.5,-1368.8023"/>
 <text text-anchor="middle" x="4664" y="-1353.6022" font-family="Inconsolata" font-size="14.00" fill="#000000">a = require &quot;anterm&quot;</text>
 <text text-anchor="middle" x="4664" y="-1338.2022" font-family="Inconsolata" font-size="14.00" fill="#000000">color = require &quot;color&quot;</text>
-<text text-anchor="middle" x="4664" y="-1322.8022" font-family="Inconsolata" font-size="14.00" fill="#000000">ts = color.ts</text>
+<text text-anchor="middle" x="4664" y="-1322.8022" font-family="Inconsolata" font-size="14.00" fill="#000000">local repr = require &quot;repr&quot;</text>
 <text text-anchor="middle" x="4664" y="-1307.4022" font-family="Inconsolata" font-size="14.00" fill="#000000">c = color.color</text>
 <text text-anchor="middle" x="4664" y="-1292.0021" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45;watch = require &quot;watcher&quot;</text>
 </g>
@@ -2289,7 +2289,7 @@
 <polygon fill="none" stroke="#c0c0c0" points="10263.5,-932.8019 9946.5,-932.8019 9946.5,-381.4001 10263.5,-381.4001 10263.5,-932.8019"/>
 <text text-anchor="middle" x="10105" y="-917.5014" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; Get names for as many values as possible</text>
 <text text-anchor="middle" x="10105" y="-902.1014" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; into the colorizer</text>
-<text text-anchor="middle" x="10105" y="-886.7014" font-family="Inconsolata" font-size="14.00" fill="#000000">color.allNames()</text>
+<text text-anchor="middle" x="10105" y="-886.7014" font-family="Inconsolata" font-size="14.00" fill="#000000">repr.allNames()</text>
 <text text-anchor="middle" x="10105" y="-855.3013" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; raw mode</text>
 <text text-anchor="middle" x="10105" y="-839.9013" font-family="Inconsolata" font-size="14.00" fill="#000000">uv.tty_set_mode(stdin, 2)</text>
 <text text-anchor="middle" x="10105" y="-824.5013" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; mouse mode</text>

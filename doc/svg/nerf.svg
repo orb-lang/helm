@@ -13,13 +13,13 @@
 <g id="node1" class="node">
 <title>doc_0</title>
 <ellipse fill="none" stroke="#000000" cx="1155.5" cy="-1557.8021" rx="46.9581" ry="18"/>
-<text text-anchor="middle" x="1155.5" y="-1553.6021" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">doc &#45; 241</text>
+<text text-anchor="middle" x="1155.5" y="-1553.6021" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">doc &#45; 240</text>
 </g>
 <!-- section_1 -->
 <g id="node2" class="node">
 <title>section_1</title>
 <ellipse fill="none" stroke="#000000" cx="1155.5" cy="-1485.8021" rx="60.9826" ry="18"/>
-<text text-anchor="middle" x="1155.5" y="-1481.6021" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 1&#45;37</text>
+<text text-anchor="middle" x="1155.5" y="-1481.6021" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 1&#45;36</text>
 </g>
 <!-- doc_0&#45;&gt;section_1 -->
 <g id="edge1" class="edge">
@@ -91,7 +91,7 @@
 <g id="node8" class="node">
 <title>section_7</title>
 <ellipse fill="none" stroke="#000000" cx="2142.5" cy="-1413.8021" rx="65.8187" ry="18"/>
-<text text-anchor="middle" x="2142.5" y="-1409.6021" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 14&#45;37</text>
+<text text-anchor="middle" x="2142.5" y="-1409.6021" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 14&#45;36</text>
 </g>
 <!-- section_1&#45;&gt;section_7 -->
 <g id="edge7" class="edge">
@@ -103,7 +103,7 @@
 <g id="node9" class="node">
 <title>section_8</title>
 <ellipse fill="none" stroke="#000000" cx="3280.5" cy="-1413.8021" rx="70.655" ry="18"/>
-<text text-anchor="middle" x="3280.5" y="-1409.6021" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 38&#45;223</text>
+<text text-anchor="middle" x="3280.5" y="-1409.6021" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 37&#45;222</text>
 </g>
 <!-- section_1&#45;&gt;section_8 -->
 <g id="edge8" class="edge">
@@ -271,7 +271,7 @@
 <g id="node33" class="node">
 <title>codeblock_32</title>
 <ellipse fill="none" stroke="#000000" cx="2296.5" cy="-1341.8021" rx="77.4211" ry="18"/>
-<text text-anchor="middle" x="2296.5" y="-1337.6021" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 18&#45;22</text>
+<text text-anchor="middle" x="2296.5" y="-1337.6021" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 18&#45;21</text>
 </g>
 <!-- section_7&#45;&gt;codeblock_32 -->
 <g id="edge32" class="edge">
@@ -283,7 +283,7 @@
 <g id="node34" class="node">
 <title>codeblock_33</title>
 <ellipse fill="none" stroke="#000000" cx="2555.5" cy="-1341.8021" rx="77.4211" ry="18"/>
-<text text-anchor="middle" x="2555.5" y="-1337.6021" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 24&#45;35</text>
+<text text-anchor="middle" x="2555.5" y="-1337.6021" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 23&#45;34</text>
 </g>
 <!-- section_7&#45;&gt;codeblock_33 -->
 <g id="edge33" class="edge">
@@ -319,7 +319,7 @@
 <g id="node42" class="node">
 <title>section_41</title>
 <ellipse fill="none" stroke="#000000" cx="3280.5" cy="-1341.8021" rx="65.8187" ry="18"/>
-<text text-anchor="middle" x="3280.5" y="-1337.6021" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 41&#45;64</text>
+<text text-anchor="middle" x="3280.5" y="-1337.6021" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 40&#45;63</text>
 </g>
 <!-- section_8&#45;&gt;section_41 -->
 <g id="edge41" class="edge">
@@ -331,7 +331,7 @@
 <g id="node43" class="node">
 <title>section_42</title>
 <ellipse fill="none" stroke="#000000" cx="3807.5" cy="-1341.8021" rx="70.655" ry="18"/>
-<text text-anchor="middle" x="3807.5" y="-1337.6021" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 65&#45;193</text>
+<text text-anchor="middle" x="3807.5" y="-1337.6021" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 64&#45;192</text>
 </g>
 <!-- section_8&#45;&gt;section_42 -->
 <g id="edge42" class="edge">
@@ -343,7 +343,7 @@
 <g id="node44" class="node">
 <title>section_43</title>
 <ellipse fill="none" stroke="#000000" cx="4907.5" cy="-1341.8021" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="4907.5" y="-1337.6021" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 194&#45;223</text>
+<text text-anchor="middle" x="4907.5" y="-1337.6021" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 193&#45;222</text>
 </g>
 <!-- section_8&#45;&gt;section_43 -->
 <g id="edge43" class="edge">
@@ -355,7 +355,7 @@
 <g id="node45" class="node">
 <title>section_44</title>
 <ellipse fill="none" stroke="#000000" cx="5698.5" cy="-1341.8021" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="5698.5" y="-1337.6021" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 224&#45;241</text>
+<text text-anchor="middle" x="5698.5" y="-1337.6021" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 223&#45;240</text>
 </g>
 <!-- section_8&#45;&gt;section_44 -->
 <g id="edge44" class="edge">
@@ -509,16 +509,15 @@
 <!-- leaf_37 -->
 <g id="node38" class="node">
 <title>leaf_37</title>
-<polygon fill="none" stroke="#c0c0c0" points="2463.5,-1233.7024 2181.5,-1233.7024 2181.5,-1179.3015 2463.5,-1179.3015 2463.5,-1233.7024"/>
-<text text-anchor="middle" x="2322.5" y="-1218.402" font-family="Inconsolata" font-size="14.00" fill="#000000">assert(meta, &quot;must have meta in _G&quot;)</text>
-<text text-anchor="middle" x="2322.5" y="-1203.002" font-family="Inconsolata" font-size="14.00" fill="#000000">assert(write, &quot;must have write in _G&quot;)</text>
-<text text-anchor="middle" x="2322.5" y="-1187.6019" font-family="Inconsolata" font-size="14.00" fill="#000000">assert(ts, &quot;must have ts in _G&quot;)</text>
+<polygon fill="none" stroke="#c0c0c0" points="2463.5,-1225.8025 2181.5,-1225.8025 2181.5,-1187.2014 2463.5,-1187.2014 2463.5,-1225.8025"/>
+<text text-anchor="middle" x="2322.5" y="-1210.702" font-family="Inconsolata" font-size="14.00" fill="#000000">assert(meta, &quot;must have meta in _G&quot;)</text>
+<text text-anchor="middle" x="2322.5" y="-1195.302" font-family="Inconsolata" font-size="14.00" fill="#000000">assert(write, &quot;must have write in _G&quot;)</text>
 </g>
 <!-- codeblock_32&#45;&gt;leaf_37 -->
 <g id="edge37" class="edge">
 <title>codeblock_32&#45;&gt;leaf_37</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M2300.0065,-1323.5549C2303.9222,-1303.1779 2310.3648,-1269.652 2315.3536,-1243.6907"/>
-<polygon fill="#000000" stroke="#000000" points="2318.8041,-1244.2814 2317.2542,-1233.8005 2311.9298,-1242.9603 2318.8041,-1244.2814"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M2300.0065,-1323.5549C2304.3138,-1301.1402 2311.6785,-1262.8153 2316.8027,-1236.15"/>
+<polygon fill="#000000" stroke="#000000" points="2320.2623,-1236.6928 2318.7124,-1226.2119 2313.3881,-1235.3717 2320.2623,-1236.6928"/>
 </g>
 <!-- leaf_38 -->
 <g id="node39" class="node">
@@ -604,7 +603,7 @@
 <g id="node51" class="node">
 <title>codeblock_50</title>
 <ellipse fill="none" stroke="#000000" cx="3280.5" cy="-1206.502" rx="77.4211" ry="18"/>
-<text text-anchor="middle" x="3280.5" y="-1202.302" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 45&#45;52</text>
+<text text-anchor="middle" x="3280.5" y="-1202.302" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 44&#45;51</text>
 </g>
 <!-- section_41&#45;&gt;codeblock_50 -->
 <g id="edge50" class="edge">
@@ -628,7 +627,7 @@
 <g id="node53" class="node">
 <title>codeblock_52</title>
 <ellipse fill="none" stroke="#000000" cx="3544.5" cy="-1206.502" rx="77.4211" ry="18"/>
-<text text-anchor="middle" x="3544.5" y="-1202.302" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 56&#45;62</text>
+<text text-anchor="middle" x="3544.5" y="-1202.302" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 55&#45;61</text>
 </g>
 <!-- section_41&#45;&gt;codeblock_52 -->
 <g id="edge52" class="edge">
@@ -664,7 +663,7 @@
 <g id="node63" class="node">
 <title>codeblock_62</title>
 <ellipse fill="none" stroke="#000000" cx="3995.5" cy="-1206.502" rx="81.9542" ry="18"/>
-<text text-anchor="middle" x="3995.5" y="-1202.302" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 67&#45;118</text>
+<text text-anchor="middle" x="3995.5" y="-1202.302" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 66&#45;117</text>
 </g>
 <!-- section_42&#45;&gt;codeblock_62 -->
 <g id="edge62" class="edge">
@@ -676,7 +675,7 @@
 <g id="node64" class="node">
 <title>codeblock_63</title>
 <ellipse fill="none" stroke="#000000" cx="4354.5" cy="-1206.502" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="4354.5" y="-1202.302" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 124&#45;189</text>
+<text text-anchor="middle" x="4354.5" y="-1202.302" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 123&#45;188</text>
 </g>
 <!-- section_42&#45;&gt;codeblock_63 -->
 <g id="edge63" class="edge">
@@ -724,7 +723,7 @@
 <g id="node73" class="node">
 <title>codeblock_72</title>
 <ellipse fill="none" stroke="#000000" cx="5205.5" cy="-1206.502" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="5205.5" y="-1202.302" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 200&#45;221</text>
+<text text-anchor="middle" x="5205.5" y="-1202.302" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 199&#45;220</text>
 </g>
 <!-- section_43&#45;&gt;codeblock_72 -->
 <g id="edge72" class="edge">
@@ -760,7 +759,7 @@
 <g id="node82" class="node">
 <title>codeblock_81</title>
 <ellipse fill="none" stroke="#000000" cx="5887.5" cy="-1206.502" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="5887.5" y="-1202.302" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 226&#45;236</text>
+<text text-anchor="middle" x="5887.5" y="-1202.302" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 225&#45;235</text>
 </g>
 <!-- section_44&#45;&gt;codeblock_81 -->
 <g id="edge81" class="edge">
@@ -772,7 +771,7 @@
 <g id="node83" class="node">
 <title>codeblock_82</title>
 <ellipse fill="none" stroke="#000000" cx="6174.5" cy="-1206.502" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="6174.5" y="-1202.302" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 238&#45;240</text>
+<text text-anchor="middle" x="6174.5" y="-1202.302" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 237&#45;239</text>
 </g>
 <!-- section_44&#45;&gt;codeblock_82 -->
 <g id="edge82" class="edge">

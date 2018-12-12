@@ -21,7 +21,6 @@ Well, the _very_ first thing we need to do is move it...
 #### imports
 
 ```lua
-#!lua
 local a = require "anterm"
 
 local core = require "core"

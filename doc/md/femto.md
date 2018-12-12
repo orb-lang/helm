@@ -101,7 +101,7 @@ in Orb relatively soon.
 ```lua
 a = require "anterm"
 color = require "color"
-ts = color.ts
+local repr = require "repr"
 c = color.color
 --watch = require "watcher"
 
@@ -280,7 +280,7 @@ end
 ```lua
 -- Get names for as many values as possible
 -- into the colorizer
-color.allNames()
+repr.allNames()
 
 -- raw mode
 uv.tty_set_mode(stdin, 2)

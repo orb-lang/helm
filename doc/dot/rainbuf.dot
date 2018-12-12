@@ -729,8 +729,8 @@ leaf_190  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 // END RANK raw_189
 
 codeblock_187 -> leaf_191
-leaf_191  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local color = require \"color\"
-local ts = color.ts"]
+leaf_191  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local repr = require \"repr\"
+local ts = repr.ts"]
 // END RANK codeblock_187
 
 section_55 -> { header_192 prose_193 codeblock_194}

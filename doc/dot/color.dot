@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 453"]
+doc_0 [label="doc - 121"]
 
 
 doc_0 -> { section_1}
@@ -33,7 +33,7 @@ codeblock_8 [label="code block 20-73"]
 
 section_9 [label="section: 76-103"]
 
-section_10 [label="section: 104-357"]
+section_10 [label="section: 104-106"]
 
 
 // END RANK section_1
@@ -348,624 +348,98 @@ C.no_color = setmetatable({}, { __index  = _no_c_index,
                                 __concat = _no_c_concat, })"]
 // END RANK codeblock_65
 
-section_10 -> { header_70 prose_71 section_72 section_73 section_74 section_75 section_76}
-{rank=same; header_70 prose_71 section_72 section_73 section_74 section_75 section_76}
+section_10 -> { header_70 prose_71 section_72}
+{rank=same; header_70 prose_71 section_72}
 
 header_70 [label="2 : ts(value)"]
 
 prose_71 [label="prose"]
 
-section_72 [label="section: 107-122"]
-
-section_73 [label="section: 123-136"]
-
-section_74 [label="section: 137-199"]
-
-section_75 [label="section: 200-357"]
-
-section_76 [label="section: 358-453"]
+section_72 [label="section: 107-121"]
 
 
 // END RANK section_10
 
-header_70 -> leaf_77
-leaf_77  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** ts(value)"]
+header_70 -> leaf_73
+leaf_73  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** ts(value)"]
 // END RANK header_70
 
-prose_71 -> { raw_78}
-{rank=same; raw_78}
+prose_71 -> { raw_74}
+{rank=same; raw_74}
 
-raw_78 [label="raw"]
+raw_74 [label="raw"]
 
 
 // END RANK prose_71
 
-raw_78 -> leaf_79
-leaf_79  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_74 -> leaf_75
+leaf_75  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 "]
-// END RANK raw_78
+// END RANK raw_74
 
-section_72 -> { header_80 prose_81 codeblock_82}
-{rank=same; header_80 prose_81 codeblock_82}
+section_72 -> { header_76 prose_77 codeblock_78 codeblock_79}
+{rank=same; header_76 prose_77 codeblock_78 codeblock_79}
 
-header_80 [label="4 : setup"]
+header_76 [label="4 : setup"]
 
-prose_81 [label="prose"]
+prose_77 [label="prose"]
 
-codeblock_82 [label="code block 111-120"]
+codeblock_78 [label="code block 111-117"]
+
+codeblock_79 [label="code block 119-121"]
 
 
 // END RANK section_72
 
-header_80 -> leaf_83
-leaf_83  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** setup"]
-// END RANK header_80
+header_76 -> leaf_80
+leaf_80  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** setup"]
+// END RANK header_76
 
-prose_81 -> { raw_84 prespace_85 literal_86 raw_87}
-{rank=same; raw_84 prespace_85 literal_86 raw_87}
+prose_77 -> { raw_81 prespace_82 literal_83 raw_84}
+{rank=same; raw_81 prespace_82 literal_83 raw_84}
+
+raw_81 [label="raw"]
+
+prespace_82 [label="prespace"]
+
+literal_83 [label="literal"]
 
 raw_84 [label="raw"]
 
-prespace_85 [label="prespace"]
 
-literal_86 [label="literal"]
+// END RANK prose_77
 
-raw_87 [label="raw"]
-
-
-// END RANK prose_81
-
-raw_84 -> leaf_88
-leaf_88  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_81 -> leaf_85
+leaf_85  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 Localize a few values and create an anti-"]
+// END RANK raw_81
+
+prespace_82 -> leaf_86
+leaf_86  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_82
+
+literal_83 -> leaf_87
+leaf_87  [color=Gray,shape=rectangle,fontname=Inconsolata,label="_G"]
+// END RANK literal_83
+
+raw_84 -> leaf_88
+leaf_88  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" table.
+"]
 // END RANK raw_84
 
-prespace_85 -> leaf_89
-leaf_89  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_85
-
-literal_86 -> leaf_90
-leaf_90  [color=Gray,shape=rectangle,fontname=Inconsolata,label="_G"]
-// END RANK literal_86
-
-raw_87 -> leaf_91
-leaf_91  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" table.
-"]
-// END RANK raw_87
-
-codeblock_82 -> leaf_92
-leaf_92  [color=Gray,shape=rectangle,fontname=Inconsolata,label="C.color.hints = { field = C.color.field,
+codeblock_78 -> leaf_89
+leaf_89  [color=Gray,shape=rectangle,fontname=Inconsolata,label="C.color.hints = { field = C.color.field,
                   fn    = C.color.func,
                   mt    = C.color.mt }
 
-local hints = C.color.hints
-
-local c = C.color
-local anti_G = { _G = \"_G\" }"]
-// END RANK codeblock_82
-
-section_73 -> { header_93 prose_94 prose_95 codeblock_96}
-{rank=same; header_93 prose_94 prose_95 codeblock_96}
-
-header_93 [label="4 : tie_break(old, new)"]
-
-prose_94 [label="prose"]
-
-prose_95 [label="prose"]
-
-codeblock_96 [label="code block 130-134"]
-
-
-// END RANK section_73
-
-header_93 -> leaf_97
-leaf_97  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** tie_break(old, new)"]
-// END RANK header_93
-
-prose_94 -> { raw_98}
-{rank=same; raw_98}
-
-raw_98 [label="raw"]
-
-
-// END RANK prose_94
-
-raw_98 -> leaf_99
-leaf_99  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-
-A helper function to decide which name is better.
-"]
-// END RANK raw_98
-
-prose_95 -> { raw_100 prespace_101 literal_102 raw_103}
-{rank=same; raw_100 prespace_101 literal_102 raw_103}
-
-raw_100 [label="raw"]
-
-prespace_101 [label="prespace"]
-
-literal_102 [label="literal"]
-
-raw_103 [label="raw"]
-
-
-// END RANK prose_95
-
-raw_100 -> leaf_104
-leaf_104  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-To really dig out a good name for metatables we're going to need to write"]
-// END RANK raw_100
-
-prespace_101 -> leaf_105
-leaf_105  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
-// END RANK prespace_101
-
-literal_102 -> leaf_106
-leaf_106  [color=Gray,shape=rectangle,fontname=Inconsolata,label="use"]
-// END RANK literal_102
-
-raw_103 -> leaf_107
-leaf_107  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
-"]
-// END RANK raw_103
-
-codeblock_96 -> leaf_108
-leaf_108  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function tie_break(old, new)
-   return #old > #new
-end"]
-// END RANK codeblock_96
-
-section_74 -> { header_109 prose_110 codeblock_111}
-{rank=same; header_109 prose_110 codeblock_111}
-
-header_109 [label="3 : C.allNames()"]
-
-prose_110 [label="prose"]
-
-codeblock_111 [label="code block 142-197"]
-
-
-// END RANK section_74
-
-header_109 -> leaf_112
-leaf_112  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** C.allNames()"]
-// END RANK header_109
-
-prose_110 -> { raw_113 prespace_114 literal_115 raw_116}
-{rank=same; raw_113 prespace_114 literal_115 raw_116}
-
-raw_113 [label="raw"]
-
-prespace_114 [label="prespace"]
-
-literal_115 [label="literal"]
-
-raw_116 [label="raw"]
-
-
-// END RANK prose_110
-
-raw_113 -> leaf_117
-leaf_117  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-
-
-Ransacks"]
-// END RANK raw_113
-
-prespace_114 -> leaf_118
-leaf_118  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_114
-
-literal_115 -> leaf_119
-leaf_119  [color=Gray,shape=rectangle,fontname=Inconsolata,label="_G"]
-// END RANK literal_115
-
-raw_116 -> leaf_120
-leaf_120  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" looking for names to put on things.
-"]
-// END RANK raw_116
-
-codeblock_111 -> leaf_121
-leaf_121  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function addName(t, aG, pre)
-   pre = pre or \"\"
-   aG = aG or anti_G
-   if pre ~= \"\" then
-      pre = pre .. \".\"
-   end
-   for k, v in pairs(t) do
-      local T = type(v)
-      if (T == \"table\") then
-         local key = pre .. (type(k) == \"string\" and k or \"<\" .. type(k) .. \">\")
-         if not aG[v] then
-            aG[v] = key
-            if not (pre == \"\" and k == \"package\") then
-               addName(v, aG, key)
-            end
-         else
-            local kv = aG[v]
-            if tie_break(kv, key) then
-               -- quadradic lol
-               aG[v] = key
-               addName(v, aG, key)
-            end
-         end
-         local _M = getmetatable(v)
-         local _M_id = _M and \"⟨\" .. key.. \"⟩\" or \"\"
-         if _M then
-            if not aG[_M] then
-               addName(_M, aG, _M_id)
-               aG[_M] = _M_id
-            else
-               local aG_M_id = aG[_M]
-               if tie_break(aG_M_id, _M_id) then
-                  addName(_M, aG, _M_id)
-                  aG[_M] = _M_id
-               end
-            end
-         end
-      elseif T == \"function\" or
-         T == \"thread\" or
-         T == \"userdata\" then
-         aG[v] = pre .. k
-      end
-   end
-   return aG
-end
-
-function C.allNames()
-   return addName(package.loaded, addName(_G))
-end
-
-function C.clearNames()
-   anti_G = {_G = \"_G\"}
-   return anti_G
-end"]
-// END RANK codeblock_111
-
-section_75 -> { header_122 prose_123 prose_124 codeblock_125 prose_126 codeblock_127 codeblock_128}
-{rank=same; header_122 prose_123 prose_124 codeblock_125 prose_126 codeblock_127 codeblock_128}
-
-header_122 [label="3 : tabulator"]
-
-prose_123 [label="prose"]
-
-prose_124 [label="prose"]
-
-codeblock_125 [label="code block 208-308"]
-
-prose_126 [label="prose"]
-
-codeblock_127 [label="code block 313-344"]
-
-codeblock_128 [label="code block 346-356"]
-
-
-// END RANK section_75
-
-header_122 -> leaf_129
-leaf_129  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** tabulator"]
-// END RANK header_122
-
-prose_123 -> { raw_130}
-{rank=same; raw_130}
-
-raw_130 [label="raw"]
-
-
-// END RANK prose_123
-
-raw_130 -> leaf_131
-leaf_131  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-
-This is fundamentally [[Tim Caswell's][https://github.com/creationix]] code.
-"]
-// END RANK raw_130
-
-prose_124 -> { raw_132}
-{rank=same; raw_132}
-
-raw_132 [label="raw"]
-
-
-// END RANK prose_124
-
-raw_132 -> leaf_133
-leaf_133  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-I've dressed it up a bit.
-"]
-// END RANK raw_132
-
-codeblock_125 -> leaf_134
-leaf_134  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local ts
-
-local SORT_LIMIT = 500
-
-local function _keysort(a, b)
-   if type(a) == \"number\" and type(b) == \"string\" then
-      return true
-   elseif type(a) == \"string\" and type(b) == \"number\" then
-      return false
-   elseif (type(a) == \"string\" and type(b) == \"string\")
-      or (type(a) == \"number\" and type(b) == \"number\") then
-      return a < b
-   else
-      return false
-   end
-end
-
-local function tabulate(tab, depth, cycle)
-   cycle = cycle or {}
-   depth = depth or 0
-   if type(tab) ~= \"table\" then
-      return ts(tab)
-   end
-   if depth > C.depth or cycle[tab] then
-      return ts(tab, \"tab_name\")
-   end
-   cycle[tab] = true
-   local indent = (\"  \"):rep(depth)
-   -- Check to see if this is an array
-   local is_array = true
-   local i = 1
-   for k,v in pairs(tab) do
-      if not (k == i) then
-         is_array = false
-      end
-      i = i + 1
-   end
-   local first = true
-   local lines = {}
-   -- if we have a metatable, get it first
-   local mt = \"\"
-   local _M = getmetatable(tab)
-   if _M then
-      mt = ts(tab, \"mt\") .. c.base(\" = \") .. tabulate(_M, depth + 1, cycle)
-      lines[1] = mt
-      i = 2
-   else
-      i = 1
-   end
-   local estimated = 0
-   local keys
-   if not is_array then
-      keys = table.keys(tab)
-      if #keys <= SORT_LIMIT then
-         table.sort(keys, _keysort)
-      else
-         -- bail
-         return \"{ !!! }\"
-      end
-   else
-      if #tab > SORT_LIMIT then
-         return \"{ #!!! }\"
-      end
-      keys = tab
-   end
-   for j, k in ipairs(keys) do
-      -- this looks dumb but
-      -- the result is that k is key
-      -- and v is value for either type of table
-      local v
-      if is_array then
-         v = k
-         k = j
-      else
-         v = tab[k]
-      end
-      local s
-      if is_array then
-         s = \"\"
-      else
-         if type(k) == \"string\" and k:find(\"^[%a_][%a%d_]*$\") then
-            s = ts(k) .. c.base(\" = \")
-         else
-            s = c.base(\"[\") .. tabulate(k, 100, cycle) .. c.base(\"] = \")
-         end
-      end
-      s = s .. tabulate(v, depth + 1, cycle)
-      lines[i] = s
-      estimated = estimated + #s
-      i = i + 1
-   end
-   if estimated > WIDE_TABLE then
-      return c.base(\"{ \") .. indent
-         .. table.concat(lines, \",\\n  \" .. indent)
-         ..  c.base(\" }\")
-   else
-      return c.base(\"{ \") .. table.concat(lines, c.base(\", \")) .. c.base(\" }\")
-   end
-end"]
-// END RANK codeblock_125
-
-prose_126 -> { raw_135}
-{rank=same; raw_135}
-
-raw_135 [label="raw"]
-
-
-// END RANK prose_126
-
-raw_135 -> leaf_136
-leaf_136  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-We make a small wrapper function which resets string color in between
-escapes, then gsub the daylights out of it.
-"]
-// END RANK raw_135
-
-codeblock_127 -> leaf_137
-leaf_137  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local find, sub, gsub, byte = string.find, string.sub,
-                              string.gsub, string.byte
-
-local e = function(str)
-   return c.stresc .. str .. c.string
-end
-
--- Turn control characters into their byte rep,
--- preserving escapes
-local function ctrl_pr(str)
-   if byte(str) ~= 27 then
-      return e(\"\\\\\" .. byte(str))
-   else
-      return str
-   end
-end
-
-local function scrub (str)
-   return str:gsub(\"\\27\", e \"\\\\x1b\")
-             :gsub('\"',  e '\\\\\"')
-             :gsub(\"'\",  e \"\\\\'\")
-             :gsub(\"\\a\", e \"\\\\a\")
-             :gsub(\"\\b\", e \"\\\\b\")
-             :gsub(\"\\f\", e \"\\\\f\")
-             :gsub(\"\\n\", e \"\\\\n\")
-             :gsub(\"\\r\", e \"\\\\r\")
-             :gsub(\"\\t\", e \"\\\\t\")
-             :gsub(\"\\v\", e \"\\\\v\")
-             :gsub(\"%c\", ctrl_pr)
-end"]
-// END RANK codeblock_127
-
-codeblock_128 -> leaf_138
-leaf_138  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function c_data(value, str)
-   local meta = reflect.getmetatable(value)
-   if meta then
-      local mt_str = ts(meta)
-      return str .. \" = \" .. mt_str
-   else
-      return str
-   end
-end"]
-// END RANK codeblock_128
-
-section_76 -> { header_139 prose_140 codeblock_141 codeblock_142 codeblock_143}
-{rank=same; header_139 prose_140 codeblock_141 codeblock_142 codeblock_143}
-
-header_139 [label="3 : ts"]
-
-prose_140 [label="prose"]
-
-codeblock_141 [label="code block 362-440"]
-
-codeblock_142 [label="code block 442-449"]
-
-codeblock_143 [label="code block 451-453"]
-
-
-// END RANK section_76
-
-header_139 -> leaf_144
-leaf_144  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** ts"]
-// END RANK header_139
-
-prose_140 -> { raw_145}
-{rank=same; raw_145}
-
-raw_145 [label="raw"]
-
-
-// END RANK prose_140
-
-raw_145 -> leaf_146
-leaf_146  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-
-Lots of small, nice things in this one.
-"]
-// END RANK raw_145
-
-codeblock_141 -> leaf_147
-leaf_147  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ts = function (value, hint)
-   local strval = tostring(value) or \"\"
-   local str = scrub(strval)
-   -- For cases more specific than mere type,
-   -- we have hints:
-   if hint then
-      if hint == \"tab_name\" then
-         local tab_name = anti_G[value] or \"t:\" .. sub(str, -6)
-         return c.table(tab_name)
-      elseif hint == \"mt\" then
-         local mt_name = anti_G[value] or \"mt:\" .. sub(str, -6)
-         return c.metatable(\"⟨\" .. mt_name .. \"⟩\")
-      elseif hints[hint] then
-         return hints[hint](str)
-      elseif c[hint] then
-         return c[hint](str)
-      end
-   end
-
-   local typica = type(value)
-
-   if typica == \"table\" then
-      -- check for a __repr metamethod
-      local _M = getmetatable(value)
-      if _M and _M.__repr and not (hint == \"raw\") then
-         str = _M.__repr(value, c)
-
-         assert(type(str) == \"string\")
-      else
-         str = tabulate(value)
-      end
-   elseif typica == \"function\" then
-      local f_label = sub(str,11)
-      f_label = sub(f_label,1,5) == \"built\"
-                and f_label
-                or \"f:\" .. sub(str, -6)
-      local func_name = anti_G[value] or f_label
-      str = c.func(func_name)
-   elseif typica == \"boolean\" then
-      str = value and c.truth(str) or c.falsehood(str)
-   elseif typica == \"string\" then
-      if value == \"\" then
-         str = c.string('\"\"')
-      else
-         str = c.string(str)
-      end
-   elseif typica == \"number\" then
-      str = c.number(str)
-   elseif typica == \"nil\" then
-      str = c.nilness(str)
-   elseif typica == \"thread\" then
-      local coro_name = anti_G[value] and \"coro:\" .. anti_G[value]
-                                      or  \"coro:\" .. sub(str, -6)
-      str = c.thread(coro_name)
-   elseif typica == \"userdata\" then
-      if anti_G[value] then
-         str = c.userdata(anti_G[value])
-      else
-         local name = find(str, \":\")
-         if name then
-            str = c.userdata(sub(str, 1, name - 1))
-         else
-            str = c.userdata(str)
-         end
-      end
-   elseif typica == \"cdata\" then
-      if anti_G[value] then
-         str = c.cdata(anti_G[value])
-      else
-         str = c.cdata(str)
-      end
-      str = c_data(value, str)
-   end
-   return str
-end
-
-C.ts = ts"]
-// END RANK codeblock_141
-
-codeblock_142 -> leaf_148
-leaf_148  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function C.ts_bw(value)
-   c = C.no_color
-   local to_string = ts(value)
-   c = C.color
-   return to_string
-end"]
-// END RANK codeblock_142
-
-codeblock_143 -> leaf_149
-leaf_149  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return C"]
-// END RANK codeblock_143
+local hints = C.color.hints"]
+// END RANK codeblock_78
+
+codeblock_79 -> leaf_90
+leaf_90  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return C"]
+// END RANK codeblock_79
 
 
 }
