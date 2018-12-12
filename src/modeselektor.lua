@@ -550,9 +550,7 @@ function ModeS.eval(modeS)
    end
    if f then
       setfenv(f, _G)
-      local tried_doubleG = false
       success, results = gatherResults(xpcall(f, debug.traceback))
-      :: succession ::  -- yesssss the power of goto compels you
       if success then
       -- successful call
          if results.n > 0 then
@@ -561,13 +559,22 @@ function ModeS.eval(modeS)
          else
             modeS.zones.results:replace ""
          end
-      elseif string.find(results[1], "is not declared")
-         and not tried_doubleG then
-         -- let's try it with __G what could go wrong?
+      elseif string.find(results[1], "is not declared") then
+         -- let's try it with __G
          setfenv(f, __G)
          success, results = gatherResults(xpcall(f, debug.traceback))
-         tried_doubleG = true
-         goto succession
+         if success then
+            if results.n > 0 then
+               local rb = Rainbuf(results)
+               modeS.zones.results:replace(rb)
+            else
+               modeS.zones.results:replace ""
+            end
+         else
+            -- error
+            results.frozen = true
+            modeS.zones.results:replace(results)
+         end
       else
          -- error
          results.frozen = true
