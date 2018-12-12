@@ -160,6 +160,10 @@ local ts
 
 local SORT_LIMIT = 500  -- This won't be necessary #todo remove
 
+assert(coro, "coro must be in the namespace")
+
+local yield, wrap = coro.yield, coro.wrap
+
 local function _keysort(a, b)
    if type(a) == "number" and type(b) == "string" then
       return true
@@ -173,14 +177,14 @@ local function _keysort(a, b)
    end
 end
 
-local function tabulate(tab, depth, cycle)
+local function _tabulate(tab, depth, cycle)
    cycle = cycle or {}
    depth = depth or 0
    if type(tab) ~= "table" then
-      return ts(tab)
+      yield(ts(tab)); return nil
    end
    if depth > C.depth or cycle[tab] then
-      return ts(tab, "tab_name")
+      yield(ts(tab, "tab_name")); return nil
    end
    cycle[tab] = true
    local indent = ("  "):rep(depth)
@@ -199,7 +203,8 @@ local function tabulate(tab, depth, cycle)
    local mt = ""
    local _M = getmetatable(tab)
    if _M then
-      mt = ts(tab, "mt") .. c.base(" = ") .. tabulate(_M, depth + 1, cycle)
+      mt = ts(tab, "mt") .. c.base(" = ")
+           .. (wrap(_tabulate))(_M, depth + 1, cycle)
       lines[1] = mt
       i = 2
    else
@@ -213,11 +218,11 @@ local function tabulate(tab, depth, cycle)
          table.sort(keys, _keysort)
       else
          -- bail
-         return "{ !!! }"
+         yield "{ !!! }"; return nil
       end
    else
       if #tab > SORT_LIMIT then
-         return "{ #!!! }"
+         yield "{ #!!! }"; return nil
       end
       keys = tab
    end
@@ -242,19 +247,22 @@ local function tabulate(tab, depth, cycle)
             s = c.base("[") .. tabulate(k, 100, cycle) .. c.base("] = ")
          end
       end
-      s = s .. tabulate(v, depth + 1, cycle)
+      s = s .. (wrap(_tabulate))(v, depth + 1, cycle)
       lines[i] = s
       estimated = estimated + #s
       i = i + 1
    end
    if estimated > WIDE_TABLE then
-      return c.base("{ ") .. indent
+      yield (c.base("{ ") .. indent
          .. table.concat(lines, ",\n  " .. indent)
-         ..  c.base(" }")
+         ..  c.base(" }")); return nil
    else
-      return c.base("{ ") .. table.concat(lines, c.base(", ")) .. c.base(" }")
+      yield (c.base("{ ") .. table.concat(lines, c.base(", ")) .. c.base(" }"))
    end
+   return nil
 end
+
+local tabulate = coroutine.wrap(_tabulate)
 
 
 
