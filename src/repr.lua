@@ -262,7 +262,9 @@ local function _tabulate(tab, depth, cycle)
    return nil
 end
 
-local tabulate = coroutine.wrap(_tabulate)
+local function tabulate(...)
+   return (wrap(_tabulate))(...)
+end
 
 
 
