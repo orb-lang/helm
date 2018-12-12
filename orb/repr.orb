@@ -244,7 +244,8 @@ local function _tabulate(tab, depth, cycle)
          if type(k) == "string" and k:find("^[%a_][%a%d_]*$") then
             s = ts(k) .. c.base(" = ")
          else
-            s = c.base("[") .. tabulate(k, 100, cycle) .. c.base("] = ")
+            s = c.base("[")
+                .. (wrap(_tabulate))(k, 100, cycle) .. c.base("] = ")
          end
       end
       s = s .. (wrap(_tabulate))(v, depth + 1, cycle)
@@ -263,7 +264,14 @@ local function _tabulate(tab, depth, cycle)
 end
 
 local function tabulate(...)
-   return (wrap(_tabulate))(...)
+   local phrase = {}
+   local iter = wrap(_tabulate)
+   while true do
+      local line = iter(...)
+      if line == nil then break end
+      phrase[#phrase + 1] = line
+   end
+   return table.concat(phrase)
 end
 #/lua
 
