@@ -204,7 +204,7 @@ local function _tabulate(tab, depth, cycle)
    local _M = getmetatable(tab)
    if _M then
       mt = ts(tab, "mt") .. c.base(" = ")
-           .. (wrap(_tabulate))(_M, depth + 1, cycle)
+           .. _tabulate(_M, depth + 1, cycle)
       lines[1] = mt
       i = 2
    else
@@ -245,18 +245,32 @@ local function _tabulate(tab, depth, cycle)
             s = ts(k) .. c.base(" = ")
          else
             s = c.base("[")
-                .. (wrap(_tabulate))(k, 100, cycle) .. c.base("] = ")
+                .. _tabulate(k, 100, cycle) .. c.base("] = ")
          end
       end
-      s = s .. (wrap(_tabulate))(v, depth + 1, cycle)
+      s = s .. _tabulate(v, depth + 1, cycle)
       lines[i] = s
       estimated = estimated + #s
       i = i + 1
    end
    if estimated > WIDE_TABLE then
+   --[[
       yield (c.base("{ ") .. indent
          .. table.concat(lines, ",\n  " .. indent)
          ..  c.base(" }")); return nil
+   --]]
+      yield(c.base("{ ") .. indent .. lines[1] .. ",\n")
+      local i = 2
+      while true do
+         local line = lines[i]
+         i = i + 1
+         if line ~= nil then
+            yield(indent .. line .. ",\n")
+         else
+            yield(indent ..  c.base(" }"))
+            break
+         end
+      end
    else
       yield (c.base("{ ") .. table.concat(lines, c.base(", ")) .. c.base(" }"))
    end
