@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 649"]
+doc_0 [label="doc - 659"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-594"]
+section_1 [label="section: 1-604"]
 
 
 // END RANK doc_0
@@ -27,7 +27,7 @@ section_5 [label="section: 12-362"]
 
 section_6 [label="section: 427-516"]
 
-section_7 [label="section: 595-649"]
+section_7 [label="section: 605-659"]
 
 
 // END RANK section_1
@@ -2676,7 +2676,7 @@ codeblock_665 [label="code block 501-505"]
 
 section_666 [label="section: 508-516"]
 
-section_667 [label="section: 517-594"]
+section_667 [label="section: 517-604"]
 
 
 // END RANK section_6
@@ -2987,7 +2987,7 @@ codeblock_729 [label="code block 520-525"]
 
 codeblock_730 [label="code block 527-531"]
 
-codeblock_731 [label="code block 533-592"]
+codeblock_731 [label="code block 533-602"]
 
 
 // END RANK section_667
@@ -3044,7 +3044,6 @@ leaf_737  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS
    if f then
       setfenv(f, _G)
       success, results = gatherResults(xpcall(f, debug.traceback))
-      :: succession ::  -- yesssss the power of goto compels you
       if success then
       -- successful call
          if results.n > 0 then
@@ -3054,10 +3053,21 @@ leaf_737  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS
             modeS.zones.results:replace \"\"
          end
       elseif string.find(results[1], \"is not declared\") then
-         -- let's try it with __G what could go wrong?
+         -- let's try it with __G
          setfenv(f, __G)
          success, results = gatherResults(xpcall(f, debug.traceback))
-         goto succession
+         if success then
+            if results.n > 0 then
+               local rb = Rainbuf(results)
+               modeS.zones.results:replace(rb)
+            else
+               modeS.zones.results:replace \"\"
+            end
+         else
+            -- error
+            results.frozen = true
+            modeS.zones.results:replace(results)
+         end
       else
          -- error
          results.frozen = true
@@ -3091,9 +3101,9 @@ header_738 [label="2 : new"]
 
 prose_739 [label="prose"]
 
-codeblock_740 [label="code block 598-621"]
+codeblock_740 [label="code block 608-631"]
 
-codeblock_741 [label="code block 623-625"]
+codeblock_741 [label="code block 633-635"]
 
 
 // END RANK section_7

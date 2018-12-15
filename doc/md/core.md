@@ -170,10 +170,10 @@ function core.arrayof(tab)
    return arr
 end
 ```
-### collect(iter, tab)
+### collect(iter, ...)
 
-Collects and returns up to two tables of values, given an iterator and a
-table to iterate over.
+  Collects and returns up to two tables of values, given an iterator and
+arguments to pass to it.
 
 ```lua
 function core.collect(iter, tab)

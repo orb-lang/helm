@@ -866,7 +866,7 @@ end"]
 section_147 -> { header_197 prose_198 codeblock_199}
 {rank=same; header_197 prose_198 codeblock_199}
 
-header_197 [label="3 : collect(iter, tab)"]
+header_197 [label="3 : collect(iter, ...)"]
 
 prose_198 [label="prose"]
 
@@ -876,7 +876,7 @@ codeblock_199 [label="code block 183-192"]
 // END RANK section_147
 
 header_197 -> leaf_200
-leaf_200  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** collect(iter, tab)"]
+leaf_200  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** collect(iter, ...)"]
 // END RANK header_197
 
 prose_198 -> { raw_201}
@@ -890,8 +890,8 @@ raw_201 [label="raw"]
 raw_201 -> leaf_202
 leaf_202  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
-Collects and returns up to two tables of values, given an iterator and a
-table to iterate over.
+  Collects and returns up to two tables of values, given an iterator and
+arguments to pass to it.
 "]
 // END RANK raw_201
 

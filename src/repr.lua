@@ -164,6 +164,10 @@ assert(coro, "coro must be in the namespace")
 
 local yield, wrap = coro.yield, coro.wrap
 
+local collect = assert(table.collect)
+
+local concat = table.concat
+
 local function _keysort(a, b)
    if type(a) == "number" and type(b) == "string" then
       return true
@@ -174,6 +178,12 @@ local function _keysort(a, b)
       return a < b
    else
       return false
+   end
+end
+
+local function itWrap(fn)
+   return function()
+     return wrap(fn)
    end
 end
 
@@ -204,7 +214,7 @@ local function _tabulate(tab, depth, cycle)
    local _M = getmetatable(tab)
    if _M then
       mt = ts(tab, "mt") .. c.base(" = ")
-           .. _tabulate(_M, depth + 1, cycle)
+           .. concat(collect(itWrap, _tabulate, _M, depth + 1, cycle))
       lines[1] = mt
       i = 2
    else
@@ -237,18 +247,15 @@ local function _tabulate(tab, depth, cycle)
       else
          v = tab[k]
       end
-      local s
-      if is_array then
-         s = ""
+      local s = ""
+      if type(k) == "string" and k:find("^[%a_][%a%d_]*$") then
+         yield(ts(k) .. c.base(" = "))
       else
-         if type(k) == "string" and k:find("^[%a_][%a%d_]*$") then
-            s = ts(k) .. c.base(" = ")
-         else
-            s = c.base("[")
-                .. _tabulate(k, 100, cycle) .. c.base("] = ")
-         end
+         yield(c.base("[")
+             .. (wrap(_tabulate))(k, 100, cycle)
+             .. c.base("] = "))
       end
-      s = s .. _tabulate(v, depth + 1, cycle)
+      _tabulate(v, depth + 1, cycle)
       lines[i] = s
       estimated = estimated + #s
       i = i + 1

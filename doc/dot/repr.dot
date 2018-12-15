@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 409"]
+doc_0 [label="doc - 452"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-310"]
+section_1 [label="section: 1-353"]
 
 
 // END RANK doc_0
@@ -35,11 +35,11 @@ section_9 [label="section: 45-56"]
 
 section_10 [label="section: 66-128"]
 
-section_11 [label="section: 145-260"]
+section_11 [label="section: 145-303"]
 
-section_12 [label="section: 261-310"]
+section_12 [label="section: 304-353"]
 
-section_13 [label="section: 311-409"]
+section_13 [label="section: 354-452"]
 
 
 // END RANK section_1
@@ -640,7 +640,7 @@ structure_142 [label="structure"]
 
 structure_143 [label="structure"]
 
-codeblock_144 [label="code block 158-258"]
+codeblock_144 [label="code block 158-301"]
 
 
 // END RANK section_11
@@ -674,7 +674,7 @@ raw_148 [label="raw"]
 
 raw_148 -> leaf_149
 leaf_149  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-I've dressed it up a bit.
+I've dressed it up a bit. Okay, a lot.
 "]
 // END RANK raw_148
 
@@ -723,6 +723,14 @@ leaf_156  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local ts
 
 local SORT_LIMIT = 500  -- This won't be necessary #todo remove
 
+assert(coro, \"coro must be in the namespace\")
+
+local yield, wrap = coro.yield, coro.wrap
+
+local collect = assert(table.collect)
+
+local concat = table.concat
+
 local function _keysort(a, b)
    if type(a) == \"number\" and type(b) == \"string\" then
       return true
@@ -736,14 +744,20 @@ local function _keysort(a, b)
    end
 end
 
-local function tabulate(tab, depth, cycle)
+local function itWrap(fn)
+   return function()
+     return wrap(fn)
+   end
+end
+
+local function _tabulate(tab, depth, cycle)
    cycle = cycle or {}
    depth = depth or 0
    if type(tab) ~= \"table\" then
-      return ts(tab)
+      yield(ts(tab)); return nil
    end
    if depth > C.depth or cycle[tab] then
-      return ts(tab, \"tab_name\")
+      yield(ts(tab, \"tab_name\")); return nil
    end
    cycle[tab] = true
    local indent = (\"  \"):rep(depth)
@@ -762,7 +776,8 @@ local function tabulate(tab, depth, cycle)
    local mt = \"\"
    local _M = getmetatable(tab)
    if _M then
-      mt = ts(tab, \"mt\") .. c.base(\" = \") .. tabulate(_M, depth + 1, cycle)
+      mt = ts(tab, \"mt\") .. c.base(\" = \")
+           .. concat(collect(itWrap, _tabulate, _M, depth + 1, cycle))
       lines[1] = mt
       i = 2
    else
@@ -776,11 +791,11 @@ local function tabulate(tab, depth, cycle)
          table.sort(keys, _keysort)
       else
          -- bail
-         return \"{ !!! }\"
+         yield \"{ !!! }\"; return nil
       end
    else
       if #tab > SORT_LIMIT then
-         return \"{ #!!! }\"
+         yield \"{ #!!! }\"; return nil
       end
       keys = tab
    end
@@ -802,21 +817,49 @@ local function tabulate(tab, depth, cycle)
          if type(k) == \"string\" and k:find(\"^[%a_][%a%d_]*$\") then
             s = ts(k) .. c.base(\" = \")
          else
-            s = c.base(\"[\") .. tabulate(k, 100, cycle) .. c.base(\"] = \")
+            s = c.base(\"[\")
+                .. (wrap(_tabulate))(k, 100, cycle)
+                .. c.base(\"] = \")
          end
       end
-      s = s .. tabulate(v, depth + 1, cycle)
+      _tabulate(v, depth + 1, cycle)
       lines[i] = s
       estimated = estimated + #s
       i = i + 1
    end
    if estimated > WIDE_TABLE then
-      return c.base(\"{ \") .. indent
+   --[[
+      yield (c.base(\"{ \") .. indent
          .. table.concat(lines, \",\\n  \" .. indent)
-         ..  c.base(\" }\")
+         ..  c.base(\" }\")); return nil
+   --]]
+      yield(c.base(\"{ \") .. indent .. lines[1] .. \",\\n\")
+      local i = 2
+      while true do
+         local line = lines[i]
+         i = i + 1
+         if line ~= nil then
+            yield(indent .. line .. \",\\n\")
+         else
+            yield(indent ..  c.base(\" }\"))
+            break
+         end
+      end
    else
-      return c.base(\"{ \") .. table.concat(lines, c.base(\", \")) .. c.base(\" }\")
+      yield (c.base(\"{ \") .. table.concat(lines, c.base(\", \")) .. c.base(\" }\"))
    end
+   return nil
+end
+
+local function tabulate(...)
+   local phrase = {}
+   local iter = wrap(_tabulate)
+   while true do
+      local line = iter(...)
+      if line == nil then break end
+      phrase[#phrase + 1] = line
+   end
+   return table.concat(phrase)
 end"]
 // END RANK codeblock_144
 
@@ -827,9 +870,9 @@ header_157 [label="3 : string and cdata pretty-printing"]
 
 prose_158 [label="prose"]
 
-codeblock_159 [label="code block 266-297"]
+codeblock_159 [label="code block 309-340"]
 
-codeblock_160 [label="code block 299-309"]
+codeblock_160 [label="code block 342-352"]
 
 
 // END RANK section_12
@@ -906,11 +949,11 @@ header_166 [label="3 : ts"]
 
 prose_167 [label="prose"]
 
-codeblock_168 [label="code block 315-393"]
+codeblock_168 [label="code block 358-436"]
 
-codeblock_169 [label="code block 395-402"]
+codeblock_169 [label="code block 438-445"]
 
-codeblock_170 [label="code block 404-406"]
+codeblock_170 [label="code block 447-449"]
 
 
 // END RANK section_13
