@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 452"]
+doc_0 [label="doc - 479"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-353"]
+section_1 [label="section: 1-380"]
 
 
 // END RANK doc_0
@@ -35,11 +35,11 @@ section_9 [label="section: 45-56"]
 
 section_10 [label="section: 66-128"]
 
-section_11 [label="section: 145-303"]
+section_11 [label="section: 145-330"]
 
-section_12 [label="section: 304-353"]
+section_12 [label="section: 331-380"]
 
-section_13 [label="section: 354-452"]
+section_13 [label="section: 381-479"]
 
 
 // END RANK section_1
@@ -627,8 +627,8 @@ function repr.clearNames()
 end"]
 // END RANK codeblock_122
 
-section_11 -> { header_139 prose_140 prose_141 structure_142 structure_143 codeblock_144}
-{rank=same; header_139 prose_140 prose_141 structure_142 structure_143 codeblock_144}
+section_11 -> { header_139 prose_140 prose_141 structure_142 structure_143 codeblock_144 prose_145 prose_146 prose_147 prose_148 codeblock_149 prose_150 prose_151 codeblock_152 codeblock_153}
+{rank=same; header_139 prose_140 prose_141 structure_142 structure_143 codeblock_144 prose_145 prose_146 prose_147 prose_148 codeblock_149 prose_150 prose_151 codeblock_152 codeblock_153}
 
 header_139 [label="3 : tabulator"]
 
@@ -640,86 +640,104 @@ structure_142 [label="structure"]
 
 structure_143 [label="structure"]
 
-codeblock_144 [label="code block 158-301"]
+codeblock_144 [label="code block 158-190"]
+
+prose_145 [label="prose"]
+
+prose_146 [label="prose"]
+
+prose_147 [label="prose"]
+
+prose_148 [label="prose"]
+
+codeblock_149 [label="code block 204-301"]
+
+prose_150 [label="prose"]
+
+prose_151 [label="prose"]
+
+codeblock_152 [label="code block 311-315"]
+
+codeblock_153 [label="code block 317-328"]
 
 
 // END RANK section_11
 
-header_139 -> leaf_145
-leaf_145  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** tabulator"]
+header_139 -> leaf_154
+leaf_154  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** tabulator"]
 // END RANK header_139
 
-prose_140 -> { raw_146}
-{rank=same; raw_146}
+prose_140 -> { raw_155}
+{rank=same; raw_155}
 
-raw_146 [label="raw"]
+raw_155 [label="raw"]
 
 
 // END RANK prose_140
 
-raw_146 -> leaf_147
-leaf_147  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_155 -> leaf_156
+leaf_156  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 This is fundamentally [[Tim Caswell's][https://github.com/creationix]] code.
 "]
-// END RANK raw_146
+// END RANK raw_155
 
-prose_141 -> { raw_148}
-{rank=same; raw_148}
+prose_141 -> { raw_157}
+{rank=same; raw_157}
 
-raw_148 [label="raw"]
+raw_157 [label="raw"]
 
 
 // END RANK prose_141
 
-raw_148 -> leaf_149
-leaf_149  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_157 -> leaf_158
+leaf_158  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 I've dressed it up a bit. Okay, a lot.
 "]
-// END RANK raw_148
+// END RANK raw_157
 
-structure_142 -> { hashline_150}
-{rank=same; hashline_150}
+structure_142 -> { hashline_159}
+{rank=same; hashline_159}
 
-hashline_150 [label="hashline"]
+hashline_159 [label="hashline"]
 
 
 // END RANK structure_142
 
-hashline_150 -> { hashtag_151}
-{rank=same; hashtag_151}
+hashline_159 -> { hashtag_160}
+{rank=same; hashtag_160}
 
-hashtag_151 [label="hashtag"]
+hashtag_160 [label="hashtag"]
 
 
-// END RANK hashline_150
+// END RANK hashline_159
 
-hashtag_151 -> leaf_152
-leaf_152  [color=Gray,shape=rectangle,fontname=Inconsolata,label="todo"]
-// END RANK hashtag_151
+hashtag_160 -> leaf_161
+leaf_161  [color=Gray,shape=rectangle,fontname=Inconsolata,label="todo"]
+// END RANK hashtag_160
 
-structure_143 -> { hashline_153}
-{rank=same; hashline_153}
+structure_143 -> { hashline_162}
+{rank=same; hashline_162}
 
-hashline_153 [label="hashline"]
+hashline_162 [label="hashline"]
 
 
 // END RANK structure_143
 
-hashline_153 -> { hashtag_154}
-{rank=same; hashtag_154}
+hashline_162 -> { hashtag_163}
+{rank=same; hashtag_163}
 
-hashtag_154 [label="hashtag"]
+hashtag_163 [label="hashtag"]
 
 
-// END RANK hashline_153
+// END RANK hashline_162
 
-hashtag_154 -> leaf_155
-leaf_155  [color=Gray,shape=rectangle,fontname=Inconsolata,label="todo"]
-// END RANK hashtag_154
+hashtag_163 -> leaf_164
+leaf_164  [color=Gray,shape=rectangle,fontname=Inconsolata,label="todo"]
+// END RANK hashtag_163
 
-codeblock_144 -> leaf_156
-leaf_156  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local ts
+codeblock_144 -> leaf_165
+leaf_165  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local ts
 
 local SORT_LIMIT = 500  -- This won't be necessary #todo remove
 
@@ -749,8 +767,71 @@ local function itWrap(fn)
      return wrap(fn)
    end
 end
+"]
+// END RANK codeblock_144
 
-local function _tabulate(tab, depth, cycle)
+prose_145 -> { raw_166}
+{rank=same; raw_166}
+
+raw_166 [label="raw"]
+
+
+// END RANK prose_145
+
+raw_166 -> leaf_167
+leaf_167  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+[record scratch, freeze frame]
+
+"]
+// END RANK raw_166
+
+prose_146 -> { raw_168}
+{rank=same; raw_168}
+
+raw_168 [label="raw"]
+
+
+// END RANK prose_146
+
+raw_168 -> leaf_169
+leaf_169  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+In order to restore sanity, we're going to need to break a few things up.
+"]
+// END RANK raw_168
+
+prose_147 -> { raw_170}
+{rank=same; raw_170}
+
+raw_170 [label="raw"]
+
+
+// END RANK prose_147
+
+raw_170 -> leaf_171
+leaf_171  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+The essence of the current hangup is, we need to figure out if a wide or
+a long print is suitable. This is dragging on our goal of yielding one line
+at a time. So we need a buffer function that handles that.
+"]
+// END RANK raw_170
+
+prose_148 -> { raw_172}
+{rank=same; raw_172}
+
+raw_172 [label="raw"]
+
+
+// END RANK prose_148
+
+raw_172 -> leaf_173
+leaf_173  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+In the process we need to stop concat-ing everything on-site and switch to
+buffering fragments into tables. thank heaven for multiple return values.
+"]
+// END RANK raw_172
+
+codeblock_149 -> leaf_174
+leaf_174  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function _tabulate(tab, depth, cycle)
    cycle = cycle or {}
    depth = depth or 0
    if type(tab) ~= \"table\" then
@@ -810,17 +891,13 @@ local function _tabulate(tab, depth, cycle)
       else
          v = tab[k]
       end
-      local s
-      if is_array then
-         s = \"\"
+      local s = \"\"
+      if type(k) == \"string\" and k:find(\"^[%a_][%a%d_]*$\") then
+         yield(ts(k) .. c.base(\" = \"))
       else
-         if type(k) == \"string\" and k:find(\"^[%a_][%a%d_]*$\") then
-            s = ts(k) .. c.base(\" = \")
-         else
-            s = c.base(\"[\")
-                .. (wrap(_tabulate))(k, 100, cycle)
-                .. c.base(\"] = \")
-         end
+         yield(c.base(\"[\")
+             .. (wrap(_tabulate))(k, 100, cycle)
+             .. c.base(\"] = \"))
       end
       _tabulate(v, depth + 1, cycle)
       lines[i] = s
@@ -849,9 +926,120 @@ local function _tabulate(tab, depth, cycle)
       yield (c.base(\"{ \") .. table.concat(lines, c.base(\", \")) .. c.base(\" }\"))
    end
    return nil
-end
+end"]
+// END RANK codeblock_149
 
-local function tabulate(...)
+prose_150 -> { raw_175}
+{rank=same; raw_175}
+
+raw_175 [label="raw"]
+
+
+// END RANK prose_150
+
+raw_175 -> leaf_176
+leaf_176  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+line-buffer goes here
+"]
+// END RANK raw_175
+
+prose_151 -> { raw_177 prespace_178 literal_179 raw_180 prespace_181 literal_182 raw_183 prespace_184 literal_185 raw_186 prespace_187 literal_188 raw_189}
+{rank=same; raw_177 prespace_178 literal_179 raw_180 prespace_181 literal_182 raw_183 prespace_184 literal_185 raw_186 prespace_187 literal_188 raw_189}
+
+raw_177 [label="raw"]
+
+prespace_178 [label="prespace"]
+
+literal_179 [label="literal"]
+
+raw_180 [label="raw"]
+
+prespace_181 [label="prespace"]
+
+literal_182 [label="literal"]
+
+raw_183 [label="raw"]
+
+prespace_184 [label="prespace"]
+
+literal_185 [label="literal"]
+
+raw_186 [label="raw"]
+
+prespace_187 [label="prespace"]
+
+literal_188 [label="literal"]
+
+raw_189 [label="raw"]
+
+
+// END RANK prose_151
+
+raw_177 -> leaf_190
+leaf_190  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+needs to decide when things are 'wide enough' so each yield needs to return"]
+// END RANK raw_177
+
+prespace_178 -> leaf_191
+leaf_191  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK prespace_178
+
+literal_179 -> leaf_192
+leaf_192  [color=Gray,shape=rectangle,fontname=Inconsolata,label="str, len, done"]
+// END RANK literal_179
+
+raw_180 -> leaf_193
+leaf_193  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", where"]
+// END RANK raw_180
+
+prespace_181 -> leaf_194
+leaf_194  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_181
+
+literal_182 -> leaf_195
+leaf_195  [color=Gray,shape=rectangle,fontname=Inconsolata,label="str"]
+// END RANK literal_182
+
+raw_183 -> leaf_196
+leaf_196  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is the fragment of string,"]
+// END RANK raw_183
+
+prespace_184 -> leaf_197
+leaf_197  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_184
+
+literal_185 -> leaf_198
+leaf_198  [color=Gray,shape=rectangle,fontname=Inconsolata,label="len"]
+// END RANK literal_185
+
+raw_186 -> leaf_199
+leaf_199  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is a number
+representing its printable width (don't @ me) and"]
+// END RANK raw_186
+
+prespace_187 -> leaf_200
+leaf_200  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_187
+
+literal_188 -> leaf_201
+leaf_201  [color=Gray,shape=rectangle,fontname=Inconsolata,label="done"]
+// END RANK literal_188
+
+raw_189 -> leaf_202
+leaf_202  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is a boolean for if
+this is the last bit of the repr of a given thing. Table, userdata, what
+have you.
+"]
+// END RANK raw_189
+
+codeblock_152 -> leaf_203
+leaf_203  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function lineBuff(...)
+   local fragment, len, done = _tabulate(...)
+end"]
+// END RANK codeblock_152
+
+codeblock_153 -> leaf_204
+leaf_204  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function tabulate(...)
    local phrase = {}
    local iter = wrap(_tabulate)
    while true do
@@ -861,44 +1049,44 @@ local function tabulate(...)
    end
    return table.concat(phrase)
 end"]
-// END RANK codeblock_144
+// END RANK codeblock_153
 
-section_12 -> { header_157 prose_158 codeblock_159 codeblock_160}
-{rank=same; header_157 prose_158 codeblock_159 codeblock_160}
+section_12 -> { header_205 prose_206 codeblock_207 codeblock_208}
+{rank=same; header_205 prose_206 codeblock_207 codeblock_208}
 
-header_157 [label="3 : string and cdata pretty-printing"]
+header_205 [label="3 : string and cdata pretty-printing"]
 
-prose_158 [label="prose"]
+prose_206 [label="prose"]
 
-codeblock_159 [label="code block 309-340"]
+codeblock_207 [label="code block 336-367"]
 
-codeblock_160 [label="code block 342-352"]
+codeblock_208 [label="code block 369-379"]
 
 
 // END RANK section_12
 
-header_157 -> leaf_161
-leaf_161  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** string and cdata pretty-printing"]
-// END RANK header_157
+header_205 -> leaf_209
+leaf_209  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** string and cdata pretty-printing"]
+// END RANK header_205
 
-prose_158 -> { raw_162}
-{rank=same; raw_162}
+prose_206 -> { raw_210}
+{rank=same; raw_210}
 
-raw_162 [label="raw"]
+raw_210 [label="raw"]
 
 
-// END RANK prose_158
+// END RANK prose_206
 
-raw_162 -> leaf_163
-leaf_163  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_210 -> leaf_211
+leaf_211  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 We make a small wrapper function which resets string color in between
 escapes, then gsub the daylights out of it.
 "]
-// END RANK raw_162
+// END RANK raw_210
 
-codeblock_159 -> leaf_164
-leaf_164  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local find, sub, gsub, byte = string.find, string.sub,
+codeblock_207 -> leaf_212
+leaf_212  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local find, sub, gsub, byte = string.find, string.sub,
                               string.gsub, string.byte
 
 local e = function(str)
@@ -928,10 +1116,10 @@ local function scrub (str)
              :gsub(\"\\v\", e \"\\\\v\")
              :gsub(\"%c\", ctrl_pr)
 end"]
-// END RANK codeblock_159
+// END RANK codeblock_207
 
-codeblock_160 -> leaf_165
-leaf_165  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function c_data(value, str)
+codeblock_208 -> leaf_213
+leaf_213  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function c_data(value, str)
    local meta = reflect.getmetatable(value)
    if meta then
       local mt_str = ts(meta)
@@ -940,45 +1128,45 @@ leaf_165  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function
       return str
    end
 end"]
-// END RANK codeblock_160
+// END RANK codeblock_208
 
-section_13 -> { header_166 prose_167 codeblock_168 codeblock_169 codeblock_170}
-{rank=same; header_166 prose_167 codeblock_168 codeblock_169 codeblock_170}
+section_13 -> { header_214 prose_215 codeblock_216 codeblock_217 codeblock_218}
+{rank=same; header_214 prose_215 codeblock_216 codeblock_217 codeblock_218}
 
-header_166 [label="3 : ts"]
+header_214 [label="3 : ts"]
 
-prose_167 [label="prose"]
+prose_215 [label="prose"]
 
-codeblock_168 [label="code block 358-436"]
+codeblock_216 [label="code block 385-463"]
 
-codeblock_169 [label="code block 438-445"]
+codeblock_217 [label="code block 465-472"]
 
-codeblock_170 [label="code block 447-449"]
+codeblock_218 [label="code block 474-476"]
 
 
 // END RANK section_13
 
-header_166 -> leaf_171
-leaf_171  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** ts"]
-// END RANK header_166
+header_214 -> leaf_219
+leaf_219  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** ts"]
+// END RANK header_214
 
-prose_167 -> { raw_172}
-{rank=same; raw_172}
+prose_215 -> { raw_220}
+{rank=same; raw_220}
 
-raw_172 [label="raw"]
+raw_220 [label="raw"]
 
 
-// END RANK prose_167
+// END RANK prose_215
 
-raw_172 -> leaf_173
-leaf_173  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_220 -> leaf_221
+leaf_221  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 Lots of small, nice things in this one.
 "]
-// END RANK raw_172
+// END RANK raw_220
 
-codeblock_168 -> leaf_174
-leaf_174  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ts = function (value, hint)
+codeblock_216 -> leaf_222
+leaf_222  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ts = function (value, hint)
    local strval = tostring(value) or \"\"
    local str = scrub(strval)
    -- For cases more specific than mere type,
@@ -1055,20 +1243,20 @@ leaf_174  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ts = function 
 end
 
 repr.ts = ts"]
-// END RANK codeblock_168
+// END RANK codeblock_216
 
-codeblock_169 -> leaf_175
-leaf_175  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function repr.ts_bw(value)
+codeblock_217 -> leaf_223
+leaf_223  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function repr.ts_bw(value)
    c = C.no_color
    local to_string = ts(value)
    c = C.color
    return to_string
 end"]
-// END RANK codeblock_169
+// END RANK codeblock_217
 
-codeblock_170 -> leaf_176
-leaf_176  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return repr"]
-// END RANK codeblock_170
+codeblock_218 -> leaf_224
+leaf_224  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return repr"]
+// END RANK codeblock_218
 
 
 }

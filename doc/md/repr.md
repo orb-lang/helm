@@ -176,6 +176,24 @@ local function itWrap(fn)
    end
 end
 
+```
+
+[record scratch, freeze frame]
+
+
+
+In order to restore sanity, we're going to need to break a few things up.
+
+
+The essence of the current hangup is, we need to figure out if a wide or
+a long print is suitable. This is dragging on our goal of yielding one line
+at a time. So we need a buffer function that handles that.
+
+
+In the process we need to stop concat-ing everything on-site and switch to
+buffering fragments into tables. thank heaven for multiple return values.
+
+```lua
 local function _tabulate(tab, depth, cycle)
    cycle = cycle or {}
    depth = depth or 0
@@ -236,17 +254,13 @@ local function _tabulate(tab, depth, cycle)
       else
          v = tab[k]
       end
-      local s
-      if is_array then
-         s = ""
+      local s = ""
+      if type(k) == "string" and k:find("^[%a_][%a%d_]*$") then
+         yield(ts(k) .. c.base(" = "))
       else
-         if type(k) == "string" and k:find("^[%a_][%a%d_]*$") then
-            s = ts(k) .. c.base(" = ")
-         else
-            s = c.base("[")
-                .. (wrap(_tabulate))(k, 100, cycle)
-                .. c.base("] = ")
-         end
+         yield(c.base("[")
+             .. (wrap(_tabulate))(k, 100, cycle)
+             .. c.base("] = "))
       end
       _tabulate(v, depth + 1, cycle)
       lines[i] = s
@@ -276,7 +290,23 @@ local function _tabulate(tab, depth, cycle)
    end
    return nil
 end
+```
 
+line-buffer goes here
+
+
+needs to decide when things are 'wide enough' so each yield needs to return
+``str, len, done``, where ``str`` is the fragment of string, ``len`` is a number
+representing its printable width (don't @ me) and ``done`` is a boolean for if
+this is the last bit of the repr of a given thing. Table, userdata, what
+have you.
+
+```lua
+local function lineBuff(...)
+   local fragment, len, done = _tabulate(...)
+end
+```
+```lua
 local function tabulate(...)
    local phrase = {}
    local iter = wrap(_tabulate)

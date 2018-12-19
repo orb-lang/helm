@@ -187,6 +187,21 @@ local function itWrap(fn)
    end
 end
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local function _tabulate(tab, depth, cycle)
    cycle = cycle or {}
    depth = depth or 0
@@ -283,6 +298,22 @@ local function _tabulate(tab, depth, cycle)
    end
    return nil
 end
+
+
+
+
+
+
+
+
+
+
+
+local function lineBuff(...)
+   local fragment, len, done = _tabulate(...)
+end
+
+
 
 local function tabulate(...)
    local phrase = {}
