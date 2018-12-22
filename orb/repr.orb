@@ -384,7 +384,7 @@ end
 Lots of small, nice things in this one.
 
 #!lua
-ts = function (value, hint)
+local function ts_coro(value, hint)
    local strval = tostring(value) or ""
    local len = #strval
    local str = scrub(strval)
@@ -395,15 +395,15 @@ ts = function (value, hint)
       if hint == "tab_name" then
          local tab_name = anti_G[value] or "t:" .. sub(str, -6)
          len = #tab_name
-         return c.table(tab_name), len
+         yield(c.table(tab_name), len)
       elseif hint == "mt" then
          local mt_name = anti_G[value] or "mt:" .. sub(str, -6)
          len = #mt_name + 2
-         return c.metatable("⟨" .. mt_name .. "⟩")
+         yield(c.metatable("⟨" .. mt_name .. "⟩"))
       elseif hints[hint] then
-         return hints[hint](str), len
+         yield(hints[hint](str), len)
       elseif c[hint] then
-         return c[hint](str), len
+         yield(c[hint](str), len)
       end
    end
 
@@ -418,9 +418,7 @@ ts = function (value, hint)
          len = repr_len or len
          assert(type(str) == "string")
       else
-         local tab_len
-         str, tab_len = tabulate(value)
-         len = tab_len or len
+         str = tabulate(value)
       end
    elseif typica == "function" then
       local f_label = sub(str,11)
@@ -471,7 +469,11 @@ ts = function (value, hint)
       end
       str, len = c_data(value, str)
    end
-   return str, len
+   yield(str, len)
+end
+
+ts = function(value)
+      return wrap(ts_coro)(value)
 end
 
 repr.ts = ts
