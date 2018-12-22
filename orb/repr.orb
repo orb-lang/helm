@@ -222,7 +222,7 @@ local function _tabulate(tab, depth, cycle)
 
       local mt_rep, mt_len = ts(tab, "mt")
       yield(mt_rep, mt_len)
-      yield(c.base(" = ", 3))
+      yield(c.base(" = "), 3)
       _tabulate(_M, depth + 1, cycle)
    end
    local estimated = 0
@@ -294,6 +294,10 @@ local function tabulate(...)
          if stage ~= event and event == "array" then
             skip_comma = true
          end
+         if (stage == "array" or stage == "map")
+            and event == "end" then
+            is_empty = true
+         end
          stage = event
       end
       if stage =="map" then
@@ -306,7 +310,8 @@ local function tabulate(...)
       elseif stage == "array"
          and not skip_comma then
          phrase[#phrase + 1] = ", "
-      elseif stage == "end" then
+         map_counter = map_counter + 1
+      elseif stage == "end" and map_counter > 0 then
          table.remove(phrase, #phrase - 1)
       end
       skip_comma = false
