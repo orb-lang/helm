@@ -160,9 +160,7 @@ local ts, ts_coro
 
 local SORT_LIMIT = 500  -- This won't be necessary #todo remove
 
-local DONE = true
-
-assert(coro, "coro must be in the namespace")
+local coro = coro or coroutine
 
 local yield, wrap = coro.yield, coro.wrap
 
@@ -211,10 +209,8 @@ local function _tabulate(tab, depth, cycle)
    -- Check to see if this is an array
    local is_array = true
    local i = 1
-   for k,v in pairs(tab) do
-      if not (k == i) then
-         is_array = false
-      end
+   for k,_ in pairs(tab) do
+      is_array = is_array and (k == i)
       i = i + 1
    end
    local first = true
@@ -226,7 +222,7 @@ local function _tabulate(tab, depth, cycle)
 
       local mt_rep, mt_len = ts(tab, "mt")
       yield(mt_rep, mt_len)
-      yield(c.base(" =", 3))
+      yield(c.base(" = ", 3))
       _tabulate(_M, depth + 1, cycle)
    end
    local estimated = 0
@@ -237,40 +233,34 @@ local function _tabulate(tab, depth, cycle)
          table.sort(keys, _keysort)
       else
          -- bail
-         yield("{ !!! }", 7, DONE); return nil
+         yield("{ !!! }", 7, "end"); return nil
       end
    else
       if #tab > SORT_LIMIT then
-         yield("{ #!!! }", 8, DONE); return nil
+         yield("{ #!!! }", 8, "end"); return nil
       end
       keys = tab
    end
-   yield(c.base "{", 1)
-   for j, k in ipairs(keys) do
-      -- this looks dumb but
-      -- the result is that k is key
-      -- and v is value for either type of table
-      local v
+   yield(c.base "{", 1, (is_array and "array" or "map"))
+   for j, key in ipairs(keys) do
       if is_array then
-         v = k
-         k = j
+         _tabulate(key, depth + 1, cycle)
       else
-         v = tab[k]
+         val = tab[key]
+         if type(key) == "string" and key:find("^[%a_][%a%d_]*$") then
+            local sym_repr, len = ts(key)
+            yield(sym_repr, len)
+            yield(c.base(" = "), 3)
+         else
+            yield(c.base("["), 1)
+               -- unwrap this, 20 is a dummy value
+            _tabulate(key, 100, cycle)
+            yield(c.base("] = {"), 5, (is_array and "array" or "map"))
+         end
+         _tabulate(val, depth + 1, cycle)
       end
-      local s = ""
-      if type(k) == "string" and k:find("^[%a_][%a%d_]*$") then
-         local sym_repr, len = ts(k)
-         yield(sym_repr, len)
-         yield(c.base(" = "), 3)
-      else
-         yield(c.base("["), 1)
-            -- unwrap this, 20 is a dummy value
-         yield(wrap(_tabulate)(k, 100, cycle), 20)
-         yield(c.base("] = {"), 5)
-      end
-      _tabulate(v, depth + 1, cycle)
    end
-   yield(c.base("}"), 1, DONE)
+   yield(c.base("}"), 1, "end")
    return nil
 end
 #/lua
@@ -293,10 +283,33 @@ end
 local function tabulate(...)
    local phrase = {}
    local iter = wrap(_tabulate)
+   local stage = ""
+   local map_counter = 0
+   local skip_comma = false
    while true do
-      local line, len, done = iter(...)
+      local line, len, event = iter(...)
       if line == nil then break end
       phrase[#phrase + 1] = line
+      if event then
+         if stage ~= event and event == "array" then
+            skip_comma = true
+         end
+         stage = event
+      end
+      if stage =="map" then
+         if map_counter == 3 then
+            phrase[#phrase + 1] = ", "
+            map_counter = 1
+         else
+            map_counter = map_counter + 1
+         end
+      elseif stage == "array"
+         and not skip_comma then
+         phrase[#phrase + 1] = ", "
+      elseif stage == "end" then
+         table.remove(phrase, #phrase - 1)
+      end
+      skip_comma = false
    end
    return table.concat(phrase)
 end
