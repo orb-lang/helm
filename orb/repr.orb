@@ -156,9 +156,11 @@ I've dressed it up a bit. Okay, a lot.
 metadata.
 
 #!lua
-local ts
+local ts, ts_coro
 
 local SORT_LIMIT = 500  -- This won't be necessary #todo remove
+
+local DONE = true
 
 assert(coro, "coro must be in the namespace")
 
@@ -180,13 +182,6 @@ local function _keysort(a, b)
       return false
    end
 end
-
-local function itWrap(fn)
-   return function()
-     return wrap(fn)
-   end
-end
-
 #/lua
 
 [record scratch, freeze frame]
@@ -223,17 +218,16 @@ local function _tabulate(tab, depth, cycle)
       i = i + 1
    end
    local first = true
-   local lines = {}
    -- if we have a metatable, get it first
    local mt = ""
    local _M = getmetatable(tab)
    if _M then
-      mt = ts(tab, "mt") .. c.base(" = ")
-           .. concat(collect(itWrap, _tabulate, _M, depth + 1, cycle))
-      lines[1] = mt
-      i = 2
-   else
-      i = 1
+      -- fix metatable stuff
+
+      local mt_rep, mt_len = ts(tab, "mt")
+      yield(mt_rep, mt_len)
+      yield(c.base(" =", 3))
+      _tabulate(_M, depth + 1, cycle)
    end
    local estimated = 0
    local keys
@@ -243,14 +237,15 @@ local function _tabulate(tab, depth, cycle)
          table.sort(keys, _keysort)
       else
          -- bail
-         yield "{ !!! }"; return nil
+         yield("{ !!! }", 7, DONE); return nil
       end
    else
       if #tab > SORT_LIMIT then
-         yield "{ #!!! }"; return nil
+         yield("{ #!!! }", 8, DONE); return nil
       end
       keys = tab
    end
+   yield(c.base "{", 1)
    for j, k in ipairs(keys) do
       -- this looks dumb but
       -- the result is that k is key
@@ -264,38 +259,18 @@ local function _tabulate(tab, depth, cycle)
       end
       local s = ""
       if type(k) == "string" and k:find("^[%a_][%a%d_]*$") then
-         yield(ts(k) .. c.base(" = "))
+         local sym_repr, len = ts(k)
+         yield(sym_repr, len)
+         yield(c.base(" = "), 3)
       else
-         yield(c.base("[")
-             .. (wrap(_tabulate))(k, 100, cycle)
-             .. c.base("] = "))
+         yield(c.base("["), 1)
+            -- unwrap this, 20 is a dummy value
+         yield(wrap(_tabulate)(k, 100, cycle), 20)
+         yield(c.base("] = {"), 5)
       end
       _tabulate(v, depth + 1, cycle)
-      lines[i] = s
-      estimated = estimated + #s
-      i = i + 1
    end
-   if estimated > WIDE_TABLE then
-   --[[
-      yield (c.base("{ ") .. indent
-         .. table.concat(lines, ",\n  " .. indent)
-         ..  c.base(" }")); return nil
-   --]]
-      yield(c.base("{ ") .. indent .. lines[1] .. ",\n")
-      local i = 2
-      while true do
-         local line = lines[i]
-         i = i + 1
-         if line ~= nil then
-            yield(indent .. line .. ",\n")
-         else
-            yield(indent ..  c.base(" }"))
-            break
-         end
-      end
-   else
-      yield (c.base("{ ") .. table.concat(lines, c.base(", ")) .. c.base(" }"))
-   end
+   yield(c.base("}"), 1, DONE)
    return nil
 end
 #/lua
@@ -319,7 +294,7 @@ local function tabulate(...)
    local phrase = {}
    local iter = wrap(_tabulate)
    while true do
-      local line = iter(...)
+      local line, len, done = iter(...)
       if line == nil then break end
       phrase[#phrase + 1] = line
    end
@@ -384,7 +359,7 @@ end
 Lots of small, nice things in this one.
 
 #!lua
-local function ts_coro(value, hint)
+ts_coro = function (value, hint)
    local strval = tostring(value) or ""
    local len = #strval
    local str = scrub(strval)
@@ -399,7 +374,7 @@ local function ts_coro(value, hint)
       elseif hint == "mt" then
          local mt_name = anti_G[value] or "mt:" .. sub(str, -6)
          len = #mt_name + 2
-         yield(c.metatable("⟨" .. mt_name .. "⟩"))
+         yield(c.metatable("⟨" .. mt_name .. "⟩"), len); return nil
       elseif hints[hint] then
          yield(hints[hint](str), len)
       elseif c[hint] then
@@ -472,8 +447,9 @@ local function ts_coro(value, hint)
    yield(str, len)
 end
 
-ts = function(value)
-      return wrap(ts_coro)(value)
+ts = function(...)
+      local rep, len, done = wrap(ts_coro)(...)
+      return rep, len, done
 end
 
 repr.ts = ts

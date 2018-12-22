@@ -184,6 +184,18 @@ function ModeS.insert(modeS, category, value)
 end
 #/lua
 
+*** ModeS:errPrint(modeS, category, value)
+
+Debug aide.
+
+#!lua
+function ModeS.errPrint(modeS, log_stmt)
+   modeS.zones.suggest:replace(log_stmt)
+   modeS:paint()
+   return modeS
+end
+#/lua
+
 
 *** status painter (colwrite)
 

@@ -189,6 +189,18 @@ end
 
 
 
+function ModeS.errPrint(modeS, log_stmt)
+   modeS.zones.suggest:replace(log_stmt)
+   modeS:paint()
+   return modeS
+end
+
+
+
+
+
+
+
 
 
 
