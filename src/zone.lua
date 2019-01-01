@@ -183,7 +183,7 @@ end
 
 
 function Zone.replace(zone, rainbuf)
-   zone.contents = rainbuf
+   zone.contents = rainbuf or zone.contents
    zone.touched = true
 
    return zone

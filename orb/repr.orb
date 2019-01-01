@@ -308,7 +308,7 @@ local function tabulate(...)
    local map_counter = 0 -- this counts where commas go
    local skip_comma = false -- no comma at end of array/map
    local stack, old_stack = 0, 0 -- level of recursion
-   local disp = 0                -- column displacement thus far
+   local disp = 0                -- column displacement
    while true do
       local line, len, event = iter(...)
       if line == nil then

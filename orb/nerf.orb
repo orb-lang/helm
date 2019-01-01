@@ -216,6 +216,7 @@ local function clear_txtbuf(modeS, category, value)
    modeS.hist.cursor = #modeS.hist + 1
    modeS.firstChar = true
    modeS.zones.results:replace ""
+   modeS.zones:reflow(modeS)
 end
 
 CTRL ["^L"] = clear_txtbuf
