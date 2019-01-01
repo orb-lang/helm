@@ -280,42 +280,76 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local COMMA = ", "
 local function tabulate(...)
    local phrase = {}
    local iter = wrap(_tabulate)
    local stage = ""
-   local map_counter = 0
-   local skip_comma = false
+   local map_counter = 0 -- this counts where commas go
+   local skip_comma = false -- no comma at end of array/map
+   local stack, old_stack = 0, 0 -- level of recursion
+
    while true do
       local line, len, event = iter(...)
-      if line == nil then break end
+      if line == nil then
+         break
+      end
       phrase[#phrase + 1] = line
       if event then
+         if event == "array" or event == "map" then
+            stack = stack + 1
+         elseif event == "end" then
+            stack = stack - 1
+            assert(stack >= 0, "(tabulate) stack underflow")
+         end
          if stage ~= event and event == "array" then
             skip_comma = true
          end
          if (stage == "array" or stage == "map")
             and event == "end" then
-            is_empty = true
+            skip_comma = true
          end
          stage = event
       end
       if stage =="map" then
          if map_counter == 3 then
-            phrase[#phrase + 1] = ", "
+            phrase[#phrase + 1] = COMMA
             map_counter = 1
          else
             map_counter = map_counter + 1
          end
       elseif stage == "array"
          and not skip_comma then
-         phrase[#phrase + 1] = ", "
+         phrase[#phrase + 1] = COMMA
          map_counter = map_counter + 1
-      elseif stage == "end" and map_counter > 0 then
-         table.remove(phrase, #phrase - 1)
       end
       skip_comma = false
-   end
+      if old_stack < stack and phrase[#phrase] == COMMA then
+        table.remove(phrase)
+      end
+      if stage == "end" and phrase[#phrase - 1] == COMMA then
+         table.remove(phrase, #phrase - 1)
+      end
+      old_stack = stack
+      end
    return table.concat(phrase)
 end
 
