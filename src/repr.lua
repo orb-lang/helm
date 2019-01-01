@@ -255,7 +255,10 @@ local function _tabulate(tab, depth, cycle)
             yield(c.base("["), 1)
                -- unwrap this, 20 is a dummy value
             _tabulate(key, 100, cycle)
-            yield(c.base("] = {"), 5, (is_array and "array" or "map"))
+            yield(c.base("] = "), 4)
+            if type(val) == "table" then
+               yield("{", 1, is_array and "array" or "map")
+            end
          end
          _tabulate(val, depth + 1, cycle)
       end
@@ -328,6 +331,11 @@ local function tabulate(...)
             skip_comma = true
          end
          stage = event
+      end
+      -- special-case for non-string values, which
+      -- yield an extra piece
+      if line == c.base("] = ") then
+         map_counter = map_counter - 1
       end
       if stage =="map" then
          if map_counter == 3 then
