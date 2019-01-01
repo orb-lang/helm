@@ -172,7 +172,7 @@ end
 
 function NAV.SHIFT_DOWN(modeS, category, value)
    local results = modeS.zones.results.contents
-   if results.more then
+   if results and results.more then
       results.offset = results.offset + 1
       modeS.zones.results.touched = true
    end
@@ -180,7 +180,9 @@ end
 
 function NAV.SHIFT_UP(modeS, category, value)
    local results = modeS.zones.results.contents
-   if results.offset > 0 then
+   if results
+    and results.offset
+    and results.offset > 0 then
       results.offset = results.offset - 1
       modeS.zones.results.touched = true
    end

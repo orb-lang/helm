@@ -34,8 +34,6 @@ local C = require "color"
 
 local repr = {}
 
-local WIDE_TABLE = 200 -- #todo make this configurable by tty (zone) width.
-
 local hints = C.color.hints
 
 local c = C.color
@@ -54,23 +52,19 @@ local anti_G = { _G = "_G" }
 
 Now to populate it:
 
-**** tie_break(old, new)
-
-A helper function to decide which name is better.
-
-
-#!lua
-#/lua
-
 
 *** C.allNames()
-
 
 Ransacks =_G= looking for names to put on things.
 
 To really dig out a good name for metatables we're going to need to write
 some kind of reflection function that will dig around in upvalues to find
 local names for things.
+
+
+**** tie_break(old, new)
+
+A helper function to decide which name is better.
 
 #!lua
 local function tie_break(old, new)
@@ -197,6 +191,7 @@ buffering fragments into tables. thank heaven for multiple return values.
 #!lua
 local O_BRACE = c.base "{"
 local C_BRACE = c.base "}"
+
 local function _tabulate(tab, depth, cycle)
    cycle = cycle or {}
    depth = depth or 0
@@ -255,7 +250,8 @@ local function _tabulate(tab, depth, cycle)
             yield(c.base(" = "), 3)
          else
             yield(c.base("["), 1)
-               -- unwrap this, 20 is a dummy value
+               -- we want names or hashes for any lvalue table,
+               -- 100 triggers this
             _tabulate(key, 100, cycle)
             yield(c.base("] = "), 4)
             if type(val) == "table" then
@@ -303,7 +299,8 @@ just tossing everything into a =phrase= table.
 
 #!lua
 
-local COMMA = ", "
+local COMMA, COM_LEN = c.base ", ", 2
+
 local function tabulate(...)
    local phrase = {}
    local iter = wrap(_tabulate)
@@ -311,16 +308,18 @@ local function tabulate(...)
    local map_counter = 0 -- this counts where commas go
    local skip_comma = false -- no comma at end of array/map
    local stack, old_stack = 0, 0 -- level of recursion
-
+   local disp = 0                -- column displacement thus far
    while true do
       local line, len, event = iter(...)
       if line == nil then
          break
       end
       phrase[#phrase + 1] = line
+      disp = disp + len
       if event then
          if event == "array" or event == "map" then
             stack = stack + 1
+            skip_comma = true
          elseif event == "end" then
             stack = stack - 1
             assert(stack >= 0, "(tabulate) stack underflow")
@@ -336,6 +335,7 @@ local function tabulate(...)
          -- this is seriously esoteric but fixes cases like {{},{}}
          if old_stack < stack and phrase[#phrase -1] == C_BRACE then
             table.insert(phrase, #phrase, COMMA)
+            disp = disp + COM_LEN
          end
          stage = event
       end
@@ -348,6 +348,7 @@ local function tabulate(...)
       if stage =="map" then
          if map_counter == 3 then
             phrase[#phrase + 1] = COMMA
+            disp = disp + COM_LEN
             map_counter = 1
          else
             map_counter = map_counter + 1
@@ -355,23 +356,17 @@ local function tabulate(...)
       elseif stage == "array"
          and not skip_comma then
          phrase[#phrase + 1] = COMMA
+         disp = disp + COM_LEN
          map_counter = map_counter + 1
       end
       skip_comma = false
-      -- remove commas if:
-      ---[[
-      if old_stack < stack
-         and phrase[#phrase] == COMMA
-         and phrase[#phrase - 1] == O_BRACE then
-        table.remove(phrase)
-      end
-      --]]
       if stage == "end" and phrase[#phrase - 1] == COMMA then
          table.remove(phrase, #phrase - 1)
+         disp = disp - COM_LEN
       end
       old_stack = stack
       end
-   return table.concat(phrase)
+   return table.concat(phrase) .. "\n" .. disp
 end
 #/lua
 
