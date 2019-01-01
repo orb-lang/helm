@@ -195,6 +195,8 @@ end
 
 
 
+local O_BRACE = c.base "{"
+local C_BRACE = c.base "}"
 local function _tabulate(tab, depth, cycle)
    cycle = cycle or {}
    depth = depth or 0
@@ -241,7 +243,7 @@ local function _tabulate(tab, depth, cycle)
       end
       keys = tab
    end
-   yield(c.base "{", 1, (is_array and "array" or "map"))
+   yield(O_BRACE, 1, (is_array and "array" or "map"))
    for j, key in ipairs(keys) do
       if is_array then
          _tabulate(key, depth + 1, cycle)
@@ -257,13 +259,13 @@ local function _tabulate(tab, depth, cycle)
             _tabulate(key, 100, cycle)
             yield(c.base("] = "), 4)
             if type(val) == "table" then
-               yield("{", 1, is_array and "array" or "map")
+               yield(O_BRACE, 1, is_array and "array" or "map")
             end
          end
          _tabulate(val, depth + 1, cycle)
       end
    end
-   yield(c.base("}"), 1, "end")
+   yield(C_BRACE, 1, "end")
    return nil
 end
 
@@ -323,12 +325,17 @@ local function tabulate(...)
             stack = stack - 1
             assert(stack >= 0, "(tabulate) stack underflow")
          end
-         if stage ~= event and event == "array" then
+         -- don't think I need the conditional below
+         if stage ~= event then
             skip_comma = true
          end
          if (stage == "array" or stage == "map")
             and event == "end" then
             skip_comma = true
+         end
+         -- this is seriously esoteric but fixes cases like {{},{}}
+         if old_stack < stack and phrase[#phrase -1] == C_BRACE then
+            table.insert(phrase, #phrase, COMMA)
          end
          stage = event
       end
@@ -337,6 +344,7 @@ local function tabulate(...)
       if line == c.base("] = ") then
          map_counter = map_counter - 1
       end
+      -- insert commas
       if stage =="map" then
          if map_counter == 3 then
             phrase[#phrase + 1] = COMMA
@@ -350,9 +358,14 @@ local function tabulate(...)
          map_counter = map_counter + 1
       end
       skip_comma = false
-      if old_stack < stack and phrase[#phrase] == COMMA then
+      -- remove commas if:
+      ---[[
+      if old_stack < stack
+         and phrase[#phrase] == COMMA
+         and phrase[#phrase - 1] == O_BRACE then
         table.remove(phrase)
       end
+      --]]
       if stage == "end" and phrase[#phrase - 1] == COMMA then
          table.remove(phrase, #phrase - 1)
       end
