@@ -191,24 +191,17 @@ local C_BRACE = c.alert "}"
 local function _tabulate(tab, depth, cycle)
    cycle = cycle or {}
    depth = depth or 0
-   local jump_check = false
    if type(tab) ~= "table" then
       ts_coro(tab)
-      jump_check = true
       return nil
    end
    if depth > C.depth or cycle[tab] then
       yield(ts(tab, "tab_name"))
       cycle[tab] = true
-      jump_check = true
       return nil
    end
-   assert(cycle[tab] == nil, "cycle[tab] should be false here")
-   if jump_check == true then
-      error "why does this continue past the jump check?!"
-   end
+
    cycle[tab] = true
-   local indent = ("  "):rep(depth)
    -- Check to see if this is an array
    local is_array = true
    local i = 1
