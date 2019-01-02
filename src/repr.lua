@@ -14,10 +14,6 @@
 
 
 
-
-
-
-
 local a = require "anterm"
 
 local core = require "core"
@@ -189,17 +185,27 @@ end
 
 
 
-local O_BRACE = c.base "{"
-local C_BRACE = c.base "}"
+local O_BRACE = c.alert "{"
+local C_BRACE = c.alert "}"
 
 local function _tabulate(tab, depth, cycle)
    cycle = cycle or {}
    depth = depth or 0
+   local jump_check = false
    if type(tab) ~= "table" then
-      yield(ts(tab)); return nil
+      ts_coro(tab)
+      jump_check = true
+      return nil
    end
    if depth > C.depth or cycle[tab] then
-      yield(ts(tab, "tab_name")); return nil
+      yield(ts(tab, "tab_name"))
+      cycle[tab] = true
+      jump_check = true
+      return nil
+   end
+   assert(cycle[tab] == nil, "cycle[tab] should be false here")
+   if jump_check == true then
+      error "why does this continue past the jump check?!"
    end
    cycle[tab] = true
    local indent = ("  "):rep(depth)
@@ -245,8 +251,7 @@ local function _tabulate(tab, depth, cycle)
       else
          val = tab[key]
          if type(key) == "string" and key:find("^[%a_][%a%d_]*$") then
-            local sym_repr, len = ts(key)
-            yield(sym_repr, len)
+            ts_coro(key)
             yield(c.base(" = "), 3)
          else
             yield(c.base("["), 1)
@@ -254,9 +259,6 @@ local function _tabulate(tab, depth, cycle)
                -- 100 triggers this
             _tabulate(key, 100, cycle)
             yield(c.base("] = "), 4)
-            if type(val) == "table" then
-               yield(O_BRACE, 1, is_array and "array" or "map")
-            end
          end
          _tabulate(val, depth + 1, cycle)
       end
@@ -366,7 +368,7 @@ local function tabulate(...)
       end
       old_stack = stack
       end
-   return table.concat(phrase) .. "\n" .. disp
+   return table.concat(phrase) -- .. "\n" .. disp
 end
 
 
