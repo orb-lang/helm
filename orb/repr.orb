@@ -122,8 +122,9 @@ The trick here is that we scan =package.loaded= after =_G=, which gives
 better names for things.
 
 #!lua
-function repr.allNames()
-   return addName(package.loaded, addName(_G))
+function repr.allNames(tab)
+   tab = tab or _G
+   return addName(package.loaded, addName(tab))
 end
 
 function repr.clearNames()
@@ -139,11 +140,6 @@ This is fundamentally [[Tim Caswell's][https://github.com/creationix]] code.
 I've dressed it up a bit. Okay, a lot.
 
 #todo add rainbow braces
-
-#todo make tabulator =coro.yield()= one line at a time
-
-#todo make a Line class that holds an array of string fragments and some
-metadata.
 
 #!lua
 local ts, ts_coro
@@ -172,21 +168,19 @@ local function _keysort(a, b)
 end
 #/lua
 
-[record scratch, freeze frame]
 
+*** _tabulate(tab, depth, cycle)
 
-In order to restore sanity, we're going to need to break a few things up.
+This =yield()s= pieces of a table, recursively, one at a time.
 
-The essence of the current hangup is, we need to figure out if a wide or
-a long print is suitable. This is dragging on our goal of yielding one line
-at a time. So we need a buffer function that handles that.
+Second return value is the printed width, third, if any, is a string
+representing what we're opening and/or closing.
 
-In the process we need to stop concat-ing everything on-site and switch to
-buffering fragments into tables. thank heaven for multiple return values.
+At this point it works, time to start breaking it out into an iterator.
 
 #!lua
-local O_BRACE = c.alert "{"
-local C_BRACE = c.alert "}"
+local O_BRACE = c.base "{"
+local C_BRACE = c.base "}"
 
 local function _tabulate(tab, depth, cycle)
    cycle = cycle or {}
@@ -197,7 +191,6 @@ local function _tabulate(tab, depth, cycle)
    end
    if depth > C.depth or cycle[tab] then
       yield(ts(tab, "tab_name"))
-      cycle[tab] = true
       return nil
    end
 
@@ -209,7 +202,6 @@ local function _tabulate(tab, depth, cycle)
       is_array = is_array and (k == i)
       i = i + 1
    end
-   local first = true
    -- if we have a metatable, get it first
    local mt = ""
    local _M = getmetatable(tab)
@@ -269,12 +261,6 @@ representing its printable width (don't @ me) and =done= is a boolean for if
 this is the last bit of the repr of a given thing. Table, userdata, what
 have you.
 
-#!lua
-local function lineBuf(...)
-   local fragment, len, done = _tabulate(...)
-end
-#/lua
-
 
 *** tabulate(...)
 
@@ -312,6 +298,9 @@ local function tabulate(...)
       phrase[#phrase + 1] = line
       disp = disp + len
       if event then
+         if event == "map" then
+            map_counter = 0
+         end
          if event == "array" or event == "map" then
             stack = stack + 1
             skip_comma = true

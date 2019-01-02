@@ -188,7 +188,7 @@ local stdin = uv.new_tty(0, true)
 
 ** Modeselektor
 
-This should start with a read which saves the cursor location.
+#todo This should start with a read which saves the cursor location.
 
 
 #!lua
@@ -287,6 +287,7 @@ end
 -- Get names for as many values as possible
 -- into the colorizer
 repr.allNames()
+repr.allNames(__G)
 
 -- raw mode
 uv.tty_set_mode(stdin, 2)

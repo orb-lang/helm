@@ -287,6 +287,7 @@ end
 -- Get names for as many values as possible
 -- into the colorizer
 repr.allNames()
+repr.allNames(__G)
 
 -- raw mode
 uv.tty_set_mode(stdin, 2)

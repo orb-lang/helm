@@ -122,19 +122,15 @@ end
 
 
 
-function repr.allNames()
-   return addName(package.loaded, addName(_G))
+function repr.allNames(tab)
+   tab = tab or _G
+   return addName(package.loaded, addName(tab))
 end
 
 function repr.clearNames()
    anti_G = {_G = "_G"}
    return anti_G
 end
-
-
-
-
-
 
 
 
@@ -183,10 +179,8 @@ end
 
 
 
-
-
-local O_BRACE = c.alert "{"
-local C_BRACE = c.alert "}"
+local O_BRACE = c.base "{"
+local C_BRACE = c.base "}"
 
 local function _tabulate(tab, depth, cycle)
    cycle = cycle or {}
@@ -197,7 +191,6 @@ local function _tabulate(tab, depth, cycle)
    end
    if depth > C.depth or cycle[tab] then
       yield(ts(tab, "tab_name"))
-      cycle[tab] = true
       return nil
    end
 
@@ -209,7 +202,6 @@ local function _tabulate(tab, depth, cycle)
       is_array = is_array and (k == i)
       i = i + 1
    end
-   local first = true
    -- if we have a metatable, get it first
    local mt = ""
    local _M = getmetatable(tab)
@@ -270,12 +262,6 @@ end
 
 
 
-local function lineBuf(...)
-   local fragment, len, done = _tabulate(...)
-end
-
-
-
 
 
 
@@ -312,6 +298,9 @@ local function tabulate(...)
       phrase[#phrase + 1] = line
       disp = disp + len
       if event then
+         if event == "map" then
+            map_counter = 0
+         end
          if event == "array" or event == "map" then
             stack = stack + 1
             skip_comma = true
