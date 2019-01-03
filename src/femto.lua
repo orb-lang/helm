@@ -95,14 +95,11 @@ local concat = assert(table.concat)
 
 
 
-
-
-
 a = require "anterm"
-color = require "color"
 local repr = require "repr"
-c = color.color
 --watch = require "watcher"
+
+
 
 
 
@@ -286,7 +283,7 @@ end
 
 -- Get names for as many values as possible
 -- into the colorizer
-repr.allNames()
+--repr.allNames()
 repr.allNames(__G)
 
 -- raw mode

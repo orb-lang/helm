@@ -282,7 +282,7 @@ just tossing everything into a =phrase= table.
 
 local COMMA, COM_LEN = c.base ", ", 2
 
-local function tabulate(...)
+local function lineGen(...)
    local phrase = {}
    local iter = wrap(_tabulate)
    local stage = ""
@@ -344,13 +344,31 @@ local function tabulate(...)
          map_counter = map_counter + 1
       end
       skip_comma = false
+      -- if we had a comma before ending a map/array (this is normal)
+      -- then remove it
       if stage == "end" and phrase[#phrase - 1] == COMMA then
          table.remove(phrase, #phrase - 1)
          disp = disp - COM_LEN
       end
       old_stack = stack
+   end
+   local flip_me = false
+   return function()
+      if not flip_me then
+         flip_me = true
+         return table.concat(phrase)
+      else
+         return nil
       end
-   return table.concat(phrase) -- .. "\n" .. disp
+   end
+end
+
+local function tabulate(...)
+   local phrase = {}
+   for line in lineGen(...) do
+      phrase[#phrase + 1] = line
+   end
+   return table.concat(phrase)
 end
 #/lua
 

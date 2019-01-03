@@ -108,6 +108,8 @@ local Historian = require "historian"
 local Lex       = require "lex"
 local Zoneherd  = require "zone"
 local repr      = require "repr"
+local color     = require "color"
+c = color.color
 
 local Nerf   = require "nerf"
 local Search = require "search"
