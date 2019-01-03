@@ -287,11 +287,13 @@ local function lineGen(...)
    local phrase = {}
    local iter = wrap(_tabulate)
    local stage = ""
-   local map_counter = 0 -- this counts where commas go
-   local skip_comma = false -- no comma at end of array/map
+   local map_counter = 0         -- this counts where commas go
+   local skip_comma = false      -- no comma at end of array/map
    local stack, old_stack = 0, 0 -- level of recursion
    local disp = 0                -- column displacement
    local yielding = true
+   -- return an iterator function that currently yields the entire
+   -- line but will eventually yield one line at a time.
    return function()
       while yielding do
          local line, len, event = iter(unpack(arg_v))
@@ -332,7 +334,7 @@ local function lineGen(...)
             map_counter = map_counter - 1
          end
          -- insert commas
-         if stage =="map" then
+         if stage =="map"  then
             if map_counter == 3 then
                phrase[#phrase + 1] = COMMA
                disp = disp + COM_LEN
@@ -340,8 +342,7 @@ local function lineGen(...)
             else
                map_counter = map_counter + 1
             end
-         elseif stage == "array"
-            and not skip_comma then
+         elseif stage == "array" and not skip_comma then
             phrase[#phrase + 1] = COMMA
             disp = disp + COM_LEN
             map_counter = map_counter + 1
@@ -349,6 +350,8 @@ local function lineGen(...)
          skip_comma = false
          -- if we had a comma before ending a map/array (this is normal)
          -- then remove it
+         -- #nb there may be a way to do this using skip_comma but this
+         -- works, dammit.
          if stage == "end" and phrase[#phrase - 1] == COMMA then
             table.remove(phrase, #phrase - 1)
             disp = disp - COM_LEN
