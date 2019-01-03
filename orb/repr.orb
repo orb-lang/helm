@@ -283,6 +283,7 @@ just tossing everything into a =phrase= table.
 local COMMA, COM_LEN = c.base ", ", 2
 
 local function lineGen(...)
+   local arg_v = {...}
    local phrase = {}
    local iter = wrap(_tabulate)
    local stage = ""
@@ -290,72 +291,72 @@ local function lineGen(...)
    local skip_comma = false -- no comma at end of array/map
    local stack, old_stack = 0, 0 -- level of recursion
    local disp = 0                -- column displacement
-   while true do
-      local line, len, event = iter(...)
-      if line == nil then
-         break
-      end
-      phrase[#phrase + 1] = line
-      disp = disp + len
-      if event then
-         if event == "map" then
-            map_counter = 0
+   local yielding = true
+   return function()
+      while yielding do
+         local line, len, event = iter(unpack(arg_v))
+         if line == nil then
+            break
          end
-         if event == "array" or event == "map" then
-            stack = stack + 1
-            skip_comma = true
-         elseif event == "end" then
-            stack = stack - 1
-            assert(stack >= 0, "(tabulate) stack underflow")
+         phrase[#phrase + 1] = line
+         disp = disp + len
+         if event then
+            if event == "map" then
+               map_counter = 0
+            end
+            if event == "array" or event == "map" then
+               stack = stack + 1
+               skip_comma = true
+            elseif event == "end" then
+               stack = stack - 1
+               assert(stack >= 0, "(tabulate) stack underflow")
+            end
+            -- don't think I need the conditional below
+            if stage ~= event then
+               skip_comma = true
+            end
+            if (stage == "array" or stage == "map")
+               and event == "end" then
+               skip_comma = true
+            end
+            -- this is seriously esoteric but fixes cases like {{},{}}
+            if old_stack < stack and phrase[#phrase -1] == C_BRACE then
+               table.insert(phrase, #phrase, COMMA)
+               disp = disp + COM_LEN
+            end
+            stage = event
          end
-         -- don't think I need the conditional below
-         if stage ~= event then
-            skip_comma = true
+         -- special-case for non-string values, which
+         -- yield an extra piece
+         if line == c.base("] = ") then
+            map_counter = map_counter - 1
          end
-         if (stage == "array" or stage == "map")
-            and event == "end" then
-            skip_comma = true
-         end
-         -- this is seriously esoteric but fixes cases like {{},{}}
-         if old_stack < stack and phrase[#phrase -1] == C_BRACE then
-            table.insert(phrase, #phrase, COMMA)
-            disp = disp + COM_LEN
-         end
-         stage = event
-      end
-      -- special-case for non-string values, which
-      -- yield an extra piece
-      if line == c.base("] = ") then
-         map_counter = map_counter - 1
-      end
-      -- insert commas
-      if stage =="map" then
-         if map_counter == 3 then
+         -- insert commas
+         if stage =="map" then
+            if map_counter == 3 then
+               phrase[#phrase + 1] = COMMA
+               disp = disp + COM_LEN
+               map_counter = 1
+            else
+               map_counter = map_counter + 1
+            end
+         elseif stage == "array"
+            and not skip_comma then
             phrase[#phrase + 1] = COMMA
             disp = disp + COM_LEN
-            map_counter = 1
-         else
             map_counter = map_counter + 1
          end
-      elseif stage == "array"
-         and not skip_comma then
-         phrase[#phrase + 1] = COMMA
-         disp = disp + COM_LEN
-         map_counter = map_counter + 1
+         skip_comma = false
+         -- if we had a comma before ending a map/array (this is normal)
+         -- then remove it
+         if stage == "end" and phrase[#phrase - 1] == COMMA then
+            table.remove(phrase, #phrase - 1)
+            disp = disp - COM_LEN
+         end
+         old_stack = stack
       end
-      skip_comma = false
-      -- if we had a comma before ending a map/array (this is normal)
-      -- then remove it
-      if stage == "end" and phrase[#phrase - 1] == COMMA then
-         table.remove(phrase, #phrase - 1)
-         disp = disp - COM_LEN
-      end
-      old_stack = stack
-   end
-   local flip_me = false
-   return function()
-      if not flip_me then
-         flip_me = true
+      if yielding then
+         yielding = false
          return table.concat(phrase)
       else
          return nil
