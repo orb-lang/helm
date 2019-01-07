@@ -150,18 +150,16 @@ local coro = coro or coroutine
 
 local yield, wrap = coro.yield, coro.wrap
 
-local collect = assert(table.collect)
-
-local concat = table.concat
+local concat, insert, remove = table.concat, table.insert, table.remove
 
 local function _keysort(a, b)
-   if type(a) == "number" and type(b) == "string" then
+   if (type(a) == "string" and type(b) == "string")
+      or (type(a) == "number" and type(b) == "number") then
+      return a < b
+   elseif type(a) == "number" and type(b) == "string" then
       return true
    elseif type(a) == "string" and type(b) == "number" then
       return false
-   elseif (type(a) == "string" and type(b) == "string")
-      or (type(a) == "number" and type(b) == "number") then
-      return a < b
    else
       return false
    end
@@ -181,6 +179,7 @@ At this point it works, time to start breaking it out into an iterator.
 #!lua
 local O_BRACE = c.base "{"
 local C_BRACE = c.base "}"
+local COMMA, COM_LEN = c.base ", ", 2
 
 local function _tabulate(tab, depth, cycle)
    cycle = cycle or {}
@@ -286,7 +285,19 @@ lines or short lines, which is determined by =lineGen=, the caller.
 
 #!lua
 local function oneLine(phrase, long)
-   return table.concat(phrase)
+   long = long or true -- make this 'true'
+   if long then
+      local line = {}
+      while true do
+         local frag = remove(phrase, 1)
+         insert(line, frag)
+         if frag == COMMA or #phrase == 0 then
+            return concat(line) .. "\n"  -- #todo no \n
+         end
+      end
+   else
+      return concat(phrase) .. concat(phrase.disp, ", ")
+   end
 end
 #/lua
 
@@ -296,10 +307,9 @@ This function sets up an iterator, which returns one line at a time of the
 table.
 
 #!lua
-local COMMA, COM_LEN = c.base ", ", 2
-
 local function lineGen(tab, depth, cycle)
    local phrase = {}
+   phrase.disp = {}
    local iter = wrap(_tabulate)
    local stage = ""
    local map_counter = 0         -- this counts where commas go
@@ -316,6 +326,7 @@ local function lineGen(tab, depth, cycle)
             break
          end
          phrase[#phrase + 1] = line
+         phrase.disp[#phrase.disp + 1] = len
          disp = disp + len
          if event then
             if event == "map" then
@@ -338,7 +349,8 @@ local function lineGen(tab, depth, cycle)
             end
             -- this is seriously esoteric but fixes cases like {{},{}}
             if old_stack < stack and phrase[#phrase -1] == C_BRACE then
-               table.insert(phrase, #phrase, COMMA)
+               insert(phrase, #phrase, COMMA)
+               phrase.disp[#phrase.disp + 1] = COM_LEN
                disp = disp + COM_LEN
             end
             stage = event
@@ -353,12 +365,14 @@ local function lineGen(tab, depth, cycle)
             if map_counter == 3 then
                phrase[#phrase + 1] = COMMA
                disp = disp + COM_LEN
+               phrase.disp[#phrase.disp + 1] = COM_LEN
                map_counter = 1
             else
                map_counter = map_counter + 1
             end
          elseif stage == "array" and not skip_comma then
             phrase[#phrase + 1] = COMMA
+            phrase.disp[#phrase.disp + 1] = COM_LEN
             disp = disp + COM_LEN
             map_counter = map_counter + 1
          end
@@ -368,7 +382,8 @@ local function lineGen(tab, depth, cycle)
          -- #nb there may be a way to do this using skip_comma but this
          -- works, dammit.
          if stage == "end" and phrase[#phrase - 1] == COMMA then
-            table.remove(phrase, #phrase - 1)
+            remove(phrase, #phrase - 1)
+            remove(phrase.disp, #phrase.disp -1)
             disp = disp - COM_LEN
          end
          old_stack = stack
@@ -387,7 +402,7 @@ local function tabulate(...)
    for line in lineGen(...) do
       phrase[#phrase + 1] = line
    end
-   return table.concat(phrase)
+   return concat(phrase)
 end
 #/lua
 
