@@ -1108,7 +1108,7 @@ leaf_266  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 codeblock_263 -> leaf_267
 leaf_267  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Zone.replace(zone, rainbuf)
-   zone.contents = rainbuf
+   zone.contents = rainbuf or zone.contents
    zone.touched = true
 
    return zone

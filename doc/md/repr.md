@@ -1,21 +1,16 @@
 # Repr
 
 
-Our ``color`` library currently is dominated by ``ts(obj)``, a heavily-modified
-table printer based on Tim Caswell's example repl from ``luv``.
+  ``repr`` is our general-purpose pretty-printer.
 
 
-We need to make it some changes to it, so it can handle large tables without
-destruction.  Mostly, this is a change from string concatenation to a line-by-
-line iterator.
+This is undergoing a huge refactor to make it iterable, so it yields one
+line at a time and won't get hung up on enormous tables.
 
 
-There will likely be some further refactors to make it more compatible with
-``rainbuf`` and the rest of the system, but the first thing we need to do is
-make it iterable.
-
-
-Well, the _very_ first thing we need to do is move it...
+Currently we yield most things, and are working our way toward providing an
+iterator that itself returns one line at a time until it reaches the end of
+the repr.
 
 
 #### imports
@@ -35,8 +30,6 @@ local C = require "color"
 
 local repr = {}
 
-local WIDE_TABLE = 200 -- #todo make this configurable by tty (zone) width.
-
 local hints = C.color.hints
 
 local c = C.color
@@ -53,15 +46,8 @@ local anti_G = { _G = "_G" }
 
 Now to populate it:
 
-#### tie_break(old, new)
 
-A helper function to decide which name is better.
-
-
-```lua
-```
 ### C.allNames()
-
 
 Ransacks ``_G`` looking for names to put on things.
 
@@ -69,6 +55,11 @@ Ransacks ``_G`` looking for names to put on things.
 To really dig out a good name for metatables we're going to need to write
 some kind of reflection function that will dig around in upvalues to find
 local names for things.
+
+
+#### tie_break(old, new)
+
+A helper function to decide which name is better.
 
 ```lua
 local function tie_break(old, new)
@@ -128,8 +119,9 @@ The trick here is that we scan ``package.loaded`` after ``_G``, which gives
 better names for things.
 
 ```lua
-function repr.allNames()
-   return addName(package.loaded, addName(_G))
+function repr.allNames(tab)
+   tab = tab or _G
+   return addName(package.loaded, addName(tab))
 end
 
 function repr.clearNames()
@@ -144,12 +136,12 @@ This is fundamentally [[Tim Caswell's][https://github.com/creationix]] code.
 
 I've dressed it up a bit. Okay, a lot.
 
-#todo add rainbow braces#todo make tabulator =coro.yield()= one line at a time```lua
-local ts
+```lua
+local ts, ts_coro
 
 local SORT_LIMIT = 500  -- This won't be necessary #todo remove
 
-assert(coro, "coro must be in the namespace")
+local coro = coro or coroutine
 
 local yield, wrap = coro.yield, coro.wrap
 
@@ -169,63 +161,52 @@ local function _keysort(a, b)
       return false
    end
 end
-
-local function itWrap(fn)
-   return function()
-     return wrap(fn)
-   end
-end
-
 ```
+### _tabulate(tab, depth, cycle)
 
-[record scratch, freeze frame]
-
-
-
-In order to restore sanity, we're going to need to break a few things up.
+This ``yield()s`` pieces of a table, recursively, one at a time.
 
 
-The essence of the current hangup is, we need to figure out if a wide or
-a long print is suitable. This is dragging on our goal of yielding one line
-at a time. So we need a buffer function that handles that.
+Second return value is the printed width, third, if any, is a string
+representing what we're opening and/or closing.
 
 
-In the process we need to stop concat-ing everything on-site and switch to
-buffering fragments into tables. thank heaven for multiple return values.
+At this point it works, time to start breaking it out into an iterator.
 
 ```lua
+local O_BRACE = c.base "{"
+local C_BRACE = c.base "}"
+
 local function _tabulate(tab, depth, cycle)
    cycle = cycle or {}
    depth = depth or 0
    if type(tab) ~= "table" then
-      yield(ts(tab)); return nil
+      ts_coro(tab)
+      return nil
    end
    if depth > C.depth or cycle[tab] then
-      yield(ts(tab, "tab_name")); return nil
+      yield(ts(tab, "tab_name"))
+      return nil
    end
+
    cycle[tab] = true
-   local indent = ("  "):rep(depth)
    -- Check to see if this is an array
    local is_array = true
    local i = 1
-   for k,v in pairs(tab) do
-      if not (k == i) then
-         is_array = false
-      end
+   for k,_ in pairs(tab) do
+      is_array = is_array and (k == i)
       i = i + 1
    end
-   local first = true
-   local lines = {}
    -- if we have a metatable, get it first
    local mt = ""
    local _M = getmetatable(tab)
    if _M then
-      mt = ts(tab, "mt") .. c.base(" = ")
-           .. concat(collect(itWrap, _tabulate, _M, depth + 1, cycle))
-      lines[1] = mt
-      i = 2
-   else
-      i = 1
+      -- fix metatable stuff
+
+      local mt_rep, mt_len = ts(tab, "mt")
+      yield(mt_rep, mt_len)
+      yield(c.base(" = "), 3)
+      _tabulate(_M, depth + 1, cycle)
    end
    local estimated = 0
    local keys
@@ -235,59 +216,34 @@ local function _tabulate(tab, depth, cycle)
          table.sort(keys, _keysort)
       else
          -- bail
-         yield "{ !!! }"; return nil
+         yield("{ !!! }", 7, "end"); return nil
       end
    else
       if #tab > SORT_LIMIT then
-         yield "{ #!!! }"; return nil
+         yield("{ #!!! }", 8, "end"); return nil
       end
       keys = tab
    end
-   for j, k in ipairs(keys) do
-      -- this looks dumb but
-      -- the result is that k is key
-      -- and v is value for either type of table
-      local v
+   yield(O_BRACE, 1, (is_array and "array" or "map"))
+   for j, key in ipairs(keys) do
       if is_array then
-         v = k
-         k = j
+         _tabulate(key, depth + 1, cycle)
       else
-         v = tab[k]
-      end
-      local s = ""
-      if type(k) == "string" and k:find("^[%a_][%a%d_]*$") then
-         yield(ts(k) .. c.base(" = "))
-      else
-         yield(c.base("[")
-             .. (wrap(_tabulate))(k, 100, cycle)
-             .. c.base("] = "))
-      end
-      _tabulate(v, depth + 1, cycle)
-      lines[i] = s
-      estimated = estimated + #s
-      i = i + 1
-   end
-   if estimated > WIDE_TABLE then
-   --[[
-      yield (c.base("{ ") .. indent
-         .. table.concat(lines, ",\n  " .. indent)
-         ..  c.base(" }")); return nil
-   --]]
-      yield(c.base("{ ") .. indent .. lines[1] .. ",\n")
-      local i = 2
-      while true do
-         local line = lines[i]
-         i = i + 1
-         if line ~= nil then
-            yield(indent .. line .. ",\n")
+         val = tab[key]
+         if type(key) == "string" and key:find("^[%a_][%a%d_]*$") then
+            ts_coro(key)
+            yield(c.base(" = "), 3)
          else
-            yield(indent ..  c.base(" }"))
-            break
+            yield(c.base("["), 1)
+               -- we want names or hashes for any lvalue table,
+               -- 100 triggers this
+            _tabulate(key, 100, cycle)
+            yield(c.base("] = "), 4)
          end
+         _tabulate(val, depth + 1, cycle)
       end
-   else
-      yield (c.base("{ ") .. table.concat(lines, c.base(", ")) .. c.base(" }"))
    end
+   yield(C_BRACE, 1, "end")
    return nil
 end
 ```
@@ -301,18 +257,118 @@ representing its printable width (don't @ me) and ``done`` is a boolean for if
 this is the last bit of the repr of a given thing. Table, userdata, what
 have you.
 
+
+### tabulate(...)
+
+This is going to undergo several metamorpheses as we make progress.
+
+
+For now, we have the ``_tabulate`` function yielding pieces of a table as it
+generates them, as well as the printed length (not valid across all Unicode,
+but let's shave one yak at a time, shall we?).
+
+
+Now for the real fun: we need to keep track of indentation levels, and break
+'long' maps and arrays up into chunks.
+
+
+We're yielding a "map" string for k/v type tables and an "array" string for
+array-type, and just "end" for the end of either.  What we need is a classic
+push-down automaton, and some kind of buffer that's more sophisticated than
+just tossing everything into a ``phrase`` table.
+
 ```lua
-local function lineBuff(...)
-   local fragment, len, done = _tabulate(...)
-end
-```
-```lua
-local function tabulate(...)
+
+local COMMA, COM_LEN = c.base ", ", 2
+
+local function lineGen(...)
+   local arg_v = {...}
    local phrase = {}
    local iter = wrap(_tabulate)
-   while true do
-      local line = iter(...)
-      if line == nil then break end
+   local stage = ""
+   local map_counter = 0         -- this counts where commas go
+   local skip_comma = false      -- no comma at end of array/map
+   local stack, old_stack = 0, 0 -- level of recursion
+   local disp = 0                -- column displacement
+   local yielding = true
+   -- return an iterator function that currently yields the entire
+   -- line but will eventually yield one line at a time.
+   return function()
+      while yielding do
+         local line, len, event = iter(unpack(arg_v))
+         if line == nil then
+            break
+         end
+         phrase[#phrase + 1] = line
+         disp = disp + len
+         if event then
+            if event == "map" then
+               map_counter = 0
+            end
+            if event == "array" or event == "map" then
+               stack = stack + 1
+               skip_comma = true
+            elseif event == "end" then
+               stack = stack - 1
+               assert(stack >= 0, "(tabulate) stack underflow")
+            end
+            -- don't think I need the conditional below
+            if stage ~= event then
+               skip_comma = true
+            end
+            if (stage == "array" or stage == "map")
+               and event == "end" then
+               skip_comma = true
+            end
+            -- this is seriously esoteric but fixes cases like {{},{}}
+            if old_stack < stack and phrase[#phrase -1] == C_BRACE then
+               table.insert(phrase, #phrase, COMMA)
+               disp = disp + COM_LEN
+            end
+            stage = event
+         end
+         -- special-case for non-string values, which
+         -- yield an extra piece
+         if line == c.base("] = ") then
+            map_counter = map_counter - 1
+         end
+         -- insert commas
+         if stage =="map"  then
+            if map_counter == 3 then
+               phrase[#phrase + 1] = COMMA
+               disp = disp + COM_LEN
+               map_counter = 1
+            else
+               map_counter = map_counter + 1
+            end
+         elseif stage == "array" and not skip_comma then
+            phrase[#phrase + 1] = COMMA
+            disp = disp + COM_LEN
+            map_counter = map_counter + 1
+         end
+         skip_comma = false
+         -- if we had a comma before ending a map/array (this is normal)
+         -- then remove it
+         -- #nb there may be a way to do this using skip_comma but this
+         -- works, dammit.
+         if stage == "end" and phrase[#phrase - 1] == COMMA then
+            table.remove(phrase, #phrase - 1)
+            disp = disp - COM_LEN
+         end
+         old_stack = stack
+      end
+      if yielding then
+         yielding = false
+         return table.concat(phrase)
+      else
+         return nil
+      end
+   end
+end
+
+local function tabulate(...)
+   local phrase = {}
+   for line in lineGen(...) do
       phrase[#phrase + 1] = line
    end
    return table.concat(phrase)
@@ -359,10 +415,11 @@ end
 local function c_data(value, str)
    local meta = reflect.getmetatable(value)
    if meta then
-      local mt_str = ts(meta)
-      return str .. " = " .. mt_str
+      local mt_str, meta_len = ts(meta)
+      meta_len = meta_len or #mt_str
+      return str .. " = " .. mt_str, meta_len
    else
-      return str
+      return str, #str
    end
 end
 ```
@@ -371,22 +428,26 @@ end
 Lots of small, nice things in this one.
 
 ```lua
-ts = function (value, hint)
+ts_coro = function (value, hint)
    local strval = tostring(value) or ""
+   local len = #strval
    local str = scrub(strval)
+
    -- For cases more specific than mere type,
    -- we have hints:
    if hint then
       if hint == "tab_name" then
          local tab_name = anti_G[value] or "t:" .. sub(str, -6)
-         return c.table(tab_name)
+         len = #tab_name
+         yield(c.table(tab_name), len)
       elseif hint == "mt" then
          local mt_name = anti_G[value] or "mt:" .. sub(str, -6)
-         return c.metatable("⟨" .. mt_name .. "⟩")
+         len = #mt_name + 2
+         yield(c.metatable("⟨" .. mt_name .. "⟩"), len); return nil
       elseif hints[hint] then
-         return hints[hint](str)
+         yield(hints[hint](str), len)
       elseif c[hint] then
-         return c[hint](str)
+         yield(c[hint](str), len)
       end
    end
 
@@ -396,8 +457,9 @@ ts = function (value, hint)
       -- check for a __repr metamethod
       local _M = getmetatable(value)
       if _M and _M.__repr and not (hint == "raw") then
-         str = _M.__repr(value, c)
-
+         local repr_len
+         str, repr_len  = _M.__repr(value, c)
+         len = repr_len or len
          assert(type(str) == "string")
       else
          str = tabulate(value)
@@ -408,12 +470,14 @@ ts = function (value, hint)
                 and f_label
                 or "f:" .. sub(str, -6)
       local func_name = anti_G[value] or f_label
+      len = #func_name
       str = c.func(func_name)
    elseif typica == "boolean" then
       str = value and c.truth(str) or c.falsehood(str)
    elseif typica == "string" then
       if value == "" then
          str = c.string('""')
+         len = 2
       else
          str = c.string(str)
       end
@@ -424,14 +488,18 @@ ts = function (value, hint)
    elseif typica == "thread" then
       local coro_name = anti_G[value] and "coro:" .. anti_G[value]
                                       or  "coro:" .. sub(str, -6)
+      len = #coro_name
       str = c.thread(coro_name)
    elseif typica == "userdata" then
       if anti_G[value] then
          str = c.userdata(anti_G[value])
+         len = #anti_G[value]
       else
          local name = find(str, ":")
          if name then
-            str = c.userdata(sub(str, 1, name - 1))
+            name = sub(str, 1, name - 1)
+            len = #name
+            str = c.userdata(name)
          else
             str = c.userdata(str)
          end
@@ -439,12 +507,18 @@ ts = function (value, hint)
    elseif typica == "cdata" then
       if anti_G[value] then
          str = c.cdata(anti_G[value])
+         len = anti_G[value]
       else
          str = c.cdata(str)
       end
-      str = c_data(value, str)
+      str, len = c_data(value, str)
    end
-   return str
+   yield(str, len)
+end
+
+ts = function(...)
+      local rep, len, done = wrap(ts_coro)(...)
+      return rep, len, done
 end
 
 repr.ts = ts

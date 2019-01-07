@@ -280,10 +280,25 @@ end
 
 
 
+
+
+
+
+
+local function oneLine(phrase, long)
+   return table.concat(phrase)
+end
+
+
+
+
+
+
+
+
 local COMMA, COM_LEN = c.base ", ", 2
 
-local function lineGen(...)
-   local arg_v = {...}
+local function lineGen(tab, depth, cycle)
    local phrase = {}
    local iter = wrap(_tabulate)
    local stage = ""
@@ -296,7 +311,7 @@ local function lineGen(...)
    -- line but will eventually yield one line at a time.
    return function()
       while yielding do
-         local line, len, event = iter(unpack(arg_v))
+         local line, len, event = iter(tab, depth, cycle)
          if line == nil then
             break
          end
@@ -360,7 +375,7 @@ local function lineGen(...)
       end
       if yielding then
          yielding = false
-         return table.concat(phrase)
+         return oneLine(phrase)
       else
          return nil
       end

@@ -262,7 +262,7 @@ this is the last bit of the repr of a given thing. Table, userdata, what
 have you.
 
 
-*** tabulate(...)
+*** tabulate(tab, depth, cycle)
 
 This is going to undergo several metamorpheses as we make progress.
 
@@ -278,12 +278,27 @@ array-type, and just "end" for the end of either.  What we need is a classic
 push-down automaton, and some kind of buffer that's more sophisticated than
 just tossing everything into a =phrase= table.
 
-#!lua
 
+**** oneLine(phrase, long)
+
+Returns one line from =phrase=. =long= determines whether we're doing long
+lines or short lines, which is determined by =lineGen=, the caller.
+
+#!lua
+local function oneLine(phrase, long)
+   return table.concat(phrase)
+end
+#/lua
+
+**** lineGen
+
+This function sets up an iterator, which returns one line at a time of the
+table.
+
+#!lua
 local COMMA, COM_LEN = c.base ", ", 2
 
-local function lineGen(...)
-   local arg_v = {...}
+local function lineGen(tab, depth, cycle)
    local phrase = {}
    local iter = wrap(_tabulate)
    local stage = ""
@@ -296,7 +311,7 @@ local function lineGen(...)
    -- line but will eventually yield one line at a time.
    return function()
       while yielding do
-         local line, len, event = iter(unpack(arg_v))
+         local line, len, event = iter(tab, depth, cycle)
          if line == nil then
             break
          end
@@ -360,7 +375,7 @@ local function lineGen(...)
       end
       if yielding then
          yielding = false
-         return table.concat(phrase)
+         return oneLine(phrase)
       else
          return nil
       end

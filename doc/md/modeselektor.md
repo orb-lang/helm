@@ -124,6 +124,8 @@ local Historian = require "historian"
 local Lex       = require "lex"
 local Zoneherd  = require "zone"
 local repr      = require "repr"
+local color     = require "color"
+c = color.color
 
 local Nerf   = require "nerf"
 local Search = require "search"
@@ -195,6 +197,17 @@ Inserts the value into the txtbuf at cursor.
 ```lua
 function ModeS.insert(modeS, category, value)
     local success =  modeS.txtbuf:insert(value)
+end
+```
+### ModeS:errPrint(modeS, category, value)
+
+Debug aide.
+
+```lua
+function ModeS.errPrint(modeS, log_stmt)
+   modeS.zones.suggest:replace(log_stmt)
+   modeS:paint()
+   return modeS
 end
 ```
 ### status painter (colwrite)
