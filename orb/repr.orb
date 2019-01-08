@@ -285,7 +285,7 @@ lines or short lines, which is determined by =lineGen=, the caller.
 
 #!lua
 local function oneLine(phrase, long)
-   long = long or true -- make this 'true'
+   long = long or true
    if long then
       local line = {}
       while true do
@@ -323,6 +323,7 @@ local function lineGen(tab, depth, cycle)
       while yielding do
          local line, len, event = iter(tab, depth, cycle)
          if line == nil then
+            yielding = false
             break
          end
          phrase[#phrase + 1] = line
@@ -388,8 +389,7 @@ local function lineGen(tab, depth, cycle)
          end
          old_stack = stack
       end
-      if yielding then
-         yielding = false
+      if #phrase > 0 then
          return oneLine(phrase)
       else
          return nil
