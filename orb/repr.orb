@@ -286,17 +286,25 @@ lines or short lines, which is determined by =lineGen=, the caller.
 #!lua
 local function oneLine(phrase, long)
    long = long or true
+   local indent = phrase.untouched and "" or "  " -- will do more with this
+   phrase.untouched = false
    if long then
       local line = {}
       while true do
          local frag = remove(phrase, 1)
+         if frag == C_BRACE then
+            insert(line, " ")
+         end
          insert(line, frag)
+         if frag == O_BRACE then
+            insert(line, " ")
+         end
          if frag == COMMA or #phrase == 0 then
-            return concat(line) .. "\n"  -- #todo no \n
+            return indent .. concat(line)
          end
       end
    else
-      return concat(phrase) .. concat(phrase.disp, ", ")
+      return indent .. concat(phrase) .. concat(phrase.disp, ", ")
    end
 end
 #/lua
@@ -310,6 +318,7 @@ table.
 local function lineGen(tab, depth, cycle)
    local phrase = {}
    phrase.disp = {}
+   phrase.untouched = true       -- don't indent at the beginning
    local iter = wrap(_tabulate)
    local stage = ""
    local map_counter = 0         -- this counts where commas go
@@ -355,6 +364,7 @@ local function lineGen(tab, depth, cycle)
                disp = disp + COM_LEN
             end
             stage = event
+            phrase.height = stack
          end
          -- special-case for non-string values, which
          -- yield an extra piece
@@ -402,7 +412,7 @@ local function tabulate(...)
    for line in lineGen(...) do
       phrase[#phrase + 1] = line
    end
-   return concat(phrase)
+   return concat(phrase, "\n")
 end
 #/lua
 
