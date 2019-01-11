@@ -181,6 +181,8 @@ local O_BRACE = c.base "{"
 local C_BRACE = c.base "}"
 local COMMA, COM_LEN = c.base ", ", 2
 
+local tabulate -- this is a mess but will have to do for now
+
 local function _tabulate(tab, depth, cycle)
    cycle = cycle or {}
    depth = depth or 0
@@ -241,10 +243,10 @@ local function _tabulate(tab, depth, cycle)
             yield(c.base("["), 1)
                -- we want names or hashes for any lvalue table,
                -- 100 triggers this
-            _tabulate(key, 100, cycle)
+            yield(tabulate(key, 100, cycle), 10)
             yield(c.base("] = "), 4)
          end
-         _tabulate(val, depth + 1, cycle)
+         yield(tabulate(val, depth + 1, cycle), 10) -- 10 is some bullshit
       end
    end
    yield(C_BRACE, 1, "end")
@@ -292,6 +294,7 @@ local function oneLine(phrase, long)
       local line = {}
       while true do
          local frag = remove(phrase, 1)
+         -- pad with a space inside the braces
          if frag == C_BRACE then
             insert(line, " ")
          end
@@ -407,9 +410,9 @@ local function lineGen(tab, depth, cycle)
    end
 end
 
-local function tabulate(...)
+tabulate = function(tab, depth, cycle)
    local phrase = {}
-   for line in lineGen(...) do
+   for line in lineGen(tab, depth, cycle) do
       phrase[#phrase + 1] = line
    end
    return concat(phrase, "\n")
