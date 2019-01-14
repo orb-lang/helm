@@ -243,10 +243,10 @@ local function _tabulate(tab, depth, cycle)
             yield(c.base("["), 1)
                -- we want names or hashes for any lvalue table,
                -- 100 triggers this
-            yield(tabulate(key, 100, cycle), 10)
+            _tabulate(key, 100, cycle)
             yield(c.base("] = "), 4)
          end
-         yield(tabulate(val, depth + 1, cycle), 10) -- 10 is some bullshit
+         _tabulate(val, depth + 1, cycle)
       end
    end
    yield(C_BRACE, 1, "end")
@@ -294,6 +294,10 @@ local function oneLine(phrase, long)
       local line = {}
       while true do
          local frag = remove(phrase, 1)
+         -- remove commas before closing braces
+         if frag == COMMA and phrase[1] == C_BRACE then
+            frag = ""
+         end
          -- pad with a space inside the braces
          if frag == C_BRACE then
             insert(line, " ")
@@ -323,7 +327,7 @@ local function lineGen(tab, depth, cycle)
    phrase.disp = {}
    phrase.untouched = true       -- don't indent at the beginning
    local iter = wrap(_tabulate)
-   local stage = ""
+   local stage = {}              -- stage stack
    local map_counter = 0         -- this counts where commas go
    local skip_comma = false      -- no comma at end of array/map
    local stack, old_stack = 0, 0 -- level of recursion
@@ -336,6 +340,11 @@ local function lineGen(tab, depth, cycle)
          local line, len, event = iter(tab, depth, cycle)
          if line == nil then
             yielding = false
+            ---[[
+            if phrase[#phrase] == COMMA then
+               remove(phrase)
+            end
+            --]]
             break
          end
          phrase[#phrase + 1] = line
@@ -347,26 +356,28 @@ local function lineGen(tab, depth, cycle)
             end
             if event == "array" or event == "map" then
                stack = stack + 1
+               insert(stage, event)
                skip_comma = true
             elseif event == "end" then
                stack = stack - 1
+               remove(stage)
                assert(stack >= 0, "(tabulate) stack underflow")
+               if stage[#stage] == "map" then
+                  map_counter = 3
+               end
             end
-            -- don't think I need the conditional below
-            if stage ~= event then
-               skip_comma = true
-            end
-            if (stage == "array" or stage == "map")
+            --[[
+            if (stage[#stage] == "array" or stage[#stage] == "map")
                and event == "end" then
                skip_comma = true
             end
+            --]]
             -- this is seriously esoteric but fixes cases like {{},{}}
             if old_stack < stack and phrase[#phrase -1] == C_BRACE then
                insert(phrase, #phrase, COMMA)
                phrase.disp[#phrase.disp + 1] = COM_LEN
                disp = disp + COM_LEN
             end
-            stage = event
             phrase.height = stack
          end
          -- special-case for non-string values, which
@@ -375,7 +386,7 @@ local function lineGen(tab, depth, cycle)
             map_counter = map_counter - 1
          end
          -- insert commas
-         if stage =="map"  then
+         if stage[#stage] =="map"  then
             if map_counter == 3 then
                phrase[#phrase + 1] = COMMA
                disp = disp + COM_LEN
@@ -384,22 +395,13 @@ local function lineGen(tab, depth, cycle)
             else
                map_counter = map_counter + 1
             end
-         elseif stage == "array" and not skip_comma then
+         elseif stage[#stage] == "array" and not skip_comma then
             phrase[#phrase + 1] = COMMA
             phrase.disp[#phrase.disp + 1] = COM_LEN
             disp = disp + COM_LEN
             map_counter = map_counter + 1
          end
          skip_comma = false
-         -- if we had a comma before ending a map/array (this is normal)
-         -- then remove it
-         -- #nb there may be a way to do this using skip_comma but this
-         -- works, dammit.
-         if stage == "end" and phrase[#phrase - 1] == COMMA then
-            remove(phrase, #phrase - 1)
-            remove(phrase.disp, #phrase.disp -1)
-            disp = disp - COM_LEN
-         end
          old_stack = stack
       end
       if #phrase > 0 then
