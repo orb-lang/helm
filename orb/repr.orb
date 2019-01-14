@@ -298,6 +298,10 @@ local function oneLine(phrase, long)
          if frag == COMMA and phrase[1] == C_BRACE then
             frag = ""
          end
+         -- and after opening braces
+         if frag == O_BRACE and phrase[1] == COMMA then
+            remove(phrase, 1)
+         end
          -- pad with a space inside the braces
          if frag == C_BRACE then
             insert(line, " ")
@@ -329,7 +333,6 @@ local function lineGen(tab, depth, cycle)
    local iter = wrap(_tabulate)
    local stage = {}              -- stage stack
    local map_counter = 0         -- this counts where commas go
-   local skip_comma = false      -- no comma at end of array/map
    local stack, old_stack = 0, 0 -- level of recursion
    local disp = 0                -- column displacement
    local yielding = true
@@ -357,7 +360,6 @@ local function lineGen(tab, depth, cycle)
             if event == "array" or event == "map" then
                stack = stack + 1
                insert(stage, event)
-               skip_comma = true
             elseif event == "end" then
                stack = stack - 1
                remove(stage)
@@ -366,12 +368,6 @@ local function lineGen(tab, depth, cycle)
                   map_counter = 3
                end
             end
-            --[[
-            if (stage[#stage] == "array" or stage[#stage] == "map")
-               and event == "end" then
-               skip_comma = true
-            end
-            --]]
             -- this is seriously esoteric but fixes cases like {{},{}}
             if old_stack < stack and phrase[#phrase -1] == C_BRACE then
                insert(phrase, #phrase, COMMA)
@@ -395,13 +391,12 @@ local function lineGen(tab, depth, cycle)
             else
                map_counter = map_counter + 1
             end
-         elseif stage[#stage] == "array" and not skip_comma then
+         elseif stage[#stage] == "array"then
             phrase[#phrase + 1] = COMMA
             phrase.disp[#phrase.disp + 1] = COM_LEN
             disp = disp + COM_LEN
             map_counter = map_counter + 1
          end
-         skip_comma = false
          old_stack = stack
       end
       if #phrase > 0 then
