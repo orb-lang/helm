@@ -287,35 +287,31 @@ end
 
 
 local function oneLine(phrase, long)
-   long = long or true
+   long = long or false
    local indent = phrase.untouched and "" or "  " -- will do more with this
-   phrase.untouched = false
-   if long then
-      local line = {}
-      while true do
-         local frag = remove(phrase, 1)
-         -- remove commas before closing braces
-         if frag == COMMA and phrase[1] == C_BRACE then
-            frag = ""
-         end
-         -- and after opening braces
-         if frag == O_BRACE and phrase[1] == COMMA then
-            remove(phrase, 1)
-         end
-         -- pad with a space inside the braces
-         if frag == C_BRACE then
-            insert(line, " ")
-         end
-         insert(line, frag)
-         if frag == O_BRACE then
-            insert(line, " ")
-         end
-         if frag == COMMA or #phrase == 0 then
-            return indent .. concat(line)
-         end
+   phrase.untouched = false -- not using this yet...
+   local line = {}
+   while true do
+      local frag = remove(phrase, 1)
+      -- remove commas before closing braces
+      if frag == COMMA and phrase[1] == C_BRACE then
+         frag = ""
       end
-   else
-      return indent .. concat(phrase) .. concat(phrase.disp, ", ")
+      -- and after opening braces
+      if frag == O_BRACE and phrase[1] == COMMA then
+         remove(phrase, 1)
+      end
+      -- pad with a space inside the braces
+      if frag == C_BRACE then
+         insert(line, " ")
+      end
+      insert(line, frag)
+      if frag == O_BRACE then
+         insert(line, " ")
+      end
+      if (frag == COMMA and long) or #phrase == 0 then
+         return indent .. concat(line)
+      end
    end
 end
 
