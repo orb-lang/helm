@@ -287,9 +287,10 @@ lines or short lines, which is determined by =lineGen=, the caller.
 
 #!lua
 local function oneLine(phrase, long)
-   long = long or false
-   local indent = phrase.untouched and "" or "  " -- will do more with this
-   phrase.untouched = false -- not using this yet...
+   long = long or true
+   local first_line = phrase.untouched
+   phrase.untouched = false
+   local closed = false
    local line = {}
    while true do
       local frag = remove(phrase, 1)
@@ -309,7 +310,15 @@ local function oneLine(phrase, long)
       if frag == O_BRACE then
          insert(line, " ")
       end
+      -- adjust stack for next round
+      if frag == O_BRACE then
+         phrase.level = phrase.level + 1
+      elseif frag == C_BRACE then
+         phrase.level = phrase.level - 1
+      end
       if (frag == COMMA and long) or #phrase == 0 then
+         local indent = first_line and "" or ("  "):rep(phrase.dent)
+         phrase.dent = phrase.level
          return indent .. concat(line)
       end
    end
@@ -328,8 +337,10 @@ local function lineGen(tab, depth, cycle)
    phrase.untouched = true       -- don't indent at the beginning
    local iter = wrap(_tabulate)
    local stage = {}              -- stage stack
+   phrase.stage = stage
+   phrase.level = 0              -- how many levels of recursion are we on
+   phrase.dent = 0               -- indent level (lags by one line)
    local map_counter = 0         -- this counts where commas go
-   local stack, old_stack = 0, 0 -- level of recursion
    local disp = 0                -- column displacement
    local yielding = true
    -- return an iterator function that currently yields the entire
@@ -354,23 +365,13 @@ local function lineGen(tab, depth, cycle)
                map_counter = 0
             end
             if event == "array" or event == "map" then
-               stack = stack + 1
                insert(stage, event)
             elseif event == "end" then
-               stack = stack - 1
                remove(stage)
-               assert(stack >= 0, "(tabulate) stack underflow")
                if stage[#stage] == "map" then
                   map_counter = 3
                end
             end
-            -- this is seriously esoteric but fixes cases like {{},{}}
-            if old_stack < stack and phrase[#phrase -1] == C_BRACE then
-               insert(phrase, #phrase, COMMA)
-               phrase.disp[#phrase.disp + 1] = COM_LEN
-               disp = disp + COM_LEN
-            end
-            phrase.height = stack
          end
          -- special-case for non-string values, which
          -- yield an extra piece
@@ -393,7 +394,6 @@ local function lineGen(tab, depth, cycle)
             disp = disp + COM_LEN
             map_counter = map_counter + 1
          end
-         old_stack = stack
       end
       if #phrase > 0 then
          return oneLine(phrase)
