@@ -177,9 +177,9 @@ end
 
 
 
-local O_BRACE = c.base "{"
-local C_BRACE = c.base "}"
-local COMMA, COM_LEN = c.base ", ", 2
+local O_BRACE = function() return c.base "{" end
+local C_BRACE = function() return c.base "}" end
+local COMMA, COM_LEN = function() return c.base ", " end, 2
 
 local tabulate -- this is a mess but will have to do for now
 
@@ -230,7 +230,7 @@ local function _tabulate(tab, depth, cycle)
       end
       keys = tab
    end
-   yield(O_BRACE, 1, (is_array and "array" or "map"))
+   yield(O_BRACE(), 1, (is_array and "array" or "map"))
    for j, key in ipairs(keys) do
       if is_array then
          _tabulate(key, depth + 1, cycle)
@@ -249,7 +249,7 @@ local function _tabulate(tab, depth, cycle)
          _tabulate(val, depth + 1, cycle)
       end
    end
-   yield(C_BRACE, 1, "end")
+   yield(C_BRACE(), 1, "end")
    return nil
 end
 
@@ -295,28 +295,28 @@ local function oneLine(phrase, long)
    while true do
       local frag = remove(phrase, 1)
       -- remove commas before closing braces
-      if frag == COMMA and phrase[1] == C_BRACE then
+      if frag == COMMA() and phrase[1] == C_BRACE() then
          frag = ""
       end
       -- and after opening braces
-      if frag == O_BRACE and phrase[1] == COMMA then
+      if frag == O_BRACE() and phrase[1] == COMMA() then
          remove(phrase, 1)
       end
       -- pad with a space inside the braces
-      if frag == C_BRACE then
+      if frag == C_BRACE() then
          insert(line, " ")
       end
       insert(line, frag)
-      if frag == O_BRACE then
+      if frag == O_BRACE() then
          insert(line, " ")
       end
       -- adjust stack for next round
-      if frag == O_BRACE then
+      if frag == O_BRACE() then
          phrase.level = phrase.level + 1
       elseif frag == C_BRACE then
          phrase.level = phrase.level - 1
       end
-      if (frag == COMMA and long) or #phrase == 0 then
+      if (frag == COMMA() and long) or #phrase == 0 then
          local indent = first_line and "" or ("  "):rep(phrase.dent)
          phrase.dent = phrase.level
          return indent .. concat(line)
@@ -351,7 +351,7 @@ local function lineGen(tab, depth, cycle)
          if line == nil then
             yielding = false
             ---[[
-            if phrase[#phrase] == COMMA then
+            if phrase[#phrase] == COMMA() then
                remove(phrase)
             end
             --]]
@@ -367,6 +367,7 @@ local function lineGen(tab, depth, cycle)
             if event == "array" or event == "map" then
                insert(stage, event)
             elseif event == "end" then
+
                remove(stage)
                if stage[#stage] == "map" then
                   map_counter = 3
@@ -381,7 +382,7 @@ local function lineGen(tab, depth, cycle)
          -- insert commas
          if stage[#stage] =="map"  then
             if map_counter == 3 then
-               phrase[#phrase + 1] = COMMA
+               phrase[#phrase + 1] = COMMA()
                disp = disp + COM_LEN
                phrase.disp[#phrase.disp + 1] = COM_LEN
                map_counter = 1
@@ -389,7 +390,7 @@ local function lineGen(tab, depth, cycle)
                map_counter = map_counter + 1
             end
          elseif stage[#stage] == "array"then
-            phrase[#phrase + 1] = COMMA
+            phrase[#phrase + 1] = COMMA()
             phrase.disp[#phrase.disp + 1] = COM_LEN
             disp = disp + COM_LEN
             map_counter = map_counter + 1
@@ -557,18 +558,13 @@ ts_coro = function (value, hint)
    yield(str, len)
 end
 
-ts = function(...)
-      local rep, len, done = wrap(ts_coro)(...)
-      return rep, len, done
-end
-
-repr.ts = ts
+repr.ts = tabulate
 
 
 
 function repr.ts_bw(value)
    c = C.no_color
-   local to_string = ts(value)
+   local to_string = tabulate(value)
    c = C.color
    return to_string
 end
