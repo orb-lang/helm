@@ -287,7 +287,7 @@ lines or short lines, which is determined by =lineGen=, the caller.
 
 #!lua
 local function oneLine(phrase, long)
-   long = long or true
+   long = long == nil and true or long -- probably just remove this
    local first_line = phrase.untouched
    phrase.untouched = false
    local closed = false
@@ -331,7 +331,7 @@ This function sets up an iterator, which returns one line at a time of the
 table.
 
 #!lua
-local function lineGen(tab, depth, cycle)
+local function lineGen(tab, depth, cycle, disp_width)
    local phrase = {}
    phrase.disp = {}
    phrase.untouched = true       -- don't indent at the beginning
@@ -343,6 +343,8 @@ local function lineGen(tab, depth, cycle)
    local map_counter = 0         -- this counts where commas go
    local disp = 0                -- column displacement
    local yielding = true
+   local long = false            -- long or short printing
+                                 -- todo maybe attach to phrase?
    -- return an iterator function that currently yields the entire
    -- line but will eventually yield one line at a time.
    return function()
@@ -395,18 +397,22 @@ local function lineGen(tab, depth, cycle)
             disp = disp + COM_LEN
             map_counter = map_counter + 1
          end
+         if disp >= disp_width then
+            long = true
+         end
       end
       if #phrase > 0 then
-         return oneLine(phrase)
+         return oneLine(phrase, long)
       else
          return nil
       end
    end
 end
 
-tabulate = function(tab, depth, cycle)
+local function tabulate(tab, depth, cycle, disp_width)
+   disp_width = disp_width or 80
    local phrase = {}
-   for line in lineGen(tab, depth, cycle) do
+   for line in lineGen(tab, depth, cycle, disp_width) do
       phrase[#phrase + 1] = line
    end
    return concat(phrase, "\n")
