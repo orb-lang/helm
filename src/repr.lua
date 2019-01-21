@@ -191,7 +191,7 @@ local function _tabulate(tab, depth, cycle)
       return nil
    end
    if depth > C.depth or cycle[tab] then
-      yield(ts(tab, "tab_name"))
+      ts_coro(tab, "tab_name")
       return nil
    end
 
@@ -209,8 +209,7 @@ local function _tabulate(tab, depth, cycle)
    if _M then
       -- fix metatable stuff
 
-      local mt_rep, mt_len = ts(tab, "mt")
-      yield(mt_rep, mt_len)
+      ts_coro(tab, "mt")
       yield(c.base(" = "), 3)
       _tabulate(_M, depth + 1, cycle)
    end
@@ -484,14 +483,18 @@ ts_coro = function (value, hint)
          local tab_name = anti_G[value] or "t:" .. sub(str, -6)
          len = #tab_name
          yield(c.table(tab_name), len)
+         return nil
       elseif hint == "mt" then
          local mt_name = anti_G[value] or "mt:" .. sub(str, -6)
          len = #mt_name + 2
-         yield(c.metatable("⟨" .. mt_name .. "⟩"), len); return nil
+         yield(c.metatable("⟨" .. mt_name .. "⟩"), len)
+         return nil
       elseif hints[hint] then
          yield(hints[hint](str), len)
+         return nil
       elseif c[hint] then
          yield(c[hint](str), len)
+         return nil
       end
    end
 

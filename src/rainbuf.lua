@@ -142,14 +142,6 @@ end
 
 
 
-function Rainbuf.__tostring(rainbuf)
-end
-
-
-
-
-
-
 local function new(res)
    -- #todo this should be an error
    if type(res) == "table" and res.idEst == Rainbuf then

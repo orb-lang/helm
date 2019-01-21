@@ -139,14 +139,6 @@ end
 #/lua
 
 
-*** Rainbuf:__tostring()
-
-#!lua
-function Rainbuf.__tostring(rainbuf)
-end
-#/lua
-
-
 *** new(res?)
 
 #!lua
