@@ -338,20 +338,20 @@ local function lineGen(tab, depth, cycle, disp_width)
    local map_counter = 0         -- counts where commas go
    local disp = 0                -- column displacement
    local yielding = true
+   local more = true
    local long = false            -- long or short printing
                                  -- todo maybe attach to phrase?
    -- return an iterator function that currently yields the entire
    -- line but will eventually yield one line at a time.
    return function()
+      if #phrase == 0 and more then
+         yielding = true
+      end
       while yielding do
          local line, len, event = iter(tab, depth, cycle)
          if line == nil then
             yielding = false
-            ---[[
-            if phrase[#phrase] == COMMA() then
-               remove(phrase)
-            end
-            --]]
+            more = false
             break
          end
          phrase[#phrase + 1] = line
@@ -394,6 +394,7 @@ local function lineGen(tab, depth, cycle, disp_width)
          end
          if disp >= disp_width then
             long = true
+            yielding = false
          end
       end
       if #phrase > 0 then
