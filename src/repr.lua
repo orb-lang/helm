@@ -309,13 +309,13 @@ local function oneLine(phrase, long)
       -- adjust stack for next round
       if frag == O_BRACE() then
          phrase.level = phrase.level + 1
-      elseif frag == C_BRACE then
+      elseif frag == C_BRACE() then
          phrase.level = phrase.level - 1
       end
       if (frag == COMMA() and long) or #phrase == 0 then
          local indent = phrase.dent == 0 and "" or ("  "):rep(phrase.dent)
          phrase.dent = phrase.level
-         return indent .. concat(line)
+         return indent.. concat(line)
       end
    end
 end
@@ -508,8 +508,9 @@ ts_coro = function (value, hint)
          str, repr_len  = _M.__repr(value, c)
          len = repr_len or len
          assert(type(str) == "string")
-      else
-         str = tabulate(value)
+      elseif _M then
+         _tabulate(value)
+         return nil
       end
    elseif typica == "function" then
       local f_label = sub(str,11)
