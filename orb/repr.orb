@@ -287,9 +287,6 @@ lines or short lines, which is determined by =lineGen=, the caller.
 
 #!lua
 local function oneLine(phrase, long)
-   long = long == nil and true or long -- probably just remove this
-   local first_line = phrase.untouched
-   phrase.untouched = false
    local closed = false
    local line = {}
    while true do
@@ -317,7 +314,7 @@ local function oneLine(phrase, long)
          phrase.level = phrase.level - 1
       end
       if (frag == COMMA() and long) or #phrase == 0 then
-         local indent = first_line and "" or ("  "):rep(phrase.dent)
+         local indent = phrase.dent == 0 and "" or ("  "):rep(phrase.dent)
          phrase.dent = phrase.level
          return indent .. concat(line)
       end
@@ -334,13 +331,12 @@ table.
 local function lineGen(tab, depth, cycle, disp_width)
    local phrase = {}
    phrase.disp = {}
-   phrase.untouched = true       -- don't indent at the beginning
    local iter = wrap(_tabulate)
    local stage = {}              -- stage stack
    phrase.stage = stage
    phrase.level = 0              -- how many levels of recursion are we on
    phrase.dent = 0               -- indent level (lags by one line)
-   local map_counter = 0         -- this counts where commas go
+   local map_counter = 0         -- counts where commas go
    local disp = 0                -- column displacement
    local yielding = true
    local long = false            -- long or short printing
