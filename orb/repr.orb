@@ -296,23 +296,29 @@ end
 local function oneLine(phrase, long)
    local closed = false
    local line = {}
+   local disps = {}
    while true do
-      local frag = remove(phrase, 1)
+      local frag, disp = remove(phrase, 1), remove(phrase.disp, 1)
       -- remove commas before closing braces
       if frag == COMMA() and phrase[1] == C_BRACE() then
          frag = ""
+         disp = 0
       end
       -- and after opening braces
       if frag == O_BRACE() and phrase[1] == COMMA() then
          remove(phrase, 1)
+         remove(phrase.disp, 1)
       end
       -- pad with a space inside the braces
       if frag == C_BRACE() then
          insert(line, " ")
+         insert(disps, 1)
       end
       insert(line, frag)
+      insert(disps, disp)
       if frag == O_BRACE() then
          insert(line, " ")
+         insert(disps, 1)
       end
       -- adjust stack for next round
       if frag == O_BRACE() then
@@ -320,10 +326,20 @@ local function oneLine(phrase, long)
       elseif frag == C_BRACE() then
          phrase.level = phrase.level - 1
       end
-      if (frag == COMMA() and long) or #phrase == 0 then
+      if (frag == COMMA() and long)
+         or (#phrase == 0 and not phrase.more) then
          local indent = phrase.dent == 0 and "" or ("  "):rep(phrase.dent)
          phrase.dent = phrase.level
          return indent.. concat(line)
+      elseif #phrase == 0 and phrase.more then
+         -- spill our fragments back
+         assert(#line == #disps, "#line must == #disps")
+         for i = 1, #line do
+            phrase[i] = line[i]
+            phrase.disp[i] = disps[i]
+         end
+         phrase.yielding = true
+         return false
       end
    end
 end
@@ -343,22 +359,20 @@ local function lineGen(tab, depth, cycle, disp_width)
    phrase.stage = stage
    phrase.level = 0              -- how many levels of recursion are we on
    phrase.dent = 0               -- indent level (lags by one line)
+   phrase.more = true            -- are their more frags to come
    local map_counter = 0         -- counts where commas go
-   local yielding = true
-   local more = true
+   phrase.yielding = true
    local long = false            -- long or short printing
                                  -- todo maybe attach to phrase?
    -- return an iterator function that currently yields the entire
    -- line but will eventually yield one line at a time.
    return function()
-      if #phrase == 0 and more then
-         yielding = true
-      end
-      while yielding do
+      ::start::
+      while phrase.yielding do
          local line, len, event = iter(tab, depth, cycle)
          if line == nil then
-            yielding = false
-            more = false
+            phrase.yielding = false
+            phrase.more = false
             break
          end
          phrase[#phrase + 1] = line
@@ -401,11 +415,18 @@ local function lineGen(tab, depth, cycle, disp_width)
          end
          if _disp(phrase) >= disp_width then
             long = true
-            yielding = false
+            phrase.yielding = false
+         else
+            long = false
          end
       end
       if #phrase > 0 then
-         return oneLine(phrase, long)
+         local ln = oneLine(phrase, long)
+         if ln then
+            return ln
+         else
+            goto start
+         end
       else
          return nil
       end
