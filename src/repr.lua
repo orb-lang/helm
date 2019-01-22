@@ -285,6 +285,14 @@ end
 
 
 
+local function _disp(phrase)
+   local displacement = 0
+   for i = 1, #phrase do
+      displacement = displacement + phrase.disp[i]
+   end
+   return displacement
+end
+
 local function oneLine(phrase, long)
    local closed = false
    local line = {}
@@ -336,7 +344,6 @@ local function lineGen(tab, depth, cycle, disp_width)
    phrase.level = 0              -- how many levels of recursion are we on
    phrase.dent = 0               -- indent level (lags by one line)
    local map_counter = 0         -- counts where commas go
-   local disp = 0                -- column displacement
    local yielding = true
    local more = true
    local long = false            -- long or short printing
@@ -356,7 +363,6 @@ local function lineGen(tab, depth, cycle, disp_width)
          end
          phrase[#phrase + 1] = line
          phrase.disp[#phrase.disp + 1] = len
-         disp = disp + len
          if event then
             if event == "map" then
                map_counter = 0
@@ -369,6 +375,9 @@ local function lineGen(tab, depth, cycle, disp_width)
                if stage[#stage] == "map" then
                   map_counter = 3
                end
+            elseif event == "mt_name" then
+               -- gotta drop that comma
+               map_counter = 1
             end
          end
          -- special-case for non-string values, which
@@ -380,7 +389,6 @@ local function lineGen(tab, depth, cycle, disp_width)
          if stage[#stage] =="map"  then
             if map_counter == 3 then
                phrase[#phrase + 1] = COMMA()
-               disp = disp + COM_LEN
                phrase.disp[#phrase.disp + 1] = COM_LEN
                map_counter = 1
             else
@@ -389,10 +397,9 @@ local function lineGen(tab, depth, cycle, disp_width)
          elseif stage[#stage] == "array"then
             phrase[#phrase + 1] = COMMA()
             phrase.disp[#phrase.disp + 1] = COM_LEN
-            disp = disp + COM_LEN
             map_counter = map_counter + 1
          end
-         if disp >= disp_width then
+         if _disp(phrase) >= disp_width then
             long = true
             yielding = false
          end
@@ -488,7 +495,7 @@ ts_coro = function (value, hint)
       elseif hint == "mt" then
          local mt_name = anti_G[value] or "mt:" .. sub(str, -6)
          len = #mt_name + 2
-         yield(c.metatable("⟨" .. mt_name .. "⟩"), len)
+         yield(c.metatable("⟨" .. mt_name .. "⟩"), len, "mt_name")
          return nil
       elseif hints[hint] then
          yield(hints[hint](str), len)
