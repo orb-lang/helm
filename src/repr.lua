@@ -287,16 +287,19 @@ end
 
 local function _disp(phrase)
    local displacement = 0
-   for i = 1, #phrase do
+   for i = 1, #phrase.disp do
       displacement = displacement + phrase.disp[i]
    end
    return displacement
 end
 
 local function oneLine(phrase, long)
-   local closed = false
    local line = {}
    local disps = {}
+   if #phrase == 0 then
+      phrase.yielding = true
+      return false
+   end
    while true do
       local frag, disp = remove(phrase, 1), remove(phrase.disp, 1)
       -- remove commas before closing braces
@@ -334,7 +337,7 @@ local function oneLine(phrase, long)
       elseif #phrase == 0 and phrase.more then
          -- spill our fragments back
          assert(#line == #disps, "#line must == #disps")
-         for i = 1, #line do
+         for i = 0, #line do
             phrase[i] = line[i]
             phrase.disp[i] = disps[i]
          end
@@ -364,8 +367,7 @@ local function lineGen(tab, depth, cycle, disp_width)
    phrase.yielding = true
    local long = false            -- long or short printing
                                  -- todo maybe attach to phrase?
-   -- return an iterator function that currently yields the entire
-   -- line but will eventually yield one line at a time.
+   -- return an iterator function which yields one line at a time.
    return function()
       ::start::
       while phrase.yielding do
@@ -384,7 +386,6 @@ local function lineGen(tab, depth, cycle, disp_width)
             if event == "array" or event == "map" then
                insert(stage, event)
             elseif event == "end" then
-
                remove(stage)
                if stage[#stage] == "map" then
                   map_counter = 3
@@ -416,6 +417,7 @@ local function lineGen(tab, depth, cycle, disp_width)
          if _disp(phrase) >= disp_width then
             long = true
             phrase.yielding = false
+            break
          else
             long = false
          end
@@ -427,8 +429,11 @@ local function lineGen(tab, depth, cycle, disp_width)
          else
             goto start
          end
-      else
+      elseif phrase.more == false then
          return nil
+      else
+         phrase.yielding = true
+         goto start
       end
    end
 end
