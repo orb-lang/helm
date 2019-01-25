@@ -293,6 +293,16 @@ local function _disp(phrase)
    return displacement
 end
 
+local function _spill(phrase, line, disps)
+   assert(#line == #disps, "#line must == #disps")
+   for i = 0, #line do
+      phrase[i] = line[i]
+      phrase.disp[i] = disps[i]
+   end
+   phrase.yielding = true
+   return false
+end
+
 local function oneLine(phrase, long)
    local line = {}
    local disps = {}
@@ -336,13 +346,7 @@ local function oneLine(phrase, long)
          return indent.. concat(line)
       elseif #phrase == 0 and phrase.more then
          -- spill our fragments back
-         assert(#line == #disps, "#line must == #disps")
-         for i = 0, #line do
-            phrase[i] = line[i]
-            phrase.disp[i] = disps[i]
-         end
-         phrase.yielding = true
-         return false
+         return _spill(phrase, line, disps)
       end
    end
 end
