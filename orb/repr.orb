@@ -313,9 +313,17 @@ local function oneLine(phrase, long)
    while true do
       local frag, disp = remove(phrase, 1), remove(phrase.disp, 1)
       -- remove commas before closing braces
-      if frag == COMMA() and phrase[1] == C_BRACE() then
-         frag = ""
-         disp = 0
+      if frag == COMMA() then
+         if phrase[1] == C_BRACE() then
+            frag = ""
+            disp = 0
+         ---[[
+         elseif #phrase == 0 then
+            insert(line, frag)
+            insert(disps, disp)
+            return _spill(phrase, line, disps)
+         --]]
+         end
       end
       -- and after opening braces
       if frag == O_BRACE() and phrase[1] == COMMA() then
