@@ -219,14 +219,8 @@ local function _tabulate(tab, depth, cycle)
       keys = table.keys(tab)
       if #keys <= SORT_LIMIT then
          table.sort(keys, _keysort)
-      else
-         -- bail
-         yield("{ !!! }", 7, "end"); return nil
       end
    else
-      if #tab > SORT_LIMIT then
-         yield("{ #!!! }", 8, "end"); return nil
-      end
       keys = tab
    end
    yield(O_BRACE(), 1, (is_array and "array" or "map"))
@@ -317,12 +311,10 @@ local function oneLine(phrase, long)
          if phrase[1] == C_BRACE() then
             frag = ""
             disp = 0
-         ---[[
          elseif #phrase == 0 then
             insert(line, frag)
             insert(disps, disp)
             return _spill(phrase, line, disps)
-         --]]
          end
       end
       -- and after opening braces
@@ -449,6 +441,8 @@ local function lineGen(tab, depth, cycle, disp_width)
       end
    end
 end
+
+repr.lineGen = lineGen
 
 local function tabulate(tab, depth, cycle, disp_width)
    disp_width = disp_width or 80

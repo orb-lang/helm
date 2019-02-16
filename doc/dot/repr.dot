@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 580"]
+doc_0 [label="doc - 624"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-464"]
+section_1 [label="section: 1-508"]
 
 
 // END RANK doc_0
@@ -35,13 +35,13 @@ section_9 [label="section: 52-118"]
 
 section_10 [label="section: 136-169"]
 
-section_11 [label="section: 170-263"]
+section_11 [label="section: 170-258"]
 
-section_12 [label="section: 264-305"]
+section_12 [label="section: 259-354"]
 
-section_13 [label="section: 414-464"]
+section_13 [label="section: 458-508"]
 
-section_14 [label="section: 465-580"]
+section_14 [label="section: 509-624"]
 
 
 // END RANK section_1
@@ -618,7 +618,7 @@ prose_124 [label="prose"]
 
 prose_125 [label="prose"]
 
-codeblock_126 [label="code block 179-253"]
+codeblock_126 [label="code block 179-248"]
 
 prose_127 [label="prose"]
 
@@ -694,9 +694,11 @@ At this point it works, time to start breaking it out into an iterator.
 // END RANK raw_140
 
 codeblock_126 -> leaf_142
-leaf_142  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local O_BRACE = c.base \"{\"
-local C_BRACE = c.base \"}\"
-local COMMA, COM_LEN = c.base \", \", 2
+leaf_142  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local O_BRACE = function() return c.base \"{\" end
+local C_BRACE = function() return c.base \"}\" end
+local COMMA, COM_LEN = function() return c.base \", \" end, 2
+
+local tabulate -- this is a mess but will have to do for now
 
 local function _tabulate(tab, depth, cycle)
    cycle = cycle or {}
@@ -706,7 +708,7 @@ local function _tabulate(tab, depth, cycle)
       return nil
    end
    if depth > C.depth or cycle[tab] then
-      yield(ts(tab, \"tab_name\"))
+      ts_coro(tab, \"tab_name\")
       return nil
    end
 
@@ -724,8 +726,7 @@ local function _tabulate(tab, depth, cycle)
    if _M then
       -- fix metatable stuff
 
-      local mt_rep, mt_len = ts(tab, \"mt\")
-      yield(mt_rep, mt_len)
+      ts_coro(tab, \"mt\")
       yield(c.base(\" = \"), 3)
       _tabulate(_M, depth + 1, cycle)
    end
@@ -735,17 +736,11 @@ local function _tabulate(tab, depth, cycle)
       keys = table.keys(tab)
       if #keys <= SORT_LIMIT then
          table.sort(keys, _keysort)
-      else
-         -- bail
-         yield(\"{ !!! }\", 7, \"end\"); return nil
       end
    else
-      if #tab > SORT_LIMIT then
-         yield(\"{ #!!! }\", 8, \"end\"); return nil
-      end
       keys = tab
    end
-   yield(O_BRACE, 1, (is_array and \"array\" or \"map\"))
+   yield(O_BRACE(), 1, (is_array and \"array\" or \"map\"))
    for j, key in ipairs(keys) do
       if is_array then
          _tabulate(key, depth + 1, cycle)
@@ -764,7 +759,7 @@ local function _tabulate(tab, depth, cycle)
          _tabulate(val, depth + 1, cycle)
       end
    end
-   yield(C_BRACE, 1, \"end\")
+   yield(C_BRACE(), 1, \"end\")
    return nil
 end"]
 // END RANK codeblock_126
@@ -886,9 +881,9 @@ prose_174 [label="prose"]
 
 prose_175 [label="prose"]
 
-section_176 [label="section: 281-305"]
+section_176 [label="section: 276-354"]
 
-section_177 [label="section: 306-413"]
+section_177 [label="section: 355-457"]
 
 
 // END RANK section_12
@@ -1004,7 +999,7 @@ header_199 [label="4 : oneLine(phrase, long)"]
 
 prose_200 [label="prose"]
 
-codeblock_201 [label="code block 286-304"]
+codeblock_201 [label="code block 281-353"]
 
 
 // END RANK section_176
@@ -1084,21 +1079,75 @@ leaf_222  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", the caller.
 // END RANK raw_212
 
 codeblock_201 -> leaf_223
-leaf_223  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function oneLine(phrase, long)
-   long = long or true
-   local indent = phrase.untouched and \"\" or \"   \" -- will do more with this
-   phrase.untouched = false
-   if long then
-      local line = {}
-      while true do
-         local frag = remove(phrase, 1)
-         insert(line, frag)
-         if frag == COMMA or #phrase == 0 then
-            return indent .. concat(line)
+leaf_223  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function _disp(phrase)
+   local displacement = 0
+   for i = 1, #phrase.disp do
+      displacement = displacement + phrase.disp[i]
+   end
+   return displacement
+end
+
+local function _spill(phrase, line, disps)
+   assert(#line == #disps, \"#line must == #disps\")
+   for i = 0, #line do
+      phrase[i] = line[i]
+      phrase.disp[i] = disps[i]
+   end
+   phrase.yielding = true
+   return false
+end
+
+local function oneLine(phrase, long)
+   local line = {}
+   local disps = {}
+   if #phrase == 0 then
+      phrase.yielding = true
+      return false
+   end
+   while true do
+      local frag, disp = remove(phrase, 1), remove(phrase.disp, 1)
+      -- remove commas before closing braces
+      if frag == COMMA() then
+         if phrase[1] == C_BRACE() then
+            frag = \"\"
+            disp = 0
+         elseif #phrase == 0 then
+            insert(line, frag)
+            insert(disps, disp)
+            return _spill(phrase, line, disps)
          end
       end
-   else
-      return indent .. concat(phrase) .. concat(phrase.disp, \", \")
+      -- and after opening braces
+      if frag == O_BRACE() and phrase[1] == COMMA() then
+         remove(phrase, 1)
+         remove(phrase.disp, 1)
+      end
+      -- pad with a space inside the braces
+      if frag == C_BRACE() then
+         insert(line, \" \")
+         insert(disps, 1)
+      end
+      insert(line, frag)
+      insert(disps, disp)
+      if frag == O_BRACE() then
+         insert(line, \" \")
+         insert(disps, 1)
+      end
+      -- adjust stack for next round
+      if frag == O_BRACE() then
+         phrase.level = phrase.level + 1
+      elseif frag == C_BRACE() then
+         phrase.level = phrase.level - 1
+      end
+      if (frag == COMMA() and long)
+         or (#phrase == 0 and not phrase.more) then
+         local indent = phrase.dent == 0 and \"\" or (\"  \"):rep(phrase.dent)
+         phrase.dent = phrase.level
+         return indent.. concat(line)
+      elseif #phrase == 0 and phrase.more then
+         -- spill our fragments back
+         return _spill(phrase, line, disps)
+      end
    end
 end"]
 // END RANK codeblock_201
@@ -1110,7 +1159,7 @@ header_224 [label="4 : lineGen"]
 
 prose_225 [label="prose"]
 
-codeblock_226 [label="code block 311-411"]
+codeblock_226 [label="code block 360-455"]
 
 
 // END RANK section_177
@@ -1136,56 +1185,46 @@ table.
 // END RANK raw_228
 
 codeblock_226 -> leaf_230
-leaf_230  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function lineGen(tab, depth, cycle)
+leaf_230  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function lineGen(tab, depth, cycle, disp_width)
    local phrase = {}
    phrase.disp = {}
-   phrase.untouched = true       -- don't indent at the beginning
    local iter = wrap(_tabulate)
-   local stage = \"\"
-   local map_counter = 0         -- this counts where commas go
-   local skip_comma = false      -- no comma at end of array/map
-   local stack, old_stack = 0, 0 -- level of recursion
-   local disp = 0                -- column displacement
-   local yielding = true
-   -- return an iterator function that currently yields the entire
-   -- line but will eventually yield one line at a time.
+   local stage = {}              -- stage stack
+   phrase.stage = stage
+   phrase.level = 0              -- how many levels of recursion are we on
+   phrase.dent = 0               -- indent level (lags by one line)
+   phrase.more = true            -- are their more frags to come
+   local map_counter = 0         -- counts where commas go
+   phrase.yielding = true
+   local long = false            -- long or short printing
+                                 -- todo maybe attach to phrase?
+   -- return an iterator function which yields one line at a time.
    return function()
-      while yielding do
+      ::start::
+      while phrase.yielding do
          local line, len, event = iter(tab, depth, cycle)
          if line == nil then
-            yielding = false
+            phrase.yielding = false
+            phrase.more = false
             break
          end
          phrase[#phrase + 1] = line
          phrase.disp[#phrase.disp + 1] = len
-         disp = disp + len
          if event then
             if event == \"map\" then
                map_counter = 0
             end
             if event == \"array\" or event == \"map\" then
-               stack = stack + 1
-               skip_comma = true
+               insert(stage, event)
             elseif event == \"end\" then
-               stack = stack - 1
-               assert(stack >= 0, \"(tabulate) stack underflow\")
+               remove(stage)
+               if stage[#stage] == \"map\" then
+                  map_counter = 3
+               end
+            elseif event == \"mt_name\" then
+               -- gotta drop that comma
+               map_counter = 1
             end
-            -- don't think I need the conditional below
-            if stage ~= event then
-               skip_comma = true
-            end
-            if (stage == \"array\" or stage == \"map\")
-               and event == \"end\" then
-               skip_comma = true
-            end
-            -- this is seriously esoteric but fixes cases like {{},{}}
-            if old_stack < stack and phrase[#phrase -1] == C_BRACE then
-               insert(phrase, #phrase, COMMA)
-               phrase.disp[#phrase.disp + 1] = COM_LEN
-               disp = disp + COM_LEN
-            end
-            stage = event
-            phrase.height = stack
          end
          -- special-case for non-string values, which
          -- yield an extra piece
@@ -1193,47 +1232,52 @@ leaf_230  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function
             map_counter = map_counter - 1
          end
          -- insert commas
-         if stage ==\"map\"  then
+         if stage[#stage] ==\"map\"  then
             if map_counter == 3 then
-               phrase[#phrase + 1] = COMMA
-               disp = disp + COM_LEN
+               phrase[#phrase + 1] = COMMA()
                phrase.disp[#phrase.disp + 1] = COM_LEN
                map_counter = 1
             else
                map_counter = map_counter + 1
             end
-         elseif stage == \"array\" and not skip_comma then
-            phrase[#phrase + 1] = COMMA
+         elseif stage[#stage] == \"array\"then
+            phrase[#phrase + 1] = COMMA()
             phrase.disp[#phrase.disp + 1] = COM_LEN
-            disp = disp + COM_LEN
             map_counter = map_counter + 1
          end
-         skip_comma = false
-         -- if we had a comma before ending a map/array (this is normal)
-         -- then remove it
-         -- #nb there may be a way to do this using skip_comma but this
-         -- works, dammit.
-         if stage == \"end\" and phrase[#phrase - 1] == COMMA then
-            remove(phrase, #phrase - 1)
-            remove(phrase.disp, #phrase.disp -1)
-            disp = disp - COM_LEN
+         if _disp(phrase) >= disp_width then
+            long = true
+            phrase.yielding = false
+            break
+         else
+            long = false
          end
-         old_stack = stack
       end
       if #phrase > 0 then
-         return oneLine(phrase)
-      else
+         local ln = oneLine(phrase, long)
+         if ln then
+            return ln
+         else
+            goto start
+         end
+      elseif phrase.more == false then
          return nil
+      else
+         phrase.yielding = true
+         goto start
       end
    end
 end
 
-local function tabulate(...)
+repr.lineGen = lineGen
+
+local function tabulate(tab, depth, cycle, disp_width)
+   disp_width = disp_width or 80
    local phrase = {}
-   for line in lineGen(...) do
+   for line in lineGen(tab, depth, cycle, disp_width) do
       phrase[#phrase + 1] = line
    end
-   return concat(phrase)
+   return concat(phrase, \"\\n\")
 end"]
 // END RANK codeblock_226
 
@@ -1244,9 +1288,9 @@ header_231 [label="3 : string and cdata pretty-printing"]
 
 prose_232 [label="prose"]
 
-codeblock_233 [label="code block 419-450"]
+codeblock_233 [label="code block 463-494"]
 
-codeblock_234 [label="code block 452-463"]
+codeblock_234 [label="code block 496-507"]
 
 
 // END RANK section_13
@@ -1320,21 +1364,21 @@ end"]
 section_14 -> { header_240 prose_241 codeblock_242 codeblock_243 codeblock_244}
 {rank=same; header_240 prose_241 codeblock_242 codeblock_243 codeblock_244}
 
-header_240 [label="3 : ts"]
+header_240 [label="3 : ts_coro"]
 
 prose_241 [label="prose"]
 
-codeblock_242 [label="code block 469-564"]
+codeblock_242 [label="code block 513-608"]
 
-codeblock_243 [label="code block 566-573"]
+codeblock_243 [label="code block 610-617"]
 
-codeblock_244 [label="code block 575-577"]
+codeblock_244 [label="code block 619-621"]
 
 
 // END RANK section_14
 
 header_240 -> leaf_245
-leaf_245  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** ts"]
+leaf_245  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** ts_coro"]
 // END RANK header_240
 
 prose_241 -> { raw_246}
@@ -1365,14 +1409,18 @@ leaf_248  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ts_coro = func
          local tab_name = anti_G[value] or \"t:\" .. sub(str, -6)
          len = #tab_name
          yield(c.table(tab_name), len)
+         return nil
       elseif hint == \"mt\" then
          local mt_name = anti_G[value] or \"mt:\" .. sub(str, -6)
          len = #mt_name + 2
-         yield(c.metatable(\"⟨\" .. mt_name .. \"⟩\"), len); return nil
+         yield(c.metatable(\"⟨\" .. mt_name .. \"⟩\"), len, \"mt_name\")
+         return nil
       elseif hints[hint] then
          yield(hints[hint](str), len)
+         return nil
       elseif c[hint] then
          yield(c[hint](str), len)
+         return nil
       end
    end
 
@@ -1386,8 +1434,9 @@ leaf_248  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ts_coro = func
          str, repr_len  = _M.__repr(value, c)
          len = repr_len or len
          assert(type(str) == \"string\")
-      else
-         str = tabulate(value)
+      elseif _M then
+         _tabulate(value)
+         return nil
       end
    elseif typica == \"function\" then
       local f_label = sub(str,11)
@@ -1441,18 +1490,13 @@ leaf_248  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ts_coro = func
    yield(str, len)
 end
 
-ts = function(...)
-      local rep, len, done = wrap(ts_coro)(...)
-      return rep, len, done
-end
-
-repr.ts = ts"]
+repr.ts = tabulate"]
 // END RANK codeblock_242
 
 codeblock_243 -> leaf_249
 leaf_249  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function repr.ts_bw(value)
    c = C.no_color
-   local to_string = ts(value)
+   local to_string = tabulate(value)
    c = C.color
    return to_string
 end"]

@@ -59,7 +59,7 @@
 
 
 local repr = require "repr"
-local ts = repr.ts
+local ts, lineGen = repr.ts, repr.lineGen
 
 
 
@@ -94,7 +94,46 @@ local Rainbuf = meta {}
 
 
 
-function Rainbuf.lineGen(rainbuf, rows)
+function Rainbuf.lineGen(rainbuf, rows, cols)
+   offset = rainbuf.offset or 0
+   cols = cols or 80
+   local reprs = {}
+   if not rainbuf.lines then
+      for i = 1, rainbuf.n do
+         if rainbuf.frozen then
+            reprs[i] = string.lines(rainbuf[i])
+         else
+            reprs[i] = lineGen(rainbuf[i], nil, nil, cols)
+            if type(reprs[i]) == "string" then
+               reprs[i] = string.lines(reprs[i])
+            end
+         end
+      end
+   end
+   -- state for iterator
+   local r_num = 1
+   local cursor = 1 + offset
+
+   local function _nextLine()
+      -- if we have lines, yield them
+      if rainbuf.lines then
+         -- deal with line case
+      else
+         local repr = reprs[r_num]
+         if repr == nil then return nil end
+         local line = repr()
+         if line ~= nil then
+            return line
+         else
+            r_num = r_num + 1
+            _nextLine()
+         end
+      end
+   end
+   return _nextLine
+end
+
+function Rainbuf._lineGen(rainbuf, rows)
    offset = rainbuf.offset or 0
    if not rainbuf.lines then
       local phrase = ""
@@ -143,7 +182,6 @@ end
 
 
 local function new(res)
-   -- #todo this should be an error
    if type(res) == "table" and res.idEst == Rainbuf then
       error "made a Rainbuf from a Rainbuf"
    end
