@@ -113,20 +113,20 @@ function Rainbuf.lineGen(rainbuf, rows, cols)
    -- state for iterator
    local r_num = 1
    local cursor = 1 + offset
-
-   local function _nextLine()
+   local function _nextLine(param)
       -- if we have lines, yield them
       if rainbuf.lines then
          -- deal with line case
       else
          local repr = reprs[r_num]
          if repr == nil then return nil end
+         assert(type(repr) == "function", "I see your problem")
          local line = repr()
          if line ~= nil then
             return line
          else
             r_num = r_num + 1
-            _nextLine()
+            return _nextLine()
          end
       end
    end
