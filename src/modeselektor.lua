@@ -108,6 +108,8 @@ local Historian = require "historian"
 local Lex       = require "lex"
 local Zoneherd  = require "zone"
 local repr      = require "repr"
+local color     = require "color"
+c = color.color
 
 local Nerf   = require "nerf"
 local Search = require "search"
@@ -181,6 +183,18 @@ end
 
 function ModeS.insert(modeS, category, value)
     local success =  modeS.txtbuf:insert(value)
+end
+
+
+
+
+
+
+
+function ModeS.errPrint(modeS, log_stmt)
+   modeS.zones.suggest:replace(log_stmt)
+   modeS:paint()
+   return modeS
 end
 
 

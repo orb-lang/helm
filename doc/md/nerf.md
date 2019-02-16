@@ -165,7 +165,7 @@ end
 
 function NAV.SHIFT_DOWN(modeS, category, value)
    local results = modeS.zones.results.contents
-   if results.more then
+   if results and results.more then
       results.offset = results.offset + 1
       modeS.zones.results.touched = true
    end
@@ -173,7 +173,9 @@ end
 
 function NAV.SHIFT_UP(modeS, category, value)
    local results = modeS.zones.results.contents
-   if results.offset > 0 then
+   if results
+    and results.offset
+    and results.offset > 0 then
       results.offset = results.offset - 1
       modeS.zones.results.touched = true
    end
@@ -204,6 +206,7 @@ local function clear_txtbuf(modeS, category, value)
    modeS.hist.cursor = #modeS.hist + 1
    modeS.firstChar = true
    modeS.zones.results:replace ""
+   modeS.zones:reflow(modeS)
 end
 
 CTRL ["^L"] = clear_txtbuf

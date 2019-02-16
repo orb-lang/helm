@@ -94,15 +94,9 @@ local concat = assert(table.concat)
 
 Primitives for terminal manipulation.
 
-
-Arguably don't belong here. ``watch`` is unused at present, it will be useful
-in Orb relatively soon.
-
 ```lua
 a = require "anterm"
-color = require "color"
 local repr = require "repr"
-c = color.color
 --watch = require "watcher"
 
 ```
@@ -111,7 +105,7 @@ c = color.color
 I'm making the crudest possible logger here.
 
 
-This thing sucks tbh
+This thing sucks tbh, don't think I'm using it and should probably delete.
 
 ```lua
 local _log = {}
@@ -183,12 +177,7 @@ end
 
 local stdin = uv.new_tty(0, true)
 ```
-## Modeselektor
-
-This should start with a read which saves the cursor location.
-
-
-```lua
+## Modeselektor```lua
 -- This switches screens and does a wipe,
 -- then puts the cursor at 1,1.
 write "\x1b[?47h\x1b[2J\x1b[H"
@@ -280,7 +269,8 @@ end
 ```lua
 -- Get names for as many values as possible
 -- into the colorizer
-repr.allNames()
+--repr.allNames()
+repr.allNames(__G)
 
 -- raw mode
 uv.tty_set_mode(stdin, 2)

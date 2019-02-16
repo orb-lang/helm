@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 240"]
+doc_0 [label="doc - 243"]
 
 
 doc_0 -> { section_1}
@@ -29,7 +29,7 @@ prose_6 [label="prose"]
 
 section_7 [label="section: 14-36"]
 
-section_8 [label="section: 37-222"]
+section_8 [label="section: 37-225"]
 
 
 // END RANK section_1
@@ -192,11 +192,11 @@ prose_40 [label="prose"]
 
 section_41 [label="section: 40-63"]
 
-section_42 [label="section: 64-192"]
+section_42 [label="section: 64-194"]
 
-section_43 [label="section: 193-222"]
+section_43 [label="section: 195-225"]
 
-section_44 [label="section: 223-240"]
+section_44 [label="section: 226-243"]
 
 
 // END RANK section_8
@@ -294,7 +294,7 @@ prose_61 [label="prose"]
 
 codeblock_62 [label="code block 66-117"]
 
-codeblock_63 [label="code block 123-188"]
+codeblock_63 [label="code block 123-190"]
 
 
 // END RANK section_42
@@ -421,7 +421,7 @@ end
 
 function NAV.SHIFT_DOWN(modeS, category, value)
    local results = modeS.zones.results.contents
-   if results.more then
+   if results and results.more then
       results.offset = results.offset + 1
       modeS.zones.results.touched = true
    end
@@ -429,7 +429,9 @@ end
 
 function NAV.SHIFT_UP(modeS, category, value)
    local results = modeS.zones.results.contents
-   if results.offset > 0 then
+   if results
+    and results.offset
+    and results.offset > 0 then
       results.offset = results.offset - 1
       modeS.zones.results.touched = true
    end
@@ -445,7 +447,7 @@ prose_70 [label="prose"]
 
 prose_71 [label="prose"]
 
-codeblock_72 [label="code block 199-220"]
+codeblock_72 [label="code block 201-223"]
 
 
 // END RANK section_43
@@ -501,6 +503,7 @@ local function clear_txtbuf(modeS, category, value)
    modeS.hist.cursor = #modeS.hist + 1
    modeS.firstChar = true
    modeS.zones.results:replace \"\"
+   modeS.zones:reflow(modeS)
 end
 
 CTRL [\"^L\"] = clear_txtbuf"]
@@ -513,9 +516,9 @@ header_79 [label="3 : MOUSE"]
 
 prose_80 [label="prose"]
 
-codeblock_81 [label="code block 225-235"]
+codeblock_81 [label="code block 228-238"]
 
-codeblock_82 [label="code block 237-239"]
+codeblock_82 [label="code block 240-242"]
 
 
 // END RANK section_44

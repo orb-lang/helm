@@ -124,6 +124,8 @@ local Historian = require "historian"
 local Lex       = require "lex"
 local Zoneherd  = require "zone"
 local repr      = require "repr"
+local color     = require "color"
+c = color.color
 
 local Nerf   = require "nerf"
 local Search = require "search"
@@ -195,6 +197,17 @@ Inserts the value into the txtbuf at cursor.
 ```lua
 function ModeS.insert(modeS, category, value)
     local success =  modeS.txtbuf:insert(value)
+end
+```
+### ModeS:errPrint(modeS, category, value)
+
+Debug aide.
+
+```lua
+function ModeS.errPrint(modeS, log_stmt)
+   modeS.zones.suggest:replace(log_stmt)
+   modeS:paint()
+   return modeS
 end
 ```
 ### status painter (colwrite)
@@ -557,7 +570,6 @@ function ModeS.eval(modeS)
    if f then
       setfenv(f, _G)
       success, results = gatherResults(xpcall(f, debug.traceback))
-      :: succession ::  -- yesssss the power of goto compels you
       if success then
       -- successful call
          if results.n > 0 then
@@ -567,10 +579,21 @@ function ModeS.eval(modeS)
             modeS.zones.results:replace ""
          end
       elseif string.find(results[1], "is not declared") then
-         -- let's try it with __G what could go wrong?
+         -- let's try it with __G
          setfenv(f, __G)
          success, results = gatherResults(xpcall(f, debug.traceback))
-         goto succession
+         if success then
+            if results.n > 0 then
+               local rb = Rainbuf(results)
+               modeS.zones.results:replace(rb)
+            else
+               modeS.zones.results:replace ""
+            end
+         else
+            -- error
+            results.frozen = true
+            modeS.zones.results:replace(results)
+         end
       else
          -- error
          results.frozen = true
