@@ -444,6 +444,34 @@ end
 
 repr.lineGen = lineGen
 
+
+
+
+
+
+
+
+
+
+
+
+
+function repr.lineGenBW(tab, depth, cycle, disp_width)
+   local lg = lineGen(tab, depth, cycle, disp_width)
+   return function()
+      c = C.no_color
+      local line = lg()
+      if line ~= nil then
+         c = C.color
+         return line
+      end
+      c = C.color
+      return nil
+   end
+end
+
+
+
 local function tabulate(tab, depth, cycle, disp_width)
    disp_width = disp_width or 80
    local phrase = {}
