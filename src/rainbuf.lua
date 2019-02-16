@@ -81,24 +81,11 @@ local Rainbuf = meta {}
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 function Rainbuf.lineGen(rainbuf, rows, cols)
    offset = rainbuf.offset or 0
    cols = cols or 80
-   local reprs = {}
-   if not rainbuf.lines then
+   if not rainbuf.reprs then
+      local reprs = {}
       for i = 1, rainbuf.n do
          if rainbuf.frozen then
             reprs[i] = string.lines(rainbuf[i])
@@ -109,25 +96,42 @@ function Rainbuf.lineGen(rainbuf, rows, cols)
             end
          end
       end
+      rainbuf.reprs = reprs
    end
    -- state for iterator
+   local reprs = rainbuf.reprs
    local r_num = 1
    local cursor = 1 + offset
+   rows = rows + offset
+   rainbuf.lines = rainbuf.lines or {}
+   rainbuf.more = true
+   local flip = true
    local function _nextLine(param)
       -- if we have lines, yield them
-      if rainbuf.lines then
-         -- deal with line case
-      else
-         local repr = reprs[r_num]
-         if repr == nil then return nil end
-         assert(type(repr) == "function", "I see your problem")
-         local line = repr()
-         if line ~= nil then
-            return line
-         else
-            r_num = r_num + 1
-            return _nextLine()
+      if cursor < rows then
+         if rainbuf.lines and cursor <= #rainbuf.lines then
+            -- deal with line case
+            cursor = cursor + 1
+            return rainbuf.lines[cursor - 1]
+         else -- if rainbuf.more then
+            local repr = reprs[r_num]
+            if repr == nil then
+               rainbuf.more = false
+               return nil
+            end
+            assert(type(repr) == "function", "I see your problem")
+            local line = repr()
+            if line ~= nil then
+               rainbuf.lines[#rainbuf.lines] = line
+               cursor = cursor + 1
+               return line
+            else
+               r_num = r_num + 1
+               return _nextLine()
+            end
          end
+      else
+         return nil
       end
    end
    return _nextLine
