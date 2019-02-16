@@ -103,7 +103,9 @@ function Rainbuf.lineGen(rainbuf, rows, cols)
    local r_num = 1
    local cursor = 1 + offset
    rows = rows + offset
-   rainbuf.lines = rainbuf.lines or {}
+   if not rainbuf.lines then
+      rainbuf.lines = {}
+   end
    rainbuf.more = true
    local flip = true
    local function _nextLine(param)
@@ -113,7 +115,7 @@ function Rainbuf.lineGen(rainbuf, rows, cols)
             -- deal with line case
             cursor = cursor + 1
             return rainbuf.lines[cursor - 1]
-         else -- if rainbuf.more then
+         elseif rainbuf.more then
             local repr = reprs[r_num]
             if repr == nil then
                rainbuf.more = false
@@ -122,7 +124,7 @@ function Rainbuf.lineGen(rainbuf, rows, cols)
             assert(type(repr) == "function", "I see your problem")
             local line = repr()
             if line ~= nil then
-               rainbuf.lines[#rainbuf.lines] = line
+               rainbuf.lines[#rainbuf.lines + 1] = line
                cursor = cursor + 1
                return line
             else
