@@ -181,8 +181,6 @@ local O_BRACE = function() return c.base "{" end
 local C_BRACE = function() return c.base "}" end
 local COMMA, COM_LEN = function() return c.base ", " end, 2
 
-local tabulate -- this is a mess but will have to do for now
-
 local function _tabulate(tab, depth, cycle)
    cycle = cycle or {}
    depth = depth or 0
@@ -442,7 +440,10 @@ local function lineGen(tab, depth, cycle, disp_width)
    end
 end
 
-repr.lineGen = lineGen
+function repr.lineGen(tab, disp)
+   disp = disp or 80
+   return lineGen(tab, nil, nil, disp)
+end
 #/lua
 
 
@@ -456,8 +457,8 @@ color off and back on with each line.
 Global state is annoying!
 
 #!lua
-function repr.lineGenBW(tab, depth, cycle, disp_width)
-   local lg = lineGen(tab, depth, cycle, disp_width)
+function repr.lineGenBW(tab, disp_width)
+   local lg = lineGen(tab, nil, nil, disp_width)
    return function()
       c = C.no_color
       local line = lg()
@@ -569,17 +570,8 @@ ts_coro = function (value, hint)
    local typica = type(value)
 
    if typica == "table" then
-      -- check for a __repr metamethod
-      local _M = getmetatable(value)
-      if _M and _M.__repr and not (hint == "raw") then
-         local repr_len
-         str, repr_len  = _M.__repr(value, c)
-         len = repr_len or len
-         assert(type(str) == "string")
-      elseif _M then
-         _tabulate(value)
-         return nil
-      end
+      _tabulate(value)
+      return nil
    elseif typica == "function" then
       local f_label = sub(str,11)
       f_label = sub(f_label,1,5) == "built"

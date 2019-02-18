@@ -414,8 +414,7 @@ function Historian.search(historian, frag)
       local score = match(patt, tostring(historian[i]))
       if score then
          collection[#collection + 1] = tostring(historian[i])
-
-            cursors[#cursors + 1] = i
+         cursors[#cursors + 1] = i
       end
    end
    if #collection == 0 then
