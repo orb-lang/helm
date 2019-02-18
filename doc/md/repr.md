@@ -181,7 +181,9 @@ local tabulate -- this is a mess but will have to do for now
 local function _tabulate(tab, depth, cycle)
    cycle = cycle or {}
    depth = depth or 0
-   if type(tab) ~= "table" then
+   if type(tab) ~= "table"
+      or getmetatable(tab) and
+      (getmetatable(tab).__repr then
       ts_coro(tab)
       return nil
    end
@@ -441,7 +443,34 @@ local function lineGen(tab, depth, cycle, disp_width)
 end
 
 repr.lineGen = lineGen
+```
+### repr.lineGenBW(tab, depth, cycle, disp_width)
 
+This generates lines, but with no color.
+
+
+To keep it from interfering with other uses of the ``repr`` library, we turn
+color off and back on with each line.
+
+
+Global state is annoying!
+
+```lua
+function repr.lineGenBW(tab, depth, cycle, disp_width)
+   local lg = lineGen(tab, depth, cycle, disp_width)
+   return function()
+      c = C.no_color
+      local line = lg()
+      if line ~= nil then
+         c = C.color
+         return line
+      end
+      c = C.color
+      return nil
+   end
+end
+```
+```lua
 local function tabulate(tab, depth, cycle, disp_width)
    disp_width = disp_width or 80
    local phrase = {}

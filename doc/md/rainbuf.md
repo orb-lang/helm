@@ -87,35 +87,19 @@ local Rainbuf = meta {}
 This is a generator which yields ``rows`` number of lines.
 
 
-I need to do some empirical profiling as to whether, given ``luv``, we should
-iterate over an array of tokens and ``write`` them individually, or use
-``table.concat`` to efficiently stringify them first.
-
-
-It's non-blocking, but it is a syscall, and those are expensive. I suspect
-more expensive than ``concat`` which is efficient C.
-
-
-Given this more likely scenario, ``lines`` should emit pure strings.
-
-
-The default method, provided here, can be overridden for other data types.
-I intend to substitute a ``lines`` method instead of the use of ``__repr`` at
-some point in the relatively near future, for search results and the like.
-
-
-We're going to do this the easy way, and generate a full representation,
-yielding only afterward.  But the interface is designed so that we can do this
-lazily once we're motivated to do so.
+Since we've replaced the old all-at-once ``repr`` with something that generates
+a line at a time (and it only took, oh, six months), we're finally able to
+generate these on the fly.
 
 ```lua
-function Rainbuf.linegen(rainbuf, rows, cols)
+function Rainbuf.lineGen(rainbuf, rows, cols)
    offset = rainbuf.offset or 0
-   local reprs = {}
-   if not rainbuf.lines then
+   cols = cols or 80
+   if not rainbuf.reprs then
+      local reprs = {}
       for i = 1, rainbuf.n do
          if rainbuf.frozen then
-            reprs[i] = rainbuf[i]
+            reprs[i] = string.lines(rainbuf[i])
          else
             reprs[i] = lineGen(rainbuf[i], nil, nil, cols)
             if type(reprs[i]) == "string" then
@@ -123,25 +107,44 @@ function Rainbuf.linegen(rainbuf, rows, cols)
             end
          end
       end
+      rainbuf.reprs = reprs
    end
    -- state for iterator
+   local reprs = rainbuf.reprs
    local r_num = 1
    local cursor = 1 + offset
-
-   local function _nextLine()
+   rows = rows + offset
+   if not rainbuf.lines then
+      rainbuf.lines = {}
+   end
+   rainbuf.more = true
+   local flip = true
+   local function _nextLine(param)
       -- if we have lines, yield them
-      if rainbuf.lines then
-         -- deal with line case
-      else
-         local repr = reprs[r_num]
-         if repr == nil then return nil end
-         local line = repr()
-         if line ~= nil then
-            return line
-         else
-            r_num = r_num + 1
-            _nextLine()
+      if cursor < rows then
+         if rainbuf.lines and cursor <= #rainbuf.lines then
+            -- deal with line case
+            cursor = cursor + 1
+            return rainbuf.lines[cursor - 1]
+         elseif rainbuf.more then
+            local repr = reprs[r_num]
+            if repr == nil then
+               rainbuf.more = false
+               return nil
+            end
+            assert(type(repr) == "function", "I see your problem")
+            local line = repr()
+            if line ~= nil then
+               rainbuf.lines[#rainbuf.lines + 1] = line
+               cursor = cursor + 1
+               return line
+            else
+               r_num = r_num + 1
+               return _nextLine()
+            end
          end
+      else
+         return nil
       end
    end
    return _nextLine

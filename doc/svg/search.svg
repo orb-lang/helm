@@ -13,13 +13,13 @@
 <g id="node1" class="node">
 <title>doc_0</title>
 <ellipse fill="none" stroke="#000000" cx="1541" cy="-637.4007" rx="42.1216" ry="18"/>
-<text text-anchor="middle" x="1541" y="-633.2007" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">doc &#45; 91</text>
+<text text-anchor="middle" x="1541" y="-633.2007" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">doc &#45; 90</text>
 </g>
 <!-- section_1 -->
 <g id="node2" class="node">
 <title>section_1</title>
 <ellipse fill="none" stroke="#000000" cx="1541" cy="-565.4007" rx="60.9826" ry="18"/>
-<text text-anchor="middle" x="1541" y="-561.2007" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 1&#45;91</text>
+<text text-anchor="middle" x="1541" y="-561.2007" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 1&#45;90</text>
 </g>
 <!-- doc_0&#45;&gt;section_1 -->
 <g id="edge1" class="edge">
@@ -91,7 +91,7 @@
 <g id="node8" class="node">
 <title>codeblock_7</title>
 <ellipse fill="none" stroke="#000000" cx="1777" cy="-493.4007" rx="77.4211" ry="18"/>
-<text text-anchor="middle" x="1777" y="-489.2007" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 38&#45;47</text>
+<text text-anchor="middle" x="1777" y="-489.2007" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 38&#45;46</text>
 </g>
 <!-- section_1&#45;&gt;codeblock_7 -->
 <g id="edge7" class="edge">
@@ -103,7 +103,7 @@
 <g id="node9" class="node">
 <title>codeblock_8</title>
 <ellipse fill="none" stroke="#000000" cx="2141" cy="-493.4007" rx="77.4211" ry="18"/>
-<text text-anchor="middle" x="2141" y="-489.2007" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 49&#45;57</text>
+<text text-anchor="middle" x="2141" y="-489.2007" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 48&#45;56</text>
 </g>
 <!-- section_1&#45;&gt;codeblock_8 -->
 <g id="edge8" class="edge">
@@ -115,7 +115,7 @@
 <g id="node10" class="node">
 <title>codeblock_9</title>
 <ellipse fill="none" stroke="#000000" cx="2499" cy="-493.4007" rx="77.4211" ry="18"/>
-<text text-anchor="middle" x="2499" y="-489.2007" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 59&#45;63</text>
+<text text-anchor="middle" x="2499" y="-489.2007" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 58&#45;62</text>
 </g>
 <!-- section_1&#45;&gt;codeblock_9 -->
 <g id="edge9" class="edge">
@@ -127,7 +127,7 @@
 <g id="node11" class="node">
 <title>codeblock_10</title>
 <ellipse fill="none" stroke="#000000" cx="2897" cy="-493.4007" rx="77.4211" ry="18"/>
-<text text-anchor="middle" x="2897" y="-489.2007" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 65&#45;87</text>
+<text text-anchor="middle" x="2897" y="-489.2007" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 64&#45;86</text>
 </g>
 <!-- section_1&#45;&gt;codeblock_10 -->
 <g id="edge10" class="edge">
@@ -139,7 +139,7 @@
 <g id="node12" class="node">
 <title>codeblock_11</title>
 <ellipse fill="none" stroke="#000000" cx="3269" cy="-493.4007" rx="77.4211" ry="18"/>
-<text text-anchor="middle" x="3269" y="-489.2007" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 89&#45;91</text>
+<text text-anchor="middle" x="3269" y="-489.2007" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 88&#45;90</text>
 </g>
 <!-- section_1&#45;&gt;codeblock_11 -->
 <g id="edge11" class="edge">
@@ -263,21 +263,20 @@
 <!-- leaf_24 -->
 <g id="node25" class="node">
 <title>leaf_24</title>
-<polygon fill="none" stroke="#c0c0c0" points="2049,-339.1007 1655,-339.1007 1655,-207.6999 2049,-207.6999 2049,-339.1007"/>
-<text text-anchor="middle" x="1852" y="-323.8005" font-family="Inconsolata" font-size="14.00" fill="#000000">function Search.NAV.SHIFT_DOWN(modeS, category, value)</text>
-<text text-anchor="middle" x="1852" y="-308.4004" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#45;&#45; #temporary drop into global namespace</text>
-<text text-anchor="middle" x="1852" y="-293.0004" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local search_result = modeS.hist.last_collection</text>
-<text text-anchor="middle" x="1852" y="-277.6004" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if not search_result then return end</text>
-<text text-anchor="middle" x="1852" y="-262.2003" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if search_result.hl &lt; #search_result then</text>
-<text text-anchor="middle" x="1852" y="-246.8003" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;search_result.hl = search_result.hl + 1</text>
-<text text-anchor="middle" x="1852" y="-231.4003" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
-<text text-anchor="middle" x="1852" y="-216.0002" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
+<polygon fill="none" stroke="#c0c0c0" points="2049,-331.2007 1655,-331.2007 1655,-215.6 2049,-215.6 2049,-331.2007"/>
+<text text-anchor="middle" x="1852" y="-316.1005" font-family="Inconsolata" font-size="14.00" fill="#000000">function Search.NAV.SHIFT_DOWN(modeS, category, value)</text>
+<text text-anchor="middle" x="1852" y="-300.7004" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local search_result = modeS.hist.last_collection</text>
+<text text-anchor="middle" x="1852" y="-285.3004" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if not search_result then return end</text>
+<text text-anchor="middle" x="1852" y="-269.9004" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if search_result.hl &lt; #search_result then</text>
+<text text-anchor="middle" x="1852" y="-254.5003" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;search_result.hl = search_result.hl + 1</text>
+<text text-anchor="middle" x="1852" y="-239.1003" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
+<text text-anchor="middle" x="1852" y="-223.7003" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
 </g>
 <!-- codeblock_7&#45;&gt;leaf_24 -->
 <g id="edge24" class="edge">
 <title>codeblock_7&#45;&gt;leaf_24</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1783.1376,-475.3971C1792.5114,-447.9004 1810.9333,-393.8628 1826.366,-348.5936"/>
-<polygon fill="#000000" stroke="#000000" points="1829.6954,-349.6739 1829.6094,-339.0794 1823.0698,-347.4152 1829.6954,-349.6739"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1783.1376,-475.3971C1793.034,-446.3675 1813.0155,-387.7552 1828.9171,-341.1103"/>
+<polygon fill="#000000" stroke="#000000" points="1832.3293,-341.9479 1832.2433,-331.3534 1825.7037,-339.6891 1832.3293,-341.9479"/>
 </g>
 <!-- leaf_25 -->
 <g id="node26" class="node">

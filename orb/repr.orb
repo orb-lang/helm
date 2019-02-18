@@ -167,6 +167,43 @@ end
 #/lua
 
 
+*** _yieldReprs(tab, disp)
+
+I want to deliver =__repr=s from inside the funky coroutine brew,
+because, well, because. =ts= is meant to be general.
+
+I also want a lot of flexibility in how reprs are written, so we need to
+handle several cases.
+
+We're going to start with returning a string, and returning an iterator.
+
+I might get around to returning tables with tokens in them and other intel,
+I might not; I do have plans that are broader than merely writing an
+incredibly intricate repl.
+
+#!lua
+local function _yieldReprs(tab, disp)
+   local _repr = getmetatable(tab).__repr
+   local repr = _repr(tab, disp)
+   local yielder
+   if type(repr) == "string" then
+      yielder = string.lines(repr)
+   else
+      yielder = repr
+   end
+   while true do
+      local line, len = yielder()
+      if line ~= nil then
+         len = len or #line
+         yield(line, len, "repr_line")
+      else
+         break
+      end
+   end
+end
+
+#/lua
+
 *** _tabulate(tab, depth, cycle)
 
 This =yield()s= pieces of a table, recursively, one at a time.
@@ -181,8 +218,6 @@ local O_BRACE = function() return c.base "{" end
 local C_BRACE = function() return c.base "}" end
 local COMMA, COM_LEN = function() return c.base ", " end, 2
 
-local tabulate -- this is a mess but will have to do for now
-
 local function _tabulate(tab, depth, cycle)
    cycle = cycle or {}
    depth = depth or 0
@@ -194,8 +229,21 @@ local function _tabulate(tab, depth, cycle)
       ts_coro(tab, "tab_name")
       return nil
    end
-
    cycle[tab] = true
+   -- if we have a metatable, get it first
+   local _M = getmetatable(tab)
+   if _M then
+      ---[[special case tables with __repr
+      if _M.__repr then
+         _yieldReprs(tab)
+         return nil
+      end
+      --]]
+      --otherwise print the metatable normally
+      ts_coro(tab, "mt")
+      yield(c.base(" = "), 3)
+      _tabulate(_M, depth + 1, cycle)
+   end
    -- Check to see if this is an array
    local is_array = true
    local i = 1
@@ -203,17 +251,7 @@ local function _tabulate(tab, depth, cycle)
       is_array = is_array and (k == i)
       i = i + 1
    end
-   -- if we have a metatable, get it first
-   local mt = ""
-   local _M = getmetatable(tab)
-   if _M then
-      -- fix metatable stuff
 
-      ts_coro(tab, "mt")
-      yield(c.base(" = "), 3)
-      _tabulate(_M, depth + 1, cycle)
-   end
-   local estimated = 0
    local keys
    if not is_array then
       keys = table.keys(tab)
@@ -384,6 +422,10 @@ local function lineGen(tab, depth, cycle, disp_width)
          phrase[#phrase + 1] = line
          phrase.disp[#phrase.disp + 1] = len
          if event then
+            if event == "repr_line" then
+               phrase[#phrase] = nil
+               return line
+            end
             if event == "map" then
                map_counter = 0
             end
@@ -442,7 +484,10 @@ local function lineGen(tab, depth, cycle, disp_width)
    end
 end
 
-repr.lineGen = lineGen
+function repr.lineGen(tab, disp)
+   disp = disp or 80
+   return lineGen(tab, nil, nil, disp)
+end
 #/lua
 
 
@@ -456,8 +501,8 @@ color off and back on with each line.
 Global state is annoying!
 
 #!lua
-function repr.lineGenBW(tab, depth, cycle, disp_width)
-   local lg = lineGen(tab, depth, cycle, disp_width)
+function repr.lineGenBW(tab, disp_width)
+   local lg = lineGen(tab, nil, nil, disp_width)
    return function()
       c = C.no_color
       local line = lg()
@@ -569,17 +614,8 @@ ts_coro = function (value, hint)
    local typica = type(value)
 
    if typica == "table" then
-      -- check for a __repr metamethod
-      local _M = getmetatable(value)
-      if _M and _M.__repr and not (hint == "raw") then
-         local repr_len
-         str, repr_len  = _M.__repr(value, c)
-         len = repr_len or len
-         assert(type(str) == "string")
-      elseif _M then
-         _tabulate(value)
-         return nil
-      end
+      _tabulate(value)
+      return nil
    elseif typica == "function" then
       local f_label = sub(str,11)
       f_label = sub(f_label,1,5) == "built"

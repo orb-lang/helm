@@ -37,7 +37,6 @@ end
 
 
 function Search.NAV.SHIFT_DOWN(modeS, category, value)
-   -- #temporary drop into global namespace
    local search_result = modeS.hist.last_collection
    if not search_result then return end
    if search_result.hl < #search_result then
