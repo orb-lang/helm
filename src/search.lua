@@ -41,6 +41,11 @@ function Search.NAV.SHIFT_DOWN(modeS, category, value)
    if not search_result then return end
    if search_result.hl < #search_result then
       search_result.hl = search_result.hl + 1
+      local rb = modeS.zones.results.contents
+      if search_result.hl > 5
+        and rb.more then
+        rb.offset = rb.offset + 1
+      end
    end
 end
 

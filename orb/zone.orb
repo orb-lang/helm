@@ -237,6 +237,7 @@ local function _writeResults(write, zone, new)
    end
    if results.idEst ~= Rainbuf then
       results = Rainbuf(results)
+      zone.contents = results
    end
    local nl = a.col(zone.tc) .. a.jump.down(1)
    for line in results:lineGen(zone:height() + 1, zone:width()) do
