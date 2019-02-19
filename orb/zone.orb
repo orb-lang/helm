@@ -75,6 +75,7 @@ local Txtbuf = require "txtbuf"
 
 local Rainbuf = require "rainbuf"
 
+local ts = require "repr" . ts
 local Zone = meta {}
 
 local Zoneherd = meta {}
@@ -229,14 +230,16 @@ We'll special-case the results buffer for now.
 
 #!lua
 local function _writeResults(write, zone, new)
-   local rainbuf = {}
    local row = zone.tr
    local results = zone.contents
    if not results then
       return nil
    end
    if results.idEst ~= Rainbuf then
+      assert(false, "whups: " .. ts(results))
       results = Rainbuf(results)
+      results.made_in = "writeResults"
+      zone.contents = results
    end
    local nl = a.col(zone.tc) .. a.jump.down(1)
    for line in results:lineGen(zone:height() + 1, zone:width()) do

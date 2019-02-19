@@ -17,7 +17,8 @@ record.  We should store the line as a string, to facilitate fuzzy matching.
 local Txtbuf  = require "txtbuf"
 local Rainbuf = require "rainbuf"
 local sql     = require "sqlayer"
-local color   = require "color"
+local color   = (require "color").color
+
 local L       = require "lpeg"
 local repr    = require "repr"
 local format  = assert (string.format)
@@ -326,10 +327,8 @@ attach to the collection.
 #!lua
 local concat, litpat = assert(table.concat), assert(string.litpat)
 local gsub = assert(string.gsub)
-
 local function _highlight(line, frag, c, best)
    local hl = {}
-   local og_line = line -- debugging
    while #frag > 0 do
       local char
       char, frag = frag:sub(1,1), frag:sub(2)
@@ -337,43 +336,48 @@ local function _highlight(line, frag, c, best)
       if not at then
          error ("can't find " .. char .. " in: " .. line)
       end
-      local color
+      local Color
       -- highlight the last two differently if this is a 'second best'
       -- search
       if not best and #frag <= 1 then
-         color = c.alert
+         Color = color.alert
       else
-         color = c.search_hl
+         Color = color.search_hl
       end
-      hl[#hl + 1] = c.base(line:sub(1, at -1))
-      hl[#hl + 1] = color(char)
+      hl[#hl + 1] = color.base(line:sub(1, at -1))
+      hl[#hl + 1] = Color(char)
       line = line:sub(at + 1)
    end
-   hl[#hl + 1] = c.base(line)
-   return concat(hl):gsub("\n", c.stresc("\\n"))
+   hl[#hl + 1] = color.base(line)
+   return concat(hl):gsub("\n", color.stresc("\\n"))
 end
 
-
 local function _collect_repr(collection, c)
-   if #collection == 0 then
-      return c.alert "No results found"
-   end
-   local phrase = ""
-   for i,v in ipairs(collection) do
+   local i = 1
+   local first = true
+   return function()
+      if #collection == 0 then
+         if first then
+            first = false
+            return color.alert "No results found"
+         else
+            return nil
+         end
+      end
+      local v = collection[i]
+      if v == nil then return nil end
       local alt_seq = "    "
       if i < 10 then
          alt_seq = a.bold("M-" .. tostring(i) .. " ")
       end
       local next_line = alt_seq
                         .. _highlight(v, collection.frag, c, collection.best)
-                        .. "\n"
       if i == collection.hl then
-         next_line = c.highlight(next_line)
+         next_line = color.highlight(next_line)
       end
-      phrase = phrase .. next_line
+      i = i + 1
+      return next_line
    end
-
-   return phrase
 end
 
 local collect_M = {__repr = _collect_repr}
@@ -404,7 +408,7 @@ The other fields are:
 #!lua
 function Historian.search(historian, frag)
    if historian.last_collection
-      and historian.last_collection.lit_frag == frag then
+      and historian.last_collection[1].lit_frag == frag then
       -- don't repeat a search
       return historian.last_collection
    end
@@ -412,7 +416,7 @@ function Historian.search(historian, frag)
    collection.frag = frag
    collection.lit_frag = frag
    if frag == "" then
-      return collection, false
+      return Rainbuf {[1] = collection, n = 1}, false
    end
    local cursors = {}
    local best = true
@@ -441,8 +445,9 @@ function Historian.search(historian, frag)
    collection.best = best
    collection.cursors = cursors
    collection.hl = 1
-   historian.last_collection = collection
-   return collection, best
+   historian.last_collection = Rainbuf {[1] = collection, n = 1, live = true}
+   historian.last_collection.made_in = "historian.search"
+   return historian.last_collection, best
 end
 #/lua
 
