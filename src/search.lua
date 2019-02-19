@@ -42,10 +42,10 @@ function Search.NAV.SHIFT_DOWN(modeS, category, value)
    local search_result = search_buf[1]
    if search_result.hl < #search_result then
       search_result.hl = search_result.hl + 1
-      if search_result.hl > 5
+      if search_result.hl > 5 -- modeS.zones.results:height()
         and search_buf.more then
         search_buf.offset = search_buf.offset + 1
-        search_buf.tag = "tagged"
+        search_result.tag = "tagged"
         modeS.zones.results: replace(search_buf)
       end
    end

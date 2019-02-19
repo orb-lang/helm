@@ -440,7 +440,7 @@ function Historian.search(historian, frag)
    collection.best = best
    collection.cursors = cursors
    collection.hl = 1
-   historian.last_collection = Rainbuf {[1] = collection, n = 1}
+   historian.last_collection = Rainbuf {[1] = collection, n = 1, live = true}
    historian.last_collection.made_in = "historian.search"
    return historian.last_collection, best
 end

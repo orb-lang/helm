@@ -85,6 +85,9 @@ function Rainbuf.lineGen(rainbuf, rows, cols)
    offset = rainbuf.offset or 0
    cols = cols or 80
    rainbuf.in_line = "in the line of duty"
+   if rainbuf.live then
+      rainbuf.reprs, rainbuf.lines = nil, nil
+   end
    if not rainbuf.reprs then
       local reprs = {}
       for i = 1, rainbuf.n do
@@ -157,6 +160,7 @@ local function new(res)
       end
       rainbuf.n = res.n
       rainbuf.frozen = res.frozen
+      rainbuf.live = res.live
    end
    -- these aren't in play yet
    rainbuf.wids  = {}
