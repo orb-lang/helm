@@ -327,7 +327,7 @@ attach to the collection.
 #!lua
 local concat, litpat = assert(table.concat), assert(string.litpat)
 local gsub = assert(string.gsub)
-local function _highlight(line, frag, c, best)
+local function _highlight(line, frag, best)
    local hl = {}
    while #frag > 0 do
       local char
@@ -352,7 +352,7 @@ local function _highlight(line, frag, c, best)
    return concat(hl):gsub("\n", color.stresc("\\n"))
 end
 
-local function _collect_repr(collection, c)
+local function _collect_repr(collection)
    local i = 1
    local first = true
    return function()
@@ -371,7 +371,7 @@ local function _collect_repr(collection, c)
          alt_seq = a.bold("M-" .. tostring(i) .. " ")
       end
       local next_line = alt_seq
-                        .. _highlight(v, collection.frag, c, collection.best)
+                        .. _highlight(v, collection.frag, collection.best)
       if i == collection.hl then
          next_line = color.highlight(next_line)
       end

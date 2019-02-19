@@ -18,7 +18,7 @@ local Search = clone(Nerf, 3)
 
 
 function Search.NAV.RETURN(modeS, category, value)
-   local searchResult = modeS.hist:search(tostring(modeS.txtbuf))
+   local searchResult = modeS.hist:search(tostring(modeS.txtbuf))[1]
    if #searchResult > 0 then
       local result
       local hl = searchResult.hl
