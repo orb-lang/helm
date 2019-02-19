@@ -496,9 +496,7 @@ function ModeS.act(modeS, category, value)
    ::final::
    if modeS.raga == "search" then
       -- we need to fake this into a 'result'
-      local searchResult = Rainbuf()
-      searchResult[1] = modeS.hist:search(tostring(modeS.txtbuf))
-      searchResult.n = 1
+      local searchResult = modeS.hist:search(tostring(modeS.txtbuf))
       modeS.zones.results:replace(searchResult)
    end
    -- Replace zones

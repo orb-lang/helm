@@ -37,14 +37,16 @@ end
 
 #!lua
 function Search.NAV.SHIFT_DOWN(modeS, category, value)
-   local search_result = modeS.hist.last_collection
-   if not search_result then return end
+   local search_buf = modeS.hist.last_collection
+   if not search_buf then return end
+   local search_result = search_buf[1]
    if search_result.hl < #search_result then
       search_result.hl = search_result.hl + 1
-      local rb = modeS.zones.results.contents
       if search_result.hl > 5
-        and rb.more then
-        rb.offset = rb.offset + 1
+        and search_buf.more then
+        search_buf.offset = search_buf.offset + 1
+        search_buf.tag = "tagged"
+        modeS.zones.results: replace(search_buf)
       end
    end
 end
@@ -52,10 +54,12 @@ end
 
 #!lua
 function Search.NAV.SHIFT_UP(modeS, category, value)
-   local search_result = modeS.hist.last_collection
-   if not search_result then return end
+   local search_buf = modeS.hist.last_collection
+   if not search_buf then return end
+   local search_result = search_buf[1]
    if search_result.hl > 1 then
       search_result.hl = search_result.hl - 1
+      modeS.zones.results.touched = true
    end
 end
 #/lua

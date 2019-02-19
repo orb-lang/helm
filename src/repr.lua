@@ -570,7 +570,7 @@ end
 local function c_data(value, str)
    local meta = reflect.getmetatable(value)
    if meta then
-      local mt_str, meta_len = ts(meta)
+      ts_coro(meta)
       meta_len = meta_len or #mt_str
       return str .. " = " .. mt_str, meta_len
    else

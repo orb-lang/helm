@@ -84,13 +84,14 @@ local Rainbuf = meta {}
 function Rainbuf.lineGen(rainbuf, rows, cols)
    offset = rainbuf.offset or 0
    cols = cols or 80
+   rainbuf.in_line = "in the line of duty"
    if not rainbuf.reprs then
       local reprs = {}
       for i = 1, rainbuf.n do
          if rainbuf.frozen then
             reprs[i] = string.lines(rainbuf[i])
          else
-            reprs[i] = lineGen(rainbuf[i], nil, nil, cols)
+            reprs[i] = lineGen(rainbuf[i], cols)
             if type(reprs[i]) == "string" then
                reprs[i] = string.lines(reprs[i])
             end
@@ -139,49 +140,6 @@ function Rainbuf.lineGen(rainbuf, rows, cols)
    return _nextLine
 end
 
-function Rainbuf._lineGen(rainbuf, rows)
-   offset = rainbuf.offset or 0
-   if not rainbuf.lines then
-      local phrase = ""
-      for i = 1, rainbuf.n do
-         local piece
-         if rainbuf.frozen then
-            piece = rainbuf[i]
-         else
-            piece = ts(rainbuf[i])
-         end
-         phrase = phrase .. piece
-         if i < rainbuf.n then
-            phrase = phrase .. "   "
-         end
-      end
-      rainbuf.lines = table.collect(string.lines, phrase)
-   end
-   rows = rows or #rainbuf.lines
-   local cursor = 1 + offset
-   rows = rows + offset
-
-   return function()
-      if cursor < rows then
-         local line = rainbuf.lines[cursor]
-         if not line then
-            rainbuf.more = false
-            return nil
-         end
-         cursor = cursor + 1
-         return line
-      else
-         if cursor <= #rainbuf.lines then
-            rainbuf.more = true
-            return nil
-         else
-            rainbuf.more = false
-            return nil
-         end
-      end
-   end
-end
-
 
 
 
@@ -192,6 +150,7 @@ local function new(res)
       error "made a Rainbuf from a Rainbuf"
    end
    local rainbuf = meta(Rainbuf)
+   assert(res.n, "must have n")
    if res then
       for i = 1, res.n do
          rainbuf[i] = res[i]
@@ -199,6 +158,7 @@ local function new(res)
       rainbuf.n = res.n
       rainbuf.frozen = res.frozen
    end
+   -- these aren't in play yet
    rainbuf.wids  = {}
    rainbuf.offset = 0
    return rainbuf

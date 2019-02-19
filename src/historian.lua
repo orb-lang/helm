@@ -403,7 +403,7 @@ local collect_M = {__repr = _collect_repr}
 
 function Historian.search(historian, frag)
    if historian.last_collection
-      and historian.last_collection.lit_frag == frag then
+      and historian.last_collection[1].lit_frag == frag then
       -- don't repeat a search
       return historian.last_collection
    end
@@ -411,7 +411,7 @@ function Historian.search(historian, frag)
    collection.frag = frag
    collection.lit_frag = frag
    if frag == "" then
-      return collection, false
+      return Rainbuf {[1] = collection, n = 1}, false
    end
    local cursors = {}
    local best = true
@@ -440,8 +440,9 @@ function Historian.search(historian, frag)
    collection.best = best
    collection.cursors = cursors
    collection.hl = 1
-   historian.last_collection = collection
-   return collection, best
+   historian.last_collection = Rainbuf {[1] = collection, n = 1}
+   historian.last_collection.made_in = "historian.search"
+   return historian.last_collection, best
 end
 
 
