@@ -84,8 +84,8 @@ local Rainbuf = meta {}
 function Rainbuf.lineGen(rainbuf, rows, cols)
    offset = rainbuf.offset or 0
    cols = cols or 80
-   rainbuf.in_line = "in the line of duty"
    if rainbuf.live then
+      -- this buffer needs a fresh render each time
       rainbuf.reprs, rainbuf.lines = nil, nil
    end
    if not rainbuf.reprs then
@@ -112,7 +112,7 @@ function Rainbuf.lineGen(rainbuf, rows, cols)
    end
    rainbuf.more = true
    local flip = true
-   local function _nextLine(param)
+   local function _nextLine()
       -- if we have lines, yield them
       if cursor < rows then
          if rainbuf.lines and cursor <= #rainbuf.lines then
@@ -129,8 +129,12 @@ function Rainbuf.lineGen(rainbuf, rows, cols)
             local line = repr()
             if line ~= nil then
                rainbuf.lines[#rainbuf.lines + 1] = line
-               cursor = cursor + 1
-               return line
+               if offset <= #rainbuf.lines then
+                  cursor = cursor + 1
+                  return line
+               else
+                  return _nextLine()
+               end
             else
                r_num = r_num + 1
                return _nextLine()
