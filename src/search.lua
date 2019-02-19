@@ -42,13 +42,12 @@ function Search.NAV.SHIFT_DOWN(modeS, category, value)
    local search_result = search_buf[1]
    if search_result.hl < #search_result then
       search_result.hl = search_result.hl + 1
-      if search_result.hl >= modeS.zones.results:height()
+      if search_result.hl >= modeS.zones.results:height() + search_buf.offset
         and search_buf.more then
         search_buf.offset = search_buf.offset + 1
-        search_result.tag = "tagged"
-        modeS.zones.results: replace(search_buf)
       end
    end
+   modeS.zones.results.touched = true
 end
 
 
@@ -59,6 +58,9 @@ function Search.NAV.SHIFT_UP(modeS, category, value)
    local search_result = search_buf[1]
    if search_result.hl > 1 then
       search_result.hl = search_result.hl - 1
+      if search_result.hl < search_buf.offset then
+         search_buf.offset = search_buf.offset - 1
+      end
       modeS.zones.results.touched = true
    end
 end

@@ -329,7 +329,6 @@ local concat, litpat = assert(table.concat), assert(string.litpat)
 local gsub = assert(string.gsub)
 local function _highlight(line, frag, c, best)
    local hl = {}
-   local og_line = line -- debugging
    while #frag > 0 do
       local char
       char, frag = frag:sub(1,1), frag:sub(2)
@@ -365,11 +364,10 @@ local function _collect_repr(collection, c)
       end
       local next_line = alt_seq
                         .. _highlight(v, collection.frag, c, collection.best)
-                        .. "\n"
       if i == collection.hl then
          next_line = color.highlight(next_line)
       end
-      phrase = phrase .. next_line
+      phrase = phrase .. next_line .. "\n"
    end
 
    return phrase
