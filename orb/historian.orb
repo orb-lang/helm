@@ -327,7 +327,7 @@ attach to the collection.
 #!lua
 local concat, litpat = assert(table.concat), assert(string.litpat)
 local gsub = assert(string.gsub)
-local function _highlight(line, frag, best)
+local function _highlight(line, frag, best, c)
    local hl = {}
    while #frag > 0 do
       local char
@@ -340,26 +340,27 @@ local function _highlight(line, frag, best)
       -- highlight the last two differently if this is a 'second best'
       -- search
       if not best and #frag <= 1 then
-         Color = color.alert
+         Color = c.alert
       else
-         Color = color.search_hl
+         Color = c.search_hl
       end
-      hl[#hl + 1] = color.base(line:sub(1, at -1))
+      hl[#hl + 1] = c.base(line:sub(1, at -1))
       hl[#hl + 1] = Color(char)
       line = line:sub(at + 1)
    end
-   hl[#hl + 1] = color.base(line)
-   return concat(hl):gsub("\n", color.stresc("\\n"))
+   hl[#hl + 1] = c.base(line)
+   return concat(hl):gsub("\n", c.stresc("\\n"))
 end
 
-local function _collect_repr(collection)
+local function _collect_repr(collection, width, c)
+   assert(c, "must provide a color table")
    local i = 1
    local first = true
    return function()
       if #collection == 0 then
          if first then
             first = false
-            return color.alert "No results found"
+            return c.alert "No results found"
          else
             return nil
          end
@@ -368,12 +369,12 @@ local function _collect_repr(collection)
       if v == nil then return nil end
       local alt_seq = "    "
       if i < 10 then
-         alt_seq = a.bold("M-" .. tostring(i) .. " ")
+         alt_seq = c.bold("M-" .. tostring(i) .. " ")
       end
       local next_line = alt_seq
-                        .. _highlight(v, collection.frag, collection.best)
+                        .. _highlight(v, collection.frag, collection.best, c)
       if i == collection.hl then
-         next_line = color.highlight(next_line)
+         next_line = c.highlight(next_line)
       end
       i = i + 1
       return next_line

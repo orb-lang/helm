@@ -236,7 +236,6 @@ local function _writeResults(write, zone, new)
       return nil
    end
    if results.idEst ~= Rainbuf then
-      assert(false, "whups: " .. ts(results))
       results = Rainbuf(results)
       results.made_in = "writeResults"
       zone.contents = results

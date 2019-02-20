@@ -184,7 +184,8 @@ end
 
 local function _yieldReprs(tab, disp)
    local _repr = getmetatable(tab).__repr
-   local repr = _repr(tab, disp)
+   assert(c, "must have a value for c")
+   local repr = _repr(tab, disp, c)
    local yielder
    if type(repr) == "string" then
       yielder = string.lines(repr)
@@ -395,10 +396,12 @@ end
 
 
 local function lineGen(tab, depth, cycle, disp_width)
+   assert(disp_width, "lineGen must have a disp_width")
    local phrase = {}
    phrase.disp = {}
    local iter = wrap(_tabulate)
    local stage = {}              -- stage stack
+   phrase.width = disp_width
    phrase.stage = stage
    phrase.level = 0              -- how many levels of recursion are we on
    phrase.dent = 0               -- indent level (lags by one line)
@@ -665,6 +668,8 @@ ts_coro = function (value, hint, width)
 end
 
 repr.ts = tabulate
+
+
 
 
 
