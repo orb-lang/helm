@@ -86,6 +86,7 @@ table.unpack = rawget(table, "unpack") and table.unpack or unpack
 meta = core.meta
 getmeta, setmeta = getmetatable, setmetatable
 hasmetamethod, hasfield = core.hasmetamethod, core.hasfield
+readOnly = core.readOnly
 coro = coroutine
 --assert = core.assertfmt
 
