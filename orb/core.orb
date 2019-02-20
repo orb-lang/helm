@@ -91,6 +91,22 @@ That's just a shallow clone, the subtlety is that if the __index was a
 self-table, it now points to =Meta=, while if Meta was created through
 endowment or inheritance it's now out of the picture.
 
+*** readOnly(tab)
+
+Makes a table read-only, will throw an error if assigned to.
+
+#!lua
+
+local function RO_M__newindex(tab, key, value)
+   error("attempt to write value `" .. tostring(value)
+         .. "` to read-only table slot `." .. tostring(key) .. "`")
+end
+
+function core.readOnly(tab)
+   return setmetatable({}, {__index = tab, __newindex = RO_M__newindex})
+end
+#/lua
+
 
 ** Table extensions
 

@@ -97,6 +97,22 @@ end
 
 
 
+local function RO_M__newindex(tab, key, value)
+   error("attempt to write value `" .. tostring(value)
+         .. "` to read-only table slot `." .. tostring(key) .. "`")
+end
+
+function core.readOnly(tab)
+   return setmetatable({}, {__index = tab, __newindex = RO_M__newindex})
+end
+
+
+
+
+
+
+
+
 
 
 function core.pack(...)
