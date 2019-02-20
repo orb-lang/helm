@@ -204,29 +204,27 @@ end
 
 #/lua
 
-*** _tabulate(tab, depth, cycle)
+*** _tabulate(tab, depth, cycle, width)
 
 This =yield()s= pieces of a table, recursively, one at a time.
 
 Second return value is the printed width, third, if any, is a string
 representing what we're opening and/or closing.
 
-At this point it works, time to start breaking it out into an iterator.
-
 #!lua
 local O_BRACE = function() return c.base "{" end
 local C_BRACE = function() return c.base "}" end
 local COMMA, COM_LEN = function() return c.base ", " end, 2
 
-local function _tabulate(tab, depth, cycle)
+local function _tabulate(tab, depth, cycle, width)
    cycle = cycle or {}
    depth = depth or 0
    if type(tab) ~= "table" then
-      ts_coro(tab)
+      ts_coro(tab, nil, width)
       return nil
    end
    if depth > C.depth or cycle[tab] then
-      ts_coro(tab, "tab_name")
+      ts_coro(tab, "tab_name", width)
       return nil
    end
    cycle[tab] = true
@@ -240,9 +238,9 @@ local function _tabulate(tab, depth, cycle)
       end
       --]]
       --otherwise print the metatable normally
-      ts_coro(tab, "mt")
+      ts_coro(tab, "mt", width)
       yield(c.base(" = "), 3)
-      _tabulate(_M, depth + 1, cycle)
+      _tabulate(_M, depth + 1, cycle, width)
    end
    -- Check to see if this is an array
    local is_array = true
@@ -264,20 +262,20 @@ local function _tabulate(tab, depth, cycle)
    yield(O_BRACE(), 1, (is_array and "array" or "map"))
    for j, key in ipairs(keys) do
       if is_array then
-         _tabulate(key, depth + 1, cycle)
+         _tabulate(key, depth + 1, cycle, width)
       else
          val = tab[key]
          if type(key) == "string" and key:find("^[%a_][%a%d_]*$") then
-            ts_coro(key)
+            ts_coro(key, nil, width)
             yield(c.base(" = "), 3)
          else
             yield(c.base("["), 1)
                -- we want names or hashes for any lvalue table,
                -- 100 triggers this
-            _tabulate(key, 100, cycle)
+            _tabulate(key, 100, cycle, width)
             yield(c.base("] = "), 4)
          end
-         _tabulate(val, depth + 1, cycle)
+         _tabulate(val, depth + 1, cycle, width)
       end
    end
    yield(C_BRACE(), 1, "end")
@@ -413,7 +411,7 @@ local function lineGen(tab, depth, cycle, disp_width)
    return function()
       ::start::
       while phrase.yielding do
-         local line, len, event = iter(tab, depth, cycle)
+         local line, len, event = iter(tab, depth, cycle, disp_width)
          if line == nil then
             phrase.yielding = false
             phrase.more = false
@@ -567,14 +565,12 @@ end
 #/lua
 
 #!lua
-local function c_data(value, str)
+local function c_data(value, str, width)
    local meta = reflect.getmetatable(value)
+   yield(str, #str)
    if meta then
-      ts_coro(meta)
-      meta_len = meta_len or #mt_str
-      return str .. " = " .. mt_str, meta_len
-   else
-      return str, #str
+      yield(c.base " = ", 3)
+      ts_coro(meta, nil, width)
    end
 end
 #/lua
@@ -584,7 +580,7 @@ end
 Lots of small, nice things in this one.
 
 #!lua
-ts_coro = function (value, hint)
+ts_coro = function (value, hint, width)
    local strval = tostring(value) or ""
    local len = #strval
    local str = scrub(strval)
@@ -614,7 +610,7 @@ ts_coro = function (value, hint)
    local typica = type(value)
 
    if typica == "table" then
-      _tabulate(value)
+      _tabulate(value, nil, nil, width)
       return nil
    elseif typica == "function" then
       local f_label = sub(str,11)
