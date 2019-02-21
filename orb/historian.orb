@@ -352,7 +352,7 @@ local function _highlight(line, frag, best, c)
    return concat(hl):gsub("\n", c.stresc("\\n"))
 end
 
-local function _collect_repr(collection, width, c)
+local function _collect_repr(collection, phrase, c)
    assert(c, "must provide a color table")
    local i = 1
    local first = true
@@ -365,19 +365,25 @@ local function _collect_repr(collection, width, c)
             return nil
          end
       end
-      local v = collection[i]
-      if v == nil then return nil end
+      local line = collection[i]
+      local len = #line
+      if line == nil then return nil end
       local alt_seq = "    "
       if i < 10 then
          alt_seq = c.bold("M-" .. tostring(i) .. " ")
       end
+      len = len + 4
+      if len > phrase:remains() then
+         line = line:sub(1, phrase:remains())
+         len = phrase.width -- this isn't correct!
+      end
       local next_line = alt_seq
-                        .. _highlight(v, collection.frag, collection.best, c)
+                        .. _highlight(line, collection.frag, collection.best, c)
       if i == collection.hl then
          next_line = c.highlight(next_line)
       end
       i = i + 1
-      return next_line
+      return next_line, len
    end
 end
 
