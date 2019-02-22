@@ -281,8 +281,22 @@ end
 --repr.allNames()
 repr.allNames(__G)
 
+-- read main programme
+---[[
+if arg[1] then
+  local chunk = loadfile(arg[1])
+  if chunk then
+     setfenv(chunk,  _G)
+     chunk()
+  end
+end
+--]]
+
+-- assuming we survived that, set up our repling environment:
+
 -- raw mode
 uv.tty_set_mode(stdin, 2)
+
 -- mouse mode
 write(a.mouse.track(true))
 uv.read_start(stdin, onseq)
@@ -291,15 +305,6 @@ uv.read_start(stdin, onseq)
 -- This switches screens and does a wipe,
 -- then puts the cursor at 1,1.
 write "\x1b[?47h\x1b[2J\x1b[H"
-
--- read main programme
----[[
-if arg[1] then
-  local chunk = loadfile(arg[1])
-  setfenv(chunk,  _G)
-  chunk()
-end
---]]
 
 -- paint screen
 modeS:paint()

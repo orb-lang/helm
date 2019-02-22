@@ -126,7 +126,7 @@ function Rainbuf.lineGen(rainbuf, rows, cols)
                return nil
             end
             assert(type(repr) == "function", "I see your problem")
-            local line = repr()
+            local line = repr()  -- #todo fix dead coroutine problem here
             if line ~= nil then
                rainbuf.lines[#rainbuf.lines + 1] = line
                if offset <= #rainbuf.lines then
