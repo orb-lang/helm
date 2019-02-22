@@ -75,7 +75,7 @@ Search.NAV.DOWN = Search.NAV.SHIFT_DOWN
 #!lua
 local function _makeControl(num)
     return function(modeS, category, value)
-       local searchResult = modeS.hist:search(tostring(modeS.txtbuf))
+       local searchResult = modeS.hist:search(tostring(modeS.txtbuf))[1]
        if #searchResult > 0 then
           local result
           modeS.txtbuf, result = modeS.hist:index(searchResult.cursors[num])

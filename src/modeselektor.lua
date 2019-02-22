@@ -538,7 +538,7 @@ end
 
 
 function ModeS.clearResults(modeS)
-   write(a.erase.box(modeS.repl_top + 1, 1, modeS.max_row, modeS.r_margin))
+   write(a.erase.box(1, modeS.repl_top + 1, modeS.r_margin, modeS.max_row))
 end
 
 
