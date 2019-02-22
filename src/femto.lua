@@ -189,11 +189,6 @@ local stdin = uv.new_tty(0, true)
 
 
 
-
--- This switches screens and does a wipe,
--- then puts the cursor at 1,1.
-write "\x1b[?47h\x1b[2J\x1b[H"
-
 -- Get window size and set up an idler to keep it refreshed
 
 local max_col, max_row = uv.tty_get_winsize(stdin)
@@ -205,7 +200,6 @@ uv.timer_start(timer, 500, 500, function()
    max_col, max_row = uv.tty_get_winsize(stdin)
    if max_col ~= modeS.max_col or max_row ~= modeS.max_row then
       -- reflow screen.
-      -- for now:
       modeS.max_col, modeS.max_row = max_col, max_row
       modeS:reflow()
    end
@@ -293,8 +287,12 @@ uv.tty_set_mode(stdin, 2)
 write(a.mouse.track(true))
 uv.read_start(stdin, onseq)
 
+-- #todo This should start with a read which saves the cursor location.
+-- This switches screens and does a wipe,
+-- then puts the cursor at 1,1.
+write "\x1b[?47h\x1b[2J\x1b[H"
+
 -- read main programme
--- faked for now
 ---[[
 if arg[1] then
   local chunk = loadfile(arg[1])
@@ -304,7 +302,6 @@ end
 --]]
 
 -- paint screen
-
 modeS:paint()
 
 -- main loop
