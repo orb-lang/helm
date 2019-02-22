@@ -276,21 +276,24 @@ end
 #/lua
 
 #!lua
--- Get names for as many values as possible
--- into the colorizer
---repr.allNames()
-repr.allNames(__G)
 
 -- read main programme
----[[
 if arg[1] then
-  local chunk = loadfile(arg[1])
+  local prog = table.remove(arg, 1)
+  local chunk, err = loadfile(prog)
   if chunk then
-     setfenv(chunk,  _G)
-     chunk()
+     setfenv(chunk, _G)()
+  else
+     error ("couldn't load " .. prog .. "\n" .. err)
   end
 end
---]]
+
+
+
+
+-- Get names for as many values as possible
+-- into the colorizer
+repr.allNames(_G)
 
 -- assuming we survived that, set up our repling environment:
 
