@@ -374,7 +374,7 @@ local function _collect_repr(collection, phrase, c)
       end
       len = len + 4
       if len > phrase:remains() then
-         line = line:sub(1, phrase:remains() - 5) .. "…"
+         line = line:sub(1, phrase:remains() - 5) .. c.alert "…"
          len = phrase.width - (phrase.width - phrase:remains() - 4)
       end
       local next_line = alt_seq
