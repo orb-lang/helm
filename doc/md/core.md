@@ -92,7 +92,20 @@ That's just a shallow clone, the subtlety is that if the __index was a
 self-table, it now points to ``Meta``, while if Meta was created through
 endowment or inheritance it's now out of the picture.
 
+### readOnly(tab)
 
+Makes a table read-only, will throw an error if assigned to.
+
+```lua
+local function RO_M__newindex(tab, key, value)
+   error("attempt to write value `" .. tostring(value)
+         .. "` to read-only table slot `." .. tostring(key) .. "`")
+end
+
+function core.readOnly(tab)
+   return setmetatable({}, {__index = tab, __newindex = RO_M__newindex})
+end
+```
 ## Table extensions
 
 ### pack(...)
@@ -257,6 +270,10 @@ end
 Puts the full contents of ``into`` into ``tab`` at ``index``.  The argument order is
 compatible with existing functions and method syntax.
 
+
+if ``index`` is nil, the contents of ``into`` will be inserted at the end of
+``tab``
+
 ```lua
 local insert = table.insert
 
@@ -267,7 +284,10 @@ local _e_3 = sp_er .. "$3 must be a table"
 
 function core.splice(tab, idx, into)
    assert(type(tab) == "table", _e_1)
-   assert(type(idx) == "number", _e_2)
+   assert(type(idx) == "number" or idx == nil, _e_2)
+   if idx == nil then
+      idx = #tab + 1
+   end
    assert(type(into) == "table", _e_3)
     idx = idx - 1
     local i = 1
@@ -540,6 +560,18 @@ function core.codepoints(str)
       end
    end
    return codes
+end
+```
+### core.slurp(filename)
+
+This takes a (text) file and returns a string containing its whole contents.
+
+```lua
+function core.slurp(filename)
+  local f = io.open(filename, "rb")
+  local content = f:read("*all")
+  f:close()
+  return content
 end
 ```
 ## Errors and asserts

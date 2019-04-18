@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 575"]
+doc_0 [label="doc - 590"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-469"]
+section_1 [label="section: 1-484"]
 
 
 // END RANK doc_0
@@ -27,17 +27,17 @@ prose_5 [label="prose"]
 
 prose_6 [label="prose"]
 
-codeblock_7 [label="code block 16-28"]
+codeblock_7 [label="code block 16-29"]
 
-codeblock_8 [label="code block 30-32"]
+codeblock_8 [label="code block 31-33"]
 
-section_9 [label="section: 35-223"]
+section_9 [label="section: 36-227"]
 
-section_10 [label="section: 281-316"]
+section_10 [label="section: 285-320"]
 
-section_11 [label="section: 383-449"]
+section_11 [label="section: 397-464"]
 
-section_12 [label="section: 470-540"]
+section_12 [label="section: 485-555"]
 
 
 // END RANK section_1
@@ -112,7 +112,8 @@ codeblock_7 -> leaf_22
 leaf_22  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Txtbuf  = require \"txtbuf\"
 local Rainbuf = require \"rainbuf\"
 local sql     = require \"sqlayer\"
-local color   = require \"color\"
+local color   = (require \"color\").color
+
 local L       = require \"lpeg\"
 local repr    = require \"repr\"
 local format  = assert (string.format)
@@ -133,13 +134,13 @@ header_24 [label="2 : Persistence"]
 
 prose_25 [label="prose"]
 
-section_26 [label="section: 39-141"]
+section_26 [label="section: 40-145"]
 
-section_27 [label="section: 142-212"]
+section_27 [label="section: 146-216"]
 
-section_28 [label="section: 213-223"]
+section_28 [label="section: 217-227"]
 
-section_29 [label="section: 224-280"]
+section_29 [label="section: 228-284"]
 
 
 // END RANK section_9
@@ -170,7 +171,7 @@ header_33 [label="3 : SQLite battery"]
 
 prose_34 [label="prose"]
 
-codeblock_35 [label="code block 41-139"]
+codeblock_35 [label="code block 42-143"]
 
 
 // END RANK section_26
@@ -197,31 +198,34 @@ leaf_39  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Historian.HISTO
 
 local create_project_table = [[
 CREATE TABLE IF NOT EXISTS project (
-project_id INTEGER PRIMARY KEY AUTOINCREMENT,
-directory TEXT UNIQUE,
-time DATETIME DEFAULT CURRENT_TIMESTAMP );
+   project_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   directory TEXT UNIQUE,
+   time DATETIME DEFAULT CURRENT_TIMESTAMP
+);
 ]]
 
 local create_repl_table = [[
 CREATE TABLE IF NOT EXISTS repl (
-line_id INTEGER PRIMARY KEY AUTOINCREMENT,
-project INTEGER,
-line TEXT,
-time DATETIME DEFAULT CURRENT_TIMESTAMP,
-FOREIGN KEY (project)
-   REFERENCES project (project_id)
-   ON DELETE CASCADE );
+   line_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   project INTEGER,
+   line TEXT,
+   time DATETIME DEFAULT CURRENT_TIMESTAMP,
+   FOREIGN KEY (project)
+      REFERENCES project (project_id)
+      ON DELETE CASCADE
+);
 ]]
 
 local create_result_table = [[
 CREATE TABLE IF NOT EXISTS result (
-result_id INTEGER PRIMARY KEY AUTOINCREMENT,
-line_id INTEGER,
-repr text NOT NULL,
-value blob,
-FOREIGN KEY (line_id)
-   REFERENCES repl (line_id)
-   ON DELETE CASCADE );
+   result_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   line_id INTEGER,
+   repr text NOT NULL,
+   value blob,
+   FOREIGN KEY (line_id)
+      REFERENCES repl (line_id)
+      ON DELETE CASCADE
+);
 ]]
 
 local create_session_table = [[
@@ -274,7 +278,7 @@ WHERE result.line_id = :line_id
 ORDER BY result.result_id;
 ]]
 
-local home_dir = io.popen(\"echo $HOME\", \"r\"):read(\"*a\"):sub(1, -2)
+local home_dir = os.getenv \"HOME\"
 
 local bridge_home = io.popen(\"echo $BRIDGE_HOME\", \"r\"):read(\"*a\"):sub(1, -2)
 Historian.bridge_home = bridge_home ~= \"\" and bridge_home
@@ -305,7 +309,7 @@ structure_43 [label="structure"]
 
 prose_44 [label="prose"]
 
-codeblock_45 [label="code block 156-210"]
+codeblock_45 [label="code block 160-214"]
 
 
 // END RANK section_27
@@ -443,7 +447,7 @@ prose_58 [label="prose"]
 
 prose_59 [label="prose"]
 
-codeblock_60 [label="code block 219-221"]
+codeblock_60 [label="code block 223-225"]
 
 
 // END RANK section_28
@@ -500,7 +504,7 @@ prose_71 [label="prose"]
 
 prose_72 [label="prose"]
 
-codeblock_73 [label="code block 243-278"]
+codeblock_73 [label="code block 247-282"]
 
 
 // END RANK section_29
@@ -672,9 +676,9 @@ prose_100 [label="prose"]
 
 prose_101 [label="prose"]
 
-section_102 [label="section: 291-316"]
+section_102 [label="section: 295-320"]
 
-section_103 [label="section: 317-382"]
+section_103 [label="section: 321-396"]
 
 
 // END RANK section_10
@@ -725,7 +729,7 @@ prose_110 [label="prose"]
 
 prose_111 [label="prose"]
 
-codeblock_112 [label="code block 300-314"]
+codeblock_112 [label="code block 304-318"]
 
 
 // END RANK section_102
@@ -838,7 +842,7 @@ prose_136 [label="prose"]
 
 prose_137 [label="prose"]
 
-codeblock_138 [label="code block 326-380"]
+codeblock_138 [label="code block 330-394"]
 
 
 // END RANK section_103
@@ -900,54 +904,64 @@ attach to the collection.
 codeblock_138 -> leaf_150
 leaf_150  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local concat, litpat = assert(table.concat), assert(string.litpat)
 local gsub = assert(string.gsub)
-
-local function _highlight(line, frag, c, best)
+local function _highlight(line, frag, best, c)
    local hl = {}
-   local og_line = line -- debugging
    while #frag > 0 do
       local char
       char, frag = frag:sub(1,1), frag:sub(2)
       local at = line:find(litpat(char))
       if not at then
-         error (\"can't find \" .. char .. \" in: \" .. line)
+         break
       end
-      local color
+      local Color
       -- highlight the last two differently if this is a 'second best'
       -- search
       if not best and #frag <= 1 then
-         color = c.alert
+         Color = c.alert
       else
-         color = c.search_hl
+         Color = c.search_hl
       end
       hl[#hl + 1] = c.base(line:sub(1, at -1))
-      hl[#hl + 1] = color(char)
+      hl[#hl + 1] = Color(char)
       line = line:sub(at + 1)
    end
    hl[#hl + 1] = c.base(line)
    return concat(hl):gsub(\"\\n\", c.stresc(\"\\\\n\"))
 end
 
-
-local function _collect_repr(collection, c)
-   if #collection == 0 then
-      return c.alert \"No results found\"
-   end
-   local phrase = \"\"
-   for i,v in ipairs(collection) do
+local function _collect_repr(collection, phrase, c)
+   assert(c, \"must provide a color table\")
+   local i = 1
+   local first = true
+   return function()
+      if #collection == 0 then
+         if first then
+            first = false
+            return c.alert \"No results found\"
+         else
+            return nil
+         end
+      end
+      local line = collection[i]
+      if line == nil then return nil end
+      local len = #line
       local alt_seq = \"    \"
       if i < 10 then
-         alt_seq = a.bold(\"M-\" .. tostring(i) .. \" \")
+         alt_seq = c.bold(\"M-\" .. tostring(i) .. \" \")
+      end
+      len = len + 4
+      if len > phrase:remains() then
+         line = line:sub(1, phrase:remains() - 5) .. c.alert \"…\"
+         len = phrase.width - (phrase.width - phrase:remains() - 4)
       end
       local next_line = alt_seq
-                        .. _highlight(v, collection.frag, c, collection.best)
-                        .. \"\\n\"
+                     .. _highlight(line, collection.frag, collection.best, c)
       if i == collection.hl then
          next_line = c.highlight(next_line)
       end
-      phrase = phrase .. next_line
+      i = i + 1
+      return next_line, len
    end
-
-   return phrase
 end
 
 local collect_M = {__repr = _collect_repr}"]
@@ -972,9 +986,9 @@ prose_157 [label="prose"]
 
 prose_158 [label="prose"]
 
-codeblock_159 [label="code block 404-447"]
+codeblock_159 [label="code block 418-462"]
 
-section_160 [label="section: 450-469"]
+section_160 [label="section: 465-484"]
 
 
 // END RANK section_11
@@ -1126,7 +1140,7 @@ leaf_187  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 codeblock_159 -> leaf_188
 leaf_188  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Historian.search(historian, frag)
    if historian.last_collection
-      and historian.last_collection.lit_frag == frag then
+      and historian.last_collection[1].lit_frag == frag then
       -- don't repeat a search
       return historian.last_collection
    end
@@ -1134,7 +1148,7 @@ leaf_188  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histo
    collection.frag = frag
    collection.lit_frag = frag
    if frag == \"\" then
-      return collection, false
+      return Rainbuf {[1] = collection, n = 1}, false
    end
    local cursors = {}
    local best = true
@@ -1163,8 +1177,9 @@ leaf_188  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histo
    collection.best = best
    collection.cursors = cursors
    collection.hl = 1
-   historian.last_collection = collection
-   return collection, best
+   historian.last_collection = Rainbuf {[1] = collection, n = 1, live = true}
+   historian.last_collection.made_in = \"historian.search\"
+   return historian.last_collection, best
 end"]
 // END RANK codeblock_159
 
@@ -1175,7 +1190,7 @@ header_189 [label="4 : _resultsFrom(historian, line_id)"]
 
 prose_190 [label="prose"]
 
-codeblock_191 [label="code block 454-467"]
+codeblock_191 [label="code block 469-482"]
 
 
 // END RANK section_160
@@ -1221,13 +1236,13 @@ header_196 [label="2 : Historian:prev()"]
 
 prose_197 [label="prose"]
 
-codeblock_198 [label="code block 472-486"]
+codeblock_198 [label="code block 487-501"]
 
-section_199 [label="section: 489-521"]
+section_199 [label="section: 504-536"]
 
-section_200 [label="section: 522-540"]
+section_200 [label="section: 537-555"]
 
-section_201 [label="section: 541-575"]
+section_201 [label="section: 556-590"]
 
 
 // END RANK section_12
@@ -1272,7 +1287,7 @@ header_206 [label="3 : Historian:next()"]
 
 prose_207 [label="prose"]
 
-codeblock_208 [label="code block 495-519"]
+codeblock_208 [label="code block 510-534"]
 
 
 // END RANK section_199
@@ -1348,7 +1363,7 @@ header_219 [label="3 : Historian:index(cursor)"]
 
 prose_220 [label="prose"]
 
-codeblock_221 [label="code block 526-539"]
+codeblock_221 [label="code block 541-554"]
 
 
 // END RANK section_200
@@ -1396,11 +1411,11 @@ prose_227 [label="prose"]
 
 prose_228 [label="prose"]
 
-codeblock_229 [label="code block 547-562"]
+codeblock_229 [label="code block 562-577"]
 
-codeblock_230 [label="code block 564-571"]
+codeblock_230 [label="code block 579-586"]
 
-codeblock_231 [label="code block 573-575"]
+codeblock_231 [label="code block 588-590"]
 
 
 // END RANK section_201

@@ -160,7 +160,47 @@ local function _keysort(a, b)
    end
 end
 ```
-### _tabulate(tab, depth, cycle)
+### _yieldReprs(tab, disp)
+
+I want to deliver ``__repr``s from inside the funky coroutine brew,
+because, well, because. ``ts`` is meant to be general.
+
+
+I also want a lot of flexibility in how reprs are written, so we need to
+handle several cases.
+
+
+We're going to start with returning a string, and returning an iterator.
+
+
+I might get around to returning tables with tokens in them and other intel,
+I might not; I do have plans that are broader than merely writing an
+incredibly intricate repl.
+
+```lua
+local function _yieldReprs(tab, phrase)
+   local _repr = getmetatable(tab).__repr
+   assert(c, "must have a value for c")
+   local repr = _repr(tab, phrase, c)
+   local yielder
+   if type(repr) == "string" then
+      yielder = string.lines(repr)
+   else
+      yielder = repr
+   end
+   while true do
+      local line, len = yielder()
+      if line ~= nil then
+         len = len or #line
+         yield(line, len, "repr_line")
+      else
+         break
+      end
+   end
+end
+
+```
+### _tabulate(tab, depth, cycle, phrase)
 
 This ``yield()s`` pieces of a table, recursively, one at a time.
 
@@ -168,31 +208,37 @@ This ``yield()s`` pieces of a table, recursively, one at a time.
 Second return value is the printed width, third, if any, is a string
 representing what we're opening and/or closing.
 
-
-At this point it works, time to start breaking it out into an iterator.
-
 ```lua
 local O_BRACE = function() return c.base "{" end
 local C_BRACE = function() return c.base "}" end
 local COMMA, COM_LEN = function() return c.base ", " end, 2
 
-local tabulate -- this is a mess but will have to do for now
-
-local function _tabulate(tab, depth, cycle)
+local function _tabulate(tab, depth, cycle, phrase)
    cycle = cycle or {}
    depth = depth or 0
-   if type(tab) ~= "table"
-      or getmetatable(tab) and
-      (getmetatable(tab).__repr then
-      ts_coro(tab)
+   if type(tab) ~= "table" then
+      ts_coro(tab, nil, phrase)
       return nil
    end
    if depth > C.depth or cycle[tab] then
-      ts_coro(tab, "tab_name")
+      ts_coro(tab, "tab_name", phrase)
       return nil
    end
-
    cycle[tab] = true
+   -- if we have a metatable, get it first
+   local _M = getmetatable(tab)
+   if _M then
+      ---[[special case tables with __repr
+      if _M.__repr then
+         _yieldReprs(tab, phrase)
+         return nil
+      end
+      --]]
+      --otherwise print the metatable normally
+      ts_coro(tab, "mt", phrase)
+      yield(c.base(" = "), 3)
+      _tabulate(_M, depth + 1, cycle, phrase)
+   end
    -- Check to see if this is an array
    local is_array = true
    local i = 1
@@ -200,17 +246,7 @@ local function _tabulate(tab, depth, cycle)
       is_array = is_array and (k == i)
       i = i + 1
    end
-   -- if we have a metatable, get it first
-   local mt = ""
-   local _M = getmetatable(tab)
-   if _M then
-      -- fix metatable stuff
 
-      ts_coro(tab, "mt")
-      yield(c.base(" = "), 3)
-      _tabulate(_M, depth + 1, cycle)
-   end
-   local estimated = 0
    local keys
    if not is_array then
       keys = table.keys(tab)
@@ -223,20 +259,20 @@ local function _tabulate(tab, depth, cycle)
    yield(O_BRACE(), 1, (is_array and "array" or "map"))
    for j, key in ipairs(keys) do
       if is_array then
-         _tabulate(key, depth + 1, cycle)
+         _tabulate(key, depth + 1, cycle, phrase)
       else
          val = tab[key]
          if type(key) == "string" and key:find("^[%a_][%a%d_]*$") then
-            ts_coro(key)
+            ts_coro(key, nil, phrase)
             yield(c.base(" = "), 3)
          else
             yield(c.base("["), 1)
                -- we want names or hashes for any lvalue table,
                -- 100 triggers this
-            _tabulate(key, 100, cycle)
+            _tabulate(key, 100, cycle, phrase)
             yield(c.base("] = "), 4)
          end
-         _tabulate(val, depth + 1, cycle)
+         _tabulate(val, depth + 1, cycle, phrase)
       end
    end
    yield(C_BRACE(), 1, "end")
@@ -358,11 +394,20 @@ This function sets up an iterator, which returns one line at a time of the
 table.
 
 ```lua
+assert(readOnly, "must have readOnly from core")
+
+local function _remains(phrase)
+   return phrase.width - _disp(phrase)
+end
+
 local function lineGen(tab, depth, cycle, disp_width)
+   assert(disp_width, "lineGen must have a disp_width")
    local phrase = {}
    phrase.disp = {}
    local iter = wrap(_tabulate)
    local stage = {}              -- stage stack
+   phrase.remains = _remains
+   phrase.width = disp_width
    phrase.stage = stage
    phrase.level = 0              -- how many levels of recursion are we on
    phrase.dent = 0               -- indent level (lags by one line)
@@ -371,11 +416,13 @@ local function lineGen(tab, depth, cycle, disp_width)
    phrase.yielding = true
    local long = false            -- long or short printing
                                  -- todo maybe attach to phrase?
+   -- make a read-only phrase table for fetching values
+   local phrase_ro = readOnly(phrase)
    -- return an iterator function which yields one line at a time.
    return function()
       ::start::
       while phrase.yielding do
-         local line, len, event = iter(tab, depth, cycle)
+         local line, len, event = iter(tab, depth, cycle, phrase_ro)
          if line == nil then
             phrase.yielding = false
             phrase.more = false
@@ -384,6 +431,12 @@ local function lineGen(tab, depth, cycle, disp_width)
          phrase[#phrase + 1] = line
          phrase.disp[#phrase.disp + 1] = len
          if event then
+            if event == "repr_line" then
+               -- remove from the phrase and send directly
+               phrase[#phrase] = nil
+               phrase.disp[#phrase.disp] = nil
+               return line
+            end
             if event == "map" then
                map_counter = 0
             end
@@ -442,7 +495,10 @@ local function lineGen(tab, depth, cycle, disp_width)
    end
 end
 
-repr.lineGen = lineGen
+function repr.lineGen(tab, disp)
+   disp = disp or 80
+   return lineGen(tab, nil, nil, disp)
+end
 ```
 ### repr.lineGenBW(tab, depth, cycle, disp_width)
 
@@ -456,8 +512,8 @@ color off and back on with each line.
 Global state is annoying!
 
 ```lua
-function repr.lineGenBW(tab, depth, cycle, disp_width)
-   local lg = lineGen(tab, depth, cycle, disp_width)
+function repr.lineGenBW(tab, disp_width)
+   local lg = lineGen(tab, nil, nil, disp_width)
    return function()
       c = C.no_color
       local line = lg()
@@ -518,14 +574,12 @@ local function scrub (str)
 end
 ```
 ```lua
-local function c_data(value, str)
+local function c_data(value, str, phrase)
    local meta = reflect.getmetatable(value)
+   yield(str, #str)
    if meta then
-      local mt_str, meta_len = ts(meta)
-      meta_len = meta_len or #mt_str
-      return str .. " = " .. mt_str, meta_len
-   else
-      return str, #str
+      yield(c.base " = ", 3)
+      ts_coro(meta, nil, phrase)
    end
 end
 ```
@@ -534,7 +588,7 @@ end
 Lots of small, nice things in this one.
 
 ```lua
-ts_coro = function (value, hint)
+ts_coro = function (value, hint, phrase)
    local strval = tostring(value) or ""
    local len = #strval
    local str = scrub(strval)
@@ -564,17 +618,8 @@ ts_coro = function (value, hint)
    local typica = type(value)
 
    if typica == "table" then
-      -- check for a __repr metamethod
-      local _M = getmetatable(value)
-      if _M and _M.__repr and not (hint == "raw") then
-         local repr_len
-         str, repr_len  = _M.__repr(value, c)
-         len = repr_len or len
-         assert(type(str) == "string")
-      elseif _M then
-         _tabulate(value)
-         return nil
-      end
+      _tabulate(value, nil, nil, phrase)
+      return nil
    elseif typica == "function" then
       local f_label = sub(str,11)
       f_label = sub(f_label,1,5) == "built"

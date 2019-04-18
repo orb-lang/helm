@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 121"]
+doc_0 [label="doc - 132"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-103"]
+section_1 [label="section: 1-114"]
 
 
 // END RANK doc_0
@@ -29,11 +29,11 @@ prose_6 [label="prose"]
 
 prose_7 [label="prose"]
 
-codeblock_8 [label="code block 20-73"]
+codeblock_8 [label="code block 20-74"]
 
-section_9 [label="section: 76-103"]
+section_9 [label="section: 77-114"]
 
-section_10 [label="section: 104-106"]
+section_10 [label="section: 115-117"]
 
 
 // END RANK section_1
@@ -287,6 +287,7 @@ C.color.alert      = a.fg24(250, 0, 40)
 C.color.base       = a.fg24(200, 200, 200)
 C.color.search_hl = a.fg24(30, 230, 100)
 C.color.error = a.bg24(50,0,0)
+C.color.bold = a.bold
 
 C.color.highlight = a.bg24(70, 70, 70)
 
@@ -294,40 +295,44 @@ C.color.highlight = a.bg24(70, 70, 70)
 C.depth = 4 -- table print depth"]
 // END RANK codeblock_8
 
-section_9 -> { header_63 prose_64 codeblock_65}
-{rank=same; header_63 prose_64 codeblock_65}
+section_9 -> { header_63 prose_64 codeblock_65 structure_66 codeblock_67}
+{rank=same; header_63 prose_64 codeblock_65 structure_66 codeblock_67}
 
 header_63 [label="2 : no_color"]
 
 prose_64 [label="prose"]
 
-codeblock_65 [label="code block 81-101"]
+codeblock_65 [label="code block 82-102"]
+
+structure_66 [label="structure"]
+
+codeblock_67 [label="code block 109-113"]
 
 
 // END RANK section_9
 
-header_63 -> leaf_66
-leaf_66  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** no_color"]
+header_63 -> leaf_68
+leaf_68  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** no_color"]
 // END RANK header_63
 
-prose_64 -> { raw_67}
-{rank=same; raw_67}
+prose_64 -> { raw_69}
+{rank=same; raw_69}
 
-raw_67 [label="raw"]
+raw_69 [label="raw"]
 
 
 // END RANK prose_64
 
-raw_67 -> leaf_68
-leaf_68  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_69 -> leaf_70
+leaf_70  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 As a generally-useful measure, we need an object that behaves like a
 colorizer but which doesn't actually apply color.
 "]
-// END RANK raw_67
+// END RANK raw_69
 
-codeblock_65 -> leaf_69
-leaf_69  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local no_color = {}
+codeblock_65 -> leaf_71
+leaf_71  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local no_color = {}
 -- if field accessed, pass through
 local function _no_c_index(nc, _)
    return nc
@@ -348,98 +353,124 @@ C.no_color = setmetatable({}, { __index  = _no_c_index,
                                 __concat = _no_c_concat, })"]
 // END RANK codeblock_65
 
-section_10 -> { header_70 prose_71 section_72}
-{rank=same; header_70 prose_71 section_72}
+structure_66 -> { hashline_72}
+{rank=same; hashline_72}
 
-header_70 [label="2 : ts(value)"]
+hashline_72 [label="hashline"]
 
-prose_71 [label="prose"]
 
-section_72 [label="section: 107-121"]
+// END RANK structure_66
+
+hashline_72 -> { hashtag_73}
+{rank=same; hashtag_73}
+
+hashtag_73 [label="hashtag"]
+
+
+// END RANK hashline_72
+
+hashtag_73 -> leaf_74
+leaf_74  [color=Gray,shape=rectangle,fontname=Inconsolata,label="todo"]
+// END RANK hashtag_73
+
+codeblock_67 -> leaf_75
+leaf_75  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function C.color.err()
+  error \"error in color\"
+end"]
+// END RANK codeblock_67
+
+section_10 -> { header_76 prose_77 section_78}
+{rank=same; header_76 prose_77 section_78}
+
+header_76 [label="2 : ts(value)"]
+
+prose_77 [label="prose"]
+
+section_78 [label="section: 118-132"]
 
 
 // END RANK section_10
 
-header_70 -> leaf_73
-leaf_73  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** ts(value)"]
-// END RANK header_70
-
-prose_71 -> { raw_74}
-{rank=same; raw_74}
-
-raw_74 [label="raw"]
-
-
-// END RANK prose_71
-
-raw_74 -> leaf_75
-leaf_75  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-
-"]
-// END RANK raw_74
-
-section_72 -> { header_76 prose_77 codeblock_78 codeblock_79}
-{rank=same; header_76 prose_77 codeblock_78 codeblock_79}
-
-header_76 [label="4 : setup"]
-
-prose_77 [label="prose"]
-
-codeblock_78 [label="code block 111-117"]
-
-codeblock_79 [label="code block 119-121"]
-
-
-// END RANK section_72
-
-header_76 -> leaf_80
-leaf_80  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** setup"]
+header_76 -> leaf_79
+leaf_79  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** ts(value)"]
 // END RANK header_76
 
-prose_77 -> { raw_81 prespace_82 literal_83 raw_84}
-{rank=same; raw_81 prespace_82 literal_83 raw_84}
+prose_77 -> { raw_80}
+{rank=same; raw_80}
 
-raw_81 [label="raw"]
-
-prespace_82 [label="prespace"]
-
-literal_83 [label="literal"]
-
-raw_84 [label="raw"]
+raw_80 [label="raw"]
 
 
 // END RANK prose_77
 
-raw_81 -> leaf_85
-leaf_85  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_80 -> leaf_81
+leaf_81  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+"]
+// END RANK raw_80
+
+section_78 -> { header_82 prose_83 codeblock_84 codeblock_85}
+{rank=same; header_82 prose_83 codeblock_84 codeblock_85}
+
+header_82 [label="4 : setup"]
+
+prose_83 [label="prose"]
+
+codeblock_84 [label="code block 122-128"]
+
+codeblock_85 [label="code block 130-132"]
+
+
+// END RANK section_78
+
+header_82 -> leaf_86
+leaf_86  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** setup"]
+// END RANK header_82
+
+prose_83 -> { raw_87 prespace_88 literal_89 raw_90}
+{rank=same; raw_87 prespace_88 literal_89 raw_90}
+
+raw_87 [label="raw"]
+
+prespace_88 [label="prespace"]
+
+literal_89 [label="literal"]
+
+raw_90 [label="raw"]
+
+
+// END RANK prose_83
+
+raw_87 -> leaf_91
+leaf_91  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 Localize a few values and create an anti-"]
-// END RANK raw_81
+// END RANK raw_87
 
-prespace_82 -> leaf_86
-leaf_86  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_82
+prespace_88 -> leaf_92
+leaf_92  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_88
 
-literal_83 -> leaf_87
-leaf_87  [color=Gray,shape=rectangle,fontname=Inconsolata,label="_G"]
-// END RANK literal_83
+literal_89 -> leaf_93
+leaf_93  [color=Gray,shape=rectangle,fontname=Inconsolata,label="_G"]
+// END RANK literal_89
 
-raw_84 -> leaf_88
-leaf_88  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" table.
+raw_90 -> leaf_94
+leaf_94  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" table.
 "]
-// END RANK raw_84
+// END RANK raw_90
 
-codeblock_78 -> leaf_89
-leaf_89  [color=Gray,shape=rectangle,fontname=Inconsolata,label="C.color.hints = { field = C.color.field,
+codeblock_84 -> leaf_95
+leaf_95  [color=Gray,shape=rectangle,fontname=Inconsolata,label="C.color.hints = { field = C.color.field,
                   fn    = C.color.func,
                   mt    = C.color.mt }
 
 local hints = C.color.hints"]
-// END RANK codeblock_78
+// END RANK codeblock_84
 
-codeblock_79 -> leaf_90
-leaf_90  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return C"]
-// END RANK codeblock_79
+codeblock_85 -> leaf_96
+leaf_96  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return C"]
+// END RANK codeblock_85
 
 
 }

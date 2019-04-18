@@ -69,6 +69,7 @@ C.color.alert      = a.fg24(250, 0, 40)
 C.color.base       = a.fg24(200, 200, 200)
 C.color.search_hl = a.fg24(30, 230, 100)
 C.color.error = a.bg24(50,0,0)
+C.color.bold = a.bold
 
 C.color.highlight = a.bg24(70, 70, 70)
 
@@ -100,6 +101,11 @@ end
 C.no_color = setmetatable({}, { __index  = _no_c_index,
                                 __call   = _no_c_call,
                                 __concat = _no_c_concat, })
+```
+#todo remove```lua
+function C.color.err()
+  error "error in color"
+end
 ```
 ## ts(value)
 

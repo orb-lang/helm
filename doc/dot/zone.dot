@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 504"]
+doc_0 [label="doc - 506"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-262"]
+section_1 [label="section: 1-264"]
 
 
 // END RANK doc_0
@@ -39,11 +39,11 @@ prose_11 [label="prose"]
 
 prose_12 [label="prose"]
 
-section_13 [label="section: 46-149"]
+section_13 [label="section: 46-150"]
 
-section_14 [label="section: 166-248"]
+section_14 [label="section: 167-250"]
 
-section_15 [label="section: 263-457"]
+section_15 [label="section: 265-459"]
 
 
 // END RANK section_1
@@ -476,11 +476,11 @@ prose_123 [label="prose"]
 
 prose_124 [label="prose"]
 
-codeblock_125 [label="code block 69-81"]
+codeblock_125 [label="code block 69-82"]
 
-section_126 [label="section: 84-149"]
+section_126 [label="section: 85-150"]
 
-section_127 [label="section: 150-165"]
+section_127 [label="section: 151-166"]
 
 
 // END RANK section_13
@@ -795,6 +795,7 @@ local Txtbuf = require \"txtbuf\"
 
 local Rainbuf = require \"rainbuf\"
 
+local ts = require \"repr\" . ts
 local Zone = meta {}
 
 local Zoneherd = meta {}"]
@@ -811,7 +812,7 @@ structure_214 [label="structure"]
 
 structure_215 [label="structure"]
 
-codeblock_216 [label="code block 99-147"]
+codeblock_216 [label="code block 100-148"]
 
 
 // END RANK section_126
@@ -932,7 +933,7 @@ prose_228 [label="prose"]
 
 prose_229 [label="prose"]
 
-codeblock_230 [label="code block 156-164"]
+codeblock_230 [label="code block 157-165"]
 
 
 // END RANK section_127
@@ -1005,17 +1006,17 @@ header_243 [label="2 : Zone methods"]
 
 prose_244 [label="prose"]
 
-section_245 [label="section: 169-181"]
+section_245 [label="section: 170-182"]
 
-section_246 [label="section: 182-192"]
+section_246 [label="section: 183-193"]
 
-section_247 [label="section: 193-205"]
+section_247 [label="section: 194-206"]
 
-section_248 [label="section: 206-225"]
+section_248 [label="section: 207-226"]
 
-section_249 [label="section: 226-248"]
+section_249 [label="section: 227-250"]
 
-section_250 [label="section: 249-262"]
+section_250 [label="section: 251-264"]
 
 
 // END RANK section_14
@@ -1045,7 +1046,7 @@ header_254 [label="3 : Zone:height(), Zone:width()"]
 
 prose_255 [label="prose"]
 
-codeblock_256 [label="code block 171-179"]
+codeblock_256 [label="code block 172-180"]
 
 
 // END RANK section_245
@@ -1084,7 +1085,7 @@ header_261 [label="3 : Zone:replace(zone, rainbuf)"]
 
 prose_262 [label="prose"]
 
-codeblock_263 [label="code block 184-191"]
+codeblock_263 [label="code block 185-192"]
 
 
 // END RANK section_246
@@ -1122,7 +1123,7 @@ header_268 [label="3 : Zone:set(tc, tr, bc, br)"]
 
 prose_269 [label="prose"]
 
-codeblock_270 [label="code block 195-203"]
+codeblock_270 [label="code block 196-204"]
 
 
 // END RANK section_247
@@ -1161,7 +1162,7 @@ header_275 [label="3 : _writeLines(write, zone, str)"]
 
 prose_276 [label="prose"]
 
-codeblock_277 [label="code block 208-223"]
+codeblock_277 [label="code block 209-224"]
 
 
 // END RANK section_248
@@ -1207,7 +1208,7 @@ header_282 [label="3 : _writeResults"]
 
 prose_283 [label="prose"]
 
-codeblock_284 [label="code block 230-247"]
+codeblock_284 [label="code block 231-249"]
 
 
 // END RANK section_249
@@ -1233,7 +1234,6 @@ We'll special-case the results buffer for now.
 
 codeblock_284 -> leaf_288
 leaf_288  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function _writeResults(write, zone, new)
-   local rainbuf = {}
    local row = zone.tr
    local results = zone.contents
    if not results then
@@ -1241,9 +1241,11 @@ leaf_288  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function
    end
    if results.idEst ~= Rainbuf then
       results = Rainbuf(results)
+      results.made_in = \"writeResults\"
+      zone.contents = results
    end
    local nl = a.col(zone.tc) .. a.jump.down(1)
-   for line in results:lineGen(zone:height() + 1) do
+   for line in results:lineGen(zone:height() + 1, zone:width()) do
       write(line)
       write(nl)
    end
@@ -1257,7 +1259,7 @@ header_289 [label="3 : _renderTxtbuf(modeS, zone)"]
 
 prose_290 [label="prose"]
 
-codeblock_291 [label="code block 251-260"]
+codeblock_291 [label="code block 253-262"]
 
 
 // END RANK section_250
@@ -1297,19 +1299,19 @@ header_296 [label="2 : Zoneherd methods"]
 
 prose_297 [label="prose"]
 
-section_298 [label="section: 266-279"]
+section_298 [label="section: 268-281"]
 
-section_299 [label="section: 280-312"]
+section_299 [label="section: 282-314"]
 
-section_300 [label="section: 330-341"]
+section_300 [label="section: 332-343"]
 
-section_301 [label="section: 342-373"]
+section_301 [label="section: 344-375"]
 
-section_302 [label="section: 374-438"]
+section_302 [label="section: 376-440"]
 
-section_303 [label="section: 439-457"]
+section_303 [label="section: 441-459"]
 
-section_304 [label="section: 458-504"]
+section_304 [label="section: 460-506"]
 
 
 // END RANK section_15
@@ -1339,7 +1341,7 @@ header_308 [label="3 : Zoneherd:newZone(name, tc, tr, bc, br, z, debug_mark)"]
 
 prose_309 [label="prose"]
 
-codeblock_310 [label="code block 268-277"]
+codeblock_310 [label="code block 270-279"]
 
 
 // END RANK section_298
@@ -1385,9 +1387,9 @@ structure_318 [label="structure"]
 
 prose_319 [label="prose"]
 
-codeblock_320 [label="code block 298-311"]
+codeblock_320 [label="code block 300-313"]
 
-section_321 [label="section: 313-329"]
+section_321 [label="section: 315-331"]
 
 
 // END RANK section_299
@@ -1522,7 +1524,7 @@ header_345 [label="4 : _zoneOffset(modes)"]
 
 prose_346 [label="prose"]
 
-codeblock_347 [label="code block 315-327"]
+codeblock_347 [label="code block 317-329"]
 
 
 // END RANK section_321
@@ -1565,7 +1567,7 @@ header_352 [label="3 : Zoneherd:adjustCommand(zoneherd, delta)"]
 
 prose_353 [label="prose"]
 
-codeblock_354 [label="code block 332-340"]
+codeblock_354 [label="code block 334-342"]
 
 
 // END RANK section_300
@@ -1604,7 +1606,7 @@ header_359 [label="3 : Zoneherd:reflow(modeS)"]
 
 prose_360 [label="prose"]
 
-codeblock_361 [label="code block 344-371"]
+codeblock_361 [label="code block 346-373"]
 
 
 // END RANK section_301
@@ -1662,7 +1664,7 @@ header_366 [label="3 : Zoneherd:paint(modeS)"]
 
 prose_367 [label="prose"]
 
-codeblock_368 [label="code block 381-436"]
+codeblock_368 [label="code block 383-438"]
 
 
 // END RANK section_302
@@ -1716,7 +1718,7 @@ local function _paintGutter(zoneherd)
    local write = zoneherd.write
    local lines = zoneherd.command.contents
                  and #zoneherd.command.contents.lines - 1 or 0
-   write(a.erase._box(1, 3, zoneherd.results.tc - 1, zoneherd.results.br))
+   write(a.erase.box(1, 3, zoneherd.results.tc - 1, zoneherd.results.br))
    write(a.colrow(1,3))
    while lines > 0 do
       write \"...\"
@@ -1740,7 +1742,7 @@ function Zoneherd.paint(zoneherd, modeS, all)
    for i, zone in ipairs(zoneherd) do
       if zone.touched or all then
          -- erase
-         write(a.erase._box(    zone.tc,
+         write(a.erase.box(     zone.tc,
                                 zone.tr,
                                 zone.bc,
                                 zone.br ))
@@ -1771,7 +1773,7 @@ header_379 [label="3 : newZone(tr, tc, br, bc, z, debug_mark)"]
 
 prose_380 [label="prose"]
 
-codeblock_381 [label="code block 443-455"]
+codeblock_381 [label="code block 445-457"]
 
 
 // END RANK section_303
@@ -1818,9 +1820,9 @@ prose_387 [label="prose"]
 
 prose_388 [label="prose"]
 
-codeblock_389 [label="code block 467-490"]
+codeblock_389 [label="code block 469-492"]
 
-codeblock_390 [label="code block 492-494"]
+codeblock_390 [label="code block 494-496"]
 
 
 // END RANK section_304

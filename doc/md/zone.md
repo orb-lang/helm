@@ -88,6 +88,7 @@ local Txtbuf = require "txtbuf"
 
 local Rainbuf = require "rainbuf"
 
+local ts = require "repr" . ts
 local Zone = meta {}
 
 local Zoneherd = meta {}
@@ -218,7 +219,6 @@ We'll special-case the results buffer for now.
 
 ```lua
 local function _writeResults(write, zone, new)
-   local rainbuf = {}
    local row = zone.tr
    local results = zone.contents
    if not results then
@@ -226,9 +226,11 @@ local function _writeResults(write, zone, new)
    end
    if results.idEst ~= Rainbuf then
       results = Rainbuf(results)
+      results.made_in = "writeResults"
+      zone.contents = results
    end
    local nl = a.col(zone.tc) .. a.jump.down(1)
-   for line in results:lineGen(zone:height() + 1) do
+   for line in results:lineGen(zone:height() + 1, zone:width()) do
       write(line)
       write(nl)
    end
@@ -362,7 +364,7 @@ local function _paintGutter(zoneherd)
    local write = zoneherd.write
    local lines = zoneherd.command.contents
                  and #zoneherd.command.contents.lines - 1 or 0
-   write(a.erase._box(1, 3, zoneherd.results.tc - 1, zoneherd.results.br))
+   write(a.erase.box(1, 3, zoneherd.results.tc - 1, zoneherd.results.br))
    write(a.colrow(1,3))
    while lines > 0 do
       write "..."
@@ -386,7 +388,7 @@ function Zoneherd.paint(zoneherd, modeS, all)
    for i, zone in ipairs(zoneherd) do
       if zone.touched or all then
          -- erase
-         write(a.erase._box(    zone.tc,
+         write(a.erase.box(     zone.tc,
                                 zone.tr,
                                 zone.bc,
                                 zone.br ))

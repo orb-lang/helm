@@ -96,7 +96,6 @@ end
 
 
 
-
 local function RO_M__newindex(tab, key, value)
    error("attempt to write value `" .. tostring(value)
          .. "` to read-only table slot `." .. tostring(key) .. "`")
@@ -293,6 +292,9 @@ end
 
 
 
+
+
+
 local insert = table.insert
 
 local sp_er = "table<core>.splice: "
@@ -302,7 +304,10 @@ local _e_3 = sp_er .. "$3 must be a table"
 
 function core.splice(tab, idx, into)
    assert(type(tab) == "table", _e_1)
-   assert(type(idx) == "number", _e_2)
+   assert(type(idx) == "number" or idx == nil, _e_2)
+   if idx == nil then
+      idx = #tab + 1
+   end
    assert(type(into) == "table", _e_3)
     idx = idx - 1
     local i = 1
@@ -576,6 +581,20 @@ function core.codepoints(str)
       end
    end
    return codes
+end
+
+
+
+
+
+
+
+
+function core.slurp(filename)
+  local f = io.open(filename, "rb")
+  local content = f:read("*all")
+  f:close()
+  return content
 end
 
 

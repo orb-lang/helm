@@ -44,31 +44,34 @@ Historian.HISTORY_LIMIT = 2000
 
 local create_project_table = [[
 CREATE TABLE IF NOT EXISTS project (
-project_id INTEGER PRIMARY KEY AUTOINCREMENT,
-directory TEXT UNIQUE,
-time DATETIME DEFAULT CURRENT_TIMESTAMP );
+   project_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   directory TEXT UNIQUE,
+   time DATETIME DEFAULT CURRENT_TIMESTAMP
+);
 ]]
 
 local create_repl_table = [[
 CREATE TABLE IF NOT EXISTS repl (
-line_id INTEGER PRIMARY KEY AUTOINCREMENT,
-project INTEGER,
-line TEXT,
-time DATETIME DEFAULT CURRENT_TIMESTAMP,
-FOREIGN KEY (project)
-   REFERENCES project (project_id)
-   ON DELETE CASCADE );
+   line_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   project INTEGER,
+   line TEXT,
+   time DATETIME DEFAULT CURRENT_TIMESTAMP,
+   FOREIGN KEY (project)
+      REFERENCES project (project_id)
+      ON DELETE CASCADE
+);
 ]]
 
 local create_result_table = [[
 CREATE TABLE IF NOT EXISTS result (
-result_id INTEGER PRIMARY KEY AUTOINCREMENT,
-line_id INTEGER,
-repr text NOT NULL,
-value blob,
-FOREIGN KEY (line_id)
-   REFERENCES repl (line_id)
-   ON DELETE CASCADE );
+   result_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   line_id INTEGER,
+   repr text NOT NULL,
+   value blob,
+   FOREIGN KEY (line_id)
+      REFERENCES repl (line_id)
+      ON DELETE CASCADE
+);
 ]]
 
 local create_session_table = [[
@@ -121,11 +124,10 @@ WHERE result.line_id = :line_id
 ORDER BY result.result_id;
 ]]
 
-local home_dir = io.popen("echo $HOME", "r"):read("*a"):sub(1, -2)
+local home_dir = os.getenv "HOME"
 
-local bridge_home = io.popen("echo $BRIDGE_HOME", "r"):read("*a"):sub(1, -2)
-Historian.bridge_home = bridge_home ~= "" and bridge_home
-                        or home_dir .. "/.bridge"
+local bridge_home = os.getenv "BRIDGE_HOME"
+Historian.bridge_home = bridge_home or home_dir .. "/.bridge"
 
 Historian.project = io.popen("pwd", "r"):read("*a"):sub(1, -2)
 

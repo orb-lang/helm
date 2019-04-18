@@ -15,7 +15,7 @@ local Search = clone(Nerf, 3)
 ```
 ```lua
 function Search.NAV.RETURN(modeS, category, value)
-   local searchResult = modeS.hist:search(tostring(modeS.txtbuf))
+   local searchResult = modeS.hist:search(tostring(modeS.txtbuf))[1]
    if #searchResult > 0 then
       local result
       local hl = searchResult.hl
@@ -33,19 +33,30 @@ end
 ```
 ```lua
 function Search.NAV.SHIFT_DOWN(modeS, category, value)
-   local search_result = modeS.hist.last_collection
-   if not search_result then return end
+   local search_buf = modeS.hist.last_collection
+   if not search_buf then return end
+   local search_result = search_buf[1]
    if search_result.hl < #search_result then
       search_result.hl = search_result.hl + 1
+      if search_result.hl >= modeS.zones.results:height() + search_buf.offset
+        and search_buf.more then
+        search_buf.offset = search_buf.offset + 1
+      end
    end
+   modeS.zones.results.touched = true
 end
 ```
 ```lua
 function Search.NAV.SHIFT_UP(modeS, category, value)
-   local search_result = modeS.hist.last_collection
-   if not search_result then return end
+   local search_buf = modeS.hist.last_collection
+   if not search_buf then return end
+   local search_result = search_buf[1]
    if search_result.hl > 1 then
       search_result.hl = search_result.hl - 1
+      if search_result.hl < search_buf.offset then
+         search_buf.offset = search_buf.offset - 1
+      end
+      modeS.zones.results.touched = true
    end
 end
 ```
@@ -57,7 +68,7 @@ Search.NAV.DOWN = Search.NAV.SHIFT_DOWN
 ```lua
 local function _makeControl(num)
     return function(modeS, category, value)
-       local searchResult = modeS.hist:search(tostring(modeS.txtbuf))
+       local searchResult = modeS.hist:search(tostring(modeS.txtbuf))[1]
        if #searchResult > 0 then
           local result
           modeS.txtbuf, result = modeS.hist:index(searchResult.cursors[num])

@@ -20,7 +20,8 @@ record.  We should store the line as a string, to facilitate fuzzy matching.
 local Txtbuf  = require "txtbuf"
 local Rainbuf = require "rainbuf"
 local sql     = require "sqlayer"
-local color   = require "color"
+local color   = (require "color").color
+
 local L       = require "lpeg"
 local repr    = require "repr"
 local format  = assert (string.format)
@@ -43,31 +44,34 @@ Historian.HISTORY_LIMIT = 2000
 
 local create_project_table = [[
 CREATE TABLE IF NOT EXISTS project (
-project_id INTEGER PRIMARY KEY AUTOINCREMENT,
-directory TEXT UNIQUE,
-time DATETIME DEFAULT CURRENT_TIMESTAMP );
+   project_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   directory TEXT UNIQUE,
+   time DATETIME DEFAULT CURRENT_TIMESTAMP
+);
 ]]
 
 local create_repl_table = [[
 CREATE TABLE IF NOT EXISTS repl (
-line_id INTEGER PRIMARY KEY AUTOINCREMENT,
-project INTEGER,
-line TEXT,
-time DATETIME DEFAULT CURRENT_TIMESTAMP,
-FOREIGN KEY (project)
-   REFERENCES project (project_id)
-   ON DELETE CASCADE );
+   line_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   project INTEGER,
+   line TEXT,
+   time DATETIME DEFAULT CURRENT_TIMESTAMP,
+   FOREIGN KEY (project)
+      REFERENCES project (project_id)
+      ON DELETE CASCADE
+);
 ]]
 
 local create_result_table = [[
 CREATE TABLE IF NOT EXISTS result (
-result_id INTEGER PRIMARY KEY AUTOINCREMENT,
-line_id INTEGER,
-repr text NOT NULL,
-value blob,
-FOREIGN KEY (line_id)
-   REFERENCES repl (line_id)
-   ON DELETE CASCADE );
+   result_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   line_id INTEGER,
+   repr text NOT NULL,
+   value blob,
+   FOREIGN KEY (line_id)
+      REFERENCES repl (line_id)
+      ON DELETE CASCADE
+);
 ]]
 
 local create_session_table = [[
@@ -120,7 +124,7 @@ WHERE result.line_id = :line_id
 ORDER BY result.result_id;
 ]]
 
-local home_dir = io.popen("echo $HOME", "r"):read("*a"):sub(1, -2)
+local home_dir = os.getenv "HOME"
 
 local bridge_home = io.popen("echo $BRIDGE_HOME", "r"):read("*a"):sub(1, -2)
 Historian.bridge_home = bridge_home ~= "" and bridge_home
@@ -315,54 +319,64 @@ attach to the collection.
 ```lua
 local concat, litpat = assert(table.concat), assert(string.litpat)
 local gsub = assert(string.gsub)
-
-local function _highlight(line, frag, c, best)
+local function _highlight(line, frag, best, c)
    local hl = {}
-   local og_line = line -- debugging
    while #frag > 0 do
       local char
       char, frag = frag:sub(1,1), frag:sub(2)
       local at = line:find(litpat(char))
       if not at then
-         error ("can't find " .. char .. " in: " .. line)
+         break
       end
-      local color
+      local Color
       -- highlight the last two differently if this is a 'second best'
       -- search
       if not best and #frag <= 1 then
-         color = c.alert
+         Color = c.alert
       else
-         color = c.search_hl
+         Color = c.search_hl
       end
       hl[#hl + 1] = c.base(line:sub(1, at -1))
-      hl[#hl + 1] = color(char)
+      hl[#hl + 1] = Color(char)
       line = line:sub(at + 1)
    end
    hl[#hl + 1] = c.base(line)
    return concat(hl):gsub("\n", c.stresc("\\n"))
 end
 
-
-local function _collect_repr(collection, c)
-   if #collection == 0 then
-      return c.alert "No results found"
-   end
-   local phrase = ""
-   for i,v in ipairs(collection) do
+local function _collect_repr(collection, phrase, c)
+   assert(c, "must provide a color table")
+   local i = 1
+   local first = true
+   return function()
+      if #collection == 0 then
+         if first then
+            first = false
+            return c.alert "No results found"
+         else
+            return nil
+         end
+      end
+      local line = collection[i]
+      if line == nil then return nil end
+      local len = #line
       local alt_seq = "    "
       if i < 10 then
-         alt_seq = a.bold("M-" .. tostring(i) .. " ")
+         alt_seq = c.bold("M-" .. tostring(i) .. " ")
+      end
+      len = len + 4
+      if len > phrase:remains() then
+         line = line:sub(1, phrase:remains() - 5) .. c.alert "…"
+         len = phrase.width - (phrase.width - phrase:remains() - 4)
       end
       local next_line = alt_seq
-                        .. _highlight(v, collection.frag, c, collection.best)
-                        .. "\n"
+                     .. _highlight(line, collection.frag, collection.best, c)
       if i == collection.hl then
          next_line = c.highlight(next_line)
       end
-      phrase = phrase .. next_line
+      i = i + 1
+      return next_line, len
    end
-
-   return phrase
 end
 
 local collect_M = {__repr = _collect_repr}
@@ -397,7 +411,7 @@ The other fields are:
 ```lua
 function Historian.search(historian, frag)
    if historian.last_collection
-      and historian.last_collection.lit_frag == frag then
+      and historian.last_collection[1].lit_frag == frag then
       -- don't repeat a search
       return historian.last_collection
    end
@@ -405,7 +419,7 @@ function Historian.search(historian, frag)
    collection.frag = frag
    collection.lit_frag = frag
    if frag == "" then
-      return collection, false
+      return Rainbuf {[1] = collection, n = 1}, false
    end
    local cursors = {}
    local best = true
@@ -434,8 +448,9 @@ function Historian.search(historian, frag)
    collection.best = best
    collection.cursors = cursors
    collection.hl = 1
-   historian.last_collection = collection
-   return collection, best
+   historian.last_collection = Rainbuf {[1] = collection, n = 1, live = true}
+   historian.last_collection.made_in = "historian.search"
+   return historian.last_collection, best
 end
 ```
 #### _resultsFrom(historian, line_id)

@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 90"]
+doc_0 [label="doc - 101"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-90"]
+section_1 [label="section: 1-101"]
 
 
 // END RANK doc_0
@@ -27,15 +27,15 @@ codeblock_5 [label="code block 11-16"]
 
 codeblock_6 [label="code block 19-36"]
 
-codeblock_7 [label="code block 38-46"]
+codeblock_7 [label="code block 38-52"]
 
-codeblock_8 [label="code block 48-56"]
+codeblock_8 [label="code block 54-67"]
 
-codeblock_9 [label="code block 58-62"]
+codeblock_9 [label="code block 69-73"]
 
-codeblock_10 [label="code block 64-86"]
+codeblock_10 [label="code block 75-97"]
 
-codeblock_11 [label="code block 88-90"]
+codeblock_11 [label="code block 99-101"]
 
 
 // END RANK section_1
@@ -92,7 +92,7 @@ local Search = clone(Nerf, 3)"]
 
 codeblock_6 -> leaf_23
 leaf_23  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Search.NAV.RETURN(modeS, category, value)
-   local searchResult = modeS.hist:search(tostring(modeS.txtbuf))
+   local searchResult = modeS.hist:search(tostring(modeS.txtbuf))[1]
    if #searchResult > 0 then
       local result
       local hl = searchResult.hl
@@ -111,20 +111,31 @@ end"]
 
 codeblock_7 -> leaf_24
 leaf_24  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Search.NAV.SHIFT_DOWN(modeS, category, value)
-   local search_result = modeS.hist.last_collection
-   if not search_result then return end
+   local search_buf = modeS.hist.last_collection
+   if not search_buf then return end
+   local search_result = search_buf[1]
    if search_result.hl < #search_result then
       search_result.hl = search_result.hl + 1
+      if search_result.hl >= modeS.zones.results:height() + search_buf.offset
+        and search_buf.more then
+        search_buf.offset = search_buf.offset + 1
+      end
    end
+   modeS.zones.results.touched = true
 end"]
 // END RANK codeblock_7
 
 codeblock_8 -> leaf_25
 leaf_25  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Search.NAV.SHIFT_UP(modeS, category, value)
-   local search_result = modeS.hist.last_collection
-   if not search_result then return end
+   local search_buf = modeS.hist.last_collection
+   if not search_buf then return end
+   local search_result = search_buf[1]
    if search_result.hl > 1 then
       search_result.hl = search_result.hl - 1
+      if search_result.hl < search_buf.offset then
+         search_buf.offset = search_buf.offset - 1
+      end
+      modeS.zones.results.touched = true
    end
 end"]
 // END RANK codeblock_8
@@ -138,7 +149,7 @@ Search.NAV.DOWN = Search.NAV.SHIFT_DOWN
 codeblock_10 -> leaf_27
 leaf_27  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function _makeControl(num)
     return function(modeS, category, value)
-       local searchResult = modeS.hist:search(tostring(modeS.txtbuf))
+       local searchResult = modeS.hist:search(tostring(modeS.txtbuf))[1]
        if #searchResult > 0 then
           local result
           modeS.txtbuf, result = modeS.hist:index(searchResult.cursors[num])

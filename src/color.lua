@@ -107,6 +107,16 @@ C.no_color = setmetatable({}, { __index  = _no_c_index,
 
 
 
+function C.color.err()
+  error "error in color"
+end
+
+
+
+
+
+
+
 
 
 

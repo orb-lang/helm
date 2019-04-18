@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 213"]
+doc_0 [label="doc - 181"]
 
 
 doc_0 -> { section_1}
@@ -29,7 +29,7 @@ prose_6 [label="prose"]
 
 section_7 [label="section: 15-65"]
 
-section_8 [label="section: 72-186"]
+section_8 [label="section: 72-151"]
 
 
 // END RANK section_1
@@ -773,9 +773,9 @@ header_199 [label="2 : Methods"]
 
 prose_200 [label="prose"]
 
-section_201 [label="section: 75-186"]
+section_201 [label="section: 75-151"]
 
-section_202 [label="section: 187-213"]
+section_202 [label="section: 152-181"]
 
 
 // END RANK section_8
@@ -807,7 +807,7 @@ prose_207 [label="prose"]
 
 prose_208 [label="prose"]
 
-codeblock_209 [label="code block 83-184"]
+codeblock_209 [label="code block 83-149"]
 
 
 // END RANK section_201
@@ -887,13 +887,17 @@ codeblock_209 -> leaf_227
 leaf_227  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Rainbuf.lineGen(rainbuf, rows, cols)
    offset = rainbuf.offset or 0
    cols = cols or 80
+   if rainbuf.live then
+      -- this buffer needs a fresh render each time
+      rainbuf.reprs, rainbuf.lines = nil, nil
+   end
    if not rainbuf.reprs then
       local reprs = {}
       for i = 1, rainbuf.n do
          if rainbuf.frozen then
             reprs[i] = string.lines(rainbuf[i])
          else
-            reprs[i] = lineGen(rainbuf[i], nil, nil, cols)
+            reprs[i] = lineGen(rainbuf[i], cols)
             if type(reprs[i]) == \"string\" then
                reprs[i] = string.lines(reprs[i])
             end
@@ -911,7 +915,7 @@ leaf_227  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Rainb
    end
    rainbuf.more = true
    local flip = true
-   local function _nextLine(param)
+   local function _nextLine()
       -- if we have lines, yield them
       if cursor < rows then
          if rainbuf.lines and cursor <= #rainbuf.lines then
@@ -925,11 +929,15 @@ leaf_227  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Rainb
                return nil
             end
             assert(type(repr) == \"function\", \"I see your problem\")
-            local line = repr()
+            local line = repr()  -- #todo fix dead coroutine problem here
             if line ~= nil then
                rainbuf.lines[#rainbuf.lines + 1] = line
-               cursor = cursor + 1
-               return line
+               if offset <= #rainbuf.lines then
+                  cursor = cursor + 1
+                  return line
+               else
+                  return _nextLine()
+               end
             else
                r_num = r_num + 1
                return _nextLine()
@@ -940,49 +948,6 @@ leaf_227  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Rainb
       end
    end
    return _nextLine
-end
-
-function Rainbuf._lineGen(rainbuf, rows)
-   offset = rainbuf.offset or 0
-   if not rainbuf.lines then
-      local phrase = \"\"
-      for i = 1, rainbuf.n do
-         local piece
-         if rainbuf.frozen then
-            piece = rainbuf[i]
-         else
-            piece = ts(rainbuf[i])
-         end
-         phrase = phrase .. piece
-         if i < rainbuf.n then
-            phrase = phrase .. \"   \"
-         end
-      end
-      rainbuf.lines = table.collect(string.lines, phrase)
-   end
-   rows = rows or #rainbuf.lines
-   local cursor = 1 + offset
-   rows = rows + offset
-
-   return function()
-      if cursor < rows then
-         local line = rainbuf.lines[cursor]
-         if not line then
-            rainbuf.more = false
-            return nil
-         end
-         cursor = cursor + 1
-         return line
-      else
-         if cursor <= #rainbuf.lines then
-            rainbuf.more = true
-            return nil
-         else
-            rainbuf.more = false
-            return nil
-         end
-      end
-   end
 end"]
 // END RANK codeblock_209
 
@@ -993,7 +958,7 @@ header_228 [label="3 : new(res?)"]
 
 prose_229 [label="prose"]
 
-codeblock_230 [label="code block 189-210"]
+codeblock_230 [label="code block 154-178"]
 
 
 // END RANK section_202
@@ -1021,13 +986,16 @@ leaf_234  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function
       error \"made a Rainbuf from a Rainbuf\"
    end
    local rainbuf = meta(Rainbuf)
+   assert(res.n, \"must have n\")
    if res then
       for i = 1, res.n do
          rainbuf[i] = res[i]
       end
       rainbuf.n = res.n
       rainbuf.frozen = res.frozen
+      rainbuf.live = res.live
    end
+   -- these aren't in play yet
    rainbuf.wids  = {}
    rainbuf.offset = 0
    return rainbuf

@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 673"]
+doc_0 [label="doc - 671"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-618"]
+section_1 [label="section: 1-616"]
 
 
 // END RANK doc_0
@@ -25,9 +25,9 @@ prose_4 [label="prose"]
 
 section_5 [label="section: 12-376"]
 
-section_6 [label="section: 441-530"]
+section_6 [label="section: 441-528"]
 
-section_7 [label="section: 619-673"]
+section_7 [label="section: 617-671"]
 
 
 // END RANK section_1
@@ -2711,15 +2711,15 @@ prose_669 [label="prose"]
 
 prose_670 [label="prose"]
 
-codeblock_671 [label="code block 454-511"]
+codeblock_671 [label="code block 454-509"]
 
 prose_672 [label="prose"]
 
-codeblock_673 [label="code block 515-519"]
+codeblock_673 [label="code block 513-517"]
 
-section_674 [label="section: 522-530"]
+section_674 [label="section: 520-528"]
 
-section_675 [label="section: 531-618"]
+section_675 [label="section: 529-616"]
 
 
 // END RANK section_6
@@ -2919,9 +2919,7 @@ function ModeS.act(modeS, category, value)
    ::final::
    if modeS.raga == \"search\" then
       -- we need to fake this into a 'result'
-      local searchResult = Rainbuf()
-      searchResult[1] = modeS.hist:search(tostring(modeS.txtbuf))
-      searchResult.n = 1
+      local searchResult = modeS.hist:search(tostring(modeS.txtbuf))
       modeS.zones.results:replace(searchResult)
    end
    -- Replace zones
@@ -3026,11 +3024,11 @@ header_735 [label="3 : ModeS:eval()"]
 
 prose_736 [label="prose"]
 
-codeblock_737 [label="code block 534-539"]
+codeblock_737 [label="code block 532-537"]
 
-codeblock_738 [label="code block 541-545"]
+codeblock_738 [label="code block 539-543"]
 
-codeblock_739 [label="code block 547-616"]
+codeblock_739 [label="code block 545-614"]
 
 
 // END RANK section_675
@@ -3062,7 +3060,7 @@ end"]
 
 codeblock_738 -> leaf_744
 leaf_744  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function ModeS.clearResults(modeS)
-   write(a.erase.box(modeS.repl_top + 1, 1, modeS.max_row, modeS.r_margin))
+   write(a.erase.box(1, modeS.repl_top + 1, modeS.r_margin, modeS.max_row))
 end"]
 // END RANK codeblock_738
 
@@ -3144,9 +3142,9 @@ header_746 [label="2 : new"]
 
 prose_747 [label="prose"]
 
-codeblock_748 [label="code block 622-645"]
+codeblock_748 [label="code block 620-643"]
 
-codeblock_749 [label="code block 647-649"]
+codeblock_749 [label="code block 645-647"]
 
 
 // END RANK section_7

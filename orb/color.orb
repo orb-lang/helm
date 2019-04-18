@@ -102,6 +102,16 @@ C.no_color = setmetatable({}, { __index  = _no_c_index,
 #/lua
 
 
+#todo remove
+
+This is just a shim for checking something
+
+#!lua
+function C.color.err()
+  error "error in color"
+end
+#/lua
+
 ** ts(value)
 
 

@@ -86,6 +86,7 @@ table.unpack = rawget(table, "unpack") and table.unpack or unpack
 meta = core.meta
 getmeta, setmeta = getmetatable, setmetatable
 hasmetamethod, hasfield = core.hasmetamethod, core.hasfield
+readOnly = core.readOnly
 coro = coroutine
 --assert = core.assertfmt
 
@@ -177,10 +178,10 @@ end
 
 local stdin = uv.new_tty(0, true)
 ```
-## Modeselektor```lua
--- This switches screens and does a wipe,
--- then puts the cursor at 1,1.
-write "\x1b[?47h\x1b[2J\x1b[H"
+## Modeselektor
+
+
+```lua
 
 -- Get window size and set up an idler to keep it refreshed
 
@@ -193,7 +194,6 @@ uv.timer_start(timer, 500, 500, function()
    max_col, max_row = uv.tty_get_winsize(stdin)
    if max_col ~= modeS.max_col or max_row ~= modeS.max_row then
       -- reflow screen.
-      -- for now:
       modeS.max_col, modeS.max_row = max_col, max_row
       modeS:reflow()
    end
@@ -267,29 +267,40 @@ local function onseq(err,seq)
 end
 ```
 ```lua
+
+-- read main programme
+if arg[1] then
+  local prog = table.remove(arg, 1)
+  local chunk, err = loadfile(prog)
+  if chunk then
+     setfenv(chunk, _G)()
+  else
+     error ("couldn't load " .. prog .. "\n" .. err)
+  end
+end
+
+
+
+
 -- Get names for as many values as possible
 -- into the colorizer
---repr.allNames()
-repr.allNames(__G)
+repr.allNames(_G)
+
+-- assuming we survived that, set up our repling environment:
 
 -- raw mode
 uv.tty_set_mode(stdin, 2)
+
 -- mouse mode
 write(a.mouse.track(true))
 uv.read_start(stdin, onseq)
 
--- read main programme
--- faked for now
----[[
-if arg[1] then
-  local chunk = loadfile(arg[1])
-  setfenv(chunk,  _G)
-  chunk()
-end
---]]
+-- #todo This should start with a read which saves the cursor location.
+-- This switches screens and does a wipe,
+-- then puts the cursor at 1,1.
+write "\x1b[?47h\x1b[2J\x1b[H"
 
 -- paint screen
-
 modeS:paint()
 
 -- main loop

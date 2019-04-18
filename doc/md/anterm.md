@@ -380,7 +380,7 @@ Comes with an optional fifth parameter for debugging purposes.
 
 ```lua
 local cursor = {}
-function erase.box(tr, tc, br, bc, dash)
+function erase.box(tc, tr, bc, br, dash)
    dash = dash or " "
    assert(tr <= br and tc <= bc, "box must be at least 1 by 1: "
           .. " tc: " .. tc .. " tr: " .. tr
@@ -395,17 +395,6 @@ function erase.box(tr, tc, br, bc, dash)
       phrase = phrase .. blanks .. nl
    end
    return phrase .. anterm.pop()
-end
-```
-
-Great, I fucked this up and it takes row before column.
-
-
-Let's fix that a little at a time:
-
-```lua
-function erase._box(tc, tr, bc, br, dash)
-   return erase.box(tr, tc, br, bc, dash)
 end
 ```
 ### erase.checker(tc, tr, bc, br, dash, mod)
