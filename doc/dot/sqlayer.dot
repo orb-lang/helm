@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 239"]
+doc_0 [label="doc - 240"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-115"]
+section_1 [label="section: 1-117"]
 
 
 // END RANK doc_0
@@ -25,17 +25,17 @@ prose_4 [label="prose"]
 
 prose_5 [label="prose"]
 
-codeblock_6 [label="code block 11-18"]
+codeblock_6 [label="code block 11-20"]
 
-section_7 [label="section: 21-38"]
+section_7 [label="section: 23-40"]
 
-section_8 [label="section: 39-51"]
+section_8 [label="section: 41-53"]
 
-section_9 [label="section: 52-95"]
+section_9 [label="section: 54-97"]
 
-section_10 [label="section: 96-115"]
+section_10 [label="section: 98-117"]
 
-section_11 [label="section: 116-210"]
+section_11 [label="section: 118-211"]
 
 
 // END RANK section_1
@@ -112,7 +112,9 @@ leaf_25  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local sql = req
 local pcall = assert (pcall)
 local gsub = assert(string.gsub)
 local format = assert(string.format)
+local ffi = require \"ffi\"
 assert(ffi)
+ffi.reflect = require \"reflect\"
 assert(ffi.reflect)"]
 // END RANK codeblock_6
 
@@ -125,7 +127,7 @@ prose_27 [label="prose"]
 
 prose_28 [label="prose"]
 
-codeblock_29 [label="code block 27-37"]
+codeblock_29 [label="code block 29-39"]
 
 
 // END RANK section_7
@@ -218,7 +220,7 @@ header_48 [label="2 : sql.san(str)"]
 
 prose_49 [label="prose"]
 
-codeblock_50 [label="code block 43-49"]
+codeblock_50 [label="code block 45-51"]
 
 
 // END RANK section_8
@@ -265,7 +267,7 @@ prose_59 [label="prose"]
 
 prose_60 [label="prose"]
 
-codeblock_61 [label="code block 73-94"]
+codeblock_61 [label="code block 75-96"]
 
 
 // END RANK section_9
@@ -556,7 +558,7 @@ prose_133 [label="prose"]
 
 prose_134 [label="prose"]
 
-codeblock_135 [label="code block 102-113"]
+codeblock_135 [label="code block 104-115"]
 
 
 // END RANK section_10
@@ -634,11 +636,11 @@ prose_149 [label="prose"]
 
 prose_150 [label="prose"]
 
-codeblock_151 [label="code block 122-127"]
+codeblock_151 [label="code block 124-129"]
 
-section_152 [label="section: 130-210"]
+section_152 [label="section: 132-211"]
 
-section_153 [label="section: 211-219"]
+section_153 [label="section: 212-220"]
 
 
 // END RANK section_11
@@ -716,13 +718,13 @@ prose_170 [label="prose"]
 
 prose_171 [label="prose"]
 
-codeblock_172 [label="code block 144-185"]
+codeblock_172 [label="code block 146-186"]
 
 prose_173 [label="prose"]
 
-codeblock_174 [label="code block 190-203"]
+codeblock_174 [label="code block 191-204"]
 
-codeblock_175 [label="code block 206-208"]
+codeblock_175 [label="code block 207-209"]
 
 
 // END RANK section_152
@@ -914,7 +916,6 @@ fresh each time.
 
 codeblock_172 -> leaf_223
 leaf_223  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local pragma_pre = \"PRAGMA \"
-local c = require \"color\"
 
 -- Builds and returns a pragma string
 local function __pragma(prag, value)
@@ -929,7 +930,7 @@ local function __pragma(prag, value)
    elseif type(value) == \"number\" then
       val = \" = \" .. tostring(value)
    else
-      error(false, \"value of type \" .. type(value) .. \", \" .. c.ts(value))
+      error(false, \"value of type \" .. type(value) .. \", \" .. tostring(value))
    end
    return pragma_pre .. prag .. val .. \";\"
 end
@@ -1014,9 +1015,9 @@ header_234 [label="3 : Stretch goals"]
 
 prose_235 [label="prose"]
 
-section_236 [label="section: 215-219"]
+section_236 [label="section: 216-220"]
 
-section_237 [label="section: 220-239"]
+section_237 [label="section: 221-240"]
 
 
 // END RANK section_153

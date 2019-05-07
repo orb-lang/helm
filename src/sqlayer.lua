@@ -13,7 +13,9 @@ local sql = require "sqlite"
 local pcall = assert (pcall)
 local gsub = assert(string.gsub)
 local format = assert(string.format)
+local ffi = require "ffi"
 assert(ffi)
+ffi.reflect = require "reflect"
 assert(ffi.reflect)
 
 
@@ -143,7 +145,6 @@ end
 
 
 local pragma_pre = "PRAGMA "
-local c = require "color"
 
 -- Builds and returns a pragma string
 local function __pragma(prag, value)
@@ -158,7 +159,7 @@ local function __pragma(prag, value)
    elseif type(value) == "number" then
       val = " = " .. tostring(value)
    else
-      error(false, "value of type " .. type(value) .. ", " .. c.ts(value))
+      error(false, "value of type " .. type(value) .. ", " .. tostring(value))
    end
    return pragma_pre .. prag .. val .. ";"
 end

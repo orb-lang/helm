@@ -16,7 +16,7 @@
 
 local Txtbuf  = require "txtbuf"
 local Rainbuf = require "rainbuf"
-local sql     = require "sqlayer"
+local sql     = rawget(_G, "sql")  or require "sqlayer"
 local color   = (require "color").color
 
 local L       = require "lpeg"

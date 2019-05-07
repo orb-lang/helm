@@ -32,6 +32,7 @@ ffi  = require "ffi"
 bit  = require "bit"
 uv   = require "luv"
 utf8 = require "lua-utf8"
+core = require "core"
 
 -- replace string lib with utf8 equivalents
 for k,v in pairs(utf8) do
@@ -48,7 +49,7 @@ require "table.clear"
 
 -- sqlayer uses this monkey patch:
 ffi.reflect = require "reflect"
-sql = require "sqlayer"
+sql = rawget(_G, "sql") or require "sqlayer"
 
 
 
@@ -66,7 +67,6 @@ sql = require "sqlayer"
 
 
 
-core = require "core"
 string.cleave, string.litpat = core.cleave, core.litpat
 string.utf8 = core.utf8 -- deprecated
 string.codepoints = core.codepoints
