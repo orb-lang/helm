@@ -22,8 +22,6 @@ local a = require "anterm"
 
 local core = require "core"
 
-local reflect = require "reflect"
-
 local WIDE_TABLE = 200 -- should be tty-specific
 
 local C = {}

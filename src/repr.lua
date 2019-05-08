@@ -18,8 +18,6 @@ local a = require "anterm"
 
 local core = require "core"
 
-local reflect = require "reflect"
-
 local C = require "color"
 
 
@@ -579,13 +577,21 @@ end
 
 
 
+
+
+
+
+
+
 local function c_data(value, str, phrase)
-   local meta = reflect.getmetatable(value)
+   --local meta = reflect.getmetatable(value)
    yield(str, #str)
+   --[[
    if meta then
       yield(c.base " = ", 3)
       ts_coro(meta, nil, phrase)
    end
+   --]]
 end
 
 

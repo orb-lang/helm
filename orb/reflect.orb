@@ -1,5 +1,9 @@
 * Reflect
 
+#NB I think this is what's been causing the segfaults, so let's phase it out.
+
+It's no longer needed to monkey-patch the SQLite library, since I've
+moved all of that into a bytecode loaded in =bridge=.
 
 This lovely library has been [[borrowed in][https://github.com/corsix/ffi-reflect]]
 so we can find names for struct fields and otherwise iterate over compound
