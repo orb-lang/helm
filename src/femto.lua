@@ -94,7 +94,7 @@ local concat = assert(table.concat)
 
 
 
-a = require "anterm"
+a = require "femto:anterm"
 local repr = require "repr"
 --watch = require "watcher"
 

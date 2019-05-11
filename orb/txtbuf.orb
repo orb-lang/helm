@@ -88,13 +88,19 @@ local _frag_sub = { ["("] = {"(", ")"},
                     ["{"] = {"{", "}"},
                     ["["] = {"[", "]"} }
 
-local _no_double = { ['"'] = true,
-                     [")"] = true,
-                     ["}"] = true,
-                     ["'"] = true }
+local _closing_pairs = { '"', ")", "}", "]", "'"}
 
-local function _no_skip(line, cursor, frag)
-   if frag == line[cursor] then
+local function _closer(frag)
+   local mebbe = false
+   for _, cha in ipairs(_closing_pairs) do
+      mebbe = mebbe or cha == frag
+   end
+   return mebbe
+end
+
+local function _no_insert(line, cursor, frag)
+   if frag == line[cursor]
+      and _closer(frag) then
       return false
    else
       return true
@@ -119,9 +125,10 @@ function Txtbuf.insert(txtbuf, frag)
    end
    -- #/deprecated
    if not wide_frag then
-      if _frag_sub[frag] and _no_skip(line, txtbuf.cursor, frag) then
+      if _frag_sub[frag] and _no_insert(line, txtbuf.cursor, frag) then
+         -- add a closing symbol
          splice(line, txtbuf.cursor, _frag_sub[frag])
-      elseif _no_skip(line, txtbuf.cursor, frag) then
+      elseif _no_insert(line, txtbuf.cursor, frag)then
          t_insert(line, txtbuf.cursor, frag)
       end
       txtbuf.cursor = txtbuf.cursor + 1

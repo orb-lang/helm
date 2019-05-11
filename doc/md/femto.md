@@ -33,6 +33,7 @@ ffi  = require "ffi"
 bit  = require "bit"
 uv   = require "luv"
 utf8 = require "lua-utf8"
+core = require "core"
 
 -- replace string lib with utf8 equivalents
 for k,v in pairs(utf8) do
@@ -47,9 +48,7 @@ jit.p = require "ljprof"
 --apparently this is a hidden, undocumented LuaJIT thing?
 require "table.clear"
 
--- sqlayer uses this monkey patch:
-ffi.reflect = require "reflect"
-sql = require "sqlayer"
+sql = assert(sql, "sql must be in _G")
 ```
 ### Djikstra Insertion Point
 
@@ -66,7 +65,6 @@ namespace and standard library.
 This prelude belongs in ``pylon``; it, and ``core``, will eventually end up there.
 
 ```lua
-core = require "core"
 string.cleave, string.litpat = core.cleave, core.litpat
 string.utf8 = core.utf8 -- deprecated
 string.codepoints = core.codepoints
@@ -96,7 +94,7 @@ local concat = assert(table.concat)
 Primitives for terminal manipulation.
 
 ```lua
-a = require "anterm"
+a = require "femto:anterm"
 local repr = require "repr"
 --watch = require "watcher"
 

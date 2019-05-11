@@ -19,7 +19,7 @@ record.  We should store the line as a string, to facilitate fuzzy matching.
 ```lua
 local Txtbuf  = require "txtbuf"
 local Rainbuf = require "rainbuf"
-local sql     = require "sqlayer"
+local sql     = assert(sql, "sql must be in bridge _G")
 local color   = (require "color").color
 
 local L       = require "lpeg"

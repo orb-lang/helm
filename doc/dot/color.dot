@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 132"]
+doc_0 [label="doc - 130"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-114"]
+section_1 [label="section: 1-112"]
 
 
 // END RANK doc_0
@@ -29,11 +29,11 @@ prose_6 [label="prose"]
 
 prose_7 [label="prose"]
 
-codeblock_8 [label="code block 20-74"]
+codeblock_8 [label="code block 20-72"]
 
-section_9 [label="section: 77-114"]
+section_9 [label="section: 75-112"]
 
-section_10 [label="section: 115-117"]
+section_10 [label="section: 113-115"]
 
 
 // END RANK section_1
@@ -244,8 +244,6 @@ leaf_62  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local a = requi
 
 local core = require \"core\"
 
-local reflect = require \"reflect\"
-
 local WIDE_TABLE = 200 -- should be tty-specific
 
 local C = {}
@@ -302,11 +300,11 @@ header_63 [label="2 : no_color"]
 
 prose_64 [label="prose"]
 
-codeblock_65 [label="code block 82-102"]
+codeblock_65 [label="code block 80-100"]
 
 structure_66 [label="structure"]
 
-codeblock_67 [label="code block 109-113"]
+codeblock_67 [label="code block 107-111"]
 
 
 // END RANK section_9
@@ -386,7 +384,7 @@ header_76 [label="2 : ts(value)"]
 
 prose_77 [label="prose"]
 
-section_78 [label="section: 118-132"]
+section_78 [label="section: 116-130"]
 
 
 // END RANK section_10
@@ -416,9 +414,9 @@ header_82 [label="4 : setup"]
 
 prose_83 [label="prose"]
 
-codeblock_84 [label="code block 122-128"]
+codeblock_84 [label="code block 120-126"]
 
-codeblock_85 [label="code block 130-132"]
+codeblock_85 [label="code block 128-130"]
 
 
 // END RANK section_78

@@ -93,8 +93,17 @@ local _no_double = { ['"'] = true,
                      ["}"] = true,
                      ["'"] = true }
 
+local function noDouble(frag)
+   local mebbe = false
+   for _, cha in ipairs(_no_double) do
+      mebbe = mebbe or cha == frag
+   end
+   return mebbe
+end
+
 local function _no_skip(line, cursor, frag)
-   if frag == line[cursor] then
+   if frag == line[cursor]
+      and noDouble(frag) then
       return false
    else
       return true

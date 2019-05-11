@@ -20,8 +20,6 @@ local a = require "anterm"
 
 local core = require "core"
 
-local reflect = require "reflect"
-
 local C = require "color"
 ```
 #### setup
@@ -573,14 +571,23 @@ local function scrub (str)
              :gsub("%c", ctrl_pr)
 end
 ```
+
+Note: the reflect library appears to be broken for LuaJIT 2.1 so we're
+not going to use it.
+
+
+I'm leaving in the code for now, because I'd like to repair and use it...
+
 ```lua
 local function c_data(value, str, phrase)
-   local meta = reflect.getmetatable(value)
+   --local meta = reflect.getmetatable(value)
    yield(str, #str)
+   --[[
    if meta then
       yield(c.base " = ", 3)
       ts_coro(meta, nil, phrase)
    end
+   --]]
 end
 ```
 ### ts_coro

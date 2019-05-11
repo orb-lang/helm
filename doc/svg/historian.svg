@@ -225,7 +225,7 @@
 <polygon fill="none" stroke="#c0c0c0" points="2057.5,-2655.605 1516.5,-2655.605 1516.5,-2461.8035 2057.5,-2461.8035 2057.5,-2655.605"/>
 <text text-anchor="middle" x="1787" y="-2640.2044" font-family="Inconsolata" font-size="14.00" fill="#000000">local Txtbuf &#160;= require &quot;txtbuf&quot;</text>
 <text text-anchor="middle" x="1787" y="-2624.8044" font-family="Inconsolata" font-size="14.00" fill="#000000">local Rainbuf = require &quot;rainbuf&quot;</text>
-<text text-anchor="middle" x="1787" y="-2609.4043" font-family="Inconsolata" font-size="14.00" fill="#000000">local sql &#160;&#160;&#160;&#160;= require &quot;sqlayer&quot;</text>
+<text text-anchor="middle" x="1787" y="-2609.4043" font-family="Inconsolata" font-size="14.00" fill="#000000">local sql &#160;&#160;&#160;&#160;= assert(sql, &quot;sql must be in bridge _G&quot;)</text>
 <text text-anchor="middle" x="1787" y="-2594.0043" font-family="Inconsolata" font-size="14.00" fill="#000000">local color &#160;&#160;= (require &quot;color&quot;).color</text>
 <text text-anchor="middle" x="1787" y="-2562.6043" font-family="Inconsolata" font-size="14.00" fill="#000000">local L &#160;&#160;&#160;&#160;&#160;&#160;= require &quot;lpeg&quot;</text>
 <text text-anchor="middle" x="1787" y="-2547.2042" font-family="Inconsolata" font-size="14.00" fill="#000000">local repr &#160;&#160;&#160;= require &quot;repr&quot;</text>

@@ -1,7 +1,6 @@
 # Reflect
 
-
-This lovely library has been [borrowed in](https://github.com/corsix/ffi-reflect)
+#NB I think this is what's been causing the segfaults, so let's phase it out.
 so we can find names for struct fields and otherwise iterate over compound
 data in C.
 

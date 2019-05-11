@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 700"]
+doc_0 [label="doc - 706"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-591"]
+section_1 [label="section: 1-597"]
 
 
 // END RANK doc_0
@@ -25,27 +25,27 @@ prose_4 [label="prose"]
 
 prose_5 [label="prose"]
 
-section_6 [label="section: 14-26"]
+section_6 [label="section: 14-24"]
 
-section_7 [label="section: 27-38"]
+section_7 [label="section: 25-36"]
 
-section_8 [label="section: 39-51"]
+section_8 [label="section: 37-49"]
 
-section_9 [label="section: 52-118"]
+section_9 [label="section: 50-116"]
 
-section_10 [label="section: 136-169"]
+section_10 [label="section: 134-167"]
 
-section_11 [label="section: 170-207"]
+section_11 [label="section: 168-205"]
 
-section_12 [label="section: 208-295"]
+section_12 [label="section: 206-293"]
 
-section_13 [label="section: 296-391"]
+section_13 [label="section: 294-389"]
 
-section_14 [label="section: 506-542"]
+section_14 [label="section: 504-540"]
 
-section_15 [label="section: 543-591"]
+section_15 [label="section: 541-597"]
 
-section_16 [label="section: 592-700"]
+section_16 [label="section: 598-706"]
 
 
 // END RANK section_1
@@ -127,7 +127,7 @@ header_30 [label="4 : imports"]
 
 prose_31 [label="prose"]
 
-codeblock_32 [label="code block 16-24"]
+codeblock_32 [label="code block 16-22"]
 
 
 // END RANK section_6
@@ -154,8 +154,6 @@ leaf_36  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local a = requi
 
 local core = require \"core\"
 
-local reflect = require \"reflect\"
-
 local C = require \"color\""]
 // END RANK codeblock_32
 
@@ -166,7 +164,7 @@ header_37 [label="4 : setup"]
 
 prose_38 [label="prose"]
 
-codeblock_39 [label="code block 29-36"]
+codeblock_39 [label="code block 27-34"]
 
 
 // END RANK section_7
@@ -204,7 +202,7 @@ header_44 [label="3 : anti_G"]
 
 prose_45 [label="prose"]
 
-codeblock_46 [label="code block 45-47"]
+codeblock_46 [label="code block 43-45"]
 
 prose_47 [label="prose"]
 
@@ -314,9 +312,9 @@ prose_73 [label="prose"]
 
 prose_74 [label="prose"]
 
-section_75 [label="section: 61-118"]
+section_75 [label="section: 59-116"]
 
-section_76 [label="section: 119-135"]
+section_76 [label="section: 117-133"]
 
 
 // END RANK section_9
@@ -382,7 +380,7 @@ header_88 [label="4 : tie_break(old, new)"]
 
 prose_89 [label="prose"]
 
-codeblock_90 [label="code block 65-116"]
+codeblock_90 [label="code block 63-114"]
 
 
 // END RANK section_75
@@ -466,7 +464,7 @@ header_95 [label="4 : repr.allNames(), repr.clearNames()"]
 
 prose_96 [label="prose"]
 
-codeblock_97 [label="code block 124-134"]
+codeblock_97 [label="code block 122-132"]
 
 
 // END RANK section_76
@@ -548,7 +546,7 @@ prose_115 [label="prose"]
 
 prose_116 [label="prose"]
 
-codeblock_117 [label="code block 144-167"]
+codeblock_117 [label="code block 142-165"]
 
 
 // END RANK section_10
@@ -624,7 +622,7 @@ prose_127 [label="prose"]
 
 prose_128 [label="prose"]
 
-codeblock_129 [label="code block 184-206"]
+codeblock_129 [label="code block 182-204"]
 
 
 // END RANK section_11
@@ -763,7 +761,7 @@ prose_153 [label="prose"]
 
 prose_154 [label="prose"]
 
-codeblock_155 [label="code block 215-285"]
+codeblock_155 [label="code block 213-283"]
 
 prose_156 [label="prose"]
 
@@ -1013,9 +1011,9 @@ prose_201 [label="prose"]
 
 prose_202 [label="prose"]
 
-section_203 [label="section: 313-391"]
+section_203 [label="section: 311-389"]
 
-section_204 [label="section: 392-505"]
+section_204 [label="section: 390-503"]
 
 
 // END RANK section_13
@@ -1131,7 +1129,7 @@ header_226 [label="4 : oneLine(phrase, long)"]
 
 prose_227 [label="prose"]
 
-codeblock_228 [label="code block 318-390"]
+codeblock_228 [label="code block 316-388"]
 
 
 // END RANK section_203
@@ -1291,7 +1289,7 @@ header_251 [label="4 : lineGen"]
 
 prose_252 [label="prose"]
 
-codeblock_253 [label="code block 397-503"]
+codeblock_253 [label="code block 395-501"]
 
 
 // END RANK section_204
@@ -1435,9 +1433,9 @@ prose_260 [label="prose"]
 
 prose_261 [label="prose"]
 
-codeblock_262 [label="code block 515-529"]
+codeblock_262 [label="code block 513-527"]
 
-codeblock_263 [label="code block 531-540"]
+codeblock_263 [label="code block 529-538"]
 
 
 // END RANK section_14
@@ -1535,42 +1533,46 @@ leaf_278  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function
 end"]
 // END RANK codeblock_263
 
-section_15 -> { header_279 prose_280 codeblock_281 codeblock_282}
-{rank=same; header_279 prose_280 codeblock_281 codeblock_282}
+section_15 -> { header_279 prose_280 codeblock_281 prose_282 prose_283 codeblock_284}
+{rank=same; header_279 prose_280 codeblock_281 prose_282 prose_283 codeblock_284}
 
 header_279 [label="3 : string and cdata pretty-printing"]
 
 prose_280 [label="prose"]
 
-codeblock_281 [label="code block 548-579"]
+codeblock_281 [label="code block 546-577"]
 
-codeblock_282 [label="code block 581-590"]
+prose_282 [label="prose"]
+
+prose_283 [label="prose"]
+
+codeblock_284 [label="code block 585-596"]
 
 
 // END RANK section_15
 
-header_279 -> leaf_283
-leaf_283  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** string and cdata pretty-printing"]
+header_279 -> leaf_285
+leaf_285  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** string and cdata pretty-printing"]
 // END RANK header_279
 
-prose_280 -> { raw_284}
-{rank=same; raw_284}
+prose_280 -> { raw_286}
+{rank=same; raw_286}
 
-raw_284 [label="raw"]
+raw_286 [label="raw"]
 
 
 // END RANK prose_280
 
-raw_284 -> leaf_285
-leaf_285  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_286 -> leaf_287
+leaf_287  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 We make a small wrapper function which resets string color in between
 escapes, then gsub the daylights out of it.
 "]
-// END RANK raw_284
+// END RANK raw_286
 
-codeblock_281 -> leaf_286
-leaf_286  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local find, sub, gsub, byte = string.find, string.sub,
+codeblock_281 -> leaf_288
+leaf_288  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local find, sub, gsub, byte = string.find, string.sub,
                               string.gsub, string.byte
 
 local e = function(str)
@@ -1602,54 +1604,85 @@ local function scrub (str)
 end"]
 // END RANK codeblock_281
 
-codeblock_282 -> leaf_287
-leaf_287  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function c_data(value, str, phrase)
-   local meta = reflect.getmetatable(value)
+prose_282 -> { raw_289}
+{rank=same; raw_289}
+
+raw_289 [label="raw"]
+
+
+// END RANK prose_282
+
+raw_289 -> leaf_290
+leaf_290  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Note: the reflect library appears to be broken for LuaJIT 2.1 so we're
+not going to use it.
+"]
+// END RANK raw_289
+
+prose_283 -> { raw_291}
+{rank=same; raw_291}
+
+raw_291 [label="raw"]
+
+
+// END RANK prose_283
+
+raw_291 -> leaf_292
+leaf_292  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+I'm leaving in the code for now, because I'd like to repair and use it...
+"]
+// END RANK raw_291
+
+codeblock_284 -> leaf_293
+leaf_293  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function c_data(value, str, phrase)
+   --local meta = reflect.getmetatable(value)
    yield(str, #str)
+   --[[
    if meta then
       yield(c.base \" = \", 3)
       ts_coro(meta, nil, phrase)
    end
+   --]]
 end"]
-// END RANK codeblock_282
+// END RANK codeblock_284
 
-section_16 -> { header_288 prose_289 codeblock_290 codeblock_291 codeblock_292}
-{rank=same; header_288 prose_289 codeblock_290 codeblock_291 codeblock_292}
+section_16 -> { header_294 prose_295 codeblock_296 codeblock_297 codeblock_298}
+{rank=same; header_294 prose_295 codeblock_296 codeblock_297 codeblock_298}
 
-header_288 [label="3 : ts_coro"]
+header_294 [label="3 : ts_coro"]
 
-prose_289 [label="prose"]
+prose_295 [label="prose"]
 
-codeblock_290 [label="code block 596-682"]
+codeblock_296 [label="code block 602-688"]
 
-codeblock_291 [label="code block 686-693"]
+codeblock_297 [label="code block 692-699"]
 
-codeblock_292 [label="code block 695-697"]
+codeblock_298 [label="code block 701-703"]
 
 
 // END RANK section_16
 
-header_288 -> leaf_293
-leaf_293  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** ts_coro"]
-// END RANK header_288
+header_294 -> leaf_299
+leaf_299  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** ts_coro"]
+// END RANK header_294
 
-prose_289 -> { raw_294}
-{rank=same; raw_294}
+prose_295 -> { raw_300}
+{rank=same; raw_300}
 
-raw_294 [label="raw"]
+raw_300 [label="raw"]
 
 
-// END RANK prose_289
+// END RANK prose_295
 
-raw_294 -> leaf_295
-leaf_295  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_300 -> leaf_301
+leaf_301  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 Lots of small, nice things in this one.
 "]
-// END RANK raw_294
+// END RANK raw_300
 
-codeblock_290 -> leaf_296
-leaf_296  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ts_coro = function (value, hint, phrase)
+codeblock_296 -> leaf_302
+leaf_302  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ts_coro = function (value, hint, phrase)
    local strval = tostring(value) or \"\"
    local len = #strval
    local str = scrub(strval)
@@ -1734,20 +1767,20 @@ leaf_296  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ts_coro = func
 end
 
 repr.ts = tabulate"]
-// END RANK codeblock_290
+// END RANK codeblock_296
 
-codeblock_291 -> leaf_297
-leaf_297  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function repr.ts_bw(value)
+codeblock_297 -> leaf_303
+leaf_303  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function repr.ts_bw(value)
    c = C.no_color
    local to_string = tabulate(value)
    c = C.color
    return to_string
 end"]
-// END RANK codeblock_291
+// END RANK codeblock_297
 
-codeblock_292 -> leaf_298
-leaf_298  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return repr"]
-// END RANK codeblock_292
+codeblock_298 -> leaf_304
+leaf_304  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return repr"]
+// END RANK codeblock_298
 
 
 }

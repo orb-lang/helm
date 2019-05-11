@@ -3,90 +3,98 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 385"]
+doc_0 [label="doc - 389"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-39"]
+section_1 [label="section: 1-43"]
 
 
 // END RANK doc_0
 
-section_1 -> { header_2 prose_3 prose_4 prose_5 section_6 section_7}
-{rank=same; header_2 prose_3 prose_4 prose_5 section_6 section_7}
+section_1 -> { header_2 prose_3 structure_4 prose_5 prose_6 prose_7 section_8 section_9}
+{rank=same; header_2 prose_3 structure_4 prose_5 prose_6 prose_7 section_8 section_9}
 
 header_2 [label="1 : Reflect"]
 
 prose_3 [label="prose"]
 
-prose_4 [label="prose"]
+structure_4 [label="structure"]
 
 prose_5 [label="prose"]
 
-section_6 [label="section: 16-39"]
+prose_6 [label="prose"]
 
-section_7 [label="section: 40-385"]
+prose_7 [label="prose"]
+
+section_8 [label="section: 20-43"]
+
+section_9 [label="section: 44-389"]
 
 
 // END RANK section_1
 
-header_2 -> leaf_8
-leaf_8  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Reflect"]
+header_2 -> leaf_10
+leaf_10  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Reflect"]
 // END RANK header_2
 
-prose_3 -> { raw_9 link_10 raw_11}
-{rank=same; raw_9 link_10 raw_11}
-
-raw_9 [label="raw"]
-
-link_10 [label="link"]
+prose_3 -> { raw_11}
+{rank=same; raw_11}
 
 raw_11 [label="raw"]
 
 
 // END RANK prose_3
 
-raw_9 -> leaf_12
+raw_11 -> leaf_12
 leaf_12  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+"]
+// END RANK raw_11
+
+structure_4 -> { hashline_13}
+{rank=same; hashline_13}
+
+hashline_13 [label="hashline"]
 
 
-This lovely library has been "]
-// END RANK raw_9
+// END RANK structure_4
 
-link_10 -> { anchortext_13 url_14}
-{rank=same; anchortext_13 url_14}
+hashline_13 -> { hashtag_14}
+{rank=same; hashtag_14}
 
-anchortext_13 [label="anchortext"]
-
-url_14 [label="url"]
+hashtag_14 [label="hashtag"]
 
 
-// END RANK link_10
+// END RANK hashline_13
 
-anchortext_13 -> leaf_15
-leaf_15  [color=Gray,shape=rectangle,fontname=Inconsolata,label="borrowed in"]
-// END RANK anchortext_13
+hashtag_14 -> leaf_15
+leaf_15  [color=Gray,shape=rectangle,fontname=Inconsolata,label="NB"]
+// END RANK hashtag_14
 
-url_14 -> leaf_16
-leaf_16  [color=Gray,shape=rectangle,fontname=Inconsolata,label="https://github.com/corsix/ffi-reflect"]
-// END RANK url_14
+prose_5 -> { raw_16}
+{rank=same; raw_16}
 
-raw_11 -> leaf_17
+raw_16 [label="raw"]
+
+
+// END RANK prose_5
+
+raw_16 -> leaf_17
 leaf_17  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 so we can find names for struct fields and otherwise iterate over compound
 data in C.
 "]
-// END RANK raw_11
+// END RANK raw_16
 
-prose_4 -> { raw_18}
+prose_6 -> { raw_18}
 {rank=same; raw_18}
 
 raw_18 [label="raw"]
 
 
-// END RANK prose_4
+// END RANK prose_6
 
 raw_18 -> leaf_19
 leaf_19  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
@@ -96,7 +104,7 @@ other primitive and compound C types.
 "]
 // END RANK raw_18
 
-prose_5 -> { raw_20 link_21 raw_22}
+prose_7 -> { raw_20 link_21 raw_22}
 {rank=same; raw_20 link_21 raw_22}
 
 raw_20 [label="raw"]
@@ -106,7 +114,7 @@ link_21 [label="link"]
 raw_22 [label="raw"]
 
 
-// END RANK prose_5
+// END RANK prose_7
 
 raw_20 -> leaf_23
 leaf_23  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
@@ -138,7 +146,7 @@ leaf_28  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
 "]
 // END RANK raw_22
 
-section_6 -> { header_29 prose_30 prose_31 prose_32 prose_33}
+section_8 -> { header_29 prose_30 prose_31 prose_32 prose_33}
 {rank=same; header_29 prose_30 prose_31 prose_32 prose_33}
 
 header_29 [label="4 : License (MIT)"]
@@ -152,7 +160,7 @@ prose_32 [label="prose"]
 prose_33 [label="prose"]
 
 
-// END RANK section_6
+// END RANK section_8
 
 header_29 -> leaf_34
 leaf_34  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** License (MIT)"]
@@ -229,17 +237,17 @@ THE SOFTWARE.
 "]
 // END RANK raw_41
 
-section_7 -> { header_43 prose_44 codeblock_45}
+section_9 -> { header_43 prose_44 codeblock_45}
 {rank=same; header_43 prose_44 codeblock_45}
 
 header_43 [label="3 : reflect"]
 
 prose_44 [label="prose"]
 
-codeblock_45 [label="code block 42-385"]
+codeblock_45 [label="code block 46-389"]
 
 
-// END RANK section_7
+// END RANK section_9
 
 header_43 -> leaf_46
 leaf_46  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** reflect"]
