@@ -114,8 +114,11 @@ function Txtbuf.insert(txtbuf, frag)
       txtbuf.line = line
    end
    local wide_frag = utf8(frag)
-   -- #deprecated, this shouldn't happen any longer,
-   -- since we break up wide inputs in femto main
+   -- in principle, we should be breaking up wide (paste) inputs in
+   -- femto.
+   --
+   -- in reality this code is still invoked on paste.  Something to fix
+   -- at some point...
    if wide_frag < #frag then -- a paste
       -- Normalize whitespace
       frag = gsub(frag, "\r\n", "\n"):gsub("\r", "\n"):gsub("\t", "   ")
@@ -163,12 +166,39 @@ end
 
 
 
+
+
+
 local remove = assert(table.remove)
+
+local _del_by_pairs = { {"{", "}"},
+                       {"'", "'"},
+                       {'"', '"'},
+                       {"[", "]"},
+                       {"(", ")"} }
+
+local function _isPaired(a, b)
+   local pairing = false
+   for _, bookends in ipairs(_del_by_pairs) do
+      pairing = pairing or (a == bookends[1] and b == bookends[2])
+   end
+   return pairing
+end
+
+local function _deleteBack(txtbuf, cursor)
+   local cursor, cur_row, lines = txtbuf.cursor, txtbuf.cur_row, txtbuf.lines
+   if _isPaired(lines[cur_row][cursor - 1], lines[cur_row][cursor]) then
+      remove(txtbuf.lines[cur_row], cursor)
+      remove(txtbuf.lines[cur_row], cursor - 1)
+   else
+      remove(txtbuf.lines[cur_row], cursor - 1)
+   end
+end
 
 function Txtbuf.d_back(txtbuf)
    local cursor, cur_row = txtbuf.cursor, txtbuf.cur_row
    if cursor > 1 then
-      remove(txtbuf.lines[cur_row], cursor - 1)
+      _deleteBack(txtbuf, cursor)
       txtbuf.cursor = cursor - 1
       return false
    elseif cur_row == 1 then
