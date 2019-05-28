@@ -90,6 +90,7 @@ local _frag_sub = { ["("] = {"(", ")"},
 
 local _closing_pairs = { '"', ")", "}", "]", "'"}
 
+-- pronounced clozer
 local function _closer(frag)
    local mebbe = false
    for _, cha in ipairs(_closing_pairs) do
@@ -193,13 +194,13 @@ local function _deleteBack(txtbuf, cursor)
    else
       remove(txtbuf.lines[cur_row], cursor - 1)
    end
+   txtbuf.cursor = cursor - 1
 end
 
 function Txtbuf.d_back(txtbuf)
    local cursor, cur_row = txtbuf.cursor, txtbuf.cur_row
    if cursor > 1 then
       _deleteBack(txtbuf, cursor)
-      txtbuf.cursor = cursor - 1
       return false
    elseif cur_row == 1 then
       return false
