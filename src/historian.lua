@@ -124,10 +124,11 @@ WHERE result.line_id = :line_id
 ORDER BY result.result_id;
 ]]
 
-local home_dir = os.getenv "HOME"
+local home_dir = io.popen("echo $HOME", "r"):read("*a"):sub(1, -2)
 
-local bridge_home = os.getenv "BRIDGE_HOME"
-Historian.bridge_home = bridge_home or home_dir .. "/.bridge"
+local bridge_home = io.popen("echo $BRIDGE_HOME", "r"):read("*a"):sub(1, -2)
+Historian.bridge_home = bridge_home ~= "" and bridge_home
+                        or home_dir .. "/.bridge"
 
 Historian.project = io.popen("pwd", "r"):read("*a"):sub(1, -2)
 
