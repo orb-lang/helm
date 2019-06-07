@@ -94,7 +94,7 @@ local concat = assert(table.concat)
 Primitives for terminal manipulation.
 
 #!lua
-a = require "femto:anterm"
+a = require "anterm"
 local repr = require "repr"
 --watch = require "watcher"
 

@@ -29,3 +29,9 @@ would run ``orb spec``. The space is optional, ``!orb spec`` is fine.
 ```
 
 where ``@`` simply means last noun.
+
+
+I have a ways to go before it's fruitful to really flesh this out, an example
+would be ``orb agenda`` itself, so I can fetch:
+
+#Todo write =orb agenda=

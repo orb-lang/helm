@@ -1056,7 +1056,7 @@
 <g id="node91" class="node">
 <title>leaf_90</title>
 <polygon fill="none" stroke="#c0c0c0" points="4411.5,-1353.5026 4206.5,-1353.5026 4206.5,-1299.1017 4411.5,-1299.1017 4411.5,-1353.5026"/>
-<text text-anchor="middle" x="4309" y="-1338.2022" font-family="Inconsolata" font-size="14.00" fill="#000000">a = require &quot;femto:anterm&quot;</text>
+<text text-anchor="middle" x="4309" y="-1338.2022" font-family="Inconsolata" font-size="14.00" fill="#000000">a = require &quot;anterm&quot;</text>
 <text text-anchor="middle" x="4309" y="-1322.8022" font-family="Inconsolata" font-size="14.00" fill="#000000">local repr = require &quot;repr&quot;</text>
 <text text-anchor="middle" x="4309" y="-1307.4022" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45;watch = require &quot;watcher&quot;</text>
 </g>

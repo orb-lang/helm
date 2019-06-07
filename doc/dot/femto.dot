@@ -420,7 +420,7 @@ Primitives for terminal manipulation.
 // END RANK raw_88
 
 codeblock_61 -> leaf_90
-leaf_90  [color=Gray,shape=rectangle,fontname=Inconsolata,label="a = require \"femto:anterm\"
+leaf_90  [color=Gray,shape=rectangle,fontname=Inconsolata,label="a = require \"anterm\"
 local repr = require \"repr\"
 --watch = require \"watcher\"
 "]
