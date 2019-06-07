@@ -1,7 +1,7 @@
 # Repr
 
 
-  ``repr`` is our general-purpose pretty-printer.
+``repr`` is our general-purpose pretty-printer.
 
 
 This is undergoing a huge refactor to make it iterable, so it yields one
@@ -64,7 +64,6 @@ local function tie_break(old, new)
    return #old > #new
 end
 
-
 local function addName(t, aG, pre)
    pre = pre or ""
    aG = aG or anti_G
@@ -74,7 +73,8 @@ local function addName(t, aG, pre)
    for k, v in pairs(t) do
       local T = type(v)
       if (T == "table") then
-         local key = pre .. (type(k) == "string" and k or "<" .. type(k) .. ">")
+         local key = pre ..
+            (type(k) == "string" and k or "<" .. type(k) .. ">")
          if not aG[v] then
             aG[v] = key
             if not (pre == "" and k == "package") then
@@ -255,6 +255,7 @@ local function _tabulate(tab, depth, cycle, phrase)
       keys = tab
    end
    yield(O_BRACE(), 1, (is_array and "array" or "map"))
+
    for j, key in ipairs(keys) do
       if is_array then
          _tabulate(key, depth + 1, cycle, phrase)
@@ -413,7 +414,7 @@ local function lineGen(tab, depth, cycle, disp_width)
    local map_counter = 0         -- counts where commas go
    phrase.yielding = true
    local long = false            -- long or short printing
-                                 -- todo maybe attach to phrase?
+
    -- make a read-only phrase table for fetching values
    local phrase_ro = readOnly(phrase)
    -- return an iterator function which yields one line at a time.
@@ -450,6 +451,7 @@ local function lineGen(tab, depth, cycle, disp_width)
                map_counter = 1
             end
          end
+
          -- special-case for non-string values, which
          -- yield an extra piece
          if line == c.base("] = ") then
@@ -508,6 +510,12 @@ color off and back on with each line.
 
 
 Global state is annoying!
+
+
+I mean, module-local global.
+
+
+But still.
 
 ```lua
 function repr.lineGenBW(tab, disp_width)
@@ -577,6 +585,9 @@ not going to use it.
 
 
 I'm leaving in the code for now, because I'd like to repair and use it...
+
+
+lol
 
 ```lua
 local function c_data(value, str, phrase)

@@ -1,0 +1,320 @@
+digraph lpegNode {
+
+node [fontname=Helvetica]
+edge [style=dashed]
+
+doc_0 [label="doc - 27"]
+
+
+doc_0 -> { section_1}
+{rank=same; section_1}
+
+section_1 [label="section: 1-27"]
+
+
+// END RANK doc_0
+
+section_1 -> { header_2 prose_3 prose_4 prose_5 prose_6 codeblock_7 prose_8 prose_9 codeblock_10 prose_11}
+{rank=same; header_2 prose_3 prose_4 prose_5 prose_6 codeblock_7 prose_8 prose_9 codeblock_10 prose_11}
+
+header_2 [label="1 : bang!"]
+
+prose_3 [label="prose"]
+
+prose_4 [label="prose"]
+
+prose_5 [label="prose"]
+
+prose_6 [label="prose"]
+
+codeblock_7 [label="code block 15-17"]
+
+prose_8 [label="prose"]
+
+prose_9 [label="prose"]
+
+codeblock_10 [label="code block 23-25"]
+
+prose_11 [label="prose"]
+
+
+// END RANK section_1
+
+header_2 -> leaf_12
+leaf_12  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* bang!"]
+// END RANK header_2
+
+prose_3 -> { raw_13 prespace_14 literal_15 raw_16 prespace_17 literal_18 raw_19 link_20 raw_21}
+{rank=same; raw_13 prespace_14 literal_15 raw_16 prespace_17 literal_18 raw_19 link_20 raw_21}
+
+raw_13 [label="raw"]
+
+prespace_14 [label="prespace"]
+
+literal_15 [label="literal"]
+
+raw_16 [label="raw"]
+
+prespace_17 [label="prespace"]
+
+literal_18 [label="literal"]
+
+raw_19 [label="raw"]
+
+link_20 [label="link"]
+
+raw_21 [label="raw"]
+
+
+// END RANK prose_3
+
+raw_13 -> leaf_22
+leaf_22  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+
+We have, at present, two input modes for"]
+// END RANK raw_13
+
+prespace_14 -> leaf_23
+leaf_23  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_14
+
+literal_15 -> leaf_24
+leaf_24  [color=Gray,shape=rectangle,fontname=Inconsolata,label="modeselektor"]
+// END RANK literal_15
+
+raw_16 -> leaf_25
+leaf_25  [color=Gray,shape=rectangle,fontname=Inconsolata,label=": the normal mode,"]
+// END RANK raw_16
+
+prespace_17 -> leaf_26
+leaf_26  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK prespace_17
+
+literal_18 -> leaf_27
+leaf_27  [color=Gray,shape=rectangle,fontname=Inconsolata,label="nerf"]
+// END RANK literal_18
+
+raw_19 -> leaf_28
+leaf_28  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", and a companion mode we've called "]
+// END RANK raw_19
+
+link_20 -> { anchortext_29 url_30}
+{rank=same; anchortext_29 url_30}
+
+anchortext_29 [label="anchortext"]
+
+url_30 [label="url"]
+
+
+// END RANK link_20
+
+anchortext_29 -> leaf_31
+leaf_31  [color=Gray,shape=rectangle,fontname=Inconsolata,label="search"]
+// END RANK anchortext_29
+
+url_30 -> leaf_32
+leaf_32  [color=Gray,shape=rectangle,fontname=Inconsolata,label="hts://~/search.orb"]
+// END RANK url_30
+
+raw_21 -> leaf_33
+leaf_33  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
+"]
+// END RANK raw_21
+
+prose_4 -> { raw_34 prespace_35 literal_36 raw_37}
+{rank=same; raw_34 prespace_35 literal_36 raw_37}
+
+raw_34 [label="raw"]
+
+prespace_35 [label="prespace"]
+
+literal_36 [label="literal"]
+
+raw_37 [label="raw"]
+
+
+// END RANK prose_4
+
+raw_34 -> leaf_38
+leaf_38  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+We could also call this"]
+// END RANK raw_34
+
+prespace_35 -> leaf_39
+leaf_39  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_35
+
+literal_36 -> leaf_40
+leaf_40  [color=Gray,shape=rectangle,fontname=Inconsolata,label="/"]
+// END RANK literal_36
+
+raw_37 -> leaf_41
+leaf_41  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" mode, pronounced \"slash\", and it is familiar to
+the vim-conversant.
+"]
+// END RANK raw_37
+
+prose_5 -> { raw_42 prespace_43 literal_44 raw_45}
+{rank=same; raw_42 prespace_43 literal_44 raw_45}
+
+raw_42 [label="raw"]
+
+prespace_43 [label="prespace"]
+
+literal_44 [label="literal"]
+
+raw_45 [label="raw"]
+
+
+// END RANK prose_5
+
+raw_42 -> leaf_46
+leaf_46  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+The next mode we sketch, and build, is"]
+// END RANK raw_42
+
+prespace_43 -> leaf_47
+leaf_47  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_43
+
+literal_44 -> leaf_48
+leaf_48  [color=Gray,shape=rectangle,fontname=Inconsolata,label="bang"]
+// END RANK literal_44
+
+raw_45 -> leaf_49
+leaf_49  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".  This is a short-imperative
+form in a shell sort of idiom.
+"]
+// END RANK raw_45
+
+prose_6 -> { raw_50}
+{rank=same; raw_50}
+
+raw_50 [label="raw"]
+
+
+// END RANK prose_6
+
+raw_50 -> leaf_51
+leaf_51  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+An example:
+"]
+// END RANK raw_50
+
+codeblock_7 -> leaf_52
+leaf_52  [color=Gray,shape=rectangle,fontname=Inconsolata,label="! orb spec"]
+// END RANK codeblock_7
+
+prose_8 -> { raw_53 prespace_54 literal_55 raw_56 prespace_57 literal_58 raw_59}
+{rank=same; raw_53 prespace_54 literal_55 raw_56 prespace_57 literal_58 raw_59}
+
+raw_53 [label="raw"]
+
+prespace_54 [label="prespace"]
+
+literal_55 [label="literal"]
+
+raw_56 [label="raw"]
+
+prespace_57 [label="prespace"]
+
+literal_58 [label="literal"]
+
+raw_59 [label="raw"]
+
+
+// END RANK prose_8
+
+raw_53 -> leaf_60
+leaf_60  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+would run"]
+// END RANK raw_53
+
+prespace_54 -> leaf_61
+leaf_61  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_54
+
+literal_55 -> leaf_62
+leaf_62  [color=Gray,shape=rectangle,fontname=Inconsolata,label="orb spec"]
+// END RANK literal_55
+
+raw_56 -> leaf_63
+leaf_63  [color=Gray,shape=rectangle,fontname=Inconsolata,label=". The space is optional,"]
+// END RANK raw_56
+
+prespace_57 -> leaf_64
+leaf_64  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_57
+
+literal_58 -> leaf_65
+leaf_65  [color=Gray,shape=rectangle,fontname=Inconsolata,label="!orb spec"]
+// END RANK literal_58
+
+raw_59 -> leaf_66
+leaf_66  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is fine.
+"]
+// END RANK raw_59
+
+prose_9 -> { prespace_67 literal_68 raw_69}
+{rank=same; prespace_67 literal_68 raw_69}
+
+prespace_67 [label="prespace"]
+
+literal_68 [label="literal"]
+
+raw_69 [label="raw"]
+
+
+// END RANK prose_9
+
+prespace_67 -> leaf_70
+leaf_70  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK prespace_67
+
+literal_68 -> leaf_71
+leaf_71  [color=Gray,shape=rectangle,fontname=Inconsolata,label="bang"]
+// END RANK literal_68
+
+raw_69 -> leaf_72
+leaf_72  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" mode is stateful so the next command could be
+"]
+// END RANK raw_69
+
+codeblock_10 -> leaf_73
+leaf_73  [color=Gray,shape=rectangle,fontname=Inconsolata,label="!@ agenda"]
+// END RANK codeblock_10
+
+prose_11 -> { raw_74 prespace_75 literal_76 raw_77}
+{rank=same; raw_74 prespace_75 literal_76 raw_77}
+
+raw_74 [label="raw"]
+
+prespace_75 [label="prespace"]
+
+literal_76 [label="literal"]
+
+raw_77 [label="raw"]
+
+
+// END RANK prose_11
+
+raw_74 -> leaf_78
+leaf_78  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+where"]
+// END RANK raw_74
+
+prespace_75 -> leaf_79
+leaf_79  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_75
+
+literal_76 -> leaf_80
+leaf_80  [color=Gray,shape=rectangle,fontname=Inconsolata,label="@"]
+// END RANK literal_76
+
+raw_77 -> leaf_81
+leaf_81  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" simply means last noun."]
+// END RANK raw_77
+
+
+}

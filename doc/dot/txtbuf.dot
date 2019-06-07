@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 392"]
+doc_0 [label="doc - 421"]
 
 
 doc_0 -> { section_1}
@@ -29,7 +29,7 @@ prose_6 [label="prose"]
 
 section_7 [label="section: 15-16"]
 
-section_8 [label="section: 41-361"]
+section_8 [label="section: 41-390"]
 
 
 // END RANK section_1
@@ -258,23 +258,23 @@ codeblock_48 [label="code block 43-45"]
 
 section_49 [label="section: 47-78"]
 
-section_50 [label="section: 79-148"]
+section_50 [label="section: 79-150"]
 
-section_51 [label="section: 149-161"]
+section_51 [label="section: 151-163"]
 
-section_52 [label="section: 162-191"]
+section_52 [label="section: 164-220"]
 
-section_53 [label="section: 192-212"]
+section_53 [label="section: 221-241"]
 
-section_54 [label="section: 213-236"]
+section_54 [label="section: 242-265"]
 
-section_55 [label="section: 237-255"]
+section_55 [label="section: 266-284"]
 
-section_56 [label="section: 256-287"]
+section_56 [label="section: 285-316"]
 
-section_57 [label="section: 288-361"]
+section_57 [label="section: 317-390"]
 
-section_58 [label="section: 362-392"]
+section_58 [label="section: 391-421"]
 
 
 // END RANK section_8
@@ -367,7 +367,7 @@ header_72 [label="3 : Txtbuf:insert(frag)"]
 
 prose_73 [label="prose"]
 
-codeblock_74 [label="code block 81-146"]
+codeblock_74 [label="code block 81-148"]
 
 
 // END RANK section_50
@@ -399,22 +399,20 @@ local _frag_sub = { [\"(\"] = {\"(\", \")\"},
                     [\"{\"] = {\"{\", \"}\"},
                     [\"[\"] = {\"[\", \"]\"} }
 
-local _no_double = { ['\"'] = true,
-                     [\")\"] = true,
-                     [\"}\"] = true,
-                     [\"'\"] = true }
+local _closing_pairs = { '\"', \")\", \"}\", \"]\", \"'\"}
 
-local function noDouble(frag)
+-- pronounced clozer
+local function _closer(frag)
    local mebbe = false
-   for _, cha in ipairs(_no_double) do
+   for _, cha in ipairs(_closing_pairs) do
       mebbe = mebbe or cha == frag
    end
    return mebbe
 end
 
-local function _no_skip(line, cursor, frag)
+local function _no_insert(line, cursor, frag)
    if frag == line[cursor]
-      and noDouble(frag) then
+      and _closer(frag) then
       return false
    else
       return true
@@ -428,8 +426,11 @@ function Txtbuf.insert(txtbuf, frag)
       txtbuf.line = line
    end
    local wide_frag = utf8(frag)
-   -- #deprecated, this shouldn't happen any longer,
-   -- since we break up wide inputs in femto main
+   -- in principle, we should be breaking up wide (paste) inputs in
+   -- femto.
+   --
+   -- in reality this code is still invoked on paste.  Something to fix
+   -- at some point...
    if wide_frag < #frag then -- a paste
       -- Normalize whitespace
       frag = gsub(frag, \"\\r\\n\", \"\\n\"):gsub(\"\\r\", \"\\n\"):gsub(\"\\t\", \"   \")
@@ -439,9 +440,10 @@ function Txtbuf.insert(txtbuf, frag)
    end
    -- #/deprecated
    if not wide_frag then
-      if _frag_sub[frag] and _no_skip(line, txtbuf.cursor, frag) then
+      if _frag_sub[frag] and _no_insert(line, txtbuf.cursor, frag) then
+         -- add a closing symbol
          splice(line, txtbuf.cursor, _frag_sub[frag])
-      elseif _no_skip(line, txtbuf.cursor, frag) then
+      elseif _no_insert(line, txtbuf.cursor, frag)then
          t_insert(line, txtbuf.cursor, frag)
       end
       txtbuf.cursor = txtbuf.cursor + 1
@@ -463,7 +465,7 @@ header_79 [label="3 : Txtbuf:advance()"]
 
 prose_80 [label="prose"]
 
-codeblock_81 [label="code block 151-159"]
+codeblock_81 [label="code block 153-161"]
 
 
 // END RANK section_51
@@ -502,7 +504,7 @@ header_86 [label="3 : Txtbuf:d_back()"]
 
 prose_87 [label="prose"]
 
-codeblock_88 [label="code block 167-189"]
+codeblock_88 [label="code block 172-218"]
 
 
 // END RANK section_52
@@ -523,18 +525,42 @@ raw_90 -> leaf_91
 leaf_91  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 The return value tells us if we have one less line, since we need to
-clear it off the screen (true of d_fwd as well).
+clear it off the screen (true of d_fwd as well
 "]
 // END RANK raw_90
 
 codeblock_88 -> leaf_92
 leaf_92  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local remove = assert(table.remove)
 
+local _del_by_pairs = { {\"{\", \"}\"},
+                       {\"'\", \"'\"},
+                       {'\"', '\"'},
+                       {\"[\", \"]\"},
+                       {\"(\", \")\"} }
+
+local function _isPaired(a, b)
+   local pairing = false
+   for _, bookends in ipairs(_del_by_pairs) do
+      pairing = pairing or (a == bookends[1] and b == bookends[2])
+   end
+   return pairing
+end
+
+local function _deleteBack(txtbuf, cursor)
+   local cursor, cur_row, lines = txtbuf.cursor, txtbuf.cur_row, txtbuf.lines
+   if _isPaired(lines[cur_row][cursor - 1], lines[cur_row][cursor]) then
+      remove(txtbuf.lines[cur_row], cursor)
+      remove(txtbuf.lines[cur_row], cursor - 1)
+   else
+      remove(txtbuf.lines[cur_row], cursor - 1)
+   end
+   txtbuf.cursor = cursor - 1
+end
+
 function Txtbuf.d_back(txtbuf)
    local cursor, cur_row = txtbuf.cursor, txtbuf.cur_row
    if cursor > 1 then
-      remove(txtbuf.lines[cur_row], cursor - 1)
-      txtbuf.cursor = cursor - 1
+      _deleteBack(txtbuf, cursor)
       return false
    elseif cur_row == 1 then
       return false
@@ -558,7 +584,7 @@ header_93 [label="3 : Txtbuf:d_fwd()"]
 
 prose_94 [label="prose"]
 
-codeblock_95 [label="code block 194-210"]
+codeblock_95 [label="code block 223-239"]
 
 
 // END RANK section_53
@@ -607,7 +633,7 @@ prose_101 [label="prose"]
 
 prose_102 [label="prose"]
 
-codeblock_103 [label="code block 221-234"]
+codeblock_103 [label="code block 250-263"]
 
 
 // END RANK section_54
@@ -705,7 +731,7 @@ header_122 [label="3 : Txtbuf:right(disp)"]
 
 prose_123 [label="prose"]
 
-codeblock_124 [label="code block 239-253"]
+codeblock_124 [label="code block 268-282"]
 
 
 // END RANK section_55
@@ -750,9 +776,9 @@ header_129 [label="3 : Txtbuf:up(), Txtbuf:down()"]
 
 prose_130 [label="prose"]
 
-codeblock_131 [label="code block 258-271"]
+codeblock_131 [label="code block 287-300"]
 
-codeblock_132 [label="code block 273-286"]
+codeblock_132 [label="code block 302-315"]
 
 
 // END RANK section_56
@@ -811,13 +837,13 @@ header_138 [label="3 : Txtbuf:nl()"]
 
 prose_139 [label="prose"]
 
-codeblock_140 [label="code block 292-323"]
+codeblock_140 [label="code block 321-352"]
 
-codeblock_141 [label="code block 326-334"]
+codeblock_141 [label="code block 355-363"]
 
-codeblock_142 [label="code block 336-346"]
+codeblock_142 [label="code block 365-375"]
 
-codeblock_143 [label="code block 348-359"]
+codeblock_143 [label="code block 377-388"]
 
 
 // END RANK section_57
@@ -916,9 +942,9 @@ header_151 [label="3 : new"]
 
 prose_152 [label="prose"]
 
-codeblock_153 [label="code block 364-388"]
+codeblock_153 [label="code block 393-417"]
 
-codeblock_154 [label="code block 390-392"]
+codeblock_154 [label="code block 419-421"]
 
 
 // END RANK section_58

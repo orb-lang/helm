@@ -88,22 +88,20 @@ local _frag_sub = { ["("] = {"(", ")"},
                     ["{"] = {"{", "}"},
                     ["["] = {"[", "]"} }
 
-local _no_double = { ['"'] = true,
-                     [")"] = true,
-                     ["}"] = true,
-                     ["'"] = true }
+local _closing_pairs = { '"', ")", "}", "]", "'"}
 
-local function noDouble(frag)
+-- pronounced clozer
+local function _closer(frag)
    local mebbe = false
-   for _, cha in ipairs(_no_double) do
+   for _, cha in ipairs(_closing_pairs) do
       mebbe = mebbe or cha == frag
    end
    return mebbe
 end
 
-local function _no_skip(line, cursor, frag)
+local function _no_insert(line, cursor, frag)
    if frag == line[cursor]
-      and noDouble(frag) then
+      and _closer(frag) then
       return false
    else
       return true
@@ -117,8 +115,11 @@ function Txtbuf.insert(txtbuf, frag)
       txtbuf.line = line
    end
    local wide_frag = utf8(frag)
-   -- #deprecated, this shouldn't happen any longer,
-   -- since we break up wide inputs in femto main
+   -- in principle, we should be breaking up wide (paste) inputs in
+   -- femto.
+   --
+   -- in reality this code is still invoked on paste.  Something to fix
+   -- at some point...
    if wide_frag < #frag then -- a paste
       -- Normalize whitespace
       frag = gsub(frag, "\r\n", "\n"):gsub("\r", "\n"):gsub("\t", "   ")
@@ -128,9 +129,10 @@ function Txtbuf.insert(txtbuf, frag)
    end
    -- #/deprecated
    if not wide_frag then
-      if _frag_sub[frag] and _no_skip(line, txtbuf.cursor, frag) then
+      if _frag_sub[frag] and _no_insert(line, txtbuf.cursor, frag) then
+         -- add a closing symbol
          splice(line, txtbuf.cursor, _frag_sub[frag])
-      elseif _no_skip(line, txtbuf.cursor, frag) then
+      elseif _no_insert(line, txtbuf.cursor, frag)then
          t_insert(line, txtbuf.cursor, frag)
       end
       txtbuf.cursor = txtbuf.cursor + 1
@@ -158,16 +160,40 @@ end
 ### Txtbuf:d_back()
 
 The return value tells us if we have one less line, since we need to
-clear it off the screen (true of d_fwd as well).
+clear it off the screen (true of d_fwd as well
 
 ```lua
 local remove = assert(table.remove)
 
+local _del_by_pairs = { {"{", "}"},
+                       {"'", "'"},
+                       {'"', '"'},
+                       {"[", "]"},
+                       {"(", ")"} }
+
+local function _isPaired(a, b)
+   local pairing = false
+   for _, bookends in ipairs(_del_by_pairs) do
+      pairing = pairing or (a == bookends[1] and b == bookends[2])
+   end
+   return pairing
+end
+
+local function _deleteBack(txtbuf, cursor)
+   local cursor, cur_row, lines = txtbuf.cursor, txtbuf.cur_row, txtbuf.lines
+   if _isPaired(lines[cur_row][cursor - 1], lines[cur_row][cursor]) then
+      remove(txtbuf.lines[cur_row], cursor)
+      remove(txtbuf.lines[cur_row], cursor - 1)
+   else
+      remove(txtbuf.lines[cur_row], cursor - 1)
+   end
+   txtbuf.cursor = cursor - 1
+end
+
 function Txtbuf.d_back(txtbuf)
    local cursor, cur_row = txtbuf.cursor, txtbuf.cur_row
    if cursor > 1 then
-      remove(txtbuf.lines[cur_row], cursor - 1)
-      txtbuf.cursor = cursor - 1
+      _deleteBack(txtbuf, cursor)
       return false
    elseif cur_row == 1 then
       return false

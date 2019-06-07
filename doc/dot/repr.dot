@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 706"]
+doc_0 [label="doc - 719"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-597"]
+section_1 [label="section: 1-610"]
 
 
 // END RANK doc_0
@@ -33,19 +33,19 @@ section_8 [label="section: 37-49"]
 
 section_9 [label="section: 50-116"]
 
-section_10 [label="section: 134-167"]
+section_10 [label="section: 135-168"]
 
-section_11 [label="section: 168-205"]
+section_11 [label="section: 169-206"]
 
-section_12 [label="section: 206-293"]
+section_12 [label="section: 207-295"]
 
-section_13 [label="section: 294-389"]
+section_13 [label="section: 296-392"]
 
-section_14 [label="section: 504-540"]
+section_14 [label="section: 508-548"]
 
-section_15 [label="section: 541-597"]
+section_15 [label="section: 549-610"]
 
-section_16 [label="section: 598-706"]
+section_16 [label="section: 611-719"]
 
 
 // END RANK section_1
@@ -70,13 +70,11 @@ raw_21 [label="raw"]
 
 raw_18 -> leaf_22
 leaf_22  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-
-
- "]
+"]
 // END RANK raw_18
 
 prespace_19 -> leaf_23
-leaf_23  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+leaf_23  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
 // END RANK prespace_19
 
 literal_20 -> leaf_24
@@ -314,7 +312,7 @@ prose_74 [label="prose"]
 
 section_75 [label="section: 59-116"]
 
-section_76 [label="section: 117-133"]
+section_76 [label="section: 117-134"]
 
 
 // END RANK section_9
@@ -409,7 +407,6 @@ leaf_94  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function 
    return #old > #new
 end
 
-
 local function addName(t, aG, pre)
    pre = pre or \"\"
    aG = aG or anti_G
@@ -419,7 +416,8 @@ local function addName(t, aG, pre)
    for k, v in pairs(t) do
       local T = type(v)
       if (T == \"table\") then
-         local key = pre .. (type(k) == \"string\" and k or \"<\" .. type(k) .. \">\")
+         local key = pre ..
+            (type(k) == \"string\" and k or \"<\" .. type(k) .. \">\")
          if not aG[v] then
             aG[v] = key
             if not (pre == \"\" and k == \"package\") then
@@ -546,7 +544,7 @@ prose_115 [label="prose"]
 
 prose_116 [label="prose"]
 
-codeblock_117 [label="code block 142-165"]
+codeblock_117 [label="code block 143-166"]
 
 
 // END RANK section_10
@@ -622,7 +620,7 @@ prose_127 [label="prose"]
 
 prose_128 [label="prose"]
 
-codeblock_129 [label="code block 182-204"]
+codeblock_129 [label="code block 183-205"]
 
 
 // END RANK section_11
@@ -761,7 +759,7 @@ prose_153 [label="prose"]
 
 prose_154 [label="prose"]
 
-codeblock_155 [label="code block 213-283"]
+codeblock_155 [label="code block 214-285"]
 
 prose_156 [label="prose"]
 
@@ -871,6 +869,7 @@ local function _tabulate(tab, depth, cycle, phrase)
       keys = tab
    end
    yield(O_BRACE(), 1, (is_array and \"array\" or \"map\"))
+
    for j, key in ipairs(keys) do
       if is_array then
          _tabulate(key, depth + 1, cycle, phrase)
@@ -1011,9 +1010,9 @@ prose_201 [label="prose"]
 
 prose_202 [label="prose"]
 
-section_203 [label="section: 311-389"]
+section_203 [label="section: 313-392"]
 
-section_204 [label="section: 390-503"]
+section_204 [label="section: 393-507"]
 
 
 // END RANK section_13
@@ -1129,7 +1128,7 @@ header_226 [label="4 : oneLine(phrase, long)"]
 
 prose_227 [label="prose"]
 
-codeblock_228 [label="code block 316-388"]
+codeblock_228 [label="code block 318-390"]
 
 
 // END RANK section_203
@@ -1289,7 +1288,7 @@ header_251 [label="4 : lineGen"]
 
 prose_252 [label="prose"]
 
-codeblock_253 [label="code block 395-501"]
+codeblock_253 [label="code block 398-505"]
 
 
 // END RANK section_204
@@ -1336,7 +1335,7 @@ local function lineGen(tab, depth, cycle, disp_width)
    local map_counter = 0         -- counts where commas go
    phrase.yielding = true
    local long = false            -- long or short printing
-                                 -- todo maybe attach to phrase?
+
    -- make a read-only phrase table for fetching values
    local phrase_ro = readOnly(phrase)
    -- return an iterator function which yields one line at a time.
@@ -1373,6 +1372,7 @@ local function lineGen(tab, depth, cycle, disp_width)
                map_counter = 1
             end
          end
+
          -- special-case for non-string values, which
          -- yield an extra piece
          if line == c.base(\"] = \") then
@@ -1422,8 +1422,8 @@ function repr.lineGen(tab, disp)
 end"]
 // END RANK codeblock_253
 
-section_14 -> { header_258 prose_259 prose_260 prose_261 codeblock_262 codeblock_263}
-{rank=same; header_258 prose_259 prose_260 prose_261 codeblock_262 codeblock_263}
+section_14 -> { header_258 prose_259 prose_260 prose_261 prose_262 prose_263 codeblock_264 codeblock_265}
+{rank=same; header_258 prose_259 prose_260 prose_261 prose_262 prose_263 codeblock_264 codeblock_265}
 
 header_258 [label="3 : repr.lineGenBW(tab, depth, cycle, disp_width)"]
 
@@ -1433,81 +1433,113 @@ prose_260 [label="prose"]
 
 prose_261 [label="prose"]
 
-codeblock_262 [label="code block 513-527"]
+prose_262 [label="prose"]
 
-codeblock_263 [label="code block 529-538"]
+prose_263 [label="prose"]
+
+codeblock_264 [label="code block 521-535"]
+
+codeblock_265 [label="code block 537-546"]
 
 
 // END RANK section_14
 
-header_258 -> leaf_264
-leaf_264  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** repr.lineGenBW(tab, depth, cycle, disp_width)"]
+header_258 -> leaf_266
+leaf_266  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** repr.lineGenBW(tab, depth, cycle, disp_width)"]
 // END RANK header_258
 
-prose_259 -> { raw_265}
-{rank=same; raw_265}
+prose_259 -> { raw_267}
+{rank=same; raw_267}
 
-raw_265 [label="raw"]
+raw_267 [label="raw"]
 
 
 // END RANK prose_259
 
-raw_265 -> leaf_266
-leaf_266  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_267 -> leaf_268
+leaf_268  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 This generates lines, but with no color.
 "]
-// END RANK raw_265
+// END RANK raw_267
 
-prose_260 -> { raw_267 prespace_268 literal_269 raw_270}
-{rank=same; raw_267 prespace_268 literal_269 raw_270}
+prose_260 -> { raw_269 prespace_270 literal_271 raw_272}
+{rank=same; raw_269 prespace_270 literal_271 raw_272}
 
-raw_267 [label="raw"]
+raw_269 [label="raw"]
 
-prespace_268 [label="prespace"]
+prespace_270 [label="prespace"]
 
-literal_269 [label="literal"]
+literal_271 [label="literal"]
 
-raw_270 [label="raw"]
+raw_272 [label="raw"]
 
 
 // END RANK prose_260
 
-raw_267 -> leaf_271
-leaf_271  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_269 -> leaf_273
+leaf_273  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 To keep it from interfering with other uses of the"]
-// END RANK raw_267
+// END RANK raw_269
 
-prespace_268 -> leaf_272
-leaf_272  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_268
+prespace_270 -> leaf_274
+leaf_274  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_270
 
-literal_269 -> leaf_273
-leaf_273  [color=Gray,shape=rectangle,fontname=Inconsolata,label="repr"]
-// END RANK literal_269
+literal_271 -> leaf_275
+leaf_275  [color=Gray,shape=rectangle,fontname=Inconsolata,label="repr"]
+// END RANK literal_271
 
-raw_270 -> leaf_274
-leaf_274  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" library, we turn
+raw_272 -> leaf_276
+leaf_276  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" library, we turn
 color off and back on with each line.
 "]
-// END RANK raw_270
+// END RANK raw_272
 
-prose_261 -> { raw_275}
-{rank=same; raw_275}
+prose_261 -> { raw_277}
+{rank=same; raw_277}
 
-raw_275 [label="raw"]
+raw_277 [label="raw"]
 
 
 // END RANK prose_261
 
-raw_275 -> leaf_276
-leaf_276  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_277 -> leaf_278
+leaf_278  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 Global state is annoying!
 "]
-// END RANK raw_275
+// END RANK raw_277
 
-codeblock_262 -> leaf_277
-leaf_277  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function repr.lineGenBW(tab, disp_width)
+prose_262 -> { raw_279}
+{rank=same; raw_279}
+
+raw_279 [label="raw"]
+
+
+// END RANK prose_262
+
+raw_279 -> leaf_280
+leaf_280  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+I mean, module-local global.
+"]
+// END RANK raw_279
+
+prose_263 -> { raw_281}
+{rank=same; raw_281}
+
+raw_281 [label="raw"]
+
+
+// END RANK prose_263
+
+raw_281 -> leaf_282
+leaf_282  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+But still.
+"]
+// END RANK raw_281
+
+codeblock_264 -> leaf_283
+leaf_283  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function repr.lineGenBW(tab, disp_width)
    local lg = lineGen(tab, nil, nil, disp_width)
    return function()
       c = C.no_color
@@ -1520,10 +1552,10 @@ leaf_277  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function repr.
       return nil
    end
 end"]
-// END RANK codeblock_262
+// END RANK codeblock_264
 
-codeblock_263 -> leaf_278
-leaf_278  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function tabulate(tab, depth, cycle, disp_width)
+codeblock_265 -> leaf_284
+leaf_284  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function tabulate(tab, depth, cycle, disp_width)
    disp_width = disp_width or 80
    local phrase = {}
    for line in lineGen(tab, depth, cycle, disp_width) do
@@ -1531,48 +1563,50 @@ leaf_278  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function
    end
    return concat(phrase, \"\\n\")
 end"]
-// END RANK codeblock_263
+// END RANK codeblock_265
 
-section_15 -> { header_279 prose_280 codeblock_281 prose_282 prose_283 codeblock_284}
-{rank=same; header_279 prose_280 codeblock_281 prose_282 prose_283 codeblock_284}
+section_15 -> { header_285 prose_286 codeblock_287 prose_288 prose_289 prose_290 codeblock_291}
+{rank=same; header_285 prose_286 codeblock_287 prose_288 prose_289 prose_290 codeblock_291}
 
-header_279 [label="3 : string and cdata pretty-printing"]
+header_285 [label="3 : string and cdata pretty-printing"]
 
-prose_280 [label="prose"]
+prose_286 [label="prose"]
 
-codeblock_281 [label="code block 546-577"]
+codeblock_287 [label="code block 554-585"]
 
-prose_282 [label="prose"]
+prose_288 [label="prose"]
 
-prose_283 [label="prose"]
+prose_289 [label="prose"]
 
-codeblock_284 [label="code block 585-596"]
+prose_290 [label="prose"]
+
+codeblock_291 [label="code block 597-608"]
 
 
 // END RANK section_15
 
-header_279 -> leaf_285
-leaf_285  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** string and cdata pretty-printing"]
-// END RANK header_279
+header_285 -> leaf_292
+leaf_292  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** string and cdata pretty-printing"]
+// END RANK header_285
 
-prose_280 -> { raw_286}
-{rank=same; raw_286}
+prose_286 -> { raw_293}
+{rank=same; raw_293}
 
-raw_286 [label="raw"]
+raw_293 [label="raw"]
 
 
-// END RANK prose_280
+// END RANK prose_286
 
-raw_286 -> leaf_287
-leaf_287  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_293 -> leaf_294
+leaf_294  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 We make a small wrapper function which resets string color in between
 escapes, then gsub the daylights out of it.
 "]
-// END RANK raw_286
+// END RANK raw_293
 
-codeblock_281 -> leaf_288
-leaf_288  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local find, sub, gsub, byte = string.find, string.sub,
+codeblock_287 -> leaf_295
+leaf_295  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local find, sub, gsub, byte = string.find, string.sub,
                               string.gsub, string.byte
 
 local e = function(str)
@@ -1602,39 +1636,53 @@ local function scrub (str)
              :gsub(\"\\v\", e \"\\\\v\")
              :gsub(\"%c\", ctrl_pr)
 end"]
-// END RANK codeblock_281
+// END RANK codeblock_287
 
-prose_282 -> { raw_289}
-{rank=same; raw_289}
+prose_288 -> { raw_296}
+{rank=same; raw_296}
 
-raw_289 [label="raw"]
+raw_296 [label="raw"]
 
 
-// END RANK prose_282
+// END RANK prose_288
 
-raw_289 -> leaf_290
-leaf_290  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_296 -> leaf_297
+leaf_297  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 Note: the reflect library appears to be broken for LuaJIT 2.1 so we're
 not going to use it.
 "]
-// END RANK raw_289
+// END RANK raw_296
 
-prose_283 -> { raw_291}
-{rank=same; raw_291}
+prose_289 -> { raw_298}
+{rank=same; raw_298}
 
-raw_291 [label="raw"]
+raw_298 [label="raw"]
 
 
-// END RANK prose_283
+// END RANK prose_289
 
-raw_291 -> leaf_292
-leaf_292  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_298 -> leaf_299
+leaf_299  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 I'm leaving in the code for now, because I'd like to repair and use it...
 "]
-// END RANK raw_291
+// END RANK raw_298
 
-codeblock_284 -> leaf_293
-leaf_293  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function c_data(value, str, phrase)
+prose_290 -> { raw_300}
+{rank=same; raw_300}
+
+raw_300 [label="raw"]
+
+
+// END RANK prose_290
+
+raw_300 -> leaf_301
+leaf_301  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+lol
+"]
+// END RANK raw_300
+
+codeblock_291 -> leaf_302
+leaf_302  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function c_data(value, str, phrase)
    --local meta = reflect.getmetatable(value)
    yield(str, #str)
    --[[
@@ -1644,45 +1692,45 @@ leaf_293  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function
    end
    --]]
 end"]
-// END RANK codeblock_284
+// END RANK codeblock_291
 
-section_16 -> { header_294 prose_295 codeblock_296 codeblock_297 codeblock_298}
-{rank=same; header_294 prose_295 codeblock_296 codeblock_297 codeblock_298}
+section_16 -> { header_303 prose_304 codeblock_305 codeblock_306 codeblock_307}
+{rank=same; header_303 prose_304 codeblock_305 codeblock_306 codeblock_307}
 
-header_294 [label="3 : ts_coro"]
+header_303 [label="3 : ts_coro"]
 
-prose_295 [label="prose"]
+prose_304 [label="prose"]
 
-codeblock_296 [label="code block 602-688"]
+codeblock_305 [label="code block 615-701"]
 
-codeblock_297 [label="code block 692-699"]
+codeblock_306 [label="code block 705-712"]
 
-codeblock_298 [label="code block 701-703"]
+codeblock_307 [label="code block 714-716"]
 
 
 // END RANK section_16
 
-header_294 -> leaf_299
-leaf_299  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** ts_coro"]
-// END RANK header_294
+header_303 -> leaf_308
+leaf_308  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** ts_coro"]
+// END RANK header_303
 
-prose_295 -> { raw_300}
-{rank=same; raw_300}
+prose_304 -> { raw_309}
+{rank=same; raw_309}
 
-raw_300 [label="raw"]
+raw_309 [label="raw"]
 
 
-// END RANK prose_295
+// END RANK prose_304
 
-raw_300 -> leaf_301
-leaf_301  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_309 -> leaf_310
+leaf_310  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 Lots of small, nice things in this one.
 "]
-// END RANK raw_300
+// END RANK raw_309
 
-codeblock_296 -> leaf_302
-leaf_302  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ts_coro = function (value, hint, phrase)
+codeblock_305 -> leaf_311
+leaf_311  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ts_coro = function (value, hint, phrase)
    local strval = tostring(value) or \"\"
    local len = #strval
    local str = scrub(strval)
@@ -1767,20 +1815,20 @@ leaf_302  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ts_coro = func
 end
 
 repr.ts = tabulate"]
-// END RANK codeblock_296
+// END RANK codeblock_305
 
-codeblock_297 -> leaf_303
-leaf_303  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function repr.ts_bw(value)
+codeblock_306 -> leaf_312
+leaf_312  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function repr.ts_bw(value)
    c = C.no_color
    local to_string = tabulate(value)
    c = C.color
    return to_string
 end"]
-// END RANK codeblock_297
+// END RANK codeblock_306
 
-codeblock_298 -> leaf_304
-leaf_304  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return repr"]
-// END RANK codeblock_298
+codeblock_307 -> leaf_313
+leaf_313  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return repr"]
+// END RANK codeblock_307
 
 
 }

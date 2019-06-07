@@ -65,7 +65,6 @@ local function tie_break(old, new)
    return #old > #new
 end
 
-
 local function addName(t, aG, pre)
    pre = pre or ""
    aG = aG or anti_G
@@ -75,7 +74,8 @@ local function addName(t, aG, pre)
    for k, v in pairs(t) do
       local T = type(v)
       if (T == "table") then
-         local key = pre .. (type(k) == "string" and k or "<" .. type(k) .. ">")
+         local key = pre ..
+            (type(k) == "string" and k or "<" .. type(k) .. ">")
          if not aG[v] then
             aG[v] = key
             if not (pre == "" and k == "package") then
@@ -129,6 +129,7 @@ function repr.clearNames()
    anti_G = {_G = "_G"}
    return anti_G
 end
+
 
 
 
@@ -259,6 +260,7 @@ local function _tabulate(tab, depth, cycle, phrase)
       keys = tab
    end
    yield(O_BRACE(), 1, (is_array and "array" or "map"))
+
    for j, key in ipairs(keys) do
       if is_array then
          _tabulate(key, depth + 1, cycle, phrase)
@@ -393,6 +395,7 @@ end
 
 
 
+
 assert(readOnly, "must have readOnly from core")
 
 local function _remains(phrase)
@@ -414,7 +417,7 @@ local function lineGen(tab, depth, cycle, disp_width)
    local map_counter = 0         -- counts where commas go
    phrase.yielding = true
    local long = false            -- long or short printing
-                                 -- todo maybe attach to phrase?
+
    -- make a read-only phrase table for fetching values
    local phrase_ro = readOnly(phrase)
    -- return an iterator function which yields one line at a time.
@@ -451,6 +454,7 @@ local function lineGen(tab, depth, cycle, disp_width)
                map_counter = 1
             end
          end
+
          -- special-case for non-string values, which
          -- yield an extra piece
          if line == c.base("] = ") then
@@ -498,6 +502,10 @@ function repr.lineGen(tab, disp)
    disp = disp or 80
    return lineGen(tab, nil, nil, disp)
 end
+
+
+
+
 
 
 
@@ -583,6 +591,10 @@ end
 
 
 
+
+
+
+
 local function c_data(value, str, phrase)
    --local meta = reflect.getmetatable(value)
    yield(str, #str)
@@ -593,6 +605,7 @@ local function c_data(value, str, phrase)
    end
    --]]
 end
+
 
 
 
