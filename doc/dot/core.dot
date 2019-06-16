@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 646"]
+doc_0 [label="doc - 647"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-601"]
+section_1 [label="section: 1-602"]
 
 
 // END RANK doc_0
@@ -25,13 +25,13 @@ prose_4 [label="prose"]
 
 codeblock_5 [label="code block 8-10"]
 
-section_6 [label="section: 13-93"]
+section_6 [label="section: 13-94"]
 
-section_7 [label="section: 110-321"]
+section_7 [label="section: 111-322"]
 
-section_8 [label="section: 359-587"]
+section_8 [label="section: 360-588"]
 
-section_9 [label="section: 602-604"]
+section_9 [label="section: 603-605"]
 
 
 // END RANK section_1
@@ -117,13 +117,13 @@ prose_29 [label="prose"]
 
 prose_30 [label="prose"]
 
-section_31 [label="section: 20-43"]
+section_31 [label="section: 20-44"]
 
-section_32 [label="section: 44-67"]
+section_32 [label="section: 45-68"]
 
-section_33 [label="section: 68-93"]
+section_33 [label="section: 69-94"]
 
-section_34 [label="section: 94-109"]
+section_34 [label="section: 95-110"]
 
 
 // END RANK section_6
@@ -277,7 +277,7 @@ header_76 [label="3 : meta"]
 
 prose_77 [label="prose"]
 
-codeblock_78 [label="code block 25-41"]
+codeblock_78 [label="code block 25-42"]
 
 
 // END RANK section_31
@@ -321,10 +321,11 @@ leaf_87  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
 // END RANK raw_83
 
 codeblock_78 -> leaf_88
-leaf_88  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function core.meta(MT)
+leaf_88  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function core.meta(MT, tab)
+   tab = tab or {}
    if MT and MT.__index then
       -- inherit
-      return setmetatable({}, MT)
+      return setmetatable(tab, MT)
    elseif MT then
       -- decorate
       MT.__index = MT
@@ -349,7 +350,7 @@ prose_91 [label="prose"]
 
 prose_92 [label="prose"]
 
-codeblock_93 [label="code block 55-66"]
+codeblock_93 [label="code block 56-67"]
 
 
 // END RANK section_32
@@ -482,7 +483,7 @@ prose_122 [label="prose"]
 
 prose_123 [label="prose"]
 
-codeblock_124 [label="code block 78-88"]
+codeblock_124 [label="code block 79-89"]
 
 prose_125 [label="prose"]
 
@@ -591,7 +592,7 @@ header_142 [label="3 : readOnly(tab)"]
 
 prose_143 [label="prose"]
 
-codeblock_144 [label="code block 98-107"]
+codeblock_144 [label="code block 99-108"]
 
 
 // END RANK section_34
@@ -633,27 +634,27 @@ header_149 [label="2 : Table extensions"]
 
 prose_150 [label="prose"]
 
-section_151 [label="section: 112-122"]
+section_151 [label="section: 113-123"]
 
-section_152 [label="section: 123-151"]
+section_152 [label="section: 124-152"]
 
-section_153 [label="section: 152-177"]
+section_153 [label="section: 153-178"]
 
-section_154 [label="section: 178-192"]
+section_154 [label="section: 179-193"]
 
-section_155 [label="section: 193-209"]
+section_155 [label="section: 194-210"]
 
-section_156 [label="section: 210-238"]
+section_156 [label="section: 211-239"]
 
-section_157 [label="section: 239-256"]
+section_157 [label="section: 240-257"]
 
-section_158 [label="section: 257-273"]
+section_158 [label="section: 258-274"]
 
-section_159 [label="section: 274-288"]
+section_159 [label="section: 275-289"]
 
-section_160 [label="section: 289-321"]
+section_160 [label="section: 290-322"]
 
-section_161 [label="section: 322-358"]
+section_161 [label="section: 323-359"]
 
 
 // END RANK section_7
@@ -682,7 +683,7 @@ header_165 [label="3 : pack(...)"]
 
 prose_166 [label="prose"]
 
-codeblock_167 [label="code block 116-120"]
+codeblock_167 [label="code block 117-121"]
 
 
 // END RANK section_151
@@ -719,7 +720,7 @@ header_172 [label="3 : hasfield(field, tab) & hasfield.field(tab)"]
 
 prose_173 [label="prose"]
 
-codeblock_174 [label="code block 128-149"]
+codeblock_174 [label="code block 129-150"]
 
 
 // END RANK section_152
@@ -778,7 +779,7 @@ prose_181 [label="prose"]
 
 prose_182 [label="prose"]
 
-codeblock_183 [label="code block 160-175"]
+codeblock_183 [label="code block 161-176"]
 
 
 // END RANK section_153
@@ -872,7 +873,7 @@ header_198 [label="3 : arrayof(tab)"]
 
 prose_199 [label="prose"]
 
-codeblock_200 [label="code block 182-190"]
+codeblock_200 [label="code block 183-191"]
 
 
 // END RANK section_154
@@ -913,7 +914,7 @@ header_205 [label="3 : collect(iter, ...)"]
 
 prose_206 [label="prose"]
 
-codeblock_207 [label="code block 198-207"]
+codeblock_207 [label="code block 199-208"]
 
 
 // END RANK section_155
@@ -958,7 +959,7 @@ prose_213 [label="prose"]
 
 structure_214 [label="structure"]
 
-codeblock_215 [label="code block 218-236"]
+codeblock_215 [label="code block 219-237"]
 
 
 // END RANK section_156
@@ -1065,7 +1066,7 @@ header_235 [label="3 : reverse(tab)"]
 
 prose_236 [label="prose"]
 
-codeblock_237 [label="code block 243-254"]
+codeblock_237 [label="code block 244-255"]
 
 
 // END RANK section_157
@@ -1109,7 +1110,7 @@ header_242 [label="3 : keys(tab)"]
 
 prose_243 [label="prose"]
 
-codeblock_244 [label="code block 261-271"]
+codeblock_244 [label="code block 262-272"]
 
 
 // END RANK section_158
@@ -1152,7 +1153,7 @@ header_249 [label="3 : values(tab)"]
 
 prose_250 [label="prose"]
 
-codeblock_251 [label="code block 276-286"]
+codeblock_251 [label="code block 277-287"]
 
 
 // END RANK section_159
@@ -1195,7 +1196,7 @@ prose_257 [label="prose"]
 
 prose_258 [label="prose"]
 
-codeblock_259 [label="code block 297-320"]
+codeblock_259 [label="code block 298-321"]
 
 
 // END RANK section_160
@@ -1374,7 +1375,7 @@ header_302 [label="3 : safeget(tab, key)"]
 
 prose_303 [label="prose"]
 
-codeblock_304 [label="code block 327-356"]
+codeblock_304 [label="code block 328-357"]
 
 
 // END RANK section_161
@@ -1437,19 +1438,19 @@ header_309 [label="2 : String extensions"]
 
 prose_310 [label="prose"]
 
-codeblock_311 [label="code block 361-366"]
+codeblock_311 [label="code block 362-367"]
 
-section_312 [label="section: 368-417"]
+section_312 [label="section: 369-418"]
 
-section_313 [label="section: 418-478"]
+section_313 [label="section: 419-479"]
 
-section_314 [label="section: 479-508"]
+section_314 [label="section: 480-509"]
 
-section_315 [label="section: 509-549"]
+section_315 [label="section: 510-550"]
 
-section_316 [label="section: 550-587"]
+section_316 [label="section: 551-588"]
 
-section_317 [label="section: 588-601"]
+section_317 [label="section: 589-602"]
 
 
 // END RANK section_8
@@ -1487,7 +1488,7 @@ prose_323 [label="prose"]
 
 prose_324 [label="prose"]
 
-codeblock_325 [label="code block 376-415"]
+codeblock_325 [label="code block 377-416"]
 
 
 // END RANK section_312
@@ -1593,7 +1594,7 @@ prose_342 [label="prose"]
 
 prose_343 [label="prose"]
 
-codeblock_344 [label="code block 460-477"]
+codeblock_344 [label="code block 461-478"]
 
 
 // END RANK section_313
@@ -2374,7 +2375,7 @@ prose_562 [label="prose"]
 
 prose_563 [label="prose"]
 
-codeblock_564 [label="code block 485-506"]
+codeblock_564 [label="code block 486-507"]
 
 
 // END RANK section_314
@@ -2514,9 +2515,9 @@ prose_596 [label="prose"]
 
 prose_597 [label="prose"]
 
-codeblock_598 [label="code block 516-526"]
+codeblock_598 [label="code block 517-527"]
 
-codeblock_599 [label="code block 528-547"]
+codeblock_599 [label="code block 529-548"]
 
 
 // END RANK section_315
@@ -2631,7 +2632,7 @@ header_619 [label="3 : codepoints(str)"]
 
 prose_620 [label="prose"]
 
-codeblock_621 [label="code block 555-585"]
+codeblock_621 [label="code block 556-586"]
 
 
 // END RANK section_316
@@ -2713,7 +2714,7 @@ header_632 [label="3 : core.slurp(filename)"]
 
 prose_633 [label="prose"]
 
-codeblock_634 [label="code block 592-599"]
+codeblock_634 [label="code block 593-600"]
 
 
 // END RANK section_317
@@ -2753,7 +2754,7 @@ header_639 [label="2 : Errors and asserts"]
 
 prose_640 [label="prose"]
 
-section_641 [label="section: 605-646"]
+section_641 [label="section: 606-647"]
 
 
 // END RANK section_9
@@ -2785,9 +2786,9 @@ prose_646 [label="prose"]
 
 prose_647 [label="prose"]
 
-codeblock_648 [label="code block 612-622"]
+codeblock_648 [label="code block 613-623"]
 
-codeblock_649 [label="code block 624-626"]
+codeblock_649 [label="code block 625-627"]
 
 
 // END RANK section_641

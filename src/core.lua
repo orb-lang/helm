@@ -23,10 +23,11 @@ local core = {}
 
 
 
-function core.meta(MT)
+function core.meta(MT, tab)
+   tab = tab or {}
    if MT and MT.__index then
       -- inherit
-      return setmetatable({}, MT)
+      return setmetatable(tab, MT)
    elseif MT then
       -- decorate
       MT.__index = MT
