@@ -1493,7 +1493,7 @@
 <text text-anchor="middle" x="3653" y="-465.1006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return MT</text>
 <text text-anchor="middle" x="3653" y="-449.7006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;else</text>
 <text text-anchor="middle" x="3653" y="-434.3005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; new metatable</text>
-<text text-anchor="middle" x="3653" y="-418.9005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local _M = {}</text>
+<text text-anchor="middle" x="3653" y="-418.9005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local _M = tab</text>
 <text text-anchor="middle" x="3653" y="-403.5005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;_M.__index = _M</text>
 <text text-anchor="middle" x="3653" y="-388.1005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return _M</text>
 <text text-anchor="middle" x="3653" y="-372.7004" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>

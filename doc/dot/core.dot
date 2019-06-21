@@ -332,7 +332,7 @@ leaf_88  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function core.m
       return MT
    else
       -- new metatable
-      local _M = {}
+      local _M = tab
       _M.__index = _M
       return _M
    end

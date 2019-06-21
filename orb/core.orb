@@ -34,7 +34,7 @@ function core.meta(MT, tab)
       return MT
    else
       -- new metatable
-      local _M = {}
+      local _M = tab
       _M.__index = _M
       return _M
    end
