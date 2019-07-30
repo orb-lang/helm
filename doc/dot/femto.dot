@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 336"]
+doc_0 [label="doc - 337"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-207"]
+section_1 [label="section: 1-208"]
 
 
 // END RANK doc_0
@@ -21,13 +21,13 @@ header_2 [label="1 : Femto"]
 
 prose_3 [label="prose"]
 
-section_4 [label="section: 6-53"]
+section_4 [label="section: 6-54"]
 
-section_5 [label="section: 60-171"]
+section_5 [label="section: 61-172"]
 
-section_6 [label="section: 185-207"]
+section_6 [label="section: 186-208"]
 
-section_7 [label="section: 208-213"]
+section_7 [label="section: 209-214"]
 
 
 // END RANK section_1
@@ -75,9 +75,9 @@ header_17 [label="2 : includes"]
 
 prose_18 [label="prose"]
 
-section_19 [label="section: 9-53"]
+section_19 [label="section: 9-54"]
 
-section_20 [label="section: 54-59"]
+section_20 [label="section: 55-60"]
 
 
 // END RANK section_4
@@ -113,7 +113,7 @@ codeblock_27 [label="code block 17-22"]
 
 prose_28 [label="prose"]
 
-codeblock_29 [label="code block 26-51"]
+codeblock_29 [label="code block 26-52"]
 
 
 // END RANK section_19
@@ -220,6 +220,7 @@ bit  = require \"bit\"
 uv   = require \"luv\"
 utf8 = require \"lua-utf8\"
 core = require \"core\"
+ss   = require \"ss\"
 
 -- replace string lib with utf8 equivalents
 for k,v in pairs(utf8) do
@@ -277,15 +278,15 @@ prose_57 [label="prose"]
 
 prose_58 [label="prose"]
 
-codeblock_59 [label="code block 67-92"]
+codeblock_59 [label="code block 68-93"]
 
 prose_60 [label="prose"]
 
-codeblock_61 [label="code block 96-101"]
+codeblock_61 [label="code block 97-102"]
 
-section_62 [label="section: 103-171"]
+section_62 [label="section: 104-172"]
 
-section_63 [label="section: 172-184"]
+section_63 [label="section: 173-185"]
 
 
 // END RANK section_5
@@ -435,19 +436,19 @@ prose_92 [label="prose"]
 
 prose_93 [label="prose"]
 
-codeblock_94 [label="code block 111-128"]
+codeblock_94 [label="code block 112-129"]
 
 prose_95 [label="prose"]
 
 prose_96 [label="prose"]
 
-codeblock_97 [label="code block 133-150"]
+codeblock_97 [label="code block 134-151"]
 
 prose_98 [label="prose"]
 
-codeblock_99 [label="code block 154-158"]
+codeblock_99 [label="code block 155-159"]
 
-codeblock_100 [label="code block 160-169"]
+codeblock_100 [label="code block 161-170"]
 
 
 // END RANK section_62
@@ -624,7 +625,7 @@ header_128 [label="3 : tty setup"]
 
 prose_129 [label="prose"]
 
-codeblock_130 [label="code block 174-182"]
+codeblock_130 [label="code block 175-183"]
 
 
 // END RANK section_63
@@ -663,7 +664,7 @@ header_135 [label="2 : Modeselektor"]
 
 prose_136 [label="prose"]
 
-codeblock_137 [label="code block 188-205"]
+codeblock_137 [label="code block 189-206"]
 
 
 // END RANK section_6
@@ -712,7 +713,7 @@ header_142 [label="2 : Reader"]
 
 prose_143 [label="prose"]
 
-section_144 [label="section: 214-325"]
+section_144 [label="section: 215-326"]
 
 
 // END RANK section_7
@@ -781,11 +782,11 @@ header_160 [label="3 : process_escapes(seq)"]
 
 prose_161 [label="prose"]
 
-codeblock_162 [label="code block 216-274"]
+codeblock_162 [label="code block 217-275"]
 
-codeblock_163 [label="code block 276-324"]
+codeblock_163 [label="code block 277-325"]
 
-section_164 [label="section: 326-336"]
+section_164 [label="section: 327-337"]
 
 
 // END RANK section_144
@@ -924,7 +925,7 @@ header_170 [label="4 : Launch femto"]
 
 prose_171 [label="prose"]
 
-codeblock_172 [label="code block 330-335"]
+codeblock_172 [label="code block 331-336"]
 
 
 // END RANK section_164

@@ -33,6 +33,7 @@ bit  = require "bit"
 uv   = require "luv"
 utf8 = require "lua-utf8"
 core = require "core"
+ss   = require "ss"
 
 -- replace string lib with utf8 equivalents
 for k,v in pairs(utf8) do
