@@ -2170,41 +2170,42 @@
 <!-- leaf_169 -->
 <g id="node170" class="node">
 <title>leaf_169</title>
-<polygon fill="none" stroke="#c0c0c0" points="9822.5,-1026.7022 9309.5,-1026.7022 9309.5,-287.4998 9822.5,-287.4998 9822.5,-1026.7022"/>
-<text text-anchor="middle" x="9566" y="-995.7015" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; read main programme</text>
-<text text-anchor="middle" x="9566" y="-980.3015" font-family="Inconsolata" font-size="14.00" fill="#000000">if arg[1] then</text>
-<text text-anchor="middle" x="9566" y="-964.9015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;local prog = table.remove(arg, 1)</text>
-<text text-anchor="middle" x="9566" y="-949.5014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;local chunk, err = loadfile(prog)</text>
-<text text-anchor="middle" x="9566" y="-934.1014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;if chunk then</text>
-<text text-anchor="middle" x="9566" y="-918.7014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;setfenv(chunk, _G)()</text>
-<text text-anchor="middle" x="9566" y="-903.3013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;else</text>
-<text text-anchor="middle" x="9566" y="-887.9013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;error (&quot;couldn&#39;t load &quot; .. prog .. &quot;\n&quot; .. err)</text>
-<text text-anchor="middle" x="9566" y="-872.5013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;end</text>
-<text text-anchor="middle" x="9566" y="-857.1012" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
-<text text-anchor="middle" x="9566" y="-777.7012" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; Get names for as many values as possible</text>
-<text text-anchor="middle" x="9566" y="-762.3012" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; into the colorizer</text>
-<text text-anchor="middle" x="9566" y="-746.9011" font-family="Inconsolata" font-size="14.00" fill="#000000">repr.allNames(_G)</text>
-<text text-anchor="middle" x="9566" y="-715.5011" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; assuming we survived that, set up our repling environment:</text>
-<text text-anchor="middle" x="9566" y="-684.1011" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; raw mode</text>
-<text text-anchor="middle" x="9566" y="-668.701" font-family="Inconsolata" font-size="14.00" fill="#000000">uv.tty_set_mode(stdin, 2)</text>
-<text text-anchor="middle" x="9566" y="-637.301" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; mouse mode</text>
-<text text-anchor="middle" x="9566" y="-621.901" font-family="Inconsolata" font-size="14.00" fill="#000000">write(a.mouse.track(true))</text>
-<text text-anchor="middle" x="9566" y="-606.501" font-family="Inconsolata" font-size="14.00" fill="#000000">uv.read_start(stdin, onseq)</text>
-<text text-anchor="middle" x="9566" y="-575.1009" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; #todo This should start with a read which saves the cursor location.</text>
-<text text-anchor="middle" x="9566" y="-559.7009" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; This switches screens and does a wipe,</text>
-<text text-anchor="middle" x="9566" y="-544.3009" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; then puts the cursor at 1,1.</text>
-<text text-anchor="middle" x="9566" y="-528.9008" font-family="Inconsolata" font-size="14.00" fill="#000000">write &quot;\x1b[?47h\x1b[2J\x1b[H&quot;</text>
-<text text-anchor="middle" x="9566" y="-497.5008" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; paint screen</text>
-<text text-anchor="middle" x="9566" y="-482.1008" font-family="Inconsolata" font-size="14.00" fill="#000000">modeS:paint()</text>
-<text text-anchor="middle" x="9566" y="-450.7007" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; main loop</text>
-<text text-anchor="middle" x="9566" y="-435.3007" font-family="Inconsolata" font-size="14.00" fill="#000000">local retcode = &#160;uv.run(&#39;default&#39;)</text>
-<text text-anchor="middle" x="9566" y="-419.9007" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; Restore main screen</text>
-<text text-anchor="middle" x="9566" y="-404.5006" font-family="Inconsolata" font-size="14.00" fill="#000000">print &#39;\x1b[?47l&#39;</text>
-<text text-anchor="middle" x="9566" y="-373.1006" font-family="Inconsolata" font-size="14.00" fill="#000000">if retcode ~= true then</text>
-<text text-anchor="middle" x="9566" y="-357.7006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;error(retcode)</text>
-<text text-anchor="middle" x="9566" y="-342.3005" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
-<text text-anchor="middle" x="9566" y="-310.9005" font-family="Inconsolata" font-size="14.00" fill="#000000">print(&quot;kthxbye&quot;)</text>
-<text text-anchor="middle" x="9566" y="-295.5005" font-family="Inconsolata" font-size="14.00" fill="#000000">return retcode</text>
+<polygon fill="none" stroke="#c0c0c0" points="9822.5,-1026.6021 9309.5,-1026.6021 9309.5,-287.5999 9822.5,-287.5999 9822.5,-1026.6021"/>
+<text text-anchor="middle" x="9566" y="-995.4015" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45;[[ read main programme</text>
+<text text-anchor="middle" x="9566" y="-980.0015" font-family="Inconsolata" font-size="14.00" fill="#000000">if arg[1] then</text>
+<text text-anchor="middle" x="9566" y="-964.6015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;local prog = table.remove(arg, 1)</text>
+<text text-anchor="middle" x="9566" y="-949.2014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;local chunk, err = loadfile(prog)</text>
+<text text-anchor="middle" x="9566" y="-933.8014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;if chunk then</text>
+<text text-anchor="middle" x="9566" y="-918.4014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;setfenv(chunk, _G)()</text>
+<text text-anchor="middle" x="9566" y="-903.0013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;else</text>
+<text text-anchor="middle" x="9566" y="-887.6013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;error (&quot;couldn&#39;t load &quot; .. prog .. &quot;\n&quot; .. err)</text>
+<text text-anchor="middle" x="9566" y="-872.2013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;end</text>
+<text text-anchor="middle" x="9566" y="-856.8012" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
+<text text-anchor="middle" x="9566" y="-841.4012" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45;]]</text>
+<text text-anchor="middle" x="9566" y="-778.0012" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; Get names for as many values as possible</text>
+<text text-anchor="middle" x="9566" y="-762.6012" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; into the colorizer</text>
+<text text-anchor="middle" x="9566" y="-747.2011" font-family="Inconsolata" font-size="14.00" fill="#000000">repr.allNames(_G)</text>
+<text text-anchor="middle" x="9566" y="-715.8011" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; assuming we survived that, set up our repling environment:</text>
+<text text-anchor="middle" x="9566" y="-684.4011" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; raw mode</text>
+<text text-anchor="middle" x="9566" y="-669.001" font-family="Inconsolata" font-size="14.00" fill="#000000">uv.tty_set_mode(stdin, 2)</text>
+<text text-anchor="middle" x="9566" y="-637.601" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; mouse mode</text>
+<text text-anchor="middle" x="9566" y="-622.201" font-family="Inconsolata" font-size="14.00" fill="#000000">write(a.mouse.track(true))</text>
+<text text-anchor="middle" x="9566" y="-606.8009" font-family="Inconsolata" font-size="14.00" fill="#000000">uv.read_start(stdin, onseq)</text>
+<text text-anchor="middle" x="9566" y="-575.4009" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; #todo This should start with a read which saves the cursor location.</text>
+<text text-anchor="middle" x="9566" y="-560.0009" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; This switches screens and does a wipe,</text>
+<text text-anchor="middle" x="9566" y="-544.6008" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; then puts the cursor at 1,1.</text>
+<text text-anchor="middle" x="9566" y="-529.2008" font-family="Inconsolata" font-size="14.00" fill="#000000">write &quot;\x1b[?47h\x1b[2J\x1b[H&quot;</text>
+<text text-anchor="middle" x="9566" y="-497.8008" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; paint screen</text>
+<text text-anchor="middle" x="9566" y="-482.4007" font-family="Inconsolata" font-size="14.00" fill="#000000">modeS:paint()</text>
+<text text-anchor="middle" x="9566" y="-451.0007" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; main loop</text>
+<text text-anchor="middle" x="9566" y="-435.6007" font-family="Inconsolata" font-size="14.00" fill="#000000">local retcode = &#160;uv.run(&#39;default&#39;)</text>
+<text text-anchor="middle" x="9566" y="-420.2007" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; Restore main screen</text>
+<text text-anchor="middle" x="9566" y="-404.8006" font-family="Inconsolata" font-size="14.00" fill="#000000">print &#39;\x1b[?47l&#39;</text>
+<text text-anchor="middle" x="9566" y="-373.4006" font-family="Inconsolata" font-size="14.00" fill="#000000">if retcode ~= true then</text>
+<text text-anchor="middle" x="9566" y="-358.0006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;error(retcode)</text>
+<text text-anchor="middle" x="9566" y="-342.6005" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
+<text text-anchor="middle" x="9566" y="-311.2005" font-family="Inconsolata" font-size="14.00" fill="#000000">print(&quot;kthxbye&quot;)</text>
+<text text-anchor="middle" x="9566" y="-295.8005" font-family="Inconsolata" font-size="14.00" fill="#000000">return retcode</text>
 </g>
 <!-- codeblock_163&#45;&gt;leaf_169 -->
 <g id="edge169" class="edge">

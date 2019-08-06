@@ -267,7 +267,7 @@ end
 ```
 ```lua
 
--- read main programme
+--[[ read main programme
 if arg[1] then
   local prog = table.remove(arg, 1)
   local chunk, err = loadfile(prog)
@@ -277,7 +277,7 @@ if arg[1] then
      error ("couldn't load " .. prog .. "\n" .. err)
   end
 end
-
+--]]
 
 
 
