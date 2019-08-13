@@ -229,7 +229,7 @@ local function _tabulate(tab, depth, cycle, phrase)
    end
    cycle[tab] = true
    ---[[special case tables with __repr
-   if tab.__repr then
+   if rawget(tab, "__repr") then
       _yieldReprs(tab, phrase)
       return nil
    end
