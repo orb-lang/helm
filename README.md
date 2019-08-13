@@ -4,7 +4,7 @@ Femto is "an REPL".  It is, naturally, a work in progress.
 
 But then again, aren't we all.  Pull requests gratefully accepted.
 
-It features an innovate "top mode" interaction paradigm, an incomplete but hopefully comprehensible command set, and a curated dark color scheme.
+It features an innovative "top mode" interaction paradigm, an incomplete but hopefully comprehensible command set, and a curated dark color scheme.
 
 The knit code for `femto` is written in Lua, which will be changed by one letter once Djikstra indexing and the new parser are complete.
 
