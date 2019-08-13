@@ -170,7 +170,6 @@ function Lex.lua_thor(txtbuf)
       if bite == nil then
          break
       else
-         -- #todo add a color
          local col = color_map[lex_map[tok_t]]
          if col then
             toks[#toks + 1] = col

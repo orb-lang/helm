@@ -127,7 +127,7 @@
 <g id="node11" class="node">
 <title>section_10</title>
 <ellipse fill="none" stroke="#000000" cx="7307" cy="-2724.8044" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="7307" y="-2720.6044" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 285&#45;320</text>
+<text text-anchor="middle" x="7307" y="-2720.6044" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 286&#45;320</text>
 </g>
 <!-- section_1&#45;&gt;section_10 -->
 <g id="edge10" class="edge">
@@ -317,7 +317,7 @@
 <g id="node30" class="node">
 <title>section_29</title>
 <ellipse fill="none" stroke="#000000" cx="4967" cy="-2574.1043" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="4967" y="-2569.9043" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 228&#45;284</text>
+<text text-anchor="middle" x="4967" y="-2569.9043" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 228&#45;285</text>
 </g>
 <!-- section_9&#45;&gt;section_29 -->
 <g id="edge29" class="edge">
@@ -365,7 +365,7 @@
 <g id="node103" class="node">
 <title>section_102</title>
 <ellipse fill="none" stroke="#000000" cx="7939" cy="-2574.1043" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="7939" y="-2569.9043" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 295&#45;320</text>
+<text text-anchor="middle" x="7939" y="-2569.9043" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 296&#45;320</text>
 </g>
 <!-- section_10&#45;&gt;section_102 -->
 <g id="edge102" class="edge">
@@ -884,7 +884,7 @@
 <g id="node74" class="node">
 <title>codeblock_73</title>
 <ellipse fill="none" stroke="#000000" cx="6111" cy="-2106.3034" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="6111" y="-2102.1034" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 247&#45;282</text>
+<text text-anchor="middle" x="6111" y="-2102.1034" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 247&#45;283</text>
 </g>
 <!-- section_29&#45;&gt;codeblock_73 -->
 <g id="edge73" class="edge">
@@ -1114,7 +1114,7 @@
 <text text-anchor="middle" x="3480" y="-1169.1019" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&quot;i&quot;)</text>
 <text text-anchor="middle" x="3480" y="-1153.7018" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if not proj_val then</text>
 <text text-anchor="middle" x="3480" y="-1138.3018" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local ins_proj_stmt = conn:prepare(insert_project)</text>
-<text text-anchor="middle" x="3480" y="-1122.9018" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;ins_proj_stmt:bindkv {dir = historian.project}</text>
+<text text-anchor="middle" x="3480" y="-1122.9018" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;ins_proj_stmt : bindkv { dir = historian.project }</text>
 <text text-anchor="middle" x="3480" y="-1107.5017" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;proj_val, proj_row = ins_proj_stmt:step()</text>
 <text text-anchor="middle" x="3480" y="-1092.1017" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; retry</text>
 <text text-anchor="middle" x="3480" y="-1076.7017" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;proj_val, proj_row = sql.pexec(conn,</text>
@@ -1437,46 +1437,46 @@
 <!-- leaf_98 -->
 <g id="node99" class="node">
 <title>leaf_98</title>
-<polygon fill="none" stroke="#c0c0c0" points="6521.5,-1222.9025 6008.5,-1222.9025 6008.5,-690.5004 6521.5,-690.5004 6521.5,-1222.9025"/>
-<text text-anchor="middle" x="6265" y="-1207.6019" font-family="Inconsolata" font-size="14.00" fill="#000000">local concat = table.concat</text>
-<text text-anchor="middle" x="6265" y="-1192.2019" font-family="Inconsolata" font-size="14.00" fill="#000000">function Historian.persist(historian, txtbuf, results)</text>
-<text text-anchor="middle" x="6265" y="-1176.8019" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local lb = tostring(txtbuf)</text>
-<text text-anchor="middle" x="6265" y="-1161.4018" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if lb ~= &quot;&quot; then</text>
-<text text-anchor="middle" x="6265" y="-1146.0018" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;historian.insert_line:bindkv { project = historian.project_id,</text>
-<text text-anchor="middle" x="6265" y="-1130.6018" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;line &#160;&#160;&#160;= lb }</text>
-<text text-anchor="middle" x="6265" y="-1115.2017" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local err = historian.insert_line:step()</text>
-<text text-anchor="middle" x="6265" y="-1099.8017" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;if not err then</text>
-<text text-anchor="middle" x="6265" y="-1084.4017" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;historian.insert_line:clearbind():reset()</text>
-<text text-anchor="middle" x="6265" y="-1069.0017" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;else</text>
-<text text-anchor="middle" x="6265" y="-1053.6016" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;error(err)</text>
-<text text-anchor="middle" x="6265" y="-1038.2016" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end</text>
-<text text-anchor="middle" x="6265" y="-1022.8016" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local line_id = sql.lastRowId(historian.conn)</text>
-<text text-anchor="middle" x="6265" y="-1007.4015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;table.insert(historian.line_ids, line_id)</text>
-<text text-anchor="middle" x="6265" y="-992.0015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;if results and type(results) == &quot;table&quot; then</text>
-<text text-anchor="middle" x="6265" y="-976.6015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;for i = 1, results.n do</text>
-<text text-anchor="middle" x="6265" y="-961.2014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#45;&#45; insert result repr</text>
-<text text-anchor="middle" x="6265" y="-945.8014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;local res = results[i]</text>
-<text text-anchor="middle" x="6265" y="-930.4014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;historian.insert_result:bindkv { line_id = line_id,</text>
-<text text-anchor="middle" x="6265" y="-915.0013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;repr = repr.ts(res) }</text>
-<text text-anchor="middle" x="6265" y="-899.6013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;err = historian.insert_result:step()</text>
-<text text-anchor="middle" x="6265" y="-884.2013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;if not err then</text>
-<text text-anchor="middle" x="6265" y="-868.8012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;historian.insert_result:clearbind():reset()</text>
-<text text-anchor="middle" x="6265" y="-853.4012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;end</text>
-<text text-anchor="middle" x="6265" y="-838.0012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;end</text>
-<text text-anchor="middle" x="6265" y="-822.6012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end</text>
-<text text-anchor="middle" x="6265" y="-791.2011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return true</text>
-<text text-anchor="middle" x="6265" y="-775.8011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;else</text>
-<text text-anchor="middle" x="6265" y="-760.4011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; A blank line can have no results and is uninteresting.</text>
-<text text-anchor="middle" x="6265" y="-745.001" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return false</text>
-<text text-anchor="middle" x="6265" y="-729.601" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
-<text text-anchor="middle" x="6265" y="-714.201" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#45;&#45;]]</text>
-<text text-anchor="middle" x="6265" y="-698.8009" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
+<polygon fill="none" stroke="#c0c0c0" points="6521.5,-1230.9025 6008.5,-1230.9025 6008.5,-682.5004 6521.5,-682.5004 6521.5,-1230.9025"/>
+<text text-anchor="middle" x="6265" y="-1215.6019" font-family="Inconsolata" font-size="14.00" fill="#000000">local concat = table.concat</text>
+<text text-anchor="middle" x="6265" y="-1184.2019" font-family="Inconsolata" font-size="14.00" fill="#000000">function Historian.persist(historian, txtbuf, results)</text>
+<text text-anchor="middle" x="6265" y="-1168.8019" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local lb = tostring(txtbuf)</text>
+<text text-anchor="middle" x="6265" y="-1153.4018" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if lb ~= &quot;&quot; then</text>
+<text text-anchor="middle" x="6265" y="-1138.0018" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;historian.insert_line:bindkv { project = historian.project_id,</text>
+<text text-anchor="middle" x="6265" y="-1122.6018" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;line &#160;&#160;&#160;= lb }</text>
+<text text-anchor="middle" x="6265" y="-1107.2017" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local err = historian.insert_line:step()</text>
+<text text-anchor="middle" x="6265" y="-1091.8017" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;if not err then</text>
+<text text-anchor="middle" x="6265" y="-1076.4017" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;historian.insert_line:clearbind():reset()</text>
+<text text-anchor="middle" x="6265" y="-1061.0017" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;else</text>
+<text text-anchor="middle" x="6265" y="-1045.6016" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;error(err)</text>
+<text text-anchor="middle" x="6265" y="-1030.2016" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end</text>
+<text text-anchor="middle" x="6265" y="-1014.8016" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;local line_id = sql.lastRowId(historian.conn)</text>
+<text text-anchor="middle" x="6265" y="-999.4015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;table.insert(historian.line_ids, line_id)</text>
+<text text-anchor="middle" x="6265" y="-984.0015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;if results and type(results) == &quot;table&quot; then</text>
+<text text-anchor="middle" x="6265" y="-968.6015" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;for i = 1, results.n do</text>
+<text text-anchor="middle" x="6265" y="-953.2014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#45;&#45; insert result repr</text>
+<text text-anchor="middle" x="6265" y="-937.8014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;local res = results[i]</text>
+<text text-anchor="middle" x="6265" y="-922.4014" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;historian.insert_result:bindkv { line_id = line_id,</text>
+<text text-anchor="middle" x="6265" y="-907.0013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;repr = repr.ts(res) }</text>
+<text text-anchor="middle" x="6265" y="-891.6013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;err = historian.insert_result:step()</text>
+<text text-anchor="middle" x="6265" y="-876.2013" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;if not err then</text>
+<text text-anchor="middle" x="6265" y="-860.8012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;historian.insert_result:clearbind():reset()</text>
+<text text-anchor="middle" x="6265" y="-845.4012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;end</text>
+<text text-anchor="middle" x="6265" y="-830.0012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;end</text>
+<text text-anchor="middle" x="6265" y="-814.6012" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end</text>
+<text text-anchor="middle" x="6265" y="-783.2011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return true</text>
+<text text-anchor="middle" x="6265" y="-767.8011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;else</text>
+<text text-anchor="middle" x="6265" y="-752.4011" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#45;&#45; A blank line can have no results and is uninteresting.</text>
+<text text-anchor="middle" x="6265" y="-737.001" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;return false</text>
+<text text-anchor="middle" x="6265" y="-721.601" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
+<text text-anchor="middle" x="6265" y="-706.201" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#45;&#45;]]</text>
+<text text-anchor="middle" x="6265" y="-690.8009" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
 </g>
 <!-- codeblock_73&#45;&gt;leaf_98 -->
 <g id="edge98" class="edge">
 <title>codeblock_73&#45;&gt;leaf_98</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M6113.419,-2088.2459C6126.2549,-1992.4266 6187.3348,-1536.4679 6227.9345,-1233.3935"/>
-<polygon fill="#000000" stroke="#000000" points="6231.4511,-1233.5026 6229.3099,-1223.1264 6224.513,-1232.5732 6231.4511,-1233.5026"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M6113.419,-2088.2459C6126.1461,-1993.2387 6186.303,-1544.1701 6226.8979,-1241.1314"/>
+<polygon fill="#000000" stroke="#000000" points="6230.4147,-1241.2391 6228.2735,-1230.8629 6223.4767,-1240.3096 6230.4147,-1241.2391"/>
 </g>
 <!-- leaf_76 -->
 <g id="node77" class="node">
@@ -1702,7 +1702,7 @@
 <g id="node113" class="node">
 <title>codeblock_112</title>
 <ellipse fill="none" stroke="#000000" cx="8656" cy="-2106.3034" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="8656" y="-2102.1034" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 304&#45;318</text>
+<text text-anchor="middle" x="8656" y="-2102.1034" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 305&#45;318</text>
 </g>
 <!-- section_102&#45;&gt;codeblock_112 -->
 <g id="edge112" class="edge">

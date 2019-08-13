@@ -33,7 +33,7 @@ codeblock_8 [label="code block 31-33"]
 
 section_9 [label="section: 36-227"]
 
-section_10 [label="section: 285-320"]
+section_10 [label="section: 286-320"]
 
 section_11 [label="section: 397-464"]
 
@@ -140,7 +140,7 @@ section_27 [label="section: 146-216"]
 
 section_28 [label="section: 217-227"]
 
-section_29 [label="section: 228-284"]
+section_29 [label="section: 228-285"]
 
 
 // END RANK section_9
@@ -398,7 +398,7 @@ leaf_56  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Histor
                                   \"i\")
    if not proj_val then
       local ins_proj_stmt = conn:prepare(insert_project)
-      ins_proj_stmt:bindkv {dir = historian.project}
+      ins_proj_stmt : bindkv { dir = historian.project }
       proj_val, proj_row = ins_proj_stmt:step()
       -- retry
       proj_val, proj_row = sql.pexec(conn,
@@ -504,7 +504,7 @@ prose_71 [label="prose"]
 
 prose_72 [label="prose"]
 
-codeblock_73 [label="code block 247-282"]
+codeblock_73 [label="code block 247-283"]
 
 
 // END RANK section_29
@@ -632,6 +632,7 @@ common value for any identical semantics.
 
 codeblock_73 -> leaf_98
 leaf_98  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local concat = table.concat
+
 function Historian.persist(historian, txtbuf, results)
    local lb = tostring(txtbuf)
    if lb ~= \"\" then
@@ -676,7 +677,7 @@ prose_100 [label="prose"]
 
 prose_101 [label="prose"]
 
-section_102 [label="section: 295-320"]
+section_102 [label="section: 296-320"]
 
 section_103 [label="section: 321-396"]
 
@@ -729,7 +730,7 @@ prose_110 [label="prose"]
 
 prose_111 [label="prose"]
 
-codeblock_112 [label="code block 304-318"]
+codeblock_112 [label="code block 305-318"]
 
 
 // END RANK section_102
@@ -829,8 +830,7 @@ local function fuzz_patt(frag)
    end
    patt = patt * P(frag[#frag])
    return patt
-end
-"]
+end"]
 // END RANK codeblock_112
 
 section_103 -> { header_135 prose_136 prose_137 codeblock_138}

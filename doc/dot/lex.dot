@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 202"]
+doc_0 [label="doc - 201"]
 
 
 doc_0 -> { section_1}
@@ -220,7 +220,7 @@ header_24 [label="2 : Lex.lua_thor(txtbuf)"]
 
 prose_25 [label="prose"]
 
-section_26 [label="section: 133-202"]
+section_26 [label="section: 133-201"]
 
 
 // END RANK section_6
@@ -252,9 +252,9 @@ header_30 [label="3 : chomp_token(lb)"]
 
 prose_31 [label="prose"]
 
-codeblock_32 [label="code block 138-196"]
+codeblock_32 [label="code block 138-195"]
 
-codeblock_33 [label="code block 199-201"]
+codeblock_33 [label="code block 198-200"]
 
 
 // END RANK section_26
@@ -332,7 +332,6 @@ function Lex.lua_thor(txtbuf)
       if bite == nil then
          break
       else
-         -- #todo add a color
          local col = color_map[lex_map[tok_t]]
          if col then
             toks[#toks + 1] = col

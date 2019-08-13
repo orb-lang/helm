@@ -168,7 +168,7 @@ function Historian.load(historian)
                                   "i")
    if not proj_val then
       local ins_proj_stmt = conn:prepare(insert_project)
-      ins_proj_stmt:bindkv {dir = historian.project}
+      ins_proj_stmt : bindkv { dir = historian.project }
       proj_val, proj_row = ins_proj_stmt:step()
       -- retry
       proj_val, proj_row = sql.pexec(conn,
@@ -236,6 +236,7 @@ common value for any identical semantics.
 
 ```lua
 local concat = table.concat
+
 function Historian.persist(historian, txtbuf, results)
    local lb = tostring(txtbuf)
    if lb ~= "" then
@@ -304,7 +305,6 @@ local function fuzz_patt(frag)
    patt = patt * P(frag[#frag])
    return patt
 end
-
 ```
 ### __repr for collection
 
