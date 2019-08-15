@@ -130,6 +130,8 @@ end
 local function _hasfield(field, tab)
    if type(tab) == "table" and tab[field] ~= nil then
       return true, tab[field]
+   elseif getmetatable(tab) then
+      return _hasfield(field, getmetatable(tab))
    else
       return false
    end

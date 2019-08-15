@@ -229,7 +229,7 @@ local function _tabulate(tab, depth, cycle, phrase)
    end
    cycle[tab] = true
    ---[[special case tables with __repr
-   if rawget(tab, "__repr") then
+   if table.hasfield.__repr(tab) then
       _yieldReprs(tab, phrase)
       return nil
    end
@@ -237,13 +237,6 @@ local function _tabulate(tab, depth, cycle, phrase)
    -- if we have a metatable, get it first
    local _M = getmetatable(tab)
    if _M then
-      ---[[special case tables with __repr
-      if _M.__repr then
-         _yieldReprs(tab, phrase)
-         return nil
-      end
-      --]]
-      --otherwise print the metatable normally
       ts_coro(tab, "mt", phrase)
       yield(c.base(" = "), 3)
       _tabulate(_M, depth + 1, cycle, phrase)
