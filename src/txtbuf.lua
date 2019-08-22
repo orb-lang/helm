@@ -31,6 +31,26 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 assert(meta)
 local collect = assert(table.collect)
 local lines = assert(string.lines)
@@ -246,8 +266,6 @@ end
 
 
 
-
-
 function Txtbuf.left(txtbuf, disp)
    local disp = disp or 1
    local moved = false
@@ -289,6 +307,29 @@ function Txtbuf.right(txtbuf, disp)
 
    return moved
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
