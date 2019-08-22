@@ -18,6 +18,26 @@
 __G = setmetatable({}, {__index = _G})
 
 setfenv(0, __G)
+
+
+
+
+
+--[[
+brParse
+   : name "bridge"
+   : description "An lua, howth castle & environs."
+   : epilog "For more info, see https://specialcircumstanc.es"
+   : require_command(false)
+   : command_target "verb"
+   : command ("orb o", "orb compiler", "orb subcommands")
+   : argument ("serve s", "launch localhost responsive compiler and document server")
+   : parse()
+--]]
+
+
+
+
 local function _femto(_ENV)
 
 

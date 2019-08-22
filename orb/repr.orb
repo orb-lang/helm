@@ -228,12 +228,12 @@ local function _tabulate(tab, depth, cycle, phrase)
       return nil
    end
    cycle[tab] = true
-   ---[[special case tables with __repr
+   -- __repr gets special treatment
    if table.hasfield.__repr(tab) then
       _yieldReprs(tab, phrase)
       return nil
    end
-      --]]
+
    -- if we have a metatable, get it first
    local _M = getmetatable(tab)
    if _M then

@@ -257,6 +257,11 @@ function Txtbuf.left(txtbuf, disp)
    else
       txtbuf.cursor = 1
    end
+   if not moved and txtbuf.cur_row ~= 1 then
+      local cur_row = txtbuf.cur_row - 1
+      txtbuf.cur_row = cur_row
+      txtbuf.cursor = #txtbuf.lines[cur_row] + 1
+   end
 
    return moved
 end
@@ -275,6 +280,11 @@ function Txtbuf.right(txtbuf, disp)
       moved = true
    else
       txtbuf.cursor = #line + 1
+   end
+
+   if not moved and txtbuf.cur_row ~= txtbuf.lines then
+      txtbuf.cur_row = txtbuf.cur_row + 1
+      txtbuf.cursor = 1
    end
 
    return moved

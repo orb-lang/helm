@@ -18,6 +18,26 @@ Man.  I really like having first-class environments.
 __G = setmetatable({}, {__index = _G})
 
 setfenv(0, __G)
+#/lua
+
+Let's wedge in the argparse where it won't break between bridge builds:
+
+#!lua
+--[[
+brParse
+   : name "bridge"
+   : description "An lua, howth castle & environs."
+   : epilog "For more info, see https://specialcircumstanc.es"
+   : require_command(false)
+   : command_target "verb"
+   : command ("orb o", "orb compiler", "orb subcommands")
+   : argument ("serve s", "launch localhost responsive compiler and document server")
+   : parse()
+--]]
+#/lua
+
+
+#!lua
 local function _femto(_ENV)
 #/lua
 
