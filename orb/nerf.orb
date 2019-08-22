@@ -66,50 +66,61 @@ Nerf = { ASCII  = ASCII,
 #!lua
 local up1, down1 = a.jump.up(), a.jump.down()
 
+local function _prev(modeS)
+   local prev_result, linestash
+   if tostring(modeS.txtbuf) ~= ""
+      and modeS.hist.cursor > #modeS.hist then
+      linestash = modeS.txtbuf
+   end
+   modeS.txtbuf, prev_result = modeS.hist:prev()
+   if linestash then
+      modeS.hist:append(linestash)
+   end
+   if prev_result then
+      modeS.zones.results:replace(Rainbuf(prev_result))
+   else
+      modeS.zones.results:replace ""
+   end
+
+   return modeS
+end
+
 function NAV.UP(modeS, category, value)
    modeS.firstChar = false
    local inline = modeS.txtbuf:up()
    if not inline then
-      local prev_result, linestash
-      if tostring(modeS.txtbuf) ~= ""
-         and modeS.hist.cursor > #modeS.hist then
-         linestash = modeS.txtbuf
-      end
-      modeS.txtbuf, prev_result = modeS.hist:prev()
-      if linestash then
-         modeS.hist:append(linestash)
-      end
-      if prev_result then
-         modeS.zones.results:replace(Rainbuf(prev_result))
-      else
-         modeS.zones.results:replace ""
-      end
+      _prev(modeS)
    end
 
+   return modeS
+end
+
+local function _advance(modeS)
+   local next_p, next_result, new_txtbuf
+   new_txtbuf, next_result, next_p = modeS.hist:next()
+   if next_p then
+      modeS.firstChar = true
+      local added = modeS.hist:append(modeS.txtbuf)
+      if added then
+         modeS.hist.cursor = #modeS.hist + 1
+      end
+      modeS.txtbuf = Txtbuf()
+   else
+      modeS.txtbuf = new_txtbuf
+   end
+   modeS:clearResults()
+   if next_result then
+      modeS.zones.results:replace(Rainbuf(next_result))
+   else
+      modeS.zones.results:replace ""
+   end
    return modeS
 end
 
 function NAV.DOWN(modeS, category, value)
    local inline = modeS.txtbuf:down()
    if not inline then
-      local next_p, next_result, new_txtbuf
-      new_txtbuf, next_result, next_p = modeS.hist:next()
-      if next_p then
-         modeS.firstChar = true
-         local added = modeS.hist:append(modeS.txtbuf)
-         if added then
-            modeS.hist.cursor = #modeS.hist + 1
-         end
-         modeS.txtbuf = Txtbuf()
-      else
-         modeS.txtbuf = new_txtbuf
-      end
-      modeS:clearResults()
-      if next_result then
-         modeS.zones.results:replace(Rainbuf(next_result))
-      else
-         modeS.zones.results:replace ""
-      end
+      _advance(modeS)
    end
 
    return modeS
