@@ -177,7 +177,8 @@ incredibly intricate repl.
 
 ```lua
 local function _yieldReprs(tab, phrase)
-   local _repr = getmetatable(tab).__repr
+   local _repr = getmetatable(tab) and getmetatable(tab).__repr or tab.__repr
+                 or assert(tostring)
    assert(c, "must have a value for c")
    local repr = _repr(tab, phrase, c)
    local yielder
@@ -223,16 +224,15 @@ local function _tabulate(tab, depth, cycle, phrase)
       return nil
    end
    cycle[tab] = true
+   -- __repr gets special treatment
+   if table.hasfield.__repr(tab) then
+      _yieldReprs(tab, phrase)
+      return nil
+   end
+
    -- if we have a metatable, get it first
    local _M = getmetatable(tab)
    if _M then
-      ---[[special case tables with __repr
-      if _M.__repr then
-         _yieldReprs(tab, phrase)
-         return nil
-      end
-      --]]
-      --otherwise print the metatable normally
       ts_coro(tab, "mt", phrase)
       yield(c.base(" = "), 3)
       _tabulate(_M, depth + 1, cycle, phrase)

@@ -135,6 +135,7 @@ function Txtbuf.insert(txtbuf, frag)
       txtbuf.line = line
    end
    local wide_frag = utf8(frag)
+   -- #deprecated
    -- in principle, we should be breaking up wide (paste) inputs in
    -- femto.
    --

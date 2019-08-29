@@ -183,6 +183,7 @@ end
 
 local function _yieldReprs(tab, phrase)
    local _repr = getmetatable(tab) and getmetatable(tab).__repr or tab.__repr
+                 or assert(tostring)
    assert(c, "must have a value for c")
    local repr = _repr(tab, phrase, c)
    local yielder

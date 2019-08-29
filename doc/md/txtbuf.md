@@ -17,6 +17,7 @@ A closed line is just a string.
 
 ## Interface
 
+
 ### Instance fields
 
 - lines :  An array of arrays containing codepoints (string fragments).
@@ -32,7 +33,30 @@ A closed line is just a string.
           may be reached by printing the corresponding row.
 
 
+The intention is that all of these fields are manipulated internally: the
+codebase doesn't completely respect this, yet, but it should.
 
+
+This will let us expand, for instance, the definition of ``cursor`` to allow for
+an array of cursors, in the event that there's more than one, without exposing
+this elaboration to the rest of the system.
+
+
+The ``txtbuf`` is also a candidate for full replacement with the quipu data
+structure, so the more we can encapsulate its region of responsiblity, the
+cleaner that transition can be.
+
+
+#### Instance fields to be added
+
+- region:  Has a field ``cursor`` and field ``cur_row`` which store the beginning
+           of a region, with the txtbuf fields defined as the end of that
+           region.
+
+
+           Mutation of these should be encapsulated such that there can
+           eventually be plural regions, during for instance search and
+           replace.
 
 #### dependencies
 
@@ -115,6 +139,7 @@ function Txtbuf.insert(txtbuf, frag)
       txtbuf.line = line
    end
    local wide_frag = utf8(frag)
+   -- #deprecated
    -- in principle, we should be breaking up wide (paste) inputs in
    -- femto.
    --
@@ -228,14 +253,12 @@ function Txtbuf.d_fwd(txtbuf)
    end
 end
 ```
-### Txtbuf:left(disp)
+### Txtbuf:left(disp), Txtbuf:right(disp)
 
-This method and the next inform the modeSelektor if the cursor has moved,
-so as to wrap around otherwise.
+These methods shift a cursor left or right, handling line breaks internally.
 
 
-Arguably this logic should be completely internal to ``left`` and ``right``
-themselves.
+``disp`` is a number of codepoints to shift.
 
 ```lua
 function Txtbuf.left(txtbuf, disp)
@@ -246,6 +269,11 @@ function Txtbuf.left(txtbuf, disp)
       moved = true
    else
       txtbuf.cursor = 1
+   end
+   if not moved and txtbuf.cur_row ~= 1 then
+      local cur_row = txtbuf.cur_row - 1
+      txtbuf.cur_row = cur_row
+      txtbuf.cursor = #txtbuf.lines[cur_row] + 1
    end
 
    return moved
@@ -265,9 +293,42 @@ function Txtbuf.right(txtbuf, disp)
       txtbuf.cursor = #line + 1
    end
 
+   if not moved and txtbuf.cur_row ~= txtbuf.lines then
+      txtbuf.cur_row = txtbuf.cur_row + 1
+      txtbuf.cursor = 1
+   end
+
    return moved
 end
 ```
+### Txtbuf:rightWord(disp, mark), Txtbuf:leftWord(disp, mark)
+
+This is the proposed interface for operating on a word level on a Txtbuf:
+
+
+- #parameters
+
+
+  - disp:  The number of _words_ to move across
+
+
+  - mark:  A boolean: if true, the Txtbuf is annotated with a 'mark' defining
+           a region.  The first cursor is stored as the mark origin, and the
+           second cursor is given the 'cursor' slot on the txtbuf.
+
+
+This lets us define a generalized method to kill or yank the region.
+
+
+### Txtbuf:replace(frag)
+
+Replaces the character to the right of the cursor with the given codepoint.
+
+
+This is called ``frag`` as a reminder that, a) it's variable width and b) to
+really nail displacement we need to be looking up displacements in some kind
+of region-defined lookup table.
+
 ### Txtbuf:up(), Txtbuf:down()
 
 ```lua
