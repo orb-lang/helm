@@ -183,7 +183,11 @@ end
 
 local function _yieldReprs(tab, phrase)
    local _repr = getmetatable(tab) and getmetatable(tab).__repr or tab.__repr
-                 or assert(tostring)
+                 -- #codesmell this fallback is not ideal, but there's
+                 -- some pathway that lands us here without a repr, sometimes.
+                 or function(tab, phrase, c)
+                       return ("backstop:" .. tostring(tab))
+                    end
    assert(c, "must have a value for c")
    local repr = _repr(tab, phrase, c)
    local yielder
