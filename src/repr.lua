@@ -16,7 +16,7 @@
 
 local a = require "anterm"
 
-local core = require "core"
+local core = require "singletons/core"
 
 local C = require "color"
 
@@ -186,7 +186,7 @@ local function _yieldReprs(tab, phrase)
                  -- #codesmell this fallback is not ideal, but there's
                  -- some pathway that lands us here without a repr, sometimes.
                  or function(tab, phrase, c)
-                       return ("backstop:" .. tostring(tab))
+                       return ("backstop->" .. tostring(tab))
                     end
    assert(c, "must have a value for c")
    local repr = _repr(tab, phrase, c)
@@ -400,7 +400,7 @@ end
 
 
 
-assert(readOnly, "must have readOnly from core")
+local readOnly = require "singletons/core" . readOnly
 
 local function _remains(phrase)
    return phrase.width - _disp(phrase)

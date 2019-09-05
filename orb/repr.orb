@@ -16,7 +16,7 @@ the repr.
 #!lua
 local a = require "anterm"
 
-local core = require "core"
+local core = require "singletons/core"
 
 local C = require "color"
 #/lua
@@ -400,7 +400,7 @@ This function sets up an iterator, which returns one line at a time of the
 table.
 
 #!lua
-assert(readOnly, "must have readOnly from core")
+local readOnly = require "singletons/core" . readOnly
 
 local function _remains(phrase)
    return phrase.width - _disp(phrase)
