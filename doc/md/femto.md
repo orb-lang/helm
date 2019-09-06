@@ -3,9 +3,15 @@
 
 ``femto`` is our repl.
 
-## includes
+
+I'm about to re-name it ``helm``, which is going to be loads of fun.
 
 
+At least I only have to do it once.
+
+```lua
+_Bridge.helm = true
+```
 #### Intercept _G
 
 We don't want to put ``femto`` into the environment of the codebase under
