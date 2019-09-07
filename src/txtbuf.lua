@@ -343,6 +343,58 @@ end
 
 
 
+local match = assert(string.match)
+
+function Txtbuf.leftWord(txtbuf)
+   local found_word_char = false
+   local search_pos = txtbuf.cursor
+   local line = txtbuf.lines[txtbuf.cur_row]
+   repeat
+      if search_pos < 1 then
+         if txtbuf.cur_row == 1 then
+            txtbuf.cursor = 1
+            return false
+         else
+            -- Should not actually switch rows here, I think--want to do more of a what-if
+            txtbuf:switchRow(txtbuf.cur_row - 1)
+            line = txtbuf.lines[txtbuf.cur_row]
+            search_pos = #line
+         end
+      end
+      search_pos = search_pos - 1
+      found_word_char = found_word_char or (search_pos >= 1 and match(line[search_pos],'^%w$'))
+   until found_word_char and (search_pos < 1 or match(line[search_pos],'^%W$'))
+   txtbuf.cursor = search_pos + 1
+   return true
+end
+
+function Txtbuf.rightWord(txtbuf)
+   local found_word_char = false
+   local search_pos = txtbuf.cursor
+   local line = txtbuf.lines[txtbuf.cur_row]
+   repeat
+      if search_pos > #line then
+         if txtbuf.cur_row == #txtbuf.lines then
+            txtbuf.cursor = #line + 1
+            return false
+         else
+            -- Should not actually switch rows here, I think--want to do more of a what-if
+            txtbuf:switchRow(txtbuf.cur_row + 1)
+            line = txtbuf.lines[txtbuf.cur_row]
+            search_pos = 1
+         end
+      end
+      found_word_char = found_word_char or match(line[search_pos],'^%w$')
+      search_pos = search_pos + 1
+   until found_word_char and (search_pos > #line or match(line[search_pos],'^%W$'))
+   txtbuf.cursor = search_pos
+   return true
+end
+
+
+
+
+
 
 
 

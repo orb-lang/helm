@@ -140,6 +140,14 @@ function NAV.RIGHT(modeS, category, value)
    return modeS.txtbuf:right()
 end
 
+function NAV.ALT_LEFT(modeS,category,value)
+  return modeS.txtbuf:leftWord()
+end
+
+function NAV.ALT_RIGHT(modeS,category,value)
+  return modeS.txtbuf:rightWord()
+end
+
 function NAV.RETURN(modeS, category, value)
    -- eval or split line
    local eval = modeS.txtbuf:nl()
