@@ -99,6 +99,33 @@ end
 
 
 
+function Txtbuf.openRow(txtbuf,row_num)
+   local line = txtbuf.lines[row_num]
+   if type(line) == "string" then
+      txtbuf.lines[row_num] = codepoints(line)
+   end
+end
+
+function Txtbuf.closeRow(txtbuf,row_num)
+   local line = txtbuf.lines[row_num]
+   if type(line) == "table" then
+      txtbuf.lines[row_num] = concat(line)
+   end
+end
+
+function Txtbuf.switchRow(txtbuf,new_row)
+   if txtbuf.cur_row == new_row then return end
+   txtbuf:closeRow(txtbuf.cur_row)
+   txtbuf.cur_row = new_row
+   txtbuf:openRow(txtbuf.cur_row)
+end
+
+
+
+
+
+
+
 local t_insert, splice = assert(table.insert), assert(table.splice)
 local utf8, codepoints, gsub = string.utf8, string.codepoints, string.gsub
 
@@ -130,10 +157,6 @@ end
 
 function Txtbuf.insert(txtbuf, frag)
    local line = txtbuf.lines[txtbuf.cur_row]
-   if type(line) == "string" then
-      line = codepoints(line)
-      txtbuf.line = line
-   end
    local wide_frag = utf8(frag)
    -- #deprecated
    -- in principle, we should be breaking up wide (paste) inputs in
@@ -159,6 +182,8 @@ function Txtbuf.insert(txtbuf, frag)
       txtbuf.cursor = txtbuf.cursor + 1
       return true
    else
+      -- What if the fragment contains a newline? Don't we need to split it onto two lines of the txtbuf?
+      -- Breaking up paste inputs might change how/where we handle this, but somehow or other we need to...
       splice(line, txtbuf.cursor, wide_frag)
       txtbuf.cursor = txtbuf.cursor + #wide_frag
       return true
@@ -175,6 +200,7 @@ end
 local ts_bw = (require "color").ts_bw
 
 function Txtbuf.advance(txtbuf)
+   -- Seems like this should be folded into insert(), as part of handling newlines?
    txtbuf.lines[#txtbuf.lines + 1] = {}
    txtbuf.cur_row = #txtbuf.lines
    txtbuf.cursor = 1
@@ -226,10 +252,9 @@ function Txtbuf.d_back(txtbuf)
    elseif cur_row == 1 then
       return false
    else
-      local new_line = concat(txtbuf.lines[cur_row - 1])
-                       .. concat(txtbuf.lines[cur_row])
+      txtbuf:openRow(cur_row - 1)
       local new_cursor = #txtbuf.lines[cur_row - 1] + 1
-      txtbuf.lines[cur_row - 1] = codepoints(new_line)
+      splice(txtbuf.lines[cur_row - 1],nil,txtbuf.lines[cur_row])
       remove(txtbuf.lines, cur_row)
       txtbuf.cur_row = cur_row - 1
       txtbuf.cursor = new_cursor
@@ -250,9 +275,8 @@ function Txtbuf.d_fwd(txtbuf)
    elseif cur_row == #txtbuf.lines then
       return false
    else
-      local new_line = concat(txtbuf.lines[cur_row])
-                       .. concat(txtbuf.lines[cur_row + 1])
-      txtbuf.lines[cur_row] = codepoints(new_line)
+      txtbuf:openRow(cur_row + 1)
+      splice(txtbuf.lines[cur_row],nil,txtbuf.lines[cur_row + 1])
       remove(txtbuf.lines, cur_row + 1)
       return true
    end
@@ -337,15 +361,19 @@ end
 
 
 
+
+local function _constrain_cursor(txtbuf)
+   if txtbuf.cursor > #txtbuf.lines[txtbuf.cur_row] + 1 then
+      txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
+   end
+end
+
 function Txtbuf.up(txtbuf)
-   local cur_row = txtbuf.cur_row
-   if cur_row == 1 then
+   if txtbuf.cur_row == 1 then
       return false
    else
-      txtbuf.cur_row = cur_row - 1
-      if txtbuf.cursor > #txtbuf.lines[txtbuf.cur_row] + 1 then
-         txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
-      end
+      txtbuf:switchRow(txtbuf.cur_row - 1)
+      _constrain_cursor(txtbuf)
       return true
    end
 end
@@ -353,14 +381,11 @@ end
 
 
 function Txtbuf.down(txtbuf)
-   local cur_row = txtbuf.cur_row
-   if cur_row == #txtbuf.lines then
+   if txtbuf.cur_row == #txtbuf.lines then
       return false
    else
-      txtbuf.cur_row = cur_row + 1
-      if txtbuf.cursor > #txtbuf.lines[txtbuf.cur_row] + 1 then
-         txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
-      end
+      txtbuf:switchRow(txtbuf.cur_row + 1)
+      _constrain_cursor(txtbuf)
       return true
    end
 end
@@ -470,3 +495,4 @@ Txtbuf.idEst = new
 
 
 return new
+
