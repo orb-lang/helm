@@ -234,13 +234,11 @@ local function _isPaired(a, b)
 end
 
 local function _deleteBack(txtbuf, cursor)
-   local cursor, cur_row, lines = txtbuf.cursor, txtbuf.cur_row, txtbuf.lines
-   if _isPaired(lines[cur_row][cursor - 1], lines[cur_row][cursor]) then
-      remove(txtbuf.lines[cur_row], cursor)
-      remove(txtbuf.lines[cur_row], cursor - 1)
-   else
-      remove(txtbuf.lines[cur_row], cursor - 1)
+   local line, cursor = txtbuf.lines[txtbuf.cur_row], txtbuf.cursor
+   if _isPaired(line[cursor - 1], line[cursor]) then
+      remove(line, cursor)
    end
+   remove(line, cursor - 1)
    txtbuf.cursor = cursor - 1
 end
 
@@ -291,22 +289,20 @@ end
 
 
 
-function Txtbuf.left(txtbuf, disp)
-   local disp = disp or 1
-   local moved = false
-   if txtbuf.cursor - disp >= 1 then
-      txtbuf.cursor = txtbuf.cursor - disp
-      moved = true
-   else
-      txtbuf.cursor = 1
-   end
-   if not moved and txtbuf.cur_row ~= 1 then
-      local cur_row = txtbuf.cur_row - 1
-      txtbuf.cur_row = cur_row
-      txtbuf.cursor = #txtbuf.lines[cur_row] + 1
-   end
 
-   return moved
+function Txtbuf.left(txtbuf, disp)
+   disp = disp or 1
+   local new_cursor = txtbuf.cursor - disp
+   while new_cursor < 1 do
+      if txtbuf.cur_row == 1 then
+         txtbuf.cursor = 1
+         return false
+      end
+      txtbuf:switchRow(txtbuf.cur_row - 1)
+      new_cursor = #txtbuf.lines[txtbuf.cur_row] + 1 + new_cursor
+   end
+   txtbuf.cursor = new_cursor
+   return true
 end
 
 
@@ -316,21 +312,17 @@ end
 
 function Txtbuf.right(txtbuf, disp)
    disp = disp or 1
-   local moved = false
-   local line = txtbuf.lines[txtbuf.cur_row]
-   if txtbuf.cursor + disp <= #line + 1 then
-      txtbuf.cursor = txtbuf.cursor + disp
-      moved = true
-   else
-      txtbuf.cursor = #line + 1
+   local new_cursor = txtbuf.cursor + disp
+   while new_cursor > #txtbuf.lines[txtbuf.cur_row] + 1 do
+      if txtbuf.cur_row == #txtbuf.lines then
+         txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
+         return false
+      end
+      new_cursor = new_cursor - (#txtbuf.lines[txtbuf.cur_row] + 1)
+      txtbuf:switchRow(txtbuf.cur_row + 1)
    end
-
-   if not moved and txtbuf.cur_row ~= txtbuf.lines then
-      txtbuf.cur_row = txtbuf.cur_row + 1
-      txtbuf.cursor = 1
-   end
-
-   return moved
+   txtbuf.cursor = new_cursor
+   return true
 end
 
 
