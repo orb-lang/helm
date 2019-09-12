@@ -334,52 +334,68 @@ end
 
 
 
+
+
 local match = assert(string.match)
 
-function Txtbuf.leftWord(txtbuf)
+function Txtbuf.leftWord(txtbuf, disp)
+   disp = disp or 1
    local found_word_char = false
-   local search_pos = txtbuf.cursor
+   local moved = false
    local line = txtbuf.lines[txtbuf.cur_row]
-   repeat
-      if search_pos < 1 then
-         if txtbuf.cur_row == 1 then
-            txtbuf.cursor = 1
-            return false
-         else
-            -- Should not actually switch rows here, I think--want to do more of a what-if
-            txtbuf:switchRow(txtbuf.cur_row - 1)
-            line = txtbuf.lines[txtbuf.cur_row]
-            search_pos = #line
-         end
+   local search_pos = txtbuf.cursor
+   local search_char
+   while true do
+      search_char = search_pos == 1 and '\n' or line[search_pos - 1]
+      if match(search_char, '^%w$') then
+         found_word_char = true
+      elseif found_word_char then
+         disp = disp - 1
+         if disp == 0 then break end
+         found_word_char = false
       end
-      search_pos = search_pos - 1
-      found_word_char = found_word_char or (search_pos >= 1 and match(line[search_pos],'^%w$'))
-   until found_word_char and (search_pos < 1 or match(line[search_pos],'^%W$'))
-   txtbuf.cursor = search_pos + 1
-   return true
+      if search_pos == 1 then
+         if txtbuf.cur_row == 1 then break end
+         txtbuf:switchRow(txtbuf.cur_row - 1)
+         line = txtbuf.lines[txtbuf.cur_row]
+         search_pos = #line + 1
+      else
+         search_pos = search_pos - 1
+      end
+      moved = true
+   end
+   txtbuf.cursor = search_pos
+   return moved
 end
 
-function Txtbuf.rightWord(txtbuf)
+function Txtbuf.rightWord(txtbuf, disp)
+   disp = disp or 1
    local found_word_char = false
-   local search_pos = txtbuf.cursor
+   local moved = false
    local line = txtbuf.lines[txtbuf.cur_row]
-   repeat
-      if search_pos > #line then
-         if txtbuf.cur_row == #txtbuf.lines then
-            txtbuf.cursor = #line + 1
-            return false
-         else
-            -- Should not actually switch rows here, I think--want to do more of a what-if
-            txtbuf:switchRow(txtbuf.cur_row + 1)
-            line = txtbuf.lines[txtbuf.cur_row]
-            search_pos = 1
-         end
+   local search_pos = txtbuf.cursor
+   local search_char
+   while true do
+      search_char = search_pos > #line and '\n' or line[search_pos]
+      if match(search_char, '^%w$') then
+         found_word_char = true
+      elseif found_word_char then
+         disp = disp - 1
+         if disp == 0 then break end
+         found_word_char = false
       end
-      found_word_char = found_word_char or match(line[search_pos],'^%w$')
-      search_pos = search_pos + 1
-   until found_word_char and (search_pos > #line or match(line[search_pos],'^%W$'))
+      if search_pos > #line then
+         if txtbuf.cur_row == #txtbuf.lines then break end
+         txtbuf:switchRow(txtbuf.cur_row + 1)
+         line = txtbuf.lines[txtbuf.cur_row]
+         search_pos = 1
+      else
+         search_pos = search_pos + 1
+      end
+      moved = true
+   end
    txtbuf.cursor = search_pos
-   return true
+   return moved
 end
 
 
