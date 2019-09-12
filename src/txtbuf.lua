@@ -113,11 +113,40 @@ function Txtbuf.closeRow(txtbuf,row_num)
    end
 end
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function Txtbuf.switchRow(txtbuf,new_row)
-   if txtbuf.cur_row == new_row then return end
+   if new_row < 1 then
+      new_row = 1
+   elseif new_row > #txtbuf.lines then
+      new_row = #txtbuf.lines
+   end
+   if txtbuf.cur_row == new_row then
+      return false
+   end
    txtbuf:closeRow(txtbuf.cur_row)
    txtbuf.cur_row = new_row
    txtbuf:openRow(txtbuf.cur_row)
+   if txtbuf.cursor > #txtbuf.lines[txtbuf.cur_row] + 1 then
+      txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
+   end
+   return true
 end
 
 
@@ -285,11 +314,10 @@ function Txtbuf.left(txtbuf, disp)
    disp = disp or 1
    local new_cursor = txtbuf.cursor - disp
    while new_cursor < 1 do
-      if txtbuf.cur_row == 1 then
+      if not txtbuf:up() then
          txtbuf.cursor = 1
          return false
       end
-      txtbuf:switchRow(txtbuf.cur_row - 1)
       new_cursor = #txtbuf.lines[txtbuf.cur_row] + 1 + new_cursor
    end
    txtbuf.cursor = new_cursor
@@ -305,12 +333,11 @@ function Txtbuf.right(txtbuf, disp)
    disp = disp or 1
    local new_cursor = txtbuf.cursor + disp
    while new_cursor > #txtbuf.lines[txtbuf.cur_row] + 1 do
-      if txtbuf.cur_row == #txtbuf.lines then
+      if not txtbuf:down() then
          txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
          return false
       end
-      new_cursor = new_cursor - (#txtbuf.lines[txtbuf.cur_row] + 1)
-      txtbuf:switchRow(txtbuf.cur_row + 1)
+      new_cursor = new_cursor - (#txtbuf.lines[txtbuf.cur_row - 1] + 1)
    end
    txtbuf.cursor = new_cursor
    return true
@@ -355,8 +382,7 @@ function Txtbuf.leftWord(txtbuf, disp)
          found_word_char = false
       end
       if search_pos == 1 then
-         if txtbuf.cur_row == 1 then break end
-         txtbuf:switchRow(txtbuf.cur_row - 1)
+         if not txtbuf:up() then break end
          line = txtbuf.lines[txtbuf.cur_row]
          search_pos = #line + 1
       else
@@ -385,8 +411,7 @@ function Txtbuf.rightWord(txtbuf, disp)
          found_word_char = false
       end
       if search_pos > #line then
-         if txtbuf.cur_row == #txtbuf.lines then break end
-         txtbuf:switchRow(txtbuf.cur_row + 1)
+         if not txtbuf:down() then break end
          line = txtbuf.lines[txtbuf.cur_row]
          search_pos = 1
       else
@@ -413,32 +438,14 @@ end
 
 
 
-local function _constrain_cursor(txtbuf)
-   if txtbuf.cursor > #txtbuf.lines[txtbuf.cur_row] + 1 then
-      txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
-   end
-end
-
 function Txtbuf.up(txtbuf)
-   if txtbuf.cur_row == 1 then
-      return false
-   else
-      txtbuf:switchRow(txtbuf.cur_row - 1)
-      _constrain_cursor(txtbuf)
-      return true
-   end
+   return txtbuf:switchRow(txtbuf.cur_row - 1)
 end
 
 
 
 function Txtbuf.down(txtbuf)
-   if txtbuf.cur_row == #txtbuf.lines then
-      return false
-   else
-      txtbuf:switchRow(txtbuf.cur_row + 1)
-      _constrain_cursor(txtbuf)
-      return true
-   end
+   return txtbuf:switchRow(txtbuf.cur_row + 1)
 end
 
 

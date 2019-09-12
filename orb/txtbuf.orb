@@ -7,7 +7,7 @@ I'll circle back for quipu but I want a basic editor as soon as possible. The
 interaction dynamics need to be worked out right away, plus I want to use it!
 
 Plan: A line that has a cursor on it, and there can be many, gets 'opened'
-into a grid of characters. These in turn get 'closed' when the cursor leaves.
+into a grid of characters.  These in turn get 'closed' when the cursor leaves.
 
 A closed line is just a string.
 
@@ -95,7 +95,7 @@ function Txtbuf.__tostring(txtbuf)
 end
 #/lua
 
-*** Txtbuf:openRow(row_num), Txtbuf:closeRow(row_num), Txtbuf:switchRow(row_num)
+*** Txtbuf:openRow(row_num), Txtbuf:closeRow(row_num), Txtbuf:switchRow(new_row)
 
 #!lua
 
@@ -113,11 +113,40 @@ function Txtbuf.closeRow(txtbuf,row_num)
    end
 end
 
+#/lua
+
+**** TxtBuf:switchRow(new_row)
+
+new_row is constrained to be within the range of rows that actually exist.
+
+Also constrains the cursor to be in-bounds for the new row.
+
+The return value indicates whether a switch actually occurred.
+
+#TODO Currently this is only used to switch from row n to row n+1 or n-1,
+so in effect the return value indicates whether the requested row was
+in-bounds. If other usages appear, it may be useful to distinguish between
+"was the argument in bounds" and "was the argument actually different from
+cur_row".
+
+#!lua
+
 function Txtbuf.switchRow(txtbuf,new_row)
-   if txtbuf.cur_row == new_row then return end
+   if new_row < 1 then
+      new_row = 1
+   elseif new_row > #txtbuf.lines then
+      new_row = #txtbuf.lines
+   end
+   if txtbuf.cur_row == new_row then
+      return false
+   end
    txtbuf:closeRow(txtbuf.cur_row)
    txtbuf.cur_row = new_row
    txtbuf:openRow(txtbuf.cur_row)
+   if txtbuf.cursor > #txtbuf.lines[txtbuf.cur_row] + 1 then
+      txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
+   end
+   return true
 end
 
 #/lua
@@ -207,7 +236,7 @@ end
 *** Txtbuf:deleteBackward()
 
 The return value tells us if we have one less line, since we need to
-clear it off the screen (true of deleteForward as well
+clear it off the screen (true of deleteForward as well).
 
 #NB this leave ghost lines on the screen during some kinds of multi-line
 edits, which must be addressed.
@@ -285,11 +314,10 @@ function Txtbuf.left(txtbuf, disp)
    disp = disp or 1
    local new_cursor = txtbuf.cursor - disp
    while new_cursor < 1 do
-      if txtbuf.cur_row == 1 then
+      if not txtbuf:up() then
          txtbuf.cursor = 1
          return false
       end
-      txtbuf:switchRow(txtbuf.cur_row - 1)
       new_cursor = #txtbuf.lines[txtbuf.cur_row] + 1 + new_cursor
    end
    txtbuf.cursor = new_cursor
@@ -305,12 +333,11 @@ function Txtbuf.right(txtbuf, disp)
    disp = disp or 1
    local new_cursor = txtbuf.cursor + disp
    while new_cursor > #txtbuf.lines[txtbuf.cur_row] + 1 do
-      if txtbuf.cur_row == #txtbuf.lines then
+      if not txtbuf:down() then
          txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
          return false
       end
-      new_cursor = new_cursor - (#txtbuf.lines[txtbuf.cur_row] + 1)
-      txtbuf:switchRow(txtbuf.cur_row + 1)
+      new_cursor = new_cursor - (#txtbuf.lines[txtbuf.cur_row - 1] + 1)
    end
    txtbuf.cursor = new_cursor
    return true
@@ -355,8 +382,7 @@ function Txtbuf.leftWord(txtbuf, disp)
          found_word_char = false
       end
       if search_pos == 1 then
-         if txtbuf.cur_row == 1 then break end
-         txtbuf:switchRow(txtbuf.cur_row - 1)
+         if not txtbuf:up() then break end
          line = txtbuf.lines[txtbuf.cur_row]
          search_pos = #line + 1
       else
@@ -385,8 +411,7 @@ function Txtbuf.rightWord(txtbuf, disp)
          found_word_char = false
       end
       if search_pos > #line then
-         if txtbuf.cur_row == #txtbuf.lines then break end
-         txtbuf:switchRow(txtbuf.cur_row + 1)
+         if not txtbuf:down() then break end
          line = txtbuf.lines[txtbuf.cur_row]
          search_pos = 1
       else
@@ -413,32 +438,14 @@ of region-defined lookup table.
 
 #!lua
 
-local function _constrain_cursor(txtbuf)
-   if txtbuf.cursor > #txtbuf.lines[txtbuf.cur_row] + 1 then
-      txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
-   end
-end
-
 function Txtbuf.up(txtbuf)
-   if txtbuf.cur_row == 1 then
-      return false
-   else
-      txtbuf:switchRow(txtbuf.cur_row - 1)
-      _constrain_cursor(txtbuf)
-      return true
-   end
+   return txtbuf:switchRow(txtbuf.cur_row - 1)
 end
 #/lua
 
 #!lua
 function Txtbuf.down(txtbuf)
-   if txtbuf.cur_row == #txtbuf.lines then
-      return false
-   else
-      txtbuf:switchRow(txtbuf.cur_row + 1)
-      _constrain_cursor(txtbuf)
-      return true
-   end
+   return txtbuf:switchRow(txtbuf.cur_row + 1)
 end
 #/lua
 
