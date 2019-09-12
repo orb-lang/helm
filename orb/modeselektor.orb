@@ -1,21 +1,21 @@
 * Modeselektor
 
-=femto= will hold all state for an terminal session, including setup of io,
+=helm= will hold all state for an terminal session, including setup of io,
 the main event loop, teardown and exuent.  Soon, we will encapsulate that,
 making the library re-entrant.
 
 =modeselektor= is the modal interpreter for the repl language, which becomes
 the core of =ed=.  This is a glorified lookup table with a state switch and
-a pointer to the =femto=cell we're operating on.
+a pointer to the =helm=cell we're operating on.
 
 
 ** Design
 
-  =femto= passes keystrokes as messages to =modeselektor=.  It does no writes
+  =helm= passes keystrokes as messages to =modeselektor=.  It does no writes
 to stdout at all.  It is smart enough to categorize and parse various device
 reports, but has no knowledge of why those reports were requested.
 
-=femto= runs the event loop, so all other members are pulled in as modules.
+=helm= runs the event loop, so all other members are pulled in as modules.
 
 =modeselektor= takes care of system-level housekeeping: opening files
 and sockets, keeping command history, fuzzy completion, and has its own eval
