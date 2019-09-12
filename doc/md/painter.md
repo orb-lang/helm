@@ -4,7 +4,7 @@
 The ``modeselektor`` module responsible for display.
 
 
-``femto`` is currently both the loop loader and the inbox, and I will eventually
+``helm`` is currently both the loop loader and the inbox, and I will eventually
 break the latter out into its own module.  In any case, it wholly owns
 ``stdin``, ``modeselektor`` runs entirely on messages.
 
@@ -25,7 +25,7 @@ assert(type)
 local Paint = meta {}
 ```
 
-Carryovers from ``modeselektor``, many from ``femto`` originally.
+Carryovers from ``modeselektor``, many from ``helm`` originally.
 
 
 This is the final resting place.

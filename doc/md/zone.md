@@ -34,7 +34,7 @@ reached the edges.  When we start to add mouse clicks, we have to know what
 the mouse has targeted, so Zones will receive mouse messages also.
 
 
-This is the next major push for ``femto``, and when it's complete I'll be ready
+This is the next major push for ``helm``, and when it's complete I'll be ready
 to show it off.  It's a significant piece of engineering and I'm thinking I
 need to shore up Orb a bit to get there.
 
@@ -44,10 +44,10 @@ generator, and maybe cut the apron strings with respect to Markdown and public
 hosting.
 
 
-This is a delicate point in the boot process.  ``femto`` needs to be able to
+This is a delicate point in the boot process.  ``helm`` needs to be able to
 interact with an already-running bridge/luv process, as it stands the two
 event loops will collide.  ``orb`` only runs an event loop with ``orb serve`` so
-the next step with ``femto`` proper is to set it up locally to run as a ``repl``
+the next step with ``helm`` proper is to set it up locally to run as a ``repl``
 on plain ordinary ``br`` programs, so I can use all this carefully won tooling
 on the other parts of the programme.
 
