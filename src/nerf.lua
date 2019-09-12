@@ -171,12 +171,12 @@ local function _modeShiftOnEmpty(modeS)
 end
 
 function NAV.BACKSPACE(modeS, category, value)
-   local shrunk =  modeS.txtbuf:d_back()
+   local shrunk =  modeS.txtbuf:deleteBackward()
    _modeShiftOnEmpty(modeS)
 end
 
 function NAV.DELETE(modeS, category, value)
-   local shrunk = modeS.txtbuf:d_fwd()
+   local shrunk = modeS.txtbuf:deleteForward()
    _modeShiftOnEmpty(modeS)
 end
 

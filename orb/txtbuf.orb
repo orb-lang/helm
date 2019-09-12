@@ -208,10 +208,10 @@ end
 #/lua
 
 
-*** Txtbuf:d_back()
+*** Txtbuf:deleteBackward()
 
 The return value tells us if we have one less line, since we need to
-clear it off the screen (true of d_fwd as well
+clear it off the screen (true of deleteForward as well
 
 #NB this leave ghost lines on the screen during some kinds of multi-line
 edits, which must be addressed.
@@ -242,7 +242,7 @@ local function _deleteBack(txtbuf, cursor)
    txtbuf.cursor = cursor - 1
 end
 
-function Txtbuf.d_back(txtbuf)
+function Txtbuf.deleteBackward(txtbuf)
    local cursor, cur_row = txtbuf.cursor, txtbuf.cur_row
    if cursor > 1 then
       _deleteBack(txtbuf, cursor)
@@ -262,10 +262,10 @@ end
 #/lua
 
 
-*** Txtbuf:d_fwd()
+*** Txtbuf:deleteForward()
 
 #!lua
-function Txtbuf.d_fwd(txtbuf)
+function Txtbuf.deleteForward(txtbuf)
    local cursor, cur_row = txtbuf.cursor, txtbuf.cur_row
    if cursor <= #txtbuf.lines[cur_row] then
       remove(txtbuf.lines[txtbuf.cur_row], txtbuf.cursor)

@@ -242,7 +242,7 @@ local function _deleteBack(txtbuf, cursor)
    txtbuf.cursor = cursor - 1
 end
 
-function Txtbuf.d_back(txtbuf)
+function Txtbuf.deleteBackward(txtbuf)
    local cursor, cur_row = txtbuf.cursor, txtbuf.cur_row
    if cursor > 1 then
       _deleteBack(txtbuf, cursor)
@@ -265,7 +265,7 @@ end
 
 
 
-function Txtbuf.d_fwd(txtbuf)
+function Txtbuf.deleteForward(txtbuf)
    local cursor, cur_row = txtbuf.cursor, txtbuf.cur_row
    if cursor <= #txtbuf.lines[cur_row] then
       remove(txtbuf.lines[txtbuf.cur_row], txtbuf.cursor)
