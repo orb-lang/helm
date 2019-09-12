@@ -183,37 +183,18 @@ end
 
 function Txtbuf.insert(txtbuf, frag)
    local line = txtbuf.lines[txtbuf.cur_row]
-   local wide_frag = utf8(frag)
-   -- #deprecated
-   -- in principle, we should be breaking up wide (paste) inputs in
-   -- femto.
-   --
-   -- in reality this code is still invoked on paste.  Something to fix
-   -- at some point...
-   if wide_frag < #frag then -- a paste
-      -- Normalize whitespace
-      frag = gsub(frag, "\r\n", "\n"):gsub("\r", "\n"):gsub("\t", "   ")
-      wide_frag = codepoints(frag)
-   else
-      wide_frag = false
+   if type(line) == "string" then
+      line = codepoints(line)
+      txtbuf.line = line
    end
-   -- #/deprecated
-   if not wide_frag then
-      if _frag_sub[frag] and _no_insert(line, txtbuf.cursor, frag) then
-         -- add a closing symbol
-         splice(line, txtbuf.cursor, _frag_sub[frag])
-      elseif _no_insert(line, txtbuf.cursor, frag)then
-         t_insert(line, txtbuf.cursor, frag)
-      end
-      txtbuf.cursor = txtbuf.cursor + 1
-      return true
-   else
-      splice(line, txtbuf.cursor, wide_frag)
-      txtbuf.cursor = txtbuf.cursor + #wide_frag
-      return true
+   if _frag_sub[frag] and _no_insert(line, txtbuf.cursor, frag) then
+      -- add a closing symbol
+      splice(line, txtbuf.cursor, _frag_sub[frag])
+   elseif _no_insert(line, txtbuf.cursor, frag)then
+      t_insert(line, txtbuf.cursor, frag)
    end
-
-   return false
+   txtbuf.cursor = txtbuf.cursor + 1
+   return true
 end
 ```
 ### Txtbuf:advance()
