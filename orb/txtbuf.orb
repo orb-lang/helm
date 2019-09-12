@@ -476,11 +476,9 @@ end
 
 #!lua
 function Txtbuf.resume(txtbuf)
-   for i, line in ipairs(txtbuf.lines) do
-      txtbuf.lines[i] = codepoints(line)
-   end
-   txtbuf.cursor = #txtbuf.lines[#txtbuf.lines] + 1
+   txtbuf:openRow(#txtbuf.lines)
    txtbuf.cur_row = #txtbuf.lines
+   txtbuf.cursor = #txtbuf.lines[#txtbuf.lines] + 1
 
    return txtbuf
 end
@@ -503,25 +501,18 @@ end
 *** new
 
 #!lua
-local function into_codepoints(lines)
-   local cp = {}
-   for i,v in ipairs(lines) do
-      cp[i] = codepoints(v)
-   end
 
-   return cp
-end
-
-local function new(line)
+local function new(str)
+   str = str or ""
    local txtbuf = meta(Txtbuf)
-   local __l = line or ""
-   local _lines = into_codepoints(collect(lines, __l))
-   if #_lines == 0 then
-      _lines[1] = {}
+   local lines = collect(lines,str)
+   if #lines == 0 then
+      lines[1] = {}
    end
-   txtbuf.cursor = line and #_lines[#_lines] + 1 or 1
-   txtbuf.cur_row = line and #_lines  or 1
-   txtbuf.lines = _lines
+   txtbuf.lines = lines
+   txtbuf:openRow(#lines)
+   txtbuf.cur_row = #lines
+   txtbuf.cursor = #lines[#lines] + 1
    return txtbuf
 end
 
