@@ -7,7 +7,7 @@ I'll circle back for quipu but I want a basic editor as soon as possible. The
 interaction dynamics need to be worked out right away, plus I want to use it!
 
 Plan: A line that has a cursor on it, and there can be many, gets 'opened'
-into a grid of characters.  These in turn get 'closed' when the cursor leaves.
+into a grid of characters. These in turn get 'closed' when the cursor leaves.
 
 A closed line is just a string.
 
@@ -17,14 +17,11 @@ A closed line is just a string.
 
 *** Instance fields
 
-- lines :  An array of arrays containing codepoints (string fragments).
+- lines :  An array of strings (closed lines), or arrays containing codepoints (string fragments) (open lines).
 
-- cursor :  Number of fragments to skip before an insertion.
+- cursor :  Number of fragments to skip before an insertion. Valid values are 1 to #line + 1.
 
 - cur_row :  Row containing the cursor.
-
-- disp :  Array of numbers, representing the furthest-right column which
-          may be reached by printing the corresponding row.
 
 The intention is that all of these fields are manipulated internally: the
 codebase doesn't completely respect this, yet, but it should.
@@ -47,6 +44,9 @@ cleaner that transition can be.
            Mutation of these should be encapsulated such that there can
            eventually be plural regions, during for instance search and
            replace.
+- disp :  Array of numbers, representing the furthest-right column which
+          may be reached by printing the corresponding row. Not equivalent
+          to #lines[n] as one codepoint != one column.
 
 **** dependencies
 
@@ -182,8 +182,6 @@ function Txtbuf.insert(txtbuf, frag)
       txtbuf.cursor = txtbuf.cursor + 1
       return true
    else
-      -- What if the fragment contains a newline? Don't we need to split it onto two lines of the txtbuf?
-      -- Breaking up paste inputs might change how/where we handle this, but somehow or other we need to...
       splice(line, txtbuf.cursor, wide_frag)
       txtbuf.cursor = txtbuf.cursor + #wide_frag
       return true
@@ -197,10 +195,8 @@ end
 *** Txtbuf:advance()
 
 #!lua
-local ts_bw = (require "color").ts_bw
 
 function Txtbuf.advance(txtbuf)
-   -- Seems like this should be folded into insert(), as part of handling newlines?
    txtbuf.lines[#txtbuf.lines + 1] = {}
    txtbuf.cur_row = #txtbuf.lines
    txtbuf.cursor = 1
@@ -233,19 +229,14 @@ local function _isPaired(a, b)
    return pairing
 end
 
-local function _deleteBack(txtbuf, cursor)
-   local line, cursor = txtbuf.lines[txtbuf.cur_row], txtbuf.cursor
-   if _isPaired(line[cursor - 1], line[cursor]) then
-      remove(line, cursor)
-   end
-   remove(line, cursor - 1)
-   txtbuf.cursor = cursor - 1
-end
-
 function Txtbuf.deleteBackward(txtbuf)
-   local cursor, cur_row = txtbuf.cursor, txtbuf.cur_row
+   local line, cursor, cur_row = txtbuf.lines[txtbuf.cur_row], txtbuf.cursor, txtbuf.cur_row
    if cursor > 1 then
-      _deleteBack(txtbuf, cursor)
+      if _isPaired(line[cursor - 1], line[cursor]) then
+         remove(line, cursor)
+      end
+      remove(line, cursor - 1)
+      txtbuf.cursor = cursor - 1
       return false
    elseif cur_row == 1 then
       return false

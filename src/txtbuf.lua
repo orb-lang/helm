@@ -182,8 +182,6 @@ function Txtbuf.insert(txtbuf, frag)
       txtbuf.cursor = txtbuf.cursor + 1
       return true
    else
-      -- What if the fragment contains a newline? Don't we need to split it onto two lines of the txtbuf?
-      -- Breaking up paste inputs might change how/where we handle this, but somehow or other we need to...
       splice(line, txtbuf.cursor, wide_frag)
       txtbuf.cursor = txtbuf.cursor + #wide_frag
       return true
@@ -197,10 +195,8 @@ end
 
 
 
-local ts_bw = (require "color").ts_bw
 
 function Txtbuf.advance(txtbuf)
-   -- Seems like this should be folded into insert(), as part of handling newlines?
    txtbuf.lines[#txtbuf.lines + 1] = {}
    txtbuf.cur_row = #txtbuf.lines
    txtbuf.cursor = 1
@@ -233,19 +229,14 @@ local function _isPaired(a, b)
    return pairing
 end
 
-local function _deleteBack(txtbuf, cursor)
-   local line, cursor = txtbuf.lines[txtbuf.cur_row], txtbuf.cursor
-   if _isPaired(line[cursor - 1], line[cursor]) then
-      remove(line, cursor)
-   end
-   remove(line, cursor - 1)
-   txtbuf.cursor = cursor - 1
-end
-
 function Txtbuf.deleteBackward(txtbuf)
-   local cursor, cur_row = txtbuf.cursor, txtbuf.cur_row
+   local line, cursor, cur_row = txtbuf.lines[txtbuf.cur_row], txtbuf.cursor, txtbuf.cur_row
    if cursor > 1 then
-      _deleteBack(txtbuf, cursor)
+      if _isPaired(line[cursor - 1], line[cursor]) then
+         remove(line, cursor)
+      end
+      remove(line, cursor - 1)
+      txtbuf.cursor = cursor - 1
       return false
    elseif cur_row == 1 then
       return false
