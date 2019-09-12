@@ -99,6 +99,62 @@ end
 
 
 
+function Txtbuf.openRow(txtbuf,row_num)
+   local line = txtbuf.lines[row_num]
+   if type(line) == "string" then
+      txtbuf.lines[row_num] = codepoints(line)
+   end
+end
+
+function Txtbuf.closeRow(txtbuf,row_num)
+   local line = txtbuf.lines[row_num]
+   if type(line) == "table" then
+      txtbuf.lines[row_num] = concat(line)
+   end
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function Txtbuf.switchRow(txtbuf,new_row)
+   if new_row < 1 then
+      new_row = 1
+   elseif new_row > #txtbuf.lines then
+      new_row = #txtbuf.lines
+   end
+   if txtbuf.cur_row == new_row then
+      return false
+   end
+   txtbuf:closeRow(txtbuf.cur_row)
+   txtbuf.cur_row = new_row
+   txtbuf:openRow(txtbuf.cur_row)
+   if txtbuf.cursor > #txtbuf.lines[txtbuf.cur_row] + 1 then
+      txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
+   end
+   return true
+end
+
+
+
+
+
+
+
 local t_insert, splice = assert(table.insert), assert(table.splice)
 local utf8, codepoints, gsub = string.utf8, string.codepoints, string.gsub
 
@@ -130,10 +186,6 @@ end
 
 function Txtbuf.insert(txtbuf, frag)
    local line = txtbuf.lines[txtbuf.cur_row]
-   if type(line) == "string" then
-      line = codepoints(line)
-      txtbuf.line = line
-   end
    local wide_frag = utf8(frag)
    -- #deprecated
    -- in principle, we should be breaking up wide (paste) inputs in
@@ -172,7 +224,6 @@ end
 
 
 
-local ts_bw = (require "color").ts_bw
 
 function Txtbuf.advance(txtbuf)
    txtbuf.lines[#txtbuf.lines + 1] = {}
@@ -207,29 +258,21 @@ local function _isPaired(a, b)
    return pairing
 end
 
-local function _deleteBack(txtbuf, cursor)
-   local cursor, cur_row, lines = txtbuf.cursor, txtbuf.cur_row, txtbuf.lines
-   if _isPaired(lines[cur_row][cursor - 1], lines[cur_row][cursor]) then
-      remove(txtbuf.lines[cur_row], cursor)
-      remove(txtbuf.lines[cur_row], cursor - 1)
-   else
-      remove(txtbuf.lines[cur_row], cursor - 1)
-   end
-   txtbuf.cursor = cursor - 1
-end
-
-function Txtbuf.d_back(txtbuf)
-   local cursor, cur_row = txtbuf.cursor, txtbuf.cur_row
+function Txtbuf.deleteBackward(txtbuf)
+   local line, cursor, cur_row = txtbuf.lines[txtbuf.cur_row], txtbuf.cursor, txtbuf.cur_row
    if cursor > 1 then
-      _deleteBack(txtbuf, cursor)
+      if _isPaired(line[cursor - 1], line[cursor]) then
+         remove(line, cursor)
+      end
+      remove(line, cursor - 1)
+      txtbuf.cursor = cursor - 1
       return false
    elseif cur_row == 1 then
       return false
    else
-      local new_line = concat(txtbuf.lines[cur_row - 1])
-                       .. concat(txtbuf.lines[cur_row])
+      txtbuf:openRow(cur_row - 1)
       local new_cursor = #txtbuf.lines[cur_row - 1] + 1
-      txtbuf.lines[cur_row - 1] = codepoints(new_line)
+      splice(txtbuf.lines[cur_row - 1],nil,txtbuf.lines[cur_row])
       remove(txtbuf.lines, cur_row)
       txtbuf.cur_row = cur_row - 1
       txtbuf.cursor = new_cursor
@@ -242,7 +285,7 @@ end
 
 
 
-function Txtbuf.d_fwd(txtbuf)
+function Txtbuf.deleteForward(txtbuf)
    local cursor, cur_row = txtbuf.cursor, txtbuf.cur_row
    if cursor <= #txtbuf.lines[cur_row] then
       remove(txtbuf.lines[txtbuf.cur_row], txtbuf.cursor)
@@ -250,9 +293,8 @@ function Txtbuf.d_fwd(txtbuf)
    elseif cur_row == #txtbuf.lines then
       return false
    else
-      local new_line = concat(txtbuf.lines[cur_row])
-                       .. concat(txtbuf.lines[cur_row + 1])
-      txtbuf.lines[cur_row] = codepoints(new_line)
+      txtbuf:openRow(cur_row + 1)
+      splice(txtbuf.lines[cur_row],nil,txtbuf.lines[cur_row + 1])
       remove(txtbuf.lines, cur_row + 1)
       return true
    end
@@ -267,22 +309,19 @@ end
 
 
 
-function Txtbuf.left(txtbuf, disp)
-   local disp = disp or 1
-   local moved = false
-   if txtbuf.cursor - disp >= 1 then
-      txtbuf.cursor = txtbuf.cursor - disp
-      moved = true
-   else
-      txtbuf.cursor = 1
-   end
-   if not moved and txtbuf.cur_row ~= 1 then
-      local cur_row = txtbuf.cur_row - 1
-      txtbuf.cur_row = cur_row
-      txtbuf.cursor = #txtbuf.lines[cur_row] + 1
-   end
 
-   return moved
+function Txtbuf.left(txtbuf, disp)
+   disp = disp or 1
+   local new_cursor = txtbuf.cursor - disp
+   while new_cursor < 1 do
+      if not txtbuf:up() then
+         txtbuf.cursor = 1
+         return false
+      end
+      new_cursor = #txtbuf.lines[txtbuf.cur_row] + 1 + new_cursor
+   end
+   txtbuf.cursor = new_cursor
+   return true
 end
 
 
@@ -292,21 +331,16 @@ end
 
 function Txtbuf.right(txtbuf, disp)
    disp = disp or 1
-   local moved = false
-   local line = txtbuf.lines[txtbuf.cur_row]
-   if txtbuf.cursor + disp <= #line + 1 then
-      txtbuf.cursor = txtbuf.cursor + disp
-      moved = true
-   else
-      txtbuf.cursor = #line + 1
+   local new_cursor = txtbuf.cursor + disp
+   while new_cursor > #txtbuf.lines[txtbuf.cur_row] + 1 do
+      if not txtbuf:down() then
+         txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
+         return false
+      end
+      new_cursor = new_cursor - (#txtbuf.lines[txtbuf.cur_row - 1] + 1)
    end
-
-   if not moved and txtbuf.cur_row ~= txtbuf.lines then
-      txtbuf.cur_row = txtbuf.cur_row + 1
-      txtbuf.cursor = 1
-   end
-
-   return moved
+   txtbuf.cursor = new_cursor
+   return true
 end
 
 
@@ -321,6 +355,73 @@ end
 
 
 
+
+
+
+
+
+
+
+
+local match = assert(string.match)
+
+function Txtbuf.leftWord(txtbuf, disp)
+   disp = disp or 1
+   local found_word_char = false
+   local moved = false
+   local line = txtbuf.lines[txtbuf.cur_row]
+   local search_pos = txtbuf.cursor
+   local search_char
+   while true do
+      search_char = search_pos == 1 and '\n' or line[search_pos - 1]
+      if match(search_char, '^%w$') then
+         found_word_char = true
+      elseif found_word_char then
+         disp = disp - 1
+         if disp == 0 then break end
+         found_word_char = false
+      end
+      if search_pos == 1 then
+         if not txtbuf:up() then break end
+         line = txtbuf.lines[txtbuf.cur_row]
+         search_pos = #line + 1
+      else
+         search_pos = search_pos - 1
+      end
+      moved = true
+   end
+   txtbuf.cursor = search_pos
+   return moved
+end
+
+function Txtbuf.rightWord(txtbuf, disp)
+   disp = disp or 1
+   local found_word_char = false
+   local moved = false
+   local line = txtbuf.lines[txtbuf.cur_row]
+   local search_pos = txtbuf.cursor
+   local search_char
+   while true do
+      search_char = search_pos > #line and '\n' or line[search_pos]
+      if match(search_char, '^%w$') then
+         found_word_char = true
+      elseif found_word_char then
+         disp = disp - 1
+         if disp == 0 then break end
+         found_word_char = false
+      end
+      if search_pos > #line then
+         if not txtbuf:down() then break end
+         line = txtbuf.lines[txtbuf.cur_row]
+         search_pos = 1
+      else
+         search_pos = search_pos + 1
+      end
+      moved = true
+   end
+   txtbuf.cursor = search_pos
+   return moved
+end
 
 
 
@@ -338,31 +439,13 @@ end
 
 
 function Txtbuf.up(txtbuf)
-   local cur_row = txtbuf.cur_row
-   if cur_row == 1 then
-      return false
-   else
-      txtbuf.cur_row = cur_row - 1
-      if txtbuf.cursor > #txtbuf.lines[txtbuf.cur_row] + 1 then
-         txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
-      end
-      return true
-   end
+   return txtbuf:switchRow(txtbuf.cur_row - 1)
 end
 
 
 
 function Txtbuf.down(txtbuf)
-   local cur_row = txtbuf.cur_row
-   if cur_row == #txtbuf.lines then
-      return false
-   else
-      txtbuf.cur_row = cur_row + 1
-      if txtbuf.cursor > #txtbuf.lines[txtbuf.cur_row] + 1 then
-         txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
-      end
-      return true
-   end
+   return txtbuf:switchRow(txtbuf.cur_row + 1)
 end
 
 
@@ -416,11 +499,9 @@ end
 
 
 function Txtbuf.resume(txtbuf)
-   for i, line in ipairs(txtbuf.lines) do
-      txtbuf.lines[i] = codepoints(line)
-   end
-   txtbuf.cursor = #txtbuf.lines[#txtbuf.lines] + 1
+   txtbuf:openRow(#txtbuf.lines)
    txtbuf.cur_row = #txtbuf.lines
+   txtbuf.cursor = #txtbuf.lines[#txtbuf.lines] + 1
 
    return txtbuf
 end
@@ -443,25 +524,18 @@ end
 
 
 
-local function into_codepoints(lines)
-   local cp = {}
-   for i,v in ipairs(lines) do
-      cp[i] = codepoints(v)
-   end
 
-   return cp
-end
-
-local function new(line)
+local function new(str)
+   str = str or ""
    local txtbuf = meta(Txtbuf)
-   local __l = line or ""
-   local _lines = into_codepoints(collect(lines, __l))
-   if #_lines == 0 then
-      _lines[1] = {}
+   local lines = collect(lines,str)
+   if #lines == 0 then
+      lines[1] = {}
    end
-   txtbuf.cursor = line and #_lines[#_lines] + 1 or 1
-   txtbuf.cur_row = line and #_lines  or 1
-   txtbuf.lines = _lines
+   txtbuf.lines = lines
+   txtbuf:openRow(#lines)
+   txtbuf.cur_row = #lines
+   txtbuf.cursor = #lines[#lines] + 1
    return txtbuf
 end
 
