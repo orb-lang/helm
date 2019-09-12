@@ -233,6 +233,15 @@ CTRL ["^L"] = clear_txtbuf
 #/lua
 
 
+*** ALT
+
+#!lua
+ALT ["M-w"] = NAV.ALT_RIGHT
+
+ALT ["M-b"] = NAV.ALT_LEFT
+#/lua
+
+
 *** MOUSE
 
 #!lua

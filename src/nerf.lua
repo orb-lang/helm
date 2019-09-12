@@ -236,6 +236,15 @@ CTRL ["^L"] = clear_txtbuf
 
 
 
+ALT ["M-w"] = NAV.ALT_RIGHT
+
+ALT ["M-b"] = NAV.ALT_LEFT
+
+
+
+
+
+
 function Nerf.MOUSE(modeS, category, value)
    if value.scrolling then
       if value.button == "MB0" then
