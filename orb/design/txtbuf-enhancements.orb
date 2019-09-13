@@ -1,0 +1,52 @@
+* Txtbuf Design Roadmap #Author @sam-atman
+
+
+The =txtbuf= class abstracts our interactions with Lua code at the REPL.
+
+Currently this is an array of lines, which are either a single string or
+an array of codepoints.
+
+This structure is mutable, making it unfeasible to implement undo or anything
+else involving history.
+
+
+** Back End
+
+  =txtbuf= needs to be prepared so that it can accept a different data
+structure, implemented as a C library.
+
+Anthony DiFranco will (hopefully) be working on our bindings for that library.
+
+Making sure all =txtbuf= operations are reasonably encapsulated will let us
+isolate this library to the module, then expand its use to the rest of
+=helm=.
+
+This is a rope-like structure with AST characteristics and an immutable
+nature which stores all changes.
+
+The intention is that our parsers will also output this data structure
+directly, while being capable of validating changes to the structure.
+
+
+*** Front End
+
+The implication of this is that we want to do as little as practical to
+enhance the front end, until this change lands.
+
+That said, it would be useful to add the whitespace-separated version of
+word movement.
+
+I'd like this implemented as a =forwardNextPattern= method, which takes a
+=reps= parameter that defaults to =1=.  A Lua pattern is a weird beast, less
+powerful than a regular expression, but employing this will let us implement
+forward and backward search fairly readily, and the equivalent for single-line
+jumps, which is a common idiom in vi-land.
+
+We'll also want 'jump to first non-whitespace character of line', but that's
+going to be about it for enhancements to =txtbuf= for awhile.
+
+This is the point where I'll write the =vril-command= and =vril-insert= ragas,
+which I want working by the time we do an alpha release.
+
+Which will most likely predate the change to a quipu, which is what I call the
+as-yet-vapor library for string-ast handling at the C level.

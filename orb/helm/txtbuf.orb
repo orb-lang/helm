@@ -1,0 +1,528 @@
+* Txtbuf
+
+This is not much more than an ordinary array of lines that has a bit of
+awareness, mostly about which lines have cursors and which don't.
+
+I'll circle back for quipu but I want a basic editor as soon as possible. The
+interaction dynamics need to be worked out right away, plus I want to use it!
+
+Plan: A line that has a cursor on it, and there can be many, gets 'opened'
+into a grid of characters.  These in turn get 'closed' when the cursor leaves.
+
+A closed line is just a string.
+
+
+** Interface
+
+
+*** Instance fields
+
+- lines :  An array of strings (closed lines), or arrays containing codepoints (string fragments) (open lines).
+
+- cursor :  Number of fragments to skip before an insertion. Valid values are 1 to #line + 1.
+
+- cur_row :  Row containing the cursor.
+
+The intention is that all of these fields are manipulated internally: the
+codebase doesn't completely respect this, yet, but it should.
+
+This will let us expand, for instance, the definition of =cursor= to allow for
+an array of cursors, in the event that there's more than one, without exposing
+this elaboration to the rest of the system.
+
+The =txtbuf= is also a candidate for full replacement with the quipu data
+structure, so the more we can encapsulate its region of responsiblity, the
+cleaner that transition can be.
+
+
+**** Instance fields to be added
+
+- region:  Has a field =cursor= and field =cur_row= which store the beginning
+           of a region, with the txtbuf fields defined as the end of that
+           region.
+
+           Mutation of these should be encapsulated such that there can
+           eventually be plural regions, during for instance search and
+           replace.
+- disp :  Array of numbers, representing the furthest-right column which
+          may be reached by printing the corresponding row. Not equivalent
+          to #lines[n] as one codepoint != one column.
+
+**** dependencies
+
+#!lua
+assert(meta)
+local collect = assert(table.collect)
+local lines = assert(string.lines)
+local codepoints = assert(string.codepoints)
+#/lua
+
+
+** Methods
+
+#!lua
+local Txtbuf = meta {}
+#/lua
+
+*** Txtbuf.__tostring(txtbuf)
+
+#!lua
+local concat = assert(table.concat)
+
+local function cat(l)
+   if type(l) == "string" then
+      return l
+   elseif type(l) == "table" then
+      if l[1] ~= nil then
+         return concat(l)
+      else
+         return ""
+      end
+   end
+
+   error("called private fn cat with type" .. type(l))
+end
+#/lua
+
+#!lua
+function Txtbuf.__tostring(txtbuf)
+   local phrase = ""
+   for i = 1, #txtbuf.lines - 1 do
+      phrase = phrase .. cat(txtbuf.lines[i]) .. "\n"
+   end
+
+   return phrase .. cat(txtbuf.lines[#txtbuf.lines])
+end
+#/lua
+
+*** Txtbuf:openRow(row_num), Txtbuf:closeRow(row_num), Txtbuf:switchRow(new_row)
+
+#!lua
+
+function Txtbuf.openRow(txtbuf,row_num)
+   local line = txtbuf.lines[row_num]
+   if type(line) == "string" then
+      txtbuf.lines[row_num] = codepoints(line)
+   end
+end
+
+function Txtbuf.closeRow(txtbuf,row_num)
+   local line = txtbuf.lines[row_num]
+   if type(line) == "table" then
+      txtbuf.lines[row_num] = concat(line)
+   end
+end
+
+#/lua
+
+**** TxtBuf:switchRow(new_row)
+
+new_row is constrained to be within the range of rows that actually exist.
+
+Also constrains the cursor to be in-bounds for the new row.
+
+The return value indicates whether a switch actually occurred.
+
+#TODO Currently this is only used to switch from row n to row n+1 or n-1,
+so in effect the return value indicates whether the requested row was
+in-bounds. If other usages appear, it may be useful to distinguish between
+"was the argument in bounds" and "was the argument actually different from
+cur_row".
+
+#!lua
+
+function Txtbuf.switchRow(txtbuf,new_row)
+   if new_row < 1 then
+      new_row = 1
+   elseif new_row > #txtbuf.lines then
+      new_row = #txtbuf.lines
+   end
+   if txtbuf.cur_row == new_row then
+      return false
+   end
+   txtbuf:closeRow(txtbuf.cur_row)
+   txtbuf.cur_row = new_row
+   txtbuf:openRow(txtbuf.cur_row)
+   if txtbuf.cursor > #txtbuf.lines[txtbuf.cur_row] + 1 then
+      txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
+   end
+   return true
+end
+
+#/lua
+
+
+*** Txtbuf:insert(frag)
+
+#!lua
+local t_insert, splice = assert(table.insert), assert(table.splice)
+local utf8, codepoints, gsub = string.utf8, string.codepoints, string.gsub
+
+local _frag_sub = { ["("] = {"(", ")"},
+                    ['"'] = {'"', '"'},
+                    ["'"] = {"'", "'"},
+                    ["{"] = {"{", "}"},
+                    ["["] = {"[", "]"} }
+
+local _closing_pairs = { '"', ")", "}", "]", "'"}
+
+-- pronounced clozer
+local function _closer(frag)
+   local mebbe = false
+   for _, cha in ipairs(_closing_pairs) do
+      mebbe = mebbe or cha == frag
+   end
+   return mebbe
+end
+
+local function _no_insert(line, cursor, frag)
+   if frag == line[cursor]
+      and _closer(frag) then
+      return false
+   else
+      return true
+   end
+end
+
+function Txtbuf.insert(txtbuf, frag)
+   local line = txtbuf.lines[txtbuf.cur_row]
+   if type(line) == "string" then
+      line = codepoints(line)
+      txtbuf.line = line
+   end
+   if _frag_sub[frag] and _no_insert(line, txtbuf.cursor, frag) then
+      -- add a closing symbol
+      splice(line, txtbuf.cursor, _frag_sub[frag])
+   elseif _no_insert(line, txtbuf.cursor, frag)then
+      t_insert(line, txtbuf.cursor, frag)
+   end
+   txtbuf.cursor = txtbuf.cursor + 1
+   return true
+end
+#/lua
+
+
+*** Txtbuf:advance()
+
+#!lua
+
+function Txtbuf.advance(txtbuf)
+   txtbuf.lines[#txtbuf.lines + 1] = {}
+   txtbuf.cur_row = #txtbuf.lines
+   txtbuf.cursor = 1
+end
+#/lua
+
+
+*** Txtbuf:deleteBackward()
+
+The return value tells us if we have one less line, since we need to
+clear it off the screen (true of deleteForward as well).
+
+#NB this leave ghost lines on the screen during some kinds of multi-line
+edits, which must be addressed.
+
+#!lua
+local remove = assert(table.remove)
+
+local _del_by_pairs = { {"{", "}"},
+                       {"'", "'"},
+                       {'"', '"'},
+                       {"[", "]"},
+                       {"(", ")"} }
+
+local function _isPaired(a, b)
+   local pairing = false
+   for _, bookends in ipairs(_del_by_pairs) do
+      pairing = pairing or (a == bookends[1] and b == bookends[2])
+   end
+   return pairing
+end
+
+function Txtbuf.deleteBackward(txtbuf)
+   local line, cursor, cur_row = txtbuf.lines[txtbuf.cur_row], txtbuf.cursor, txtbuf.cur_row
+   if cursor > 1 then
+      if _isPaired(line[cursor - 1], line[cursor]) then
+         remove(line, cursor)
+      end
+      remove(line, cursor - 1)
+      txtbuf.cursor = cursor - 1
+      return false
+   elseif cur_row == 1 then
+      return false
+   else
+      txtbuf:openRow(cur_row - 1)
+      local new_cursor = #txtbuf.lines[cur_row - 1] + 1
+      splice(txtbuf.lines[cur_row - 1],nil,txtbuf.lines[cur_row])
+      remove(txtbuf.lines, cur_row)
+      txtbuf.cur_row = cur_row - 1
+      txtbuf.cursor = new_cursor
+      return true
+   end
+end
+#/lua
+
+
+*** Txtbuf:deleteForward()
+
+#!lua
+function Txtbuf.deleteForward(txtbuf)
+   local cursor, cur_row = txtbuf.cursor, txtbuf.cur_row
+   if cursor <= #txtbuf.lines[cur_row] then
+      remove(txtbuf.lines[txtbuf.cur_row], txtbuf.cursor)
+      return false
+   elseif cur_row == #txtbuf.lines then
+      return false
+   else
+      txtbuf:openRow(cur_row + 1)
+      splice(txtbuf.lines[cur_row],nil,txtbuf.lines[cur_row + 1])
+      remove(txtbuf.lines, cur_row + 1)
+      return true
+   end
+end
+#/lua
+
+
+*** Txtbuf:left(disp), Txtbuf:right(disp)
+
+These methods shift a cursor left or right, handling line breaks internally.
+
+=disp= is a number of codepoints to shift.
+
+#!lua
+
+function Txtbuf.left(txtbuf, disp)
+   disp = disp or 1
+   local new_cursor = txtbuf.cursor - disp
+   while new_cursor < 1 do
+      if not txtbuf:up() then
+         txtbuf.cursor = 1
+         return false
+      end
+      new_cursor = #txtbuf.lines[txtbuf.cur_row] + 1 + new_cursor
+   end
+   txtbuf.cursor = new_cursor
+   return true
+end
+#/lua
+
+
+*** Txtbuf:right(disp)
+
+#!lua
+function Txtbuf.right(txtbuf, disp)
+   disp = disp or 1
+   local new_cursor = txtbuf.cursor + disp
+   while new_cursor > #txtbuf.lines[txtbuf.cur_row] + 1 do
+      if not txtbuf:down() then
+         txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
+         return false
+      end
+      new_cursor = new_cursor - (#txtbuf.lines[txtbuf.cur_row - 1] + 1)
+   end
+   txtbuf.cursor = new_cursor
+   return true
+end
+#/lua
+
+
+*** Txtbuf:rightWord(disp), Txtbuf:leftWord(disp)
+
+This is the proposed interface for operating on a word level on a Txtbuf:
+
+- #parameters
+
+  - disp:  The number of /words/ to move across
+
+- To be added later:
+
+  - mark:  A boolean: if true, the Txtbuf is annotated with a 'mark' defining
+           a region.  The first cursor is stored as the mark origin, and the
+           second cursor is given the 'cursor' slot on the txtbuf.
+
+           This lets us define a generalized method to kill or yank the region.
+
+#!lua
+
+local match = assert(string.match)
+
+function Txtbuf.leftWord(txtbuf, disp)
+   disp = disp or 1
+   local found_word_char = false
+   local moved = false
+   local line = txtbuf.lines[txtbuf.cur_row]
+   local search_pos = txtbuf.cursor
+   local search_char
+   while true do
+      search_char = search_pos == 1 and '\n' or line[search_pos - 1]
+      if match(search_char, '^%w$') then
+         found_word_char = true
+      elseif found_word_char then
+         disp = disp - 1
+         if disp == 0 then break end
+         found_word_char = false
+      end
+      if search_pos == 1 then
+         if not txtbuf:up() then break end
+         line = txtbuf.lines[txtbuf.cur_row]
+         search_pos = #line + 1
+      else
+         search_pos = search_pos - 1
+      end
+      moved = true
+   end
+   txtbuf.cursor = search_pos
+   return moved
+end
+
+function Txtbuf.rightWord(txtbuf, disp)
+   disp = disp or 1
+   local found_word_char = false
+   local moved = false
+   local line = txtbuf.lines[txtbuf.cur_row]
+   local search_pos = txtbuf.cursor
+   local search_char
+   while true do
+      search_char = search_pos > #line and '\n' or line[search_pos]
+      if match(search_char, '^%w$') then
+         found_word_char = true
+      elseif found_word_char then
+         disp = disp - 1
+         if disp == 0 then break end
+         found_word_char = false
+      end
+      if search_pos > #line then
+         if not txtbuf:down() then break end
+         line = txtbuf.lines[txtbuf.cur_row]
+         search_pos = 1
+      else
+         search_pos = search_pos + 1
+      end
+      moved = true
+   end
+   txtbuf.cursor = search_pos
+   return moved
+end
+
+#/lua
+
+
+*** Txtbuf:replace(frag)
+
+Replaces the character to the right of the cursor with the given codepoint.
+
+This is called =frag= as a reminder that, a) it's variable width and b) to
+really nail displacement we need to be looking up displacements in some kind
+of region-defined lookup table.
+
+*** Txtbuf:up(), Txtbuf:down()
+
+#!lua
+
+function Txtbuf.up(txtbuf)
+   return txtbuf:switchRow(txtbuf.cur_row - 1)
+end
+#/lua
+
+#!lua
+function Txtbuf.down(txtbuf)
+   return txtbuf:switchRow(txtbuf.cur_row + 1)
+end
+#/lua
+
+*** Txtbuf:nl()
+
+Either splits a line or (more usually) evaluates.
+
+#!lua
+local sub = assert(string.sub)
+local insert = assert(table.insert)
+function Txtbuf.nl(txtbuf)
+   -- Most txtbufs are one line, so we always evaluate from
+   -- a one-liner, regardless of cursor location.
+   local linum = #txtbuf.lines
+   if linum == 1 then
+      return true
+   end
+   local cursor = txtbuf.cursor
+   local cur_row = txtbuf.cur_row
+   -- these are the two default positions for up and down
+   -- history search
+   if cur_row == 1 and cursor > #txtbuf.lines[1] then
+      return true
+   end
+   if cur_row == linum and cursor > #txtbuf.lines[linum] then
+      return true
+   end
+   -- split the line
+   local cur_line = concat(txtbuf.lines[txtbuf.cur_row])
+   local first = sub(cur_line, 1, cursor - 1)
+   local second = sub(cur_line, cursor)
+   txtbuf.lines[cur_row] = codepoints(first)
+   insert(txtbuf.lines, cur_row + 1, codepoints(second))
+   txtbuf.cursor = 1
+   txtbuf.cur_row = cur_row + 1
+
+   return false
+end
+#/lua
+
+
+#!lua
+function Txtbuf.suspend(txtbuf)
+   for i,v in ipairs(txtbuf.lines) do
+      txtbuf.lines[i] = tostring(v)
+   end
+
+   return txtbuf
+end
+#/lua
+
+#!lua
+function Txtbuf.resume(txtbuf)
+   txtbuf:openRow(#txtbuf.lines)
+   txtbuf.cur_row = #txtbuf.lines
+   txtbuf.cursor = #txtbuf.lines[#txtbuf.lines] + 1
+
+   return txtbuf
+end
+#/lua
+
+#!lua
+local cl = assert(table.clone, "table.clone must be provided")
+
+function Txtbuf.clone(txtbuf)
+   -- Clone to depth of 3 to get tb, tb.lines, and each lines
+   local tb = cl(txtbuf, 3)
+   if type(tb.lines[1]) == "string" then
+      return tb:resume()
+   end
+   return tb
+end
+#/lua
+
+
+*** new
+
+#!lua
+
+local function new(str)
+   str = str or ""
+   local txtbuf = meta(Txtbuf)
+   local lines = collect(lines,str)
+   if #lines == 0 then
+      lines[1] = {}
+   end
+   txtbuf.lines = lines
+   txtbuf:openRow(#lines)
+   txtbuf.cur_row = #lines
+   txtbuf.cursor = #lines[#lines] + 1
+   return txtbuf
+end
+
+Txtbuf.idEst = new
+#/lua
+
+#!lua
+return new
+#/lua
