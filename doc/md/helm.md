@@ -113,7 +113,7 @@ Primitives for terminal manipulation.
 
 ```lua
 a = require "singletons/anterm"
-local repr = require "repr"
+local repr = require "helm/repr"
 --watch = require "watcher"
 
 ```

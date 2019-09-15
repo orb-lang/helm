@@ -117,7 +117,7 @@ local concat = assert(table.concat)
 
 
 a = require "singletons/anterm"
-local repr = require "repr"
+local repr = require "helm/repr"
 --watch = require "watcher"
 
 

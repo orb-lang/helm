@@ -181,13 +181,10 @@ end
 
 
 
+local hasfield = assert(core.hasfield)
+
 local function _yieldReprs(tab, phrase)
-   local _repr = getmetatable(tab) and getmetatable(tab).__repr or tab.__repr
-                 -- #codesmell this fallback is not ideal, but there's
-                 -- some pathway that lands us here without a repr, sometimes.
-                 or function(tab, phrase, c)
-                       return ("backstop->" .. tostring(tab))
-                    end
+   local isYes, _repr = hasfield.__repr(tab)
    assert(c, "must have a value for c")
    local repr = _repr(tab, phrase, c)
    local yielder
@@ -234,7 +231,7 @@ local function _tabulate(tab, depth, cycle, phrase)
    end
    cycle[tab] = true
    -- __repr gets special treatment
-   if table.hasfield.__repr(tab) then
+   if hasfield.__repr(tab) then
       _yieldReprs(tab, phrase)
       return nil
    end
