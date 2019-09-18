@@ -391,6 +391,7 @@ local function _collect_repr(collection, phrase, c)
 end
 
 local collect_M = {__repr = _collect_repr}
+collect_M.__index = collect_M
 #/lua
 
 

@@ -260,6 +260,7 @@ local icon_map = { MOUSE = mk_paint(STAT_ICON, c.userdata),
 
 local function _make_icon(category, value)
    local icon = ""
+   local phrase
    if category == "MOUSE" then
       phrase = icon_map[category]("", pr_mouse(value))
    else
@@ -623,6 +624,7 @@ function new(max_col, max_row)
   local modeS = meta(ModeS)
   modeS.txtbuf = Txtbuf()
   modeS.hist  = Historian()
+  modeS.status = {}
   modeS.lex  = Lex.lua_thor
   modeS.hist.cursor = #modeS.hist + 1
   modeS.max_col = max_col

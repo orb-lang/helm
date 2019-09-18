@@ -213,7 +213,14 @@ local stdin = uv.new_tty(0, true)
 
 local max_col, max_row = uv.tty_get_winsize(stdin)
 
-modeS = require "helm:modeselektor" (max_col, max_row)
+modeS = require "helm/modeselektor" (max_col, max_row)
+
+local function s_out(msg)
+  insert(modeS.status, msg)
+end
+
+-- make a new 'status' instance
+local s = require "status" (s_out)
 
 local timer = uv.new_timer()
 uv.timer_start(timer, 500, 500, function()
