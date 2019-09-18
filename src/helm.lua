@@ -4,7 +4,9 @@
 
 
 
-_Bridge.helm = true
+if rawget(_G, "_Bridge") then
+  _Bridge.helm = true
+end
 
 
 

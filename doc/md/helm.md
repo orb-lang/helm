@@ -4,7 +4,9 @@
 ``helm`` is our repl.
 
 ```lua
-_Bridge.helm = true
+if rawget(_G, "_Bridge") then
+  _Bridge.helm = true
+end
 ```
 #### Intercept _G
 
