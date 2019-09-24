@@ -147,6 +147,13 @@ end
 
 function NAV.ALT_RIGHT(modeS,category,value)
   return modeS.txtbuf:rightWord()
+
+function NAV.HYPER_LEFT(modeS,category,value)
+  return modeS.txtbuf:startOfLine()
+end
+
+function NAV.HYPER_RIGHT(modeS,category,value)
+  return modeS.txtbuf:endOfLine()
 end
 
 function NAV.RETURN(modeS, category, value)
@@ -210,17 +217,10 @@ end
 
 
 
-local function cursor_begin(modeS, category, value)
-   modeS.txtbuf.cursor = 1
-end
 
-CTRL["^A"] = cursor_begin
+CTRL["^A"] = NAV.HYPER_LEFT
 
-local function cursor_end(modeS, category, value)
-   modeS.txtbuf.cursor = #modeS.txtbuf.lines[modeS.txtbuf.cur_row] + 1
-end
-
-CTRL["^E"] = cursor_end
+CTRL["^E"] = NAV.HYPER_RIGHT
 
 local function clear_txtbuf(modeS, category, value)
    modeS.txtbuf = Txtbuf()

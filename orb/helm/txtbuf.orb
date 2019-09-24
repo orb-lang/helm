@@ -325,6 +325,19 @@ function Txtbuf.right(txtbuf, disp)
 end
 #/lua
 
+*** Txtbuf:startOfLine(), Txtbuf:endOfLine()
+
+#!lua
+
+function Txtbuf.startOfLine(txtbuf)
+   txtbuf.cursor = 1
+end
+
+function Txtbuf.endOfLine(txtbuf)
+   txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
+end
+
+#/lua
 
 *** Txtbuf:rightWord(disp), Txtbuf:leftWord(disp)
 

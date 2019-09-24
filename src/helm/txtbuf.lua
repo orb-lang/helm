@@ -329,6 +329,19 @@ end
 
 
 
+function Txtbuf.startOfLine(txtbuf)
+   txtbuf.cursor = 1
+end
+
+function Txtbuf.endOfLine(txtbuf)
+   txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
+end
+
+
+
+
+
+
 
 
 
