@@ -314,13 +314,20 @@ end
 
 #/lua
 
-*** Txtbuf:rightWord(disp), Txtbuf:leftWord(disp)
+*** Txtbuf:rightToBoundary(pattern, reps), Txtbuf:leftToBoundary(pattern, reps)
 
-This is the proposed interface for operating on a word level on a Txtbuf:
+Move the cursor until it "hits" a character matching =pattern=, after
+encountering at least one character *not* matching =pattern=. Stops with the
+cursor on the matching character when moving right, or one cell ahead of it
+when moving left, i.e. with the cursor "between" a non-matching character
+and a matching one. Used as the basis for word (alphanumeric) and
+Word (whitespace-separated) motions.
 
 - #parameters
 
-  - disp:  The number of /words/ to move across
+   - pattern: A pattern matching character(s) to stop at. Generally either a
+              single character or a single character class, e.g. %W
+   - reps:    Number of times to repeat the motion
 
 - To be added later:
 
@@ -334,21 +341,21 @@ This is the proposed interface for operating on a word level on a Txtbuf:
 
 local match = assert(string.match)
 
-function Txtbuf.leftWord(txtbuf, disp)
-   disp = disp or 1
-   local found_word_char = false
+function Txtbuf.leftToBoundary(txtbuf, pattern, reps)
+   reps = reps or 1
+   local found_other_char = false
    local moved = false
    local line = txtbuf.lines[txtbuf.cur_row]
    local search_pos = txtbuf.cursor
    local search_char
    while true do
-      search_char = search_pos == 1 and '\n' or line[search_pos - 1]
-      if match(search_char, '^%w$') then
-         found_word_char = true
-      elseif found_word_char then
-         disp = disp - 1
-         if disp == 0 then break end
-         found_word_char = false
+      search_char = search_pos == 1 and "\n" or line[search_pos - 1]
+      if not match(search_char, pattern) then
+         found_other_char = true
+      elseif found_other_char then
+         reps = reps - 1
+         if reps == 0 then break end
+         found_other_char = false
       end
       if search_pos == 1 then
          if not txtbuf:up() then break end
@@ -363,21 +370,21 @@ function Txtbuf.leftWord(txtbuf, disp)
    return moved
 end
 
-function Txtbuf.rightWord(txtbuf, disp)
-   disp = disp or 1
-   local found_word_char = false
+function Txtbuf.rightToBoundary(txtbuf, pattern, reps)
+   reps = reps or 1
+   local found_other_char = false
    local moved = false
    local line = txtbuf.lines[txtbuf.cur_row]
    local search_pos = txtbuf.cursor
    local search_char
    while true do
-      search_char = search_pos > #line and '\n' or line[search_pos]
-      if match(search_char, '^%w$') then
-         found_word_char = true
-      elseif found_word_char then
-         disp = disp - 1
-         if disp == 0 then break end
-         found_word_char = false
+      search_char = search_pos > #line and "\n" or line[search_pos]
+      if not match(search_char, pattern) then
+         found_other_char = true
+      elseif found_other_char then
+         reps = reps - 1
+         if reps == 0 then break end
+         found_other_char = false
       end
       if search_pos > #line then
          if not txtbuf:down() then break end
@@ -390,6 +397,28 @@ function Txtbuf.rightWord(txtbuf, disp)
    end
    txtbuf.cursor = search_pos
    return moved
+end
+
+#/lua
+
+*** Txtbuf:leftWordAlpha(reps), Txtbuf:rightWordAlpha(reps), Txtbuf:leftWordWhitespace(reps), Txtbuf:rightWordWhitespace(reps)
+
+#!lua
+
+function Txtbuf.leftWordAlpha(txtbuf, reps)
+   return txtbuf:leftToBoundary('%W', reps)
+end
+
+function Txtbuf.rightWordAlpha(txtbuf, reps)
+   return txtbuf:rightToBoundary('%W', reps)
+end
+
+function Txtbuf.leftWordWhitespace(txtbuf, reps)
+   return txtbuf:leftToBoundary('%s', reps)
+end
+
+function Txtbuf.rightWordWhitespace(txtbuf, reps)
+   return txtbuf:rightToBoundary('%s', reps)
 end
 
 #/lua

@@ -332,23 +332,30 @@ end
 
 
 
+
+
+
+
+
+
+
 local match = assert(string.match)
 
-function Txtbuf.leftWord(txtbuf, disp)
-   disp = disp or 1
-   local found_word_char = false
+function Txtbuf.leftToBoundary(txtbuf, pattern, reps)
+   reps = reps or 1
+   local found_other_char = false
    local moved = false
    local line = txtbuf.lines[txtbuf.cur_row]
    local search_pos = txtbuf.cursor
    local search_char
    while true do
-      search_char = search_pos == 1 and '\n' or line[search_pos - 1]
-      if match(search_char, '^%w$') then
-         found_word_char = true
-      elseif found_word_char then
-         disp = disp - 1
-         if disp == 0 then break end
-         found_word_char = false
+      search_char = search_pos == 1 and "\n" or line[search_pos - 1]
+      if not match(search_char, pattern) then
+         found_other_char = true
+      elseif found_other_char then
+         reps = reps - 1
+         if reps == 0 then break end
+         found_other_char = false
       end
       if search_pos == 1 then
          if not txtbuf:up() then break end
@@ -363,21 +370,21 @@ function Txtbuf.leftWord(txtbuf, disp)
    return moved
 end
 
-function Txtbuf.rightWord(txtbuf, disp)
-   disp = disp or 1
-   local found_word_char = false
+function Txtbuf.rightToBoundary(txtbuf, pattern, reps)
+   reps = reps or 1
+   local found_other_char = false
    local moved = false
    local line = txtbuf.lines[txtbuf.cur_row]
    local search_pos = txtbuf.cursor
    local search_char
    while true do
-      search_char = search_pos > #line and '\n' or line[search_pos]
-      if match(search_char, '^%w$') then
-         found_word_char = true
-      elseif found_word_char then
-         disp = disp - 1
-         if disp == 0 then break end
-         found_word_char = false
+      search_char = search_pos > #line and "\n" or line[search_pos]
+      if not match(search_char, pattern) then
+         found_other_char = true
+      elseif found_other_char then
+         reps = reps - 1
+         if reps == 0 then break end
+         found_other_char = false
       end
       if search_pos > #line then
          if not txtbuf:down() then break end
@@ -390,6 +397,28 @@ function Txtbuf.rightWord(txtbuf, disp)
    end
    txtbuf.cursor = search_pos
    return moved
+end
+
+
+
+
+
+
+
+function Txtbuf.leftWordAlpha(txtbuf, reps)
+   return txtbuf:leftToBoundary('%W', reps)
+end
+
+function Txtbuf.rightWordAlpha(txtbuf, reps)
+   return txtbuf:rightToBoundary('%W', reps)
+end
+
+function Txtbuf.leftWordWhitespace(txtbuf, reps)
+   return txtbuf:leftToBoundary('%s', reps)
+end
+
+function Txtbuf.rightWordWhitespace(txtbuf, reps)
+   return txtbuf:rightToBoundary('%s', reps)
 end
 
 

@@ -142,11 +142,12 @@ function NAV.RIGHT(modeS, category, value)
 end
 
 function NAV.ALT_LEFT(modeS,category,value)
-  return modeS.txtbuf:leftWord()
+  return modeS.txtbuf:leftWordAlpha()
 end
 
 function NAV.ALT_RIGHT(modeS,category,value)
-  return modeS.txtbuf:rightWord()
+  return modeS.txtbuf:rightWordAlpha()
+end
 
 function NAV.HYPER_LEFT(modeS,category,value)
   return modeS.txtbuf:startOfLine()
