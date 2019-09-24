@@ -155,61 +155,46 @@ end
 
 
 
-local t_insert, splice = assert(table.insert), assert(table.splice)
-local utf8, codepoints, gsub = string.utf8, string.codepoints, string.gsub
-
-local _frag_sub = { ["("] = {"(", ")"},
-                    ['"'] = {'"', '"'},
-                    ["'"] = {"'", "'"},
-                    ["{"] = {"{", "}"},
-                    ["["] = {"[", "]"} }
-
-local _closing_pairs = { '"', ")", "}", "]", "'"}
-
--- pronounced clozer
-local function _closer(frag)
-   local mebbe = false
-   for _, cha in ipairs(_closing_pairs) do
-      mebbe = mebbe or cha == frag
-   end
-   return mebbe
-end
-
-local function _no_insert(line, cursor, frag)
-   if frag == line[cursor]
-      and _closer(frag) then
-      return false
-   else
-      return true
-   end
-end
-
-function Txtbuf.insert(txtbuf, frag)
-   local line = txtbuf.lines[txtbuf.cur_row]
-   if type(line) == "string" then
-      line = codepoints(line)
-      txtbuf.line = line
-   end
-   if _frag_sub[frag] and _no_insert(line, txtbuf.cursor, frag) then
-      -- add a closing symbol
-      splice(line, txtbuf.cursor, _frag_sub[frag])
-   elseif _no_insert(line, txtbuf.cursor, frag)then
-      t_insert(line, txtbuf.cursor, frag)
-   end
-   txtbuf.cursor = txtbuf.cursor + 1
-   return true
-end
-
-
-
-
-
-
-
 function Txtbuf.advance(txtbuf)
    txtbuf.lines[#txtbuf.lines + 1] = {}
    txtbuf.cur_row = #txtbuf.lines
    txtbuf.cursor = 1
+end
+
+
+
+
+
+local t_insert, splice = assert(table.insert), assert(table.splice)
+local codepoints, gsub = assert(string.codepoints), assert(string.gsub)
+
+local _brace_pairs = { ["("] = ")",
+                       ['"'] = '"',
+                       ["'"] = "'",
+                       ["{"] = "}",
+                       ["["] = "]"}
+-- pronounced clozer
+local function _is_closer(frag)
+   for _, cha in pairs(_brace_pairs) do
+      if cha == frag then return true end
+   end
+   return false
+end
+
+local function _should_insert(line, cursor, frag)
+   return not (frag == line[cursor] and _is_closer(frag))
+end
+
+function Txtbuf.insert(txtbuf, frag)
+   local line = txtbuf.lines[txtbuf.cur_row]
+   if _should_insert(line, txtbuf.cursor, frag) then
+      if _brace_pairs[frag] then
+         t_insert(line, txtbuf.cursor, _brace_pairs[frag])
+      end
+      t_insert(line, txtbuf.cursor, frag)
+   end
+   txtbuf.cursor = txtbuf.cursor + 1
+   return true
 end
 
 
@@ -225,24 +210,14 @@ end
 
 local remove = assert(table.remove)
 
-local _del_by_pairs = { {"{", "}"},
-                       {"'", "'"},
-                       {'"', '"'},
-                       {"[", "]"},
-                       {"(", ")"} }
-
-local function _isPaired(a, b)
-   local pairing = false
-   for _, bookends in ipairs(_del_by_pairs) do
-      pairing = pairing or (a == bookends[1] and b == bookends[2])
-   end
-   return pairing
+local function _is_paired(a, b)
+   return _brace_pairs[a] == b
 end
 
 function Txtbuf.deleteBackward(txtbuf)
    local line, cursor, cur_row = txtbuf.lines[txtbuf.cur_row], txtbuf.cursor, txtbuf.cur_row
    if cursor > 1 then
-      if _isPaired(line[cursor - 1], line[cursor]) then
+      if _is_paired(line[cursor - 1], line[cursor]) then
          remove(line, cursor)
       end
       remove(line, cursor - 1)
@@ -253,7 +228,7 @@ function Txtbuf.deleteBackward(txtbuf)
    else
       txtbuf:openRow(cur_row - 1)
       local new_cursor = #txtbuf.lines[cur_row - 1] + 1
-      splice(txtbuf.lines[cur_row - 1],nil,txtbuf.lines[cur_row])
+      splice(txtbuf.lines[cur_row - 1],nil,line)
       remove(txtbuf.lines, cur_row)
       txtbuf.cur_row = cur_row - 1
       txtbuf.cursor = new_cursor
