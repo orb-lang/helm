@@ -405,6 +405,29 @@ end
 
 
 
+
+
+
+
+function Txtbuf.firstNonWhitespace(txtbuf)
+   local line = txtbuf.lines[txtbuf.cur_row]
+   local new_cursor = 1
+   while new_cursor <= #line do
+      if match(line[new_cursor],'%S') then
+         txtbuf.cursor = new_cursor
+         return true
+      end
+      new_cursor = new_cursor + 1
+   end
+   return false
+end
+
+
+
+
+
+
+
 function Txtbuf.leftWordAlpha(txtbuf, reps)
    return txtbuf:leftToBoundary('%W', reps)
 end
