@@ -345,6 +345,8 @@ modeS:paint()
 local retcode =  uv.run('default')
 -- Restore main screen
 print '\x1b[?47l'
+-- Back to normal mode
+uv.tty_reset_mode()
 
 if retcode ~= true then
    error(retcode)
