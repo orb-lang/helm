@@ -486,18 +486,20 @@ end
 ** Historian:prev()
 
 #!lua
+local bound = assert(math.bound)
+
 function Historian.prev(historian)
-   if historian.cursor == 0 or #historian == 0 then
-      return Txtbuf()
+   historian.cursor = bound(historian.cursor - 1, 1)
+   local txtbuf = historian[historian.cursor]
+   if txtbuf then
+      txtbuf = txtbuf:clone()
+      txtbuf:startOfText()
+      txtbuf:endOfLine()
+      local result = _resultsFrom(historian, historian.line_ids[historian.cursor])
+      return txtbuf, result
+   else
+      return Txtbuf(), nil
    end
-   local Δ = historian.cursor > 1 and historian.cursor - 1 or historian.cursor
-   local txtbuf = historian[Δ]
-   txtbuf.cur_row = 1
-   local result = _resultsFrom(historian, historian.line_ids[Δ])
-   --local result = historian.results[txtbuf]
-   historian.cursor = Δ
-   txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
-   return txtbuf:clone(), result
 end
 #/lua
 
@@ -510,26 +512,15 @@ Returns the next txtbuf in history, and a second flag to tell the
 
 #!lua
 function Historian.next(historian)
-   local Δ = historian.cursor < #historian
-             and historian.cursor + 1
-             or  historian.cursor
-   local fwd = historian.cursor >= #historian
-   if historian.cursor == 0 or #historian == 0 then
-      return Txtbuf()
-   end
-   local txtbuf = historian[Δ]
-   if not txtbuf then
-      return Txtbuf(), nil, true
-   end
-   txtbuf.cur_row = #txtbuf.lines
-   local result = _resultsFrom(historian, historian.line_ids[Δ])
-   historian.cursor = Δ
-   txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
-   if fwd and #txtbuf.lines > 0 then
-      historian.cursor = #historian + 1
-      return txtbuf:clone(), nil, true
+   historian.cursor = bound(historian.cursor + 1, nil, #historian + 1)
+   local txtbuf = historian[historian.cursor]
+   if txtbuf then
+      txtbuf = txtbuf:clone()
+      txtbuf:endOfText()
+      local result = _resultsFrom(historian, historian.line_ids[historian.cursor])
+      return txtbuf, result
    else
-      return txtbuf:clone(), result, false
+      return nil, nil
    end
 end
 #/lua
@@ -537,19 +528,18 @@ end
 
 *** Historian:index(cursor)
 
-Loads the history to an exact index.
+Loads the history to an exact index. The index must be one that actually exists,
+i.e. 1 <= index <= #historian--#historian + 1 is not allowed.
 
 #!lua
+local inbounds = assert(math.inbounds)
+
 function Historian.index(historian, cursor)
-   if (not cursor) or cursor < 0 or cursor > #historian + 1 then
-      return Txtbuf()
-   end
-   local txtbuf = historian[cursor]
+   assert(inbounds(cursor, 1, #historian))
+   local txtbuf = historian[cursor]:clone()
+   txtbuf:endOfText()
    local result = _resultsFrom(historian, historian.line_ids[cursor])
-   txtbuf = txtbuf:clone()
    historian.cursor = cursor
-   txtbuf.cur_row = #txtbuf.lines
-   txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
    return txtbuf, result
 end
 #/lua

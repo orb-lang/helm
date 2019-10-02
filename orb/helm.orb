@@ -101,6 +101,8 @@ table.select = core.select
 table.reverse = core.reverse
 table.hasfield = core.hasfield
 table.keys = core.keys
+math.bound = core.bound
+math.inbounds = core.inbounds
 
 table.pack = rawget(table, "pack") and table.pack or core.pack
 table.unpack = rawget(table, "unpack") and table.unpack or unpack
