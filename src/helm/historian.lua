@@ -14,12 +14,15 @@
 
 
 
+local L       = require "lpeg"
+local uv      = require "luv"
+local sql     = assert(sql, "sql must be in bridge _G")
+
 local Txtbuf  = require "helm/txtbuf"
 local Rainbuf = require "helm/rainbuf"
-local sql     = assert(sql, "sql must be in bridge _G")
-local color   = (require "color").color
+local color   = (require "singletons/color").color
 
-local L       = require "lpeg"
+
 local repr    = require "helm/repr"
 local format  = assert (string.format)
 local sub     = assert (string.sub)
@@ -130,7 +133,7 @@ local bridge_home = io.popen("echo $BRIDGE_HOME", "r"):read("*a"):sub(1, -2)
 Historian.bridge_home = bridge_home ~= "" and bridge_home
                         or home_dir .. "/.bridge"
 
-Historian.project = io.popen("pwd", "r"):read("*a"):sub(1, -2)
+Historian.project = uv.cwd()
 
 local function has(table, name)
    for _,v in ipairs(table) do

@@ -110,31 +110,6 @@ local repr = require "helm/repr"
 --watch = require "watcher"
 
 ```
-### Logging
-
-I'm making the crudest possible logger here.
-
-
-This thing sucks tbh, don't think I'm using it and should probably delete.
-
-```lua
-local _log = {}
-_log.vals = {}
-local format = assert(string.format )
-local function __logger(_, fmtstr, ...)
-   _log[#_log + 1] = format(fmtstr, ...)
-   _log.vals[#_log.vals + 1] = table.pack(...)
-end
-
-log = setmeta(_log, {__call = __logger})
-
-log.cache = {}
-function cache(a,b,c)
-   local tuck = {a,b,c}
-   log.cache[#log.cache + 1] = tuck
-end
-
-```
 
 This boot sequence builds on Tim Caswell and the Luvit Author's repl example.
 
