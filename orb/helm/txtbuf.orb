@@ -152,7 +152,7 @@ function Txtbuf.makeCursor(txtbuf, rowOrTable, col, basedOn)
    col = col or basedOn.col
    assert(inbounds(row, 1, #txtbuf.lines))
    txtbuf:openRow(row)
-   assert(inbounds(col, 1, nil)
+   assert(inbounds(col, 1, nil))
    col = bound(col, nil, #txtbuf.lines[row] + 1)
    return {row = row, col = col}
 end
