@@ -22,22 +22,11 @@ __G = setmetatable({}, {__index = _G})
 
 setfenv(0, __G)
 ```
+### _helm
 
-Let's wedge in the argparse where it won't break between bridge builds:
+The entire module is setup as a function, to allow our new fenv
+to be passed in.
 
-```lua
---[[
-brParse
-   : name "bridge"
-   : description "An lua, howth castle & environs."
-   : epilog "For more info, see https://specialcircumstanc.es"
-   : require_command(false)
-   : command_target "verb"
-   : command ("orb o", "orb compiler", "orb subcommands")
-   : argument ("serve s", "launch localhost responsive compiler and document server")
-   : parse()
---]]
-```
 ```lua
 local function _helm(_ENV)
 ```
@@ -62,8 +51,8 @@ for k,v in pairs(utf8) do
    end
 end
 
-jit.vmdef = require "vmdef"
-jit.p = require "ljprof"
+jit.vmdef = require "helm:helm/vmdef"
+jit.p = require "helm:helm/ljprof"
 
 --apparently this is a hidden, undocumented LuaJIT thing?
 require "table.clear"
@@ -344,13 +333,10 @@ end
 print("kthxbye")
 return retcode
 ```
-#### Launch helm
-
-Here we assign our function a wrapper and get down to business
+#### Return environmental closure
 
 ```lua
-end -- of wrapper
-local retcode = _helm(__G)
+end -- of _helm
 
-return retcode
+return function() _helm(__G) end
 ```
