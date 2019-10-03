@@ -77,12 +77,8 @@ local function _prev(modeS)
    if linestash then
       modeS.hist:append(linestash)
    end
-   if prev_result then
-      modeS.zones.results:replace(Rainbuf(prev_result))
-   else
-      modeS.zones.results:replace ""
-   end
-
+   prev_result = prev_result and Rainbuf(prev_result) or ""
+   modeS.zones.results:replace(prev_result)
    return modeS
 end
 
@@ -97,9 +93,8 @@ function NAV.UP(modeS, category, value)
 end
 
 local function _advance(modeS)
-   local next_p, next_result, new_txtbuf
-   new_txtbuf, next_result, next_p = modeS.hist:next()
-   if next_p then
+   local new_txtbuf, next_result = modeS.hist:next()
+   if not new_txtbuf then
       modeS.firstChar = true
       local added = modeS.hist:append(modeS.txtbuf)
       if added then
@@ -110,11 +105,8 @@ local function _advance(modeS)
       modeS.txtbuf = new_txtbuf
    end
    modeS:clearResults()
-   if next_result then
-      modeS.zones.results:replace(Rainbuf(next_result))
-   else
-      modeS.zones.results:replace ""
-   end
+   next_result = next_result and Rainbuf(next_result) or ""
+   modeS.zones.results:replace(next_result)
    return modeS
 end
 

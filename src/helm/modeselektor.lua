@@ -280,7 +280,7 @@ end
 
 
 function ModeS.cur_col(modeS)
-   return modeS.txtbuf.cursor + modeS.l_margin - 1
+   return modeS.txtbuf.cursor.col + modeS.l_margin - 1
 end
 
 
@@ -299,8 +299,8 @@ end
 
 
 function ModeS.placeCursor(modeS)
-   local col = modeS.zones.command.tc + modeS.txtbuf.cursor - 1
-   local row = modeS.zones.command.tr + modeS.txtbuf.cur_row - 1
+   local col = modeS.zones.command.tc + modeS.txtbuf.cursor.col - 1
+   local row = modeS.zones.command.tr + modeS.txtbuf.cursor.row - 1
    write(a.colrow(col, row))
 end
 
@@ -565,29 +565,18 @@ function ModeS.eval(modeS)
    if f then
       setfenv(f, _G)
       success, results = gatherResults(xpcall(f, debug.traceback))
+      if not success and string.find(results[1], "is not declared") then
+         -- let's try it with __G
+         setfenv(f, __G)
+         success, results = gatherResults(xpcall(f, debug.traceback))
+      end
       if success then
-      -- successful call
+         -- successful call
          if results.n > 0 then
             local rb = Rainbuf(results)
             modeS.zones.results:replace(rb)
          else
             modeS.zones.results:replace ""
-         end
-      elseif string.find(results[1], "is not declared") then
-         -- let's try it with __G
-         setfenv(f, __G)
-         success, results = gatherResults(xpcall(f, debug.traceback))
-         if success then
-            if results.n > 0 then
-               local rb = Rainbuf(results)
-               modeS.zones.results:replace(rb)
-            else
-               modeS.zones.results:replace ""
-            end
-         else
-            -- error
-            results.frozen = true
-            modeS.zones.results:replace(results)
          end
       else
          -- error

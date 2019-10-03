@@ -51,10 +51,25 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
 assert(meta)
-local collect = assert(table.collect)
-local lines = assert(string.lines)
 local codepoints = assert(string.codepoints)
+local gsub = assert(string.gsub)
+local sub = assert(string.sub)
+
+local table_clone = assert(table.clone)
+local concat = assert(table.concat)
+local insert, splice = assert(table.insert), assert(table.splice)
+local remove = assert(table.remove)
 
 
 
@@ -67,7 +82,6 @@ local Txtbuf = meta {}
 
 
 
-local concat = assert(table.concat)
 
 local function cat(l)
    if type(l) == "string" then
@@ -85,32 +99,13 @@ end
 
 
 
+
 function Txtbuf.__tostring(txtbuf)
-   local phrase = ""
-   for i = 1, #txtbuf.lines - 1 do
-      phrase = phrase .. cat(txtbuf.lines[i]) .. "\n"
+   local closed_lines = table_clone(txtbuf.lines)
+   for k, v in ipairs(closed_lines) do
+      closed_lines[k] = cat(v)
    end
-
-   return phrase .. cat(txtbuf.lines[#txtbuf.lines])
-end
-
-
-
-
-
-
-function Txtbuf.openRow(txtbuf,row_num)
-   local line = txtbuf.lines[row_num]
-   if type(line) == "string" then
-      txtbuf.lines[row_num] = codepoints(line)
-   end
-end
-
-function Txtbuf.closeRow(txtbuf,row_num)
-   local line = txtbuf.lines[row_num]
-   if type(line) == "table" then
-      txtbuf.lines[row_num] = concat(line)
-   end
+   return concat(closed_lines, "\n")
 end
 
 
@@ -121,6 +116,13 @@ end
 
 
 
+local function _split_cursor(cursor)
+   return cursor.row, cursor.col
+end
+
+function Txtbuf.getCursor(txtbuf)
+   return _split_cursor(txtbuf.cursor)
+end
 
 
 
@@ -131,22 +133,51 @@ end
 
 
 
-function Txtbuf.switchRow(txtbuf,new_row)
-   if new_row < 1 then
-      new_row = 1
-   elseif new_row > #txtbuf.lines then
-      new_row = #txtbuf.lines
+
+
+
+
+
+
+local bound, inbounds = assert(math.bound), assert(math.inbounds)
+
+function Txtbuf.makeCursor(txtbuf, rowOrTable, col, basedOn)
+   local row
+   if type(rowOrTable) == "table" then
+      row, col = rowOrTable.row, rowOrTable.col
+   else
+      row = rowOrTable
    end
-   if txtbuf.cur_row == new_row then
-      return false
+   row = row or basedOn.row
+   col = col or basedOn.col
+   assert(inbounds(row, 1, #txtbuf.lines))
+   txtbuf:openRow(row)
+   assert(inbounds(col, 1, nil))
+   col = bound(col, nil, #txtbuf.lines[row] + 1)
+   return {row = row, col = col}
+end
+
+function Txtbuf.setCursor(txtbuf, rowOrTable, col)
+   txtbuf.cursor = txtbuf:makeCursor(rowOrTable, col, txtbuf.cursor)
+end
+
+
+
+
+
+
+
+
+
+
+function Txtbuf.openRow(txtbuf, row_num)
+   if row_num < 1 or row_num > #txtbuf.lines then
+      return nil
    end
-   txtbuf:closeRow(txtbuf.cur_row)
-   txtbuf.cur_row = new_row
-   txtbuf:openRow(txtbuf.cur_row)
-   if txtbuf.cursor > #txtbuf.lines[txtbuf.cur_row] + 1 then
-      txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
+   if type(txtbuf.lines[row_num]) == "string" then
+      txtbuf.lines[row_num] = codepoints(txtbuf.lines[row_num])
    end
-   return true
+   return txtbuf.lines[row_num], row_num
 end
 
 
@@ -157,16 +188,13 @@ end
 
 function Txtbuf.advance(txtbuf)
    txtbuf.lines[#txtbuf.lines + 1] = {}
-   txtbuf.cur_row = #txtbuf.lines
-   txtbuf.cursor = 1
+   txtbuf:setCursor(#txtbuf.lines, 1)
 end
 
 
 
 
 
-local t_insert, splice = assert(table.insert), assert(table.splice)
-local codepoints, gsub = assert(string.codepoints), assert(string.gsub)
 
 local _brace_pairs = { ["("] = ")",
                        ['"'] = '"',
@@ -186,14 +214,14 @@ local function _should_insert(line, cursor, frag)
 end
 
 function Txtbuf.insert(txtbuf, frag)
-   local line = txtbuf.lines[txtbuf.cur_row]
-   if _should_insert(line, txtbuf.cursor, frag) then
+   local line, cur_col = txtbuf.lines[txtbuf.cursor.row], txtbuf.cursor.col
+   if _should_insert(line, cur_col, frag) then
       if _brace_pairs[frag] then
-         t_insert(line, txtbuf.cursor, _brace_pairs[frag])
+         insert(line, cur_col, _brace_pairs[frag])
       end
-      t_insert(line, txtbuf.cursor, frag)
+      insert(line, cur_col, frag)
    end
-   txtbuf.cursor = txtbuf.cursor + 1
+   txtbuf:setCursor(nil, cur_col + 1)
    return true
 end
 
@@ -208,30 +236,29 @@ end
 
 
 
-local remove = assert(table.remove)
 
 local function _is_paired(a, b)
    return _brace_pairs[a] == b
 end
 
 function Txtbuf.deleteBackward(txtbuf)
-   local line, cursor, cur_row = txtbuf.lines[txtbuf.cur_row], txtbuf.cursor, txtbuf.cur_row
-   if cursor > 1 then
-      if _is_paired(line[cursor - 1], line[cursor]) then
-         remove(line, cursor)
+   local cur_row, cur_col = txtbuf:getCursor()
+   local line = txtbuf.lines[cur_row]
+   if cur_col > 1 then
+      if _is_paired(line[cur_col - 1], line[cur_col]) then
+         remove(line, cur_col)
       end
-      remove(line, cursor - 1)
-      txtbuf.cursor = cursor - 1
+      remove(line, cur_col - 1)
+      txtbuf:setCursor(nil, cur_col - 1)
       return false
    elseif cur_row == 1 then
       return false
    else
       txtbuf:openRow(cur_row - 1)
-      local new_cursor = #txtbuf.lines[cur_row - 1] + 1
-      splice(txtbuf.lines[cur_row - 1],nil,line)
+      local new_col = #txtbuf.lines[cur_row - 1] + 1
+      splice(txtbuf.lines[cur_row - 1], nil, line)
       remove(txtbuf.lines, cur_row)
-      txtbuf.cur_row = cur_row - 1
-      txtbuf.cursor = new_cursor
+      txtbuf:setCursor(cur_row - 1, new_col)
       return true
    end
 end
@@ -242,15 +269,15 @@ end
 
 
 function Txtbuf.deleteForward(txtbuf)
-   local cursor, cur_row = txtbuf.cursor, txtbuf.cur_row
-   if cursor <= #txtbuf.lines[cur_row] then
-      remove(txtbuf.lines[txtbuf.cur_row], txtbuf.cursor)
+   local cur_row, cur_col = txtbuf:getCursor()
+   if cur_col <= #txtbuf.lines[cur_row] then
+      remove(txtbuf.lines[cur_row], cur_col)
       return false
    elseif cur_row == #txtbuf.lines then
       return false
    else
       txtbuf:openRow(cur_row + 1)
-      splice(txtbuf.lines[cur_row],nil,txtbuf.lines[cur_row + 1])
+      splice(txtbuf.lines[cur_row], nil, txtbuf.lines[cur_row + 1])
       remove(txtbuf.lines, cur_row + 1)
       return true
    end
@@ -268,15 +295,17 @@ end
 
 function Txtbuf.left(txtbuf, disp)
    disp = disp or 1
-   local new_cursor = txtbuf.cursor - disp
-   while new_cursor < 1 do
-      if not txtbuf:up() then
-         txtbuf.cursor = 1
+   local new_row, new_col = txtbuf:getCursor()
+   new_col = new_col - disp
+   while new_col < 1 do
+      _, new_row = txtbuf:openRow(new_row - 1)
+      if not new_row then
+         txtbuf:setCursor(nil, 1)
          return false
       end
-      new_cursor = #txtbuf.lines[txtbuf.cur_row] + 1 + new_cursor
+      new_col = #txtbuf.lines[new_row] + 1 + new_col
    end
-   txtbuf.cursor = new_cursor
+   txtbuf:setCursor(new_row, new_col)
    return true
 end
 
@@ -287,15 +316,17 @@ end
 
 function Txtbuf.right(txtbuf, disp)
    disp = disp or 1
-   local new_cursor = txtbuf.cursor + disp
-   while new_cursor > #txtbuf.lines[txtbuf.cur_row] + 1 do
-      if not txtbuf:down() then
-         txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
+   local new_row, new_col = txtbuf:getCursor()
+   new_col = new_col + disp
+   while new_col > #txtbuf.lines[new_row] + 1 do
+      _, new_row = txtbuf:openRow(new_row + 1)
+      if not new_row then
+         txtbuf:setCursor(nil, #txtbuf.lines[txtbuf.cursor.row] + 1)
          return false
       end
-      new_cursor = new_cursor - (#txtbuf.lines[txtbuf.cur_row - 1] + 1)
+      new_col = new_col - (#txtbuf.lines[new_row - 1] + 1)
    end
-   txtbuf.cursor = new_cursor
+   txtbuf:setCursor(new_row, new_col)
    return true
 end
 
@@ -305,11 +336,27 @@ end
 
 
 function Txtbuf.startOfLine(txtbuf)
-   txtbuf.cursor = 1
+   txtbuf:setCursor(nil, 1)
 end
 
 function Txtbuf.endOfLine(txtbuf)
-   txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
+   txtbuf:setCursor(nil, #txtbuf.lines[txtbuf.cursor.row] + 1)
+end
+
+
+
+
+
+
+
+
+
+function Txtbuf.startOfText(txtbuf)
+   txtbuf:setCursor(1, 1)
+end
+
+function Txtbuf.endOfText(txtbuf)
+   txtbuf:setCursor(#txtbuf.lines, #txtbuf.lines[#txtbuf.lines] + 1)
 end
 
 
@@ -345,8 +392,8 @@ function Txtbuf.leftToBoundary(txtbuf, pattern, reps)
    reps = reps or 1
    local found_other_char = false
    local moved = false
-   local line = txtbuf.lines[txtbuf.cur_row]
-   local search_pos = txtbuf.cursor
+   local search_row, search_pos = txtbuf:getCursor()
+   local line = txtbuf.lines[search_row]
    local search_char
    while true do
       search_char = search_pos == 1 and "\n" or line[search_pos - 1]
@@ -358,15 +405,15 @@ function Txtbuf.leftToBoundary(txtbuf, pattern, reps)
          found_other_char = false
       end
       if search_pos == 1 then
-         if not txtbuf:up() then break end
-         line = txtbuf.lines[txtbuf.cur_row]
+         if search_row == 1 then break end
+         line, search_row = txtbuf:openRow(search_row - 1)
          search_pos = #line + 1
       else
          search_pos = search_pos - 1
       end
       moved = true
    end
-   txtbuf.cursor = search_pos
+   txtbuf:setCursor(search_row, search_pos)
    return moved
 end
 
@@ -374,8 +421,8 @@ function Txtbuf.rightToBoundary(txtbuf, pattern, reps)
    reps = reps or 1
    local found_other_char = false
    local moved = false
-   local line = txtbuf.lines[txtbuf.cur_row]
-   local search_pos = txtbuf.cursor
+   local search_row, search_pos = txtbuf:getCursor()
+   local line = txtbuf.lines[search_row]
    local search_char
    while true do
       search_char = search_pos > #line and "\n" or line[search_pos]
@@ -387,15 +434,15 @@ function Txtbuf.rightToBoundary(txtbuf, pattern, reps)
          found_other_char = false
       end
       if search_pos > #line then
-         if not txtbuf:down() then break end
-         line = txtbuf.lines[txtbuf.cur_row]
+         if search_row == #txtbuf.lines then break end
+         line, search_row = txtbuf:openRow(search_row + 1)
          search_pos = 1
       else
          search_pos = search_pos + 1
       end
       moved = true
    end
-   txtbuf.cursor = search_pos
+   txtbuf:setCursor(search_row, search_pos)
    return moved
 end
 
@@ -410,14 +457,14 @@ end
 
 
 function Txtbuf.firstNonWhitespace(txtbuf)
-   local line = txtbuf.lines[txtbuf.cur_row]
-   local new_cursor = 1
-   while new_cursor <= #line do
-      if match(line[new_cursor],'%S') then
-         txtbuf.cursor = new_cursor
+   local line = txtbuf.lines[txtbuf.cursor.row]
+   local new_col = 1
+   while new_col <= #line do
+      if match(line[new_col], '%S') then
+         txtbuf:setCursor(nil, new_col)
          return true
       end
-      new_cursor = new_cursor + 1
+      new_col = new_col + 1
    end
    return false
 end
@@ -459,14 +506,30 @@ end
 
 
 
+
+
+
+
+
+
 function Txtbuf.up(txtbuf)
-   return txtbuf:switchRow(txtbuf.cur_row - 1)
+   if not txtbuf:openRow(txtbuf.cursor.row - 1) then
+      txtbuf:setCursor(nil, 1)
+      return false
+   end
+   txtbuf:setCursor(txtbuf.cursor.row - 1, nil)
+   return true
 end
 
 
 
 function Txtbuf.down(txtbuf)
-   return txtbuf:switchRow(txtbuf.cur_row + 1)
+   if not txtbuf:openRow(txtbuf.cursor.row + 1) then
+      txtbuf:setCursor(nil, #txtbuf.lines[txtbuf.cursor.row] + 1)
+      return false
+   end
+   txtbuf:setCursor(txtbuf.cursor.row + 1, nil)
+   return true
 end
 
 
@@ -475,8 +538,6 @@ end
 
 
 
-local sub = assert(string.sub)
-local insert = assert(table.insert)
 function Txtbuf.nl(txtbuf)
    -- Most txtbufs are one line, so we always evaluate from
    -- a one-liner, regardless of cursor location.
@@ -484,60 +545,50 @@ function Txtbuf.nl(txtbuf)
    if linum == 1 then
       return true
    end
-   local cursor = txtbuf.cursor
-   local cur_row = txtbuf.cur_row
-   -- these are the two default positions for up and down
-   -- history search
-   if cur_row == 1 and cursor > #txtbuf.lines[1] then
-      return true
-   end
-   if cur_row == linum and cursor > #txtbuf.lines[linum] then
+   local cur_row, cur_col = txtbuf:getCursor()
+   -- Evaluate if we are at the end of the first or last line (the default
+   -- positions after scrolling up or down in the history)
+   if (cur_row == 1 or cur_row == linum) and cur_col > #txtbuf.lines[cur_row] then
       return true
    end
    -- split the line
-   local cur_line = concat(txtbuf.lines[txtbuf.cur_row])
-   local first = sub(cur_line, 1, cursor - 1)
-   local second = sub(cur_line, cursor)
+   local line = concat(txtbuf.lines[cur_row])
+   local first = sub(line, 1, cur_col - 1)
+   local second = sub(line, cur_col)
    txtbuf.lines[cur_row] = codepoints(first)
    insert(txtbuf.lines, cur_row + 1, codepoints(second))
-   txtbuf.cursor = 1
-   txtbuf.cur_row = cur_row + 1
-
+   txtbuf:setCursor(cur_row + 1, 1)
    return false
 end
 
 
 
 
-function Txtbuf.suspend(txtbuf)
-   for i,v in ipairs(txtbuf.lines) do
-      txtbuf.lines[i] = tostring(v)
-   end
 
+
+
+
+function Txtbuf.suspend(txtbuf)
+   for i, v in ipairs(txtbuf.lines) do
+      txtbuf.lines[i] = cat(v)
+   end
    return txtbuf
 end
 
 
 
 function Txtbuf.resume(txtbuf)
-   txtbuf:openRow(#txtbuf.lines)
-   txtbuf.cur_row = #txtbuf.lines
-   txtbuf.cursor = #txtbuf.lines[#txtbuf.lines] + 1
-
+   txtbuf:openRow(txtbuf.cursor.row)
    return txtbuf
 end
 
 
 
-local cl = assert(table.clone, "table.clone must be provided")
 
 function Txtbuf.clone(txtbuf)
    -- Clone to depth of 3 to get tb, tb.lines, and each lines
-   local tb = cl(txtbuf, 3)
-   if type(tb.lines[1]) == "string" then
-      return tb:resume()
-   end
-   return tb
+   local tb = table_clone(txtbuf, 3)
+   return tb:resume()
 end
 
 
@@ -546,17 +597,18 @@ end
 
 
 
+local collect = assert(table.collect)
+local lines = assert(string.lines)
+
 local function new(str)
    str = str or ""
    local txtbuf = meta(Txtbuf)
-   local lines = collect(lines,str)
+   local lines = collect(lines, str)
    if #lines == 0 then
       lines[1] = {}
    end
    txtbuf.lines = lines
-   txtbuf:openRow(#lines)
-   txtbuf.cur_row = #lines
-   txtbuf.cursor = #lines[#lines] + 1
+   txtbuf:endOfText()
    return txtbuf
 end
 
