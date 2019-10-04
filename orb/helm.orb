@@ -181,8 +181,9 @@ local max_col, max_row = uv.tty_get_winsize(stdin)
 
 modeS = require "helm/modeselektor" (max_col, max_row)
 
+
 local function s_out(msg)
-  insert(modeS.status, msg)
+  table.insert(modeS.status, msg)
 end
 
 -- make a new 'status' instance

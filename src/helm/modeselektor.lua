@@ -608,11 +608,24 @@ end
 
 
 
+local function _status__repr(status_table)
+  return table.concat(status_table)
+end
+
+local _stat_M = meta {}
+_stat_M.__repr = _status__repr
+
+
+
+
+
+
+
 function new(max_col, max_row)
   local modeS = meta(ModeS)
   modeS.txtbuf = Txtbuf()
   modeS.hist  = Historian()
-  modeS.status = {}
+  modeS.status = setmeta({}, _stat_M)
   modeS.lex  = Lex.lua_thor
   modeS.hist.cursor = #modeS.hist + 1
   modeS.max_col = max_col
