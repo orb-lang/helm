@@ -227,8 +227,12 @@ local function onseq(err,seq)
    if head == 17 then
       uv.tty_set_mode(stdin, 1)
       write(a.mouse.track(false))
+      uv.tty_reset_mode()
       uv.stop()
-      return 0
+      -- Restore main screen
+      print '\x1b[?47l'
+      print("kthxbye")
+      os.exit(0)
    end
    -- Escape sequences
    if head == 27 then
@@ -296,18 +300,7 @@ write "\x1b[?47h\x1b[2J\x1b[H"
 modeS:paint()
 
 -- main loop
-local retcode =  uv.run('default')
--- Restore main screen
-print '\x1b[?47l'
--- Back to normal mode
-uv.tty_reset_mode()
-
-if retcode ~= true then
-   error(retcode)
-end
-
-print("kthxbye")
-return retcode
+uv.run('default')
 ```
 #### Return environmental closure
 

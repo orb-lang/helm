@@ -615,6 +615,10 @@ end
 local _stat_M = meta {}
 _stat_M.__repr = _status__repr
 
+function _stat_M.clear(status_table)
+  return setmeta({}, getmeta(status_table))
+end
+
 
 
 
