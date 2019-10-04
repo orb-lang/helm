@@ -186,7 +186,7 @@ local function s_out(msg)
 end
 
 -- make a new 'status' instance
-local s = require "status" (s_out)
+local s = require "singletons/status" (s_out)
 
 local timer = uv.new_timer()
 uv.timer_start(timer, 500, 500, function()
@@ -286,7 +286,7 @@ end
 
 -- Get names for as many values as possible
 -- into the colorizer
-repr.allNames(_G)
+repr.allNames(__G)
 
 -- assuming we survived that, set up our repling environment:
 
@@ -325,4 +325,4 @@ return retcode
 
 end -- of _helm
 
-return function() _helm(__G) end
+return _helm(__G)

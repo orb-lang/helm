@@ -193,7 +193,7 @@ local function _yieldReprs(tab, phrase)
    else
       yielder = repr
    end
-   while true do
+   while true and type(yielder) == 'function' do
       local line, len = yielder()
       if line ~= nil then
          len = len or #line

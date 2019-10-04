@@ -589,7 +589,7 @@ function ModeS.eval(modeS)
          write(a.colrow(1, modeS.repl_top + 1) .. "...")
          return true
       else
-         local to_err = { err.. "\n" .. debug.tracebacl(),
+         local to_err = { err.. "\n" .. debug.traceback(),
                           n = 1,
                           frozen = true}
          modeS.zones.results:replace(to_err)
