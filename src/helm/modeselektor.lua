@@ -630,6 +630,7 @@ function new(max_col, max_row)
   modeS.txtbuf = Txtbuf()
   modeS.hist  = Historian()
   modeS.status = setmeta({}, _stat_M)
+  rawset(__G, "stat", modeS.status)
   modeS.lex  = Lex.lua_thor
   modeS.hist.cursor = #modeS.hist + 1
   modeS.max_col = max_col
