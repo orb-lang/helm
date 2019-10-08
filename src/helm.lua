@@ -337,5 +337,4 @@ end -- of _helm
 
 
 
--- return function() return _helm(__G) end
-return _helm(__G)
+_helm(__G)

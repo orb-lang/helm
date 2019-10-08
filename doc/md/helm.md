@@ -322,9 +322,8 @@ os.exit(retcode)
 
 end -- of _helm
 ```
-#### Return environmental closure
+#### Call helm
 
 ```lua
--- return function() return _helm(__G) end
-return _helm(__G)
+_helm(__G)
 ```
