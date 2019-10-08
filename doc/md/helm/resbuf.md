@@ -10,7 +10,7 @@ generalize into ``rainbuf``s.
 ```lua
 assert (meta)
 assert (ipairs)
-local color = require "color"
+local color = require "singletons/color"
 ```
 ```lua
 local Resbuf = meta {}

@@ -17,13 +17,16 @@ record.  We should store the line as a string, to facilitate fuzzy matching.
 
 
 ```lua
-local Txtbuf  = require "txtbuf"
-local Rainbuf = require "rainbuf"
-local sql     = assert(sql, "sql must be in bridge _G")
-local color   = (require "color").color
-
 local L       = require "lpeg"
-local repr    = require "repr"
+local uv      = require "luv"
+local sql     = assert(sql, "sql must be in bridge _G")
+
+local Txtbuf  = require "helm/txtbuf"
+local Rainbuf = require "helm/rainbuf"
+local color   = (require "singletons/color").color
+
+
+local repr    = require "helm/repr"
 local format  = assert (string.format)
 local sub     = assert (string.sub)
 local codepoints = assert(string.codepoints, "must have string.codepoints")
@@ -130,7 +133,7 @@ local bridge_home = io.popen("echo $BRIDGE_HOME", "r"):read("*a"):sub(1, -2)
 Historian.bridge_home = bridge_home ~= "" and bridge_home
                         or home_dir .. "/.bridge"
 
-Historian.project = io.popen("pwd", "r"):read("*a"):sub(1, -2)
+Historian.project = uv.cwd()
 
 local function has(table, name)
    for _,v in ipairs(table) do
@@ -380,6 +383,7 @@ local function _collect_repr(collection, phrase, c)
 end
 
 local collect_M = {__repr = _collect_repr}
+collect_M.__index = collect_M
 ```
 ## Historian:search(frag)
 
@@ -474,18 +478,20 @@ end
 ## Historian:prev()
 
 ```lua
+local bound = assert(math.bound)
+
 function Historian.prev(historian)
-   if historian.cursor == 0 or #historian == 0 then
-      return Txtbuf()
+   historian.cursor = bound(historian.cursor - 1, 1)
+   local txtbuf = historian[historian.cursor]
+   if txtbuf then
+      txtbuf = txtbuf:clone()
+      txtbuf:startOfText()
+      txtbuf:endOfLine()
+      local result = _resultsFrom(historian, historian.line_ids[historian.cursor])
+      return txtbuf, result
+   else
+      return Txtbuf(), nil
    end
-   local Δ = historian.cursor > 1 and historian.cursor - 1 or historian.cursor
-   local txtbuf = historian[Δ]
-   txtbuf.cur_row = 1
-   local result = _resultsFrom(historian, historian.line_ids[Δ])
-   --local result = historian.results[txtbuf]
-   historian.cursor = Δ
-   txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
-   return txtbuf:clone(), result
 end
 ```
 ### Historian:next()
@@ -496,44 +502,32 @@ Returns the next txtbuf in history, and a second flag to tell the
 
 ```lua
 function Historian.next(historian)
-   local Δ = historian.cursor < #historian
-             and historian.cursor + 1
-             or  historian.cursor
-   local fwd = historian.cursor >= #historian
-   if historian.cursor == 0 or #historian == 0 then
-      return Txtbuf()
-   end
-   local txtbuf = historian[Δ]
-   if not txtbuf then
-      return Txtbuf(), nil, true
-   end
-   txtbuf.cur_row = #txtbuf.lines
-   local result = _resultsFrom(historian, historian.line_ids[Δ])
-   historian.cursor = Δ
-   txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
-   if fwd and #txtbuf.lines > 0 then
-      historian.cursor = #historian + 1
-      return txtbuf:clone(), nil, true
+   historian.cursor = bound(historian.cursor + 1, nil, #historian + 1)
+   local txtbuf = historian[historian.cursor]
+   if txtbuf then
+      txtbuf = txtbuf:clone()
+      txtbuf:endOfText()
+      local result = _resultsFrom(historian, historian.line_ids[historian.cursor])
+      return txtbuf, result
    else
-      return txtbuf:clone(), result, false
+      return nil, nil
    end
 end
 ```
 ### Historian:index(cursor)
 
-Loads the history to an exact index.
+Loads the history to an exact index. The index must be one that actually exists,
+i.e. 1 <= index <= #historian--#historian + 1 is not allowed.
 
 ```lua
+local inbounds = assert(math.inbounds)
+
 function Historian.index(historian, cursor)
-   if (not cursor) or cursor < 0 or cursor > #historian + 1 then
-      return Txtbuf()
-   end
-   local txtbuf = historian[cursor]
+   assert(inbounds(cursor, 1, #historian))
+   local txtbuf = historian[cursor]:clone()
+   txtbuf:endOfText()
    local result = _resultsFrom(historian, historian.line_ids[cursor])
-   txtbuf = txtbuf:clone()
    historian.cursor = cursor
-   txtbuf.cur_row = #txtbuf.lines
-   txtbuf.cursor = #txtbuf.lines[txtbuf.cur_row] + 1
    return txtbuf, result
 end
 ```

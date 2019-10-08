@@ -9,7 +9,7 @@ local P, R, S, match = L.P, L.R, L.S, L.match
 local Lex = meta {}
 local sub, gsub = assert(string.sub), assert(string.gsub)
 local concat = assert(table.concat)
-local c = require "color"
+local c = require "singletons/color"
 local codepoints = assert(string.codepoints)
 ```
 ### Lua lexers

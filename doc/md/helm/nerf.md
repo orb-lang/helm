@@ -23,11 +23,12 @@ assert(meta, "must have meta in _G")
 assert(write, "must have write in _G")
 ```
 ```lua
-local Txtbuf    = require "txtbuf"
-local Rainbuf   = require "rainbuf"
-local Historian = require "historian"
-local Lex       = require "lex"
-local a         = require "anterm"
+local a         = require "singletons/anterm"
+local Txtbuf    = require "helm/txtbuf"
+local Rainbuf   = require "helm/rainbuf"
+local Historian = require "helm/historian"
+local Lex       = require "helm/lex"
+
 
 local concat         = assert(table.concat)
 local sub, gsub, rep = assert(string.sub),
@@ -74,12 +75,8 @@ local function _prev(modeS)
    if linestash then
       modeS.hist:append(linestash)
    end
-   if prev_result then
-      modeS.zones.results:replace(Rainbuf(prev_result))
-   else
-      modeS.zones.results:replace ""
-   end
-
+   prev_result = prev_result and Rainbuf(prev_result) or ""
+   modeS.zones.results:replace(prev_result)
    return modeS
 end
 
@@ -94,9 +91,8 @@ function NAV.UP(modeS, category, value)
 end
 
 local function _advance(modeS)
-   local next_p, next_result, new_txtbuf
-   new_txtbuf, next_result, next_p = modeS.hist:next()
-   if next_p then
+   local new_txtbuf, next_result = modeS.hist:next()
+   if not new_txtbuf then
       modeS.firstChar = true
       local added = modeS.hist:append(modeS.txtbuf)
       if added then
@@ -107,11 +103,8 @@ local function _advance(modeS)
       modeS.txtbuf = new_txtbuf
    end
    modeS:clearResults()
-   if next_result then
-      modeS.zones.results:replace(Rainbuf(next_result))
-   else
-      modeS.zones.results:replace ""
-   end
+   next_result = next_result and Rainbuf(next_result) or ""
+   modeS.zones.results:replace(next_result)
    return modeS
 end
 
@@ -134,11 +127,19 @@ function NAV.RIGHT(modeS, category, value)
 end
 
 function NAV.ALT_LEFT(modeS,category,value)
-  return modeS.txtbuf:leftWord()
+  return modeS.txtbuf:leftWordAlpha()
 end
 
 function NAV.ALT_RIGHT(modeS,category,value)
-  return modeS.txtbuf:rightWord()
+  return modeS.txtbuf:rightWordAlpha()
+end
+
+function NAV.HYPER_LEFT(modeS,category,value)
+  return modeS.txtbuf:startOfLine()
+end
+
+function NAV.HYPER_RIGHT(modeS,category,value)
+  return modeS.txtbuf:endOfLine()
 end
 
 function NAV.RETURN(modeS, category, value)
@@ -199,17 +200,10 @@ Many/most of these will be re-used as e.g. "^" and "$" in vim mode.
 Thus we will declare them as bare functions and assign them to slots.
 
 ```lua
-local function cursor_begin(modeS, category, value)
-   modeS.txtbuf.cursor = 1
-end
 
-CTRL["^A"] = cursor_begin
+CTRL["^A"] = NAV.HYPER_LEFT
 
-local function cursor_end(modeS, category, value)
-   modeS.txtbuf.cursor = #modeS.txtbuf.lines[modeS.txtbuf.cur_row] + 1
-end
-
-CTRL["^E"] = cursor_end
+CTRL["^E"] = NAV.HYPER_RIGHT
 
 local function clear_txtbuf(modeS, category, value)
    modeS.txtbuf = Txtbuf()

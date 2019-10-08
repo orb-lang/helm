@@ -8,8 +8,8 @@ A light wrapper over ``nerf``.
 local clone = assert(table.clone, "requires table.clone")
 ```
 ```lua
-local Nerf = require "nerf"
-local Rainbuf = require "rainbuf"
+local Nerf = require "helm/nerf"
+local Rainbuf = require "helm/rainbuf"
 
 local Search = clone(Nerf, 3)
 ```

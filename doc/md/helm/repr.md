@@ -16,11 +16,11 @@ the repr.
 #### imports
 
 ```lua
-local a = require "anterm"
+local a = require "singletons/anterm"
 
 local core = require "singletons/core"
 
-local C = require "color"
+local C = require "singletons/color"
 ```
 #### setup
 
@@ -176,13 +176,10 @@ I might not; I do have plans that are broader than merely writing an
 incredibly intricate repl.
 
 ```lua
+local hasfield = assert(core.hasfield)
+
 local function _yieldReprs(tab, phrase)
-   local _repr = getmetatable(tab) and getmetatable(tab).__repr or tab.__repr
-                 -- #codesmell this fallback is not ideal, but there's
-                 -- some pathway that lands us here without a repr, sometimes.
-                 or function(tab, phrase, c)
-                       return ("backstop->" .. tostring(tab))
-                    end
+   local isYes, _repr = hasfield.__repr(tab)
    assert(c, "must have a value for c")
    local repr = _repr(tab, phrase, c)
    local yielder
@@ -191,7 +188,7 @@ local function _yieldReprs(tab, phrase)
    else
       yielder = repr
    end
-   while true do
+   while true and type(yielder) == 'function' do
       local line, len = yielder()
       if line ~= nil then
          len = len or #line
@@ -229,7 +226,7 @@ local function _tabulate(tab, depth, cycle, phrase)
    end
    cycle[tab] = true
    -- __repr gets special treatment
-   if table.hasfield.__repr(tab) then
+   if hasfield.__repr(tab) then
       _yieldReprs(tab, phrase)
       return nil
    end
