@@ -71,7 +71,7 @@ continues past the edge of the zone and otherwise falsy.
 #### includes
 
 ```lua
-local repr = require "repr"
+local repr = require "helm/repr"
 local ts, lineGen = repr.ts, repr.lineGen
 ```
 #### Rainbuf metatable

@@ -115,20 +115,20 @@ The easiest way to go mad in concurrent environments is to share memory.
 ``modeselektor`` will own txtbuf, historian, and the entire screen.
 
 ```lua
-local stacktrace = require "stacktrace" . stacktrace
+local color     = require "singletons/color"
 
-local Txtbuf    = require "txtbuf"
-local Resbuf    = require "resbuf" -- Not currently used...
-local Rainbuf   = require "rainbuf"
-local Historian = require "historian"
-local Lex       = require "lex"
-local Zoneherd  = require "zone"
-local repr      = require "repr"
-local color     = require "color"
+local Txtbuf    = require "helm/txtbuf"
+local Resbuf    = require "helm/resbuf" -- Not currently used...
+local Rainbuf   = require "helm/rainbuf"
+local Historian = require "helm/historian"
+local Lex       = require "helm/lex"
+local Zoneherd  = require "helm/zone"
+local repr      = require "helm/repr"
+
 c = color.color
 
-local Nerf   = require "nerf"
-local Search = require "search"
+local Nerf   = require "helm/nerf"
+local Search = require "helm/search"
 
 local concat               = assert(table.concat)
 local sub, gsub, rep, find = assert(string.sub),
@@ -273,6 +273,7 @@ local icon_map = { MOUSE = mk_paint(STAT_ICON, c.userdata),
 
 local function _make_icon(category, value)
    local icon = ""
+   local phrase
    if category == "MOUSE" then
       phrase = icon_map[category]("", pr_mouse(value))
    else
@@ -291,7 +292,7 @@ else will be both calculated and accessed (internally) from ``modeS.zones``.
 
 ```lua
 function ModeS.cur_col(modeS)
-   return modeS.txtbuf.cursor + modeS.l_margin - 1
+   return modeS.txtbuf.cursor.col + modeS.l_margin - 1
 end
 ```
 #deprecated```lua
@@ -305,8 +306,8 @@ Places the cursor where it belongs within the ``command`` zone.
 
 ```lua
 function ModeS.placeCursor(modeS)
-   local col = modeS.zones.command.tc + modeS.txtbuf.cursor - 1
-   local row = modeS.zones.command.tr + modeS.txtbuf.cur_row - 1
+   local col = modeS.zones.command.tc + modeS.txtbuf.cursor.col - 1
+   local row = modeS.zones.command.tr + modeS.txtbuf.cursor.row - 1
    write(a.colrow(col, row))
 end
 ```
@@ -568,29 +569,18 @@ function ModeS.eval(modeS)
    if f then
       setfenv(f, _G)
       success, results = gatherResults(xpcall(f, debug.traceback))
+      if not success and string.find(results[1], "is not declared") then
+         -- let's try it with __G
+         setfenv(f, __G)
+         success, results = gatherResults(xpcall(f, debug.traceback))
+      end
       if success then
-      -- successful call
+         -- successful call
          if results.n > 0 then
             local rb = Rainbuf(results)
             modeS.zones.results:replace(rb)
          else
             modeS.zones.results:replace ""
-         end
-      elseif string.find(results[1], "is not declared") then
-         -- let's try it with __G
-         setfenv(f, __G)
-         success, results = gatherResults(xpcall(f, debug.traceback))
-         if success then
-            if results.n > 0 then
-               local rb = Rainbuf(results)
-               modeS.zones.results:replace(rb)
-            else
-               modeS.zones.results:replace ""
-            end
-         else
-            -- error
-            results.frozen = true
-            modeS.zones.results:replace(results)
          end
       else
          -- error
@@ -604,7 +594,7 @@ function ModeS.eval(modeS)
          write(a.colrow(1, modeS.repl_top + 1) .. "...")
          return true
       else
-         local to_err = { err.. "\n" .. stacktrace(),
+         local to_err = { err.. "\n" .. debug.traceback(),
                           n = 1,
                           frozen = true}
          modeS.zones.results:replace(to_err)
@@ -617,6 +607,22 @@ function ModeS.eval(modeS)
    -- modeS:prompt()
 end
 ```
+#### modeS.status
+
+A way to jack into ``singletons/status``.
+
+```lua
+local function _status__repr(status_table)
+  return table.concat(status_table)
+end
+
+local _stat_M = meta {}
+_stat_M.__repr = _status__repr
+
+function _stat_M.clear(status_table)
+  return setmeta({}, getmeta(status_table))
+end
+```
 ## new
 
 
@@ -625,6 +631,8 @@ function new(max_col, max_row)
   local modeS = meta(ModeS)
   modeS.txtbuf = Txtbuf()
   modeS.hist  = Historian()
+  modeS.status = setmeta({}, _stat_M)
+  rawset(__G, "stat", modeS.status)
   modeS.lex  = Lex.lua_thor
   modeS.hist.cursor = #modeS.hist + 1
   modeS.max_col = max_col

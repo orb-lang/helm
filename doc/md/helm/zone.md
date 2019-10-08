@@ -84,11 +84,11 @@ assert(meta)
 
 local concat = assert(table.concat)
 
-local Txtbuf = require "txtbuf"
+local Txtbuf = require "helm/txtbuf"
 
-local Rainbuf = require "rainbuf"
+local Rainbuf = require "helm/rainbuf"
 
-local ts = require "repr" . ts
+local ts = require "helm/repr" . ts
 local Zone = meta {}
 
 local Zoneherd = meta {}
