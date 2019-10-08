@@ -235,14 +235,8 @@ local function onseq(err,seq)
    local head = byte(seq)
    -- ^Q hard coded as quit, for now
    if head == 17 then
-      uv.tty_set_mode(stdin, 1)
-      write(a.mouse.track(false))
-      uv.tty_reset_mode()
       uv.stop()
-      -- Restore main screen
-      print '\x1b[?47l'
-      print("kthxbye")
-      os.exit(0)
+      return 0
    end
    -- Escape sequences
    if head == 27 then
@@ -302,22 +296,46 @@ uv.tty_set_mode(stdin, 2)
 write(a.mouse.track(true))
 uv.read_start(stdin, onseq)
 
--- #todo This should start with a read which saves the cursor location.
--- This switches screens and does a wipe,
+-- This saves the cursor, switches screens and does a wipe,
 -- then puts the cursor at 1,1.
-write "\x1b[?47h\x1b[2J\x1b[H"
+-- #todo Cursor save/restore supposedly may not work on all terminals?
+-- Test this and, if necessary, explicitly read and store the cursor position
+-- and manually restore it at the end.
+-- #todo Implement this in terms of anterm functions
+write("\x1b7\x1b[?47h\x1b[2J\x1b[H")
 
 -- paint screen
 modeS:paint()
 
 -- main loop
-uv.run('default')
+local retcode =  uv.run('default')
+-- Restore main screen and cursor
+-- #todo Implement this in terms of anterm functions
+write('\x1b[?47l\x1b8')
+-- Mouse tracking off
+write(a.mouse.track(false))
+-- Back to normal mode
+uv.tty_reset_mode()
+
+if retcode ~= true then
+   error(retcode)
+end
+
+print("kthxbye")
+-- When modularizing helm, encountered errors evaluating expressions that
+-- depend on __G if we return a wrapper function. Evaluating _helm
+-- immediately fixes this but causes a single ^Q to not be enough to exit.
+-- Work around *that* by explicitly calling os.exit() here.
+-- #todo Figure out the environment issues and put these back.
+
+-- return retcode
+os.exit(retcode)
+
+end -- of _helm
 #/lua
 
-**** Return environmental closure
+**** Call helm
 
 #!lua
-end -- of _helm
-
-return _helm(__G)
+_helm(__G)
 #/lua
