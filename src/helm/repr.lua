@@ -330,6 +330,12 @@ local function _spill(phrase, line, disps)
    for i = 0, #line do
       phrase[i] = line[i]
       phrase.disp[i] = disps[i]
+      -- Spilling these back, so undo the side-effect on =level=
+      if line[i] == O_BRACE() then
+         phrase.level = phrase.level - 1
+      elseif line[i] == C_BRACE() then
+         phrase.level = phrase.level + 1
+      end
    end
    phrase.yielding = true
    return false
@@ -338,6 +344,7 @@ end
 local function oneLine(phrase, long)
    local line = {}
    local disps = {}
+   local this_line_indent = phrase.level
    if #phrase == 0 then
       phrase.yielding = true
       return false
@@ -379,8 +386,7 @@ local function oneLine(phrase, long)
       end
       if (frag == COMMA() and long)
          or (#phrase == 0 and not phrase.more) then
-         local indent = phrase.dent == 0 and "" or ("  "):rep(phrase.dent)
-         phrase.dent = phrase.level
+         local indent = ("  "):rep(this_line_indent)
          return indent.. concat(line)
       elseif #phrase == 0 and phrase.more then
          -- spill our fragments back
