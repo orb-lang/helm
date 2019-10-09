@@ -258,7 +258,7 @@ function Historian.persist(historian, txtbuf, results)
             -- insert result repr
             local res = results[i]
             historian.insert_result:bindkv { line_id = line_id,
-                                                  repr = repr.ts(res) }
+                                                  repr = repr.ts_bw(res) }
             err = historian.insert_result:step()
             if not err then
                historian.insert_result:clearbind():reset()
