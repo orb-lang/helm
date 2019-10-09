@@ -603,6 +603,8 @@ function ModeS.eval(modeS)
    end
 
    modeS.hist:append(modeS.txtbuf, results, success)
+   local line_id = modeS.hist.line_ids[#modeS.hist]
+   modeS.hist.result_buffer[line_id] = results
    modeS.hist.cursor = #modeS.hist
    -- modeS:prompt()
 end

@@ -463,6 +463,9 @@ Retrieve a set of results reprs from the database, given a line_id.
 
 ```lua
 local function _resultsFrom(historian, line_id)
+   if historian.result_buffer[line_id] then
+      return historian.result_buffer[line_id]
+   end
    local stmt = historian.get_results
    stmt:bindkv {line_id = line_id}
    local results = stmt:resultset()
@@ -470,6 +473,9 @@ local function _resultsFrom(historian, line_id)
       results = results[1]
       results.n = #results
       results.frozen = true
+      for i,v in ipairs(results) do
+         results[i] = c.greyscale(results[i])
+      end
    end
    historian.get_results:clearbind():reset()
    return results
@@ -558,6 +564,7 @@ end
 local function new()
    local historian = meta(Historian)
    historian:load()
+   historian.result_buffer = {}
    return historian
 end
 Historian.idEst = new
