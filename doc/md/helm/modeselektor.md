@@ -630,7 +630,7 @@ function ModeS.eval(modeS)
          end
          result_idler:stop()
       end)
-      modeS.hist.result_buffer[line_id] = result_tostring
+      modeS.hist.result_buffer[#modeS.hist] = result_tostring
    end
    modeS.hist.cursor = #modeS.hist
    -- modeS:prompt()

@@ -486,10 +486,11 @@ local _db_result_M = meta {}
 _db_result_M.__repr = _db_result__repr
 
 
-local function _resultsFrom(historian, line_id)
-   if historian.result_buffer[line_id] then
-      return historian.result_buffer[line_id]
+local function _resultsFrom(historian, cursor)
+   if historian.result_buffer[cursor] then
+      return historian.result_buffer[cursor]
    end
+   local line_id = historian.line_ids[cursor]
    local stmt = historian.get_results
    stmt:bindkv {line_id = line_id}
    local results = stmt:resultset()
@@ -520,7 +521,7 @@ function Historian.prev(historian)
       txtbuf = txtbuf:clone()
       txtbuf:startOfText()
       txtbuf:endOfLine()
-      local result = _resultsFrom(historian, historian.line_ids[historian.cursor])
+      local result = _resultsFrom(historian, historian.cursor)
       return txtbuf, result
    else
       return Txtbuf(), nil
@@ -540,7 +541,7 @@ function Historian.next(historian)
    if txtbuf then
       txtbuf = txtbuf:clone()
       txtbuf:endOfText()
-      local result = _resultsFrom(historian, historian.line_ids[historian.cursor])
+      local result = _resultsFrom(historian, historian.cursor)
       return txtbuf, result
    else
       return nil, nil
@@ -559,7 +560,7 @@ function Historian.index(historian, cursor)
    assert(inbounds(cursor, 1, #historian))
    local txtbuf = historian[cursor]:clone()
    txtbuf:endOfText()
-   local result = _resultsFrom(historian, historian.line_ids[cursor])
+   local result = _resultsFrom(historian, cursor)
    historian.cursor = cursor
    return txtbuf, result
 end
