@@ -336,7 +336,7 @@ local function _spill(phrase, line, disps)
       phrase.disp[i] = disps[i]
    end
    phrase.yielding = true
-   return nil
+   return false
 end
 
 local function oneLine(phrase, long)
