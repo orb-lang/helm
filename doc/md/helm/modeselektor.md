@@ -605,17 +605,27 @@ function ModeS.eval(modeS)
    modeS.hist:append(modeS.txtbuf, results, success)
    local line_id = modeS.hist.line_ids[#modeS.hist]
    -- async render of resbuf
-   result_tostring = {n = results.n, frozen = true}
    local result_idler = uv.new_idle()
+   local lineGens, result_tostring = {}, {n = results.n, frozen = true}
+   for i = 1, results.n do
+      -- create line generators for each result
+      lineGens[i] = repr.lineGen(results[i])
+      result_tostring[i] = {}
+   end
+   local j = 1
    result_idler:start(function()
-     for i = 1, results.n do
-       result_tostring[i] = {}
-       for line in repr.lineGen(results[i]) do
-          result_tostring[i][#result_tostring[i] + 1] = line
-       end
-       result_tostring[i] = table.concat(result_tostring[i], "\n")
-     end
-     result_idler:stop()
+      while j <= results.n do
+         local line = lineGens[j]()
+         if line then
+            result_tostring[j][#result_tostring[j] + 1] = line
+            return nil
+         else
+            result_tostring[j] = table.concat(result_tostring[j], "\n")
+            j = j + 1
+            return nil
+         end
+      end
+      result_idler:stop()
    end)
    modeS.hist.result_buffer[line_id] = result_tostring
    modeS.hist.cursor = #modeS.hist
