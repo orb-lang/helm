@@ -464,6 +464,23 @@ end
 Retrieve a set of results reprs from the database, given a line_id.
 
 ```lua
+assert(string.lines)
+local function _db_result__repr(result)
+   local result_iter = string.lines(result[1])
+   return function()
+      local line = result_iter()
+      if line then
+         return c.greyscale(line)
+      else
+         return nil
+      end
+   end
+end
+
+local _db_result_M = meta {}
+_db_result_M.__repr = _db_result__repr
+
+
 local function _resultsFrom(historian, line_id)
    if historian.result_buffer[line_id] then
       return historian.result_buffer[line_id]
@@ -474,9 +491,10 @@ local function _resultsFrom(historian, line_id)
    if results then
       results = results[1]
       results.n = #results
-      results.frozen = true
-      for i,v in ipairs(results) do
-         results[i] = c.greyscale(results[i])
+      for i = 1, results.n do
+         -- stick the result in a table to enable repr-ing
+         results[i] = {results[i]}
+         setmeta(results[i], _db_result_M)
       end
    end
    historian.get_results:clearbind():reset()

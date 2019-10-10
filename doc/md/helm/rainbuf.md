@@ -136,7 +136,6 @@ function Rainbuf.lineGen(rainbuf, rows, cols)
                rainbuf.more = false
                return nil
             end
-            assert(type(repr) == "function", "I see your problem")
             local line = repr()  -- #todo fix dead coroutine problem here
             if line ~= nil then
                rainbuf.lines[#rainbuf.lines + 1] = line
