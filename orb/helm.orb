@@ -270,19 +270,6 @@ end
 
 #!lua
 
---[[ read main programme
-if arg[1] then
-  local prog = table.remove(arg, 1)
-  local chunk, err = loadfile(prog)
-  if chunk then
-     setfenv(chunk, _G)()
-  else
-     error ("couldn't load " .. prog .. "\n" .. err)
-  end
-end
---]]
-
-
 
 -- Get names for as many values as possible
 -- into the colorizer

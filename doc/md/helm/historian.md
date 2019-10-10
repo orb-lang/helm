@@ -206,6 +206,7 @@ function Historian.load(historian)
       historian.cursor = #historian
    else
       historian.results = {}
+      historian.line_ids = {}
       historian.cursor = 0
    end
 end
