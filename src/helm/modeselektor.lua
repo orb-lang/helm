@@ -600,23 +600,25 @@ function ModeS.eval(modeS)
    modeS.hist:append(modeS.txtbuf, results, success)
    local line_id = modeS.hist.line_ids[#modeS.hist]
    -- async render of resbuf
-   local result_idler = uv.new_idle()
+   -- set up closed-over state
    local lineGens, result_tostring = {}, {n = results.n, frozen = true}
    for i = 1, results.n do
       -- create line generators for each result
       lineGens[i] = repr.lineGen(results[i])
       result_tostring[i] = {}
    end
-   local j = 1
+   local i = 1
+   local result_idler = uv.new_idle()
+   -- run string generator as idle process
    result_idler:start(function()
-      while j <= results.n do
-         local line = lineGens[j]()
+      while i <= results.n do
+         local line = lineGens[i]()
          if line then
-            result_tostring[j][#result_tostring[j] + 1] = line
+            result_tostring[i][#result_tostring[i] + 1] = line
             return nil
          else
-            result_tostring[j] = table.concat(result_tostring[j], "\n")
-            j = j + 1
+            result_tostring[i] = table.concat(result_tostring[i], "\n")
+            i = i + 1
             return nil
          end
       end

@@ -244,6 +244,7 @@ local concat = table.concat
 function Historian.persist(historian, txtbuf, results)
    local lb = tostring(txtbuf)
    if lb ~= "" then
+      historian.conn:exec "BEGIN TRANSACTION;"
       historian.insert_line:bindkv { project = historian.project_id,
                                           line    = lb }
       local err = historian.insert_line:step()
@@ -266,8 +267,8 @@ function Historian.persist(historian, txtbuf, results)
             end
          end
       end
-
-   return true
+      historian.conn:exec "END TRANSACTION;"
+      return true
    else
       -- A blank line can have no results and is uninteresting.
       return false
