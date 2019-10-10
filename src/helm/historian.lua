@@ -254,6 +254,13 @@ local concat = table.concat
 function Historian.persist(historian, txtbuf, results)
    local lb = tostring(txtbuf)
    if lb ~= "" then
+      local results_strs = {}
+      if results and type(results) == "table" then
+         for i = 1, results.n do
+            -- insert result repr
+            results_strs[i] = repr.ts_bw(results[i])
+         end
+      end
       historian.conn:exec "BEGIN TRANSACTION;"
       historian.insert_line:bindkv { project = historian.project_id,
                                           line    = lb }
@@ -267,10 +274,8 @@ function Historian.persist(historian, txtbuf, results)
       table.insert(historian.line_ids, line_id)
       if results and type(results) == "table" then
          for i = 1, results.n do
-            -- insert result repr
-            local res = results[i]
             historian.insert_result:bindkv { line_id = line_id,
-                                                  repr = repr.ts_bw(res) }
+                                                  repr = results_strs[i] }
             err = historian.insert_result:step()
             if not err then
                historian.insert_result:clearbind():reset()
