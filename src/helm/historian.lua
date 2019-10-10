@@ -473,9 +473,9 @@ end
 
 
 
-assert(string.lines)
+local lines = assert(string.lines)
 local function _db_result__repr(result)
-   local result_iter = string.lines(result[1])
+   local result_iter = lines(result[1])
    return function()
       local line = result_iter()
       if line then
@@ -507,6 +507,8 @@ local function _resultsFrom(historian, line_id)
       end
    end
    historian.get_results:clearbind():reset()
+   -- may as well memoize the database call, while we're here
+   historian.result_buffer[line_id] = results
    return results
 end
 
