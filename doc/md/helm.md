@@ -226,7 +226,10 @@ local function onseq(err,seq)
    local head = byte(seq)
    -- ^Q hard coded as quit, for now
    if head == 17 then
-      uv.stop()
+      modeS.zones.status:replace 'exiting repl, owo...'
+      modeS:paint()
+      uv.read_stop(stdin)
+      uv.timer_stop(timer)
       return 0
    end
    -- Escape sequences
@@ -286,13 +289,18 @@ modeS:paint()
 
 -- main loop
 local retcode =  uv.run('default')
+-- remove any spurious mouse inputs or other stdin stuff
+io.stdin:read "*a"
 -- Restore main screen and cursor
 -- #todo Implement this in terms of anterm functions
-write('\x1b[?47l\x1b8')
+io.write('\x1b[?47l\x1b8')
 -- Mouse tracking off
-write(a.mouse.track(false))
+io.write(a.mouse.track(false))
 -- Back to normal mode
 uv.tty_reset_mode()
+
+uv.stop()
+
 
 if retcode ~= true then
    error(retcode)

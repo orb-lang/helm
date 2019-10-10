@@ -249,40 +249,63 @@ end
 
 
 
-local concat = table.concat
+local concat, insert = table.concat, table.insert
 
 function Historian.persist(historian, txtbuf, results)
    local lb = tostring(txtbuf)
+   local have_results = results
+                        and type(results) == "table"
+                        and results.n
    if lb ~= "" then
-      local results_strs = {}
-      if results and type(results) == "table" then
+      local persist_idler = uv.new_idle()
+      local results_tostring, results_lineGens = {}, {}
+      if have_results then
          for i = 1, results.n do
-            -- insert result repr
-            results_strs[i] = repr.ts_bw(results[i])
+            results_lineGens[i] = repr.lineGenBW(results[i])
+            assert(type(results_lineGens[i]) == 'function')
+            results_tostring[i] = {}
          end
       end
-      historian.conn:exec "BEGIN TRANSACTION;"
-      historian.insert_line:bindkv { project = historian.project_id,
-                                          line    = lb }
-      local err = historian.insert_line:step()
-      if not err then
-         historian.insert_line:clearbind():reset()
-      else
-         error(err)
-      end
-      local line_id = sql.lastRowId(historian.conn)
-      table.insert(historian.line_ids, line_id)
-      if results and type(results) == "table" then
-         for i = 1, results.n do
-            historian.insert_result:bindkv { line_id = line_id,
-                                                  repr = results_strs[i] }
-            err = historian.insert_result:step()
-            if not err then
-               historian.insert_result:clearbind():reset()
+      local i = 1
+      persist_idler:start(function()
+         while have_results and i <= results.n do
+            local line = results_lineGens[i]()
+            if line then
+               insert(results_tostring[i], line)
+               return nil
+            else
+               results_tostring[i] = concat(results_tostring[i], "\n")
+               i = i + 1
+               return nil
             end
          end
-      end
-      historian.conn:exec "END TRANSACTION;"
+         -- now persist
+         historian.conn:exec "BEGIN TRANSACTION;"
+         historian.insert_line:bindkv { project = historian.project_id,
+                                             line    = lb }
+         local err = historian.insert_line:step()
+         if not err then
+            historian.insert_line:clearbind():reset()
+         else
+            error(err)
+         end
+         local line_id = sql.lastRowId(historian.conn)
+         table.insert(historian.line_ids, line_id)
+         if have_results then
+            for i = 1, results.n do
+               historian.insert_result:bindkv { line_id = line_id,
+                                                repr = results_tostring[i] }
+               err = historian.insert_result:step()
+               if not err then
+                  historian.insert_result:clearbind():reset()
+               else
+                  error(err)
+               end
+            end
+         end
+         historian.conn:exec "END TRANSACTION;"
+         persist_idler:stop()
+      end)
       return true
    else
       -- A blank line can have no results and is uninteresting.

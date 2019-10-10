@@ -544,6 +544,20 @@ end
 
 
 
+local result_repr_M = meta {}
+
+function result_repr_M.__repr(result)
+  local i = 1
+  return function()
+     if i <= #result then
+       i = i + 1
+       return result[i - 1]
+     end
+  end
+end
+
+
+
 function ModeS.eval(modeS)
    local chunk = tostring(modeS.txtbuf)
 
@@ -602,11 +616,11 @@ function ModeS.eval(modeS)
    if success then
       -- async render of resbuf
       -- set up closed-over state
-      local lineGens, result_tostring = {}, {n = results.n, frozen = true}
+      local lineGens, result_tostring = {}, {n = results.n}
       for i = 1, results.n do
          -- create line generators for each result
          lineGens[i] = repr.lineGen(results[i])
-         result_tostring[i] = {}
+         result_tostring[i] = setmeta({}, result_repr_M)
       end
       local i = 1
       local result_idler = uv.new_idle()
@@ -618,7 +632,6 @@ function ModeS.eval(modeS)
                result_tostring[i][#result_tostring[i] + 1] = line
                return nil
             else
-               result_tostring[i] = table.concat(result_tostring[i], "\n")
                i = i + 1
                return nil
             end
