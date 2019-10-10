@@ -84,6 +84,7 @@ string.codepoints = core.codepoints
 string.lines = core.lines
 table.splice = core.splice
 table.clone = core.clone
+table.isarray = core.isarray
 table.arrayof = core.arrayof
 table.collect = core.collect
 table.select = core.select

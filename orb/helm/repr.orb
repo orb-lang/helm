@@ -214,9 +214,11 @@ Second return value is the printed width, third, if any, is a string
 representing what we're opening and/or closing.
 
 #!lua
-local O_BRACE = function() return c.base "{" end
-local C_BRACE = function() return c.base "}" end
+local O_BRACE = function() return c.base "{ " end
+local C_BRACE = function() return c.base " }" end
 local COMMA, COM_LEN = function() return c.base ", " end, 2
+
+local isarray, table_keys, sort = assert(table.isarray), assert(table.keys), assert(table.sort)
 
 local function _tabulate(tab, depth, cycle, phrase)
    cycle = cycle or {}
@@ -243,44 +245,46 @@ local function _tabulate(tab, depth, cycle, phrase)
       yield(c.base(" = "), 3)
       _tabulate(_M, depth + 1, cycle, phrase)
    end
+
+   -- Okay, we're repring the body of a table of some kind
    -- Check to see if this is an array
-   local is_array = true
-   local i = 1
-   for k,_ in pairs(tab) do
-      is_array = is_array and (k == i)
-      i = i + 1
-   end
+   local is_array = isarray(tab)
+   -- And print an open brace
+   yield(O_BRACE(), 2, (is_array and "array" or "map"))
 
-   local keys
-   if not is_array then
-      keys = table.keys(tab)
-      if #keys <= SORT_LIMIT then
-         table.sort(keys, _keysort)
-      end
-   else
-      keys = tab
-   end
-   yield(O_BRACE(), 1, (is_array and "array" or "map"))
-
-   for j, key in ipairs(keys) do
-      if is_array then
-         _tabulate(key, depth + 1, cycle, phrase)
-      else
-         val = tab[key]
-         if type(key) == "string" and key:find("^[%a_][%a%d_]*$") then
-            ts_coro(key, nil, phrase)
-            yield(c.base(" = "), 3)
-         else
-            yield(c.base("["), 1)
-               -- we want names or hashes for any lvalue table,
-               -- 100 triggers this
-            _tabulate(key, 100, cycle, phrase)
-            yield(c.base("] = "), 4)
+   if is_array then
+      for i, val in ipairs(tab) do
+         if i ~= 1 then
+            yield(COMMA(), COM_LEN)
          end
          _tabulate(val, depth + 1, cycle, phrase)
       end
+   else
+      local keys = table_keys(tab)
+      if #keys <= SORT_LIMIT then
+         sort(keys, _keysort)
+      end
+      for i, key in ipairs(keys) do
+         if i ~= 1 then
+            yield(COMMA(), COM_LEN)
+         end
+         local val = tab[key]
+         if type(key) == "string" and key:find("^[%a_][%a%d_]*$") then
+            -- legal identifier, display it as a bareword
+            ts_coro(key, nil, phrase)
+         else
+            -- arbitrary string or other type, wrap with braces and repr it
+            yield(c.base("["), 1)
+            -- we want names or hashes for any lvalue table,
+            -- 100 triggers this
+            _tabulate(key, 100, cycle, phrase)
+            yield(c.base("]"), 1)
+         end
+         yield(c.base(" = "), 3)
+         _tabulate(val, depth + 1, cycle, phrase)
+      end
    end
-   yield(C_BRACE(), 1, "end")
+   yield(C_BRACE(), 2, "end")
    return nil
 end
 #/lua
@@ -330,12 +334,6 @@ local function _spill(phrase, line, disps)
    for i = 0, #line do
       phrase[i] = line[i]
       phrase.disp[i] = disps[i]
-      -- Spilling these back, so undo the side-effect on =level=
-      if line[i] == O_BRACE() then
-         phrase.level = phrase.level - 1
-      elseif line[i] == C_BRACE() then
-         phrase.level = phrase.level + 1
-      end
    end
    phrase.yielding = true
    return false
@@ -344,49 +342,25 @@ end
 local function oneLine(phrase, long)
    local line = {}
    local disps = {}
-   local this_line_indent = phrase.level
+   local new_level = phrase.level
    if #phrase == 0 then
       phrase.yielding = true
       return false
    end
    while true do
       local frag, disp = remove(phrase, 1), remove(phrase.disp, 1)
-      -- remove commas before closing braces
-      if frag == COMMA() then
-         if phrase[1] == C_BRACE() then
-            frag = ""
-            disp = 0
-         elseif #phrase == 0 then
-            insert(line, frag)
-            insert(disps, disp)
-            return _spill(phrase, line, disps)
-         end
-      end
-      -- and after opening braces
-      if frag == O_BRACE() and phrase[1] == COMMA() then
-         remove(phrase, 1)
-         remove(phrase.disp, 1)
-      end
-      -- pad with a space inside the braces
-      if frag == C_BRACE() then
-         insert(line, " ")
-         insert(disps, 1)
-      end
       insert(line, frag)
       insert(disps, disp)
-      if frag == O_BRACE() then
-         insert(line, " ")
-         insert(disps, 1)
-      end
       -- adjust stack for next round
       if frag == O_BRACE() then
-         phrase.level = phrase.level + 1
+         new_level = new_level + 1
       elseif frag == C_BRACE() then
-         phrase.level = phrase.level - 1
+         new_level = new_level - 1
       end
       if (frag == COMMA() and long)
          or (#phrase == 0 and not phrase.more) then
-         local indent = ("  "):rep(this_line_indent)
+         local indent = ("  "):rep(phrase.level)
+         phrase.level = new_level
          return indent .. concat(line)
       elseif #phrase == 0 and phrase.more then
          -- spill our fragments back
@@ -445,41 +419,13 @@ local function lineGen(tab, depth, cycle, disp_width)
                phrase.disp[#phrase.disp] = nil
                return line
             end
-            if event == "map" then
-               map_counter = 0
-            end
             if event == "array" or event == "map" then
                insert(stage, event)
             elseif event == "end" then
                remove(stage)
-               if stage[#stage] == "map" then
-                  map_counter = 3
-               end
-            elseif event == "mt_name" then
-               -- gotta drop that comma
-               map_counter = 1
             end
          end
 
-         -- special-case for non-string values, which
-         -- yield an extra piece
-         if line == c.base("] = ") then
-            map_counter = map_counter - 1
-         end
-         -- insert commas
-         if stage[#stage] =="map"  then
-            if map_counter == 3 then
-               phrase[#phrase + 1] = COMMA()
-               phrase.disp[#phrase.disp + 1] = COM_LEN
-               map_counter = 1
-            else
-               map_counter = map_counter + 1
-            end
-         elseif stage[#stage] == "array"then
-            phrase[#phrase + 1] = COMMA()
-            phrase.disp[#phrase.disp + 1] = COM_LEN
-            map_counter = map_counter + 1
-         end
          if _disp(phrase) >= disp_width then
             long = true
             phrase.yielding = false
