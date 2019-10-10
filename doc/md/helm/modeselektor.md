@@ -604,32 +604,34 @@ function ModeS.eval(modeS)
 
    modeS.hist:append(modeS.txtbuf, results, success)
    local line_id = modeS.hist.line_ids[#modeS.hist]
-   -- async render of resbuf
-   -- set up closed-over state
-   local lineGens, result_tostring = {}, {n = results.n, frozen = true}
-   for i = 1, results.n do
-      -- create line generators for each result
-      lineGens[i] = repr.lineGen(results[i])
-      result_tostring[i] = {}
-   end
-   local i = 1
-   local result_idler = uv.new_idle()
-   -- run string generator as idle process
-   result_idler:start(function()
-      while i <= results.n do
-         local line = lineGens[i]()
-         if line then
-            result_tostring[i][#result_tostring[i] + 1] = line
-            return nil
-         else
-            result_tostring[i] = table.concat(result_tostring[i], "\n")
-            i = i + 1
-            return nil
-         end
+   if success then
+      -- async render of resbuf
+      -- set up closed-over state
+      local lineGens, result_tostring = {}, {n = results.n, frozen = true}
+      for i = 1, results.n do
+         -- create line generators for each result
+         lineGens[i] = repr.lineGen(results[i])
+         result_tostring[i] = {}
       end
-      result_idler:stop()
-   end)
-   modeS.hist.result_buffer[line_id] = result_tostring
+      local i = 1
+      local result_idler = uv.new_idle()
+      -- run string generator as idle process
+      result_idler:start(function()
+         while i <= results.n do
+            local line = lineGens[i]()
+            if line then
+               result_tostring[i][#result_tostring[i] + 1] = line
+               return nil
+            else
+               result_tostring[i] = table.concat(result_tostring[i], "\n")
+               i = i + 1
+               return nil
+            end
+         end
+         result_idler:stop()
+      end)
+      modeS.hist.result_buffer[line_id] = result_tostring
+   end
    modeS.hist.cursor = #modeS.hist
    -- modeS:prompt()
 end
