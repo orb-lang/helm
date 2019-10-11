@@ -549,6 +549,19 @@ function ModeS.clearResults(modeS)
 end
 ```
 ```lua
+local result_repr_M = meta {}
+
+function result_repr_M.__repr(result)
+  local i = 1
+  return function()
+     if i <= #result then
+       i = i + 1
+       return result[i - 1]
+     end
+  end
+end
+```
+```lua
 function ModeS.eval(modeS)
    local chunk = tostring(modeS.txtbuf)
 
@@ -603,6 +616,34 @@ function ModeS.eval(modeS)
    end
 
    modeS.hist:append(modeS.txtbuf, results, success)
+   local line_id = modeS.hist.line_ids[#modeS.hist]
+   if success then
+      -- async render of resbuf
+      -- set up closed-over state
+      local lineGens, result_tostring = {}, {n = results.n}
+      for i = 1, results.n do
+         -- create line generators for each result
+         lineGens[i] = repr.lineGen(results[i])
+         result_tostring[i] = setmeta({}, result_repr_M)
+      end
+      local i = 1
+      local result_idler = uv.new_idle()
+      -- run string generator as idle process
+      result_idler:start(function()
+         while i <= results.n do
+            local line = lineGens[i]()
+            if line then
+               result_tostring[i][#result_tostring[i] + 1] = line
+               return nil
+            else
+               i = i + 1
+               return nil
+            end
+         end
+         result_idler:stop()
+      end)
+      modeS.hist.result_buffer[#modeS.hist] = result_tostring
+   end
    modeS.hist.cursor = #modeS.hist
    -- modeS:prompt()
 end

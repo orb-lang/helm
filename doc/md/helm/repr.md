@@ -335,7 +335,7 @@ local function _spill(phrase, line, disps)
       phrase.disp[i] = disps[i]
    end
    phrase.yielding = true
-   return false
+   return nil
 end
 
 local function oneLine(phrase, long)
@@ -471,6 +471,7 @@ But still.
 
 ```lua
 function repr.lineGenBW(tab, disp_width)
+   disp_width = disp_width or 80
    local lg = lineGen(tab, nil, nil, disp_width)
    return function()
       c = C.no_color

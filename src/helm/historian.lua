@@ -211,6 +211,7 @@ function Historian.load(historian)
       historian.cursor = #historian
    else
       historian.results = {}
+      historian.line_ids = {}
       historian.cursor = 0
    end
 end
@@ -248,35 +249,64 @@ end
 
 
 
-local concat = table.concat
+local concat, insert = table.concat, table.insert
 
 function Historian.persist(historian, txtbuf, results)
    local lb = tostring(txtbuf)
+   local have_results = results
+                        and type(results) == "table"
+                        and results.n
    if lb ~= "" then
-      historian.insert_line:bindkv { project = historian.project_id,
-                                          line    = lb }
-      local err = historian.insert_line:step()
-      if not err then
-         historian.insert_line:clearbind():reset()
-      else
-         error(err)
-      end
-      local line_id = sql.lastRowId(historian.conn)
-      table.insert(historian.line_ids, line_id)
-      if results and type(results) == "table" then
+      local persist_idler = uv.new_idle()
+      local results_tostring, results_lineGens = {}, {}
+      if have_results then
          for i = 1, results.n do
-            -- insert result repr
-            local res = results[i]
-            historian.insert_result:bindkv { line_id = line_id,
-                                                  repr = repr.ts(res) }
-            err = historian.insert_result:step()
-            if not err then
-               historian.insert_result:clearbind():reset()
-            end
+            results_lineGens[i] = repr.lineGenBW(results[i])
+            assert(type(results_lineGens[i]) == 'function')
+            results_tostring[i] = {}
          end
       end
-
-   return true
+      local i = 1
+      persist_idler:start(function()
+         while have_results and i <= results.n do
+            local line = results_lineGens[i]()
+            if line then
+               insert(results_tostring[i], line)
+               return nil
+            else
+               results_tostring[i] = concat(results_tostring[i], "\n")
+               i = i + 1
+               return nil
+            end
+         end
+         -- now persist
+         historian.conn:exec "BEGIN TRANSACTION;"
+         historian.insert_line:bindkv { project = historian.project_id,
+                                             line    = lb }
+         local err = historian.insert_line:step()
+         if not err then
+            historian.insert_line:clearbind():reset()
+         else
+            error(err)
+         end
+         local line_id = sql.lastRowId(historian.conn)
+         table.insert(historian.line_ids, line_id)
+         if have_results then
+            for i = 1, results.n do
+               historian.insert_result:bindkv { line_id = line_id,
+                                                repr = results_tostring[i] }
+               err = historian.insert_result:step()
+               if not err then
+                  historian.insert_result:clearbind():reset()
+               else
+                  error(err)
+               end
+            end
+         end
+         historian.conn:exec "END TRANSACTION;"
+         persist_idler:stop()
+      end)
+      return true
    else
       -- A blank line can have no results and is uninteresting.
       return false
@@ -471,16 +501,43 @@ end
 
 
 
-local function _resultsFrom(historian, line_id)
+local lines = assert(string.lines)
+local function _db_result__repr(result)
+   local result_iter = lines(result[1])
+   return function()
+      local line = result_iter()
+      if line then
+         return c.greyscale(line)
+      else
+         return nil
+      end
+   end
+end
+
+local _db_result_M = meta {}
+_db_result_M.__repr = _db_result__repr
+
+
+local function _resultsFrom(historian, cursor)
+   if historian.result_buffer[cursor] then
+      return historian.result_buffer[cursor]
+   end
+   local line_id = historian.line_ids[cursor]
    local stmt = historian.get_results
    stmt:bindkv {line_id = line_id}
    local results = stmt:resultset()
    if results then
       results = results[1]
       results.n = #results
-      results.frozen = true
+      for i = 1, results.n do
+         -- stick the result in a table to enable repr-ing
+         results[i] = {results[i]}
+         setmeta(results[i], _db_result_M)
+      end
    end
    historian.get_results:clearbind():reset()
+   -- may as well memoize the database call, while we're here
+   historian.result_buffer[line_id] = results
    return results
 end
 
@@ -498,7 +555,7 @@ function Historian.prev(historian)
       txtbuf = txtbuf:clone()
       txtbuf:startOfText()
       txtbuf:endOfLine()
-      local result = _resultsFrom(historian, historian.line_ids[historian.cursor])
+      local result = _resultsFrom(historian, historian.cursor)
       return txtbuf, result
    else
       return Txtbuf(), nil
@@ -520,7 +577,7 @@ function Historian.next(historian)
    if txtbuf then
       txtbuf = txtbuf:clone()
       txtbuf:endOfText()
-      local result = _resultsFrom(historian, historian.line_ids[historian.cursor])
+      local result = _resultsFrom(historian, historian.cursor)
       return txtbuf, result
    else
       return nil, nil
@@ -541,7 +598,7 @@ function Historian.index(historian, cursor)
    assert(inbounds(cursor, 1, #historian))
    local txtbuf = historian[cursor]:clone()
    txtbuf:endOfText()
-   local result = _resultsFrom(historian, historian.line_ids[cursor])
+   local result = _resultsFrom(historian, cursor)
    historian.cursor = cursor
    return txtbuf, result
 end
@@ -574,6 +631,7 @@ end
 local function new()
    local historian = meta(Historian)
    historian:load()
+   historian.result_buffer = {}
    return historian
 end
 Historian.idEst = new
