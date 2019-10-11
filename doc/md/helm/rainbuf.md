@@ -92,6 +92,8 @@ a line at a time (and it only took, oh, six months), we're finally able to
 generate these on the fly.
 
 ```lua
+local string_lines = assert(string.lines)
+
 function Rainbuf.lineGen(rainbuf, rows, cols)
    offset = rainbuf.offset or 0
    cols = cols or 80
@@ -103,11 +105,11 @@ function Rainbuf.lineGen(rainbuf, rows, cols)
       local reprs = {}
       for i = 1, rainbuf.n do
          if rainbuf.frozen then
-            reprs[i] = string.lines(rainbuf[i])
+            reprs[i] = string_lines(rainbuf[i])
          else
             reprs[i] = lineGen(rainbuf[i], cols)
             if type(reprs[i]) == "string" then
-               reprs[i] = string.lines(reprs[i])
+               reprs[i] = string_lines(reprs[i])
             end
          end
       end

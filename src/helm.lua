@@ -182,9 +182,9 @@ local max_col, max_row = uv.tty_get_winsize(stdin)
 
 modeS = require "helm/modeselektor" (max_col, max_row)
 
-
+local insert = assert(table.insert)
 local function s_out(msg)
-  table.insert(modeS.status, msg)
+  insert(modeS.status, msg)
 end
 
 -- make a new 'status' instance
@@ -211,7 +211,10 @@ end)
 
 
 
-local byte, sub, codepoints = string.byte, string.sub, string.codepoints
+local byte, sub, codepoints, char = assert(string.byte),
+                                    assert(string.sub),
+                                    assert(string.codepoints),
+                                    assert(string.char)
 local m_parse, is_mouse = a.mouse.parse_fast, a.mouse.ismousemove
 local navigation, is_nav = a.navigation, a.is_nav
 
@@ -248,7 +251,7 @@ local function onseq(err,seq)
    end
    -- Control sequences
    if head <= 31 and not navigation[seq] then
-      local ctrl = "^" .. string.char(head + 64)
+      local ctrl = "^" .. char(head + 64)
       return modeS("CTRL", ctrl)
    elseif navigation[seq] then
       return modeS("NAV", navigation[seq])

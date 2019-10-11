@@ -100,6 +100,7 @@ assert(write, "must have write in _G")
 
 
 local color     = require "singletons/color"
+c = color.color
 
 local Txtbuf    = require "helm/txtbuf"
 local Resbuf    = require "helm/resbuf" -- Not currently used...
@@ -109,10 +110,8 @@ local Lex       = require "helm/lex"
 local Zoneherd  = require "helm/zone"
 local repr      = require "helm/repr"
 
-c = color.color
-
-local Nerf   = require "helm/nerf"
-local Search = require "helm/search"
+local Nerf      = require "helm/nerf"
+local Search    = require "helm/search"
 
 local concat               = assert(table.concat)
 local sub, gsub, rep, find = assert(string.sub),
@@ -558,6 +557,8 @@ end
 
 
 
+local table_insert = assert(table.insert)
+
 function ModeS.eval(modeS)
    local chunk = tostring(modeS.txtbuf)
 
@@ -578,7 +579,7 @@ function ModeS.eval(modeS)
    if f then
       setfenv(f, _G)
       success, results = gatherResults(xpcall(f, debug.traceback))
-      if not success and string.find(results[1], "is not declared") then
+      if not success and find(results[1], "is not declared") then
          -- let's try it with __G
          setfenv(f, __G)
          success, results = gatherResults(xpcall(f, debug.traceback))
@@ -629,7 +630,7 @@ function ModeS.eval(modeS)
          while i <= results.n do
             local line = lineGens[i]()
             if line then
-               result_tostring[i][#result_tostring[i] + 1] = line
+               table_insert(result_tostring[i],line)
                return nil
             else
                i = i + 1
@@ -651,7 +652,7 @@ end
 
 
 local function _status__repr(status_table)
-  return table.concat(status_table)
+  return concat(status_table)
 end
 
 local _stat_M = meta {}
