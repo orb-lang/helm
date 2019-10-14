@@ -236,7 +236,7 @@ local function onseq(err,seq)
    local head = byte(seq)
    -- ^Q hard coded as quit, for now
    if head == 17 then
-      modeS.zones.status:replace 'exiting repl, owo...'
+      modeS.zones.status:replace 'exiting repl, owo... 🐲'
       modeS:paint()
       uv.read_stop(stdin)
       uv.timer_stop(timer)
