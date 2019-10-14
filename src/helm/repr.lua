@@ -147,9 +147,11 @@ local SORT_LIMIT = 500  -- This won't be necessary #todo remove
 
 local coro = coro or coroutine
 
-local yield, wrap = coro.yield, coro.wrap
+local yield, wrap = assert(coro.yield), assert(coro.wrap)
 
-local concat, insert, remove = table.concat, table.insert, table.remove
+local concat, insert, remove = assert(table.concat),
+                               assert(table.insert),
+                               assert(table.remove)
 
 local function _keysort(a, b)
    if (type(a) == "string" and type(b) == "string")
@@ -182,6 +184,7 @@ end
 
 
 local hasfield = assert(core.hasfield)
+local lines = assert(string.lines)
 
 local function _yieldReprs(tab, phrase)
    local isYes, _repr = hasfield.__repr(tab)
@@ -189,7 +192,7 @@ local function _yieldReprs(tab, phrase)
    local repr = _repr(tab, phrase, c)
    local yielder
    if type(repr) == "string" then
-      yielder = string.lines(repr)
+      yielder = lines(repr)
    else
       yielder = repr
    end
@@ -377,7 +380,7 @@ end
 
 
 
-local readOnly = require "singletons/core" . readOnly
+local readOnly = assert(core.readOnly)
 
 local function _remains(phrase)
    return phrase.width - _disp(phrase)
@@ -505,8 +508,8 @@ end
 
 
 
-local find, sub, gsub, byte = string.find, string.sub,
-                              string.gsub, string.byte
+local find, sub, gsub, byte = assert(string.find), assert(string.sub),
+                              assert(string.gsub), assert(string.byte)
 
 local e = function(str)
    return c.stresc .. str .. c.string

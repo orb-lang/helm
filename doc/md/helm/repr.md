@@ -141,9 +141,11 @@ local SORT_LIMIT = 500  -- This won't be necessary #todo remove
 
 local coro = coro or coroutine
 
-local yield, wrap = coro.yield, coro.wrap
+local yield, wrap = assert(coro.yield), assert(coro.wrap)
 
-local concat, insert, remove = table.concat, table.insert, table.remove
+local concat, insert, remove = assert(table.concat),
+                               assert(table.insert),
+                               assert(table.remove)
 
 local function _keysort(a, b)
    if (type(a) == "string" and type(b) == "string")
@@ -177,6 +179,7 @@ incredibly intricate repl.
 
 ```lua
 local hasfield = assert(core.hasfield)
+local lines = assert(string.lines)
 
 local function _yieldReprs(tab, phrase)
    local isYes, _repr = hasfield.__repr(tab)
@@ -184,7 +187,7 @@ local function _yieldReprs(tab, phrase)
    local repr = _repr(tab, phrase, c)
    local yielder
    if type(repr) == "string" then
-      yielder = string.lines(repr)
+      yielder = lines(repr)
    else
       yielder = repr
    end
@@ -335,7 +338,7 @@ local function _spill(phrase, line, disps)
       phrase.disp[i] = disps[i]
    end
    phrase.yielding = true
-   return nil
+   return false
 end
 
 local function oneLine(phrase, long)
@@ -374,7 +377,7 @@ This function sets up an iterator, which returns one line at a time of the
 table.
 
 ```lua
-local readOnly = require "singletons/core" . readOnly
+local readOnly = assert(core.readOnly)
 
 local function _remains(phrase)
    return phrase.width - _disp(phrase)
@@ -501,8 +504,8 @@ We make a small wrapper function which resets string color in between
 escapes, then gsub the daylights out of it.
 
 ```lua
-local find, sub, gsub, byte = string.find, string.sub,
-                              string.gsub, string.byte
+local find, sub, gsub, byte = assert(string.find), assert(string.sub),
+                              assert(string.gsub), assert(string.byte)
 
 local e = function(str)
    return c.stresc .. str .. c.string
