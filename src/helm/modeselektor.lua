@@ -217,11 +217,13 @@ end
 
 local STAT_ICON = "◉ "
 
+local ts_token = repr.ts_token
+
 local function tf(bool)
    if bool then
-      return ts("t", "true")
+      return ts_token("t", "true")
    else
-      return ts("f", "false")
+      return ts_token("f", "false")
    end
 end
 

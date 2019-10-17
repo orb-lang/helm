@@ -653,6 +653,10 @@ ts_coro = function (value, hint, phrase)
    yield(str, len)
 end
 
+function repr.ts_token(tab, hint)
+   return wrap(ts_coro)(tab, hint)
+end
+
 repr.ts = tabulate
 #/lua
 
