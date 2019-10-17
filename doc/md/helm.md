@@ -318,7 +318,8 @@ print("kthxbye")
 -- #todo Figure out the environment issues and put these back.
 
 -- return retcode
-os.exit(retcode)
+
+return retcode
 
 end -- of _helm
 ```
