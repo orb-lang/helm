@@ -305,11 +305,12 @@ modeS:paint()
 local retcode =  uv.run('default')
 -- remove any spurious mouse inputs or other stdin stuff
 io.stdin:read "*a"
--- Restore main screen and cursor
--- #todo Implement this in terms of anterm functions
-io.write('\x1b[?47l\x1b8')
+
 -- Mouse tracking off
 io.write(a.mouse.track(false))
+
+-- Restore main screen and cursor
+io.write('\x1b[?47l\x1b8')
 -- Back to normal mode
 uv.tty_reset_mode()
 
