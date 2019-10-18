@@ -224,11 +224,21 @@ local function process_escapes(seq)
    end
 end
 
+-- uv, being an event loop, will sometimes keep reading after
+-- we expect it to stop.
+-- this prevents modeS from being reloaded in such circumstances.
+--
+-- maybe.
+
+local _ditch = false
+
 local function onseq(err,seq)
+   if _ditch then return nil end
    if err then error(err) end
    local head = byte(seq)
    -- ^Q hard coded as quit, for now
    if head == 17 then
+      _ditch = true
       modeS.zones.status:replace 'exiting repl, owo... 🐲'
       modeS:paint()
       uv.read_stop(stdin)
@@ -307,23 +317,12 @@ uv.tty_reset_mode()
 
 uv.stop()
 
-
-if retcode ~= true then
-   error(retcode)
-end
-
-print("kthxbye")
-
 io.stdout:flush()
-
--- return retcode
-
-return retcode
 
 end -- of _helm
 ```
 #### Call helm
 
 ```lua
-_helm(__G)
+return _helm(__G)
 ```
