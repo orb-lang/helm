@@ -314,7 +314,7 @@ end
 
 print("kthxbye")
 
-io.flush()
+io.stdout:flush()
 
 -- return retcode
 
