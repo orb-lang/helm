@@ -292,14 +292,16 @@ modeS:paint()
 
 -- main loop
 local retcode =  uv.run('default')
--- remove any spurious mouse inputs or other stdin stuff
-io.stdin:read "*a"
 
 -- Mouse tracking off
 io.write(a.mouse.track(false))
 
 -- Restore main screen and cursor
 io.write('\x1b[?47l\x1b8')
+
+-- remove any spurious mouse inputs or other stdin stuff
+io.stdin:read "*a"
+
 -- Back to normal mode
 uv.tty_reset_mode()
 
@@ -311,11 +313,8 @@ if retcode ~= true then
 end
 
 print("kthxbye")
--- When modularizing helm, encountered errors evaluating expressions that
--- depend on __G if we return a wrapper function. Evaluating _helm
--- immediately fixes this but causes a single ^Q to not be enough to exit.
--- Work around *that* by explicitly calling os.exit() here.
--- #todo Figure out the environment issues and put these back.
+
+io.flush()
 
 -- return retcode
 
