@@ -200,7 +200,11 @@ local function _yieldReprs(tab, phrase)
       local line, len = yielder()
       if line ~= nil then
          len = len or #line
-         yield(line, len, "repr_line")
+         -- Yield something enough like a token for lineGen to notice
+         -- that it's special and just pass the string through.
+         yield { event = "repr_line",
+                 total_disp = len,
+                 line = line }
       else
          break
       end
@@ -217,9 +221,102 @@ end
 
 
 
-local O_BRACE = function() return c.base "{ " end
-local C_BRACE = function() return c.base " }" end
-local COMMA, COM_LEN = function() return c.base ", " end, 2
+
+
+
+
+
+
+
+
+
+
+
+
+
+local byte, codepoints, find, format, match, sub = assert(string.byte),
+                                                   assert(string.codepoints),
+                                                   assert(string.find),
+                                                   assert(string.format),
+                                                   assert(string.match),
+                                                   assert(string.sub)
+
+local escapes_map = {
+   ['"'] = '\\"',
+   ["'"] = "\\'",
+   ["\a"] = "\\a",
+   ["\b"] = "\\b",
+   ["\f"] = "\\f",
+   ["\n"] = "\\n",
+   ["\r"] = "\\r",
+   ["\t"] = "\\t",
+   ["\v"] = "\\v"
+}
+
+local function make_token(str, color, event)
+   local token = codepoints(str)
+   token.color = color
+   token.event = event
+   token.disps = {}
+   token.escapes = {}
+   token.total_disp = 0
+   local all_whitespace = true
+   for i, frag in ipairs(token) do
+      if escapes_map[frag] or find(frag, "%c") then
+         frag = escapes_map[frag] or ("\\x" .. format("%x", byte(frag)))
+         token[i] = frag
+         token.escapes[frag] = true
+      end
+      all_whitespace = all_whitespace and match(frag, "^%s+$")
+      token.disps[i] = #frag
+      token.total_disp = token.total_disp + #frag
+   end
+   -- Quote if only whitespace and this is a string. A bit ugly to do this
+   -- here, but not easy to do it anywhere else...
+   if all_whitespace and color == c.string then
+      insert(token, 1, '"')
+      insert(token.disps, 1, 1)
+      insert(token, '"')
+      insert(token.disps, 1)
+      token.total_disp = token.total_disp + 2
+   end
+   return token
+end
+
+local function yield_token(...)
+   yield(make_token(...))
+end
+
+
+
+
+
+
+
+
+
+local function token_tostring(token)
+   local output = {}
+   for i, frag in ipairs(token) do
+      if token.escapes[frag] then
+         frag = c.stresc .. frag .. token.color
+      end
+      output[i] = frag
+   end
+   return token.color(concat(output))
+end
+
+
+
+
+
+
+
+
+local function O_BRACE(event) yield_token("{ ", c.base, event) end
+local function C_BRACE()      yield_token(" }", c.base, "end") end
+local function COMMA()        yield_token(", ", c.base, "sep") end
+local function EQUALS()       yield_token(" = ", c.base)       end
 
 local isarray, table_keys, sort = assert(table.isarray), assert(table.keys), assert(table.sort)
 
@@ -245,7 +342,7 @@ local function _tabulate(tab, depth, cycle, phrase)
    local _M = getmetatable(tab)
    if _M then
       ts_coro(tab, "mt", phrase)
-      yield(c.base(" = "), 3)
+      EQUALS()
       _tabulate(_M, depth + 1, cycle, phrase)
    end
 
@@ -253,13 +350,11 @@ local function _tabulate(tab, depth, cycle, phrase)
    -- Check to see if this is an array
    local is_array = isarray(tab)
    -- And print an open brace
-   yield(O_BRACE(), 2, (is_array and "array" or "map"))
+   O_BRACE(is_array and "array" or "map")
 
    if is_array then
       for i, val in ipairs(tab) do
-         if i ~= 1 then
-            yield(COMMA(), COM_LEN)
-         end
+         if i ~= 1 then COMMA() end
          _tabulate(val, depth + 1, cycle, phrase)
       end
    else
@@ -268,26 +363,23 @@ local function _tabulate(tab, depth, cycle, phrase)
          sort(keys, _keysort)
       end
       for i, key in ipairs(keys) do
-         if i ~= 1 then
-            yield(COMMA(), COM_LEN)
-         end
+         if i ~= 1 then COMMA() end
          local val = tab[key]
          if type(key) == "string" and key:find("^[%a_][%a%d_]*$") then
             -- legal identifier, display it as a bareword
             ts_coro(key, nil, phrase)
          else
             -- arbitrary string or other type, wrap with braces and repr it
-            yield(c.base("["), 1)
-            -- we want names or hashes for any lvalue table,
-            -- 100 triggers this
-            _tabulate(key, 100, cycle, phrase)
-            yield(c.base("]"), 1)
+            yield_token("[", c.base)
+            -- We want names or hashes for any lvalue table
+            ts_coro(key, type(key) == "table" and "tab_name", phrase)
+            yield_token("]", c.base)
          end
-         yield(c.base(" = "), 3)
+         EQUALS()
          _tabulate(val, depth + 1, cycle, phrase)
       end
    end
-   yield(C_BRACE(), 2, "end")
+   C_BRACE()
    return nil
 end
 
@@ -325,18 +417,16 @@ end
 
 
 local function _disp(phrase)
-   local displacement = 0
-   for i = 1, #phrase.disp do
-      displacement = displacement + phrase.disp[i]
+   local displacement = 2 * phrase.level
+   for _, token in ipairs(phrase) do
+      displacement = displacement + token.total_disp
    end
    return displacement
 end
 
-local function _spill(phrase, line, disps)
-   assert(#line == #disps, "#line must == #disps")
+local function _spill(phrase, line)
    for i = 0, #line do
       phrase[i] = line[i]
-      phrase.disp[i] = disps[i]
    end
    phrase.yielding = true
    return false
@@ -344,30 +434,30 @@ end
 
 local function oneLine(phrase, long)
    local line = {}
-   local disps = {}
    local new_level = phrase.level
    if #phrase == 0 then
       phrase.yielding = true
       return false
    end
    while true do
-      local frag, disp = remove(phrase, 1), remove(phrase.disp, 1)
-      insert(line, frag)
-      insert(disps, disp)
-      -- adjust stack for next round
-      if frag == O_BRACE() then
+      local token = remove(phrase, 1)
+      insert(line, token)
+      if token.event == "array" or token.event == "map" then
          new_level = new_level + 1
-      elseif frag == C_BRACE() then
+      elseif token.event == "end" then
          new_level = new_level - 1
       end
-      if (frag == COMMA() and long)
+      if (token.event == "sep" and long)
          or (#phrase == 0 and not phrase.more) then
-         local indent = ("  "):rep(phrase.level)
+         for i, frag in ipairs(line) do
+            line[i] = token_tostring(frag)
+         end
+         insert(line, 1, ("  "):rep(phrase.level))
          phrase.level = new_level
-         return indent .. concat(line)
+         return concat(line)
       elseif #phrase == 0 and phrase.more then
          -- spill our fragments back
-         return _spill(phrase, line, disps)
+         return _spill(phrase, line)
       end
    end
 end
@@ -388,39 +478,44 @@ end
 
 local function lineGen(tab, depth, cycle, disp_width)
    assert(disp_width, "lineGen must have a disp_width")
-   local phrase = {}
-   phrase.disp = {}
-   local iter = wrap(_tabulate)
    local stage = {}              -- stage stack
-   phrase.remains = _remains
-   phrase.width = disp_width
-   phrase.stage = stage
-   phrase.level = 0              -- how many levels of recursion are we on
-   phrase.more = true            -- are their more frags to come
-   local map_counter = 0         -- counts where commas go
-   phrase.yielding = true
-   local long = false            -- long or short printing
-
+   local phrase = {
+      remains = _remains,
+      width = disp_width,
+      stage = stage,
+      level = 0,                 -- how many levels of recursion are we on
+      more = true,               -- are their more frags to come
+      yielding = true
+   }
    -- make a read-only phrase table for fetching values
    local phrase_ro = readOnly(phrase)
+   local iter = wrap(function()
+      local success, result = pcall(_tabulate, tab, depth, cycle, phrase_ro)
+      if not success then
+         local err_msg = "ERROR: " .. tostring(result)
+         yield { event = "repr_line",
+                 line = err_msg,
+                 total_disp = #err_msg }
+      end
+      yield(nil)
+   end)
+   local long = false            -- long or short printing
+
    -- return an iterator function which yields one line at a time.
    return function()
       ::start::
       while phrase.yielding do
-         local line, len, event = iter(tab, depth, cycle, phrase_ro)
-         if line == nil then
+         local token = iter()
+         if token == nil then
             phrase.yielding = false
             phrase.more = false
             break
          end
-         phrase[#phrase + 1] = line
-         phrase.disp[#phrase.disp + 1] = len
-         if event then
+         if token.event then
+            local event = token.event
             if event == "repr_line" then
-               -- remove from the phrase and send directly
-               phrase[#phrase] = nil
-               phrase.disp[#phrase.disp] = nil
-               return line
+               -- send directly without adding to the phrase
+               return token.line
             end
             if event == "array" or event == "map" then
                insert(stage, event)
@@ -428,6 +523,7 @@ local function lineGen(tab, depth, cycle, disp_width)
                remove(stage)
             end
          end
+         phrase[#phrase + 1] = token
 
          if _disp(phrase) >= disp_width then
             long = true
@@ -438,19 +534,19 @@ local function lineGen(tab, depth, cycle, disp_width)
          end
       end
       if #phrase > 0 then
-         local ln = oneLine(phrase, long)
+            local ln = oneLine(phrase, long)
          if ln then
             return ln
          else
             goto start
-         end
+            end
       elseif phrase.more == false then
          return nil
       else
          phrase.yielding = true
          goto start
+         end
       end
-   end
 end
 
 function repr.lineGen(tab, disp)
@@ -508,41 +604,6 @@ end
 
 
 
-local find, sub, gsub, byte = assert(string.find), assert(string.sub),
-                              assert(string.gsub), assert(string.byte)
-
-local e = function(str)
-   return c.stresc .. str .. c.string
-end
-
--- Turn control characters into their byte rep,
--- preserving escapes
-local function ctrl_pr(str)
-   if byte(str) ~= 27 then
-      return e("\\" .. byte(str))
-   else
-      return str
-   end
-end
-
-local function scrub (str)
-   return str:gsub("\27", e "\\x1b")
-             :gsub('"',  e '\\"')
-             :gsub("'",  e "\\'")
-             :gsub("\a", e "\\a")
-             :gsub("\b", e "\\b")
-             :gsub("\f", e "\\f")
-             :gsub("\n", e "\\n")
-             :gsub("\r", e "\\r")
-             :gsub("\t", e "\\t")
-             :gsub("\v", e "\\v")
-             :gsub("%c", ctrl_pr)
-end
-
-
-
-
-
 
 
 
@@ -568,32 +629,29 @@ end
 
 
 
-
-ts_coro = function (value, hint, phrase)
-   local strval = tostring(value) or ""
-   local len = #strval
-   local str = scrub(strval)
+ts_coro = function(value, hint, phrase)
+   local str = tostring(value) or ""
+   local color
 
    -- For cases more specific than mere type,
    -- we have hints:
    if hint then
       if hint == "tab_name" then
-         local tab_name = anti_G[value] or "t:" .. sub(str, -6)
-         len = #tab_name
-         yield(c.table(tab_name), len)
-         return nil
+         str = anti_G[value] or "t:" .. sub(str, -6)
+         color = c.table
       elseif hint == "mt" then
          local mt_name = anti_G[value] or "mt:" .. sub(str, -6)
-         len = #mt_name + 2
-         yield(c.metatable("⟨" .. mt_name .. "⟩"), len, "mt_name")
-         return nil
+         str = "⟨" .. mt_name .. "⟩"
+         color = c.metatable
       elseif hints[hint] then
-         yield(hints[hint](str), len)
-         return nil
+         color = hints[hint]
       elseif c[hint] then
-         yield(c[hint](str), len)
-         return nil
+         color = c[hint]
+      else
+         error("Unknown hint: " .. hint)
       end
+      yield_token(str, color)
+      return nil
    end
 
    local typica = type(value)
@@ -606,51 +664,36 @@ ts_coro = function (value, hint, phrase)
       f_label = sub(f_label,1,5) == "built"
                 and f_label
                 or "f:" .. sub(str, -6)
-      local func_name = anti_G[value] or f_label
-      len = #func_name
-      str = c.func(func_name)
+      str = anti_G[value] or f_label
+      color = c.func
    elseif typica == "boolean" then
-      str = value and c.truth(str) or c.falsehood(str)
+      color = value and c.truth or c.falsehood
    elseif typica == "string" then
-      if value == "" then
-         str = c.string('""')
-         len = 2
-      else
-         str = c.string(str)
-      end
+      color = c.string
    elseif typica == "number" then
-      str = c.number(str)
+      color = c.number
    elseif typica == "nil" then
-      str = c.nilness(str)
+      color = c.nilness
    elseif typica == "thread" then
-      local coro_name = anti_G[value] and "coro:" .. anti_G[value]
-                                      or  "coro:" .. sub(str, -6)
-      len = #coro_name
-      str = c.thread(coro_name)
+      str = "coro:" .. (anti_G[value] or sub(str, -6))
+      color = c.thread
    elseif typica == "userdata" then
+      color = c.userdata
       if anti_G[value] then
-         str = c.userdata(anti_G[value])
-         len = #anti_G[value]
+         str = anti_G[value]
       else
-         local name = find(str, ":")
-         if name then
-            name = sub(str, 1, name - 1)
-            len = #name
-            str = c.userdata(name)
-         else
-            str = c.userdata(str)
+         local name_end = find(str, ":")
+         if name_end then
+            str = sub(str, 1, name_end - 1)
          end
       end
    elseif typica == "cdata" then
+      color = c.cdata
       if anti_G[value] then
-         str = c.cdata(anti_G[value])
-         len = anti_G[value]
-      else
-         str = c.cdata(str)
+         str = anti_G[value]
       end
-      str, len = c_data(value, str)
    end
-   yield(str, len)
+   yield_token(str, color)
 end
 
 function repr.ts_token(tab, hint)
