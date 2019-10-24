@@ -611,10 +611,16 @@ function Historian.append(historian, txtbuf, results, success)
 end
 ```
 ```lua
+
+local __result_buffer_M = meta {}
+function __result_buffer_M.__repr()
+   return c.alert "cowardly refusing to print result_buffer to avoid infinite appending"
+end
+
 local function new()
    local historian = meta(Historian)
    historian:load()
-   historian.result_buffer = {}
+   historian.result_buffer = setmetatable({}, __result_buffer_M)
    return historian
 end
 Historian.idEst = new
