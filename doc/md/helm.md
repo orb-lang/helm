@@ -19,8 +19,6 @@ Man.  I really like having first-class environments.
 
 ```lua
 __G = setmetatable({}, {__index = _G})
-
-setfenv(0, __G)
 ```
 ### _helm
 
@@ -324,5 +322,5 @@ end -- of _helm
 #### Call helm
 
 ```lua
-return _helm(__G)
+return _helm
 ```

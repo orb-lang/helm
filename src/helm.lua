@@ -21,8 +21,6 @@ end
 
 __G = setmetatable({}, {__index = _G})
 
-setfenv(0, __G)
-
 
 
 
@@ -336,4 +334,4 @@ end -- of _helm
 
 
 
-return _helm(__G)
+return _helm
