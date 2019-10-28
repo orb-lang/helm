@@ -183,12 +183,13 @@ end
 
 
 
-local hasfield = assert(core.hasfield)
+local hasmetamethod = assert(core.hasmetamethod)
 local lines = assert(string.lines)
 
 local function _yieldReprs(tab, phrase)
-   local isYes, _repr = hasfield.__repr(tab)
+   local _repr = hasmetamethod("repr", tab)
    assert(c, "must have a value for c")
+   assert(_repr, "failed to retrieve repr metamethod")
    local repr = _repr(tab, phrase, c)
    local yielder
    if type(repr) == "string" then
@@ -236,7 +237,7 @@ local function _tabulate(tab, depth, cycle, phrase)
    end
    cycle[tab] = true
    -- __repr gets special treatment
-   if hasfield.__repr(tab) then
+   if hasmetamethod("repr", tab) then
       _yieldReprs(tab, phrase)
       return nil
    end
@@ -381,6 +382,7 @@ end
 
 
 local readOnly = assert(core.readOnly)
+local safeWrap = assert(core.safeWrap)
 
 local function _remains(phrase)
    return phrase.width - _disp(phrase)
@@ -390,7 +392,7 @@ local function lineGen(tab, depth, cycle, disp_width)
    assert(disp_width, "lineGen must have a disp_width")
    local phrase = {}
    phrase.disp = {}
-   local iter = wrap(_tabulate)
+   local iter = safeWrap(_tabulate)
    local stage = {}              -- stage stack
    phrase.remains = _remains
    phrase.width = disp_width
