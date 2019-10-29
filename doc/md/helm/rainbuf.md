@@ -107,7 +107,7 @@ function Rainbuf.lineGen(rainbuf, rows, cols)
          if rainbuf.frozen then
             reprs[i] = lines(rainbuf[i])
          else
-            reprs[i] = lineGen(rainbuf[i], cols)
+            reprs[i] = lineGen(rainbuf[i], nil, nil, cols)
             if type(reprs[i]) == "string" then
                reprs[i] = lines(reprs[i])
             end

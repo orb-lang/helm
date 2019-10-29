@@ -382,7 +382,7 @@ end
 
 
 local readOnly = assert(core.readOnly)
-local safeWrap = assert(core.safeWrap)
+local wrap = assert(coroutine.wrap)
 
 local function _remains(phrase)
    return phrase.width - _disp(phrase)
@@ -392,7 +392,7 @@ local function lineGen(tab, depth, cycle, disp_width)
    assert(disp_width, "lineGen must have a disp_width")
    local phrase = {}
    phrase.disp = {}
-   local iter = safeWrap(_tabulate)
+   local iter = wrap(_tabulate)
    local stage = {}              -- stage stack
    phrase.remains = _remains
    phrase.width = disp_width
