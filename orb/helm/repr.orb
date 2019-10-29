@@ -390,6 +390,10 @@ end
 
 local function lineGen(tab, depth, cycle, disp_width)
    assert(disp_width, "lineGen must have a disp_width")
+   -- bail out if our coro breaks
+   local borked = false
+   local errlines, errlinum = {}, 1
+
    local phrase = {}
    phrase.disp = {}
    local iter = wrap(_tabulate)
@@ -407,9 +411,23 @@ local function lineGen(tab, depth, cycle, disp_width)
    local phrase_ro = readOnly(phrase)
    -- return an iterator function which yields one line at a time.
    return function()
+      if borked then
+         errlinum = errlinum + 1
+         if errlinum <= #errlines then
+            return errlines[errlinum]
+         else
+            return nil
+         end
+      end
       ::start::
       while phrase.yielding do
-         local line, len, event = iter(tab, depth, cycle, phrase_ro)
+         local success, line, len, event = pcall(iter, tab,
+                                                 depth, cycle, phrase_ro)
+         if not success then
+            borked = true
+            errlines = core.collect(core.lines, line)
+            return errlines[errlinum]
+         end
          if line == nil then
             phrase.yielding = false
             phrase.more = false
