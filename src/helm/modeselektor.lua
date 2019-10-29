@@ -644,7 +644,6 @@ function ModeS.eval(modeS)
       modeS.hist.result_buffer[#modeS.hist] = result_tostring
    end
    modeS.hist.cursor = #modeS.hist
-   -- modeS:prompt()
 end
 
 

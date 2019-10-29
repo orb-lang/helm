@@ -233,6 +233,7 @@ local _ditch = false
 local function onseq(err,seq)
    if _ditch then return nil end
    if err then error(err) end
+
    local head = byte(seq)
    -- ^Q hard coded as quit, for now
    if head == 17 then
