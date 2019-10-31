@@ -394,7 +394,6 @@ local function lineGen(tab, depth, cycle, disp_width)
    phrase.stage = stage
    phrase.level = 0              -- how many levels of recursion are we on
    phrase.more = true            -- are their more frags to come
-   local map_counter = 0         -- counts where commas go
    phrase.yielding = true
    local long = false            -- long or short printing
 

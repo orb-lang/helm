@@ -59,7 +59,7 @@ local _closeeq = L.Cmt(_close * L.Cb("init"),
 
 local long_str = (_open * L.C((P(1) - _closeeq)^0) * _close) / 0 * L.Cp()
 
-local str_esc = P"\\" * (S"abfnrtvz\\\"'[]\n"
+local str_esc = P"\\" * (S"abfnrtvz\\'\"[]\n"
                          + (R"09" * R"09"^-2)
                          + (P"x" + P"X") * higit * higit)
 

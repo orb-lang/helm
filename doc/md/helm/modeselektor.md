@@ -585,7 +585,9 @@ function ModeS.eval(modeS)
    if f then
       setfenv(f, _G)
       success, results = gatherResults(xpcall(f, debug.traceback))
-      if not success and find(results[1], "is not declared") then
+      if not success
+         and results[1]
+         and find(results[1], "is not declared") then
          -- let's try it with __G
          setfenv(f, __G)
          success, results = gatherResults(xpcall(f, debug.traceback))
