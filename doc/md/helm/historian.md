@@ -249,7 +249,6 @@ function Historian.persist(historian, txtbuf, results)
       -- A blank line can have no results and is uninteresting.
       return false
    end
-
    local persist_idler = uv.new_idle()
    local results_tostring, results_lineGens = {}, {}
    if have_results then

@@ -19,8 +19,6 @@ Man.  I really like having first-class environments.
 
 ```lua
 __G = setmetatable({}, {__index = _G})
-
-setfenv(0, __G)
 ```
 ### _helm
 
@@ -235,6 +233,7 @@ local _ditch = false
 local function onseq(err,seq)
    if _ditch then return nil end
    if err then error(err) end
+
    local head = byte(seq)
    -- ^Q hard coded as quit, for now
    if head == 17 then
@@ -324,5 +323,5 @@ end -- of _helm
 #### Call helm
 
 ```lua
-return _helm(__G)
+return _helm
 ```
