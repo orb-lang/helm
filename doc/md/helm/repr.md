@@ -496,7 +496,14 @@ local function oneLine(phrase, long)
       elseif token.event == "end" then
          new_level = new_level - 1
       end
-      if _disp(line) >= phrase.width then
+      -- If we are in long mode, remove the trailing space from a comma
+      -- Note that in this case we are *certain* that the comma will fit,
+      -- since it is only one character and we otherwise reserve one space
+      -- for a possible ~
+      if token.event == "sep" and long then
+         remove(token)
+         token.total_disp = token.total_disp - remove(token.disps)
+      elseif _disp(line) >= phrase.width then
          remove(line)
          -- Reserve one column for the ~
          local remaining = phrase.width - _disp(line) - 1
