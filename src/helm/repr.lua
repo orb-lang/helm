@@ -738,10 +738,12 @@ ts_coro = function(value, hint, phrase)
       return nil
    elseif typica == "string" then
       color = c.string
-      -- If the string is all whitespace, wrap it in quotes
-      -- Can't just add the quotes to str, because make_token
+      -- If the string is all spaces (including the empty string), wrap it
+      -- in quotes. Can't just add the quotes to str, because make_token
       -- would then escape them, so we have to tell it to add them itself.
-      if match(str, '^%s*$') then
+      -- Note that whitespace other than actual spaces will be escaped,
+      -- so it will appear in a visible way and shouldn't cause quoting.
+      if match(str, '^ *$') then
          yield_token(str, color, nil, true)
          return nil
       end
