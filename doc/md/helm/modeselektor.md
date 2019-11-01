@@ -620,7 +620,7 @@ function ModeS.eval(modeS)
       local lineGens, result_tostring = {}, {n = results.n}
       for i = 1, results.n do
          -- create line generators for each result
-         lineGens[i] = repr.lineGen(results[i])
+         lineGens[i] = repr.lineGen(results[i], modeS.zones.results:width())
          result_tostring[i] = setmeta({}, result_repr_M)
       end
       local i = 1
