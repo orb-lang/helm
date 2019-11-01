@@ -544,7 +544,7 @@ This function sets up an iterator, which returns one line at a time of the
 table.
 
 #!lua
-local readOnly = assert(core.readOnly)
+local collect, readOnly = assert(core.collect), assert(core.readOnly)
 local wrap = assert(coroutine.wrap)
 
 local function _remains(phrase)
@@ -567,12 +567,14 @@ local function lineGen(tab, depth, cycle, disp_width)
    local iter = wrap(function()
       local success, result = pcall(_tabulate, tab, depth, cycle, phrase_ro)
       if not success then
-         local err_msg = "ERROR: " .. tostring(result)
-         yield { event = "repr_line",
-                 line = err_msg,
-                 total_disp = #err_msg }
+         local err_lines = collect(lines, tostring(result))
+         err_lines[1] = "error in __repr: " .. err_lines[1]
+         for _, line in ipairs(err_lines) do
+            yield { event = "repr_line",
+                    line = line,
+                    total_disp = #line }
+         end
       end
-      yield(nil)
    end)
    local long = false            -- long or short printing
 
