@@ -214,10 +214,11 @@ end
 
 #/lua
 
-*** make_token(str, color[, event])
+*** make_token(str, color[, event[, quote]])
 
 Assembles a "token" structure from the given string, color value,
-and optional event name. The structure looks like:
+and optional event name. If =quote= is truthy, also wraps the string
+in quotation marks. The structure looks like:
 
 #!lua-example
 {
@@ -230,8 +231,11 @@ and optional event name. The structure looks like:
 }
 #/lua-example
 
-Handles conversion of nonprinting characters into their escaped forms, with
-the =escapes= property indicating which characters this has been done to.
+Handles conversion of nonprinting characters and quotation marks into their
+escaped forms, with the =escapes= property indicating which characters
+this has been done to.
+
+
 
 #!lua
 
@@ -254,27 +258,29 @@ local escapes_map = {
    ["\v"] = "\\v"
 }
 
-local function make_token(str, color, event)
+local function make_token(str, color, event, quote)
    local token = codepoints(str)
    token.color = color
    token.event = event
    token.disps = {}
    token.escapes = {}
    token.total_disp = 0
-   local all_whitespace = true
    for i, frag in ipairs(token) do
+      -- For now, assume that all codepoints occupy one cell.
+      -- This is wrong, but *usually* does the right thing, and
+      -- handling Unicode properly is hard.
+      token.disps[i] = 1
       if escapes_map[frag] or find(frag, "%c") then
          frag = escapes_map[frag] or ("\\x" .. format("%x", byte(frag)))
          token[i] = frag
+         -- In the case of an escape, we know all of the characters involved
+         -- are one-byte, and each occupy one cell
+         token.disps[i] = #frag
          token.escapes[frag] = true
       end
-      all_whitespace = all_whitespace and match(frag, "^%s+$")
-      token.disps[i] = #frag
-      token.total_disp = token.total_disp + #frag
+      token.total_disp = token.total_disp + token.disps[i]
    end
-   -- Quote if only whitespace and this is a string. A bit ugly to do this
-   -- here, but not easy to do it anywhere else...
-   if all_whitespace and color == c.string then
+   if quote then
       insert(token, 1, '"')
       insert(token.disps, 1, 1)
       insert(token, '"')
@@ -305,6 +311,46 @@ local function token_tostring(token)
       output[i] = frag
    end
    return token.color(concat(output))
+end
+
+#/lua
+
+*** split_token(token, max_disp)
+
+Splits a token such that the first part occupies no more than =max_disp= cells.
+Returns two tokens.
+
+#!lua
+
+local function split_token(token, max_disp)
+   local disp_so_far = 0
+   local split_index
+   for i, disp in ipairs(token.disps) do
+      if disp_so_far + disp > max_disp then
+         split_index = i - 1
+         break
+      end
+      disp_so_far = disp_so_far + disp
+   end
+   local first, rest = {}, {}
+   first.disps = {}
+   rest.disps = {}
+   -- Copy over the properties in common.
+   for _,k in ipairs({"color", "event", "escapes"}) do
+      first[k] = token[k]
+      rest[k] = token[k]
+   end
+   for i = 1, split_index do
+      first[i]       = token[i]
+      first.disps[i] = token.disps[i]
+   end
+   first.total_disp = disp_so_far
+   for i = split_index + 1, #token do
+      rest[i - split_index]       = token[i]
+      rest.disps[i - split_index] = token.disps[i]
+   end
+   rest.total_disp = token.total_disp - disp_so_far
+   return first, rest
 end
 
 #/lua
@@ -418,7 +464,7 @@ lines or short lines, which is determined by =lineGen=, the caller.
 
 #!lua
 local function _disp(phrase)
-   local displacement = 2 * phrase.level
+   local displacement = 0
    for _, token in ipairs(phrase) do
       displacement = displacement + token.total_disp
    end
@@ -426,15 +472,20 @@ local function _disp(phrase)
 end
 
 local function _spill(phrase, line)
-   for i = 0, #line do
+   if line[1].event == "indent" then
+      remove(line, 1)
+   end
+   for i = 1, #line do
       phrase[i] = line[i]
    end
    phrase.yielding = true
    return false
 end
 
+local MIN_SPLIT_WIDTH = 20
+
 local function oneLine(phrase, long)
-   local line = {}
+   local line = { make_token(("  "):rep(phrase.level), c.base, "indent") }
    local new_level = phrase.level
    if #phrase == 0 then
       phrase.yielding = true
@@ -442,18 +493,42 @@ local function oneLine(phrase, long)
    end
    while true do
       local token = remove(phrase, 1)
+      -- Don't indent the remainder of a wrapped token
+      if token.wrap_part == "rest" then
+         assert(remove(line).event == "indent", "Should only encounter rest-of-wrap at start of line")
+      end
       insert(line, token)
       if token.event == "array" or token.event == "map" then
          new_level = new_level + 1
       elseif token.event == "end" then
          new_level = new_level - 1
       end
+      if _disp(line) >= phrase.width then
+         remove(line)
+         -- Reserve one column for the ~
+         local remaining = phrase.width - _disp(line) - 1
+         local rest
+         if token.total_disp < MIN_SPLIT_WIDTH then
+            rest = token
+            token = make_token((" "):rep(remaining), c.base)
+         else
+            token, rest = split_token(token, remaining)
+         end
+         token.wrap_part = "first"
+         rest.wrap_part = "rest"
+         insert(line, token)
+         insert(line, make_token("~", c.alert))
+         insert(phrase, 1, rest)
+      end
+      -- If we are in long mode and hit a comma
       if (token.event == "sep" and long)
-         or (#phrase == 0 and not phrase.more) then
+         -- Or we are at the very end of the stream
+         or (#phrase == 0 and not phrase.more)
+         -- Or we just needed to chop & wrap a token
+         or (token.wrap_part == "first") then
          for i, frag in ipairs(line) do
             line[i] = token_tostring(frag)
          end
-         insert(line, 1, ("  "):rep(phrase.level))
          phrase.level = new_level
          return concat(line)
       elseif #phrase == 0 and phrase.more then
@@ -527,7 +602,7 @@ local function lineGen(tab, depth, cycle, disp_width)
          end
          phrase[#phrase + 1] = token
 
-         if _disp(phrase) >= disp_width then
+         if _disp(phrase) + (2 * phrase.level) >= disp_width then
             long = true
             phrase.yielding = false
             break
@@ -661,6 +736,16 @@ ts_coro = function(value, hint, phrase)
    if typica == "table" then
       _tabulate(value, nil, nil, phrase)
       return nil
+   elseif typica == "string" then
+      color = c.string
+      -- If the string is all whitespace, wrap it in quotes
+      -- Can't just add the quotes to str, because make_token
+      -- would then escape them, so we have to tell it to add them itself.
+      if match(str, '^%s*$') then
+         yield_token(str, color, nil, true)
+         return nil
+      end
+      -- If no quoting needed, fall through to the common yield at the bottom
    elseif typica == "function" then
       local f_label = sub(str,11)
       f_label = sub(f_label,1,5) == "built"
@@ -670,8 +755,6 @@ ts_coro = function(value, hint, phrase)
       color = c.func
    elseif typica == "boolean" then
       color = value and c.truth or c.falsehood
-   elseif typica == "string" then
-      color = c.string
    elseif typica == "number" then
       color = c.number
    elseif typica == "nil" then
