@@ -332,9 +332,7 @@ local function split_token(token, max_disp)
       end
       disp_so_far = disp_so_far + disp
    end
-   local first, rest = {}, {}
-   first.disps = {}
-   rest.disps = {}
+   local first, rest = { disps = {} }, { disps = {} }
    -- Copy over the properties in common.
    for _,k in ipairs({"color", "event", "escapes"}) do
       first[k] = token[k]
@@ -779,10 +777,6 @@ ts_coro = function(value, hint, phrase)
       end
    end
    yield_token(str, color)
-end
-
-function repr.ts_token(tab, hint)
-   return wrap(ts_coro)(tab, hint)
 end
 
 repr.ts = tabulate
