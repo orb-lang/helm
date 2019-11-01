@@ -506,6 +506,12 @@ local function oneLine(phrase, long)
             token = make_token((" "):rep(remaining), c.base)
          else
             token, rest = split_token(token, remaining)
+            -- Pad with spaces if we were forced to split a couple chars short
+            for i = 1, remaining - token.total_disp do
+               insert(token, " ")
+               insert(token.disps, 1)
+            end
+            token.total_disp = remaining
          end
          token.wrap_part = "first"
          rest.wrap_part = "rest"
