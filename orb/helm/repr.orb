@@ -214,11 +214,10 @@ end
 
 #/lua
 
-*** make_token(str, color[, event[, quote]])
+*** make_token(str, color[, event[, is_string]])
 
 Assembles a "token" structure from the given string, color value,
-and optional event name. If =quote= is truthy, also wraps the string
-in quotation marks. The structure looks like:
+and optional event name. The structure looks like:
 
 #!lua-example
 {
@@ -231,11 +230,12 @@ in quotation marks. The structure looks like:
 }
 #/lua-example
 
-Handles conversion of nonprinting characters and quotation marks into their
-escaped forms, with the =escapes= property indicating which characters
-this has been done to.
-
-
+If =is_string= is truthy, performs some additional steps applicable
+only to strings:
+* Converts nonprinting characters and quotation marks to their escaped forms,
+  with the =escapes= property indicating which characters this has been done to.
+* Wraps the string in (un-escaped) quotation marks if it consists entirely of
+  space characters (or is empty).
 
 #!lua
 
@@ -258,10 +258,11 @@ local escapes_map = {
    ["\v"] = "\\v"
 }
 
-local function make_token(str, color, event, quote)
+local function make_token(str, color, event, is_string)
    local token = codepoints(str)
    token.color = color
    token.event = event
+   token.is_string = is_string
    token.disps = {}
    token.escapes = {}
    token.total_disp = 0
@@ -270,8 +271,8 @@ local function make_token(str, color, event, quote)
       -- This is wrong, but *usually* does the right thing, and
       -- handling Unicode properly is hard.
       token.disps[i] = 1
-      if escapes_map[frag] or find(frag, "%c") then
-         frag = escapes_map[frag] or ("\\x" .. format("%x", byte(frag)))
+      if is_string and (escapes_map[frag] or find(frag, "%c")) then
+         frag = escapes_map[frag] or format("\\x%x", byte(frag))
          token[i] = frag
          -- In the case of an escape, we know all of the characters involved
          -- are one-byte, and each occupy one cell
@@ -280,7 +281,7 @@ local function make_token(str, color, event, quote)
       end
       token.total_disp = token.total_disp + token.disps[i]
    end
-   if quote then
+   if is_string and find(str, '^ *$') then
       insert(token, 1, '"')
       insert(token.disps, 1, 1)
       insert(token, '"')
@@ -513,10 +514,11 @@ local function oneLine(phrase, long)
          -- Reserve one column for the ~
          local remaining = phrase.width - _disp(line) - 1
          local rest
-         if token.total_disp < MIN_SPLIT_WIDTH then
-            rest = token
-            token = make_token((" "):rep(remaining), c.base)
-         else
+         -- Only split strings, and only if they're long enough to be worth it
+         -- In the extreme event that a non-string token is longer than the
+         -- entire available width, split it too to avoid an infinite loop
+         if token.is_string and token.total_disp > MIN_SPLIT_WIDTH
+            or token.total_disp >= phrase.width then
             token, rest = split_token(token, remaining)
             -- Pad with spaces if we were forced to split a couple chars short
             for i = 1, remaining - token.total_disp do
@@ -524,6 +526,10 @@ local function oneLine(phrase, long)
                insert(token.disps, 1)
             end
             token.total_disp = remaining
+         -- Short strings and other token types just get bumped to the next line
+         else
+            rest = token
+            token = make_token((" "):rep(remaining), c.base)
          end
          token.wrap_part = "first"
          rest.wrap_part = "rest"
@@ -750,17 +756,10 @@ ts_coro = function(value, hint, phrase)
       _tabulate(value, nil, nil, phrase)
       return nil
    elseif typica == "string" then
-      color = c.string
-      -- If the string is all spaces (including the empty string), wrap it
-      -- in quotes. Can't just add the quotes to str, because make_token
-      -- would then escape them, so we have to tell it to add them itself.
-      -- Note that whitespace other than actual spaces will be escaped,
-      -- so it will appear in a visible way and shouldn't cause quoting.
-      if match(str, '^ *$') then
-         yield_token(str, color, nil, true)
-         return nil
-      end
-      -- If no quoting needed, fall through to the common yield at the bottom
+      -- Special-case handling of string values for escaping
+      -- and possible quoting
+      yield_token(str, c.string, nil, true)
+      return nil
    elseif typica == "function" then
       local f_label = sub(str,11)
       f_label = sub(f_label,1,5) == "built"
