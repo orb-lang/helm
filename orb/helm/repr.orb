@@ -75,7 +75,7 @@ local function addName(t, aG, pre)
       local T = type(v)
       if (T == "table") then
          local key = pre ..
-            (type(k) == "string" and k or "<" .. type(k) .. ">")
+            (type(k) == "string" and k or "<" .. tostring(k) .. ">")
          if not aG[v] then
             aG[v] = key
             if not (pre == "" and k == "package") then
@@ -387,7 +387,7 @@ local function _tabulate(tab, depth, cycle, phrase)
    -- if we have a metatable, get it first
    local _M = getmetatable(tab)
    if _M then
-      ts_coro(tab, "mt", phrase)
+      ts_coro(_M, "mt", phrase)
       EQUALS()
       _tabulate(_M, depth + 1, cycle, phrase)
    end
