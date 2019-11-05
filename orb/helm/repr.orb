@@ -75,7 +75,7 @@ local function addName(t, aG, pre)
       local T = type(v)
       if (T == "table") then
          local key = pre ..
-            (type(k) == "string" and k or "<" .. type(k) .. ">")
+            (type(k) == "string" and k or "<" .. tostring(k) .. ">")
          if not aG[v] then
             aG[v] = key
             if not (pre == "" and k == "package") then
@@ -201,7 +201,11 @@ local function _yieldReprs(tab, phrase)
       local line, len = yielder()
       if line ~= nil then
          len = len or #line
-         yield(line, len, "repr_line")
+         -- Yield something enough like a token for lineGen to notice
+         -- that it's special and just pass the string through.
+         yield { event = "repr_line",
+                 total_disp = len,
+                 line = line }
       else
          break
       end
@@ -210,17 +214,157 @@ end
 
 #/lua
 
+*** make_token(str, color[, event[, is_string]])
+
+Assembles a "token" structure from the given string, color value,
+and optional event name. The structure looks like:
+
+#!lua-example
+{
+   "f", "o", "o", "\\n",
+   color = c.string,
+   disps = { 1, 1, 1, 2 },
+   total_disp = 5,
+   escapes = { ["\\n"] = true },
+   event = {"array", "map", "sep", "end", "repr_line"} -- One of those, or nil
+}
+#/lua-example
+
+If =is_string= is truthy, performs some additional steps applicable
+only to strings:
+* Converts nonprinting characters and quotation marks to their escaped forms,
+  with the =escapes= property indicating which characters this has been done to.
+* Wraps the string in (un-escaped) quotation marks if it consists entirely of
+  space characters (or is empty).
+
+#!lua
+
+local byte, codepoints, find, format, match, sub = assert(string.byte),
+                                                   assert(string.codepoints),
+                                                   assert(string.find),
+                                                   assert(string.format),
+                                                   assert(string.match),
+                                                   assert(string.sub)
+
+local escapes_map = {
+   ['"'] = '\\"',
+   ["'"] = "\\'",
+   ["\a"] = "\\a",
+   ["\b"] = "\\b",
+   ["\f"] = "\\f",
+   ["\n"] = "\\n",
+   ["\r"] = "\\r",
+   ["\t"] = "\\t",
+   ["\v"] = "\\v"
+}
+
+local function make_token(str, color, event, is_string)
+   local token = codepoints(str)
+   token.color = color
+   token.event = event
+   token.is_string = is_string
+   token.disps = {}
+   token.escapes = {}
+   token.total_disp = 0
+   for i, frag in ipairs(token) do
+      -- For now, assume that all codepoints occupy one cell.
+      -- This is wrong, but *usually* does the right thing, and
+      -- handling Unicode properly is hard.
+      token.disps[i] = 1
+      if is_string and (escapes_map[frag] or find(frag, "%c")) then
+         frag = escapes_map[frag] or format("\\x%x", byte(frag))
+         token[i] = frag
+         -- In the case of an escape, we know all of the characters involved
+         -- are one-byte, and each occupy one cell
+         token.disps[i] = #frag
+         token.escapes[frag] = true
+      end
+      token.total_disp = token.total_disp + token.disps[i]
+   end
+   if is_string and find(str, '^ *$') then
+      insert(token, 1, '"')
+      insert(token.disps, 1, 1)
+      insert(token, '"')
+      insert(token.disps, 1)
+      token.total_disp = token.total_disp + 2
+   end
+   return token
+end
+
+local function yield_token(...)
+   yield(make_token(...))
+end
+
+#/lua
+
+*** token_tostring(token)
+
+Flattens a token structure back down to a simple string, including coloring sequences.
+
+#!lua
+
+local function token_tostring(token)
+   local output = {}
+   for i, frag in ipairs(token) do
+      if token.escapes[frag] then
+         frag = c.stresc .. frag .. token.color
+      elseif token.err and token.err[i] then
+         frag = c.alert .. frag .. token.color
+      end
+      output[i] = frag
+   end
+   return token.color(concat(output))
+end
+
+#/lua
+
+*** split_token(token, max_disp)
+
+Splits a token such that the first part occupies no more than =max_disp= cells.
+Returns two tokens.
+
+#!lua
+
+local function split_token(token, max_disp)
+   local disp_so_far = 0
+   local split_index
+   for i, disp in ipairs(token.disps) do
+      if disp_so_far + disp > max_disp then
+         split_index = i - 1
+         break
+      end
+      disp_so_far = disp_so_far + disp
+   end
+   local first, rest = { disps = {} }, { disps = {} }
+   -- Copy over the properties in common.
+   for _,k in ipairs({"color", "event", "escapes"}) do
+      first[k] = token[k]
+      rest[k] = token[k]
+   end
+   for i = 1, split_index do
+      first[i]       = token[i]
+      first.disps[i] = token.disps[i]
+   end
+   first.total_disp = disp_so_far
+   for i = split_index + 1, #token do
+      rest[i - split_index]       = token[i]
+      rest.disps[i - split_index] = token.disps[i]
+   end
+   rest.total_disp = token.total_disp - disp_so_far
+   return first, rest
+end
+
+#/lua
+
 *** _tabulate(tab, depth, cycle, phrase)
 
 This =yield()s= pieces of a table, recursively, one at a time.
 
-Second return value is the printed width, third, if any, is a string
-representing what we're opening and/or closing.
-
 #!lua
-local O_BRACE = function() return c.base "{ " end
-local C_BRACE = function() return c.base " }" end
-local COMMA, COM_LEN = function() return c.base ", " end, 2
+local function O_BRACE(event) yield_token("{ ", c.base, event) end
+local function C_BRACE()      yield_token(" }", c.base, "end") end
+local function COMMA()        yield_token(", ", c.base, "sep") end
+local function EQUALS()       yield_token(" = ", c.base)       end
 
 local isarray, table_keys, sort = assert(table.isarray), assert(table.keys), assert(table.sort)
 
@@ -245,8 +389,8 @@ local function _tabulate(tab, depth, cycle, phrase)
    -- if we have a metatable, get it first
    local _M = getmetatable(tab)
    if _M then
-      ts_coro(tab, "mt", phrase)
-      yield(c.base(" = "), 3)
+      ts_coro(_M, "mt", phrase)
+      EQUALS()
       _tabulate(_M, depth + 1, cycle, phrase)
    end
 
@@ -254,13 +398,11 @@ local function _tabulate(tab, depth, cycle, phrase)
    -- Check to see if this is an array
    local is_array = isarray(tab)
    -- And print an open brace
-   yield(O_BRACE(), 2, (is_array and "array" or "map"))
+   O_BRACE(is_array and "array" or "map")
 
    if is_array then
       for i, val in ipairs(tab) do
-         if i ~= 1 then
-            yield(COMMA(), COM_LEN)
-         end
+         if i ~= 1 then COMMA() end
          _tabulate(val, depth + 1, cycle, phrase)
       end
    else
@@ -269,26 +411,23 @@ local function _tabulate(tab, depth, cycle, phrase)
          sort(keys, _keysort)
       end
       for i, key in ipairs(keys) do
-         if i ~= 1 then
-            yield(COMMA(), COM_LEN)
-         end
+         if i ~= 1 then COMMA() end
          local val = tab[key]
          if type(key) == "string" and key:find("^[%a_][%a%d_]*$") then
             -- legal identifier, display it as a bareword
             ts_coro(key, nil, phrase)
          else
             -- arbitrary string or other type, wrap with braces and repr it
-            yield(c.base("["), 1)
-            -- we want names or hashes for any lvalue table,
-            -- 100 triggers this
-            _tabulate(key, 100, cycle, phrase)
-            yield(c.base("]"), 1)
+            yield_token("[", c.base)
+            -- We want names or hashes for any lvalue table
+            ts_coro(key, type(key) == "table" and "tab_name", phrase)
+            yield_token("]", c.base)
          end
-         yield(c.base(" = "), 3)
+         EQUALS()
          _tabulate(val, depth + 1, cycle, phrase)
       end
    end
-   yield(C_BRACE(), 2, "end")
+   C_BRACE()
    return nil
 end
 #/lua
@@ -327,48 +466,93 @@ lines or short lines, which is determined by =lineGen=, the caller.
 #!lua
 local function _disp(phrase)
    local displacement = 0
-   for i = 1, #phrase.disp do
-      displacement = displacement + phrase.disp[i]
+   for _, token in ipairs(phrase) do
+      displacement = displacement + token.total_disp
    end
    return displacement
 end
 
-local function _spill(phrase, line, disps)
-   assert(#line == #disps, "#line must == #disps")
-   for i = 0, #line do
+local function _spill(phrase, line)
+   if line[1].event == "indent" then
+      remove(line, 1)
+   end
+   for i = 1, #line do
       phrase[i] = line[i]
-      phrase.disp[i] = disps[i]
    end
    phrase.yielding = true
    return false
 end
 
+local MIN_SPLIT_WIDTH = 20
+
 local function oneLine(phrase, long)
-   local line = {}
-   local disps = {}
+   local line = { make_token(("  "):rep(phrase.level), c.base, "indent") }
    local new_level = phrase.level
    if #phrase == 0 then
       phrase.yielding = true
       return false
    end
    while true do
-      local frag, disp = remove(phrase, 1), remove(phrase.disp, 1)
-      insert(line, frag)
-      insert(disps, disp)
-      -- adjust stack for next round
-      if frag == O_BRACE() then
+      local token = remove(phrase, 1)
+      -- Don't indent the remainder of a wrapped token
+      if token.wrap_part == "rest" then
+         assert(remove(line).event == "indent", "Should only encounter rest-of-wrap at start of line")
+      end
+      insert(line, token)
+      if token.event == "array" or token.event == "map" then
          new_level = new_level + 1
-      elseif frag == C_BRACE() then
+      elseif token.event == "end" then
          new_level = new_level - 1
       end
-      if (frag == COMMA() and long)
-         or (#phrase == 0 and not phrase.more) then
-         local indent = ("  "):rep(phrase.level)
+      -- If we are in long mode, remove the trailing space from a comma
+      -- Note that in this case we are *certain* that the comma will fit,
+      -- since it is only one character and we otherwise reserve one space
+      -- for a possible ~
+      if token.event == "sep" and long then
+         remove(token)
+         token.total_disp = token.total_disp - remove(token.disps)
+      elseif _disp(line) >= phrase.width then
+         remove(line)
+         -- Reserve one column for the ~
+         local remaining = phrase.width - _disp(line) - 1
+         local rest
+         -- Only split strings, and only if they're long enough to be worth it
+         -- In the extreme event that a non-string token is longer than the
+         -- entire available width, split it too to avoid an infinite loop
+         if token.is_string and token.total_disp > MIN_SPLIT_WIDTH
+            or token.total_disp >= phrase.width then
+            token, rest = split_token(token, remaining)
+            -- Pad with spaces if we were forced to split a couple chars short
+            for i = 1, remaining - token.total_disp do
+               insert(token, " ")
+               insert(token.disps, 1)
+            end
+            token.total_disp = remaining
+         -- Short strings and other token types just get bumped to the next line
+         else
+            rest = token
+            token = make_token((" "):rep(remaining), c.base)
+         end
+         token.wrap_part = "first"
+         rest.wrap_part = "rest"
+         insert(line, token)
+         insert(line, make_token("~", c.alert))
+         insert(phrase, 1, rest)
+      end
+      -- If we are in long mode and hit a comma
+      if (token.event == "sep" and long)
+         -- Or we are at the very end of the stream
+         or (#phrase == 0 and not phrase.more)
+         -- Or we just needed to chop & wrap a token
+         or (token.wrap_part == "first") then
+         for i, frag in ipairs(line) do
+            line[i] = token_tostring(frag)
+         end
          phrase.level = new_level
-         return indent .. concat(line)
+         return concat(line)
       elseif #phrase == 0 and phrase.more then
          -- spill our fragments back
-         return _spill(phrase, line, disps)
+         return _spill(phrase, line)
       end
    end
 end
@@ -381,7 +565,7 @@ This function sets up an iterator, which returns one line at a time of the
 table.
 
 #!lua
-local readOnly = assert(core.readOnly)
+local collect, readOnly = assert(core.collect), assert(core.readOnly)
 local wrap = assert(coroutine.wrap)
 
 local function _remains(phrase)
@@ -390,56 +574,46 @@ end
 
 local function lineGen(tab, depth, cycle, disp_width)
    assert(disp_width, "lineGen must have a disp_width")
-   -- bail out if our coro breaks
-   local borked = false
-   local errlines, errlinum = {}, 1
-
-   local phrase = {}
-   phrase.disp = {}
-   local iter = wrap(_tabulate)
    local stage = {}              -- stage stack
-   phrase.remains = _remains
-   phrase.width = disp_width
-   phrase.stage = stage
-   phrase.level = 0              -- how many levels of recursion are we on
-   phrase.more = true            -- are their more frags to come
-   phrase.yielding = true
-   local long = false            -- long or short printing
-
+   local phrase = {
+      remains = _remains,
+      width = disp_width,
+      stage = stage,
+      level = 0,                 -- how many levels of recursion are we on
+      more = true,               -- are their more frags to come
+      yielding = true
+   }
    -- make a read-only phrase table for fetching values
    local phrase_ro = readOnly(phrase)
-   -- return an iterator function which yields one line at a time.
-   return function()
-      if borked then
-         errlinum = errlinum + 1
-         if errlinum <= #errlines then
-            return errlines[errlinum]
-         else
-            return nil
+   local iter = wrap(function()
+      local success, result = pcall(_tabulate, tab, depth, cycle, phrase_ro)
+      if not success then
+         local err_lines = collect(lines, tostring(result))
+         err_lines[1] = "error in __repr: " .. err_lines[1]
+         for _, line in ipairs(err_lines) do
+            yield { event = "repr_line",
+                    line = line,
+                    total_disp = #line }
          end
       end
+   end)
+   local long = false            -- long or short printing
+
+   -- return an iterator function which yields one line at a time.
+   return function()
       ::start::
       while phrase.yielding do
-         local success, line, len, event = pcall(iter, tab,
-                                                 depth, cycle, phrase_ro)
-         if not success then
-            borked = true
-            errlines = core.collect(core.lines, line)
-            return errlines[errlinum]
-         end
-         if line == nil then
+         local token = iter()
+         if token == nil then
             phrase.yielding = false
             phrase.more = false
             break
          end
-         phrase[#phrase + 1] = line
-         phrase.disp[#phrase.disp + 1] = len
-         if event then
+         if token.event then
+            local event = token.event
             if event == "repr_line" then
-               -- remove from the phrase and send directly
-               phrase[#phrase] = nil
-               phrase.disp[#phrase.disp] = nil
-               return line
+               -- send directly without adding to the phrase
+               return token.line
             end
             if event == "array" or event == "map" then
                insert(stage, event)
@@ -447,8 +621,9 @@ local function lineGen(tab, depth, cycle, disp_width)
                remove(stage)
             end
          end
+         phrase[#phrase + 1] = token
 
-         if _disp(phrase) >= disp_width then
+         if _disp(phrase) + (2 * phrase.level) >= disp_width then
             long = true
             phrase.yielding = false
             break
@@ -457,19 +632,19 @@ local function lineGen(tab, depth, cycle, disp_width)
          end
       end
       if #phrase > 0 then
-         local ln = oneLine(phrase, long)
+            local ln = oneLine(phrase, long)
          if ln then
             return ln
          else
             goto start
-         end
+            end
       elseif phrase.more == false then
          return nil
       else
          phrase.yielding = true
          goto start
+         end
       end
-   end
 end
 
 function repr.lineGen(tab, disp)
@@ -520,45 +695,7 @@ local function tabulate(tab, depth, cycle, disp_width)
 end
 #/lua
 
-
-*** string and cdata pretty-printing
-
-We make a small wrapper function which resets string color in between
-escapes, then gsub the daylights out of it.
-
-#!lua
-local find, sub, gsub, byte = assert(string.find), assert(string.sub),
-                              assert(string.gsub), assert(string.byte)
-
-local e = function(str)
-   return c.stresc .. str .. c.string
-end
-
--- Turn control characters into their byte rep,
--- preserving escapes
-local function ctrl_pr(str)
-   if byte(str) ~= 27 then
-      return e("\\" .. byte(str))
-   else
-      return str
-   end
-end
-
-local function scrub (str)
-   return str:gsub("\27", e "\\x1b")
-             :gsub('"',  e '\\"')
-             :gsub("'",  e "\\'")
-             :gsub("\a", e "\\a")
-             :gsub("\b", e "\\b")
-             :gsub("\f", e "\\f")
-             :gsub("\n", e "\\n")
-             :gsub("\r", e "\\r")
-             :gsub("\t", e "\\t")
-             :gsub("\v", e "\\v")
-             :gsub("%c", ctrl_pr)
-end
-#/lua
-
+*** cdata pretty-printing
 
 Note: the reflect library appears to be broken for LuaJIT 2.1 so we're
 not going to use it.
@@ -568,6 +705,9 @@ I'm leaving in the code for now, because I'd like to repair and use it...
 lol
 
 #Todo fix
+
+Will also need to change the structure of ts_coro slightly to account for
+yielding multiple tokens in this case.
 
 #!lua
 local function c_data(value, str, phrase)
@@ -582,37 +722,34 @@ local function c_data(value, str, phrase)
 end
 #/lua
 
-
 *** ts_coro
 
 Lots of small, nice things in this one.
 
 #!lua
-ts_coro = function (value, hint, phrase)
-   local strval = tostring(value) or ""
-   local len = #strval
-   local str = scrub(strval)
+ts_coro = function(value, hint, phrase)
+   local str = tostring(value) or ""
+   local color
 
    -- For cases more specific than mere type,
    -- we have hints:
    if hint then
       if hint == "tab_name" then
-         local tab_name = anti_G[value] or "t:" .. sub(str, -6)
-         len = #tab_name
-         yield(c.table(tab_name), len)
-         return nil
+         str = anti_G[value] or "t:" .. sub(str, -6)
+         color = c.table
       elseif hint == "mt" then
          local mt_name = anti_G[value] or "mt:" .. sub(str, -6)
-         len = #mt_name + 2
-         yield(c.metatable("⟨" .. mt_name .. "⟩"), len, "mt_name")
-         return nil
+         str = "⟨" .. mt_name .. "⟩"
+         color = c.metatable
       elseif hints[hint] then
-         yield(hints[hint](str), len)
-         return nil
+         color = hints[hint]
       elseif c[hint] then
-         yield(c[hint](str), len)
-         return nil
+         color = c[hint]
+      else
+         error("Unknown hint: " .. hint)
       end
+      yield_token(str, color)
+      return nil
    end
 
    local typica = type(value)
@@ -620,60 +757,44 @@ ts_coro = function (value, hint, phrase)
    if typica == "table" then
       _tabulate(value, nil, nil, phrase)
       return nil
+   elseif typica == "string" then
+      -- Special-case handling of string values for escaping
+      -- and possible quoting
+      yield_token(str, c.string, nil, true)
+      return nil
    elseif typica == "function" then
       local f_label = sub(str,11)
       f_label = sub(f_label,1,5) == "built"
                 and f_label
                 or "f:" .. sub(str, -6)
-      local func_name = anti_G[value] or f_label
-      len = #func_name
-      str = c.func(func_name)
+      str = anti_G[value] or f_label
+      color = c.func
    elseif typica == "boolean" then
-      str = value and c.truth(str) or c.falsehood(str)
-   elseif typica == "string" then
-      if value == "" then
-         str = c.string('""')
-         len = 2
-      else
-         str = c.string(str)
-      end
+      color = value and c.truth or c.falsehood
    elseif typica == "number" then
-      str = c.number(str)
+      color = c.number
    elseif typica == "nil" then
-      str = c.nilness(str)
+      color = c.nilness
    elseif typica == "thread" then
-      local coro_name = anti_G[value] and "coro:" .. anti_G[value]
-                                      or  "coro:" .. sub(str, -6)
-      len = #coro_name
-      str = c.thread(coro_name)
+      str = "coro:" .. (anti_G[value] or sub(str, -6))
+      color = c.thread
    elseif typica == "userdata" then
+      color = c.userdata
       if anti_G[value] then
-         str = c.userdata(anti_G[value])
-         len = #anti_G[value]
+         str = anti_G[value]
       else
-         local name = find(str, ":")
-         if name then
-            name = sub(str, 1, name - 1)
-            len = #name
-            str = c.userdata(name)
-         else
-            str = c.userdata(str)
+         local name_end = find(str, ":")
+         if name_end then
+            str = sub(str, 1, name_end - 1)
          end
       end
    elseif typica == "cdata" then
+      color = c.cdata
       if anti_G[value] then
-         str = c.cdata(anti_G[value])
-         len = anti_G[value]
-      else
-         str = c.cdata(str)
+         str = anti_G[value]
       end
-      str, len = c_data(value, str)
    end
-   yield(str, len)
-end
-
-function repr.ts_token(tab, hint)
-   return wrap(ts_coro)(tab, hint)
+   yield_token(str, color)
 end
 
 repr.ts = tabulate
