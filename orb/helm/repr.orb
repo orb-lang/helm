@@ -260,16 +260,6 @@ local escapes_map = {
 
 local function make_token(str, color, event, is_string)
    local token = codepoints(str)
-   local escape_pattern = "%c"
-   -- If the string isn't valid utf-8, assume it is binary instead of
-   -- spamming replacement characters everywhere
-   if token.err then
-      token = {}
-      for i = 1, #str do
-         token[i] = sub(str, i, 1)
-      end
-      escape_pattern = "[^\x20-\x7e]"
-   end
    token.color = color
    token.event = event
    token.is_string = is_string
@@ -281,7 +271,7 @@ local function make_token(str, color, event, is_string)
       -- This is wrong, but *usually* does the right thing, and
       -- handling Unicode properly is hard.
       token.disps[i] = 1
-      if is_string and (escapes_map[frag] or find(frag, escape_pattern)) then
+      if is_string and (escapes_map[frag] or find(frag, "%c")) then
          frag = escapes_map[frag] or format("\\x%x", byte(frag))
          token[i] = frag
          -- In the case of an escape, we know all of the characters involved
