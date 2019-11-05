@@ -301,6 +301,8 @@ local function token_tostring(token)
    for i, frag in ipairs(token) do
       if token.escapes[frag] then
          frag = c.stresc .. frag .. token.color
+      elseif token.err and token.err[i] then
+         frag = c.alert .. frag .. token.color
       end
       output[i] = frag
    end
