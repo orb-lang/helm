@@ -217,14 +217,8 @@ end
 
 local STAT_ICON = "◉ "
 
-local ts_token = repr.ts_token
-
 local function tf(bool)
-   if bool then
-      return ts_token("t", "true")
-   else
-      return ts_token("f", "false")
-   end
+  return bool and c.truth("t") or c.falsehood("f")
 end
 
 local function pr_mouse(m)
@@ -622,7 +616,7 @@ function ModeS.eval(modeS)
       local lineGens, result_tostring = {}, {n = results.n}
       for i = 1, results.n do
          -- create line generators for each result
-         lineGens[i] = repr.lineGen(results[i])
+         lineGens[i] = repr.lineGen(results[i], modeS.zones.results:width())
          result_tostring[i] = setmeta({}, result_repr_M)
       end
       local i = 1
