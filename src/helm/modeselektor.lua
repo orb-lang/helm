@@ -445,9 +445,6 @@ end
 
 
 
-
-
-
 local assertfmt = assert(core.assertfmt)
 
 function ModeS.act(modeS, category, value)

@@ -438,11 +438,8 @@ end
 
   =act= simply dispatches. Note that our common interfaces is
 =method(modeS, category, value)=, we need to distinguish betwen the tuple
-=("INSERT", "SHIFT-LEFT")= (which could arrive from copy-paste[*]) and
+=("INSERT", "SHIFT-LEFT")= (which could arrive from copy-paste) and
 =("NAV", "SHIFT-LEFT")= and preserve information for our fall-through method.
-
-[*] We /should/ split up paste events into constituent codepoints, but we
-don't.
 
 =act= always succeeds, meaning we need some metatable action to absorb and
 log anything unexpected.
