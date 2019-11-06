@@ -518,6 +518,33 @@ end
 ```
 ### ModeS:eval()
 
+
+#### eval Environment
+
+```lua
+local eval_ENV = {}
+local eval_M = {}
+setmeta(eval_ENV, eval_M)
+
+function eval_M.__index(eval_ENV, key)
+   local value = rawget(_G, key)
+   if value then
+      return value
+   end
+   value = rawget(__G, key)
+   if value then
+      return value
+   end
+   return nil
+end
+
+function eval_M.__newindex(eval_ENV, key, value)
+   rawset(_G, key, value)
+   local name = {}
+   name[key] = value
+   repr.allNames(name)
+end
+```
 ```lua
 local function gatherResults(success, ...)
   local n = select('#', ...)
@@ -560,8 +587,9 @@ function ModeS.eval(modeS)
    local success, results
    local f, err = loadstring(chunk, 'REPL')
    if f then
-      setfenv(f, _G)
+      setfenv(f, eval_ENV)
       success, results = gatherResults(xpcall(f, debug.traceback))
+      --[[
       if not success
          and results[1]
          and find(results[1], "is not declared") then
@@ -569,6 +597,7 @@ function ModeS.eval(modeS)
          setfenv(f, __G)
          success, results = gatherResults(xpcall(f, debug.traceback))
       end
+      ]]
       if success then
          -- successful call
          if results.n > 0 then
