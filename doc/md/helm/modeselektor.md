@@ -521,6 +521,19 @@ end
 
 #### eval Environment
 
+Create an environment to ``eval`` the txtbuf in.
+
+
+This copies new globals into ``_G``, and puts their names into the repr ``anti_G``
+namespace.
+
+
+It also does lookups against ``_G`` first, falling back on ``__G``.
+
+
+All of this assumes that user code doesn't tamper with the environment. Though
+if it happens to, this code should do the right thing, which is nothing.
+
 ```lua
 local eval_ENV = {}
 local eval_M = {}
@@ -589,15 +602,6 @@ function ModeS.eval(modeS)
    if f then
       setfenv(f, eval_ENV)
       success, results = gatherResults(xpcall(f, debug.traceback))
-      --[[
-      if not success
-         and results[1]
-         and find(results[1], "is not declared") then
-         -- let's try it with __G
-         setfenv(f, __G)
-         success, results = gatherResults(xpcall(f, debug.traceback))
-      end
-      ]]
       if success then
          -- successful call
          if results.n > 0 then
