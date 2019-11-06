@@ -102,7 +102,6 @@ local function _advance(modeS)
    else
       modeS.txtbuf = new_txtbuf
    end
-   modeS:clearResults()
    next_result = next_result and Rainbuf(next_result) or ""
    modeS.zones.results:replace(next_result)
    return modeS
@@ -160,7 +159,7 @@ local function _modeShiftOnEmpty(modeS)
    if buf == "" then
       modeS:shiftMode(modeS.raga_default)
       modeS.firstChar = true
-      modeS:clearResults()
+      modeS.zones.results:replace ""
    end
 end
 

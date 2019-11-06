@@ -525,11 +525,6 @@ local function gatherResults(success, ...)
 end
 ```
 ```lua
-function ModeS.clearResults(modeS)
-   write(a.erase.box(1, modeS.repl_top + 1, modeS.r_margin, modeS.max_row))
-end
-```
-```lua
 local result_repr_M = meta {}
 
 function result_repr_M.__repr(result)
@@ -557,11 +552,11 @@ function ModeS.eval(modeS)
    local parsed_chunk = lua_parser(return_chunk)
    if not parsed_chunk:select "Error" () then
       chunk = return_chunk
+   else
+      -- re-parse the chunk
+      parsed_chunk = lua_parser(chunk)
    end
-   -- #Todo below is debug code, remove
-   modeS.chunk = modeS.chunk or {}
-   insert(modeS.chunk, chunk)
-   insert(modeS.chunk, head)
+   -- #Todo tinker with the chunk, finding $1-type vars
    local success, results
    local f, err = loadstring(chunk, 'REPL')
    if f then
