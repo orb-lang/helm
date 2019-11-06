@@ -15,7 +15,8 @@
 
 
 
-local Peg = require "espalier:espalier/peg"
+local Peg  = require "espalier:espalier/peg"
+local Node = require "espalier:espalier/node"
 
 
 
@@ -25,7 +26,7 @@ local Peg = require "espalier:espalier/peg"
 local lua_str = [=[
 lua = shebang* _ chunk _ finalcomment* Error*
 shebang = "#" (!"\n" 1)* "\n"
-chunk = _ (statement _ ";"?)* (_ laststatement (_ ";")?)?
+chunk = _ (statement _ ";"?)* (_ laststatement _ (";")?)?
 
 Error = 1+
 
@@ -168,4 +169,18 @@ local postscript = [[
 
 
 
-return Peg(lua_str) : toGrammar(nil, postscript, header)
+
+
+
+
+local Lua = Node : inherit "lua"
+
+function Lua.__tostring(lua)
+   return lua:span()
+end
+
+local lua_metas = { lua = Lua }
+
+
+
+return Peg(lua_str) : toGrammar(lua_metas, postscript, header)

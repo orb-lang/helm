@@ -15,7 +15,8 @@ ways to go before transclusion between projects is feasible.
 
 #Todo replace this with =espalier:espalier/peg=
 #!lua
-local Peg = require "espalier:espalier/peg"
+local Peg  = require "espalier:espalier/peg"
+local Node = require "espalier:espalier/node"
 #/lua
 
 
@@ -167,6 +168,20 @@ local postscript = [[
 ]]
 #/lua
 
+
+** Metatables
+
 #!lua
-return Peg(lua_str) : toGrammar(nil, postscript, header)
+
+local Lua = Node : inherit "lua"
+
+function Lua.__tostring(lua)
+   return lua:span()
+end
+
+local lua_metas = { lua = Lua }
+#/lua
+
+#!lua
+return Peg(lua_str) : toGrammar(lua_metas, postscript, header)
 #/lua

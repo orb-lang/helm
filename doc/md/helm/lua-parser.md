@@ -17,7 +17,8 @@ Ideally, this would be accomplished through transclusion, but we have quite a
 ways to go before transclusion between projects is feasible.
 
 ```lua
-local Peg = require "espalier:espalier/peg"
+local Peg  = require "espalier:espalier/peg"
+local Node = require "espalier:espalier/node"
 ```
 ### Extended Lua PEG grammar
 
@@ -25,7 +26,7 @@ local Peg = require "espalier:espalier/peg"
 local lua_str = [=[
 lua = shebang* _ chunk _ finalcomment* Error*
 shebang = "#" (!"\n" 1)* "\n"
-chunk = _ (statement _ ";"?)* (_ laststatement (_ ";")?)?
+chunk = _ (statement _ ";"?)* (_ laststatement _ (";")?)?
 
 Error = 1+
 
@@ -162,6 +163,18 @@ local postscript = [[
   longstring = (open * C((P(1) - closeeq)^0) * close) / 0
 ]]
 ```
+## Metatables
+
 ```lua
-return Peg(lua_str) : toGrammar(nil, postscript, header)
+
+local Lua = Node : inherit "lua"
+
+function Lua.__tostring(lua)
+   return lua:span()
+end
+
+local lua_metas = { lua = Lua }
+```
+```lua
+return Peg(lua_str) : toGrammar(lua_metas, postscript, header)
 ```

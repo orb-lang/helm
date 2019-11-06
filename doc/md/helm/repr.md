@@ -371,8 +371,10 @@ local function _tabulate(tab, depth, cycle, phrase)
       return nil
    end
    cycle[tab] = true
-   -- __repr gets special treatment
-   if hasmetamethod("repr", tab) then
+   -- __repr gets special treatment:
+   -- We want to use the __repr method if and only if it is on the
+   -- metatable.
+   if hasmetamethod("repr", tab) and (not rawget(tab, "__repr")) then
       _yieldReprs(tab, phrase)
       return nil
    end
@@ -790,14 +792,6 @@ ts_coro = function(value, hint, phrase)
 end
 
 repr.ts = tabulate
-```
-```lua
-function repr.ts_bw(value)
-   c = C.no_color
-   local to_string = tabulate(value)
-   c = C.color
-   return to_string
-end
 ```
 ```lua
 return repr

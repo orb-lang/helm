@@ -118,13 +118,14 @@ The easiest way to go mad in concurrent environments is to share memory.
 local color     = require "singletons/color"
 c = color.color
 
-local Txtbuf    = require "helm/txtbuf"
-local Resbuf    = require "helm/resbuf" -- Not currently used...
-local Rainbuf   = require "helm/rainbuf"
-local Historian = require "helm/historian"
-local Lex       = require "helm/lex"
-local Zoneherd  = require "helm/zone"
-local repr      = require "helm/repr"
+local Txtbuf     = require "helm/txtbuf"
+local Resbuf     = require "helm/resbuf" -- Not currently used...
+local Rainbuf    = require "helm/rainbuf"
+local Historian  = require "helm/historian"
+local Lex        = require "helm/lex"
+local Zoneherd   = require "helm/zone"
+local repr       = require "helm/repr"
+local lua_parser = require "helm/lua-parser"
 
 local Nerf      = require "helm/nerf"
 local Search    = require "helm/search"
@@ -515,18 +516,7 @@ function ModeS.__call(modeS, category, value)
   return modeS:act(category, value)
 end
 ```
-### ASCII
-
-Any printable 7 bit utf-8 sequence.
-
-
-Currently just self-inserts, but watch this space...
-
-
-
-
 ### ModeS:eval()
-
 
 ```lua
 local function gatherResults(success, ...)
