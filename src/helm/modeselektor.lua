@@ -542,25 +542,27 @@ end
 
 
 
-local table_insert = assert(table.insert)
+local insert = assert(table.insert)
 
 function ModeS.eval(modeS)
    local chunk = tostring(modeS.txtbuf)
-
+   -- check for leading =, old-school style
+   local head = sub(chunk, 1, 1)
+   if head == "=" then -- take pity on old-school Lua hackers
+       chunk = "return " .. sub(chunk,2)
+   end
+   -- add "return" and see if it parses
+   local return_chunk = "return " .. chunk
+   local parsed_chunk = lua_parser(return_chunk)
+   if not parsed_chunk:select "Error" () then
+      chunk = return_chunk
+   end
+   -- #Todo below is debug code, remove
+   modeS.chunk = modeS.chunk or {}
+   insert(modeS.chunk, chunk)
+   insert(modeS.chunk, head)
    local success, results
-   -- first we prefix return
-   local f, err = loadstring('return ' .. chunk, 'REPL')
-
-   if not f then
-      -- try again without return
-      f, err = loadstring(chunk, 'REPL')
-   end
-   if not f then
-      local head = sub(chunk, 1, 1)
-      if head == "=" then -- take pity on old-school Lua hackers
-         f, err = loadstring('return ' .. sub(chunk,2), 'REPL')
-      end -- more special REPL prefix soon: /, ?, >(?)
-   end
+   local f, err = loadstring(chunk, 'REPL')
    if f then
       setfenv(f, _G)
       success, results = gatherResults(xpcall(f, debug.traceback))
@@ -591,7 +593,7 @@ function ModeS.eval(modeS)
          write(a.colrow(1, modeS.repl_top + 1) .. "...")
          return true
       else
-         local to_err = { err.. "\n" .. debug.traceback(),
+         local to_err = { err,
                           n = 1,
                           frozen = true}
          modeS.zones.results:replace(to_err)
@@ -617,7 +619,7 @@ function ModeS.eval(modeS)
          while i <= results.n do
             local line = lineGens[i]()
             if line then
-               table_insert(result_tostring[i],line)
+               insert(result_tostring[i],line)
                return nil
             else
                i = i + 1
