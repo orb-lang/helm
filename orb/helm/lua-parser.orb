@@ -102,7 +102,10 @@ string = singlestring / doublestring / longstring
 `doublestring` = '"' ('\\' '"' / (!'"' 1))* '"'
 ;`longstring` = "placeholder"
 
-symbol = !keyword ([A-Z] / [a-z] / "_") ([A-Z] / [a-z] / [0-9] /"_" )*
+symbol = reprsymbol
+       / !keyword ([A-Z] / [a-z] / "_") ([A-Z] / [a-z] / [0-9] /"_" )*
+
+reprsymbol = "$" ([1-9] [0-9]*)* ("." ([a-z]/[A-Z]))*
 
 number = real / hex / integer
 `integer` = [0-9]+
