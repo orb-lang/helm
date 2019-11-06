@@ -14,7 +14,8 @@
 
 
 
-local Peg = require "espalier:espalier/grammars/peg"
+
+local Peg = require "espalier:espalier/peg"
 
 
 

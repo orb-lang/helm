@@ -15,7 +15,7 @@ ways to go before transclusion between projects is feasible.
 
 #Todo replace this with =espalier:espalier/peg=
 #!lua
-local Peg = require "espalier:espalier/grammars/peg"
+local Peg = require "espalier:espalier/peg"
 #/lua
 
 

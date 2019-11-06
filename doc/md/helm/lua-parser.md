@@ -17,7 +17,7 @@ Ideally, this would be accomplished through transclusion, but we have quite a
 ways to go before transclusion between projects is feasible.
 
 ```lua
-local Peg = require "espalier:espalier/grammars/peg"
+local Peg = require "espalier:espalier/peg"
 ```
 ### Extended Lua PEG grammar
 
