@@ -752,7 +752,7 @@ ts_coro = function(value, hint, phrase)
          color = c.table
       elseif hint == "mt" then
          local mt_name = anti_G[value] or "⟨" .. "mt:" .. sub(str, -6) .. "⟩"
-         str =  mt_name
+         str = sub(mt_name, 1, 1) == "⟨" and mt_name or "⟨" .. mt_name .. "⟩"
          color = c.metatable
       elseif hints[hint] then
          color = hints[hint]
