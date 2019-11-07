@@ -406,8 +406,6 @@ local function _tabulate(tab, depth, cycle, phrase)
          _tabulate(_M, depth + 1, cycle, phrase)
          yield_token("⟩ ", c.metatable, "sep")
       else
-         -- Need a separator to indicate that a line break here is acceptable
-         -- Bit of a hack to do it this way...
          yield_token("  ", c.base, "sep")
       end
    end

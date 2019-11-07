@@ -414,9 +414,7 @@ local function _tabulate(tab, depth, cycle, phrase)
          _tabulate(_M, depth + 1, cycle, phrase)
          yield_token("⟩ ", c.metatable, "sep")
       else
-         -- Need a separator to indicate that a line break here is acceptable
-         -- Bit of a hack to do it this way...
-         yield_token("  ", c.base, "sep")
+         yield_token(" ", c.base, "sep")
       end
    end
 
@@ -527,7 +525,13 @@ local function oneLine(phrase, long)
       -- If we are in long mode, remove the trailing space from a comma
       -- Note that in this case we are *certain* that the comma will fit,
       -- since it is only one character and we otherwise reserve one space
-      -- for a possible ~
+      -- for a possible ~. Thus we can skip the check for needing to split
+      -- this token, allowing a comma to fit at the very end of a line that
+      -- exactly fills the screen.
+
+      -- This is fragile (what if a separator has more than one non-space
+      -- character?). What we should really do is still perform the overflow
+      -- check, but modify it to use > instead of >= if we are at a separator
       if token.event == "sep" and long then
          remove(token)
          token.total_disp = token.total_disp - remove(token.disps)
