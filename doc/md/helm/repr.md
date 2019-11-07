@@ -226,10 +226,13 @@ and optional event name. The structure looks like:
 
 If ``is_string`` is truthy, performs some additional steps applicable
 only to strings:
-# Converts nonprinting characters and quotation marks to their escaped forms,
-  with the ``escapes`` property indicating which characters this has been done to.
-# Wraps the string in (un-escaped) quotation marks if it consists entirely of
-  space characters (or is empty).
+
+
+-  Converts nonprinting characters and quotation marks to their escaped forms,
+   with the ``escapes`` property indicating which characters this has been done
+   to.
+-  Wraps the string in (un-escaped) quotation marks if it consists entirely of
+   space characters (or is empty).
 
 ```lua
 
