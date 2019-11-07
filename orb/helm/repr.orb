@@ -390,19 +390,29 @@ local function _tabulate(tab, depth, cycle, phrase)
       return nil
    end
 
-   -- if we have a metatable, get it first
-   local _M = getmetatable(tab)
-   if _M then
-      ts_coro(_M, "mt", phrase)
-      EQUALS()
-      _tabulate(_M, depth + 1, cycle, phrase)
-   end
-
    -- Okay, we're repring the body of a table of some kind
    -- Check to see if this is an array
    local is_array = isarray(tab)
    -- And print an open brace
    O_BRACE(is_array and "array" or "map")
+
+   -- if we have a metatable, get it first
+   local _M = getmetatable(tab)
+   if _M then
+      ts_coro(_M, "mt", phrase)
+      -- Skip printing the metatable altogether if it's going to end up
+      -- represented by its name, since we just printed that.
+      if depth < C.depth and not cycle[_M] then
+         yield_token(" → ", c.base)
+         yield_token("⟨", c.metatable)
+         _tabulate(_M, depth + 1, cycle, phrase)
+         yield_token("⟩ ", c.metatable, "sep")
+      else
+         -- Need a separator to indicate that a line break here is acceptable
+         -- Bit of a hack to do it this way...
+         yield_token("  ", c.base, "sep")
+      end
+   end
 
    if is_array then
       for i, val in ipairs(tab) do
