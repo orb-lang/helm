@@ -135,7 +135,6 @@ This is fundamentally [[Tim Caswell's][https://github.com/creationix]] code.
 I've dressed it up a bit. Okay, a lot.
 
 ```lua
-local ts, ts_coro
 
 local SORT_LIMIT = 500  -- This won't be necessary #todo remove
 
@@ -350,6 +349,78 @@ local function split_token(token, max_disp)
 end
 
 ```
+### yield_name
+
+Lots of small, nice things in this one.
+
+```lua
+local function yield_name(value, hint)
+   local str = tostring(value) or ""
+   local color
+
+   -- For cases more specific than mere type,
+   -- we have hints:
+   if hint then
+      if hint == "mt" then
+         str = anti_G[value] or "⟨" .. "mt:" .. sub(str, -6) .. "⟩"
+         color = c.metatable
+      elseif hints[hint] then
+         color = hints[hint]
+      elseif c[hint] then
+         color = c[hint]
+      else
+         error("Unknown hint: " .. hint)
+      end
+      yield_token(str, color)
+      return nil
+   end
+
+   local typica = type(value)
+
+   if typica == "table" then
+      str = anti_G[value] or "t:" .. sub(str, -6)
+      color = c.table
+   elseif typica == "string" then
+      -- Special-case handling of string values for escaping
+      -- and possible quoting
+      yield_token(str, c.string, nil, true)
+      return nil
+   elseif typica == "function" then
+      local f_label = sub(str,11)
+      f_label = sub(f_label,1,5) == "built"
+                and f_label
+                or "f:" .. sub(str, -6)
+      str = anti_G[value] or f_label
+      color = c.func
+   elseif typica == "boolean" then
+      color = value and c.truth or c.falsehood
+   elseif typica == "number" then
+      color = c.number
+   elseif typica == "nil" then
+      color = c.nilness
+   elseif typica == "thread" then
+      str = "coro:" .. (anti_G[value] or sub(str, -6))
+      color = c.thread
+   elseif typica == "userdata" then
+      color = c.userdata
+      if anti_G[value] then
+         str = anti_G[value]
+      else
+         local name_end = find(str, ":")
+         if name_end then
+            str = sub(str, 1, name_end - 1)
+         end
+      end
+   elseif typica == "cdata" then
+      color = c.cdata
+      if anti_G[value] then
+         str = anti_G[value]
+      end
+   end
+   yield_token(str, color)
+end
+
+```
 ### _tabulate(tab, depth, cycle, phrase)
 
 This ``yield()s`` pieces of a table, recursively, one at a time.
@@ -365,12 +436,10 @@ local isarray, table_keys, sort = assert(table.isarray), assert(table.keys), ass
 local function _tabulate(tab, depth, cycle, phrase)
    cycle = cycle or {}
    depth = depth or 0
-   if type(tab) ~= "table" then
-      ts_coro(tab, nil, phrase)
-      return nil
-   end
-   if depth > C.depth or cycle[tab] then
-      ts_coro(tab, "tab_name", phrase)
+   if type(tab) ~= "table"
+      or depth > C.depth
+      or cycle[tab] then
+      yield_name(tab)
       return nil
    end
    cycle[tab] = true
@@ -394,7 +463,7 @@ local function _tabulate(tab, depth, cycle, phrase)
       if cycle[_M] then
          yield_token("⟨", c.metatable)
       end
-      ts_coro(_M, "mt", phrase)
+      yield_name(_M, "mt")
       if cycle[_M] then
          yield_token("⟩ ", c.metatable)
       end
@@ -425,12 +494,12 @@ local function _tabulate(tab, depth, cycle, phrase)
          local val = tab[key]
          if type(key) == "string" and key:find("^[%a_][%a%d_]*$") then
             -- legal identifier, display it as a bareword
-            ts_coro(key, nil, phrase)
+            yield_name(key)
          else
             -- arbitrary string or other type, wrap with braces and repr it
             yield_token("[", c.base)
             -- We want names or hashes for any lvalue table
-            ts_coro(key, type(key) == "table" and "tab_name", phrase)
+            yield_name(key)
             yield_token("]", c.base)
          end
          EQUALS()
@@ -631,7 +700,7 @@ local function lineGen(tab, depth, cycle, disp_width)
          if token.event then
             local event = token.event
             if event == "repr_line" then
-               -- Clear the buffer, if any
+               -- Clear the buffer, if any, then pass along the __repr() output
                local prev = oneLine(phrase, long, true) or ""
                return prev .. token.line
             end
@@ -714,6 +783,7 @@ local function tabulate(tab, depth, cycle, disp_width)
    end
    return concat(phrase, "\n")
 end
+
 ```
 ### cdata pretty-printing
 
@@ -736,85 +806,12 @@ local function c_data(value, str, phrase)
    --[[
    if meta then
       yield(c.base " = ", 3)
-      ts_coro(meta, nil, phrase)
+      yield_name(meta)
    end
    --]]
 end
 ```
-### ts_coro
-
-Lots of small, nice things in this one.
-
 ```lua
-ts_coro = function(value, hint, phrase)
-   local str = tostring(value) or ""
-   local color
-
-   -- For cases more specific than mere type,
-   -- we have hints:
-   if hint then
-      if hint == "tab_name" then
-         str = anti_G[value] or "t:" .. sub(str, -6)
-         color = c.table
-      elseif hint == "mt" then
-         str = anti_G[value] or "⟨" .. "mt:" .. sub(str, -6) .. "⟩"
-         color = c.metatable
-      elseif hints[hint] then
-         color = hints[hint]
-      elseif c[hint] then
-         color = c[hint]
-      else
-         error("Unknown hint: " .. hint)
-      end
-      yield_token(str, color)
-      return nil
-   end
-
-   local typica = type(value)
-
-   if typica == "table" then
-      _tabulate(value, nil, nil, phrase)
-      return nil
-   elseif typica == "string" then
-      -- Special-case handling of string values for escaping
-      -- and possible quoting
-      yield_token(str, c.string, nil, true)
-      return nil
-   elseif typica == "function" then
-      local f_label = sub(str,11)
-      f_label = sub(f_label,1,5) == "built"
-                and f_label
-                or "f:" .. sub(str, -6)
-      str = anti_G[value] or f_label
-      color = c.func
-   elseif typica == "boolean" then
-      color = value and c.truth or c.falsehood
-   elseif typica == "number" then
-      color = c.number
-   elseif typica == "nil" then
-      color = c.nilness
-   elseif typica == "thread" then
-      str = "coro:" .. (anti_G[value] or sub(str, -6))
-      color = c.thread
-   elseif typica == "userdata" then
-      color = c.userdata
-      if anti_G[value] then
-         str = anti_G[value]
-      else
-         local name_end = find(str, ":")
-         if name_end then
-            str = sub(str, 1, name_end - 1)
-         end
-      end
-   elseif typica == "cdata" then
-      color = c.cdata
-      if anti_G[value] then
-         str = anti_G[value]
-      end
-   end
-   yield_token(str, color)
-end
-
 repr.ts = tabulate
 ```
 ```lua
