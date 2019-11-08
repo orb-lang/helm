@@ -406,7 +406,7 @@ local function _tabulate(tab, depth, cycle, phrase)
          _tabulate(_M, depth + 1, cycle, phrase)
          yield_token("⟩ ", c.metatable, "sep")
       else
-         yield_token("  ", c.base, "sep")
+         yield_token(" ", c.base, "sep")
       end
    end
 
@@ -499,7 +499,7 @@ end
 
 local MIN_SPLIT_WIDTH = 20
 
-local function oneLine(phrase, long)
+local function oneLine(phrase, long, force)
    local line = { make_token(("  "):rep(phrase.level), c.base, "indent") }
    local new_level = phrase.level
    if #phrase == 0 then
@@ -521,7 +521,13 @@ local function oneLine(phrase, long)
       -- If we are in long mode, remove the trailing space from a comma
       -- Note that in this case we are *certain* that the comma will fit,
       -- since it is only one character and we otherwise reserve one space
-      -- for a possible ~
+      -- for a possible ~. Thus we can skip the check for needing to split
+      -- this token, allowing a comma to fit at the very end of a line that
+      -- exactly fills the screen.
+
+      -- This is fragile (what if a separator has more than one non-space
+      -- character?). What we should really do is still perform the overflow
+      -- check, but modify it to use > instead of >= if we are at a separator
       if token.event == "sep" and long then
          remove(token)
          token.total_disp = token.total_disp - remove(token.disps)
@@ -555,8 +561,9 @@ local function oneLine(phrase, long)
       end
       -- If we are in long mode and hit a comma
       if (token.event == "sep" and long)
-         -- Or we are at the very end of the stream
-         or (#phrase == 0 and not phrase.more)
+         -- Or we are at the very end of the stream,
+         -- or have been told to produce a line no matter what
+         or (#phrase == 0 and (force or not phrase.more))
          -- Or we just needed to chop & wrap a token
          or (token.wrap_part == "first") then
          for i, frag in ipairs(line) do
@@ -624,8 +631,9 @@ local function lineGen(tab, depth, cycle, disp_width)
          if token.event then
             local event = token.event
             if event == "repr_line" then
-               -- send directly without adding to the phrase
-               return token.line
+               -- Clear the buffer, if any
+               local prev = oneLine(phrase, long, true) or ""
+               return prev .. token.line
             end
             if event == "array" or event == "map" then
                insert(stage, event)

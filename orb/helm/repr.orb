@@ -503,7 +503,7 @@ end
 
 local MIN_SPLIT_WIDTH = 20
 
-local function oneLine(phrase, long)
+local function oneLine(phrase, long, force)
    local line = { make_token(("  "):rep(phrase.level), c.base, "indent") }
    local new_level = phrase.level
    if #phrase == 0 then
@@ -565,8 +565,9 @@ local function oneLine(phrase, long)
       end
       -- If we are in long mode and hit a comma
       if (token.event == "sep" and long)
-         -- Or we are at the very end of the stream
-         or (#phrase == 0 and not phrase.more)
+         -- Or we are at the very end of the stream,
+         -- or have been told to produce a line no matter what
+         or (#phrase == 0 and (force or not phrase.more))
          -- Or we just needed to chop & wrap a token
          or (token.wrap_part == "first") then
          for i, frag in ipairs(line) do
@@ -636,8 +637,9 @@ local function lineGen(tab, depth, cycle, disp_width)
          if token.event then
             local event = token.event
             if event == "repr_line" then
-               -- send directly without adding to the phrase
-               return token.line
+               -- Clear the buffer, if any, then pass along the __repr() output
+               local prev = oneLine(phrase, long, true) or ""
+               return prev .. token.line
             end
             if event == "array" or event == "map" then
                insert(stage, event)
