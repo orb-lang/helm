@@ -382,19 +382,33 @@ local function _tabulate(tab, depth, cycle, phrase)
       return nil
    end
 
-   -- if we have a metatable, get it first
-   local _M = getmetatable(tab)
-   if _M then
-      ts_coro(_M, "mt", phrase)
-      EQUALS()
-      _tabulate(_M, depth + 1, cycle, phrase)
-   end
-
    -- Okay, we're repring the body of a table of some kind
    -- Check to see if this is an array
    local is_array = isarray(tab)
    -- And print an open brace
    O_BRACE(is_array and "array" or "map")
+
+   -- if we have a metatable, get it first
+   local _M = getmetatable(tab)
+   if _M then
+      if cycle[_M] then
+         yield_token("⟨", c.metatable)
+      end
+      ts_coro(_M, "mt", phrase)
+      if cycle[_M] then
+         yield_token("⟩ ", c.metatable)
+      end
+      -- Skip printing the metatable altogether if it's going to end up
+      -- represented by its name, since we just printed that.
+      if depth < C.depth and not cycle[_M] then
+         yield_token(" → ", c.base)
+         yield_token("⟨", c.metatable)
+         _tabulate(_M, depth + 1, cycle, phrase)
+         yield_token("⟩ ", c.metatable, "sep")
+      else
+         yield_token("  ", c.base, "sep")
+      end
+   end
 
    if is_array then
       for i, val in ipairs(tab) do
@@ -735,8 +749,7 @@ ts_coro = function(value, hint, phrase)
          str = anti_G[value] or "t:" .. sub(str, -6)
          color = c.table
       elseif hint == "mt" then
-         local mt_name = anti_G[value] or "mt:" .. sub(str, -6)
-         str = "⟨" .. mt_name .. "⟩"
+         str = anti_G[value] or "⟨" .. "mt:" .. sub(str, -6) .. "⟩"
          color = c.metatable
       elseif hints[hint] then
          color = hints[hint]
