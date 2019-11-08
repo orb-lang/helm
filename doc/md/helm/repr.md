@@ -421,7 +421,7 @@ local function yield_name(value, hint)
 end
 
 ```
-### _tabulate(tab, depth, cycle, phrase)
+### tabulate(tab, depth, cycle, phrase)
 
 This ``yield()s`` pieces of a table, recursively, one at a time.
 
@@ -433,7 +433,7 @@ local function EQUALS()       yield_token(" = ", c.base)       end
 
 local isarray, table_keys, sort = assert(table.isarray), assert(table.keys), assert(table.sort)
 
-local function _tabulate(tab, depth, cycle, phrase)
+local function tabulate(tab, depth, cycle, phrase)
    cycle = cycle or {}
    depth = depth or 0
    if type(tab) ~= "table"
@@ -472,7 +472,7 @@ local function _tabulate(tab, depth, cycle, phrase)
       if depth < C.depth and not cycle[_M] then
          yield_token(" → ", c.base)
          yield_token("⟨", c.metatable)
-         _tabulate(_M, depth + 1, cycle, phrase)
+         tabulate(_M, depth + 1, cycle, phrase)
          yield_token("⟩ ", c.metatable, "sep")
       else
          yield_token(" ", c.base, "sep")
@@ -482,7 +482,7 @@ local function _tabulate(tab, depth, cycle, phrase)
    if is_array then
       for i, val in ipairs(tab) do
          if i ~= 1 then COMMA() end
-         _tabulate(val, depth + 1, cycle, phrase)
+         tabulate(val, depth + 1, cycle, phrase)
       end
    else
       local keys = table_keys(tab)
@@ -503,7 +503,7 @@ local function _tabulate(tab, depth, cycle, phrase)
             yield_token("]", c.base)
          end
          EQUALS()
-         _tabulate(val, depth + 1, cycle, phrase)
+         tabulate(val, depth + 1, cycle, phrase)
       end
    end
    C_BRACE()
@@ -674,7 +674,7 @@ local function lineGen(tab, depth, cycle, disp_width)
    -- make a read-only phrase table for fetching values
    local phrase_ro = readOnly(phrase)
    local iter = wrap(function()
-      local success, result = pcall(_tabulate, tab, depth, cycle, phrase_ro)
+      local success, result = pcall(tabulate, tab, depth, cycle, phrase_ro)
       if not success then
          local err_lines = collect(lines, tostring(result))
          err_lines[1] = "error in __repr: " .. err_lines[1]
@@ -775,7 +775,7 @@ function repr.lineGenBW(tab, disp_width)
 end
 ```
 ```lua
-local function tabulate(tab, depth, cycle, disp_width)
+function repr.ts(tab, depth, cycle, disp_width)
    disp_width = disp_width or 80
    local phrase = {}
    for line in lineGen(tab, depth, cycle, disp_width) do
@@ -810,9 +810,6 @@ local function c_data(value, str, phrase)
    end
    --]]
 end
-```
-```lua
-repr.ts = tabulate
 ```
 ```lua
 return repr
