@@ -197,7 +197,7 @@ local function _yieldReprs(tab, phrase)
    else
       yielder = repr
    end
-   while true and type(yielder) == 'function' do
+   while type(yielder) == 'function' do
       local line, len = yielder()
       if line ~= nil then
          len = len or #line
@@ -381,7 +381,6 @@ local function _tabulate(tab, depth, cycle, phrase)
       ts_coro(tab, "tab_name", phrase)
       return nil
    end
-   cycle[tab] = true
    -- __repr gets special treatment:
    -- We want to use the __repr method if and only if it is on the
    -- metatable.
@@ -389,6 +388,8 @@ local function _tabulate(tab, depth, cycle, phrase)
       _yieldReprs(tab, phrase)
       return nil
    end
+   -- add non-__repr'ed tables to cycle
+   cycle[tab] = true
 
    -- Okay, we're repring the body of a table of some kind
    -- Check to see if this is an array
@@ -637,7 +638,7 @@ local function lineGen(tab, depth, cycle, disp_width)
          if token.event then
             local event = token.event
             if event == "repr_line" then
-               -- Clear the buffer, if any
+               -- Clear the buffer, if any, then pass along the __repr() output
                local prev = oneLine(phrase, long, true) or ""
                return prev .. token.line
             end
