@@ -30,7 +30,6 @@ local repr = {}
 
 local hints = C.color.hints
 
-local c = C.color
 ```
 ### anti_G
 
@@ -135,7 +134,6 @@ This is fundamentally [[Tim Caswell's][https://github.com/creationix]] code.
 I've dressed it up a bit. Okay, a lot.
 
 ```lua
-local ts, ts_coro
 
 local SORT_LIMIT = 500  -- This won't be necessary #todo remove
 
@@ -160,7 +158,7 @@ local function _keysort(a, b)
    end
 end
 ```
-### _yieldReprs(tab, disp)
+### _yieldReprs(tab, phrase, c)
 
 I want to deliver ``__repr``s from inside the funky coroutine brew,
 because, well, because. ``ts`` is meant to be general.
@@ -181,7 +179,7 @@ incredibly intricate repl.
 local hasmetamethod = assert(core.hasmetamethod)
 local lines = assert(string.lines)
 
-local function _yieldReprs(tab, phrase)
+local function _yieldReprs(tab, phrase, c)
    local _repr = hasmetamethod("repr", tab)
    assert(c, "must have a value for c")
    assert(_repr, "failed to retrieve repr metamethod")
@@ -350,7 +348,86 @@ local function split_token(token, max_disp)
 end
 
 ```
-### _tabulate(tab, depth, cycle, phrase)
+### name_for(value, hint)
+
+Generates a simple, name-like representation of ``value``. For simple types
+(strings, numbers, booleans, nil) this is the stringified value itself.
+For tables, functions, etc. attempts to retrieve a name from anti_G, falling
+back to generating a name from the hash if none is found.
+
+
+Lots of small, nice things in this one.
+
+```lua
+local function name_for(value, c, hint)
+   local str = tostring(value) or ""
+   local color
+
+   -- For cases more specific than mere type,
+   -- we have hints:
+   if hint then
+      if hint == "mt" then
+         str = anti_G[value] or "⟨" .. "mt:" .. sub(str, -6) .. "⟩"
+         color = c.metatable
+      elseif hints[hint] then
+         color = hints[hint]
+      elseif c[hint] then
+         color = c[hint]
+      else
+         error("Unknown hint: " .. hint)
+      end
+      return make_token(str, color)
+   end
+
+   local typica = type(value)
+
+   if typica == "table" then
+      str = anti_G[value] or "t:" .. sub(str, -6)
+      color = c.table
+   elseif typica == "string" then
+      -- Special-case handling of string values for escaping
+      -- and possible quoting
+      return make_token(str, c.string, nil, true)
+   elseif typica == "function" then
+      color = c.func
+      if anti_G[value] then
+         str = anti_G[value]
+      else
+         local f_label = sub(str,11)
+         str = sub(f_label,1,5) == "built"
+                   and f_label
+                   or "f:" .. sub(str, -6)
+      end
+   elseif typica == "boolean" then
+      color = value and c.truth or c.falsehood
+   elseif typica == "number" then
+      color = c.number
+   elseif typica == "nil" then
+      color = c.nilness
+   elseif typica == "thread" then
+      str = "coro:" .. (anti_G[value] or sub(str, -6))
+      color = c.thread
+   elseif typica == "userdata" then
+      color = c.userdata
+      if anti_G[value] then
+         str = anti_G[value]
+      else
+         local name_end = find(str, ":")
+         if name_end then
+            str = sub(str, 1, name_end - 1)
+         end
+      end
+   elseif typica == "cdata" then
+      color = c.cdata
+      if anti_G[value] then
+         str = anti_G[value]
+      end
+   end
+   return make_token(str, color)
+end
+
+```
+### tabulate(tab, phrase, c, depth, cycle)
 
 This ``yield()s`` pieces of a table, recursively, one at a time.
 
@@ -360,24 +437,26 @@ local function C_BRACE()      yield_token(" }", c.base, "end") end
 local function COMMA()        yield_token(", ", c.base, "sep") end
 local function EQUALS()       yield_token(" = ", c.base)       end
 
-local isarray, table_keys, sort = assert(table.isarray), assert(table.keys), assert(table.sort)
+local function yield_name(...) yield(name_for(...)) end
 
-local function _tabulate(tab, depth, cycle, phrase)
+local isarray, table_keys, sort = assert(table.isarray),
+                                  assert(table.keys),
+                                  assert(table.sort)
+
+local function tabulate(tab, phrase, c, depth, cycle)
    cycle = cycle or {}
    depth = depth or 0
-   if type(tab) ~= "table" then
-      ts_coro(tab, nil, phrase)
-      return nil
-   end
-   if depth > C.depth or cycle[tab] then
-      ts_coro(tab, "tab_name", phrase)
+   if type(tab) ~= "table"
+      or depth > C.depth
+      or cycle[tab] then
+      yield_name(tab, c)
       return nil
    end
    -- __repr gets special treatment:
    -- We want to use the __repr method if and only if it is on the
    -- metatable.
    if hasmetamethod("repr", tab) and (not rawget(tab, "__repr")) then
-      _yieldReprs(tab, phrase)
+      _yieldReprs(tab, phrase, c)
       return nil
    end
    -- add non-__repr'ed tables to cycle
@@ -395,7 +474,7 @@ local function _tabulate(tab, depth, cycle, phrase)
       if cycle[_M] then
          yield_token("⟨", c.metatable)
       end
-      ts_coro(_M, "mt", phrase)
+      yield_name(_M, c, "mt")
       if cycle[_M] then
          yield_token("⟩ ", c.metatable)
       end
@@ -404,7 +483,7 @@ local function _tabulate(tab, depth, cycle, phrase)
       if depth < C.depth and not cycle[_M] then
          yield_token(" → ", c.base)
          yield_token("⟨", c.metatable)
-         _tabulate(_M, depth + 1, cycle, phrase)
+         tabulate(_M, phrase, c, depth + 1, cycle)
          yield_token("⟩ ", c.metatable, "sep")
       else
          yield_token(" ", c.base, "sep")
@@ -414,7 +493,7 @@ local function _tabulate(tab, depth, cycle, phrase)
    if is_array then
       for i, val in ipairs(tab) do
          if i ~= 1 then COMMA() end
-         _tabulate(val, depth + 1, cycle, phrase)
+         tabulate(val, phrase, c, depth + 1, cycle)
       end
    else
       local keys = table_keys(tab)
@@ -426,57 +505,28 @@ local function _tabulate(tab, depth, cycle, phrase)
          local val = tab[key]
          if type(key) == "string" and key:find("^[%a_][%a%d_]*$") then
             -- legal identifier, display it as a bareword
-            ts_coro(key, nil, phrase)
+            yield_name(key, c)
          else
             -- arbitrary string or other type, wrap with braces and repr it
             yield_token("[", c.base)
             -- We want names or hashes for any lvalue table
-            ts_coro(key, type(key) == "table" and "tab_name", phrase)
+            yield_name(key, c)
             yield_token("]", c.base)
          end
          EQUALS()
-         _tabulate(val, depth + 1, cycle, phrase)
+         tabulate(val, phrase, c, depth + 1, cycle)
       end
    end
    C_BRACE()
    return nil
 end
 ```
-
-line-buffer goes here
-
-
-needs to decide when things are 'wide enough' so each yield needs to return
-``str, len, done``, where ``str`` is the fragment of string, ``len`` is a number
-representing its printable width (don't @ me) and ``done`` is a boolean for if
-this is the last bit of the repr of a given thing. Table, userdata, what
-have you.
-
-
-### tabulate(tab, depth, cycle)
-
-This is going to undergo several metamorpheses as we make progress.
-
-
-For now, we have the ``_tabulate`` function yielding pieces of a table as it
-generates them, as well as the printed length (not valid across all Unicode,
-but let's shave one yak at a time, shall we?).
-
-
-Now for the real fun: we need to keep track of indentation levels, and break
-'long' maps and arrays up into chunks.
-
-
-We're yielding a "map" string for k/v type tables and an "array" string for
-array-type, and just "end" for the end of either.  What we need is a classic
-push-down automaton, and some kind of buffer that's more sophisticated than
-just tossing everything into a ``phrase`` table.
-
-
-#### oneLine(phrase, long)
+#### oneLine(phrase, c, long, force)
 
 Returns one line from ``phrase``. ``long`` determines whether we're doing long
 lines or short lines, which is determined by ``lineGen``, the caller.
+``force`` tells us that we should return a line even if we are not at a separator
+or end-of-stream--used to clear the buffer when we hit a line from __repr.
 
 ```lua
 local function _disp(phrase)
@@ -500,7 +550,7 @@ end
 
 local MIN_SPLIT_WIDTH = 20
 
-local function oneLine(phrase, long, force)
+local function oneLine(phrase, c, long, force)
    local line = { make_token(("  "):rep(phrase.level), c.base, "indent") }
    local new_level = phrase.level
    if #phrase == 0 then
@@ -579,7 +629,7 @@ local function oneLine(phrase, long, force)
    end
 end
 ```
-#### lineGen
+#### lineGen(tab, disp_width)
 
 This function sets up an iterator, which returns one line at a time of the
 table.
@@ -592,7 +642,7 @@ local function _remains(phrase)
    return phrase.width - _disp(phrase)
 end
 
-local function lineGen(tab, depth, cycle, disp_width)
+local function lineGen(tab, c, disp_width)
    assert(disp_width, "lineGen must have a disp_width")
    local stage = {}              -- stage stack
    local phrase = {
@@ -606,7 +656,7 @@ local function lineGen(tab, depth, cycle, disp_width)
    -- make a read-only phrase table for fetching values
    local phrase_ro = readOnly(phrase)
    local iter = wrap(function()
-      local success, result = pcall(_tabulate, tab, depth, cycle, phrase_ro)
+      local success, result = pcall(tabulate, tab, phrase_ro, c)
       if not success then
          local err_lines = collect(lines, tostring(result))
          err_lines[1] = "error in __repr: " .. err_lines[1]
@@ -633,7 +683,7 @@ local function lineGen(tab, depth, cycle, disp_width)
             local event = token.event
             if event == "repr_line" then
                -- Clear the buffer, if any, then pass along the __repr() output
-               local prev = oneLine(phrase, long, true) or ""
+               local prev = oneLine(phrase, c, long, true) or ""
                return prev .. token.line
             end
             if event == "array" or event == "map" then
@@ -653,7 +703,7 @@ local function lineGen(tab, depth, cycle, disp_width)
          end
       end
       if #phrase > 0 then
-            local ln = oneLine(phrase, long)
+            local ln = oneLine(phrase, c, long)
          if ln then
             return ln
          else
@@ -668,53 +718,39 @@ local function lineGen(tab, depth, cycle, disp_width)
       end
 end
 
-function repr.lineGen(tab, disp)
-   disp = disp or 80
-   return lineGen(tab, nil, nil, disp)
-end
 ```
-### repr.lineGenBW(tab, depth, cycle, disp_width)
+### repr.lineGen(tab, disp_width), repr.lineGenBW(tab, disp_width)
 
-This generates lines, but with no color.
-
-
-To keep it from interfering with other uses of the ``repr`` library, we turn
-color off and back on with each line.
-
-
-Global state is annoying!
-
-
-I mean, module-local global.
-
-
-But still.
+Public facades for ``lineGen``, supplying the appropriate color table
+and a default width.
 
 ```lua
+
+function repr.lineGen(tab, disp_width)
+   disp_width = disp_width or 80
+   return lineGen(tab, C.color, disp_width)
+end
+
 function repr.lineGenBW(tab, disp_width)
    disp_width = disp_width or 80
-   local lg = lineGen(tab, nil, nil, disp_width)
-   return function()
-      c = C.no_color
-      local line = lg()
-      if line ~= nil then
-         c = C.color
-         return line
-      end
-      c = C.color
-      return nil
-   end
+   return lineGen(tab, C.no_color, disp_width)
 end
+
 ```
+### repr.ts(tab, disp_width)
+
+Returns a single string rather than an iterator of lines. Largely deprecated
+in favor of ``lineGen``, but available for simple use-cases.
+
 ```lua
-local function tabulate(tab, depth, cycle, disp_width)
-   disp_width = disp_width or 80
+function repr.ts(tab, disp_width)
    local phrase = {}
-   for line in lineGen(tab, depth, cycle, disp_width) do
+   for line in repr.lineGen(tab, disp_width) do
       phrase[#phrase + 1] = line
    end
    return concat(phrase, "\n")
 end
+
 ```
 ### cdata pretty-printing
 
@@ -737,86 +773,10 @@ local function c_data(value, str, phrase)
    --[[
    if meta then
       yield(c.base " = ", 3)
-      ts_coro(meta, nil, phrase)
+      yield_name(meta)
    end
    --]]
 end
-```
-### ts_coro
-
-Lots of small, nice things in this one.
-
-```lua
-ts_coro = function(value, hint, phrase)
-   local str = tostring(value) or ""
-   local color
-
-   -- For cases more specific than mere type,
-   -- we have hints:
-   if hint then
-      if hint == "tab_name" then
-         str = anti_G[value] or "t:" .. sub(str, -6)
-         color = c.table
-      elseif hint == "mt" then
-         str = anti_G[value] or "⟨" .. "mt:" .. sub(str, -6) .. "⟩"
-         color = c.metatable
-      elseif hints[hint] then
-         color = hints[hint]
-      elseif c[hint] then
-         color = c[hint]
-      else
-         error("Unknown hint: " .. hint)
-      end
-      yield_token(str, color)
-      return nil
-   end
-
-   local typica = type(value)
-
-   if typica == "table" then
-      _tabulate(value, nil, nil, phrase)
-      return nil
-   elseif typica == "string" then
-      -- Special-case handling of string values for escaping
-      -- and possible quoting
-      yield_token(str, c.string, nil, true)
-      return nil
-   elseif typica == "function" then
-      local f_label = sub(str,11)
-      f_label = sub(f_label,1,5) == "built"
-                and f_label
-                or "f:" .. sub(str, -6)
-      str = anti_G[value] or f_label
-      color = c.func
-   elseif typica == "boolean" then
-      color = value and c.truth or c.falsehood
-   elseif typica == "number" then
-      color = c.number
-   elseif typica == "nil" then
-      color = c.nilness
-   elseif typica == "thread" then
-      str = "coro:" .. (anti_G[value] or sub(str, -6))
-      color = c.thread
-   elseif typica == "userdata" then
-      color = c.userdata
-      if anti_G[value] then
-         str = anti_G[value]
-      else
-         local name_end = find(str, ":")
-         if name_end then
-            str = sub(str, 1, name_end - 1)
-         end
-      end
-   elseif typica == "cdata" then
-      color = c.cdata
-      if anti_G[value] then
-         str = anti_G[value]
-      end
-   end
-   yield_token(str, color)
-end
-
-repr.ts = tabulate
 ```
 ```lua
 return repr
