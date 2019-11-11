@@ -384,7 +384,7 @@ local function name_for(value, hint)
       else
          error("Unknown hint: " .. hint)
       end
-      return Token(str, color)
+      return make_token(str, color)
    end
 
    local typica = type(value)
@@ -395,7 +395,7 @@ local function name_for(value, hint)
    elseif typica == "string" then
       -- Special-case handling of string values for escaping
       -- and possible quoting
-      return Token(str, c.string, nil, true)
+      return make_token(str, c.string, nil, true)
    elseif typica == "function" then
       color = c.func
       if anti_G[value] then
@@ -431,7 +431,7 @@ local function name_for(value, hint)
          str = anti_G[value]
       end
    end
-   return Token(str, color)
+   return make_token(str, color)
 end
 
 
@@ -728,7 +728,7 @@ local function lineGen(tab, disp_width)
 end
 
 function repr.lineGen(tab, disp_width)
-   disp = disp or 80
+   disp_width = disp_width or 80
    return lineGen(tab, disp_width)
 end
 
