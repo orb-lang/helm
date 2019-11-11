@@ -99,8 +99,7 @@ assert(write, "must have write in _G")
 
 
 
-local color     = require "singletons/color"
-c = color.color
+local c = (require "singletons/color").color
 
 local Txtbuf     = require "helm/txtbuf"
 local Resbuf     = require "helm/resbuf" -- Not currently used...

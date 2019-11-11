@@ -99,8 +99,7 @@ The easiest way to go mad in concurrent environments is to share memory.
 =modeselektor= will own txtbuf, historian, and the entire screen.
 
 #!lua
-local color     = require "singletons/color"
-c = color.color
+local c = (require "singletons/color").color
 
 local Txtbuf     = require "helm/txtbuf"
 local Resbuf     = require "helm/resbuf" -- Not currently used...

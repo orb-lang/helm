@@ -291,13 +291,13 @@ local function yield_token(...)
 end
 
 ```
-### token_tostring(token)
+### token_tostring(token, c)
 
 Flattens a token structure back down to a simple string, including coloring sequences.
 
 ```lua
 
-local function token_tostring(token)
+local function token_tostring(token, c)
    local output = {}
    for i, frag in ipairs(token) do
       if token.escapes[frag] then
@@ -432,11 +432,6 @@ end
 This ``yield()s`` pieces of a table, recursively, one at a time.
 
 ```lua
-local function O_BRACE(event) yield_token("{ ", c.base, event) end
-local function C_BRACE()      yield_token(" }", c.base, "end") end
-local function COMMA()        yield_token(", ", c.base, "sep") end
-local function EQUALS()       yield_token(" = ", c.base)       end
-
 local function yield_name(...) yield(name_for(...)) end
 
 local isarray, table_keys, sort = assert(table.isarray),
@@ -466,7 +461,7 @@ local function tabulate(tab, phrase, c, depth, cycle)
    -- Check to see if this is an array
    local is_array = isarray(tab)
    -- And print an open brace
-   O_BRACE(is_array and "array" or "map")
+   yield_token("{ ", c.base, is_array and "array" or "map")
 
    -- if we have a metatable, get it first
    local _M = getmetatable(tab)
@@ -492,7 +487,7 @@ local function tabulate(tab, phrase, c, depth, cycle)
 
    if is_array then
       for i, val in ipairs(tab) do
-         if i ~= 1 then COMMA() end
+         if i ~= 1 then yield_token(", ", c.base, "sep") end
          tabulate(val, phrase, c, depth + 1, cycle)
       end
    else
@@ -501,7 +496,7 @@ local function tabulate(tab, phrase, c, depth, cycle)
          sort(keys, _keysort)
       end
       for i, key in ipairs(keys) do
-         if i ~= 1 then COMMA() end
+         if i ~= 1 then yield_token(", ", c.base, "sep") end
          local val = tab[key]
          if type(key) == "string" and key:find("^[%a_][%a%d_]*$") then
             -- legal identifier, display it as a bareword
@@ -513,11 +508,11 @@ local function tabulate(tab, phrase, c, depth, cycle)
             yield_name(key, c)
             yield_token("]", c.base)
          end
-         EQUALS()
+         yield_token(" = ", c.base)
          tabulate(val, phrase, c, depth + 1, cycle)
       end
    end
-   C_BRACE()
+   yield_token(" }", c.base, "end")
    return nil
 end
 ```
@@ -618,7 +613,7 @@ local function oneLine(phrase, c, long, force)
          -- Or we just needed to chop & wrap a token
          or (token.wrap_part == "first") then
          for i, frag in ipairs(line) do
-            line[i] = token_tostring(frag)
+            line[i] = token_tostring(frag, c)
          end
          phrase.level = new_level
          return concat(line)
