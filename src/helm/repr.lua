@@ -536,32 +536,6 @@ end
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 local function _disp(phrase)
    local displacement = 0
    for _, token in ipairs(phrase) do

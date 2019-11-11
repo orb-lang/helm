@@ -521,37 +521,6 @@ local function tabulate(tab, phrase, depth, cycle)
    return nil
 end
 ```
-
-line-buffer goes here
-
-
-needs to decide when things are 'wide enough' so each yield needs to return
-``str, len, done``, where ``str`` is the fragment of string, ``len`` is a number
-representing its printable width (don't @ me) and ``done`` is a boolean for if
-this is the last bit of the repr of a given thing. Table, userdata, what
-have you.
-
-
-### tabulate(tab, depth, cycle)
-
-This is going to undergo several metamorpheses as we make progress.
-
-
-For now, we have the ``_tabulate`` function yielding pieces of a table as it
-generates them, as well as the printed length (not valid across all Unicode,
-but let's shave one yak at a time, shall we?).
-
-
-Now for the real fun: we need to keep track of indentation levels, and break
-'long' maps and arrays up into chunks.
-
-
-We're yielding a "map" string for k/v type tables and an "array" string for
-array-type, and just "end" for the end of either.  What we need is a classic
-push-down automaton, and some kind of buffer that's more sophisticated than
-just tossing everything into a ``phrase`` table.
-
-
 #### oneLine(phrase, long)
 
 Returns one line from ``phrase``. ``long`` determines whether we're doing long
