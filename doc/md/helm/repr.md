@@ -291,13 +291,13 @@ local function yield_token(...)
 end
 
 ```
-### token_tostring(token)
+### token_tostring(token, c)
 
 Flattens a token structure back down to a simple string, including coloring sequences.
 
 ```lua
 
-local function token_tostring(token)
+local function token_tostring(token, c)
    local output = {}
    for i, frag in ipairs(token) do
       if token.escapes[frag] then
@@ -618,7 +618,7 @@ local function oneLine(phrase, c, long, force)
          -- Or we just needed to chop & wrap a token
          or (token.wrap_part == "first") then
          for i, frag in ipairs(line) do
-            line[i] = token_tostring(frag)
+            line[i] = token_tostring(frag, c)
          end
          phrase.level = new_level
          return concat(line)
