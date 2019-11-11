@@ -428,7 +428,7 @@ local function name_for(value, hint)
 end
 
 ```
-### tabulate(tab, depth, cycle, phrase)
+### tabulate(tab, phrase, depth, cycle)
 
 This ``yield()s`` pieces of a table, recursively, one at a time.
 
@@ -444,7 +444,7 @@ local isarray, table_keys, sort = assert(table.isarray),
                                   assert(table.keys),
                                   assert(table.sort)
 
-local function tabulate(tab, depth, cycle, phrase)
+local function tabulate(tab, phrase, depth, cycle)
    cycle = cycle or {}
    depth = depth or 0
    if type(tab) ~= "table"
@@ -483,7 +483,7 @@ local function tabulate(tab, depth, cycle, phrase)
       if depth < C.depth and not cycle[_M] then
          yield_token(" → ", c.base)
          yield_token("⟨", c.metatable)
-         tabulate(_M, depth + 1, cycle, phrase)
+         tabulate(_M, phrase, depth + 1, cycle)
          yield_token("⟩ ", c.metatable, "sep")
       else
          yield_token(" ", c.base, "sep")
@@ -493,7 +493,7 @@ local function tabulate(tab, depth, cycle, phrase)
    if is_array then
       for i, val in ipairs(tab) do
          if i ~= 1 then COMMA() end
-         tabulate(val, depth + 1, cycle, phrase)
+         tabulate(val, phrase, depth + 1, cycle)
       end
    else
       local keys = table_keys(tab)
@@ -514,7 +514,7 @@ local function tabulate(tab, depth, cycle, phrase)
             yield_token("]", c.base)
          end
          EQUALS()
-         tabulate(val, depth + 1, cycle, phrase)
+         tabulate(val, phrase, depth + 1, cycle)
       end
    end
    C_BRACE()
@@ -658,7 +658,7 @@ local function oneLine(phrase, long, force)
    end
 end
 ```
-#### lineGen
+#### lineGen(tab, disp_width)
 
 This function sets up an iterator, which returns one line at a time of the
 table.
@@ -671,7 +671,7 @@ local function _remains(phrase)
    return phrase.width - _disp(phrase)
 end
 
-local function lineGen(tab, depth, cycle, disp_width)
+local function lineGen(tab, disp_width)
    assert(disp_width, "lineGen must have a disp_width")
    local stage = {}              -- stage stack
    local phrase = {
@@ -685,7 +685,7 @@ local function lineGen(tab, depth, cycle, disp_width)
    -- make a read-only phrase table for fetching values
    local phrase_ro = readOnly(phrase)
    local iter = wrap(function()
-      local success, result = pcall(tabulate, tab, depth, cycle, phrase_ro)
+      local success, result = pcall(tabulate, tab, phrase_ro)
       if not success then
          local err_lines = collect(lines, tostring(result))
          err_lines[1] = "error in __repr: " .. err_lines[1]
@@ -747,12 +747,12 @@ local function lineGen(tab, depth, cycle, disp_width)
       end
 end
 
-function repr.lineGen(tab, disp)
+function repr.lineGen(tab, disp_width)
    disp = disp or 80
-   return lineGen(tab, nil, nil, disp)
+   return lineGen(tab, disp_width)
 end
 ```
-### repr.lineGenBW(tab, depth, cycle, disp_width)
+### repr.lineGenBW(tab, disp_width)
 
 This generates lines, but with no color.
 
@@ -772,7 +772,7 @@ But still.
 ```lua
 function repr.lineGenBW(tab, disp_width)
    disp_width = disp_width or 80
-   local lg = lineGen(tab, nil, nil, disp_width)
+   local lg = lineGen(tab, disp_width)
    return function()
       c = C.no_color
       local line = lg()
@@ -786,10 +786,10 @@ function repr.lineGenBW(tab, disp_width)
 end
 ```
 ```lua
-function repr.ts(tab, depth, cycle, disp_width)
+function repr.ts(tab, disp_width)
    disp_width = disp_width or 80
    local phrase = {}
-   for line in lineGen(tab, depth, cycle, disp_width) do
+   for line in lineGen(tab, disp_width) do
       phrase[#phrase + 1] = line
    end
    return concat(phrase, "\n")
