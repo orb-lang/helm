@@ -30,7 +30,7 @@ function Resbuf.ts(resbuf)
    return res_map
 end
 
-function new(results, frozen)
+local function new(results, frozen)
    local resbuf = meta(Resbuf)
    if frozen then resbuf.frozen = true end
    for k, v in pairs(results) do
