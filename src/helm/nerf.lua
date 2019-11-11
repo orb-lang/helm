@@ -54,11 +54,11 @@ local NYI    = {}
 
 
 
-Nerf = { ASCII  = ASCII,
-                NAV    = NAV,
-                CTRL   = CTRL,
-                ALT    = ALT,
-                NYI    = NYI }
+local Nerf = { ASCII  = ASCII,
+               NAV    = NAV,
+               CTRL   = CTRL,
+               ALT    = ALT,
+               NYI    = NYI }
 
 
 

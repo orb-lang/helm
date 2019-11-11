@@ -84,7 +84,7 @@ local Rainbuf = meta {}
 local lines = assert(string.lines)
 
 function Rainbuf.lineGen(rainbuf, rows, cols)
-   offset = rainbuf.offset or 0
+   local offset = rainbuf.offset or 0
    cols = cols or 80
    if rainbuf.live then
       -- this buffer needs a fresh render each time

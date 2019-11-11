@@ -98,14 +98,14 @@ local Zoneherd = meta {}
 
 
 
-function _inside(col, row, zone)
+local function _inside(col, row, zone)
    return (col >= zone.tc)
      and  (col <= zone.bc)
      and  (row >= zone.tr)
      and  (row <= zone.br)
 end
 
-function _collide(z_a, z_b)
+local function _collide(z_a, z_b)
    if z_a.z ~= z_b.z then
       -- this is just 'false' but let's refactor that when it's time
       return {false, false, false, false}, false, {false, false}

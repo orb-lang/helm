@@ -682,7 +682,7 @@ end
 
 
 ```lua
-function new(max_col, max_row)
+local function new(max_col, max_row)
   local modeS = meta(ModeS)
   modeS.txtbuf = Txtbuf()
   modeS.hist  = Historian()

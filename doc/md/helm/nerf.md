@@ -54,11 +54,11 @@ local NYI    = {}
 While we will likely want a metatable going forward, this will do for now:
 
 ```lua
-Nerf = { ASCII  = ASCII,
-                NAV    = NAV,
-                CTRL   = CTRL,
-                ALT    = ALT,
-                NYI    = NYI }
+local Nerf = { ASCII  = ASCII,
+               NAV    = NAV,
+               CTRL   = CTRL,
+               ALT    = ALT,
+               NYI    = NYI }
 ```
 ### NAV
 
