@@ -190,7 +190,7 @@ local function _yieldReprs(tab, phrase, c)
    else
       yielder = repr
    end
-   while true and type(yielder) == 'function' do
+   while type(yielder) == 'function' do
       local line, len = yielder()
       if line ~= nil then
          len = len or #line
@@ -452,7 +452,6 @@ local function tabulate(tab, phrase, c, depth, cycle)
       yield_name(tab, c)
       return nil
    end
-   cycle[tab] = true
    -- __repr gets special treatment:
    -- We want to use the __repr method if and only if it is on the
    -- metatable.
@@ -460,6 +459,8 @@ local function tabulate(tab, phrase, c, depth, cycle)
       _yieldReprs(tab, phrase, c)
       return nil
    end
+   -- add non-__repr'ed tables to cycle
+   cycle[tab] = true
 
    -- Okay, we're repring the body of a table of some kind
    -- Check to see if this is an array
