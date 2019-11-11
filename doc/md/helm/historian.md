@@ -23,7 +23,7 @@ local sql     = assert(sql, "sql must be in bridge _G")
 
 local Txtbuf  = require "helm/txtbuf"
 local Rainbuf = require "helm/rainbuf"
-local color   = (require "singletons/color").color
+local c       = (require "singletons/color").color
 local repr    = require "helm/repr"
 
 local format, sub, codepoints = assert(string.format),
