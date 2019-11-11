@@ -30,7 +30,6 @@ local repr = {}
 
 local hints = C.color.hints
 
-local c = C.color
 
 
 
@@ -185,7 +184,7 @@ end
 local hasmetamethod = assert(core.hasmetamethod)
 local lines = assert(string.lines)
 
-local function _yieldReprs(tab, phrase)
+local function _yieldReprs(tab, phrase, c)
    local _repr = hasmetamethod("repr", tab)
    assert(c, "must have a value for c")
    assert(_repr, "failed to retrieve repr metamethod")
@@ -367,7 +366,7 @@ end
 
 
 
-local function name_for(value, hint)
+local function name_for(value, c, hint)
    local str = tostring(value) or ""
    local color
 
@@ -452,13 +451,13 @@ local isarray, table_keys, sort = assert(table.isarray),
                                   assert(table.keys),
                                   assert(table.sort)
 
-local function tabulate(tab, phrase, depth, cycle)
+local function tabulate(tab, phrase, c, depth, cycle)
    cycle = cycle or {}
    depth = depth or 0
    if type(tab) ~= "table"
       or depth > C.depth
       or cycle[tab] then
-      yield_name(tab)
+      yield_name(tab, c)
       return nil
    end
    cycle[tab] = true
@@ -466,7 +465,7 @@ local function tabulate(tab, phrase, depth, cycle)
    -- We want to use the __repr method if and only if it is on the
    -- metatable.
    if hasmetamethod("repr", tab) and (not rawget(tab, "__repr")) then
-      _yieldReprs(tab, phrase)
+      _yieldReprs(tab, phrase, c)
       return nil
    end
 
@@ -482,7 +481,7 @@ local function tabulate(tab, phrase, depth, cycle)
       if cycle[_M] then
          yield_token("⟨", c.metatable)
       end
-      yield_name(_M, "mt")
+      yield_name(_M, c, "mt")
       if cycle[_M] then
          yield_token("⟩ ", c.metatable)
       end
@@ -491,7 +490,7 @@ local function tabulate(tab, phrase, depth, cycle)
       if depth < C.depth and not cycle[_M] then
          yield_token(" → ", c.base)
          yield_token("⟨", c.metatable)
-         tabulate(_M, phrase, depth + 1, cycle)
+         tabulate(_M, phrase, c, depth + 1, cycle)
          yield_token("⟩ ", c.metatable, "sep")
       else
          yield_token(" ", c.base, "sep")
@@ -501,7 +500,7 @@ local function tabulate(tab, phrase, depth, cycle)
    if is_array then
       for i, val in ipairs(tab) do
          if i ~= 1 then COMMA() end
-         tabulate(val, phrase, depth + 1, cycle)
+         tabulate(val, phrase, c, depth + 1, cycle)
       end
    else
       local keys = table_keys(tab)
@@ -513,21 +512,23 @@ local function tabulate(tab, phrase, depth, cycle)
          local val = tab[key]
          if type(key) == "string" and key:find("^[%a_][%a%d_]*$") then
             -- legal identifier, display it as a bareword
-            yield_name(key)
+            yield_name(key, c)
          else
             -- arbitrary string or other type, wrap with braces and repr it
             yield_token("[", c.base)
             -- We want names or hashes for any lvalue table
-            yield_name(key)
+            yield_name(key, c)
             yield_token("]", c.base)
          end
          EQUALS()
-         tabulate(val, phrase, depth + 1, cycle)
+         tabulate(val, phrase, c, depth + 1, cycle)
       end
    end
    C_BRACE()
    return nil
 end
+
+
 
 
 
@@ -557,7 +558,7 @@ end
 
 local MIN_SPLIT_WIDTH = 20
 
-local function oneLine(phrase, long, force)
+local function oneLine(phrase, c, long, force)
    local line = { make_token(("  "):rep(phrase.level), c.base, "indent") }
    local new_level = phrase.level
    if #phrase == 0 then
@@ -651,7 +652,7 @@ local function _remains(phrase)
    return phrase.width - _disp(phrase)
 end
 
-local function lineGen(tab, disp_width)
+local function lineGen(tab, c, disp_width)
    assert(disp_width, "lineGen must have a disp_width")
    local stage = {}              -- stage stack
    local phrase = {
@@ -665,7 +666,7 @@ local function lineGen(tab, disp_width)
    -- make a read-only phrase table for fetching values
    local phrase_ro = readOnly(phrase)
    local iter = wrap(function()
-      local success, result = pcall(tabulate, tab, phrase_ro)
+      local success, result = pcall(tabulate, tab, phrase_ro, c)
       if not success then
          local err_lines = collect(lines, tostring(result))
          err_lines[1] = "error in __repr: " .. err_lines[1]
@@ -692,7 +693,7 @@ local function lineGen(tab, disp_width)
             local event = token.event
             if event == "repr_line" then
                -- Clear the buffer, if any, then pass along the __repr() output
-               local prev = oneLine(phrase, long, true) or ""
+               local prev = oneLine(phrase, c, long, true) or ""
                return prev .. token.line
             end
             if event == "array" or event == "map" then
@@ -712,7 +713,7 @@ local function lineGen(tab, disp_width)
          end
       end
       if #phrase > 0 then
-            local ln = oneLine(phrase, long)
+            local ln = oneLine(phrase, c, long)
          if ln then
             return ln
          else
@@ -727,48 +728,36 @@ local function lineGen(tab, disp_width)
       end
 end
 
+
+
+
+
+
+
+
+
+
 function repr.lineGen(tab, disp_width)
    disp_width = disp_width or 80
-   return lineGen(tab, disp_width)
+   return lineGen(tab, C.color, disp_width)
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 function repr.lineGenBW(tab, disp_width)
    disp_width = disp_width or 80
-   local lg = lineGen(tab, disp_width)
-   return function()
-      c = C.no_color
-      local line = lg()
-      if line ~= nil then
-         c = C.color
-         return line
-      end
-      c = C.color
-      return nil
-   end
+   return lineGen(tab, C.no_color, disp_width)
 end
+
+
+
+
+
+
 
 
 
 function repr.ts(tab, disp_width)
-   disp_width = disp_width or 80
    local phrase = {}
-   for line in lineGen(tab, disp_width) do
+   for line in repr.lineGen(tab, disp_width) do
       phrase[#phrase + 1] = line
    end
    return concat(phrase, "\n")
