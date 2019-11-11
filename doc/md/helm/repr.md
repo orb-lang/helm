@@ -349,12 +349,18 @@ local function split_token(token, max_disp)
 end
 
 ```
-### yield_name
+### name_for(value, hint)
+
+Generates a simple, name-like representation of ``value``. For simple types
+(strings, numbers, booleans, nil) this is the stringified value itself.
+For tables, functions, etc. attempts to retrieve a name from anti_G, falling
+back to generating a name from the hash if none is found.
+
 
 Lots of small, nice things in this one.
 
 ```lua
-local function yield_name(value, hint)
+local function name_for(value, hint)
    local str = tostring(value) or ""
    local color
 
@@ -371,8 +377,7 @@ local function yield_name(value, hint)
       else
          error("Unknown hint: " .. hint)
       end
-      yield_token(str, color)
-      return nil
+      return Token(str, color)
    end
 
    local typica = type(value)
@@ -383,15 +388,17 @@ local function yield_name(value, hint)
    elseif typica == "string" then
       -- Special-case handling of string values for escaping
       -- and possible quoting
-      yield_token(str, c.string, nil, true)
-      return nil
+      return Token(str, c.string, nil, true)
    elseif typica == "function" then
-      local f_label = sub(str,11)
-      f_label = sub(f_label,1,5) == "built"
-                and f_label
-                or "f:" .. sub(str, -6)
-      str = anti_G[value] or f_label
       color = c.func
+      if anti_G[value] then
+         str = anti_G[value]
+      else
+         local f_label = sub(str,11)
+         str = sub(f_label,1,5) == "built"
+                   and f_label
+                   or "f:" .. sub(str, -6)
+      end
    elseif typica == "boolean" then
       color = value and c.truth or c.falsehood
    elseif typica == "number" then
@@ -417,7 +424,7 @@ local function yield_name(value, hint)
          str = anti_G[value]
       end
    end
-   yield_token(str, color)
+   return Token(str, color)
 end
 
 ```
@@ -431,7 +438,11 @@ local function C_BRACE()      yield_token(" }", c.base, "end") end
 local function COMMA()        yield_token(", ", c.base, "sep") end
 local function EQUALS()       yield_token(" = ", c.base)       end
 
-local isarray, table_keys, sort = assert(table.isarray), assert(table.keys), assert(table.sort)
+local function yield_name(...) yield(name_for(...)) end
+
+local isarray, table_keys, sort = assert(table.isarray),
+                                  assert(table.keys),
+                                  assert(table.sort)
 
 local function tabulate(tab, depth, cycle, phrase)
    cycle = cycle or {}
