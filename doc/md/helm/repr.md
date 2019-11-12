@@ -206,148 +206,6 @@ local function _yieldReprs(tab, phrase, c)
 end
 
 ```
-### make_token(str, color[, event[, is_string]])
-
-Assembles a "token" structure from the given string, color value,
-and optional event name. The structure looks like:
-
-```lua-example
-{
-   "f", "o", "o", "\\n",
-   color = c.string,
-   disps = { 1, 1, 1, 2 },
-   total_disp = 5,
-   escapes = { ["\\n"] = true },
-   event = {"array", "map", "sep", "end", "repr_line"} -- One of those, or nil
-}
-```
-
-If ``is_string`` is truthy, performs some additional steps applicable
-only to strings:
-
-
--  Converts nonprinting characters and quotation marks to their escaped forms,
-   with the ``escapes`` property indicating which characters this has been done
-   to.
--  Wraps the string in (un-escaped) quotation marks if it consists entirely of
-   space characters (or is empty).
-
-```lua
-
-local byte, codepoints, find, format, match, sub = assert(string.byte),
-                                                   assert(string.codepoints),
-                                                   assert(string.find),
-                                                   assert(string.format),
-                                                   assert(string.match),
-                                                   assert(string.sub)
-
-local escapes_map = {
-   ['"'] = '\\"',
-   ["'"] = "\\'",
-   ["\a"] = "\\a",
-   ["\b"] = "\\b",
-   ["\f"] = "\\f",
-   ["\n"] = "\\n",
-   ["\r"] = "\\r",
-   ["\t"] = "\\t",
-   ["\v"] = "\\v"
-}
-
-local function make_token(str, color, event, is_string)
-   local token = codepoints(str)
-   token.color = color
-   token.event = event
-   token.is_string = is_string
-   token.disps = {}
-   token.escapes = {}
-   token.total_disp = 0
-   for i, frag in ipairs(token) do
-      -- For now, assume that all codepoints occupy one cell.
-      -- This is wrong, but *usually* does the right thing, and
-      -- handling Unicode properly is hard.
-      token.disps[i] = 1
-      if is_string and (escapes_map[frag] or find(frag, "%c")) then
-         frag = escapes_map[frag] or format("\\x%x", byte(frag))
-         token[i] = frag
-         -- In the case of an escape, we know all of the characters involved
-         -- are one-byte, and each occupy one cell
-         token.disps[i] = #frag
-         token.escapes[frag] = true
-      end
-      token.total_disp = token.total_disp + token.disps[i]
-   end
-   if is_string and find(str, '^ *$') then
-      insert(token, 1, '"')
-      insert(token.disps, 1, 1)
-      insert(token, '"')
-      insert(token.disps, 1)
-      token.total_disp = token.total_disp + 2
-   end
-   return token
-end
-
-local function yield_token(...)
-   yield(make_token(...))
-end
-
-```
-### token_tostring(token, c)
-
-Flattens a token structure back down to a simple string, including coloring sequences.
-
-```lua
-
-local function token_tostring(token, c)
-   local output = {}
-   for i, frag in ipairs(token) do
-      if token.escapes[frag] then
-         frag = c.stresc .. frag .. token.color
-      elseif token.err and token.err[i] then
-         frag = c.alert .. frag .. token.color
-      end
-      output[i] = frag
-   end
-   return token.color(concat(output))
-end
-
-```
-### split_token(token, max_disp)
-
-Splits a token such that the first part occupies no more than ``max_disp`` cells.
-Returns two tokens.
-
-```lua
-
-local function split_token(token, max_disp)
-   local disp_so_far = 0
-   local split_index
-   for i, disp in ipairs(token.disps) do
-      if disp_so_far + disp > max_disp then
-         split_index = i - 1
-         break
-      end
-      disp_so_far = disp_so_far + disp
-   end
-   local first, rest = { disps = {} }, { disps = {} }
-   -- Copy over the properties in common.
-   for _,k in ipairs({"color", "event", "escapes"}) do
-      first[k] = token[k]
-      rest[k] = token[k]
-   end
-   for i = 1, split_index do
-      first[i]       = token[i]
-      first.disps[i] = token.disps[i]
-   end
-   first.total_disp = disp_so_far
-   for i = split_index + 1, #token do
-      rest[i - split_index]       = token[i]
-      rest.disps[i - split_index] = token.disps[i]
-   end
-   rest.total_disp = token.total_disp - disp_so_far
-   return first, rest
-end
-
-```
 ### name_for(value, hint)
 
 Generates a simple, name-like representation of ``value``. For simple types
@@ -359,6 +217,11 @@ back to generating a name from the hash if none is found.
 Lots of small, nice things in this one.
 
 ```lua
+
+local Token = require "helm/token"
+
+local function yield_token(...) yield(Token(...)) end
+
 local function name_for(value, c, hint)
    local str = tostring(value) or ""
    local color
@@ -376,7 +239,7 @@ local function name_for(value, c, hint)
       else
          error("Unknown hint: " .. hint)
       end
-      return make_token(str, color)
+      return Token(str, color)
    end
 
    local typica = type(value)
@@ -387,7 +250,7 @@ local function name_for(value, c, hint)
    elseif typica == "string" then
       -- Special-case handling of string values for escaping
       -- and possible quoting
-      return make_token(str, c.string, nil, true)
+      return Token(str, c.string, nil, true)
    elseif typica == "function" then
       color = c.func
       if anti_G[value] then
@@ -423,7 +286,7 @@ local function name_for(value, c, hint)
          str = anti_G[value]
       end
    end
-   return make_token(str, color)
+   return Token(str, color)
 end
 
 ```
@@ -546,7 +409,7 @@ end
 local MIN_SPLIT_WIDTH = 20
 
 local function oneLine(phrase, c, long, force)
-   local line = { make_token(("  "):rep(phrase.level), c.base, "indent") }
+   local line = { Token(("  "):rep(phrase.level), c.base, "indent") }
    local new_level = phrase.level
    if #phrase == 0 then
       phrase.yielding = true
@@ -575,8 +438,7 @@ local function oneLine(phrase, c, long, force)
       -- character?). What we should really do is still perform the overflow
       -- check, but modify it to use > instead of >= if we are at a separator
       if token.event == "sep" and long then
-         remove(token)
-         token.total_disp = token.total_disp - remove(token.disps)
+         token:remove()
       elseif _disp(line) >= phrase.width then
          remove(line)
          -- Reserve one column for the ~
@@ -587,22 +449,20 @@ local function oneLine(phrase, c, long, force)
          -- entire available width, split it too to avoid an infinite loop
          if token.is_string and token.total_disp > MIN_SPLIT_WIDTH
             or token.total_disp >= phrase.width then
-            token, rest = split_token(token, remaining)
+            token, rest = token:split(remaining)
             -- Pad with spaces if we were forced to split a couple chars short
             for i = 1, remaining - token.total_disp do
-               insert(token, " ")
-               insert(token.disps, 1)
+               token:insert(" ")
             end
-            token.total_disp = remaining
          -- Short strings and other token types just get bumped to the next line
          else
             rest = token
-            token = make_token((" "):rep(remaining), c.base)
+            token = Token((" "):rep(remaining), c.base)
          end
          token.wrap_part = "first"
          rest.wrap_part = "rest"
          insert(line, token)
-         insert(line, make_token("~", c.alert))
+         insert(line, Token("~", c.alert))
          insert(phrase, 1, rest)
       end
       -- If we are in long mode and hit a comma
@@ -613,7 +473,7 @@ local function oneLine(phrase, c, long, force)
          -- Or we just needed to chop & wrap a token
          or (token.wrap_part == "first") then
          for i, frag in ipairs(line) do
-            line[i] = token_tostring(frag, c)
+            line[i] = frag:toString(c)
          end
          phrase.level = new_level
          return concat(line)
