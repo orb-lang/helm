@@ -183,7 +183,8 @@ local escapes_map = {
 }
 
 new = function(str, color, event, is_string)
-   local token = meta(Token)
+   local token = str and codepoints(str) or {}
+   setmetatable(token, Token)
    token.color = color
    token.event = event
    token.is_string = is_string
@@ -193,9 +194,7 @@ new = function(str, color, event, is_string)
    if not str then
       return token
    end
-   local codes = codepoints(str)
-   token.err = codes.err
-   for i, frag in ipairs(codes) do
+   for i, frag in ipairs(token) do
       local disp
       if is_string and (escapes_map[frag] or find(frag, "%c")) then
          frag = escapes_map[frag] or format("\\x%x", byte(frag))
@@ -209,7 +208,8 @@ new = function(str, color, event, is_string)
          -- handling Unicode properly is hard.
          disp = 1
       end
-      token:insert(frag, disp)
+      token.disps[i] = disp
+      token.total_disp = token.total_disp + disp
    end
    if is_string and find(str, '^ *$') then
       token:insert(1, '"')
