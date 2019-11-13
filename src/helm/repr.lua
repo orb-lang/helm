@@ -506,7 +506,7 @@ local function _remains(phrase)
    return phrase.width - _disp(phrase)
 end
 
-local function lineGen(tab, c, disp_width)
+local function lineGen(tab, disp_width, c)
    assert(disp_width, "lineGen must have a disp_width")
    local stage = {}              -- stage stack
    local phrase = {
@@ -591,14 +591,15 @@ end
 
 
 
-function repr.lineGen(tab, disp_width)
+function repr.lineGen(tab, disp_width, color)
+   color = color or C.color
    disp_width = disp_width or 80
-   return lineGen(tab, C.color, disp_width)
+   return lineGen(tab, disp_width, color)
 end
 
 function repr.lineGenBW(tab, disp_width)
    disp_width = disp_width or 80
-   return lineGen(tab, C.no_color, disp_width)
+   return lineGen(tab, disp_width, C.no_color)
 end
 
 

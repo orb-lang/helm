@@ -206,7 +206,7 @@ local function _yieldReprs(tab, phrase, c)
 end
 
 ```
-### name_for(value, hint)
+### name_for(value, c, hint)
 
 Generates a simple, name-like representation of ``value``. For simple types
 (strings, numbers, booleans, nil) this is the stringified value itself.
@@ -484,7 +484,7 @@ local function oneLine(phrase, c, long, force)
    end
 end
 ```
-#### lineGen(tab, disp_width)
+#### lineGen(tab, disp_width, c)
 
 This function sets up an iterator, which returns one line at a time of the
 table.
@@ -497,7 +497,7 @@ local function _remains(phrase)
    return phrase.width - _disp(phrase)
 end
 
-local function lineGen(tab, c, disp_width)
+local function lineGen(tab, disp_width, c)
    assert(disp_width, "lineGen must have a disp_width")
    local stage = {}              -- stage stack
    local phrase = {
@@ -581,14 +581,15 @@ and a default width.
 
 ```lua
 
-function repr.lineGen(tab, disp_width)
+function repr.lineGen(tab, disp_width, color)
+   color = color or C.color
    disp_width = disp_width or 80
-   return lineGen(tab, C.color, disp_width)
+   return lineGen(tab, disp_width, color)
 end
 
 function repr.lineGenBW(tab, disp_width)
    disp_width = disp_width or 80
-   return lineGen(tab, C.no_color, disp_width)
+   return lineGen(tab, disp_width, C.no_color)
 end
 
 ```
