@@ -48,6 +48,7 @@ local NAV    = {}
 local CTRL   = {}
 local ALT    = {}
 local FN     = {}
+local UTF8   = {}
 local NYI    = {}
 
 
@@ -58,6 +59,7 @@ local Nerf = { ASCII  = ASCII,
                NAV    = NAV,
                CTRL   = CTRL,
                ALT    = ALT,
+               UTF8   = UTF8,
                NYI    = NYI }
 
 

@@ -257,6 +257,7 @@ local act_map = { MOUSE  = pr_mouse,
                   CTRL   = mk_paint(": ", c.field),
                   ALT    = mk_paint(": ", a.underscore),
                   ASCII  = mk_paint(": ", c.table),
+                  UTF8   = mk_paint(": ", c.table),
                   NYI    = mk_paint(": ", a.red)}
 
 local icon_map = { MOUSE = mk_paint(STAT_ICON, c.userdata),
@@ -264,6 +265,7 @@ local icon_map = { MOUSE = mk_paint(STAT_ICON, c.userdata),
                    CTRL  = mk_paint(STAT_ICON, a.blue),
                    ALT   = mk_paint(STAT_ICON, c["function"]),
                    ASCII = mk_paint(STAT_ICON, a.green),
+                   UTF8  = mk_paint(STAT_ICON, a.green),
                    NYI   = mk_paint(STAT_ICON .. "! ", a.red) }
 
 local function _make_icon(category, value)
@@ -475,7 +477,7 @@ function ModeS.act(modeS, category, value)
       modeS.modes[category][value](modeS, category, value)
 
    -- otherwise fall back:
-   elseif category == "ASCII" then
+   elseif category == "ASCII" or category == "UTF8" then
       -- hard coded for now
       modeS:insert(category, value)
    elseif category == "NAV" then
