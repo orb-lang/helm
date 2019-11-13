@@ -198,6 +198,7 @@ new = function(str, color, event, is_string)
       local disp
       if is_string and (escapes_map[frag] or find(frag, "%c")) then
          frag = escapes_map[frag] or format("\\x%x", byte(frag))
+         token[i] = frag
          -- In the case of an escape, we know all of the characters involved
          -- are one-byte, and each occupy one cell
          disp = #frag
