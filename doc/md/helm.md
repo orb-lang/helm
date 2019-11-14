@@ -266,7 +266,7 @@ local function onseq(err,seq)
       end
    else
       -- wchars go here
-      return modeS("NYI", seq)
+      return modeS("UTF8", seq)
    end
 end
 ```
