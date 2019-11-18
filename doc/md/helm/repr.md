@@ -28,8 +28,6 @@ local C = require "singletons/color"
 
 local repr = {}
 
-local hints = C.color.hints
-
 ```
 ### anti_G
 
@@ -218,74 +216,64 @@ Lots of small, nice things in this one.
 
 ```lua
 
+local sub = assert(string.sub)
 local Token = require "helm/token"
 
 local function yield_token(...) yield(Token(...)) end
 
 local function name_for(value, c, hint)
-   local str = tostring(value) or ""
-   local color
+   local str
+   -- Hint provides a means to override the "type" of the value,
+   -- to account for cases more specific than mere type
+   local typica = hint or type(value)
+   -- Start with the color corresponding to the type--may be overridden below
+   local color = c[typica]
 
-   -- For cases more specific than mere type,
-   -- we have hints:
-   if hint then
-      if hint == "mt" then
-         str = anti_G[value] or "⟨" .. "mt:" .. sub(str, -6) .. "⟩"
-         color = c.metatable
-      elseif hints[hint] then
-         color = hints[hint]
-      elseif c[hint] then
-         color = c[hint]
-      else
-         error("Unknown hint: " .. hint)
+   -- Value types are generally represented by their tostring()
+   if typica == "string"
+      or typica == "number"
+      or typica == "boolean"
+      or typica == "nil" then
+      str = tostring(value)
+      if typica == "string" then
+         return Token(str, color, nil, true)
+      elseif typica == "boolean" then
+         color = value and c.truth or c.falsehood
       end
       return Token(str, color)
    end
 
-   local typica = type(value)
+   -- For other types, start by looking for a name in anti_G
+   if anti_G[value] then
+      str = anti_G[value]
+      -- Prepend coro: even to names from anti_G to more clearly
+      -- distinguish from functions
+      if typica == "thread" then
+         str = "coro:" .. str
+      end
+      return Token(str, color)
+   end
 
-   if typica == "table" then
-      str = anti_G[value] or "t:" .. sub(str, -6)
-      color = c.table
-   elseif typica == "string" then
-      -- Special-case handling of string values for escaping
-      -- and possible quoting
-      return Token(str, c.string, nil, true)
+   -- If not found, construct one starting with the tostring()
+   str = tostring(value)
+   if typica == "metatable" then
+      str = "⟨" .. "mt:" .. sub(str, -6) .. "⟩"
+   elseif typica == "table" then
+      str = "t:" .. sub(str, -6)
    elseif typica == "function" then
-      color = c.func
-      if anti_G[value] then
-         str = anti_G[value]
-      else
-         local f_label = sub(str,11)
-         str = sub(f_label,1,5) == "built"
-                   and f_label
-                   or "f:" .. sub(str, -6)
-      end
-   elseif typica == "boolean" then
-      color = value and c.truth or c.falsehood
-   elseif typica == "number" then
-      color = c.number
-   elseif typica == "nil" then
-      color = c.nilness
+      local f_label = sub(str,11)
+      str = sub(f_label,1,5) == "built"
+                and f_label
+                or "f:" .. sub(str, -6)
    elseif typica == "thread" then
-      str = "coro:" .. (anti_G[value] or sub(str, -6))
-      color = c.thread
+      str = "coro:" .. sub(str, -6)
    elseif typica == "userdata" then
-      color = c.userdata
-      if anti_G[value] then
-         str = anti_G[value]
-      else
-         local name_end = find(str, ":")
-         if name_end then
-            str = sub(str, 1, name_end - 1)
-         end
-      end
-   elseif typica == "cdata" then
-      color = c.cdata
-      if anti_G[value] then
-         str = anti_G[value]
+      local name_end = find(str, ":")
+      if name_end then
+         str = sub(str, 1, name_end - 1)
       end
    end
+
    return Token(str, color)
 end
 
@@ -332,7 +320,7 @@ local function tabulate(tab, phrase, c, depth, cycle)
       if cycle[_M] then
          yield_token("⟨", c.metatable)
       end
-      yield_name(_M, c, "mt")
+      yield_name(_M, c, "metatable")
       if cycle[_M] then
          yield_token("⟩ ", c.metatable)
       end
