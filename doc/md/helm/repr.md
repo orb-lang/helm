@@ -238,7 +238,7 @@ local function name_for(value, c, hint)
       if typica == "string" then
          return Token(str, color, nil, true)
       elseif typica == "boolean" then
-         color = value and c.truth or c.falsehood
+         color = value and c["true"] or c["false"]
       end
       return Token(str, color)
    end
