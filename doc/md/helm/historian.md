@@ -353,7 +353,7 @@ local function _highlight(line, frag, best, c)
    local hl = {}
    while #frag > 0 do
       local char
-      char, frag = frag:sub(1,1), frag:sub(2)
+      char, frag = frag:sub(1, 1), frag:sub(2)
       local at = line:find(litpat(char))
       if not at then
          break
@@ -366,12 +366,12 @@ local function _highlight(line, frag, best, c)
       else
          Color = c.search_hl
       end
-      hl[#hl + 1] = c.base(line:sub(1, at -1))
+      hl[#hl + 1] = c.base(line:sub(1, at - 1))
       hl[#hl + 1] = Color(char)
       line = line:sub(at + 1)
    end
    hl[#hl + 1] = c.base(line)
-   return concat(hl):gsub("\n", c.stresc("\\n"))
+   return concat(hl):gsub("\n", c.stresc .. "\\n" .. c.base)
 end
 
 local function _collect_repr(collection, phrase, c)
