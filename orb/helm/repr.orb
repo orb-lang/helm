@@ -227,6 +227,7 @@ local Token = require "helm/token"
 
 local function yield_token(...) yield(Token(...)) end
 
+local sub = assert(string.sub)
 local function name_for(value, c, hint)
    local str = tostring(value) or ""
    local color

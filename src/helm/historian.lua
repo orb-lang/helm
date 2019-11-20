@@ -454,38 +454,51 @@ function Historian.search(historian, frag)
       -- don't repeat a search
       return historian.last_collection
    end
-   local collection = setmeta({}, collect_M)
-   collection.frag = frag
-   collection.lit_frag = frag
+   local matches = {}
+   local lit_frag = frag
    if frag == "" then
-      return Rainbuf {[1] = collection, n = 1}, false
+      return Rainbuf {[1] = matches, n = 1}, false
    end
+   local slip = nil
    local cursors = {}
    local best = true
    local patt = fuzz_patt(frag)
    for i = #historian, 1, -1 do
       local score = match(patt, tostring(historian[i]))
       if score then
-         collection[#collection + 1] = tostring(historian[i])
+         matches[#matches + 1] = tostring(historian[i])
          cursors[#cursors + 1] = i
       end
    end
-   if #collection == 0 then
+   if #matches == 0 then
       -- try the transpose
       best = false
-      local slip = sub(frag, 1, -3) .. sub(frag, -1, -1) .. sub(frag, -2, -2)
-      collection.frag = slip
+      slip = sub(frag, 1, -3) .. sub(frag, -1, -1) .. sub(frag, -2, -2)
       patt = fuzz_patt(slip)
       for i = #historian, 1, -1 do
          local score = match(patt, tostring(historian[i]))
          if score then
-            collection[#collection + 1] = tostring(historian[i])
+            matches[#matches + 1] = tostring(historian[i])
             cursors[#cursors + 1] = i
          end
       end
    end
+   -- deduplicate
+   local collection = setmeta({}, collect_M)
+   local collect_cursors = {}
+   local dup = {}
+   for i, line in ipairs(matches) do
+      if not dup[line] then
+         dup[line] = true
+         collection[#collection + 1] = line
+         collect_cursors[#collect_cursors + 1] = matches[i]
+      end
+   end
+
+   collection.frag = slip or frag
+   collection.lit_frag = lit_frag
    collection.best = best
-   collection.cursors = cursors
+   collection.cursors = collect_cursors
    collection.hl = 1
    historian.last_collection = Rainbuf {[1] = collection, n = 1, live = true}
    historian.last_collection.made_in = "historian.search"
