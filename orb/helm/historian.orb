@@ -491,7 +491,7 @@ function Historian.search(historian, frag)
       if not dup[line] then
          dup[line] = true
          collection[#collection + 1] = line
-         collect_cursors[#collect_cursors + 1] = matches[i]
+         collect_cursors[#collect_cursors + 1] = cursors[i]
       end
    end
 
