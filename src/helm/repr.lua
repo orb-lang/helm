@@ -226,6 +226,7 @@ local Token = require "helm/token"
 
 local function yield_token(...) yield(Token(...)) end
 
+local sub = assert(string.sub)
 local function name_for(value, c, hint)
    local str
    -- Hint provides a means to override the "type" of the value,

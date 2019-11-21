@@ -353,7 +353,7 @@ local function _highlight(line, frag, best, c)
    local hl = {}
    while #frag > 0 do
       local char
-      char, frag = frag:sub(1,1), frag:sub(2)
+      char, frag = frag:sub(1, 1), frag:sub(2)
       local at = line:find(litpat(char))
       if not at then
          break
@@ -366,12 +366,12 @@ local function _highlight(line, frag, best, c)
       else
          Color = c.search_hl
       end
-      hl[#hl + 1] = c.base(line:sub(1, at -1))
+      hl[#hl + 1] = c.base(line:sub(1, at - 1))
       hl[#hl + 1] = Color(char)
       line = line:sub(at + 1)
    end
    hl[#hl + 1] = c.base(line)
-   return concat(hl):gsub("\n", c.stresc("\\n"))
+   return concat(hl):gsub("\n", c.stresc .. "\\n" .. c.base)
 end
 
 local function _collect_repr(collection, phrase, c)
@@ -447,38 +447,51 @@ function Historian.search(historian, frag)
       -- don't repeat a search
       return historian.last_collection
    end
-   local collection = setmeta({}, collect_M)
-   collection.frag = frag
-   collection.lit_frag = frag
+   local matches = {}
+   local lit_frag = frag
    if frag == "" then
-      return Rainbuf {[1] = collection, n = 1}, false
+      return Rainbuf {[1] = matches, n = 1}, false
    end
+   local slip = nil
    local cursors = {}
    local best = true
    local patt = fuzz_patt(frag)
    for i = #historian, 1, -1 do
       local score = match(patt, tostring(historian[i]))
       if score then
-         collection[#collection + 1] = tostring(historian[i])
+         matches[#matches + 1] = tostring(historian[i])
          cursors[#cursors + 1] = i
       end
    end
-   if #collection == 0 then
+   if #matches == 0 then
       -- try the transpose
       best = false
-      local slip = sub(frag, 1, -3) .. sub(frag, -1, -1) .. sub(frag, -2, -2)
-      collection.frag = slip
+      slip = sub(frag, 1, -3) .. sub(frag, -1, -1) .. sub(frag, -2, -2)
       patt = fuzz_patt(slip)
       for i = #historian, 1, -1 do
          local score = match(patt, tostring(historian[i]))
          if score then
-            collection[#collection + 1] = tostring(historian[i])
+            matches[#matches + 1] = tostring(historian[i])
             cursors[#cursors + 1] = i
          end
       end
    end
+   -- deduplicate
+   local collection = setmeta({}, collect_M)
+   local collect_cursors = {}
+   local dup = {}
+   for i, line in ipairs(matches) do
+      if not dup[line] then
+         dup[line] = true
+         collection[#collection + 1] = line
+         collect_cursors[#collect_cursors + 1] = matches[i]
+      end
+   end
+
+   collection.frag = slip or frag
+   collection.lit_frag = lit_frag
    collection.best = best
-   collection.cursors = cursors
+   collection.cursors = collect_cursors
    collection.hl = 1
    historian.last_collection = Rainbuf {[1] = collection, n = 1, live = true}
    historian.last_collection.made_in = "historian.search"
