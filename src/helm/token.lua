@@ -83,10 +83,11 @@ local new
 
 function Token.toString(token, c)
    if not token.wrappable then
-      return token.color(token.str)
+      return token.color(utf8_sub(token.str, token.start))
    end
    local output = {}
-   for i, frag in ipairs(token.codepoints) do
+   for i = token.start, #token.codepoints do
+      local frag = token.codepoints[i]
       if token.escapes[frag] then
          frag = c.stresc .. frag .. token.color
       elseif token.err and token.err[i] then
@@ -94,8 +95,10 @@ function Token.toString(token, c)
       end
       output[i] = frag
    end
-   return token.color(concat(output))
+   return token.color(concat(output, "", token.start))
 end
+
+
 
 
 
@@ -107,30 +110,35 @@ end
 
 
 function Token.split(token, max_disp)
-   local disp_so_far = 0
-   local split_index
+   local first
    local cfg = { event = token.event, wrappable = token.wrappable }
-   local first, rest
    if token.wrappable then
       cfg.escapes = token.escapes
-      for i, disp in ipairs(token.disps) do
+      first = new(nil, token.color, cfg)
+      local split_index
+      local disp_so_far = 0
+      for i = token.start, #token.disps do
+         local disp = token.disps[i]
          if disp_so_far + disp > max_disp then
             split_index = i - 1
             break
          end
          disp_so_far = disp_so_far + disp
       end
-      first, rest = new(nil, token.color, cfg), new(nil, token.color, cfg)
-      for i = 1, #token.codepoints do
-         local target = i <= split_index and first or rest
-         target:insert(token.codepoints[i], token.disps[i], token.err and token.err[i])
+      for i = token.start, split_index do
+         first:insert(token.codepoints[i], token.disps[i], token.err and token.err[i])
       end
+      token.start = split_index + 1
+      token.total_disp = token.total_disp - disp_so_far
    else
-      first = new(utf8_sub(token.str, 1, max_disp), token.color, cfg)
-      rest = new(utf8_sub(token.str, max_disp + 1), token.color, cfg)
+      first = new(utf8_sub(token.str, token.start, token.start + max_disp), token.color, cfg)
+      token.start = token.start + max_disp + 1
+      token.total_disp = token.total_disp - max_disp
    end
-   return first, rest
+   return first
 end
+
+
 
 
 
@@ -144,6 +152,7 @@ end
 
 
 function Token.insert(token, pos, frag, disp, err)
+   assert(token.start == 1, "Cannot insert into a token with a start offset")
    if type(pos) ~= "number" then
       err = disp
       disp = frag
@@ -180,7 +189,10 @@ end
 
 
 
+
+
 function Token.remove(token, pos)
+   assert(token.start == 1, "Cannot remove from a token with a start offset")
    local removed, rem_disp, err
    if token.wrappable then
       removed = remove(token.codepoints, pos)
@@ -247,6 +259,7 @@ local byte, find, format = assert(string.byte),
 new = function(str, color, cfg)
    local token = meta(Token)
    token.str = str
+   token.start = 1
    token.color = color
    cfg = cfg or {}
    for k, v in pairs(cfg) do

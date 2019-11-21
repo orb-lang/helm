@@ -432,7 +432,8 @@ local function oneLine(phrase, c, long, force)
          -- entire available width, split it too to avoid an infinite loop
          if token.wrappable and token.total_disp > MIN_SPLIT_WIDTH
             or token.total_disp >= phrase.width then
-            token, rest = token:split(remaining)
+            rest = token
+            token = token:split(remaining)
             -- Pad with spaces if we were forced to split a couple chars short
             for i = 1, remaining - token.total_disp do
                token:insert(" ")
