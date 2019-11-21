@@ -42,13 +42,6 @@ uv   = require "luv"
 utf8 = require "lua-utf8"
 core = require "singletons/core"
 
--- replace string lib with utf8 equivalents
-for k,v in pairs(utf8) do
-   if string[k] then
-      string[k] = v
-   end
-end
-
 jit.vmdef = require "helm:helm/vmdef"
 jit.p = require "helm:helm/ljprof"
 
