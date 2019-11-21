@@ -20,6 +20,8 @@ local core = require "singletons/core"
 
 local C = require "singletons/color"
 
+local Token = require "helm/token"
+
 
 
 
@@ -179,32 +181,27 @@ end
 
 
 
+
 local hasmetamethod = assert(core.hasmetamethod)
 local lines = assert(string.lines)
+
+local function yield_token(...) yield(Token(...)) end
 
 local function _yieldReprs(tab, phrase, c)
    local _repr = hasmetamethod("repr", tab)
    assert(c, "must have a value for c")
    assert(_repr, "failed to retrieve repr metamethod")
    local repr = _repr(tab, phrase, c)
-   local yielder
    if type(repr) == "string" then
-      yielder = lines(repr)
-   else
-      yielder = repr
+      repr = lines(repr)
    end
-   while type(yielder) == 'function' do
-      local line, len = yielder()
-      if line ~= nil then
-         len = len or #line
-         -- Yield something enough like a token for lineGen to notice
-         -- that it's special and just pass the string through.
-         yield { event = "repr_line",
-                 total_disp = len,
-                 line = line }
-      else
-         break
-      end
+   if type(repr) ~= "function" then
+      error("__repr must return a string or a function returning lines,\
+         got a " .. type(repr))
+   end
+   for line, len in repr do
+      len = len or #line
+      yield_token(line, c.no_color, { event = "repr_line", total_disp = len })
    end
 end
 
@@ -221,12 +218,8 @@ end
 
 
 
-local sub = assert(string.sub)
-local Token = require "helm/token"
-
-local function yield_token(...) yield(Token(...)) end
-
 local sub, find = assert(string.sub), assert(string.find)
+
 local function name_for(value, c, hint)
    local str
    -- Hint provides a means to override the "type" of the value,
@@ -234,6 +227,7 @@ local function name_for(value, c, hint)
    local typica = hint or type(value)
    -- Start with the color corresponding to the type--may be overridden below
    local color = c[typica]
+   local cfg = {}
 
    -- Value types are generally represented by their tostring()
    if typica == "string"
@@ -242,22 +236,22 @@ local function name_for(value, c, hint)
       or typica == "nil" then
       str = tostring(value)
       if typica == "string" then
-         return Token(str, color, nil, true)
+         cfg.wrappable = true
       elseif typica == "boolean" then
          color = value and c["true"] or c["false"]
       end
-      return Token(str, color)
+      return Token(str, color, cfg)
    end
 
    -- For other types, start by looking for a name in anti_G
    if anti_G[value] then
       str = anti_G[value]
-      -- Prepend coro: even to names from anti_G to more clearly
-      -- distinguish from functions
       if typica == "thread" then
+         -- Prepend coro: even to names from anti_G to more clearly
+         -- distinguish from functions
          str = "coro:" .. str
       end
-      return Token(str, color)
+      return Token(str, color, cfg)
    end
 
    -- If not found, construct one starting with the tostring()
@@ -280,7 +274,7 @@ local function name_for(value, c, hint)
       end
    end
 
-   return Token(str, color)
+   return Token(str, color, cfg)
 end
 
 
@@ -319,7 +313,7 @@ local function tabulate(tab, phrase, c, depth, cycle)
    -- Check to see if this is an array
    local is_array = isarray(tab)
    -- And print an open brace
-   yield_token("{ ", c.base, is_array and "array" or "map")
+   yield_token("{ ", c.base, { event = is_array and "array" or "map" })
 
    -- if we have a metatable, get it first
    local _M = getmetatable(tab)
@@ -337,15 +331,15 @@ local function tabulate(tab, phrase, c, depth, cycle)
          yield_token(" → ", c.base)
          yield_token("⟨", c.metatable)
          tabulate(_M, phrase, c, depth + 1, cycle)
-         yield_token("⟩ ", c.metatable, "sep")
+         yield_token("⟩ ", c.metatable, { event = "sep"})
       else
-         yield_token(" ", c.base, "sep")
+         yield_token(" ", c.no_color, { event = "sep" })
       end
    end
 
    if is_array then
       for i, val in ipairs(tab) do
-         if i ~= 1 then yield_token(", ", c.base, "sep") end
+         if i ~= 1 then yield_token(", ", c.base, {event = "sep"}) end
          tabulate(val, phrase, c, depth + 1, cycle)
       end
    else
@@ -354,11 +348,11 @@ local function tabulate(tab, phrase, c, depth, cycle)
          sort(keys, _keysort)
       end
       for i, key in ipairs(keys) do
-         if i ~= 1 then yield_token(", ", c.base, "sep") end
+         if i ~= 1 then yield_token(", ", c.base, {event = "sep"}) end
          local val = tab[key]
          if type(key) == "string" and key:find("^[%a_][%a%d_]*$") then
             -- legal identifier, display it as a bareword
-            yield_name(key, c)
+            yield_name(key, c, "field")
          else
             -- arbitrary string or other type, wrap with braces and repr it
             yield_token("[", c.base)
@@ -370,7 +364,7 @@ local function tabulate(tab, phrase, c, depth, cycle)
          tabulate(val, phrase, c, depth + 1, cycle)
       end
    end
-   yield_token(" }", c.base, "end")
+   yield_token(" }", c.base, {event = "end"})
    return nil
 end
 
@@ -405,7 +399,7 @@ end
 local MIN_SPLIT_WIDTH = 20
 
 local function oneLine(phrase, c, long, force)
-   local line = { Token(("  "):rep(phrase.level), c.base, "indent") }
+   local line = { Token(("  "):rep(phrase.level), c.no_color, {event = "indent"}) }
    local new_level = phrase.level
    if #phrase == 0 then
       phrase.yielding = true
@@ -443,7 +437,7 @@ local function oneLine(phrase, c, long, force)
          -- Only split strings, and only if they're long enough to be worth it
          -- In the extreme event that a non-string token is longer than the
          -- entire available width, split it too to avoid an infinite loop
-         if token.is_string and token.total_disp > MIN_SPLIT_WIDTH
+         if token.wrappable and token.total_disp > MIN_SPLIT_WIDTH
             or token.total_disp >= phrase.width then
             token, rest = token:split(remaining)
             -- Pad with spaces if we were forced to split a couple chars short
@@ -453,7 +447,7 @@ local function oneLine(phrase, c, long, force)
          -- Short strings and other token types just get bumped to the next line
          else
             rest = token
-            token = Token((" "):rep(remaining), c.base)
+            token = Token((" "):rep(remaining), c.no_color)
          end
          token.wrap_part = "first"
          rest.wrap_part = "rest"
@@ -514,9 +508,7 @@ local function lineGen(tab, disp_width, c)
          local err_lines = collect(lines, tostring(result))
          err_lines[1] = "error in __repr: " .. err_lines[1]
          for _, line in ipairs(err_lines) do
-            yield { event = "repr_line",
-                    line = line,
-                    total_disp = #line }
+            yield_token(line, c.alert, { event = "repr_line" })
          end
       end
    end)
@@ -537,7 +529,7 @@ local function lineGen(tab, disp_width, c)
             if event == "repr_line" then
                -- Clear the buffer, if any, then pass along the __repr() output
                local prev = oneLine(phrase, c, long, true) or ""
-               return prev .. token.line
+               return prev .. token.str
             end
             if event == "array" or event == "map" then
                insert(stage, event)
