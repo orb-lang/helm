@@ -92,7 +92,9 @@ function Token.toString(token, c)
       end
       output[i] = frag
    end
-   return token.color(concat(output, "", token.start))
+   -- Need to pass the length explicitly as we've left a bunch of nils
+   -- at the beginning, breaking #output
+   return token.color(concat(output, "", token.start, #token.codepoints))
 end
 
 ```
