@@ -250,11 +250,11 @@ local function onseq(err,seq)
       return process_escapes(seq)
    end
    -- Control sequences
-   if head <= 31 and not navigation[seq] then
+   if navigation[seq] then
+      return modeS("NAV", navigation[seq])
+    elseif head <= 31 then
       local ctrl = "^" .. char(head + 64)
       return modeS("CTRL", ctrl)
-   elseif navigation[seq] then
-      return modeS("NAV", navigation[seq])
    end
    -- Printables
    if head > 31 and head < 127 then

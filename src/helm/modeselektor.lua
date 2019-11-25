@@ -218,7 +218,7 @@ end
 local STAT_ICON = "◉ "
 
 local function tf(bool)
-  return bool and c.truth("t") or c.falsehood("f")
+  return bool and c["true"]("t") or c["false"]("f")
 end
 
 local function pr_mouse(m)
