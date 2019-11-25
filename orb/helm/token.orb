@@ -11,19 +11,26 @@ mouse handling.
 -  str        : The original string this token was created from.
                 NB If =codepoints= exists, this does not take into account
                 any modifications made by insert(), remove(), or split().
+-  start      : The index within =str= or =codepoints= at which this token
+                starts. Used when splitting to avoid copying the contents
+                after the split point (which could be arbitrarily large).
 -  color      : A color value to use for the entire token.
 -  event      : A string indicating that this token has a special meaning, like
                 the beginning or end of an indented block, or a separator.
--  wrappable  : Is it acceptable to wrap this token by breaking it
-                in the middle, or must it be moved entirely to the next line
-                if it does not fit? If true, the following will also exist:
-   -  codepoints : The codepoints of the string, if we needed to break it down.
-   -  disps      : Array of the number of cells occupied by the corresponding
-                   codepoint string. There is no handling of Unicode widths at
-                   this point, but this may still be >1 in the case of an escaped
-                   nonprinting character, e.g. =\t=, =\x1b=.
-   -  err        : A table with information about any errors encountered
-                   interpreting the original string as Unicode.
+-  wrappable  : If true, it is acceptable to wrap this token by breaking it
+                in the middle. If false, it should be moved entirely to the
+                next line if it does not fit.
+                Also controls whether or not the string will be broken into
+                codepoints.
+
+The following fields will be present only if =wrappable= is true:
+-  codepoints : The codepoints of the string, if we needed to break it down.
+-  disps      : Array of the number of cells occupied by the corresponding
+                codepoint string. There is no handling of Unicode widths at
+                this point, but this may still be >1 in the case of an escaped
+                nonprinting character, e.g. =\t=, =\x1b=.
+-  err        : A table with information about any errors encountered
+                interpreting the original string as Unicode.
 
 *** Examples
 
