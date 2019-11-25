@@ -205,6 +205,35 @@ function Token.remove(token, pos)
 end
 
 ```
+### Token:removeTrailingSpaces()
+
+Removes any trailing space characters from the token. Primarily used for
+separators at the end of a line, to avoid bumping them to the next line
+when in fact they fit perfectly.
+
+
+This does not seem relevant to wrappable tokens--could be implemented later
+if needed.
+
+```lua
+
+local string_sub = assert(string.sub)
+
+function Token.removeTrailingSpaces(token)
+   assert(not token.wrappable, "removeTrailingSpaces not implemented \
+      for wrappable tokens")
+   assert(token.start == 1, "removeTrailingSpaces not implemented \
+      for tokens with a start offset")
+   -- Note that we can ignore Unicode here, as we only care about spaces
+   local last_non_space = -1
+   while string_sub(token.str, last_non_space, last_non_space) == " " do
+      last_non_space = last_non_space - 1
+   end
+   token.str = string_sub(token.str, 1, last_non_space)
+   token.total_disp = token.total_disp + last_non_space + 1
+end
+
+```
 ### new(str, color[, cfg])
 
 Creates a ``Token`` from the given string, color value, and optional table of

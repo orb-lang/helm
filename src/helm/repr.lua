@@ -417,29 +417,28 @@ local function oneLine(phrase, c, long, force)
       elseif token.event == "end" then
          new_level = new_level - 1
       end
-      -- If we are in long mode, remove the trailing space from a comma
-      -- Note that in this case we are *certain* that the comma will fit,
-      -- since it is only one character and we otherwise reserve one space
-      -- for a possible ~. Thus we can skip the check for needing to split
-      -- this token, allowing a comma to fit at the very end of a line that
-      -- exactly fills the screen.
-
-      -- This is fragile (what if a separator has more than one non-space
-      -- character?). What we should really do is still perform the overflow
-      -- check, but modify it to use > instead of >= if we are at a separator
+      -- If we are in long mode and hit a separator, remove the trailing space
+      -- so it doesn't cause an unnecessary wrap. We can also allow the line to
+      -- exactly fill the buffer, since we know we're going to end the line
+      -- here anyway.
+      local reserved_space = 1
       if token.event == "sep" and long then
-         token:remove()
-      elseif _disp(line) >= phrase.width then
+         token:removeTrailingSpaces()
+         reserved_space = 0
+      end
+      if _disp(line) + reserved_space > phrase.width then
          remove(line)
-         -- Reserve one column for the ~
+         -- Now that we know we *are* going to force-wrap, we need space for
+         -- the ~ even if this token is a separator (in which case it will
+         -- end up entirely on the next line, but we need to compute the
+         -- number of padding spaces correctly).
          local remaining = phrase.width - _disp(line) - 1
-         local rest
+         local rest = token
          -- Only split strings, and only if they're long enough to be worth it
          -- In the extreme event that a non-string token is longer than the
          -- entire available width, split it too to avoid an infinite loop
          if token.wrappable and token.total_disp > MIN_SPLIT_WIDTH
             or token.total_disp >= phrase.width then
-            rest = token
             token = token:split(remaining)
             -- Pad with spaces if we were forced to split a couple chars short
             for i = 1, remaining - token.total_disp do
@@ -447,7 +446,6 @@ local function oneLine(phrase, c, long, force)
             end
          -- Short strings and other token types just get bumped to the next line
          else
-            rest = token
             token = Token((" "):rep(remaining), c.no_color)
          end
          token.wrap_part = "first"
