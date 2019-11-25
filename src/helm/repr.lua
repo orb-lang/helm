@@ -14,8 +14,6 @@
 
 
 
-local a = require "singletons/anterm"
-
 local core = require "singletons/core"
 
 local C = require "singletons/color"

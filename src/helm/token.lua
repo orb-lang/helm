@@ -115,21 +115,14 @@ function Token.split(token, max_disp)
    if token.wrappable then
       cfg.escapes = token.escapes
       first = new(nil, token.color, cfg)
-      local split_index
-      local disp_so_far = 0
-      for i = token.start, #token.disps do
-         local disp = token.disps[i]
-         if disp_so_far + disp > max_disp then
-            split_index = i - 1
+      for i = token.start, #token.codepoints do
+         if first.total_disp + token.disps[i] > max_disp then
+            token.start = i
+            token.total_disp = token.total_disp - first.total_disp
             break
          end
-         disp_so_far = disp_so_far + disp
-      end
-      for i = token.start, split_index do
          first:insert(token.codepoints[i], token.disps[i], token.err and token.err[i])
       end
-      token.start = split_index + 1
-      token.total_disp = token.total_disp - disp_so_far
    else
       first = new(utf8_sub(token.str, token.start, token.start + max_disp), token.color, cfg)
       token.start = token.start + max_disp + 1
