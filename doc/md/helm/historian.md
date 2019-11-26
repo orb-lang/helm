@@ -126,11 +126,11 @@ WHERE result.line_id = :line_id
 ORDER BY result.result_id;
 ]]
 
-local home_dir = io.popen("echo $HOME", "r"):read("*a"):sub(1, -2)
-
-local bridge_home = io.popen("echo $BRIDGE_HOME", "r"):read("*a"):sub(1, -2)
-Historian.bridge_home = bridge_home ~= "" and bridge_home
-                        or home_dir .. "/.bridge"
+local home_dir = os.getenv "HOME"
+Historian.helm_db = home_dir .. "/.local/share/bridge/.helm"
+-- This require the bridge_home function in pylon, which I can't recompile
+-- without github access and I'm on a plane:
+-- _Bridge.bridge_home() .. ".helm"
 
 Historian.project = uv.cwd()
 
@@ -156,7 +156,7 @@ the results never get used.
 
 ```lua
 function Historian.load(historian)
-   local conn = sql.open(historian.bridge_home)
+   local conn = sql.open(historian.helm_db)
    historian.conn = conn
    -- Set up bridge tables
    conn.pragma.foreign_keys(true)
