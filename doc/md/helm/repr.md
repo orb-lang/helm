@@ -91,12 +91,11 @@ local function addName(t, aG, pre)
             if not aG[_M] then
                aG[_M] = _M_id
                addName(_M, aG, _M_id)
-
             else
                local aG_M_id = aG[_M]
                if tie_break(aG_M_id, _M_id) then
-                  addName(_M, aG, _M_id)
                   aG[_M] = _M_id
+                  addName(_M, aG, _M_id)
                end
             end
          end
