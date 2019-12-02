@@ -63,7 +63,7 @@ Non-wrappable:
 
 #!lua
 
-local codepoints = assert(core.codepoints)
+local codepoints = require "singletons/codepoints"
 local utf8_len, utf8_sub = assert(utf8.len), assert(utf8.sub)
 local concat, insert, remove = assert(table.concat),
                                assert(table.insert),
@@ -100,11 +100,11 @@ function Token.toString(token, c)
       elseif token.err and token.err[i] then
          frag = c.alert .. frag .. token.color
       end
-      output[i] = frag
+      insert(output, frag)
    end
    -- Need to pass the length explicitly as we've left a bunch of nils
    -- at the beginning, breaking #output
-   return token.color(concat(output, "", token.start, #token.codepoints))
+   return token.color(concat(output))
 end
 
 #/lua
