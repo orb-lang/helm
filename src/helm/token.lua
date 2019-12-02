@@ -102,8 +102,6 @@ function Token.toString(token, c)
       end
       insert(output, frag)
    end
-   -- Need to pass the length explicitly as we've left a bunch of nils
-   -- at the beginning, breaking #output
    return token.color(concat(output))
 end
 
@@ -122,8 +120,8 @@ function Token.split(token, max_disp)
    local first
    local cfg = { event = token.event, wrappable = token.wrappable }
    if token.wrappable then
+      cfg.escapes = token.escapes
       first = new(nil, token.color, cfg)
-      first.escapes = token.escapes
       for i = token.start, #token.codepoints do
          if first.total_disp + token.disps[i] > max_disp then
             token.start = i
@@ -293,42 +291,40 @@ new = function(str, color, cfg)
    token.start = 1
    token.color = color
    cfg = cfg or {}
+   if cfg.wrappable then
+      token.codepoints = codepoints(str or "")
+      token.err = token.codepoints.err
+      token.disps = {}
+      token.escapes = {}
+      token.total_disp = 0
+      for i, frag in ipairs(token.codepoints) do
+         -- For now, start by assuming that all codepoints occupy one cell.
+         -- This is wrong, but *usually* does the right thing, and
+         -- handling Unicode properly is hard.
+         local disp = 1
+         if escapes_map[frag] or find(frag, "%c") then
+            frag = escapes_map[frag] or format("\\x%02x", byte(frag))
+            token.codepoints[i] = frag
+            -- In the case of an escape, we know all of the characters involved
+            -- are one-byte, and each occupy one cell
+            disp = #frag
+            token.escapes[frag] = true
+         end
+         token.disps[i] = disp
+         token.total_disp = token.total_disp + disp
+      end
+      -- Note that we don't quote if str was nil, only if it was an actual
+      -- empty string. nil is used to create a blank token into which chars
+      -- will later be inserted (see :split()).
+      if str and find(str, '^ *$') then
+         token:insert(1, '"')
+         token:insert('"')
+      end
+   else -- not cfg.wrappable
+      token.total_disp = utf8_len(str)
+   end
    for k, v in pairs(cfg) do
       token[k] = v
-   end
-   if not token.wrappable then
-      token.total_disp = token.total_disp or utf8_len(str)
-      return token
-   end
-   -- Everything from here on applies only to wrappable tokens,
-   -- in practice this means only string literals
-   token.codepoints = codepoints(str or "")
-   token.err = token.codepoints.err
-   token.disps = {}
-   token.escapes = {}
-   token.total_disp = 0
-   if not str then
-      return token
-   end
-   for i, frag in ipairs(token.codepoints) do
-      -- For now, start by assuming that all codepoints occupy one cell.
-      -- This is wrong, but *usually* does the right thing, and
-      -- handling Unicode properly is hard.
-      local disp = 1
-      if escapes_map[frag] or find(frag, "%c") then
-         frag = escapes_map[frag] or format("\\x%02x", byte(frag))
-         token.codepoints[i] = frag
-         -- In the case of an escape, we know all of the characters involved
-         -- are one-byte, and each occupy one cell
-         disp = #frag
-         token.escapes[frag] = true
-      end
-      token.disps[i] = disp
-      token.total_disp = token.total_disp + disp
-   end
-   if find(str, '^ *$') then
-      token:insert(1, '"')
-      token:insert('"')
    end
    return token
 end
