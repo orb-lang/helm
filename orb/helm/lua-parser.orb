@@ -13,7 +13,6 @@ non-standard extensions to the base language.
 Ideally, this would be accomplished through transclusion, but we have quite a
 ways to go before transclusion between projects is feasible.
 
-#Todo replace this with =espalier:espalier/peg=
 #!lua
 local Peg  = require "espalier:espalier/peg"
 local Node = require "espalier:espalier/node"

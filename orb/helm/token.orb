@@ -316,7 +316,7 @@ new = function(str, color, cfg)
       -- handling Unicode properly is hard.
       local disp = 1
       if escapes_map[frag] or find(frag, "%c") then
-         frag = escapes_map[frag] or format("\\x%x", byte(frag))
+         frag = escapes_map[frag] or format("\\x%02x", byte(frag))
          token.codepoints[i] = frag
          -- In the case of an escape, we know all of the characters involved
          -- are one-byte, and each occupy one cell
