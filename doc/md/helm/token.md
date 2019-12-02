@@ -119,8 +119,8 @@ function Token.split(token, max_disp)
    local first
    local cfg = { event = token.event, wrappable = token.wrappable }
    if token.wrappable then
-      cfg.escapes = token.escapes
       first = new(nil, token.color, cfg)
+      first.escapes = token.escapes
       for i = token.start, #token.codepoints do
          if first.total_disp + token.disps[i] > max_disp then
             token.start = i
