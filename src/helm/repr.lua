@@ -216,6 +216,25 @@ end
 
 local sub, find = assert(string.sub), assert(string.find)
 
+local function _rawtostring(val)
+   local ts
+   if type(val) == "table" then
+      -- get metatable and check for __tostring
+      local M = getmetatable(val)
+      if M and M.__tostring then
+         -- cache the tostring method and put it back
+         local __tostring = M.__tostring
+         M.__tostring = nil
+         ts = tostring(val)
+         M.__tostring = __tostring
+      end
+   end
+   if not ts then
+      ts = tostring(val)
+   end
+   return ts
+end
+
 local function name_for(value, c, hint)
    local str
    -- Hint provides a means to override the "type" of the value,
@@ -251,7 +270,7 @@ local function name_for(value, c, hint)
    end
 
    -- If not found, construct one starting with the tostring()
-   str = tostring(value)
+   str = _rawtostring(value)
    if typica == "metatable" then
       str = "⟨" .. "mt:" .. sub(str, -6) .. "⟩"
    elseif typica == "table" then

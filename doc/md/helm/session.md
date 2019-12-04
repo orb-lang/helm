@@ -1,3 +1,48 @@
 # Session
 
 
+  ``helm`` is expected to have a **session mode**, where it runs a sequence of
+commands, and optionally validates some or all of the results.
+
+
+There will be a way to run these headlessly, which will also help in
+refactoring ``modeselektor`` to have no information about how display is
+happening.
+
+
+A session will have a Session object, called ``sesh`` by default, which will
+have some methods:
+
+
+``sesh:pin(to_pin)`` will take a number or the string "all", and pin that
+step of the session.
+
+
+This means that it expects the same result, and will inform the user if it
+isn't.
+
+
+``sesh:unpin(to_unpin)`` will do the opposite.
+
+
+Both return the session object, which has a ``__repr`` which is informative of
+these statuses and, for pinned objects, if they have passed on the last round.
+
+
+``sesh:add(string)`` will execute a string, and add it to a session.
+``sesh:addLast(pin=(true|false))`` and ``sesh:addNext()`` will add the last
+line, optionally pinning it, or flag the session to add the next line.
+
+
+``sesh:record()`` and ``sesh:stop()`` will start and stop recording a session.
+``^R`` or ``sesh:reset()`` will reload the session, and return the session object
+with changes to pinned lines noted.
+
+
+It's intended that any changes to files the session depends on, will also
+trigger a session reset.
+
+
+A session will load the session lines into the history buffer, but only once,
+no matter how many times the session is reset or run.
+

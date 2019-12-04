@@ -60,6 +60,17 @@ function Search.NAV.SHIFT_UP(modeS, category, value)
    end
 end
 ```
+
+- [ ]  #Todo
+
+
+  - [ ]  Add Search.NAV.SHIFT_ALT_(UP|DOWN), to move a page at a time.
+         Hook them to PgUp and PgDown while we're at it.
+
+
+  - [ ]  Add Search.NAV.HYPER_UP and Search.NAV.HYPER_DOWN to snap to the
+         top and bottom.  These are synonymous with Home and End.
+
 ```lua
 Search.NAV.UP = Search.NAV.SHIFT_UP
 Search.NAV.DOWN = Search.NAV.SHIFT_DOWN
@@ -67,21 +78,21 @@ Search.NAV.DOWN = Search.NAV.SHIFT_DOWN
 ```
 ```lua
 local function _makeControl(num)
-    return function(modeS, category, value)
+   return function(modeS, category, value)
        local searchResult = modeS.hist:search(tostring(modeS.txtbuf))[1]
        if #searchResult > 0 then
-          local result
-          modeS.txtbuf, result = modeS.hist:index(searchResult.cursors[num])
-          if not result then
+         local result
+         modeS.txtbuf, result = modeS.hist:index(searchResult.cursors[num])
+         if not result then
              result = {n=1}
-          end
-          modeS.zones.results:replace(Rainbuf(result))
-          modeS:shiftMode(modeS.raga_default)
+         end
+         modeS.zones.results:replace(Rainbuf(result))
+         modeS:shiftMode(modeS.raga_default)
        else
-          modeS:shiftMode(modeS.raga_default)
-          modeS.zones.results:replace ""
+         modeS:shiftMode(modeS.raga_default)
+         modeS.zones.results:replace ""
        end
-    end
+   end
 end
 
 for i = 1, 9 do
