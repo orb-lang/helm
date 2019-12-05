@@ -540,13 +540,18 @@ local eval_ENV = {}
 local eval_M = {}
 setmeta(eval_ENV, eval_M)
 
+
+local function indexer(Env, key)
+   return Env[key]
+end
+
 function eval_M.__index(eval_ENV, key)
-   local value = rawget(_G, key)
-   if value then
+   local ok, value = pcall(indexer, _G, key)
+   if ok and value ~= nil then
       return value
    end
-   value = rawget(__G, key)
-   if value then
+   ok, value = pcall(indexer, __G, key)
+   if ok and value ~= nil then
       return value
    end
    return nil
