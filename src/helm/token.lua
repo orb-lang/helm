@@ -102,6 +102,8 @@ function Token.toString(token, c)
       end
       insert(output, frag)
    end
+   -- Need to pass the length explicitly as we've left a bunch of nils
+   -- at the beginning, breaking #output
    return token.color(concat(output))
 end
 
