@@ -107,6 +107,7 @@ local function addName(t, aG, pre)
    end
    return aG
 end
+repr.addName = addName
 ```
 #### repr.allNames(), repr.clearNames()
 

@@ -549,11 +549,16 @@ function eval_M.__index(eval_ENV, key)
    return nil
 end
 
+local function newindexer(Env, key, value)
+   Env[key] = value
+end
+
 function eval_M.__newindex(eval_ENV, key, value)
-   rawset(_G, key, value)
-   local name = {}
-   name[key] = value
-   repr.allNames(name)
+   local ok = pcall(newindexer, _G, key, value)
+   if not ok then
+      rawset(_G, key, value)
+   end
+   repr.addName { [key] = value }
 end
 
 
