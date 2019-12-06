@@ -64,11 +64,13 @@
 
 
 local codepoints = require "singletons/codepoints"
-local utf8_len, utf8_sub = assert(utf8.len), assert(utf8.sub)
+local utf8 = require "lua-utf8"
+local utf8_len, utf8_sub = utf8.len, utf8.sub
 local concat, insert, remove = assert(table.concat),
                                assert(table.insert),
                                assert(table.remove)
 
+local meta = require "singletons/core" . meta
 
 
 

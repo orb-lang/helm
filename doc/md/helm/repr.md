@@ -17,10 +17,13 @@ the repr.
 
 ```lua
 local core = require "singletons/core"
-
+string.lines = core.lines
+table.isarray = core.isarray
+table.keys  = core.keys
 local C = require "singletons/color"
 
 local Token = require "helm/token"
+local coro = coroutine
 ```
 #### setup
 
