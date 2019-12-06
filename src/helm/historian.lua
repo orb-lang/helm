@@ -165,6 +165,7 @@ function Historian.load(historian)
    historian.conn = conn
    -- Set up bridge tables
    conn.pragma.foreign_keys(true)
+   conn.pragma.journal_mode "wal"
    conn:exec(create_project_table)
    conn:exec(create_result_table)
    conn:exec(create_repl_table)
