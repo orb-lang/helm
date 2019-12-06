@@ -589,20 +589,37 @@ function repr.lineGenBW(tab, disp_width)
 end
 
 ```
-### repr.ts(tab, disp_width)
+### repr.ts(val, [disp_width])
 
-Returns a single string rather than an iterator of lines. Largely deprecated
-in favor of ``lineGen``, but available for simple use-cases.
+Returns a representation of the value in black-and-white.
+
+
+Intended as a drop-in replacement for ``tostring()``, which unpacks tables and
+provides names, presuming that ``anti_G`` has been populated.
 
 ```lua
-function repr.ts(tab, disp_width)
+function repr.ts(val, disp_width)
    local phrase = {}
-   for line in repr.lineGen(tab, disp_width) do
+   for line in repr.lineGen(val, disp_width, C.no_color) do
       phrase[#phrase + 1] = line
    end
    return concat(phrase, "\n")
 end
+```
+### repr.ts_color(val, [disp_width, [color]])
 
+A ``tostring`` which uses ANSI colors.  Optional arguments are the allowed
+width of lines, and a color table.
+
+```lua
+function repr.ts_color(val, disp_width, color)
+   local phrase = {}
+   color = color or C.color
+   for line in repr.lineGen(val, disp_width, color) do
+      phrase[#phrase + 1] = line
+   end
+   return concat(phrase, "\n")
+end
 ```
 ### cdata pretty-printing
 

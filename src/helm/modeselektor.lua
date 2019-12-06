@@ -119,7 +119,7 @@ local sub, gsub, rep, find = assert(string.sub),
                              assert(string.rep),
                              assert(string.find)
 
-local ts = repr.ts
+local ts = repr.ts_color
 
 
 
@@ -163,15 +163,6 @@ ModeS.REPL_LINE = 2
 
 
 ModeS.special = {}
-
-
-
-
-
-
-function ModeS.default(modeS, category, value)
-    return write(ts(value))
-end
 
 
 
@@ -490,7 +481,6 @@ function ModeS.act(modeS, category, value)
 
    ::final::
    if modeS.raga == "search" then
-      -- we need to fake this into a 'result'
       local searchResult = modeS.hist:search(tostring(modeS.txtbuf))
       modeS.zones.results:replace(searchResult)
    end
