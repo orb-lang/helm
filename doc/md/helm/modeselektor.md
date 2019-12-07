@@ -135,7 +135,7 @@ local sub, gsub, rep, find = assert(string.sub),
                              assert(string.rep),
                              assert(string.find)
 
-local ts = repr.ts
+local ts = repr.ts_color
 
 ```
 ```lua
@@ -180,14 +180,6 @@ against ``special`` first:
 
 ```lua
 ModeS.special = {}
-```
-
-A simple pass-through so we can see what we're missing.
-
-```lua
-function ModeS.default(modeS, category, value)
-    return write(ts(value))
-end
 ```
 ### self-insert(modeS, category, value)
 
@@ -497,7 +489,6 @@ function ModeS.act(modeS, category, value)
 
    ::final::
    if modeS.raga == "search" then
-      -- we need to fake this into a 'result'
       local searchResult = modeS.hist:search(tostring(modeS.txtbuf))
       modeS.zones.results:replace(searchResult)
    end
