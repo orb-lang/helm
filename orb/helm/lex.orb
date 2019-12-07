@@ -81,7 +81,7 @@ local number = _hexadecimal + _decimal
 local comment = P"--" * long_str
               + P"--" * (P(1) - NL)^0 * (NL + - P(1))
 
-local ERR = P(1)
+local ERR = P(1)^1
 
 local lua_toks = {comment, KW, string_long, string_short, number, OP, symbol,
                   WS, NL, ERR}
