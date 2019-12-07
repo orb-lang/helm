@@ -27,7 +27,6 @@ local c       = (require "singletons/color").color
 local repr    = require "helm/repr"
 local Codepoints = require "singletons/codepoints"
 
-local sub = assert(string.sub)
 local concat, reverse         = assert(table.concat), assert(table.reverse)
 assert(meta)
 ```
@@ -347,7 +346,6 @@ In this case we want to highlight the letters of the fragment, which we
 attach to the collection.
 
 ```lua
-local concat = assert(table.concat)
 
 local function _highlight(line, frag, best, max_disp, c)
    local frag_index = 1
@@ -478,7 +476,7 @@ function Historian.search(historian, frag)
    if #matches == 0 then
       -- try the transpose
       best = false
-      slip = sub(frag, 1, -3) .. sub(frag, -1, -1) .. sub(frag, -2, -2)
+      slip = frag:sub(1, -3) .. frag:sub(-1, -1) .. frag:sub(-2, -2)
       patt = fuzz_patt(slip)
       for i = #historian, 1, -1 do
          local score = match(patt, tostring(historian[i]))

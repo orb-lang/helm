@@ -72,8 +72,8 @@ local string_long = long_str
 
 local letter = R"az" + R"AZ"
 
-local symbol =   (letter^1 + P"_"^1)
-               * (letter + digit + P"_")^0
+local symbol =   (-digit * -terminal * P(1))^1
+               * (-terminal * P(1))^0
                * #terminal
 
 local number = _hexadecimal + _decimal
