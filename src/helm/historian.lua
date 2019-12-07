@@ -22,10 +22,9 @@ local Txtbuf  = require "helm/txtbuf"
 local Rainbuf = require "helm/rainbuf"
 local c       = (require "singletons/color").color
 local repr    = require "helm/repr"
+local Codepoints = require "singletons/codepoints"
 
-local format, sub, codepoints = assert(string.format),
-                                assert(string.sub),
-                                assert(string.codepoints)
+local sub = assert(string.sub)
 local concat, reverse         = assert(table.concat), assert(table.reverse)
 assert(meta)
 
@@ -337,7 +336,7 @@ end
 local P, match = L.P, L.match
 
 local function fuzz_patt(frag)
-   frag = type(frag) == "string" and codepoints(frag) or frag
+   frag = type(frag) == "string" and Codepoints(frag) or frag
    local patt =  (P(1) - P(frag[1]))^0
    for i = 1 , #frag - 1 do
       local v = frag[i]
@@ -359,31 +358,48 @@ end
 
 
 
-local concat, litpat = assert(table.concat), assert(string.litpat)
-local gsub = assert(string.gsub)
-local function _highlight(line, frag, best, c)
-   local hl = {}
-   while #frag > 0 do
-      local char
-      char, frag = frag:sub(1, 1), frag:sub(2)
-      local at = line:find(litpat(char))
-      if not at then
+local concat = assert(table.concat)
+
+local function _highlight(line, frag, best, max_disp, c)
+   local frag_index = 1
+   -- Collapse multiple spaces into one for display
+   line = line:gsub(" +"," ")
+   local codes = Codepoints(line)
+   local disp = 0
+   local stop_at
+   for i, char in ipairs(codes) do
+      local char_disp = 1
+      if char == "\n" then
+         char = c.stresc .. "\\n" .. c.base
+         codes[i] = char
+         char_disp =  2
+      end
+      -- Reserve one space for ellipsis unless this is the
+      -- last character on the line
+      local reserved_space = i < #codes and 1 or 0
+      if disp + char_disp + reserved_space > max_disp then
+         char = c.alert("…")
+         codes[i] = char
+         disp = disp + 1
+         stop_at = i
          break
       end
-      local Color
-      -- highlight the last two differently if this is a 'second best'
-      -- search
-      if not best and #frag <= 1 then
-         Color = c.alert
-      else
-         Color = c.search_hl
+      disp = disp + char_disp
+      if frag_index <= #frag and char == frag:sub(frag_index, frag_index) then
+         local char_color
+         -- highlight the last two differently if this is a
+         -- 'second best' search
+         if not best and #frag - frag_index < 2 then
+            char_color = c.alert
+         else
+            char_color = c.search_hl
+         end
+         char = char_color .. char .. c.base
+         codes[i] = char
+         frag_index = frag_index + 1
       end
-      hl[#hl + 1] = c.base(line:sub(1, at - 1))
-      hl[#hl + 1] = Color(char)
-      line = line:sub(at + 1)
    end
-   hl[#hl + 1] = c.base(line)
-   return concat(hl):gsub("\n", c.stresc .. "\\n" .. c.base)
+   return c.base(concat(codes, "", 1, stop_at)), disp
 end
 
 local function _collect_repr(collection, phrase, c)
@@ -401,23 +417,18 @@ local function _collect_repr(collection, phrase, c)
       end
       local line = collection[i]
       if line == nil then return nil end
-      local len = #line
       local alt_seq = "    "
       if i < 10 then
          alt_seq = c.bold("M-" .. tostring(i) .. " ")
       end
+      line, len = _highlight(line, collection.frag, collection.best, phrase:remains() - 4, c)
+      line = alt_seq .. line
       len = len + 4
-      if len > phrase:remains() then
-         line = line:sub(1, phrase:remains() - 5) .. c.alert "…"
-         len = phrase.width - (phrase.width - phrase:remains() - 4)
-      end
-      local next_line = alt_seq
-                     .. _highlight(line, collection.frag, collection.best, c)
       if i == collection.hl then
-         next_line = c.highlight(next_line)
+         line = c.highlight(line)
       end
       i = i + 1
-      return next_line, len
+      return line, len
    end
 end
 
