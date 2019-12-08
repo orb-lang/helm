@@ -190,7 +190,7 @@ function Historian.load(historian)
    local recents  = pop_stmt:resultset("i")
    if recents then
       local lines = reverse(recents[2])
-      local line_ids = reverse(recentsb[1])
+      local line_ids = reverse(recents[1])
       historian.line_ids = line_ids
       local repl_map = {}
       for i, v in ipairs(lines) do
