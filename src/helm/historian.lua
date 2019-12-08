@@ -98,11 +98,7 @@ INSERT INTO result (line_id, repr) VALUES (:line_id, :repr);
 ]]
 
 local insert_project = [[
-INSERT INTO project (directory) VALUES (:dir);
-]]
-
-local get_tables = [[
-SELECT name FROM sqlite_master WHERE type='table';
+INSERT INTO project (directory) VALUES (?);
 ]]
 
 local get_recent = [[
@@ -174,7 +170,7 @@ function Historian.load(historian)
                                   "i")
    if not proj_val then
       local ins_proj_stmt = conn:prepare(insert_project)
-      ins_proj_stmt : bindkv { dir = historian.project }
+      ins_proj_stmt : bind(historian.project)
       proj_val, proj_row = ins_proj_stmt:step()
       -- retry
       proj_val, proj_row = sql.pexec(conn,
@@ -199,7 +195,7 @@ function Historian.load(historian)
    local recents  = pop_stmt:resultset("i")
    if recents then
       local lines = reverse(recents[2])
-      local line_ids = reverse(recents[1])
+      local line_ids = reverse(recentsb[1])
       historian.line_ids = line_ids
       local repl_map = {}
       for i, v in ipairs(lines) do

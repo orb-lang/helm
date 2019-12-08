@@ -101,10 +101,6 @@ local insert_project = [[
 INSERT INTO project (directory) VALUES (?);
 ]]
 
-local get_tables = [[
-SELECT name FROM sqlite_master WHERE type='table';
-]]
-
 local get_recent = [[
 SELECT CAST (line_id AS REAL), line FROM repl
    WHERE project = :project
