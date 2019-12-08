@@ -191,10 +191,10 @@ function Historian.load(historian)
    local pop_stmt = conn:prepare(get_recent)
                       : bindkv { project = project_id,
                                  num_lines = historian.HISTORY_LIMIT }
-   local repl_val  = pop_stmt:resultset("i")
-   if repl_val then
-      local lines = reverse(repl_val[2])
-      local line_ids = reverse(repl_val[1])
+   local recents  = pop_stmt:resultset("i")
+   if recents then
+      local lines = reverse(recents[2])
+      local line_ids = reverse(recents[1])
       historian.line_ids = line_ids
       local repl_map = {}
       for i, v in ipairs(lines) do
