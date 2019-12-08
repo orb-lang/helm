@@ -214,12 +214,22 @@ function Historian.load(historian)
       historian.n = number_of_lines
       historian.line_ids = {}
       local counter = number_of_lines
-      while res ~= nil do
+      -- add one line to ensure we have history on startup
+      historian[counter] = Txtbuf(res[2])
+      historian.line_ids[counter] = res[1]
+      counter = counter - 1
+      -- idle to populate the rest of the history
+      local idler = uv.new_idle()
+      idler:start(function()
+         res = pop_stmt:step()
+         if res == nil then
+            idler:stop()
+            return nil
+         end
          historian[counter] = Txtbuf(res[2])
          historian.line_ids[counter] = res[1]
          counter = counter - 1
-         res = pop_stmt:step()
-      end
+      end)
    end
 end
 
