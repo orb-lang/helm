@@ -481,7 +481,7 @@ function Historian.search(historian, frag)
    local cursors = {}
    local best = true
    local patt = fuzz_patt(frag)
-   for i = #historian, 1, -1 do
+   for i = historian.n, 1, -1 do
       local score = match(patt, tostring(historian[i]))
       if score then
          matches[#matches + 1] = tostring(historian[i])
@@ -493,7 +493,7 @@ function Historian.search(historian, frag)
       best = false
       slip = frag:sub(1, -3) .. frag:sub(-1, -1) .. frag:sub(-2, -2)
       patt = fuzz_patt(slip)
-      for i = #historian, 1, -1 do
+      for i = historian.n, 1, -1 do
          local score = match(patt, tostring(historian[i]))
          if score then
             matches[#matches + 1] = tostring(historian[i])
@@ -595,7 +595,7 @@ Returns the next txtbuf in history, and a second flag to tell the
 
 ```lua
 function Historian.next(historian)
-   historian.cursor = bound(historian.cursor + 1, nil, #historian + 1)
+   historian.cursor = bound(historian.cursor + 1, nil, historian.n + 1)
    local txtbuf = historian[historian.cursor]
    if txtbuf then
       txtbuf = txtbuf:clone()
@@ -610,13 +610,13 @@ end
 ### Historian:index(cursor)
 
 Loads the history to an exact index. The index must be one that actually exists,
-i.e. 1 <= index <= #historian--#historian + 1 is not allowed.
+i.e. 1 <= index <= historian.n--historian.n + 1 is not allowed.
 
 ```lua
 local inbounds = assert(math.inbounds)
 
 function Historian.index(historian, cursor)
-   assert(inbounds(cursor, 1, #historian))
+   assert(inbounds(cursor, 1, historian.n))
    local txtbuf = historian[cursor]:clone()
    txtbuf:endOfText()
    local result = _resultsFrom(historian, cursor)
@@ -633,12 +633,12 @@ Doesn't adjust the cursor.
 
 ```lua
 function Historian.append(historian, txtbuf, results, success)
-   if tostring(historian[#historian]) == tostring(txtbuf)
+   if tostring(historian[historian.n]) == tostring(txtbuf)
       or tostring(txtbuf) == "" then
       -- don't bother
       return false
    end
-   historian[#historian + 1] = txtbuf
+   historian[historian.n + 1] = txtbuf
    if success then
       historian:persist(txtbuf, results)
    else
