@@ -639,6 +639,7 @@ function Historian.append(historian, txtbuf, results, success)
       return false
    end
    historian[historian.n + 1] = txtbuf
+   historian.n = historian.n + 1
    if success then
       historian:persist(txtbuf, results)
    else
