@@ -207,6 +207,7 @@ function Historian.load(historian)
    if not res then
       historian.line_ids = {}
       historian.cursor = 0
+      historian.n = 0
       return nil
    else
       -- put the results in *backward*
