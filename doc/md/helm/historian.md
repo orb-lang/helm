@@ -108,6 +108,12 @@ SELECT CAST (line_id AS REAL), line FROM repl
    DESC LIMIT :num_lines;
 ]]
 
+local get_number_of_lines = [[
+SELECT CAST (count(line) AS REAL) from repl
+   WHERE project = ?
+;
+]]
+
 local get_project = [[
 SELECT project_id FROM project
    WHERE directory = %s;
@@ -184,25 +190,30 @@ function Historian.load(historian)
    -- Create result retrieval prepared statement
    historian.get_results = conn:prepare(get_results)
    -- Retrieve history
+   local number_of_lines = conn:prepare(get_number_of_lines)
+                             :bind(project_id):step()[1]
+   number_of_lines = historian.HISTORY_LIMIT <= number_of_lines
+                     and historian.HISTORY_LIMIT or number_of_lines
    local pop_stmt = conn:prepare(get_recent)
                       : bindkv { project = project_id,
-                                 num_lines = historian.HISTORY_LIMIT }
-   local recents  = pop_stmt:resultset("i")
-   if recents then
-      local lines = reverse(recents[2])
-      local line_ids = reverse(recents[1])
-      historian.line_ids = line_ids
-      local repl_map = {}
-      for i, v in ipairs(lines) do
-         local buf = Txtbuf(v)
-         historian[i] = buf
-         repl_map[line_ids[i]] = buf
-      end
-      historian.cursor = #historian
-   else
-      historian.results = {}
+                                 num_lines = number_of_lines }
+   -- local recents  = pop_stmt:resultset("i")
+   local res = pop_stmt:step()
+   if not res then
       historian.line_ids = {}
       historian.cursor = 0
+      return nil
+   else
+      -- put the results in *backward*
+      historian.cursor = number_of_lines
+      historian.line_ids = {}
+      local counter = number_of_lines
+      while res ~= nil do
+         historian[counter] = Txtbuf(res[2])
+         historian.line_ids[counter] = res[1]
+         counter = counter - 1
+         res = pop_stmt:step()
+      end
    end
 end
 ```
