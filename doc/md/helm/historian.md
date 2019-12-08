@@ -107,9 +107,9 @@ SELECT name FROM sqlite_master WHERE type='table';
 
 local get_recent = [[
 SELECT CAST (line_id AS REAL), line FROM repl
-   WHERE project = %d
+   WHERE project = :project
    ORDER BY time
-   DESC LIMIT %d;
+   DESC LIMIT :num_lines;
 ]]
 
 local get_project = [[
@@ -188,9 +188,10 @@ function Historian.load(historian)
    -- Create result retrieval prepared statement
    historian.get_results = conn:prepare(get_results)
    -- Retrieve history
-   local pop_str = sql.format(get_recent, project_id,
-                        historian.HISTORY_LIMIT)
-   local repl_val  = sql.pexec(conn, pop_str, "i")
+   local pop_stmt = conn:prepare(get_recent)
+                      : bindkv { project = project_id,
+                                 num_lines = historian.HISTORY_LIMIT }
+   local repl_val  = pop_stmt:resultset("i")
    if repl_val then
       local lines = reverse(repl_val[2])
       local line_ids = reverse(repl_val[1])
