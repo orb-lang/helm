@@ -571,7 +571,7 @@ local function _resultsFrom(historian, cursor)
          setmeta(results[i], _db_result_M)
       end
    end
-   historian.get_results:clearbind():reset()
+   historian.get_results:reset()
    -- may as well memoize the database call, while we're here
    historian.result_buffer[line_id] = results
    return results
