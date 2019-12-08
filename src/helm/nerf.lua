@@ -72,7 +72,7 @@ local up1, down1 = a.jump.up(), a.jump.down()
 local function _prev(modeS)
    local prev_result, linestash
    if tostring(modeS.txtbuf) ~= ""
-      and modeS.hist.cursor > #modeS.hist then
+      and modeS.hist.cursor > modeS.hist.n then
       linestash = modeS.txtbuf
    end
    modeS.txtbuf, prev_result = modeS.hist:prev()
@@ -100,7 +100,7 @@ local function _advance(modeS)
       modeS.firstChar = true
       local added = modeS.hist:append(modeS.txtbuf)
       if added then
-         modeS.hist.cursor = #modeS.hist + 1
+         modeS.hist.cursor = modeS.hist.n + 1
       end
       modeS.txtbuf = Txtbuf()
    else
@@ -218,7 +218,7 @@ CTRL["^E"] = NAV.HYPER_RIGHT
 
 local function clear_txtbuf(modeS, category, value)
    modeS.txtbuf = Txtbuf()
-   modeS.hist.cursor = #modeS.hist + 1
+   modeS.hist.cursor = modeS.hist.n + 1
    modeS.firstChar = true
    modeS.zones.results:replace ""
    modeS.zones:reflow(modeS)

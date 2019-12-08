@@ -211,6 +211,7 @@ function Historian.load(historian)
    else
       -- put the results in *backward*
       historian.cursor = number_of_lines
+      historian.n = number_of_lines
       historian.line_ids = {}
       local counter = number_of_lines
       while res ~= nil do

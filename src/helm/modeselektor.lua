@@ -627,7 +627,7 @@ function ModeS.eval(modeS)
    end
 
    modeS.hist:append(modeS.txtbuf, results, success)
-   local line_id = modeS.hist.line_ids[#modeS.hist]
+   local line_id = modeS.hist.line_ids[modeS.hist.n]
    if success then
       -- async render of resbuf
       -- set up closed-over state
@@ -653,9 +653,9 @@ function ModeS.eval(modeS)
          end
          result_idler:stop()
       end)
-      modeS.hist.result_buffer[#modeS.hist] = result_tostring
+      modeS.hist.result_buffer[modeS.hist.n] = result_tostring
    end
-   modeS.hist.cursor = #modeS.hist
+   modeS.hist.cursor = modeS.hist.n
 end
 
 
@@ -688,7 +688,7 @@ local function new(max_col, max_row)
   modeS.status = setmeta({}, _stat_M)
   rawset(__G, "stat", modeS.status)
   modeS.lex  = Lex.lua_thor
-  modeS.hist.cursor = #modeS.hist + 1
+  modeS.hist.cursor = modeS.hist.n + 1
   modeS.max_col = max_col
   modeS.max_row = max_row
   -- this will be replaced with Zones
