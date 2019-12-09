@@ -104,8 +104,8 @@ INSERT INTO project (directory) VALUES (?);
 local get_recent = [[
 SELECT CAST (line_id AS REAL), line FROM repl
    WHERE project = :project
-   ORDER BY time
-   DESC LIMIT :num_lines;
+   ORDER BY time DESC
+   LIMIT :num_lines;
 ]]
 
 local get_number_of_lines = [[
@@ -155,6 +155,9 @@ between the regenerated txtbufs and their associated result history.
 the results never get used.
 
 ```lua
+
+local bound = assert(core.bound)
+
 function Historian.load(historian)
    local conn = sql.open(historian.helm_db)
    historian.conn = conn
@@ -192,36 +195,33 @@ function Historian.load(historian)
    -- Retrieve history
    local number_of_lines = conn:prepare(get_number_of_lines)
                              :bind(project_id):step()[1]
-   number_of_lines = historian.HISTORY_LIMIT <= number_of_lines
-                     and historian.HISTORY_LIMIT or number_of_lines
+   if number_of_lines == 0 then
+      return nil
+   end
+   number_of_lines = bound(number_of_lines, nil, historian.HISTORY_LIMIT)
    local pop_stmt = conn:prepare(get_recent)
                       : bindkv { project = project_id,
                                  num_lines = number_of_lines }
-   -- local recents  = pop_stmt:resultset("i")
-   local res = pop_stmt:step()
-   if not res then
-      return nil
-   end
    -- put the results in *backward*
    historian.cursor = number_of_lines
    historian.n = number_of_lines
    local counter = number_of_lines
-   -- add one line to ensure we have history on startup
-   historian[counter] = Txtbuf(res[2])
-   historian.line_ids[counter] = res[1]
-   counter = counter - 1
-   -- idle to populate the rest of the history
-   local idler = uv.new_idle()
-   idler:start(function()
-      res = pop_stmt:step()
-      if res == nil then
-         idler:stop()
+   local idler
+   local function load_one()
+      local res = pop_stmt:step()
+      if not res then
+         if idler then idler:stop() end
          return nil
       end
       historian[counter] = Txtbuf(res[2])
       historian.line_ids[counter] = res[1]
       counter = counter - 1
-   end)
+   end
+   -- add one line to ensure we have history on startup
+   load_one()
+   -- idle to populate the rest of the history
+   idler = uv.new_idle()
+   idler:start(load_one)
 end
 ```
 ### Historian:restore_session(modeS, session)
