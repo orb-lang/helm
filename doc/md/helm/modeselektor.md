@@ -582,7 +582,7 @@ end
 ```lua
 local insert = assert(table.insert)
 
-function ModeS.__eval(modeS, chunk, append_p)
+function ModeS.__eval(modeS, chunk, no_append)
    -- check for leading =, old-school style
    local head = sub(chunk, 1, 1)
    if head == "=" then -- take pity on old-school Lua hackers
@@ -614,7 +614,6 @@ function ModeS.__eval(modeS, chunk, append_p)
       else
          -- error
          results.frozen = true
-         modeS.zones.results:replace(results)
       end
    else
       if err:match "'<eof>'$" then
@@ -623,44 +622,45 @@ function ModeS.__eval(modeS, chunk, append_p)
          write(a.colrow(1, modeS.repl_top + 1) .. "...")
          return true
       else
-         local to_err = { err,
-                          n = 1,
-                          frozen = true}
-         modeS.zones.results:replace(to_err)
-         -- pass through to default.
+         -- make the error into the result
+         results = { err,
+                     n = 1,
+                     frozen = true}
       end
    end
-
-   modeS.hist:append(modeS.txtbuf, results, success)
-   local line_id = modeS.hist.line_ids[modeS.hist.n]
-   if success then
-      -- async render of resbuf
-      -- set up closed-over state
-      local lineGens, result_tostring = {}, {n = results.n}
-      for i = 1, results.n do
-         -- create line generators for each result
-         lineGens[i] = repr.lineGen(results[i], modeS.zones.results:width())
-         result_tostring[i] = setmeta({}, result_repr_M)
-      end
-      local i = 1
-      local result_idler = uv.new_idle()
-      -- run string generator as idle process
-      result_idler:start(function()
-         while i <= results.n do
-            local line = lineGens[i]()
-            if line then
-               insert(result_tostring[i],line)
-               return nil
-            else
-               i = i + 1
-               return nil
-            end
-         end
-         result_idler:stop()
-      end)
-      modeS.hist.result_buffer[modeS.hist.n] = result_tostring
+   if not no_append then
+     modeS.zones.results:replace(results)
+     modeS.hist:append(modeS.txtbuf, results, success)
+     local line_id = modeS.hist.line_ids[modeS.hist.n]
+     if success then
+        -- async render of resbuf
+        -- set up closed-over state
+        local lineGens, result_tostring = {}, {n = results.n}
+        for i = 1, results.n do
+           -- create line generators for each result
+           lineGens[i] = repr.lineGen(results[i], modeS.zones.results:width())
+           result_tostring[i] = setmeta({}, result_repr_M)
+        end
+        local i = 1
+        local result_idler = uv.new_idle()
+        -- run string generator as idle process
+        result_idler:start(function()
+           while i <= results.n do
+              local line = lineGens[i]()
+              if line then
+                 insert(result_tostring[i],line)
+                 return nil
+              else
+                 i = i + 1
+                 return nil
+              end
+           end
+           result_idler:stop()
+        end)
+        modeS.hist.result_buffer[modeS.hist.n] = result_tostring
+     end
+     modeS.hist.cursor = modeS.hist.n
    end
-   modeS.hist.cursor = modeS.hist.n
 end
 
 function ModeS.eval(modeS)
