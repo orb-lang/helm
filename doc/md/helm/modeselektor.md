@@ -582,8 +582,7 @@ end
 ```lua
 local insert = assert(table.insert)
 
-function ModeS.eval(modeS)
-   local chunk = tostring(modeS.txtbuf)
+function ModeS.__eval(modeS, chunk, append_p)
    -- check for leading =, old-school style
    local head = sub(chunk, 1, 1)
    if head == "=" then -- take pity on old-school Lua hackers
@@ -662,6 +661,10 @@ function ModeS.eval(modeS)
       modeS.hist.result_buffer[modeS.hist.n] = result_tostring
    end
    modeS.hist.cursor = modeS.hist.n
+end
+
+function ModeS.eval(modeS)
+   modeS:__eval(tostring(modeS.txtbuf))
 end
 ```
 #### modeS.status
