@@ -356,7 +356,7 @@ like the lexer.
 
 
 ```lua
-local a = require "anterm"
+local a = require "singletons:anterm"
 
 local _hard_nl = a.col(1) .. a.jump.down()
 
