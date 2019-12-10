@@ -538,19 +538,9 @@ end
 
 
 
+
 function Txtbuf.nl(txtbuf)
-   -- Most txtbufs are one line, so we always evaluate from
-   -- a one-liner, regardless of cursor location.
-   local linum = #txtbuf.lines
-   if linum == 1 then
-      return true
-   end
    local cur_row, cur_col = txtbuf:getCursor()
-   -- Evaluate if we are at the end of the first or last line (the default
-   -- positions after scrolling up or down in the history)
-   if (cur_row == 1 or cur_row == linum) and cur_col > #txtbuf.lines[cur_row] then
-      return true
-   end
    -- split the line
    local line = concat(txtbuf.lines[cur_row])
    local first = sub(line, 1, cur_col - 1)
@@ -563,6 +553,25 @@ end
 
 
 
+
+
+
+
+
+function Txtbuf.shouldEvaluate(txtbuf)
+   -- Most txtbufs are one line, so we always evaluate from
+   -- a one-liner, regardless of cursor location.
+   local linum = #txtbuf.lines
+   if linum == 1 then
+      return true
+   end
+   local cur_row, cur_col = txtbuf:getCursor()
+   -- Evaluate if we are at the end of the first or last line (the default
+   -- positions after scrolling up or down in the history)
+   if (cur_row == 1 or cur_row == linum) and cur_col > #txtbuf.lines[cur_row] then
+      return true
+   end
+end
 
 
 

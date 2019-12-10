@@ -72,7 +72,7 @@ local up1, down1 = a.jump.up(), a.jump.down()
 local function _prev(modeS)
    local prev_result, linestash
    if tostring(modeS.txtbuf) ~= ""
-      and modeS.hist.cursor > #modeS.hist then
+      and modeS.hist.cursor > modeS.hist.n then
       linestash = modeS.txtbuf
    end
    modeS.txtbuf, prev_result = modeS.hist:prev()
@@ -100,7 +100,7 @@ local function _advance(modeS)
       modeS.firstChar = true
       local added = modeS.hist:append(modeS.txtbuf)
       if added then
-         modeS.hist.cursor = #modeS.hist + 1
+         modeS.hist.cursor = modeS.hist.n + 1
       end
       modeS.txtbuf = Txtbuf()
    else
@@ -150,18 +150,34 @@ function NAV.HYPER_RIGHT(modeS,category,value)
   return modeS.txtbuf:endOfLine()
 end
 
+local function _eval(modeS)
+   local more = modeS:eval()
+   if not more then
+      modeS.txtbuf = Txtbuf()
+      modeS.firstChar = true
+   end
+   modeS.hist.cursor = modeS.hist.cursor + 1
+end
+
 function NAV.RETURN(modeS, category, value)
-   -- eval or split line
-   local eval = modeS.txtbuf:nl()
-   if eval then
-     local more = modeS:eval()
-     if not more then
-       modeS.txtbuf = Txtbuf()
-       modeS.firstChar = true
-     end
-     modeS.hist.cursor = modeS.hist.cursor + 1
+   if modeS.txtbuf:shouldEvaluate() then
+      _eval(modeS)
+   else
+      modeS.txtbuf:nl()
    end
 end
+
+function NAV.CTRL_RETURN(modeS, category, value)
+   _eval(modeS)
+end
+
+function NAV.SHIFT_RETURN(modeS, category, value)
+   modeS.txtbuf:nl()
+end
+
+-- Add aliases for terminals not in CSI u mode
+CTRL["^\\"] = NAV.CTRL_RETURN
+NAV.ALT_RETURN = NAV.SHIFT_RETURN
 
 local function _modeShiftOnEmpty(modeS)
    local buf = tostring(modeS.txtbuf)
@@ -218,7 +234,7 @@ CTRL["^E"] = NAV.HYPER_RIGHT
 
 local function clear_txtbuf(modeS, category, value)
    modeS.txtbuf = Txtbuf()
-   modeS.hist.cursor = #modeS.hist + 1
+   modeS.hist.cursor = modeS.hist.n + 1
    modeS.firstChar = true
    modeS.zones.results:replace ""
    modeS.zones:reflow(modeS)

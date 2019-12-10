@@ -98,18 +98,20 @@ INSERT INTO result (line_id, repr) VALUES (:line_id, :repr);
 ]]
 
 local insert_project = [[
-INSERT INTO project (directory) VALUES (:dir);
-]]
-
-local get_tables = [[
-SELECT name FROM sqlite_master WHERE type='table';
+INSERT INTO project (directory) VALUES (?);
 ]]
 
 local get_recent = [[
 SELECT CAST (line_id AS REAL), line FROM repl
-   WHERE project = %d
-   ORDER BY time
-   DESC LIMIT %d;
+   WHERE project = :project
+   ORDER BY time DESC
+   LIMIT :num_lines;
+]]
+
+local get_number_of_lines = [[
+SELECT CAST (count(line) AS REAL) from repl
+   WHERE project = ?
+;
 ]]
 
 local get_project = [[
@@ -153,6 +155,9 @@ between the regenerated txtbufs and their associated result history.
 the results never get used.
 
 ```lua
+
+local bound = assert(core.bound)
+
 function Historian.load(historian)
    local conn = sql.open(historian.helm_db)
    historian.conn = conn
@@ -169,7 +174,7 @@ function Historian.load(historian)
                                   "i")
    if not proj_val then
       local ins_proj_stmt = conn:prepare(insert_project)
-      ins_proj_stmt : bindkv { dir = historian.project }
+      ins_proj_stmt : bind(historian.project)
       proj_val, proj_row = ins_proj_stmt:step()
       -- retry
       proj_val, proj_row = sql.pexec(conn,
@@ -188,25 +193,35 @@ function Historian.load(historian)
    -- Create result retrieval prepared statement
    historian.get_results = conn:prepare(get_results)
    -- Retrieve history
-   local pop_str = sql.format(get_recent, project_id,
-                        historian.HISTORY_LIMIT)
-   local repl_val  = sql.pexec(conn, pop_str, "i")
-   if repl_val then
-      local lines = reverse(repl_val[2])
-      local line_ids = reverse(repl_val[1])
-      historian.line_ids = line_ids
-      local repl_map = {}
-      for i, v in ipairs(lines) do
-         local buf = Txtbuf(v)
-         historian[i] = buf
-         repl_map[line_ids[i]] = buf
-      end
-      historian.cursor = #historian
-   else
-      historian.results = {}
-      historian.line_ids = {}
-      historian.cursor = 0
+   local number_of_lines = conn:prepare(get_number_of_lines)
+                             :bind(project_id):step()[1]
+   if number_of_lines == 0 then
+      return nil
    end
+   number_of_lines = bound(number_of_lines, nil, historian.HISTORY_LIMIT)
+   local pop_stmt = conn:prepare(get_recent)
+                      : bindkv { project = project_id,
+                                 num_lines = number_of_lines }
+   -- put the results in *backward*
+   historian.cursor = number_of_lines
+   historian.n = number_of_lines
+   local counter = number_of_lines
+   local idler
+   local function load_one()
+      local res = pop_stmt:step()
+      if not res then
+         if idler then idler:stop() end
+         return nil
+      end
+      historian[counter] = Txtbuf(res[2])
+      historian.line_ids[counter] = res[1]
+      counter = counter - 1
+   end
+   -- add one line to ensure we have history on startup
+   load_one()
+   -- idle to populate the rest of the history
+   idler = uv.new_idle()
+   idler:start(load_one)
 end
 ```
 ### Historian:restore_session(modeS, session)
@@ -466,7 +481,7 @@ function Historian.search(historian, frag)
    local cursors = {}
    local best = true
    local patt = fuzz_patt(frag)
-   for i = #historian, 1, -1 do
+   for i = historian.n, 1, -1 do
       local score = match(patt, tostring(historian[i]))
       if score then
          matches[#matches + 1] = tostring(historian[i])
@@ -478,7 +493,7 @@ function Historian.search(historian, frag)
       best = false
       slip = frag:sub(1, -3) .. frag:sub(-1, -1) .. frag:sub(-2, -2)
       patt = fuzz_patt(slip)
-      for i = #historian, 1, -1 do
+      for i = historian.n, 1, -1 do
          local score = match(patt, tostring(historian[i]))
          if score then
             matches[#matches + 1] = tostring(historian[i])
@@ -547,7 +562,7 @@ local function _resultsFrom(historian, cursor)
          setmeta(results[i], _db_result_M)
       end
    end
-   historian.get_results:clearbind():reset()
+   historian.get_results:reset()
    -- may as well memoize the database call, while we're here
    historian.result_buffer[line_id] = results
    return results
@@ -580,7 +595,7 @@ Returns the next txtbuf in history, and a second flag to tell the
 
 ```lua
 function Historian.next(historian)
-   historian.cursor = bound(historian.cursor + 1, nil, #historian + 1)
+   historian.cursor = bound(historian.cursor + 1, nil, historian.n + 1)
    local txtbuf = historian[historian.cursor]
    if txtbuf then
       txtbuf = txtbuf:clone()
@@ -595,13 +610,13 @@ end
 ### Historian:index(cursor)
 
 Loads the history to an exact index. The index must be one that actually exists,
-i.e. 1 <= index <= #historian--#historian + 1 is not allowed.
+i.e. 1 <= index <= historian.n--historian.n + 1 is not allowed.
 
 ```lua
 local inbounds = assert(math.inbounds)
 
 function Historian.index(historian, cursor)
-   assert(inbounds(cursor, 1, #historian))
+   assert(inbounds(cursor, 1, historian.n))
    local txtbuf = historian[cursor]:clone()
    txtbuf:endOfText()
    local result = _resultsFrom(historian, cursor)
@@ -618,12 +633,13 @@ Doesn't adjust the cursor.
 
 ```lua
 function Historian.append(historian, txtbuf, results, success)
-   if tostring(historian[#historian]) == tostring(txtbuf)
+   if tostring(historian[historian.n]) == tostring(txtbuf)
       or tostring(txtbuf) == "" then
       -- don't bother
       return false
    end
-   historian[#historian + 1] = txtbuf
+   historian[historian.n + 1] = txtbuf
+   historian.n = historian.n + 1
    if success then
       historian:persist(txtbuf, results)
    else
@@ -641,6 +657,9 @@ end
 
 local function new()
    local historian = meta(Historian)
+   historian.line_ids = {}
+   historian.cursor = 0
+   historian.n = 0
    historian:load()
    historian.result_buffer = setmetatable({}, __result_buffer_M)
    return historian
