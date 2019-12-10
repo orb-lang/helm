@@ -147,14 +147,10 @@ end
 
 *** Historian:load()
 
-Brings up the project history and results, and (eventually) user config.
+Brings up the project history and result ids.
 
 Most of the complexity serves to make a simple key/value relationship
 between the regenerated txtbufs and their associated result history.
-
-#todo There's actually no reason to load all the results, as we don't use the
-vast majority of them.  If we stash the line_id for each line, we can
-retrieve its results 'just in time' and get faster loads.
 
 We want as much history as practical, because we search in it, but most of
 the results never get used.

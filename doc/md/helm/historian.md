@@ -127,7 +127,7 @@ ORDER BY result.result_id;
 ]]
 
 local home_dir = os.getenv "HOME"
-Historian.helm_db = home_dir .. "/.local/share/bridge/.helm"
+Historian.helm_db = _Bridge.bridge_home .. "/.helm"
 -- This require the bridge_home function in pylon, which I can't recompile
 -- without github access and I'm on a plane:
 -- _Bridge.bridge_home() .. ".helm"
@@ -145,13 +145,14 @@ end
 ```
 ### Historian:load()
 
-Brings up the project history and results, and (eventually) user config.
+Brings up the project history and result ids.
 
 
 Most of the complexity serves to make a simple key/value relationship
 between the regenerated txtbufs and their associated result history.
 
-#todo There's actually no reason to load all the results, as we don't use the
+
+We want as much history as practical, because we search in it, but most of
 the results never get used.
 
 ```lua
