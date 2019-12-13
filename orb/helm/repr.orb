@@ -168,7 +168,7 @@ end
 #/lua
 
 
-*** _yieldReprs(tab, phrase, c)
+*** _yieldReprs(tab, window, c)
 
 I want to deliver =__repr=s from inside the funky coroutine brew,
 because, well, because. =ts= is meant to be general.
@@ -187,11 +187,11 @@ incredibly intricate repl.
 local hasmetamethod = assert(core.hasmetamethod)
 local lines = assert(string.lines)
 
-local function _yieldReprs(tab, phrase, c)
+local function _yieldReprs(tab, window, c)
    local _repr = hasmetamethod("repr", tab)
    assert(c, "must have a value for c")
    assert(_repr, "failed to retrieve repr metamethod")
-   local repr = _repr(tab, phrase, c)
+   local repr = _repr(tab, window, c)
    if type(repr) == "string" then
       repr = lines(repr)
    end
@@ -298,9 +298,10 @@ end
 
 #/lua
 
-*** tabulate(tab, phrase, c, depth, cycle)
+*** tabulate(tab, window, c, depth, cycle)
 
-This =yield()s= pieces of a table, recursively, one at a time.
+Returns an iterator that produces Tokens representing pieces of a table,
+recursively, one at a time. Implemented internally as a coroutine.
 
 #!lua
 local function yield_name(...) yield(name_for(...)) end
@@ -309,7 +310,7 @@ local isarray, table_keys, sort = assert(table.isarray),
                                   assert(table.keys),
                                   assert(table.sort)
 
-local function tabulate(tab, phrase, c, depth, cycle)
+local function _tabulate(tab, window, c, depth, cycle)
    cycle = cycle or {}
    depth = depth or 0
    if type(tab) ~= "table"
@@ -322,7 +323,7 @@ local function tabulate(tab, phrase, c, depth, cycle)
    -- We want to use the __repr method if and only if it is on the
    -- metatable.
    if hasmetamethod("repr", tab) and (not rawget(tab, "__repr")) then
-      _yieldReprs(tab, phrase, c)
+      _yieldReprs(tab, window, c)
       return nil
    end
    -- add non-__repr'ed tables to cycle
@@ -349,7 +350,7 @@ local function tabulate(tab, phrase, c, depth, cycle)
       if depth < C.depth and not cycle[_M] then
          yield(Token(" → ", c.base))
          yield(Token("⟨", c.metatable))
-         tabulate(_M, phrase, c, depth + 1, cycle)
+         _tabulate(_M, window, c, depth + 1, cycle)
          yield(Token("⟩ ", c.metatable, { event = "sep"}))
       else
          yield(Token(" ", c.no_color, { event = "sep" }))
@@ -359,7 +360,7 @@ local function tabulate(tab, phrase, c, depth, cycle)
    if is_array then
       for i, val in ipairs(tab) do
          if i ~= 1 then yield(Token(", ", c.base, {event = "sep"})) end
-         tabulate(val, phrase, c, depth + 1, cycle)
+         _tabulate(val, window, c, depth + 1, cycle)
       end
    else
       local keys = table_keys(tab)
@@ -380,148 +381,16 @@ local function tabulate(tab, phrase, c, depth, cycle)
             yield(Token("]", c.base))
          end
          yield(Token(" = ", c.base))
-         tabulate(val, phrase, c, depth + 1, cycle)
+         _tabulate(val, window, c, depth + 1, cycle)
       end
    end
    yield(Token(" }", c.base, {event = "end"}))
    return nil
 end
-#/lua
 
-**** oneLine(phrase, c, long, force)
-
-Returns one line from =phrase=. =long= determines whether we're doing long
-lines or short lines, which is determined by =lineGen=, the caller.
-=force= tells us that we should return a line even if we are not at a separator
-or end-of-stream--used to clear the buffer when we hit a line from __repr.
-
-#!lua
-local function _disp(phrase)
-   local displacement = 0
-   for _, token in ipairs(phrase) do
-      displacement = displacement + token.total_disp
-   end
-   return displacement
-end
-
-local function _spill(phrase, line)
-   if line[1].event == "indent" then
-      remove(line, 1)
-   end
-   for i = 1, #line do
-      phrase[i] = line[i]
-   end
-   phrase.yielding = true
-   return false
-end
-
-local MIN_SPLIT_WIDTH = 20
-
-local function oneLine(phrase, c, long, force)
-   local line = { Token(("  "):rep(phrase.level), c.no_color, {event = "indent"}) }
-   local new_level = phrase.level
-   if #phrase == 0 then
-      phrase.yielding = true
-      return false
-   end
-   while true do
-      local token = remove(phrase, 1)
-      -- Don't indent the remainder of a wrapped token
-      if token.wrap_part == "rest" then
-         assert(remove(line).event == "indent", "Should only encounter rest-of-wrap at start of line")
-      end
-      insert(line, token)
-      if token.event == "array" or token.event == "map" then
-         new_level = new_level + 1
-      elseif token.event == "end" then
-         new_level = new_level - 1
-      end
-      -- If we are in long mode and hit a separator, remove the trailing space
-      -- so it doesn't cause an unnecessary wrap. We can also allow the line to
-      -- exactly fill the buffer, since we know we're going to end the line
-      -- here anyway.
-      local reserved_space = 1
-      if token.event == "sep" and long then
-         token:removeTrailingSpaces()
-         reserved_space = 0
-      end
-      if _disp(line) + reserved_space > phrase.width then
-         remove(line)
-         -- Now that we know we *are* going to force-wrap, we need space for
-         -- the ~ even if this token is a separator (in which case it will
-         -- end up entirely on the next line, but we need to compute the
-         -- number of padding spaces correctly).
-         local remaining = phrase.width - _disp(line) - 1
-         local rest = token
-         -- Only split strings, and only if they're long enough to be worth it
-         -- In the extreme event that a non-string token is longer than the
-         -- entire available width, split it too to avoid an infinite loop
-         if token.wrappable and token.total_disp > MIN_SPLIT_WIDTH
-            or token.total_disp >= phrase.width then
-            token = token:split(remaining)
-            -- Pad with spaces if we were forced to split a couple chars short
-            for i = 1, remaining - token.total_disp do
-               token:insert(" ")
-            end
-         -- Short strings and other token types just get bumped to the next line
-         else
-            token = Token((" "):rep(remaining), c.no_color)
-         end
-         token.wrap_part = "first"
-         rest.wrap_part = "rest"
-         insert(line, token)
-         insert(line, Token("~", c.alert))
-         insert(phrase, 1, rest)
-      end
-      -- If we are in long mode and hit a comma
-      if (token.event == "sep" and long)
-         -- Or we are at the very end of the stream,
-         -- or have been told to produce a line no matter what
-         or (#phrase == 0 and (force or not phrase.more))
-         -- Or we just needed to chop & wrap a token
-         or (token.wrap_part == "first") then
-         for i, frag in ipairs(line) do
-            line[i] = frag:toString(c)
-         end
-         phrase.level = new_level
-         return concat(line)
-      elseif #phrase == 0 and phrase.more then
-         -- spill our fragments back
-         return _spill(phrase, line)
-      end
-   end
-end
-#/lua
-
-
-**** lineGen(tab, disp_width, c)
-
-This function sets up an iterator, which returns one line at a time of the
-table.
-
-#!lua
-local collect, readOnly = assert(core.collect), assert(core.readOnly)
-local wrap = assert(coroutine.wrap)
-
-local function _remains(phrase)
-   return phrase.width - _disp(phrase)
-end
-
-local function lineGen(tab, disp_width, c)
-   assert(disp_width, "lineGen must have a disp_width")
-   local stage = {}              -- stage stack
-   local phrase = {
-      remains = _remains,
-      width = disp_width,
-      stage = stage,
-      level = 0,                 -- how many levels of recursion are we on
-      more = true,               -- are their more frags to come
-      yielding = true
-   }
-   -- make a read-only phrase table for fetching values
-   local phrase_ro = readOnly(phrase)
-   local iter = wrap(function()
-      local success, result = pcall(tabulate, tab, phrase_ro, c)
+local function tabulate(tab, window, c)
+   return wrap(function()
+      local success, result = pcall(_tabulate, tab, window, c)
       if not success then
          local err_lines = collect(lines, tostring(result))
          err_lines[1] = "error in __repr: " .. err_lines[1]
@@ -530,55 +399,6 @@ local function lineGen(tab, disp_width, c)
          end
       end
    end)
-   local long = false            -- long or short printing
-
-   -- return an iterator function which yields one line at a time.
-   return function()
-      ::start::
-      while phrase.yielding do
-         local token = iter()
-         if token == nil then
-            phrase.yielding = false
-            phrase.more = false
-            break
-         end
-         if token.event then
-            local event = token.event
-            if event == "repr_line" then
-               -- Clear the buffer, if any, then pass along the __repr() output
-               local prev = oneLine(phrase, c, long, true) or ""
-               return prev .. token.str
-            end
-            if event == "array" or event == "map" then
-               insert(stage, event)
-            elseif event == "end" then
-               remove(stage)
-            end
-         end
-         phrase[#phrase + 1] = token
-
-         if _disp(phrase) + (2 * phrase.level) >= disp_width then
-            long = true
-            phrase.yielding = false
-            break
-         else
-            long = false
-         end
-      end
-      if #phrase > 0 then
-            local ln = oneLine(phrase, c, long)
-         if ln then
-            return ln
-         else
-            goto start
-            end
-      elseif phrase.more == false then
-         return nil
-      else
-         phrase.yielding = true
-         goto start
-         end
-      end
 end
 
 #/lua
@@ -590,15 +410,16 @@ and a default width.
 
 #!lua
 
+local Composer = require "helm/composer"
+
 function repr.lineGen(tab, disp_width, color)
    color = color or C.color
-   disp_width = disp_width or 80
-   return lineGen(tab, disp_width, color)
+   local generator = Composer(tabulate)
+   return generator(tab, disp_width, color)
 end
 
 function repr.lineGenBW(tab, disp_width)
-   disp_width = disp_width or 80
-   return lineGen(tab, disp_width, C.no_color)
+   return repr.lineGen(tab, disp_width, C.no_color)
 end
 
 #/lua

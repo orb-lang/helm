@@ -278,7 +278,6 @@ function Historian.persist(historian, txtbuf, results)
    if have_results then
       for i = 1, results.n do
          results_lineGens[i] = repr.lineGenBW(results[i])
-         assert(type(results_lineGens[i]) == 'function')
          results_tostring[i] = {}
       end
    end
