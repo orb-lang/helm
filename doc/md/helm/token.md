@@ -43,7 +43,7 @@ Wrappable:
    codepoints = { "f", "o", "o", "\\n" },
    color = c.string,
    disps = { 1, 1, 1, 2 },
-   wrappable = true
+   wrappable = true,
    total_disp = 5,
    escapes = { ["\\n"] = true }
 }

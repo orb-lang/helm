@@ -62,7 +62,6 @@ local function _spill(composer, line)
    for i = 1, #line do
       composer[i] = line[i]
    end
-   composer.yielding = true
    return false
 end
 
@@ -73,13 +72,12 @@ end
 local MIN_SPLIT_WIDTH = 20
 
 local function oneLine(composer, force)
+   if #composer == 0 then
+      return false
+   end
    local c = composer.color
    local line = { Token(("  "):rep(composer.level), c.no_color, {event = "indent"}) }
    local new_level = composer.level
-   if #composer == 0 then
-      composer.yielding = true
-      return false
-   end
    while true do
       local token = remove(composer, 1)
       -- Don't indent the remainder of a wrapped token
@@ -153,13 +151,15 @@ end
 ```lua
 
 local function lineGen(composer)
-   ::start::
-   while composer.yielding do
+   while composer.more do
+      local ln = oneLine(composer)
+      if ln then
+         return ln
+      end
       local token = composer.token_source()
       if token == nil then
-         composer.yielding = false
          composer.more = false
-         break
+         return oneLine(composer)
       end
       if token.event == "repr_line" then
          -- Clear the buffer, if any, then pass along the __repr() output
@@ -167,27 +167,7 @@ local function lineGen(composer)
          return prev .. token.str
       end
       insert(composer, token)
-
-      if composer:disp() + (2 * composer.level) >= composer.width then
-         composer.long = true
-         composer.yielding = false
-         break
-      else
-         composer.long = false
-      end
-   end
-   if #composer > 0 then
-      local ln = oneLine(composer)
-      if ln then
-         return ln
-      else
-         goto start
-      end
-   elseif composer.more == false then
-      return nil
-   else
-      composer.yielding = true
-      goto start
+      composer.long = (composer:disp() + (2 * composer.level) >= composer.width)
    end
 end
 
@@ -244,7 +224,6 @@ local function new(iter_gen, cfg)
       local composer = setmeta({
          color = color or C.no_color,
          width = disp_width or 80,
-         yielding = true,
          more = true,
          stages = {},
          level = 0,
