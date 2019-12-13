@@ -405,8 +405,8 @@ end
 
 *** repr.lineGen(tab, disp_width), repr.lineGenBW(tab, disp_width)
 
-Public facades for =lineGen=, supplying the appropriate color table
-and a default width.
+Uses =Composer= and =tabulate= to produce an iterator of lines, displaying
+the contents of =tab=.
 
 #!lua
 
@@ -424,17 +424,18 @@ end
 
 #/lua
 
-*** repr.ts(val, [disp_width])
+*** repr.ts(val[, disp_width[, color]])
 
-Returns a representation of the value in black-and-white.
+Returns a representation of the value using the supplied color table,
+defaulting to black-and-white.
 
 Intended as a drop-in replacement for =tostring()=, which unpacks tables and
 provides names, presuming that =anti_G= has been populated.
 
 #!lua
-function repr.ts(val, disp_width)
+function repr.ts(val, disp_width, color)
    local phrase = {}
-   for line in repr.lineGen(val, disp_width, C.no_color) do
+   for line in repr.lineGen(val, disp_width, color or C.no_color) do
       phrase[#phrase + 1] = line
    end
    return concat(phrase, "\n")
@@ -449,12 +450,7 @@ width of lines, and a color table.
 
 #!lua
 function repr.ts_color(val, disp_width, color)
-   local phrase = {}
-   color = color or C.color
-   for line in repr.lineGen(val, disp_width, color) do
-      phrase[#phrase + 1] = line
-   end
-   return concat(phrase, "\n")
+   return repr.ts(val, disp_width, color or C.color)
 end
 #/lua
 
