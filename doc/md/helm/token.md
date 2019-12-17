@@ -272,6 +272,7 @@ If ``str`` is nil, returns a blank ``Token``.
 local escapes_map = {
    ['"'] = '\\"',
    ["'"] = "\\'",
+   ["\\"] = "\\\\",
    ["\a"] = "\\a",
    ["\b"] = "\\b",
    ["\f"] = "\\f",
