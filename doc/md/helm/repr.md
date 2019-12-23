@@ -292,7 +292,7 @@ local function name_for(value, c, hint)
 end
 
 ```
-### tabulate(tab, window, c, depth, cycle)
+### tabulate(tab, window, c)
 
 Returns an iterator that produces Tokens representing pieces of a table,
 recursively, one at a time. Implemented internally as a coroutine.

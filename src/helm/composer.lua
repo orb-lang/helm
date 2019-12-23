@@ -21,12 +21,15 @@
 
 
 
+
+
+
 local meta = assert(meta)
 local Token = require "helm/token"
 
 local concat, insert, remove = assert(table.concat),
-assert(table.insert),
-assert(table.remove)
+                               assert(table.insert),
+                               assert(table.remove)
 
 
 
@@ -45,137 +48,278 @@ local new
 
 
 
-
-
-local function _disp(token_array)
-   local displacement = 0
-   for _, token in ipairs(token_array) do
-      displacement = displacement + token.total_disp
+function Composer.disp(composer)
+   local disp = composer[1].wrapped and 0 or 2 * composer.level
+   for i = 1, composer.pos do
+      disp = disp + composer[i].total_disp
    end
-   return displacement
+   return disp
 end
 
-Composer.disp = _disp
 
-local function _spill(composer, line)
-   if line[1].event == "indent" then
-      remove(line, 1)
-   end
-   for i = 1, #line do
-      composer[i] = line[i]
-   end
-   return false
-end
+
+
+
+
 
 function Composer.remains(composer)
    return composer.width - composer:disp()
 end
 
+
+
+
+
+
+
+
+function Composer.peek(composer)
+   if composer.more and not composer[composer.pos + 1] then
+      composer[composer.pos + 1] = composer.token_source()
+   end
+   if not composer[composer.pos + 1] then
+      composer.more = false
+   end
+   return composer[composer.pos + 1]
+end
+
+
+
+
+
+
+
+
+
+
+function Composer.advance(composer)
+   local token = composer:peek()
+   if token then
+      composer.pos = composer.pos + 1
+   end
+   return token, composer.stages[#composer.stages]
+end
+
+
+
+
+
+
+
+
+
+
+local STAGED_EVENTS = {
+   array = true,
+   map = true
+}
+
+function Composer.checkPushStage(composer)
+   local token = composer[composer.pos]
+   if STAGED_EVENTS[token.event] then
+      insert(composer.stages, {
+         start_token = token,
+         event = token.event,
+         long = false
+      })
+   end
+   return composer.stages[#composer.stages]
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function Composer.checkPopStage(composer)
+   local token = composer[composer.pos]
+   if token.event == "end" then
+      local next_token = composer:peek()
+      -- If the following token is a separator, don't end the stage here...
+      if not (next_token and next_token.event == "sep") then
+         remove(composer.stages)
+      end
+   elseif token.event == "sep" then
+      local prev = composer[composer.pos - 1]
+      -- ...because, if we encounter a separator and the *previous* token
+      -- is an =end=, *now* it's time to end the stage
+      if prev and prev.event == "end" then
+         remove(composer.stages)
+      end
+   end
+   return composer.stages[#composer.stages]
+end
+
+
+
+
+
+
+
+
+function Composer.enterLongMode(composer)
+   for i = 1, composer.level do
+      assert(composer.stages[i].long,
+         "Cannot print a long stage inside a short one")
+   end
+   local long_stage_index = composer.level
+   local stage
+   repeat
+      long_stage_index = long_stage_index + 1
+      stage = composer.stages[long_stage_index]
+      assert(stage, "No new stage to put in long mode")
+   until not stage.long
+   stage.long = true
+   for i = long_stage_index + 1, #composer.stages do
+      composer.stages[i] = nil
+   end
+   for i, token in ipairs(composer) do
+      if token == stage.start_token then
+         composer.pos = i
+         return token, composer.stages[#composer.stages]
+      end
+   end
+   error("Could not find start of stage")
+end
+
+
+
+
+
+
+
+
+function Composer.emit(composer)
+   if composer.pos == 0 then
+      return nil
+   end
+   local output = {}
+   if not composer[1].wrapped then
+      insert(output, ("  "):rep(composer.level))
+   end
+   for i = 1, composer.pos do
+      insert(output, composer[i]:toString(composer.color))
+   end
+   -- Erase what we just copied to the output and shift
+   -- any remaining tokens back
+   for i = 1, #composer do
+      if i > composer.pos then
+         composer[i - composer.pos] = composer[i]
+      end
+      composer[i] = nil
+   end
+   composer.pos = 0
+   composer.level = #composer.stages
+   return concat(output)
+end
+
+
+
+
+
+
+
+
+
+
 local MIN_SPLIT_WIDTH = 20
 
-local function oneLine(composer, force)
-   if #composer == 0 then
-      return false
+function Composer.splitToken(composer, token)
+   local token = composer[composer.pos]
+   -- Step back one token to exclude the one we're about to split
+   composer.pos = composer.pos - 1
+   -- Reserve one space for the ~ indicating a wrapped line
+   local remaining = composer:remains() - 1
+   token.wrapped = true
+   -- Only split strings, and only if they're long enough to be worth it
+   -- In the extreme event that a non-string token is longer than the
+   -- entire available width, split it too to avoid an infinite loop
+   if token.wrappable and token.total_disp > MIN_SPLIT_WIDTH
+      or token.total_disp >= composer.width then
+      token = token:split(remaining)
+      -- Pad with spaces if we were forced to split a couple chars short
+      for i = 1, remaining - token.total_disp do
+         token:insert(" ")
+      end
+   -- Short strings and other token types just get bumped to the next line
+   else
+      token = Token((" "):rep(remaining), composer.color.no_color)
    end
-   local c = composer.color
-   local line = { Token(("  "):rep(composer.level), c.no_color, {event = "indent"}) }
-   local new_level = composer.level
-   while true do
-      local token = remove(composer, 1)
-      -- Don't indent the remainder of a wrapped token
-      if token.wrap_part == "rest" then
-         assert(remove(line).event == "indent", "Should only encounter rest-of-wrap at start of line")
+   -- Done splitting, step forward again
+   composer.pos = composer.pos + 1
+   insert(composer, composer.pos, token)
+   -- Leave the ~ ready to be consumed by the next advance()--we need to finish
+   -- processing the first half of the split first.
+   insert(composer, composer.pos + 1, Token("~", composer.color.alert, { event = "break" }))
+   return token
+end
+
+
+
+
+
+
+
+
+function Composer.composeLine(composer)
+   repeat
+      local token = composer:advance()
+      if not token then
+         break
       end
-      insert(line, token)
-      if token.event == "array" or token.event == "map" then
-         new_level = new_level + 1
-      elseif token.event == "end" then
-         new_level = new_level - 1
+      local stage = composer:checkPushStage()
+      if not stage then
+         error("No stage while processing: " .. token:toStringBW())
       end
-      -- If we are in long mode and hit a separator, remove the trailing space
-      -- so it doesn't cause an unnecessary wrap. We can also allow the line to
-      -- exactly fill the buffer, since we know we're going to end the line
-      -- here anyway.
+      if (token.event == "repr_line" or token.event == "break")
+         and not stage.long then
+         token, stage = composer:enterLongMode()
+      end
+      -- If we know we are going to end the line after this token no matter
+      -- what, we can allow it to exactly fill the line--no need to reserve
+      -- space for a ~. We can also ignore any trailing spaces it may contain.
       local reserved_space = 1
-      if token.event == "sep" and composer.long then
+      if token.event == "sep" and stage.long
+         or token.event == "break" then
          token:removeTrailingSpaces()
          reserved_space = 0
       end
-      if _disp(line) + reserved_space > composer.width then
-         remove(line)
-         -- Now that we know we *are* going to force-wrap, we need space for
-         -- the ~ even if this token is a separator (in which case it will
-         -- end up entirely on the next line, but we need to compute the
-         -- number of padding spaces correctly).
-         local remaining = composer.width - _disp(line) - 1
-         local rest = token
-         -- Only split strings, and only if they're long enough to be worth it
-         -- In the extreme event that a non-string token is longer than the
-         -- entire available width, split it too to avoid an infinite loop
-         if token.wrappable and token.total_disp > MIN_SPLIT_WIDTH
-         or token.total_disp >= composer.width then
-            token = token:split(remaining)
-            -- Pad with spaces if we were forced to split a couple chars short
-            for i = 1, remaining - token.total_disp do
-               token:insert(" ")
-            end
-         -- Short strings and other token types just get bumped to the next line
-      else
-         token = Token((" "):rep(remaining), c.no_color)
+      if composer:remains() < reserved_space then
+         assert(token.event ~= "break", "~ token overflowing line")
+         if not stage.long and stage.start_token ~= token then
+            token, stage = composer:enterLongMode()
+         -- Never wrap output from __repr--likely to do more harm than good
+         -- until/unless we can parse out color escape sequences
+         elseif token.event ~= "repr_line" then
+            token = composer:splitToken()
+         end
       end
-      token.wrap_part = "first"
-      rest.wrap_part = "rest"
-      insert(line, token)
-      insert(line, Token("~", c.alert))
-      insert(composer, 1, rest)
-   end
-      -- If we are in long mode and hit a comma
-      if (token.event == "sep" and composer.long)
-         -- Or we are at the very end of the stream,
-         -- or have been told to produce a line no matter what
-         or (#composer == 0 and (force or not composer.more))
-         -- Or we just needed to chop & wrap a token
-         or (token.wrap_part == "first") then
-            for i, frag in ipairs(line) do
-               line[i] = frag:toString(c)
-            end
-            composer.level = new_level
-            return concat(line)
-      elseif #composer == 0 and composer.more then
-         -- spill our fragments back
-         return _spill(composer, line)
-      end
-   end
+      stage = composer:checkPopStage()
+   until token.event == "sep" and stage.long
+         or token.event == "break"
+         or token.event == "repr_line"
+   return composer:emit()
 end
 
-
-
-
-
-
-
-local function lineGen(composer)
-   while composer.more do
-      local ln = oneLine(composer)
-      if ln then
-         return ln
-      end
-      local token = composer.token_source()
-      if token == nil then
-         composer.more = false
-         return oneLine(composer)
-      end
-      if token.event == "repr_line" then
-         -- Clear the buffer, if any, then pass along the __repr() output
-         local prev = oneLine(composer, true) or ""
-         return prev .. token.str
-      end
-      insert(composer, token)
-      composer.long = (composer:disp() + (2 * composer.level) >= composer.width)
-   end
-end
-
-Composer.__call = lineGen
+Composer.__call = Composer.composeLine
 
 
 
@@ -192,13 +336,23 @@ Composer.__call = lineGen
 
 
 
+
+local FUNCTION_WINDOWS = {
+   remains = true,
+   case = true
+}
+
+local FIELD_WINDOWS = {
+   width = true,
+   color = true
+}
 
 local function make_window__index(composer, field)
-   return function(composer, field)
-      if field == "remains" then
-         return composer:remains()
-      elseif field == "case" then
-         return composer:case()
+   return function(window, field)
+      if FIELD_WINDOWS[field] then
+         return composer[field]
+      elseif FUNCTION_WINDOWS[field] then
+         return composer[field]()
       else
          error ("window has no method " .. field .. "n" .. debug.traceback())
       end
@@ -212,7 +366,7 @@ end
 
 function Composer.window(composer)
    local window = setmetatable({}, { __index = make_window__index(composer),
-   __newindex = _window__newindex})
+      __newindex = _window__newindex})
    return window
 end
 
@@ -224,21 +378,23 @@ end
 local function new(iter_gen, cfg)
    cfg = cfg or {}
    local function generator(val, disp_width, color)
+      assert(color, "Must provide a color table to Composer")
       local composer = setmeta({
-         color = color or C.no_color,
+         color = color,
          width = disp_width or 80,
          more = true,
-         stages = {},
+         pos = 0,
+         stages = {[0] = { long = true }},
          level = 0,
          long = false
       }, Composer)
       for k,v in pairs(cfg) do
         composer[k] = v
-     end
-     composer.token_source = iter_gen(val, composer:window(), color)
-     return composer
-  end
-  return generator
+      end
+      composer.token_source = iter_gen(val, composer:window(), color)
+      return composer
+   end
+   return generator
 end
 
 Composer.idEst = new

@@ -116,11 +116,30 @@ end
 
 
 
+function Token.toStringBW(token)
+   if token.wrappable then
+      return concat(token.codepoints, "", token.start)
+   else
+      return utf8_sub(token.str, token.start)
+   end
+end
+
+
+
+
+
+
+
+
+
+
 
 
 function Token.split(token, max_disp)
    local first
-   local cfg = { event = token.event, wrappable = token.wrappable }
+   local cfg = { event = token.event,
+                 wrappable = token.wrappable,
+                 wrapped = token.wrapped }
    if token.wrappable then
       cfg.escapes = token.escapes
       first = new(nil, token.color, cfg)
@@ -133,7 +152,7 @@ function Token.split(token, max_disp)
          first:insert(token.codepoints[i], token.disps[i], token.err and token.err[i])
       end
    else
-      first = new(utf8_sub(token.str, token.start, token.start + max_disp), token.color, cfg)
+      first = new(utf8_sub(token.str, token.start, token.start + max_disp - 1), token.color, cfg)
       token.start = token.start + max_disp + 1
       token.total_disp = token.total_disp - max_disp
    end

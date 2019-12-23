@@ -71,8 +71,7 @@ continues past the edge of the zone and otherwise falsy.
 #### includes
 
 ```lua
-local repr = require "helm/repr"
-local ts, lineGen = repr.ts, repr.lineGen
+local lineGen = (require "helm/repr").lineGen
 ```
 #### Rainbuf metatable
 
@@ -124,7 +123,6 @@ function Rainbuf.lineGen(rainbuf, rows, cols)
       rainbuf.lines = {}
    end
    rainbuf.more = true
-   local flip = true
    local function _nextLine()
       -- if we have lines, yield them
       if cursor < rows then
