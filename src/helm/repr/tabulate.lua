@@ -9,6 +9,7 @@
 
 
 
+local core = require "singletons/core"
 local Token = require "helm/repr/token"
 local nameFor = require "helm/repr/names" . nameFor
 local C = require "singletons/color"
