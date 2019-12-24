@@ -24,7 +24,7 @@ emitting [[Reslines][~/helm/resbuf#Resline]].
 
 ```lua
 
-local meta = assert(meta)
+local meta = require "singletons/core" . meta
 local Token = require "helm/token"
 
 local concat, insert, remove = assert(table.concat),
