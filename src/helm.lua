@@ -100,7 +100,7 @@ local concat = assert(table.concat)
 
 
 a = require "singletons/anterm"
-local repr = require "helm/repr"
+local names = require "helm/repr/names"
 --watch = require "watcher"
 
 
@@ -279,7 +279,7 @@ end
 
 -- Get names for as many values as possible
 -- into the colorizer
-repr.allNames(__G)
+names.allNames(__G)
 
 -- assuming we survived that, set up our repling environment:
 

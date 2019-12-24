@@ -1,14 +1,14 @@
-* Composer
+# Composer
 
 The Composer class is responsible for injesting [[Tokens][~/helm/token]] and
 emitting [[Reslines][~/helm/resbuf#Resline]].
 
 
-** Interface
+## Interface
 
-*** Instance Fields
+### Instance Fields
 
--  token_source : An iterator function returning =Token=s to be
+-  token_source : An iterator function returning ``Token``s to be
    arranged into lines.
 -  color : The color table to use.
 -  width : The width in which to fit the output.
@@ -20,34 +20,32 @@ emitting [[Reslines][~/helm/resbuf#Resline]].
    and not finished at this point in the stream. Includes a dummy entry at
    index 0 for the case where we are printing something other than a table.
 
-** Dependencies
+## Dependencies
 
-#!lua
+```lua
 
 local meta = require "singletons/core" . meta
-local Token = require "helm/token"
+local Token = require "helm/repr/token"
 
 local concat, insert, remove = assert(table.concat),
                                assert(table.insert),
                                assert(table.remove)
 
-#/lua
+```
+## Methods
 
-** Methods
-
-#!lua
+```lua
 
 local Composer = meta {}
 local new
 
-#/lua
-
-**** Composer:disp()
+```
+#### Composer:disp()
 
 Computes and returns the displacement of the candidate tokens that will make
 up the next line emitted by the composer, including the initial indent if any.
 
-#!lua
+```lua
 function Composer.disp(composer)
    local disp = composer[1].wrapped and 0 or 2 * composer.level
    for i = 1, composer.pos do
@@ -55,24 +53,22 @@ function Composer.disp(composer)
    end
    return disp
 end
-#/lua
-
-**** Composer:remains()
+```
+#### Composer:remains()
 
 Returns the remaining displacement available on the current line.
 
-#!lua
+```lua
 function Composer.remains(composer)
    return composer.width - composer:disp()
 end
-#/lua
-
-**** Composer:peek()
+```
+#### Composer:peek()
 
 Answers the next token (at pos + 1), retrieving it from the token_source
 if necessary. Does not advance the composer or handle events.
 
-#!lua
+```lua
 function Composer.peek(composer)
    if composer.more and not composer[composer.pos + 1] then
       composer[composer.pos + 1] = composer.token_source()
@@ -82,15 +78,14 @@ function Composer.peek(composer)
    end
    return composer[composer.pos + 1]
 end
-#/lua
-
-**** Composer:advance()
+```
+#### Composer:advance()
 
 Advances the composer by one token, either inspecting a token already
 retrieved from the token_source and subsequently "put back", or retrieving
 a new one. Answers the new current token and stage.
 
-#!lua
+```lua
 
 function Composer.advance(composer)
    local token = composer:peek()
@@ -99,16 +94,15 @@ function Composer.advance(composer)
    end
    return token, composer.stages[#composer.stages]
 end
-#/lua
-
-**** Composer:checkPushStage()
+```
+#### Composer:checkPushStage()
 
 Pushes a stage if indicated by the current token's event.
 Returns the active stage (whether it has changed or not).
-Does *not* update composer.level, as this needs to reflect the indent level
-as of the *start* of the current line.
+Does **not** update composer.level, as this needs to reflect the indent level
+as of the **start** of the current line.
 
-#!lua
+```lua
 local STAGED_EVENTS = {
    array = true,
    map = true
@@ -125,30 +119,28 @@ function Composer.checkPushStage(composer)
    end
    return composer.stages[#composer.stages]
 end
-#/lua
-
-**** Composer:checkPopStage()
+```
+#### Composer:checkPopStage()
 
 Pops a stage if indicated by the current token's event.
 Returns the active stage (whether it has changed or not).
-Does *not* update composer.level, as this needs to reflect the indent level
-as of the *start* of the current line.
+Does **not** update composer.level, as this needs to reflect the indent level
+as of the **start** of the current line.
+
 
 The logic for when to pop a stage is somewhat complex in order to avoid
-wrapping separators when a child table *exactly* fits in short mode.
+wrapping separators when a child table **exactly** fits in short mode.
 Essentially, we don't consider the stage complete until the trailing separator,
 if any, has been processed as well.
 
+
 This can still have problems at the end of a deeply-nested table, when
 encountering lots of closing braces in a row. Technically we might want to
-refuse to end the stage until *all* closing braces until the next separator
+refuse to end the stage until **all** closing braces until the next separator
 have been consumed. But this makes the logic much more complicated, and really,
 maybe "wrapping" a brace is better than entering long mode in that case.
 
-#todo This is a situation where it might make sense to separate out the
-starting and ending braces onto their own line as per #2.
-
-#!lua
+```lua
 function Composer.checkPopStage(composer)
    local token = composer[composer.pos]
    if token.event == "end" then
@@ -167,14 +159,13 @@ function Composer.checkPopStage(composer)
    end
    return composer.stages[#composer.stages]
 end
-#/lua
-
-**** Composer:enterLongMode()
+```
+#### Composer:enterLongMode()
 
 Enters long printing mode for the first stage that is still in short mode
 and resets the composer to retry formatting that stage.
 
-#!lua
+```lua
 function Composer.enterLongMode(composer)
    for i = 1, composer.level do
       assert(composer.stages[i].long,
@@ -199,14 +190,13 @@ function Composer.enterLongMode(composer)
    end
    error("Could not find start of stage")
 end
-#/lua
-
-**** Composer:emit()
+```
+#### Composer:emit()
 
 Emits a line consisting of the tokens inspected so far, i.e.
 composer[1..composer.pos].
 
-#!lua
+```lua
 function Composer.emit(composer)
    if composer.pos == 0 then
       return nil
@@ -230,16 +220,15 @@ function Composer.emit(composer)
    composer.level = #composer.stages
    return concat(output)
 end
-#/lua
-
-**** Composer:splitToken()
+```
+#### Composer:splitToken()
 
 Splits the current token to fit in the remaining space on the line, and inserts
 a ~ at the end of the line to indicate that it has been wrapped. If the current
 token is shorter than 20 characters, or is not marked wrappable, it is moved
 entirely to the next line instead.
 
-#!lua
+```lua
 local MIN_SPLIT_WIDTH = 20
 
 function Composer.splitToken(composer, token)
@@ -271,14 +260,13 @@ function Composer.splitToken(composer, token)
    insert(composer, composer.pos + 1, Token("~", composer.color.alert, { event = "break" }))
    return token
 end
-#/lua
-
-**** Composer:composeLine()
+```
+#### Composer:composeLine()
 
 Composes and emits one line, consuming tokens as needed from token_source.
 Also available as Composer.__call--a Composer is also an iterator function.
 
-#!lua
+```lua
 function Composer.composeLine(composer)
    repeat
       local token = composer:advance()
@@ -320,22 +308,24 @@ function Composer.composeLine(composer)
 end
 
 Composer.__call = Composer.composeLine
-#/lua
-
-*** Composer:window()
+```
+### Composer:window()
 
 This method produces a window table into the relevant data inside a Composer.
 
-It is passed to a custom =__repr= metamethod, to provide information it can
+
+It is passed to a custom ``__repr`` metamethod, to provide information it can
 use to return data to the composer.
 
-=composer:remains()= will return the amount of printable columns remaining in
+
+``composer:remains()`` will return the amount of printable columns remaining in
 the line.  It may need to make some calculations to the existing stream.
 
-=composer:case()= will return e.g. ="map_val"=, ="map_key"=, ="array"=,
-or ="outer"= if we're in the outer printing context (not in a nested table).
 
-#!lua
+``composer:case()`` will return e.g. ``"map_val"``, ``"map_key"``, ``"array"``,
+or ``"outer"`` if we're in the outer printing context (not in a nested table).
+
+```lua
 
 local FUNCTION_WINDOWS = {
    remains = true,
@@ -369,11 +359,10 @@ function Composer.window(composer)
       __newindex = _window__newindex})
    return window
 end
-#/lua
+```
+### new(iter_gen, cfg)
 
-*** new(iter_gen, cfg)
-
-#!lua
+```lua
 
 local function new(iter_gen, cfg)
    cfg = cfg or {}
@@ -401,4 +390,4 @@ Composer.idEst = new
 
 return new
 
-#/lua
+```
