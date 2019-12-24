@@ -123,8 +123,6 @@ end
 
 
 
-local sub, find = assert(string.sub), assert(string.find)
-
 local function _rawtostring(val)
    local ts
    if type(val) == "table" then
@@ -181,20 +179,20 @@ function names.nameFor(value, c, hint)
    -- If not found, construct one starting with the tostring()
    str = _rawtostring(value)
    if typica == "metatable" then
-      str = "⟨" .. "mt:" .. sub(str, -6) .. "⟩"
+      str = "⟨" .. "mt:" .. str:sub(-6) .. "⟩"
    elseif typica == "table" then
-      str = "t:" .. sub(str, -6)
+      str = "t:" .. str:sub(-6)
    elseif typica == "function" then
-      local f_label = sub(str,11)
-      str = sub(f_label,1,5) == "built"
+      local f_label = str:sub(11)
+      str = f_label:sub(1,5) == "built"
                 and f_label
-                or "f:" .. sub(str, -6)
+                or "f:" .. str:sub(-6)
    elseif typica == "thread" then
-      str = "coro:" .. sub(str, -6)
+      str = "coro:" .. str:sub(-6)
    elseif typica == "userdata" then
-      local name_end = find(str, ":")
+      local name_end = str:find(":")
       if name_end then
-         str = sub(str, 1, name_end - 1)
+         str = str:sub(1, name_end - 1)
       end
    end
 
