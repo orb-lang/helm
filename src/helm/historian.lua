@@ -127,7 +127,7 @@ ORDER BY result.result_id;
 ]]
 
 local home_dir = os.getenv "HOME"
-Historian.helm_db = home_dir .. "/.local/share/bridge/.helm"
+Historian.helm_db = _Bridge.bridge_home .. "/.helm"
 -- This require the bridge_home function in pylon, which I can't recompile
 -- without github access and I'm on a plane:
 -- _Bridge.bridge_home() .. ".helm"
@@ -278,7 +278,6 @@ function Historian.persist(historian, txtbuf, results)
    if have_results then
       for i = 1, results.n do
          results_lineGens[i] = repr.lineGenBW(results[i])
-         assert(type(results_lineGens[i]) == 'function')
          results_tostring[i] = {}
       end
    end
