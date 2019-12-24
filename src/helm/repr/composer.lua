@@ -379,7 +379,7 @@ local function new(iter_gen, cfg)
    cfg = cfg or {}
    local function generator(val, disp_width, color)
       assert(color, "Must provide a color table to Composer")
-      local composer = setmeta({
+      local composer = setmetatable({
          color = color,
          width = disp_width or 80,
          more = true,
