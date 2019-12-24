@@ -21,7 +21,7 @@ table.keys  = core.keys
 local C = require "singletons/color"
 
 local Token = require "helm/token"
-local coro = coroutine
+local Composer = require "helm/composer"
 
 
 
@@ -145,9 +145,7 @@ end
 
 local SORT_LIMIT = 500  -- This won't be necessary #todo remove
 
-local coro = coro or coroutine
-
-local yield, wrap = assert(coro.yield), assert(coro.wrap)
+local yield, wrap = assert(coroutine.yield), assert(coroutine.wrap)
 
 local concat, insert, remove = assert(table.concat),
                                assert(table.insert),
@@ -409,8 +407,6 @@ end
 
 
 
-
-local Composer = require "helm/composer"
 
 function repr.lineGen(tab, disp_width, color)
    color = color or C.color
