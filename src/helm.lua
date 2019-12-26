@@ -130,8 +130,8 @@ end
 
 
 
-function write(str)
-   uv.write(stdout, str)
+function write(...)
+   uv.write(stdout, {...})
 end
 
 
@@ -286,17 +286,18 @@ names.allNames(__G)
 -- raw mode
 uv.tty_set_mode(stdin, 2)
 
--- mouse mode
-write(a.mouse.track(true))
-uv.read_start(stdin, onseq)
-
--- This saves the cursor, switches screens and does a wipe,
--- then puts the cursor at 1,1.
+-- Enable mouse tracking, save the cursor, switch screens and wipe,
+-- then put the cursor at 1,1.
 -- #todo Cursor save/restore supposedly may not work on all terminals?
 -- Test this and, if necessary, explicitly read and store the cursor position
 -- and manually restore it at the end.
--- #todo Implement this in terms of anterm functions
-write("\x1b7\x1b[?47h\x1b[2J\x1b[H")
+write(a.cursor.stash(),
+      a.alternate_screen(true),
+      a.erase.all(),
+      a.jump(1, 1),
+      a.mouse.track(true)
+)
+uv.read_start(stdin, onseq)
 
 -- paint screen
 modeS:paint()
@@ -304,11 +305,10 @@ modeS:paint()
 -- main loop
 local retcode =  uv.run('default')
 
--- Mouse tracking off
-io.write(a.mouse.track(false))
-
--- Restore main screen and cursor
-io.write('\x1b[?47l\x1b8')
+-- Teardown: Mouse tracking off, restore main screen and cursor
+write(a.mouse.track(false),
+      a.alternate_screen(false),
+      a.cursor.pop())
 
 -- remove any spurious mouse inputs or other stdin stuff
 io.stdin:read "*a"
