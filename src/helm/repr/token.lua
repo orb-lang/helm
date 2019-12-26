@@ -1,67 +1,67 @@
-* Token
 
-This represents a logical chunk of text generated as part of the repr process.
-It includes metadata to assist with wrapping, coloration, and (eventually)
-mouse handling.
 
-** Interface
 
-*** Instance fields
 
--  str        : The original string this token was created from.
-                NB If =codepoints= exists, this does not take into account
-                any modifications made by insert(), remove(), or split().
--  start      : The index within =str= or =codepoints= at which this token
-                starts. Used when splitting to avoid copying the contents
-                after the split point (which could be arbitrarily large).
--  color      : A color value to use for the entire token.
--  event      : A string indicating that this token has a special meaning, like
-                the beginning or end of an indented block, or a separator.
--  wrappable  : If true, it is acceptable to wrap this token by breaking it
-                in the middle. If false, it should be moved entirely to the
-                next line if it does not fit.
-                Also controls whether or not the string will be broken into
-                codepoints.
 
-The following fields will be present only if =wrappable= is true:
--  codepoints : The codepoints of the string, if we needed to break it down.
--  disps      : Array of the number of cells occupied by the corresponding
-                codepoint string. There is no handling of Unicode widths at
-                this point, but this may still be >1 in the case of an escaped
-                nonprinting character, e.g. =\t=, =\x1b=.
--  err        : A table with information about any errors encountered
-                interpreting the original string as Unicode.
 
-*** Examples
 
-Wrappable:
 
-#!lua-example
-{
-   str = "foo\n",
-   codepoints = { "f", "o", "o", "\\n" },
-   color = c.string,
-   disps = { 1, 1, 1, 2 },
-   wrappable = true
-   total_disp = 5,
-   escapes = { ["\\n"] = true }
-}
-#/lua-example
 
-Non-wrappable:
 
-#!lua-example
-{
-   str = ", ",
-   color = c.base,
-   total_disp = 2,
-   event = "sep"
-}
-#/lua-example
 
-** Dependencies
 
-#!lua
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 local codepoints = require "singletons/codepoints"
 local utf8 = require "lua-utf8"
@@ -71,24 +71,24 @@ local concat, insert, remove = assert(table.concat),
                                assert(table.remove)
 
 local meta = require "singletons/core" . meta
-#/lua
 
-** Methods
 
-#!lua
+
+
+
 
 local Token = meta {}
 local new
 
-#/lua
 
-*** Token:toString(c)
 
-Produces a string that should be output when displaying the Token,
-including coloring sequences. Requires the color table in order to
-colorize escapes and errors.
 
-#!lua
+
+
+
+
+
+
 
 function Token.toString(token, c)
    if not token.wrappable then
@@ -107,20 +107,39 @@ function Token.toString(token, c)
    return token.color(concat(output))
 end
 
-#/lua
 
-*** Token:split(max_disp)
 
-Splits a token such that the first part occupies no more than =max_disp= cells.
-Modifies the receiver to start later in the underlying string, without actually
-modifying said string, in order to avoid copying massive amounts of data.
-Returns only the newly-created token, the first half of the split.
 
-#!lua
+
+
+
+
+
+
+function Token.toStringBW(token)
+   if token.wrappable then
+      return concat(token.codepoints, "", token.start)
+   else
+      return utf8_sub(token.str, token.start)
+   end
+end
+
+
+
+
+
+
+
+
+
+
+
 
 function Token.split(token, max_disp)
    local first
-   local cfg = { event = token.event, wrappable = token.wrappable }
+   local cfg = { event = token.event,
+                 wrappable = token.wrappable,
+                 wrapped = token.wrapped }
    if token.wrappable then
       cfg.escapes = token.escapes
       first = new(nil, token.color, cfg)
@@ -133,25 +152,25 @@ function Token.split(token, max_disp)
          first:insert(token.codepoints[i], token.disps[i], token.err and token.err[i])
       end
    else
-      first = new(utf8_sub(token.str, token.start, token.start + max_disp), token.color, cfg)
+      first = new(utf8_sub(token.str, token.start, token.start + max_disp - 1), token.color, cfg)
       token.start = token.start + max_disp + 1
       token.total_disp = token.total_disp - max_disp
    end
    return first
 end
 
-#/lua
 
-*** Token:insert([pos,] frag[, disp[, err]])
 
-As =table.insert=, but keeps =disps= and =total_disp= up to date.
-Accepts the displacement of the fragment as a second (or third) argument.
-Also accepts error information for the fragment as an optional third
-(or fourth) argument.
 
-For now, fails if this token is offset from the start of the underlying string.
 
-#!lua
+
+
+
+
+
+
+
+
 
 function Token.insert(token, pos, frag, disp, err)
    assert(token.start == 1, "Cannot insert into a token with a start offset")
@@ -182,16 +201,16 @@ function Token.insert(token, pos, frag, disp, err)
    token.total_disp = token.total_disp + disp
 end
 
-#/lua
 
-*** Token:remove([pos])
 
-As =table.remove=, but keeps =disps= and =total_disp= up to date.
-Answers the removed value, its displacement, and any associated error.
 
-For now, fails if this token is offset from the start of the underlying string.
 
-#!lua
+
+
+
+
+
+
 
 function Token.remove(token, pos)
    assert(token.start == 1, "Cannot remove from a token with a start offset")
@@ -210,18 +229,18 @@ function Token.remove(token, pos)
    return removed, rem_disp, err
 end
 
-#/lua
 
-*** Token:removeTrailingSpaces()
 
-Removes any trailing space characters from the token. Primarily used for
-separators at the end of a line, to avoid bumping them to the next line
-when in fact they fit perfectly.
 
-This does not seem relevant to wrappable tokens--could be implemented later
-if needed.
 
-#!lua
+
+
+
+
+
+
+
+
 
 local string_sub = assert(string.sub)
 
@@ -239,37 +258,37 @@ function Token.removeTrailingSpaces(token)
    token.total_disp = token.total_disp + last_non_space + 1
 end
 
-#/lua
 
-*** new(str, color[, cfg])
 
-Creates a =Token= from the given string, color value, and optional table of
-configuration options, which will be copied directly onto the token. Relevant
-options include:
--  event: A string indicating that this token is special in some way--
-   a separator, the beginning or end of an indented section, a line from
-   a __repr function, etc.
--  wrappable: Should this token be subject to wrapping in the middle, or
-   should it be moved entirely to the next line if it doesn't fit?
-   Also triggers a number of other bits of behavior--see below.
--  total_disp: If str contains zero-width sequences (e.g. color escapes),
-   calling code should indicate the correct total displacement of the string.
-   Note that this does not mix well with =wrappable= and =:split()=, which
-   need to know the displacement of each codepoint. Re-parsing color escapes
-   is a possible future enhancement.
 
-Extra =wrappable= behavior:
--  Breaks the string up with =codepoints()= and records a displacement value
-   for each codepoint.
--  Converts nonprinting characters and quotation marks to their escaped forms,
-   with the =escapes= property indicating which characters this has been done
-   to.
--  Wraps the string in (un-escaped) quotation marks if it consists entirely of
-   space characters (or is empty).
 
-If =str= is nil, returns a blank =Token=.
 
-#!lua
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 local escapes_map = {
    ['"'] = '\\"',

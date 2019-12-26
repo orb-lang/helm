@@ -535,10 +535,30 @@ end
 
 *** Txtbuf:nl()
 
-Either splits a line or (more usually) evaluates.
+Splits the line at the current cursor position, effectively
+inserting a newline.
 
 #!lua
 function Txtbuf.nl(txtbuf)
+   local cur_row, cur_col = txtbuf:getCursor()
+   -- split the line
+   local line = concat(txtbuf.lines[cur_row])
+   local first = sub(line, 1, cur_col - 1)
+   local second = sub(line, cur_col)
+   txtbuf.lines[cur_row] = codepoints(first)
+   insert(txtbuf.lines, cur_row + 1, codepoints(second))
+   txtbuf:setCursor(cur_row + 1, 1)
+   return false
+end
+#/lua
+
+*** Txtbuf:shouldEvaluate()
+
+Answers true if the txtbuf should be evaluated when Return is pressed,
+false if we should insert a newline.
+
+#!lua
+function Txtbuf.shouldEvaluate(txtbuf)
    -- Most txtbufs are one line, so we always evaluate from
    -- a one-liner, regardless of cursor location.
    local linum = #txtbuf.lines
@@ -551,21 +571,10 @@ function Txtbuf.nl(txtbuf)
    if (cur_row == 1 or cur_row == linum) and cur_col > #txtbuf.lines[cur_row] then
       return true
    end
-   -- split the line
-   local line = concat(txtbuf.lines[cur_row])
-   local first = sub(line, 1, cur_col - 1)
-   local second = sub(line, cur_col)
-   txtbuf.lines[cur_row] = codepoints(first)
-   insert(txtbuf.lines, cur_row + 1, codepoints(second))
-   txtbuf:setCursor(cur_row + 1, 1)
-   return false
 end
 #/lua
 
-
 *** Txtbuf:suspend(), Txtbuf:resume()
-
-
 
 #!lua
 function Txtbuf.suspend(txtbuf)
