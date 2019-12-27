@@ -414,7 +414,7 @@ local function _highlight(line, frag, best, max_disp, c)
    return c.base(concat(codes, "", 1, stop_at)), disp
 end
 
-local function _collect_repr(collection, phrase, c)
+local function _collect_repr(collection, window, c)
    assert(c, "must provide a color table")
    local i = 1
    local first = true
@@ -433,7 +433,7 @@ local function _collect_repr(collection, phrase, c)
       if i < 10 then
          alt_seq = c.bold("M-" .. tostring(i) .. " ")
       end
-      line, len = _highlight(line, collection.frag, collection.best, phrase:remains() - 4, c)
+      line, len = _highlight(line, collection.frag, collection.best, window.remains - 4, c)
       line = alt_seq .. line
       len = len + 4
       if i == collection.hl then

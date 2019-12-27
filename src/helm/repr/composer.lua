@@ -49,7 +49,11 @@ local new
 
 
 function Composer.disp(composer)
-   local disp = composer[1].wrapped and 0 or 2 * composer.level
+   local disp = 2 * composer.level
+   -- If the first token is the second half of a wrap, skip the indent
+   if composer.pos > 0 and composer[1].wrapped then
+      disp = 0
+   end
    for i = 1, composer.pos do
       disp = disp + composer[i].total_disp
    end
@@ -352,7 +356,7 @@ local function make_window__index(composer, field)
       if FIELD_WINDOWS[field] then
          return composer[field]
       elseif FUNCTION_WINDOWS[field] then
-         return composer[field]()
+         return composer[field](composer)
       else
          error ("window has no method " .. field .. "n" .. debug.traceback())
       end
