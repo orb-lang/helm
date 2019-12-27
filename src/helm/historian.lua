@@ -126,11 +126,7 @@ WHERE result.line_id = :line_id
 ORDER BY result.result_id;
 ]]
 
-local home_dir = os.getenv "HOME"
 Historian.helm_db = _Bridge.bridge_home .. "/.helm"
--- This require the bridge_home function in pylon, which I can't recompile
--- without github access and I'm on a plane:
--- _Bridge.bridge_home() .. ".helm"
 
 Historian.project = uv.cwd()
 

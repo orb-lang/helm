@@ -286,7 +286,6 @@ Extra ``wrappable`` behavior:
 If ``str`` is nil, returns a blank ``Token``.
 
 ```lua
-
 local escapes_map = {
    ['"'] = '\\"',
    ["'"] = "\\'",
