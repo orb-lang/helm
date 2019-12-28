@@ -65,7 +65,7 @@ binop = "and" / "or" / ".." / "<=" / ">=" / "~=" / "=="
        / functioncall / var
        / "(" _ expr _ ")"
 Nil   = "nil"
-bool  = "true" / "false"
+bool  = "true" t / "false" t
 vararg = "..."
 functioncall = prefix (_ suffix &(_ suffix))* _ call
 tableconstructor = "{" _ fieldlist* _ "}"
