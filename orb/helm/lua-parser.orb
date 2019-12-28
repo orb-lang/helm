@@ -69,7 +69,7 @@ bool  = "true" t / "false" t
 vararg = "..."
 functioncall = prefix (_ suffix &(_ suffix))* _ call
 tableconstructor = "{" _ fieldlist* _ "}"
-Function = "function" _ funcbody
+Function = "function" t _ funcbody
 
 var = prefix (_ suffix &(_ suffix))* index
     / symbol
@@ -91,7 +91,7 @@ args = "(" _ (explist _)? ")" / string
     ;/ tableconstructor
 `explist` = expr ("," expr)*
 
-`funcbody` = parameters _ chunk _ "end"
+`funcbody` = parameters _ chunk _ "end" t
 parameters = "(" _ (symbollist (_ "," _ vararg)*)* ")"
           / "(" _ vararg _ ")"
 `symbollist` = (symbol ("," _ symbol)*)
