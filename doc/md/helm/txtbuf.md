@@ -70,14 +70,16 @@ cleaner that transition can be.
 
 ```lua
 assert(meta)
-local codepoints = assert(string.codepoints)
-local gsub = assert(string.gsub)
-local sub = assert(string.sub)
+local Codepoints = require "singletons/codepoints"
+local lines, gsub, sub = assert(string.lines),
+                         assert(string.gsub),
+                         assert(string.sub)
 
-local table_clone = assert(table.clone)
-local concat = assert(table.concat)
-local insert, splice = assert(table.insert), assert(table.splice)
-local remove = assert(table.remove)
+local collect, concat, insert, splice, remove = assert(table.collect),
+                                                assert(table.concat),
+                                                assert(table.insert),
+                                                assert(table.splice),
+                                                assert(table.remove)
 ```
 ## Methods
 
@@ -105,8 +107,8 @@ end
 ```lua
 
 function Txtbuf.__tostring(txtbuf)
-   local closed_lines = table_clone(txtbuf.lines)
-   for k, v in ipairs(closed_lines) do
+   local closed_lines = {}
+   for k, v in ipairs(txtbuf.lines) do
       closed_lines[k] = cat(v)
    end
    return concat(closed_lines, "\n")
@@ -178,7 +180,7 @@ function Txtbuf.openRow(txtbuf, row_num)
       return nil
    end
    if type(txtbuf.lines[row_num]) == "string" then
-      txtbuf.lines[row_num] = codepoints(txtbuf.lines[row_num])
+      txtbuf.lines[row_num] = Codepoints(txtbuf.lines[row_num])
    end
    return txtbuf.lines[row_num], row_num
 end
@@ -534,8 +536,8 @@ function Txtbuf.nl(txtbuf)
    local line = concat(txtbuf.lines[cur_row])
    local first = sub(line, 1, cur_col - 1)
    local second = sub(line, cur_col)
-   txtbuf.lines[cur_row] = codepoints(first)
-   insert(txtbuf.lines, cur_row + 1, codepoints(second))
+   txtbuf.lines[cur_row] = Codepoints(first)
+   insert(txtbuf.lines, cur_row + 1, Codepoints(second))
    txtbuf:setCursor(cur_row + 1, 1)
    return false
 end
@@ -578,7 +580,7 @@ function Txtbuf.resume(txtbuf)
 end
 ```
 ```lua
-
+local table_clone = assert(table.clone)
 function Txtbuf.clone(txtbuf)
    -- Clone to depth of 3 to get tb, tb.lines, and each lines
    local tb = table_clone(txtbuf, 3)
@@ -588,9 +590,6 @@ end
 ### new
 
 ```lua
-
-local collect = assert(table.collect)
-local lines = assert(string.lines)
 
 local function new(str)
    str = str or ""
