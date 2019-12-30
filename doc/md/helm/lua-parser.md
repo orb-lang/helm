@@ -24,13 +24,11 @@ local Node = require "espalier:espalier/node"
 
 ```lua
 local lua_str = [=[
-lua = shebang* _ chunk _ finalcomment* Error*
+lua = shebang* _ chunk _ Error*
 shebang = "#" (!"\n" 1)* "\n"
 chunk = _ (statement _ ";"?)* (_ laststatement _ (";")?)?
 
 Error = 1+
-
-finalcomment = "--" 1* !1
 
 statement = "do" t chunk "end" t
           / "while" t expr "do" t chunk "end" t
@@ -49,8 +47,8 @@ statement = "do" t chunk "end" t
           / "::" symbol "::"
           / functioncall
 
-laststatement = "return" t (_ explist)?
-              / "break" t
+laststatement = "return" t _ (explist)?
+              / "break"
 
 funcname = symbol _ ("." _ symbol)* (":" _ symbol)?
 varlist  = var (_ "," _ var)*
@@ -116,7 +114,7 @@ number = real / hex / integer
 
 `_` = comment+ / whitespace
 comment = whitespace longcomment
-        / whitespace "--" (!"\n" 1)* "\n" whitespace
+        / whitespace "--" (!"\n" 1)* whitespace
 
 `longcomment` = "--" longstring
 `whitespace` = { \t\n\r}*
