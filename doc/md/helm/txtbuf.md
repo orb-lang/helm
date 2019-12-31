@@ -71,9 +71,7 @@ cleaner that transition can be.
 ```lua
 assert(meta)
 local Codepoints = require "singletons/codepoints"
-local lines, gsub, sub = assert(string.lines),
-                         assert(string.gsub),
-                         assert(string.sub)
+local lines = assert(core.lines)
 
 local collect, concat, insert, splice, remove = assert(table.collect),
                                                 assert(table.concat),
@@ -543,14 +541,17 @@ Splits the line at the current cursor position, effectively
 inserting a newline.
 
 ```lua
+
+local slice = assert(core.slice)
+
 function Txtbuf.nl(txtbuf)
    local cur_row, cur_col = txtbuf:getCursor()
    -- split the line
-   local line = concat(txtbuf.lines[cur_row])
-   local first = sub(line, 1, cur_col - 1)
-   local second = sub(line, cur_col)
-   txtbuf.lines[cur_row] = Codepoints(first)
-   insert(txtbuf.lines, cur_row + 1, Codepoints(second))
+   local line = txtbuf.lines[cur_row]
+   local first = slice(line, 1, cur_col - 1)
+   local second = slice(line, cur_col)
+   txtbuf.lines[cur_row] = first
+   insert(txtbuf.lines, cur_row + 1, second)
    txtbuf:setCursor(cur_row + 1, 1)
    return false
 end
