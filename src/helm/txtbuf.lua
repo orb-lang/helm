@@ -198,28 +198,41 @@ end
 
 
 
-local _brace_pairs = { ["("] = ")",
-                       ['"'] = '"',
-                       ["'"] = "'",
-                       ["{"] = "}",
-                       ["["] = "]"}
--- pronounced clozer
-local function _is_closer(frag)
-   for _, cha in pairs(_brace_pairs) do
-      if cha == frag then return true end
-   end
-   return false
+
+
+
+local _openers = { ["("] = ")",
+                   ['"'] = '"',
+                   ["'"] = "'",
+                   ["{"] = "}",
+                   ["["] = "]"}
+
+local _closers = {}
+for o, c in pairs(_openers) do
+   _closers[c] = o
 end
 
 local function _should_insert(line, cursor, frag)
-   return not (frag == line[cursor] and _is_closer(frag))
+   return not (frag == line[cursor] and _closers[frag])
+end
+
+local function _should_pair(line, cursor, frag)
+   -- Only consider inserting a pairing character if this is an "opener"
+   if not _openers[frag] then return false end
+   -- Translate end-of-line to the implied newline
+   local next_char = line[cursor] or "\n"
+   -- Insert a pair if we are before whitespace, or the next char is a
+   -- closing brace--that is, a closing character that is different
+   -- from its corresponding open character, i.e. not a quote
+   return next_char:match("%s") or
+      _closers[next_char] and _closers[next_char] ~= next_char
 end
 
 function Txtbuf.insert(txtbuf, frag)
    local line, cur_col = txtbuf.lines[txtbuf.cursor.row], txtbuf.cursor.col
    if _should_insert(line, cur_col, frag) then
-      if _brace_pairs[frag] then
-         insert(line, cur_col, _brace_pairs[frag])
+      if _should_pair(line, cur_col, frag) then
+         insert(line, cur_col, _openers[frag])
       end
       insert(line, cur_col, frag)
    end
@@ -240,7 +253,7 @@ end
 
 
 local function _is_paired(a, b)
-   return _brace_pairs[a] == b
+   return _openers[a] == b
 end
 
 function Txtbuf.deleteBackward(txtbuf)
