@@ -183,15 +183,6 @@ against ``special`` first:
 ```lua
 ModeS.special = {}
 ```
-### self-insert(modeS, category, value)
-
-Inserts the value into the txtbuf at cursor.
-
-```lua
-function ModeS.insert(modeS, category, value)
-    local success =  modeS.txtbuf:insert(value)
-end
-```
 ### ModeS:errPrint(modeS, category, value)
 
 Debug aide.
@@ -229,8 +220,9 @@ local function tf(bool)
   return bool and c["true"]("t") or c["false"]("f")
 end
 
-local function pr_mouse(m)
-   return a.magenta(m.button) .. ": "
+local function mouse_paint(m)
+   return c.userdata(STAT_ICON)
+      .. a.magenta(m.button) .. ": "
       .. a.bright(m.kind) .. " "
       .. tf(m.shift) .. " "
       .. tf(m.meta) .. " "
@@ -241,36 +233,33 @@ local function pr_mouse(m)
 end
 
 local function mk_paint(fragment, shade)
-   return function(category, action)
-      return shade(category .. fragment .. action)
+   return function(action)
+      return shade(fragment .. action)
    end
 end
 
-local act_map = { MOUSE  = pr_mouse,
-                  NAV    = mk_paint(": ", a.italic),
-                  CTRL   = mk_paint(": ", c.field),
-                  ALT    = mk_paint(": ", a.underscore),
-                  ASCII  = mk_paint(": ", c.table),
-                  UTF8   = mk_paint(": ", c.table),
-                  NYI    = mk_paint(": ", a.red)}
+local function paste_paint(frag)
+   local result
+   -- #todo handle escaping of special characters in pasted data
+   if #frag < 20 then
+      result = "PASTE: " .. frag
+   else
+      result = ("PASTE(%d): %s..."):format(#frag, frag:sub(1, 17))
+   end
+   return a.green(STAT_ICON .. result)
+end
 
-local icon_map = { MOUSE = mk_paint(STAT_ICON, c.userdata),
+local icon_map = { MOUSE = mouse_paint,
                    NAV   = mk_paint(STAT_ICON, a.magenta),
                    CTRL  = mk_paint(STAT_ICON, a.blue),
                    ALT   = mk_paint(STAT_ICON, c["function"]),
                    ASCII = mk_paint(STAT_ICON, a.green),
                    UTF8  = mk_paint(STAT_ICON, a.green),
+                   PASTE = paste_paint,
                    NYI   = mk_paint(STAT_ICON .. "! ", a.red) }
 
 local function _make_icon(category, value)
-   local icon = ""
-   local phrase
-   if category == "MOUSE" then
-      phrase = icon_map[category]("", pr_mouse(value))
-   else
-      phrase = icon_map[category]("", ts(value))
-   end
-   return phrase
+   return icon_map[category](value)
 end
 ```
 #### dimensional getters
@@ -448,7 +437,7 @@ end
 log anything unexpected.
 
 ```lua
-local assertfmt = assert(core.assertfmt)
+local assertfmt, iscallable = assert(core.assertfmt), assert(core.iscallable)
 
 function ModeS.act(modeS, category, value)
    assertfmt(modeS.modes[category], "no category %s in modeS", category)
@@ -469,22 +458,10 @@ function ModeS.act(modeS, category, value)
    if type(modeS.modes[category]) == "table"
       and modeS.modes[category][value] then
       modeS.modes[category][value](modeS, category, value)
-
-   -- otherwise fall back:
-   elseif category == "ASCII" or category == "UTF8" then
-      -- hard coded for now
-      modeS:insert(category, value)
-   elseif category == "NAV" then
-      if modeS.modes.NAV[value] then
-         modeS.modes.NAV[value](modeS, category, value)
-      else
-         icon = _make_icon("NYI", "NAV::" .. value)
-      end
-   elseif category == "MOUSE" then
-      -- do mouse stuff
-      if modeS.modes.MOUSE then
-         modeS.modes.MOUSE(modeS, category, value)
-      end
+   -- Or on category if the whole category is callable
+   elseif iscallable(modeS.modes[category]) then
+      modeS.modes[category](modeS, category, value)
+   -- Otherwise display the unknown command
    else
       icon = _make_icon("NYI", category .. ":" .. value)
    end

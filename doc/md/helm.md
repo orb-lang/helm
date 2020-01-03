@@ -41,6 +41,7 @@ bit  = require "bit"
 uv   = require "luv"
 utf8 = require "lua-utf8"
 core = require "singletons/core"
+local Codepoints = require "singletons/codepoints"
 
 jit.vmdef = require "helm:helm/vmdef"
 jit.p = require "helm:helm/ljprof"
@@ -127,8 +128,8 @@ end
 Not-blocking ``write`` and ``print``:
 
 ```lua
-function write(str)
-   uv.write(stdout, str)
+function write(...)
+   uv.write(stdout, {...})
 end
 ```
 ```lua
@@ -190,24 +191,23 @@ processes it into tokens, which stream to the ``modeselektor``.
 ### process_escapes(seq)
 
 ```lua
-local byte, sub, codepoints, char = assert(string.byte),
-                                    assert(string.sub),
-                                    assert(string.codepoints),
-                                    assert(string.char)
+local byte, sub, char = assert(string.byte),
+                        assert(string.sub),
+                        assert(string.char)
 local m_parse, is_mouse = a.mouse.parse_fast, a.mouse.ismousemove
 local navigation, is_nav = a.navigation, a.is_nav
 
 local function process_escapes(seq)
    if is_nav(seq) then
       return modeS("NAV", navigation[seq])
-   end
-   if is_mouse(seq) then
-      local m = m_parse(seq)
-      return modeS("MOUSE", m)
-   elseif #seq == 2 and byte(sub(seq,2,2)) < 128 then
+   elseif is_mouse(seq) then
+      return modeS("MOUSE", m_parse(seq))
+   elseif #seq == 2 and byte(seq, 2) < 128 then
       -- Meta
       local key = "M-" .. sub(seq,2,2)
       return modeS("ALT", key)
+   elseif a.is_paste(seq) then
+      return modeS("PASTE", a.parse_paste(seq))
    else
       return modeS("NYI", seq)
    end
@@ -242,24 +242,22 @@ local function onseq(err,seq)
    -- Control sequences
    if navigation[seq] then
       return modeS("NAV", navigation[seq])
-    elseif head <= 31 then
+   elseif head <= 31 then
       local ctrl = "^" .. char(head + 64)
       return modeS("CTRL", ctrl)
    end
-   -- Printables
-   if head > 31 and head < 127 then
-      if #seq > 1 then
-         -- break it up and feed it
-         local points = codepoints(seq)
-         for _, pt in ipairs(points) do
-            onseq(nil, pt)
-         end
-      else
-         return modeS("ASCII", seq)
-      end
+   -- Printables--break into codepoints in case of multi-char input sequence
+   -- But first, optimize common case of single ascii printable
+   -- Note that bytes <= 31 and 127 (DEL) will have been taken care of earlier
+   if #seq == 1 and head < 128 then
+      return modeS("ASCII", seq)
    else
-      -- wchars go here
-      return modeS("UTF8", seq)
+      local points = Codepoints(seq)
+      for i, pt in ipairs(points) do
+         -- #todo handle decode errors here--right now we'll just insert an
+         -- actual Unicode "replacement character"
+         modeS(byte(pt) < 128 and "ASCII" or "UTF8", pt)
+      end
    end
 end
 ```
@@ -275,17 +273,19 @@ names.allNames(__G)
 -- raw mode
 uv.tty_set_mode(stdin, 2)
 
--- mouse mode
-write(a.mouse.track(true))
-uv.read_start(stdin, onseq)
-
--- This saves the cursor, switches screens and does a wipe,
--- then puts the cursor at 1,1.
+-- Enable mouse tracking, save the cursor, switch screens and wipe,
+-- then put the cursor at 1,1.
 -- #todo Cursor save/restore supposedly may not work on all terminals?
 -- Test this and, if necessary, explicitly read and store the cursor position
 -- and manually restore it at the end.
--- #todo Implement this in terms of anterm functions
-write("\x1b7\x1b[?47h\x1b[2J\x1b[H")
+write(a.cursor.stash(),
+      a.alternate_screen(true),
+      a.erase.all(),
+      a.jump(1, 1),
+      a.paste_bracketing(true),
+      a.mouse.track(true)
+)
+uv.read_start(stdin, onseq)
 
 -- paint screen
 modeS:paint()
@@ -293,11 +293,11 @@ modeS:paint()
 -- main loop
 local retcode =  uv.run('default')
 
--- Mouse tracking off
-io.write(a.mouse.track(false))
-
--- Restore main screen and cursor
-io.write('\x1b[?47l\x1b8')
+-- Teardown: Mouse tracking off, restore main screen and cursor
+write(a.mouse.track(false),
+      a.paste_bracketing(false),
+      a.alternate_screen(false),
+      a.cursor.pop())
 
 -- remove any spurious mouse inputs or other stdin stuff
 io.stdin:read "*a"
