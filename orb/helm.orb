@@ -210,11 +210,9 @@ local navigation, is_nav = a.navigation, a.is_nav
 local function process_escapes(seq)
    if is_nav(seq) then
       return modeS("NAV", navigation[seq])
-   end
-   if is_mouse(seq) then
-      local m = m_parse(seq)
-      return modeS("MOUSE", m)
-   elseif #seq == 2 and byte(sub(seq,2,2)) < 128 then
+   elseif is_mouse(seq) then
+      return modeS("MOUSE", m_parse(seq))
+   elseif #seq == 2 and byte(seq, 2) < 128 then
       -- Meta
       local key = "M-" .. sub(seq,2,2)
       return modeS("ALT", key)

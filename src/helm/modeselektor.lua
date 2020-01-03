@@ -440,7 +440,7 @@ end
 
 
 
-local assertfmt = assert(core.assertfmt)
+local assertfmt, iscallable = assert(core.assertfmt), assert(core.iscallable)
 
 function ModeS.act(modeS, category, value)
    assertfmt(modeS.modes[category], "no category %s in modeS", category)
@@ -461,22 +461,14 @@ function ModeS.act(modeS, category, value)
    if type(modeS.modes[category]) == "table"
       and modeS.modes[category][value] then
       modeS.modes[category][value](modeS, category, value)
-
-   -- otherwise fall back:
-   elseif category == "ASCII" or category == "UTF8" then
-      -- hard coded for now
+   -- Or on category if the whole category is callable
+   elseif iscallable(modeS.modes[category]) then
+      modeS.modes[category](modeS, category, value)
+   -- Default behavior for inserts:
+   elseif category == "ASCII"
+      or category == "UTF8" then
       modeS:insert(category, value)
-   elseif category == "NAV" then
-      if modeS.modes.NAV[value] then
-         modeS.modes.NAV[value](modeS, category, value)
-      else
-         icon = _make_icon("NYI", "NAV::" .. value)
-      end
-   elseif category == "MOUSE" then
-      -- do mouse stuff
-      if modeS.modes.MOUSE then
-         modeS.modes.MOUSE(modeS, category, value)
-      end
+   -- Otherwise display the unknown command
    else
       icon = _make_icon("NYI", category .. ":" .. value)
    end
