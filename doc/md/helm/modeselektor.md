@@ -183,15 +183,6 @@ against ``special`` first:
 ```lua
 ModeS.special = {}
 ```
-### self-insert(modeS, category, value)
-
-Inserts the value into the txtbuf at cursor.
-
-```lua
-function ModeS.insert(modeS, category, value)
-    local success =  modeS.txtbuf:insert(value)
-end
-```
 ### ModeS:errPrint(modeS, category, value)
 
 Debug aide.
@@ -470,12 +461,6 @@ function ModeS.act(modeS, category, value)
    -- Or on category if the whole category is callable
    elseif iscallable(modeS.modes[category]) then
       modeS.modes[category](modeS, category, value)
-   -- Default behavior for inserts:
-   elseif category == "ASCII"
-      or category == "UTF8" then
-      modeS:insert(category, value)
-   elseif category == "PASTE" then
-      modeS.txtbuf:paste(value)
    -- Otherwise display the unknown command
    else
       icon = _make_icon("NYI", category .. ":" .. value)

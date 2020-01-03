@@ -43,25 +43,19 @@ local sub, gsub, rep = assert(string.sub),
 
 
 
-local ASCII  = meta {}
 local NAV    = {}
 local CTRL   = {}
 local ALT    = {}
-local FN     = {}
-local UTF8   = {}
-local PASTE  = {}
+-- ASCII, UTF8, PASTE and MOUSE are functions
 local NYI    = {}
 
 
 
 
 
-local Nerf = { ASCII  = ASCII,
-               NAV    = NAV,
+local Nerf = { NAV    = NAV,
                CTRL   = CTRL,
                ALT    = ALT,
-               UTF8   = UTF8,
-               PASTE  = PASTE,
                NYI    = NYI }
 
 
@@ -69,7 +63,22 @@ local Nerf = { ASCII  = ASCII,
 
 
 
-local up1, down1 = a.jump.up(), a.jump.down()
+function _insert(modeS, category, value)
+   modeS.txtbuf:insert(value)
+end
+
+Nerf.ASCII = _insert
+Nerf.UTF8 = _insert
+
+function Nerf.PASTE(modeS, category, value)
+   modeS.txtbuf:paste(value)
+end
+
+
+
+
+
+
 
 local function _prev(modeS)
    local prev_result, linestash
@@ -121,10 +130,6 @@ function NAV.DOWN(modeS, category, value)
 
    return modeS
 end
-
-
-
-
 
 
 

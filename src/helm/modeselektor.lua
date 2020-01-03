@@ -172,17 +172,6 @@ ModeS.special = {}
 
 
 
-
-function ModeS.insert(modeS, category, value)
-    local success =  modeS.txtbuf:insert(value)
-end
-
-
-
-
-
-
-
 function ModeS.errPrint(modeS, log_stmt)
    modeS.zones.suggest:replace(log_stmt)
    modeS:paint()
@@ -462,12 +451,6 @@ function ModeS.act(modeS, category, value)
    -- Or on category if the whole category is callable
    elseif iscallable(modeS.modes[category]) then
       modeS.modes[category](modeS, category, value)
-   -- Default behavior for inserts:
-   elseif category == "ASCII"
-      or category == "UTF8" then
-      modeS:insert(category, value)
-   elseif category == "PASTE" then
-      modeS.txtbuf:paste(value)
    -- Otherwise display the unknown command
    else
       icon = _make_icon("NYI", category .. ":" .. value)
