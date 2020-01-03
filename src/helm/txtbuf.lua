@@ -246,7 +246,6 @@ end
 
 
 
-
 function Txtbuf.paste(txtbuf, frag)
    frag = frag:gsub("\t", "   ")
    local frag_lines = collect(lines, frag)

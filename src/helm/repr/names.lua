@@ -21,7 +21,7 @@ local names = {}
 
 
 
-local anti_G = { _G = "_G" }
+local anti_G = setmetatable({ _G = "_G" }, {__mode = "k"})
 
 
 

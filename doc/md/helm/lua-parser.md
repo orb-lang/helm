@@ -26,7 +26,7 @@ local Node = require "espalier:espalier/node"
 local lua_str = [=[
 lua = shebang* _ chunk _ Error*
 shebang = "#" (!"\n" 1)* "\n"
-chunk = _ (statement _ ";"?)* (_ laststatement _ (";")?)?
+chunk = _ (statement _ ";"?)* (_ laststatement _ ";"?)?
 
 Error = 1+
 
@@ -48,7 +48,7 @@ statement = "do" t chunk "end" t
           / functioncall
 
 laststatement = "return" t _ (explist)?
-              / "break"
+              / "break" t
 
 funcname = symbol _ ("." _ symbol)* (":" _ symbol)?
 varlist  = var (_ "," _ var)*
