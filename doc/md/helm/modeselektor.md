@@ -651,17 +651,19 @@ function ModeS.eval(modeS)
       local result_idler = uv.new_idle()
       -- run string generator as idle process
       result_idler:start(function()
-         while i <= results.n do
-            local line = lineGens[i]()
-            if line then
-               insert(result_tostring[i],line)
-               return nil
-            else
-               i = i + 1
-               return nil
+         if i > results.n then
+            result_idler:stop()
+            return
+         end
+         local success, line = pcall(lineGens[i])
+         if success and line then
+            insert(result_tostring[i],line)
+         else
+            i = i + 1
+            if not success then
+               error(line)
             end
          end
-         result_idler:stop()
       end)
       modeS.hist.result_buffer[modeS.hist.n] = result_tostring
    end
