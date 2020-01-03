@@ -280,15 +280,17 @@ function Historian.persist(historian, txtbuf, results)
    local i = 1
    persist_idler:start(function()
       while have_results and i <= results.n do
-         local line = results_lineGens[i]()
-         if line then
+         local success, line = pcall(results_lineGens[i])
+         if success and line then
             insert(results_tostring[i], line)
-            return nil
          else
             results_tostring[i] = concat(results_tostring[i], "\n")
             i = i + 1
-            return nil
+            if not success then
+               error(line)
+            end
          end
+         return nil
       end
       -- now persist
       historian.conn:exec "BEGIN TRANSACTION;"

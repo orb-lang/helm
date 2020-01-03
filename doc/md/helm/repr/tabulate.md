@@ -169,14 +169,16 @@ end
 
 local function tabulate(tab, window, c)
    return wrap(function()
-      local success, result = pcall(_tabulate, tab, window, c)
-      if not success then
-         local err_lines = collect(lines, tostring(result))
-         err_lines[1] = "error in __repr: " .. err_lines[1]
-         for _, line in ipairs(err_lines) do
-            yield(Token(line, c.alert, { event = "repr_line" }))
-         end
-      end
+      local err_lines
+      local success, result = xpcall(
+         function() return _tabulate(tab, window, c) end,
+         function(err)
+            err_lines = collect(lines, debug.traceback(tostring(err)))
+            err_lines[1] = "error in __repr: " .. err_lines[1]
+            for _, line in ipairs(err_lines) do
+               yield(Token(line, c.alert, { event = "repr_line" }))
+            end
+         end)
    end)
 end
 
