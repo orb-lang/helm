@@ -214,8 +214,9 @@ local function tf(bool)
   return bool and c["true"]("t") or c["false"]("f")
 end
 
-local function pr_mouse(m)
-   return a.magenta(m.button) .. ": "
+local function mouse_paint(m)
+   return c.userdata(STAT_ICON)
+      .. a.magenta(m.button) .. ": "
       .. a.bright(m.kind) .. " "
       .. tf(m.shift) .. " "
       .. tf(m.meta) .. " "
@@ -226,20 +227,13 @@ local function pr_mouse(m)
 end
 
 local function mk_paint(fragment, shade)
-   return function(category, action)
-      return shade(category .. fragment .. action)
+   return function(action)
+      return shade(fragment .. action)
    end
 end
 
-local act_map = { MOUSE  = pr_mouse,
-                  NAV    = mk_paint(": ", a.italic),
-                  CTRL   = mk_paint(": ", c.field),
-                  ALT    = mk_paint(": ", a.underscore),
-                  ASCII  = mk_paint(": ", c.table),
-                  UTF8   = mk_paint(": ", c.table),
-                  NYI    = mk_paint(": ", a.red)}
 
-local icon_map = { MOUSE = mk_paint(STAT_ICON, c.userdata),
+local icon_map = { MOUSE = mouse_paint,
                    NAV   = mk_paint(STAT_ICON, a.magenta),
                    CTRL  = mk_paint(STAT_ICON, a.blue),
                    ALT   = mk_paint(STAT_ICON, c["function"]),
@@ -248,14 +242,7 @@ local icon_map = { MOUSE = mk_paint(STAT_ICON, c.userdata),
                    NYI   = mk_paint(STAT_ICON .. "! ", a.red) }
 
 local function _make_icon(category, value)
-   local icon = ""
-   local phrase
-   if category == "MOUSE" then
-      phrase = icon_map[category]("", pr_mouse(value))
-   else
-      phrase = icon_map[category]("", ts(value))
-   end
-   return phrase
+   return icon_map[category](value)
 end
 #/lua
 
