@@ -247,6 +247,27 @@ end
 
 
 
+function Txtbuf.paste(txtbuf, frag)
+   frag = frag:gsub("\t", "   ")
+   local frag_lines = collect(lines, frag)
+   local num_lines_before = #txtbuf.lines
+   for i, frag_line in ipairs(frag_lines) do
+      if i > 1 then txtbuf:nl() end
+      local codes = Codepoints(frag_line)
+      local cur_row, cur_col = txtbuf:getCursor()
+      splice(txtbuf.lines[cur_row], cur_col, codes)
+      txtbuf:setCursor(nil, cur_col + #codes)
+   end
+end
+
+
+
+
+
+
+
+
+
 
 
 

@@ -49,6 +49,7 @@ local CTRL   = {}
 local ALT    = {}
 local FN     = {}
 local UTF8   = {}
+local PASTE  = {}
 local NYI    = {}
 
 
@@ -60,6 +61,7 @@ local Nerf = { ASCII  = ASCII,
                CTRL   = CTRL,
                ALT    = ALT,
                UTF8   = UTF8,
+               PASTE  = PASTE,
                NYI    = NYI }
 
 

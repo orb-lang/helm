@@ -206,6 +206,8 @@ local function process_escapes(seq)
       -- Meta
       local key = "M-" .. sub(seq,2,2)
       return modeS("ALT", key)
+   elseif a.is_paste(seq) then
+      return modeS("PASTE", a.parse_paste(seq))
    else
       return modeS("NYI", seq)
    end
@@ -280,6 +282,7 @@ write(a.cursor.stash(),
       a.alternate_screen(true),
       a.erase.all(),
       a.jump(1, 1),
+      a.paste_bracketing(true),
       a.mouse.track(true)
 )
 uv.read_start(stdin, onseq)
@@ -292,6 +295,7 @@ local retcode =  uv.run('default')
 
 -- Teardown: Mouse tracking off, restore main screen and cursor
 write(a.mouse.track(false),
+      a.paste_bracketing(false),
       a.alternate_screen(false),
       a.cursor.pop())
 

@@ -247,6 +247,16 @@ local function mk_paint(fragment, shade)
    end
 end
 
+local function paste_paint(frag)
+   local result
+   -- #todo handle escaping of special characters in pasted data
+   if #frag < 20 then
+      result = "PASTE: " .. frag
+   else
+      result = ("PASTE(%d): %s..."):format(#frag, frag:sub(1, 17))
+   end
+   return a.green(STAT_ICON .. result)
+end
 
 local icon_map = { MOUSE = mouse_paint,
                    NAV   = mk_paint(STAT_ICON, a.magenta),
@@ -254,6 +264,7 @@ local icon_map = { MOUSE = mouse_paint,
                    ALT   = mk_paint(STAT_ICON, c["function"]),
                    ASCII = mk_paint(STAT_ICON, a.green),
                    UTF8  = mk_paint(STAT_ICON, a.green),
+                   PASTE = paste_paint,
                    NYI   = mk_paint(STAT_ICON .. "! ", a.red) }
 
 local function _make_icon(category, value)
@@ -463,6 +474,8 @@ function ModeS.act(modeS, category, value)
    elseif category == "ASCII"
       or category == "UTF8" then
       modeS:insert(category, value)
+   elseif category == "PASTE" then
+      modeS.txtbuf:paste(value)
    -- Otherwise display the unknown command
    else
       icon = _make_icon("NYI", category .. ":" .. value)
