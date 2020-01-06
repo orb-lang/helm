@@ -246,7 +246,6 @@ at the current cursor position. The only translation performed is
 tab to three spaces.
 
 #!lua
-
 function Txtbuf.paste(txtbuf, frag)
    frag = frag:gsub("\t", "   ")
    local frag_lines = collect(lines, frag)
