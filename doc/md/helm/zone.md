@@ -252,9 +252,6 @@ function Zoneherd.reflow(zoneherd, modeS)
                          3,
                          modeS.max_col,
                          modeS.max_row )
-   for _,z in ipairs(zoneherd) do
-      z.touched = true
-   end
    return zoneherd
 end
 ```
@@ -288,15 +285,12 @@ local function _paintGutter(zoneherd)
    end
 end
 
-function Zoneherd.paint(zoneherd, modeS, all)
+function Zoneherd.paint(zoneherd, modeS)
    local write = zoneherd.write
    write(a.cursor.hide())
    write(a.clear())
-   if all then
-      write(a.erase.all())
-   end
    for i, zone in ipairs(zoneherd) do
-      if zone.touched or all then
+      if zone.touched then
          -- erase
          write(a.erase.box(     zone.tc,
                                 zone.tr,

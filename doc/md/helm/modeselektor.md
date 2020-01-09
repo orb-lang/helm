@@ -277,13 +277,9 @@ end
 
 This simply calls the same method on the zoneherd.
 
-
-``all`` is a boolean which, if ``true``, repaints everything whether ``.touched``
-or no.
-
 ```lua
-function ModeS.paint(modeS, all)
-   modeS.zones:paint(modeS, all)
+function ModeS.paint(modeS)
+   modeS.zones:paint(modeS)
    return modeS
 end
 ```
@@ -292,7 +288,8 @@ end
 ```lua
 function ModeS.reflow(modeS)
    modeS.zones:reflow(modeS)
-   modeS:paint(true)
+   modeS:paint()
+   return modeS
 end
 ```
 ### Prompts and modes / raga

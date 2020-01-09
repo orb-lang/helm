@@ -263,12 +263,8 @@ end
 
 
 
-
-
-
-
-function ModeS.paint(modeS, all)
-   modeS.zones:paint(modeS, all)
+function ModeS.paint(modeS)
+   modeS.zones:paint(modeS)
    return modeS
 end
 
@@ -279,7 +275,8 @@ end
 
 function ModeS.reflow(modeS)
    modeS.zones:reflow(modeS)
-   modeS:paint(true)
+   modeS:paint()
+   return modeS
 end
 
 
