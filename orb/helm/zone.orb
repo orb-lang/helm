@@ -75,6 +75,8 @@ local Txtbuf = require "helm/txtbuf"
 
 local Rainbuf = require "helm/rainbuf"
 
+local a = require "singletons:anterm"
+
 local ts = require "helm/repr" . ts
 local Zone = meta {}
 
@@ -155,7 +157,6 @@ We'll special-case the results buffer for now.
 
 #!lua
 local function _writeResults(write, zone, new)
-   local row = zone.tr
    local results = zone.contents
    if not results then
       return nil
@@ -181,7 +182,6 @@ local function _renderTxtbuf(modeS, zone, write)
    if type(lb) == "table" then
       lb = concat(lb)
    end
-   write(a.colrow(zone.tc, zone.tr))
    _writeLines(write, zone, lb)
 end
 #/lua
@@ -232,31 +232,21 @@ local function _zoneOffset(modeS)
 end
 #/lua
 
-
-*** Zoneherd:adjustCommand(zoneherd, delta)
-
-#!lua
-function Zoneherd.adjustCommand(zoneherd)
-   local lines = zoneherd.command.contents and zoneherd.command.contents.lines
-   local txt_off = lines and #lines -1 or 0
-   zoneherd.command.br = zoneherd.command.tr + txt_off
-   zoneherd.results.tr = zoneherd.command.br + 1
-   return zoneherd
-end
-#/lua
-
 *** Zoneherd:reflow(modeS)
 
 #!lua
 function Zoneherd.reflow(zoneherd, modeS)
    local right_col = modeS.max_col - _zoneOffset(modeS)
-   local txt_off = modeS.txtbuf and #modeS.txtbuf.lines - 1 or 0
+   local txt_off = modeS:continuationLines()
    zoneherd.status:set(1, 1, right_col, 1)
+   zoneherd.prompt:set(  1,
+                         modeS.repl_top,
+                         modeS.l_margin - 1,
+                         modeS.repl_top + txt_off)
    zoneherd.command:set( modeS.l_margin,
                          modeS.repl_top,
                          right_col,
                          modeS.repl_top + txt_off )
-   zoneherd.prompt:set(1, 2, modeS.l_margin - 1, 2)
    zoneherd.results:set( modeS.l_margin,
                          modeS.repl_top + txt_off + 1,
                          right_col,
@@ -266,7 +256,7 @@ function Zoneherd.reflow(zoneherd, modeS)
                           modeS.max_col,
                           1 )
    zoneherd.suggest:set( right_col + 1,
-                         3,
+                         modeS.repl_top + 1,
                          modeS.max_col,
                          modeS.max_row )
    return zoneherd
@@ -279,46 +269,32 @@ end
 Once again we pass a reference to the =modeselektor= to get access to things
 like the lexer.
 
-
-
 #!lua
-local a = require "singletons:anterm"
-
-local _hard_nl = a.col(1) .. a.jump.down()
 
 local function _paintGutter(zoneherd)
    local write = zoneherd.write
-   local lines = zoneherd.command.contents
-                 and #zoneherd.command.contents.lines - 1 or 0
-   write(a.erase.box(1, 3, zoneherd.results.tc - 1, zoneherd.results.br))
-   write(a.colrow(1,3))
-   while lines > 0 do
-      write "..."
-      write(_hard_nl)
-      lines = lines - 1
-   end
    local results = zoneherd.results.contents
    if type(results) == "table" and results.more then
-      write(a.colrow(1, zoneherd.results.br))
-      write(a.red "...")
+      write(a.colrow(1, zoneherd.results.br), a.red "...")
+   else
+      write(a.erase.box(1, zoneherd.results.br, 3, zoneherd.results.br))
    end
 end
 
 function Zoneherd.paint(zoneherd, modeS)
    local write = zoneherd.write
-   write(a.cursor.hide())
-   write(a.clear())
+   write(a.cursor.hide(), a.clear())
    for i, zone in ipairs(zoneherd) do
       if zone.touched then
          -- erase
-         write(a.erase.box(     zone.tc,
-                                zone.tr,
-                                zone.bc,
-                                zone.br ))
-         write(a.colrow(zone.tc, zone.tr))
+         write(a.erase.box( zone.tc,
+                            zone.tr,
+                            zone.bc,
+                            zone.br ),
+               a.colrow(zone.tc, zone.tr))
          -- actually render ze contents
          if type(zone.contents) == "string" then
-            zoneherd.write(zone.contents)
+            _writeLines(write, zone, zone.contents)
          elseif type(zone.contents) == "table"
             and zone.contents.idEst == Txtbuf then
             _renderTxtbuf(modeS, zone, write)
@@ -328,9 +304,9 @@ function Zoneherd.paint(zoneherd, modeS)
          zone.touched = false
       end
    end
-   zoneherd.write(a.cursor.show())
    _paintGutter(zoneherd)
    modeS:placeCursor()
+   write(a.cursor.show())
    return zoneherd
 end
 #/lua

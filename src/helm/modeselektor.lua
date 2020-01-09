@@ -319,8 +319,24 @@ ModeS.prompts = { nerf   = "👉 ",
 
 
 
-function ModeS.prompt(modeS)
-   modeS.zones.prompt:replace(modeS.prompts[modeS.raga])
+
+
+
+
+
+function ModeS.continuationLines(modeS)
+   return modeS.txtbuf and #modeS.txtbuf.lines - 1 or 0
+end
+
+
+
+
+
+
+
+function ModeS.updatePrompt(modeS)
+   local prompt = modeS.prompts[modeS.raga] .. ("\n..."):rep(modeS:continuationLines())
+   modeS.zones.prompt:replace(prompt)
 end
 
 
@@ -356,7 +372,7 @@ function ModeS.shiftMode(modeS, raga)
    modeS.lex = modeS.closet[raga].lex
    modeS.modes = modeS.closet[raga].modes
    modeS.raga = raga
-   modeS:prompt()
+   modeS:updatePrompt()
    return modeS
 end
 
@@ -429,8 +445,9 @@ function ModeS.act(modeS, category, value)
    -- Replace zones
    modeS.zones.stat_col:replace(icon)
    modeS.zones.command:replace(modeS.txtbuf)
-   modeS.zones:adjustCommand()
-   modeS:paint()
+   modeS:updatePrompt()
+   -- Reflow in case command height has changed. Includes a paint.
+   modeS:reflow()
    collectgarbage()
 end
 
