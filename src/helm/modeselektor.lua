@@ -251,29 +251,6 @@ end
 
 
 
-
-
-
-
-function ModeS.cur_col(modeS)
-   return modeS.txtbuf.cursor.col + modeS.l_margin - 1
-end
-
-
-
-
-
-
-function ModeS.replLine(modeS)
-   return modeS.repl_top + #modeS.txtbuf.lines - 1
-end
-
-
-
-
-
-
-
 function ModeS.placeCursor(modeS)
    local col = modeS.zones.command.tc + modeS.txtbuf.cursor.col - 1
    local row = modeS.zones.command.tr + modeS.txtbuf.cursor.row - 1

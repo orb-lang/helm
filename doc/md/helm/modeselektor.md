@@ -262,24 +262,6 @@ local function _make_icon(category, value)
    return icon_map[category](value)
 end
 ```
-#### dimensional getters
-
-Any of this business needs to move to the ``zoneherd``.
-
-
-Ideally, ``modeS`` will hold values needed to reflow the ``zones`` and everything
-else will be both calculated and accessed (internally) from ``modeS.zones``.
-
-```lua
-function ModeS.cur_col(modeS)
-   return modeS.txtbuf.cursor.col + modeS.l_margin - 1
-end
-```
-#deprecated```lua
-function ModeS.replLine(modeS)
-   return modeS.repl_top + #modeS.txtbuf.lines - 1
-end
-```
 ### ModeS:placeCursor()
 
 Places the cursor where it belongs within the ``command`` zone.
