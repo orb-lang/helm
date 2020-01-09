@@ -297,10 +297,9 @@ end
 Time to add modes to the ``modeselektor``!
 
 
-Right now everything works on the default mode, "insert":
+Right now everything works on the default mode, "nerf":
 
 ```lua
-ModeS.raga = "nerf"
 ModeS.raga_default = "nerf"
 ```
 
@@ -370,17 +369,9 @@ function ModeS.shiftMode(modeS, raga)
       -- stash current lexer
       -- #todo do this in a less dumb way
       modeS.closet[modeS.raga].lex = modeS.lex
-      modeS.lex = modeS.closet.search.lex
-      modeS.modes = modeS.closet.search.modes
-   elseif raga == "nerf" then
-      -- do default nerfy things
-      modeS.lex = modeS.closet.nerf.lex
-      modeS.modes = modeS.closet.nerf.modes
-   elseif raga == "vril-nav" then
-      -- do vimmy navigation
-   elseif raga == "vril-ins" then
-      -- do vimmy inserts
    end
+   modeS.lex = modeS.closet[raga].lex
+   modeS.modes = modeS.closet[raga].modes
    modeS.raga = raga
    modeS:prompt()
    return modeS
@@ -650,22 +641,20 @@ local function new(max_col, max_row)
   local modeS = meta(ModeS)
   modeS.txtbuf = Txtbuf()
   modeS.hist  = Historian()
+  modeS.hist.cursor = modeS.hist.n + 1
   modeS.status = setmeta({}, _stat_M)
   rawset(__G, "stat", modeS.status)
-  modeS.lex  = Lex.lua_thor
-  modeS.hist.cursor = modeS.hist.n + 1
   modeS.max_col = max_col
   modeS.max_row = max_row
   -- this will be replaced with Zones
   modeS.l_margin = 4
   modeS.r_margin = 80
-  modeS.row = 2
-  modeS.repl_top  = ModeS.REPL_LINE
+  modeS.repl_top = ModeS.REPL_LINE
   modeS.zones = Zoneherd(modeS, write)
   modeS.zones.status:replace "an repl, plz reply uwu 👀"
-  modeS.zones.prompt:replace "👉  "
   -- initial state
   modeS.firstChar = true
+  modeS:shiftMode(modeS.raga_default)
   return modeS
 end
 
