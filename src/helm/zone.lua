@@ -111,11 +111,17 @@ end
 
 
 
+
+
+
 function Zone.set(zone, tc, tr, bc, br)
-   zone.tc = tc
-   zone.tr = tr
-   zone.bc = bc
-   zone.br = br
+   local bounds = { tc = tc, tr = tr, bc = bc, br = br }
+   for k, v in pairs(bounds) do
+      if v and zone[k] ~= v then
+         zone[k] = v
+         zone.touched = true
+      end
+   end
    return zone
 end
 

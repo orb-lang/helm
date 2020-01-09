@@ -119,12 +119,18 @@ end
 ```
 ### Zone:set(tc, tr, bc, br)
 
+Updates the bounds of the zone. A value of nil means "do not change".
+Marks the zone as touched if the bounds actually change.
+
 ```lua
 function Zone.set(zone, tc, tr, bc, br)
-   zone.tc = tc
-   zone.tr = tr
-   zone.bc = bc
-   zone.br = br
+   local bounds = { tc = tc, tr = tr, bc = bc, br = br }
+   for k, v in pairs(bounds) do
+      if v and zone[k] ~= v then
+         zone[k] = v
+         zone.touched = true
+      end
+   end
    return zone
 end
 ```
