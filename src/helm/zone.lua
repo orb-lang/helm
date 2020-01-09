@@ -115,6 +115,8 @@ end
 
 
 function Zone.set(zone, tc, tr, bc, br)
+   assert(tc <= bc, "tc: " .. tc .. ", bc: " .. bc)
+   assert(tr <= br, "tr: " .. tr .. ", br: " .. br)
    local bounds = { tc = tc, tr = tr, bc = bc, br = br }
    for k, v in pairs(bounds) do
       if v and zone[k] ~= v then
@@ -191,8 +193,21 @@ end
 
 
 
+
+
+local function newZone(name, tc, tr, bc, br, z, debug_mark)
+   local zone = meta(Zone)
+   zone.name = name
+   zone.debug_mark = debug_mark
+   zone.z = z
+   zone:set(tc, tr, bc, br)
+   zone.touched = false
+   -- zone.contents, aspirationally a rainbuf, is provided later
+   return zone
+end
+
 function Zoneherd.newZone(zoneherd, name, tc, tr, bc, br, z, debug_mark)
-   zoneherd[name] = newZone(tc, tr, bc, br, z, debug_mark)
+   zoneherd[name] = newZone(name, tc, tr, bc, br, z, debug_mark)
    -- this doesn't account for Z axis but for now:
    zoneherd[#zoneherd + 1] = zoneherd[name]
    -- todo: make a Zoneherd:add(zone, name) that handles z-ordering
@@ -326,48 +341,22 @@ end
 
 
 
-local function newZone(tc, tr, bc, br, z, debug_mark)
-   assert(tc <= bc, "tc: " .. tc .. ", bc: " .. bc)
-   assert(tr <= br, "tr: " .. tr .. ", br: " .. br)
-   local zone = meta(Zone)
-   zone:set(tc, tr, bc, br)
-   zone.debug_mark = debug_mark
-   zone.z = z
-   zone.touched = false
-   -- zone.contents, aspirationally a rainbuf, is provided later
-   return zone
-end
-
-
-
-
-
-
-
-
-
 
 
 
 
 local function new(modeS, writer)
    local zoneherd = meta(Zoneherd)
-   local right_col = modeS.max_col - _zoneOffset(modeS)
    zoneherd.write = writer
    -- make Zones
    -- correct values are provided by reflow
-   zoneherd.status  = newZone(-1, -1, -1, -1, 1, ".")
-   zoneherd[1] = zoneherd.status
-   zoneherd.command = newZone(-1, -1, -1, -1, 1, "|")
-   zoneherd[3] = zoneherd.command
-   zoneherd.prompt  = newZone(-1, -1, -1, -1, 1, ">")
-   zoneherd[2] = zoneherd.prompt
-   zoneherd.results = newZone(-1, -1, -1, -1, 1, "~")
-   zoneherd[4] = zoneherd.results
-   zoneherd.stat_col = newZone(-1, -1, -1, -1, 1, "!")
-   zoneherd[5] = zoneherd.stat_col
-   zoneherd.suggest = newZone(-1, -1, -1, -1, 1, "%")
-   zoneherd[6] = zoneherd.suggest
+   zoneherd:newZone("status", -1, -1, -1, -1, 1, ".")
+   zoneherd:newZone("stat_col", -1, -1, -1, -1, 1, "!")
+   zoneherd:newZone("prompt", -1, -1, -1, -1, 1, ">")
+   zoneherd:newZone("command", -1, -1, -1, -1, 1, "$")
+   zoneherd:newZone("gutter", -1, -1, -1, -1, 1, "_")
+   zoneherd:newZone("results", -1, -1, -1, -1, 1, "~")
+   zoneherd:newZone("suggest", -1, -1, -1, -1, 1, "%")
    zoneherd:reflow(modeS)
 
    return zoneherd
