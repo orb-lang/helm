@@ -119,12 +119,15 @@ Marks the zone as touched if the bounds actually change.
 function Zone.set(zone, tc, tr, bc, br)
    assert(tc <= bc, "tc: " .. tc .. ", bc: " .. bc)
    assert(tr <= br, "tr: " .. tr .. ", br: " .. br)
-   local bounds = { tc = tc, tr = tr, bc = bc, br = br }
-   for k, v in pairs(bounds) do
-      if v and zone[k] ~= v then
-         zone[k] = v
-         zone.touched = true
-      end
+   if not(zone.tr == tr and
+          zone.tc == tc and
+          zone.br == br and
+          zone.bc == bc) then
+      zone.tr = tr
+      zone.tc = tc
+      zone.br = br
+      zone.bc = bc
+      zone.touched = true
    end
    return zone
 end

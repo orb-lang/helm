@@ -657,7 +657,6 @@ local function new(max_col, max_row)
   local modeS = meta(ModeS)
   modeS.txtbuf = Txtbuf()
   modeS.hist  = Historian()
-  modeS.hist.cursor = modeS.hist.n + 1
   modeS.status = setmeta({}, _stat_M)
   rawset(__G, "stat", modeS.status)
   modeS.max_col = max_col

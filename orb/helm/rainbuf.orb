@@ -104,20 +104,17 @@ function Rainbuf.lineGen(rainbuf, rows, cols)
    local r_num = 1
    local cursor = offset
    local max_row = offset + rows
-   if not rainbuf.lines then
-      rainbuf.lines = {}
-   end
    rainbuf.more = true
    local function _nextLine()
-      cursor = cursor + 1
       -- Off the end
-      if cursor > max_row then
+      if cursor >= max_row then
          return nil
       end
+      cursor = cursor + 1
       -- Fill the lines array until there's a line available at the cursor,
       -- or we know there will not be one. Look one step ahead to correctly
       -- set .more
-      while rainbuf.more and cursor + 1 > #rainbuf.lines do
+      while rainbuf.more and cursor >= #rainbuf.lines do
          local repr = rainbuf.reprs[r_num]
          -- Out of content
          if repr == nil then
