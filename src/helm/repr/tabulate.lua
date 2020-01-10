@@ -28,9 +28,9 @@ local function _keysort(a, b)
       or (type(a) == "number" and type(b) == "number") then
       return a < b
    elseif type(a) == "number" and type(b) == "string" then
-      return true
-   elseif type(a) == "string" and type(b) == "number" then
       return false
+   elseif type(a) == "string" and type(b) == "number" then
+      return true
    else
       return false
    end
