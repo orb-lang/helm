@@ -172,7 +172,7 @@ local function _writeResults(write, zone, new)
       zone.contents = results
    end
    local nl = a.col(zone.tc) .. a.jump.down(1)
-   for line in results:lineGen(zone:height() + 1, zone:width()) do
+   for line in results:lineGen(zone:height(), zone:width()) do
       write(line)
       write(nl)
    end
@@ -247,7 +247,7 @@ function Zoneherd.reflow(zoneherd, modeS)
                          modeS.repl_top,
                          right_col,
                          modeS.repl_top + txt_off )
-   zoneherd.results:set( modeS.l_margin,
+   zoneherd.results:set( 1,
                          modeS.repl_top + txt_off + 1,
                          right_col,
                          modeS.max_row )
@@ -268,16 +268,6 @@ Once again we pass a reference to the ``modeselektor`` to get access to things
 like the lexer.
 
 ```lua
-
-local function _paintGutter(zoneherd)
-   local write = zoneherd.write
-   local results = zoneherd.results.contents
-   if type(results) == "table" and results.more then
-      write(a.colrow(1, zoneherd.results.br), a.red "...")
-   else
-      write(a.erase.box(1, zoneherd.results.br, 3, zoneherd.results.br))
-   end
-end
 
 function Zoneherd.paint(zoneherd, modeS)
    local write = zoneherd.write
@@ -302,7 +292,6 @@ function Zoneherd.paint(zoneherd, modeS)
          zone.touched = false
       end
    end
-   _paintGutter(zoneherd)
    modeS:placeCursor()
    write(a.cursor.show())
    return zoneherd
