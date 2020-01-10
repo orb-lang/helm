@@ -251,29 +251,6 @@ end
 
 
 
-
-
-
-
-function ModeS.cur_col(modeS)
-   return modeS.txtbuf.cursor.col + modeS.l_margin - 1
-end
-
-
-
-
-
-
-function ModeS.replLine(modeS)
-   return modeS.repl_top + #modeS.txtbuf.lines - 1
-end
-
-
-
-
-
-
-
 function ModeS.placeCursor(modeS)
    local col = modeS.zones.command.tc + modeS.txtbuf.cursor.col - 1
    local row = modeS.zones.command.tr + modeS.txtbuf.cursor.row - 1
@@ -286,12 +263,8 @@ end
 
 
 
-
-
-
-
-function ModeS.paint(modeS, all)
-   modeS.zones:paint(modeS, all)
+function ModeS.paint(modeS)
+   modeS.zones:paint(modeS)
    return modeS
 end
 
@@ -302,7 +275,8 @@ end
 
 function ModeS.reflow(modeS)
    modeS.zones:reflow(modeS)
-   modeS:paint(true)
+   modeS:paint()
+   return modeS
 end
 
 
@@ -313,7 +287,6 @@ end
 
 
 
-ModeS.raga = "nerf"
 ModeS.raga_default = "nerf"
 
 
@@ -346,8 +319,24 @@ ModeS.prompts = { nerf   = "👉 ",
 
 
 
-function ModeS.prompt(modeS)
-   modeS.zones.prompt:replace(modeS.prompts[modeS.raga])
+
+
+
+
+
+function ModeS.continuationLines(modeS)
+   return modeS.txtbuf and #modeS.txtbuf.lines - 1 or 0
+end
+
+
+
+
+
+
+
+function ModeS.updatePrompt(modeS)
+   local prompt = modeS.prompts[modeS.raga] .. ("\n..."):rep(modeS:continuationLines())
+   modeS.zones.prompt:replace(prompt)
 end
 
 
@@ -379,19 +368,11 @@ function ModeS.shiftMode(modeS, raga)
       -- stash current lexer
       -- #todo do this in a less dumb way
       modeS.closet[modeS.raga].lex = modeS.lex
-      modeS.lex = modeS.closet.search.lex
-      modeS.modes = modeS.closet.search.modes
-   elseif raga == "nerf" then
-      -- do default nerfy things
-      modeS.lex = modeS.closet.nerf.lex
-      modeS.modes = modeS.closet.nerf.modes
-   elseif raga == "vril-nav" then
-      -- do vimmy navigation
-   elseif raga == "vril-ins" then
-      -- do vimmy inserts
    end
+   modeS.lex = modeS.closet[raga].lex
+   modeS.modes = modeS.closet[raga].modes
    modeS.raga = raga
-   modeS:prompt()
+   modeS:updatePrompt()
    return modeS
 end
 
@@ -464,8 +445,9 @@ function ModeS.act(modeS, category, value)
    -- Replace zones
    modeS.zones.stat_col:replace(icon)
    modeS.zones.command:replace(modeS.txtbuf)
-   modeS.zones:adjustCommand()
-   modeS:paint()
+   modeS:updatePrompt()
+   -- Reflow in case command height has changed. Includes a paint.
+   modeS:reflow()
    collectgarbage()
 end
 
@@ -668,20 +650,17 @@ local function new(max_col, max_row)
   modeS.hist  = Historian()
   modeS.status = setmeta({}, _stat_M)
   rawset(__G, "stat", modeS.status)
-  modeS.lex  = Lex.lua_thor
-  modeS.hist.cursor = modeS.hist.n + 1
   modeS.max_col = max_col
   modeS.max_row = max_row
   -- this will be replaced with Zones
   modeS.l_margin = 4
   modeS.r_margin = 80
-  modeS.row = 2
-  modeS.repl_top  = ModeS.REPL_LINE
+  modeS.repl_top = ModeS.REPL_LINE
   modeS.zones = Zoneherd(modeS, write)
   modeS.zones.status:replace "an repl, plz reply uwu 👀"
-  modeS.zones.prompt:replace "👉  "
   -- initial state
   modeS.firstChar = true
+  modeS:shiftMode(modeS.raga_default)
   return modeS
 end
 

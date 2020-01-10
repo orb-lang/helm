@@ -75,93 +75,12 @@ local Txtbuf = require "helm/txtbuf"
 
 local Rainbuf = require "helm/rainbuf"
 
+local a = require "singletons:anterm"
+
 local ts = require "helm/repr" . ts
 local Zone = meta {}
 
 local Zoneherd = meta {}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-local function _inside(col, row, zone)
-   return (col >= zone.tc)
-     and  (col <= zone.bc)
-     and  (row >= zone.tr)
-     and  (row <= zone.br)
-end
-
-local function _collide(z_a, z_b)
-   if z_a.z ~= z_b.z then
-      -- this is just 'false' but let's refactor that when it's time
-      return {false, false, false, false}, false, {false, false}
-   end
-
-   local collision = false
-   -- clockwise from top left
-   local z_a_corners = { {z_a.tc, z_a.tr},
-                         {z_a.bc, z_a.tr},
-                         {z_a.bc, z_a.br},
-                         {z_a.tc, z_a.br} }
-   local hits = {}
-   for i, corner in ipairs(z_a_corners) do
-      local hit = _inside(corner[1], corner[2], z_b)
-      if hit then
-         collision = true
-      end
-      hits[i] = hit
-   end
-   local a_left_of_b = z_a.tc < z_b.tc
-   local a_above_b = z_a.tr < z_b.tr
-   -- bottom of a over top of b
-   if (hits[3] or hits[4]) and a_above_b then
-      z_b.tr = z_a.br + 1
-   end
-   -- right of a over left of b
-   if (hits[2] or hits[3]) and a_left_of_b then
-      z_b.tc = z_a.bc + 1
-   end
-   -- top of a over bottom of b
-   if (hits[1] or hits[2]) and not a_above_b then
-      z_b.br = z_a.tr - 1
-   end
-   -- left of a over right of b
-   if (hits[1] or hits[4]) and not a_left_of_b then
-      z_b.bc = z_a.tc - 1
-   end
-   return hits, collision, {a_left_of_b, a_above_b}
-end
-
-
-
-
-
-
-
-
-
-
-local function _collideAll(zoneherd, zone)
-   for i, z in ipairs(zoneherd) do
-      if zone ~= z then
-         _collide(zone, z)
-      end
-   end
-end
 
 
 
@@ -194,11 +113,22 @@ end
 
 
 
+
+
+
 function Zone.set(zone, tc, tr, bc, br)
-   zone.tc = tc
-   zone.tr = tr
-   zone.bc = bc
-   zone.br = br
+   assert(tc <= bc, "tc: " .. tc .. ", bc: " .. bc)
+   assert(tr <= br, "tr: " .. tr .. ", br: " .. br)
+   if not(zone.tr == tr and
+          zone.tc == tc and
+          zone.br == br and
+          zone.bc == bc) then
+      zone.tr = tr
+      zone.tc = tc
+      zone.br = br
+      zone.bc = bc
+      zone.touched = true
+   end
    return zone
 end
 
@@ -230,7 +160,6 @@ end
 
 
 local function _writeResults(write, zone, new)
-   local row = zone.tr
    local results = zone.contents
    if not results then
       return nil
@@ -241,7 +170,7 @@ local function _writeResults(write, zone, new)
       zone.contents = results
    end
    local nl = a.col(zone.tc) .. a.jump.down(1)
-   for line in results:lineGen(zone:height() + 1, zone:width()) do
+   for line in results:lineGen(zone:height(), zone:width()) do
       write(line)
       write(nl)
    end
@@ -256,7 +185,6 @@ local function _renderTxtbuf(modeS, zone, write)
    if type(lb) == "table" then
       lb = concat(lb)
    end
-   write(a.colrow(zone.tc, zone.tr))
    _writeLines(write, zone, lb)
 end
 
@@ -268,48 +196,27 @@ end
 
 
 
+
+
+local function newZone(name, tc, tr, bc, br, z, debug_mark)
+   local zone = meta(Zone)
+   zone.name = name
+   zone.debug_mark = debug_mark
+   zone.z = z
+   zone:set(tc, tr, bc, br)
+   zone.touched = false
+   -- zone.contents, aspirationally a rainbuf, is provided later
+   return zone
+end
+
 function Zoneherd.newZone(zoneherd, name, tc, tr, bc, br, z, debug_mark)
-   zoneherd[name] = newZone(tc, tr, bc, br, z, debug_mark)
+   zoneherd[name] = newZone(name, tc, tr, bc, br, z, debug_mark)
    -- this doesn't account for Z axis but for now:
    zoneherd[#zoneherd + 1] = zoneherd[name]
    -- todo: make a Zoneherd:add(zone, name) that handles z-ordering
    -- and auto-adjusts proportionally.
    return zoneherd
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -331,29 +238,19 @@ end
 
 
 
-
-function Zoneherd.adjustCommand(zoneherd)
-   local lines = zoneherd.command.contents and zoneherd.command.contents.lines
-   local txt_off = lines and #lines -1 or 0
-   zoneherd.command.br = zoneherd.command.tr + txt_off
-   zoneherd.results.tr = zoneherd.command.br + 1
-   return zoneherd
-end
-
-
-
-
-
 function Zoneherd.reflow(zoneherd, modeS)
    local right_col = modeS.max_col - _zoneOffset(modeS)
-   local txt_off = modeS.txtbuf and #modeS.txtbuf.lines - 1 or 0
+   local txt_off = modeS:continuationLines()
    zoneherd.status:set(1, 1, right_col, 1)
+   zoneherd.prompt:set(  1,
+                         modeS.repl_top,
+                         modeS.l_margin - 1,
+                         modeS.repl_top + txt_off)
    zoneherd.command:set( modeS.l_margin,
                          modeS.repl_top,
                          right_col,
                          modeS.repl_top + txt_off )
-   zoneherd.prompt:set(1, 2, modeS.l_margin - 1, 2)
-   zoneherd.results:set( modeS.l_margin,
+   zoneherd.results:set( 1,
                          modeS.repl_top + txt_off + 1,
                          right_col,
                          modeS.max_row )
@@ -362,12 +259,9 @@ function Zoneherd.reflow(zoneherd, modeS)
                           modeS.max_col,
                           1 )
    zoneherd.suggest:set( right_col + 1,
-                         3,
+                         modeS.repl_top + 1,
                          modeS.max_col,
                          modeS.max_row )
-   for _,z in ipairs(zoneherd) do
-      z.touched = true
-   end
    return zoneherd
 end
 
@@ -380,47 +274,20 @@ end
 
 
 
-
-local a = require "singletons:anterm"
-
-local _hard_nl = a.col(1) .. a.jump.down()
-
-local function _paintGutter(zoneherd)
+function Zoneherd.paint(zoneherd, modeS)
    local write = zoneherd.write
-   local lines = zoneherd.command.contents
-                 and #zoneherd.command.contents.lines - 1 or 0
-   write(a.erase.box(1, 3, zoneherd.results.tc - 1, zoneherd.results.br))
-   write(a.colrow(1,3))
-   while lines > 0 do
-      write "..."
-      write(_hard_nl)
-      lines = lines - 1
-   end
-   local results = zoneherd.results.contents
-   if type(results) == "table" and results.more then
-      write(a.colrow(1, zoneherd.results.br))
-      write(a.red "...")
-   end
-end
-
-function Zoneherd.paint(zoneherd, modeS, all)
-   local write = zoneherd.write
-   write(a.cursor.hide())
-   write(a.clear())
-   if all then
-      write(a.erase.all())
-   end
+   write(a.cursor.hide(), a.clear())
    for i, zone in ipairs(zoneherd) do
-      if zone.touched or all then
+      if zone.touched then
          -- erase
-         write(a.erase.box(     zone.tc,
-                                zone.tr,
-                                zone.bc,
-                                zone.br ))
-         write(a.colrow(zone.tc, zone.tr))
+         write(a.erase.box( zone.tc,
+                            zone.tr,
+                            zone.bc,
+                            zone.br ),
+               a.colrow(zone.tc, zone.tr))
          -- actually render ze contents
          if type(zone.contents) == "string" then
-            zoneherd.write(zone.contents)
+            _writeLines(write, zone, zone.contents)
          elseif type(zone.contents) == "table"
             and zone.contents.idEst == Txtbuf then
             _renderTxtbuf(modeS, zone, write)
@@ -430,31 +297,10 @@ function Zoneherd.paint(zoneherd, modeS, all)
          zone.touched = false
       end
    end
-   zoneherd.write(a.cursor.show())
-   _paintGutter(zoneherd)
    modeS:placeCursor()
+   write(a.cursor.show())
    return zoneherd
 end
-
-
-
-
-
-
-
-
-local function newZone(tc, tr, bc, br, z, debug_mark)
-   assert(tc <= bc, "tc: " .. tc .. ", bc: " .. bc)
-   assert(tr <= br, "tr: " .. tr .. ", br: " .. br)
-   local zone = meta(Zone)
-   zone:set(tc, tr, bc, br)
-   zone.debug_mark = debug_mark
-   zone.z = z
-   zone.touched = false
-   -- zone.contents, aspirationally a rainbuf, is provided later
-   return zone
-end
-
 
 
 
@@ -469,22 +315,16 @@ end
 
 local function new(modeS, writer)
    local zoneherd = meta(Zoneherd)
-   local right_col = modeS.max_col - _zoneOffset(modeS)
    zoneherd.write = writer
    -- make Zones
    -- correct values are provided by reflow
-   zoneherd.status  = newZone(-1, -1, -1, -1, 1, ".")
-   zoneherd[1] = zoneherd.status
-   zoneherd.command = newZone(-1, -1, -1, -1, 1, "|")
-   zoneherd[3] = zoneherd.command
-   zoneherd.prompt  = newZone(-1, -1, -1, -1, 1, ">")
-   zoneherd[2] = zoneherd.prompt
-   zoneherd.results = newZone(-1, -1, -1, -1, 1, "~")
-   zoneherd[4] = zoneherd.results
-   zoneherd.stat_col = newZone(-1, -1, -1, -1, 1, "!")
-   zoneherd[5] = zoneherd.stat_col
-   zoneherd.suggest = newZone(-1, -1, -1, -1, 1, "%")
-   zoneherd[6] = zoneherd.suggest
+   zoneherd:newZone("status", -1, -1, -1, -1, 1, ".")
+   zoneherd:newZone("stat_col", -1, -1, -1, -1, 1, "!")
+   zoneherd:newZone("prompt", -1, -1, -1, -1, 1, ">")
+   zoneherd:newZone("command", -1, -1, -1, -1, 1, "$")
+   zoneherd:newZone("gutter", -1, -1, -1, -1, 1, "_")
+   zoneherd:newZone("results", -1, -1, -1, -1, 1, "~")
+   zoneherd:newZone("suggest", -1, -1, -1, -1, 1, "%")
    zoneherd:reflow(modeS)
 
    return zoneherd

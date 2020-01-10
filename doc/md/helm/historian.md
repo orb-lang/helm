@@ -198,8 +198,7 @@ function Historian.load(historian)
    local pop_stmt = conn:prepare(get_recent)
                       : bindkv { project = project_id,
                                  num_lines = number_of_lines }
-   -- put the results in *backward*
-   historian.cursor = number_of_lines
+   historian.cursor = number_of_lines + 1
    historian.n = number_of_lines
    local counter = number_of_lines
    local idler
@@ -211,6 +210,7 @@ function Historian.load(historian)
       end
       historian[counter] = Txtbuf(res[2])
       historian.line_ids[counter] = res[1]
+      -- Results are loaded *backward* so the most recent one is available ASAP
       counter = counter - 1
    end
    -- add one line to ensure we have history on startup

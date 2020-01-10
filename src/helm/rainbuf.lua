@@ -80,68 +80,61 @@ local Rainbuf = meta {}
 
 
 
-local lines = assert(string.lines)
+local clear, insert, lines = assert(table.clear),
+                             assert(table.insert),
+                             assert(string.lines)
 
 function Rainbuf.lineGen(rainbuf, rows, cols)
    local offset = rainbuf.offset or 0
    cols = cols or 80
    if rainbuf.live then
       -- this buffer needs a fresh render each time
-      rainbuf.reprs, rainbuf.lines = nil, nil
+      rainbuf.reprs = nil
+      clear(rainbuf.lines)
    end
    if not rainbuf.reprs then
-      local reprs = {}
+      rainbuf.reprs = {}
       for i = 1, rainbuf.n do
-         if rainbuf.frozen then
-            reprs[i] = lines(rainbuf[i])
-         else
-            reprs[i] = lineGen(rainbuf[i], cols)
-            if type(reprs[i]) == "string" then
-               reprs[i] = lines(reprs[i])
-            end
-         end
+         rainbuf.reprs[i] = rainbuf.frozen
+            and lines(rainbuf[i])
+            or lineGen(rainbuf[i], cols)
       end
-      rainbuf.reprs = reprs
    end
    -- state for iterator
-   local reprs = rainbuf.reprs
    local r_num = 1
-   local cursor = 1 + offset
-   rows = rows + offset
-   if not rainbuf.lines then
-      rainbuf.lines = {}
-   end
+   local cursor = offset
+   local max_row = offset + rows
    rainbuf.more = true
    local function _nextLine()
-      -- if we have lines, yield them
-      if cursor < rows then
-         if rainbuf.lines and cursor <= #rainbuf.lines then
-            -- deal with line case
-            cursor = cursor + 1
-            return rainbuf.lines[cursor - 1]
-         elseif rainbuf.more then
-            local repr = reprs[r_num]
-            if repr == nil then
-               rainbuf.more = false
-               return nil
-            end
-            local line = repr()
-            if line ~= nil then
-               rainbuf.lines[#rainbuf.lines + 1] = line
-               if offset <= #rainbuf.lines then
-                  cursor = cursor + 1
-                  return line
-               else
-                  return _nextLine()
-               end
-            else
-               r_num = r_num + 1
-               return _nextLine()
-            end
-         end
-      else
+      -- Off the end
+      if cursor >= max_row then
          return nil
       end
+      cursor = cursor + 1
+      -- Fill the lines array until there's a line available at the cursor,
+      -- or we know there will not be one. Look one step ahead to correctly
+      -- set .more
+      while rainbuf.more and cursor >= #rainbuf.lines do
+         local repr = rainbuf.reprs[r_num]
+         -- Out of content
+         if repr == nil then
+            rainbuf.more = false
+         else
+            local line = repr()
+            if line then
+               insert(rainbuf.lines, line)
+            else
+               r_num = r_num + 1
+            end
+         end
+      end
+      -- If this is the last line requested, but more are available,
+      -- prepend a continuation marker, otherwise left padding
+      local prefix = "   "
+      if cursor == max_row and rainbuf.more then
+         prefix = a.red "..."
+      end
+      return rainbuf.lines[cursor] and prefix .. rainbuf.lines[cursor]
    end
    return _nextLine
 end
@@ -165,9 +158,8 @@ local function new(res)
       rainbuf.frozen = res.frozen
       rainbuf.live = res.live
    end
-   -- these aren't in play yet
-   rainbuf.wids  = {}
    rainbuf.offset = 0
+   rainbuf.lines = {}
    return rainbuf
 end
 
