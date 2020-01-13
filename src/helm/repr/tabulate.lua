@@ -71,7 +71,7 @@ local function _yieldReprs(tab, window, c)
          got a " .. type(repr))
    end
    for line, len in repr do
-      len = len or #line
+      -- Note that len may be nil, in which case the Token will figure things out for itself
       yield(Token(line, c.no_color, { event = "repr_line", total_disp = len }))
    end
 end
