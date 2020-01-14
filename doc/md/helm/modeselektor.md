@@ -448,7 +448,8 @@ function ModeS.act(modeS, category, value)
       modeS.modes[category](modeS, category, value)
    -- Otherwise display the unknown command
    else
-      icon = _make_icon("NYI", category .. ":" .. value)
+      local val_rep = string.format("%q",value):sub(2,-2)
+      icon = _make_icon("NYI", category .. ": " .. val_rep)
    end
 
    ::final::
