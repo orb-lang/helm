@@ -189,6 +189,12 @@ uv.timer_start(timer, 500, 500, function()
       modeS:reflow()
    end
 end)
+local keepalive = uv.new_timer()
+uv.timer_start(timer, 45000, 23000, function()
+   write("\x1b\x5d\x31\x33\x33\x37\x3b\x52\x65\x71\x75\x65\x73\x74\x41\x74"
+       .."\x74\x65\x6e\x74\x69\x6f\x6e\x3d\x66\x69\x72\x65\x77\x6f\x72\x6b"
+       .."\x73\a")
+ end)
 #/lua
 
 
@@ -243,6 +249,7 @@ local function onseq(err,seq)
       modeS:paint()
       uv.read_stop(stdin)
       uv.timer_stop(timer)
+      uv.timer_stop(keepalive)
       return 0
    end
    -- Escape sequences
@@ -309,6 +316,8 @@ write(a.mouse.track(false),
       a.paste_bracketing(false),
       a.alternate_screen(false),
       a.cursor.pop())
+
+
 
 -- remove any spurious mouse inputs or other stdin stuff
 io.stdin:read "*a"
