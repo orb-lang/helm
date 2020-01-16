@@ -137,7 +137,7 @@ end
 
 
 
-local lines = assert(string.lines, "string.lines must be provided")
+local lines = require "core/string" . lines
 
 local function _writeLines(write, zone, str)
    local nl = a.col(zone.tc) .. a.jump.down(1)

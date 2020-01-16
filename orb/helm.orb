@@ -43,8 +43,6 @@ ffi  = require "ffi"
 bit  = require "bit"
 uv   = require "luv"
 utf8 = require "lua-utf8"
-local core = require "core"
-local Codepoints = require "singletons/codepoints"
 
 jit.vmdef = require "helm:helm/vmdef"
 jit.p = require "helm:helm/ljprof"
@@ -70,31 +68,13 @@ namespace and standard library.
 This prelude belongs in =pylon=; it, and =core=, will eventually end up there.
 
 #!lua
-string.cleave, string.litpat = core.cleave, core.litpat
-string.utf8 = core.utf8 -- deprecated
-string.codepoints = core.codepoints
-string.lines = core.lines
-table.splice = core.splice
-table.clone = core.clone
-table.isarray = core.isarray
-table.arrayof = core.arrayof
-table.collect = core.collect
-table.select = core.select
-table.reverse = core.reverse
-table.hasfield = core.hasfield
-table.keys = core.keys
-math.bound = core.bound
-math.inbounds = core.inbounds
-
-table.pack = rawget(table, "pack") and table.pack or core.pack
+table.pack = rawget(table, "pack") and table.pack or require "core/table" . pack
 table.unpack = rawget(table, "unpack") and table.unpack or unpack
 
-meta = core.meta
+meta = require "core/meta" . meta
 getmeta, setmeta = getmetatable, setmetatable
-coro = coroutine
 --assert = core.assertfmt
 
-local concat = assert(table.concat)
 #/lua
 
 Primitives for terminal manipulation.
@@ -137,6 +117,8 @@ end
 #/lua
 
 #!lua
+local concat = assert(table.concat)
+
 function print(...)
   local n = select('#', ...)
   local arguments = {...}
@@ -207,6 +189,7 @@ processes it into tokens, which stream to the =modeselektor=.
 *** process_escapes(seq)
 
 #!lua
+local Codepoints = require "singletons/codepoints"
 local byte, sub, char = assert(string.byte),
                         assert(string.sub),
                         assert(string.char)

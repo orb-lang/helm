@@ -27,8 +27,9 @@ local c       = (require "singletons/color").color
 local repr    = require "helm/repr"
 local Codepoints = require "singletons/codepoints"
 
-local concat, reverse         = assert(table.concat), assert(table.reverse)
-assert(meta)
+local concat = assert(table.concat)
+local reverse = require "core/table" . reverse
+local meta = require "core/meta" . meta
 ```
 ```lua
 local Historian = meta {}
@@ -152,7 +153,8 @@ the results never get used.
 
 ```lua
 
-local bound = require "core/math" . bound
+local core_math = require "core/math"
+local bound = assert(core_math.bound)
 
 function Historian.load(historian)
    local conn = sql.open(historian.helm_db)
@@ -525,7 +527,7 @@ end
 Retrieve a set of results reprs from the database, given a line_id.
 
 ```lua
-local lines = assert(string.lines)
+local lines = require "core/string" . lines
 local function _db_result__repr(result)
    local result_iter = lines(result[1])
    return function()
@@ -568,7 +570,6 @@ end
 ## Historian:prev()
 
 ```lua
-local bound = assert(math.bound)
 
 function Historian.prev(historian)
    historian.cursor = bound(historian.cursor - 1, 1)
@@ -610,7 +611,7 @@ Loads the history to an exact index. The index must be one that actually exists,
 i.e. 1 <= index <= historian.n--historian.n + 1 is not allowed.
 
 ```lua
-local inbounds = assert(math.inbounds)
+local inbounds = assert(core_math.inbounds)
 
 function Historian.index(historian, cursor)
    assert(inbounds(cursor, 1, historian.n))

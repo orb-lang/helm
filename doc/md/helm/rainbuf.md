@@ -92,8 +92,8 @@ generate these on the fly.
 
 ```lua
 local clear, insert, lines = assert(table.clear),
-                             assert(table.insert),
-                             assert(string.lines)
+                             assert(table.insert)
+local lines = require "core/string" . lines
 
 function Rainbuf.lineGen(rainbuf, rows, cols)
    local offset = rainbuf.offset or 0

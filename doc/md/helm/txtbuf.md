@@ -143,7 +143,8 @@ Also opens the row to which the cursor is being moved.
 
 ```lua
 
-local bound, inbounds = assert(math.bound), assert(math.inbounds)
+local core_math = require "core/math"
+local bound, inbounds = assert(core_math.bound), assert(core_math.inbounds)
 
 function Txtbuf.makeCursor(txtbuf, rowOrTable, col, basedOn)
    local row
@@ -614,7 +615,7 @@ function Txtbuf.resume(txtbuf)
 end
 ```
 ```lua
-local table_clone = assert(table.clone)
+local table_clone = assert(core_table.clone)
 function Txtbuf.clone(txtbuf)
    -- Clone to depth of 3 to get tb, tb.lines, and each lines
    local tb = table_clone(txtbuf, 3)
