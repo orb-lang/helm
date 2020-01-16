@@ -9,7 +9,7 @@
 
 
 
-local core = require "singletons/core"
+local core_table, core_string = require "core/table", require "core/string"
 local Token = require "helm/repr/token"
 local nameFor = require "helm/repr/names" . nameFor
 local C = require "singletons/color"
@@ -54,9 +54,8 @@ end
 
 
 
-local collect, hasmetamethod, lines = assert(core.collect),
-                                      assert(core.hasmetamethod),
-                                      assert(core.lines)
+local hasmetamethod = require "core/meta" . hasmetamethod
+local collect, lines = assert(core_table.collect), assert(core_string.lines)
 
 local function _yieldReprs(tab, window, c)
    local _repr = hasmetamethod("repr", tab)
@@ -86,8 +85,8 @@ end
 
 local function yield_name(...) yield(nameFor(...)) end
 
-local isarray, table_keys, sort = assert(core.isarray),
-                                  assert(core.keys),
+local isarray, table_keys, sort = assert(core_table.isarray),
+                                  assert(core_table.keys),
                                   assert(table.sort)
 
 local function _tabulate(tab, window, c, depth, cycle)

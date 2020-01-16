@@ -43,7 +43,7 @@ ffi  = require "ffi"
 bit  = require "bit"
 uv   = require "luv"
 utf8 = require "lua-utf8"
-core = require "singletons/core"
+local core = require "core"
 local Codepoints = require "singletons/codepoints"
 
 jit.vmdef = require "helm:helm/vmdef"

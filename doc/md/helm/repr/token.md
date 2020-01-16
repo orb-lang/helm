@@ -69,8 +69,7 @@ local utf8_len, utf8_sub = utf8.len, utf8.sub
 local concat, insert, remove = assert(table.concat),
                                assert(table.insert),
                                assert(table.remove)
-
-local meta = require "singletons/core" . meta
+local meta = require "core/meta" . meta
 ```
 ## Methods
 

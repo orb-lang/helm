@@ -43,7 +43,7 @@ ffi  = require "ffi"
 bit  = require "bit"
 uv   = require "luv"
 utf8 = require "lua-utf8"
-core = require "singletons/core"
+local core = require "core"
 local Codepoints = require "singletons/codepoints"
 
 jit.vmdef = require "helm:helm/vmdef"
@@ -190,7 +190,7 @@ uv.timer_start(timer, 500, 500, function()
    end
 end)
 local keepalive = uv.new_timer()
-uv.timer_start(timer, 35000, 23000, function()
+uv.timer_start(timer, 23000, 23000, function()
    write("\x1b\x5d\x31\x33\x33\x37\x3b\x52\x65\x71\x75\x65\x73\x74\x41\x74"
        .."\x74\x65\x6e\x74\x69\x6f\x6e\x3d\x66\x69\x72\x65\x77\x6f\x72\x6b"
        .."\x73\a")

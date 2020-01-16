@@ -408,7 +408,8 @@ end
 
 
 
-local assertfmt, iscallable = assert(core.assertfmt), assert(core.iscallable)
+local assertfmt, iscallable = require "core/string" . assertfmt,
+                              require "core/table" . iscallable
 
 function ModeS.act(modeS, category, value)
    assertfmt(modeS.modes[category], "no category %s in modeS", category)

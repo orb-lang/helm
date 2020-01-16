@@ -157,7 +157,7 @@ end
 
 
 
-local bound = assert(core.bound)
+local bound = require "core/math" . bound
 
 function Historian.load(historian)
    local conn = sql.open(historian.helm_db)
