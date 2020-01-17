@@ -481,7 +481,7 @@ end
 
 local eval_ENV = {}
 local eval_M = {}
-setmeta(eval_ENV, eval_M)
+setmetatable(eval_ENV, eval_M)
 
 
 local function indexer(Env, key)
@@ -598,7 +598,7 @@ function ModeS.eval(modeS)
       for i = 1, results.n do
          -- create line generators for each result
          lineGens[i] = repr.lineGen(results[i], modeS.zones.results:width())
-         result_tostring[i] = setmeta({}, result_repr_M)
+         result_tostring[i] = setmetatable({}, result_repr_M)
       end
       local i = 1
       local result_idler = uv.new_idle()
@@ -637,7 +637,7 @@ local _stat_M = meta {}
 _stat_M.__repr = _status__repr
 
 function _stat_M.clear(status_table)
-  return setmeta({}, getmeta(status_table))
+  return setmetatable({}, getmetatable(status_table))
 end
 
 
@@ -650,7 +650,7 @@ local function new(max_col, max_row)
   local modeS = meta(ModeS)
   modeS.txtbuf = Txtbuf()
   modeS.hist  = Historian()
-  modeS.status = setmeta({}, _stat_M)
+  modeS.status = setmetatable({}, _stat_M)
   rawset(__G, "stat", modeS.status)
   modeS.max_col = max_col
   modeS.max_row = max_row

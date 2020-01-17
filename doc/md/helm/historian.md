@@ -501,7 +501,7 @@ function Historian.search(historian, frag)
       end
    end
    -- deduplicate
-   local collection = setmeta({}, collect_M)
+   local collection = setmetatable({}, collect_M)
    local collect_cursors = {}
    local dup = {}
    for i, line in ipairs(matches) do
@@ -558,7 +558,7 @@ local function _resultsFrom(historian, cursor)
       for i = 1, results.n do
          -- stick the result in a table to enable repr-ing
          results[i] = {results[i]}
-         setmeta(results[i], _db_result_M)
+         setmetatable(results[i], _db_result_M)
       end
    end
    historian.get_results:reset()

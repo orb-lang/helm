@@ -37,18 +37,10 @@ local function _helm(_ENV)
 
 setfenv(1, _ENV)
 
-L    = require "lpeg"
-lfs  = require "lfs"
-ffi  = require "ffi"
-bit  = require "bit"
-uv   = require "luv"
-utf8 = require "lua-utf8"
+meta = require "core/meta" . meta
 
 jit.vmdef = require "helm:helm/vmdef"
 jit.p = require "helm:helm/ljprof"
-
---apparently this is a hidden, undocumented LuaJIT thing?
-require "table.clear"
 
 sql = assert(sql, "sql must be in _G")
 
@@ -66,29 +58,7 @@ sql = assert(sql, "sql must be in _G")
 
 
 
-
-
-table.pack = rawget(table, "pack") and table.pack or require "core/table" . pack
-table.unpack = rawget(table, "unpack") and table.unpack or unpack
-
-meta = require "core/meta" . meta
-getmeta, setmeta = getmetatable, setmetatable
---assert = core.assertfmt
-
-
-
-
-
-
-a = require "singletons/anterm"
-local names = require "helm/repr/names"
---watch = require "watcher"
-
-
-
-
-
-
+uv = require "luv"
 
 local usecolors
 stdout = ""
@@ -140,6 +110,13 @@ if uv.guess_handle(0) ~= "tty" or
 end
 
 local stdin = uv.new_tty(0, true)
+
+
+
+
+
+a = require "singletons/anterm"
+--watch = require "watcher"
 
 
 
@@ -267,6 +244,7 @@ end
 
 -- Get names for as many values as possible
 -- into the colorizer
+local names = require "helm/repr/names"
 names.allNames(__G)
 
 -- assuming we survived that, set up our repling environment:

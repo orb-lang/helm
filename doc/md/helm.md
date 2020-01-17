@@ -34,18 +34,10 @@ No sense wasting a level of indent on a wrapper imho
 ```lua
 setfenv(1, _ENV)
 
-L    = require "lpeg"
-lfs  = require "lfs"
-ffi  = require "ffi"
-bit  = require "bit"
-uv   = require "luv"
-utf8 = require "lua-utf8"
+meta = require "core/meta" . meta
 
 jit.vmdef = require "helm:helm/vmdef"
 jit.p = require "helm:helm/ljprof"
-
---apparently this is a hidden, undocumented LuaJIT thing?
-require "table.clear"
 
 sql = assert(sql, "sql must be in _G")
 ```
@@ -55,38 +47,15 @@ Although we're not doing so yet, this is where we will set up Djikstra mode
 for participating code.  We then push that up through the layers, and it lands
 as close to C level as practical.
 
-## core
-
-The ``core`` library is shaping up as a place to keep alterations to the global
-namespace and standard library.
-
-
-This prelude belongs in ``pylon``; it, and ``core``, will eventually end up there.
-
-```lua
-table.pack = rawget(table, "pack") and table.pack or require "core/table" . pack
-table.unpack = rawget(table, "unpack") and table.unpack or unpack
-
-meta = require "core/meta" . meta
-getmeta, setmeta = getmetatable, setmetatable
---assert = core.assertfmt
-
-```
-
-Primitives for terminal manipulation.
-
-```lua
-a = require "singletons/anterm"
-local names = require "helm/repr/names"
---watch = require "watcher"
-
-```
+## Boot sequence
 
 This boot sequence builds on Tim Caswell and the Luvit Author's repl example.
 
 
 Couple pieces I'm not using but should:
 ```lua
+uv = require "luv"
+
 local usecolors
 stdout = ""
 
@@ -134,6 +103,11 @@ if uv.guess_handle(0) ~= "tty" or
 end
 
 local stdin = uv.new_tty(0, true)
+```
+```lua
+a = require "singletons/anterm"
+--watch = require "watcher"
+
 ```
 ## Modeselektor
 
@@ -256,6 +230,7 @@ end
 
 -- Get names for as many values as possible
 -- into the colorizer
+local names = require "helm/repr/names"
 names.allNames(__G)
 
 -- assuming we survived that, set up our repling environment:
