@@ -367,14 +367,18 @@ end
 ### new(iter_gen, cfg)
 
 ```lua
+local GUTTER_WIDTH = 3
 
 local function new(iter_gen, cfg)
    cfg = cfg or {}
    local function generator(val, disp_width, color)
       assert(color, "Must provide a color table to Composer")
+      -- For now, account for the fact that there will be a 3-column gutter
+      -- Eventually we'll probably be producing the metadata as well
+      local width = disp_width and disp_width - GUTTER_WIDTH or 80
       local composer = setmetatable({
          color = color,
-         width = disp_width or 80,
+         width = width,
          more = true,
          pos = 0,
          stages = {[0] = { long = true }},
