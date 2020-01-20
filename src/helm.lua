@@ -37,20 +37,10 @@ local function _helm(_ENV)
 
 setfenv(1, _ENV)
 
-L    = require "lpeg"
-lfs  = require "lfs"
-ffi  = require "ffi"
-bit  = require "bit"
-uv   = require "luv"
-utf8 = require "lua-utf8"
-core = require "singletons/core"
-local Codepoints = require "singletons/codepoints"
+meta = require "core/meta" . meta
 
 jit.vmdef = require "helm:helm/vmdef"
 jit.p = require "helm:helm/ljprof"
-
---apparently this is a hidden, undocumented LuaJIT thing?
-require "table.clear"
 
 sql = assert(sql, "sql must be in _G")
 
@@ -68,47 +58,7 @@ sql = assert(sql, "sql must be in _G")
 
 
 
-
-
-string.cleave, string.litpat = core.cleave, core.litpat
-string.utf8 = core.utf8 -- deprecated
-string.codepoints = core.codepoints
-string.lines = core.lines
-table.splice = core.splice
-table.clone = core.clone
-table.isarray = core.isarray
-table.arrayof = core.arrayof
-table.collect = core.collect
-table.select = core.select
-table.reverse = core.reverse
-table.hasfield = core.hasfield
-table.keys = core.keys
-math.bound = core.bound
-math.inbounds = core.inbounds
-
-table.pack = rawget(table, "pack") and table.pack or core.pack
-table.unpack = rawget(table, "unpack") and table.unpack or unpack
-
-meta = core.meta
-getmeta, setmeta = getmetatable, setmetatable
-coro = coroutine
---assert = core.assertfmt
-
-local concat = assert(table.concat)
-
-
-
-
-
-a = require "singletons/anterm"
-local names = require "helm/repr/names"
---watch = require "watcher"
-
-
-
-
-
-
+uv = require "luv"
 
 local usecolors
 stdout = ""
@@ -137,6 +87,8 @@ end
 
 
 
+local concat = assert(table.concat)
+
 function print(...)
   local n = select('#', ...)
   local arguments = {...}
@@ -158,6 +110,13 @@ if uv.guess_handle(0) ~= "tty" or
 end
 
 local stdin = uv.new_tty(0, true)
+
+
+
+
+
+a = require "anterm:anterm"
+--watch = require "watcher"
 
 
 
@@ -190,7 +149,7 @@ uv.timer_start(timer, 500, 500, function()
    end
 end)
 local keepalive = uv.new_timer()
-uv.timer_start(timer, 35000, 23000, function()
+uv.timer_start(timer, 23000, 23000, function()
    write("\x1b\x5d\x31\x33\x33\x37\x3b\x52\x65\x71\x75\x65\x73\x74\x41\x74"
        .."\x74\x65\x6e\x74\x69\x6f\x6e\x3d\x66\x69\x72\x65\x77\x6f\x72\x6b"
        .."\x73\a")
@@ -207,6 +166,7 @@ uv.timer_start(timer, 35000, 23000, function()
 
 
 
+local Codepoints = require "singletons/codepoints"
 local byte, sub, char = assert(string.byte),
                         assert(string.sub),
                         assert(string.char)
@@ -284,6 +244,7 @@ end
 
 -- Get names for as many values as possible
 -- into the colorizer
+local names = require "helm/repr/names"
 names.allNames(__G)
 
 -- assuming we survived that, set up our repling environment:

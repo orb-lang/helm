@@ -3,11 +3,8 @@
 
 A light wrapper over ``nerf``.
 
-
 ```lua
-local clone = assert(table.clone, "requires table.clone")
-```
-```lua
+local clone = require "core/table" . clone
 local Nerf = require "helm/nerf"
 local Rainbuf = require "helm/rainbuf"
 

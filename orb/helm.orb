@@ -37,20 +37,10 @@ No sense wasting a level of indent on a wrapper imho
 #!lua
 setfenv(1, _ENV)
 
-L    = require "lpeg"
-lfs  = require "lfs"
-ffi  = require "ffi"
-bit  = require "bit"
-uv   = require "luv"
-utf8 = require "lua-utf8"
-core = require "singletons/core"
-local Codepoints = require "singletons/codepoints"
+meta = require "core/meta" . meta
 
 jit.vmdef = require "helm:helm/vmdef"
 jit.p = require "helm:helm/ljprof"
-
---apparently this is a hidden, undocumented LuaJIT thing?
-require "table.clear"
 
 sql = assert(sql, "sql must be in _G")
 #/lua
@@ -62,54 +52,14 @@ Although we're not doing so yet, this is where we will set up Djikstra mode
 for participating code.  We then push that up through the layers, and it lands
 as close to C level as practical.
 
-** core
-
-The =core= library is shaping up as a place to keep alterations to the global
-namespace and standard library.
-
-This prelude belongs in =pylon=; it, and =core=, will eventually end up there.
-
-#!lua
-string.cleave, string.litpat = core.cleave, core.litpat
-string.utf8 = core.utf8 -- deprecated
-string.codepoints = core.codepoints
-string.lines = core.lines
-table.splice = core.splice
-table.clone = core.clone
-table.isarray = core.isarray
-table.arrayof = core.arrayof
-table.collect = core.collect
-table.select = core.select
-table.reverse = core.reverse
-table.hasfield = core.hasfield
-table.keys = core.keys
-math.bound = core.bound
-math.inbounds = core.inbounds
-
-table.pack = rawget(table, "pack") and table.pack or core.pack
-table.unpack = rawget(table, "unpack") and table.unpack or unpack
-
-meta = core.meta
-getmeta, setmeta = getmetatable, setmetatable
-coro = coroutine
---assert = core.assertfmt
-
-local concat = assert(table.concat)
-#/lua
-
-Primitives for terminal manipulation.
-
-#!lua
-a = require "singletons/anterm"
-local names = require "helm/repr/names"
---watch = require "watcher"
-
-#/lua
+** Boot sequence
 
 This boot sequence builds on Tim Caswell and the Luvit Author's repl example.
 
 Couple pieces I'm not using but should:
 #!lua
+uv = require "luv"
+
 local usecolors
 stdout = ""
 
@@ -137,6 +87,8 @@ end
 #/lua
 
 #!lua
+local concat = assert(table.concat)
+
 function print(...)
   local n = select('#', ...)
   local arguments = {...}
@@ -160,6 +112,13 @@ end
 local stdin = uv.new_tty(0, true)
 #/lua
 
+Primitives for terminal manipulation.
+
+#!lua
+a = require "anterm:anterm"
+--watch = require "watcher"
+
+#/lua
 
 ** Modeselektor
 
@@ -207,6 +166,7 @@ processes it into tokens, which stream to the =modeselektor=.
 *** process_escapes(seq)
 
 #!lua
+local Codepoints = require "singletons/codepoints"
 local byte, sub, char = assert(string.byte),
                         assert(string.sub),
                         assert(string.char)
@@ -284,6 +244,7 @@ end
 
 -- Get names for as many values as possible
 -- into the colorizer
+local names = require "helm/repr/names"
 names.allNames(__G)
 
 -- assuming we survived that, set up our repling environment:

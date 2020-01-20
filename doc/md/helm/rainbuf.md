@@ -91,9 +91,9 @@ a line at a time (and it only took, oh, six months), we're finally able to
 generate these on the fly.
 
 ```lua
-local clear, insert, lines = assert(table.clear),
-                             assert(table.insert),
-                             assert(string.lines)
+local clear, insert = assert(table.clear),
+                      assert(table.insert)
+local lines = require "core/string" . lines
 
 function Rainbuf.lineGen(rainbuf, rows, cols)
    local offset = rainbuf.offset or 0

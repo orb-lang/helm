@@ -24,7 +24,7 @@
 
 
 
-local meta = require "singletons/core" . meta
+local meta = require "core/meta" . meta
 local Token = require "helm/repr/token"
 
 local concat, insert, remove = assert(table.concat),

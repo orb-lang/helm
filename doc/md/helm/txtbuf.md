@@ -71,13 +71,13 @@ cleaner that transition can be.
 ```lua
 assert(meta)
 local Codepoints = require "singletons/codepoints"
-local lines = assert(core.lines)
+local lines = require "core/string" . lines
+local core_table = require "core/table"
+local collect, splice = assert(core_table.collect), assert(core_table.splice)
 
-local collect, concat, insert, splice, remove = assert(table.collect),
-                                                assert(table.concat),
-                                                assert(table.insert),
-                                                assert(table.splice),
-                                                assert(table.remove)
+local concat, insert, remove = assert(table.concat),
+                               assert(table.insert),
+                               assert(table.remove)
 ```
 ## Methods
 
@@ -143,7 +143,8 @@ Also opens the row to which the cursor is being moved.
 
 ```lua
 
-local bound, inbounds = assert(math.bound), assert(math.inbounds)
+local core_math = require "core/math"
+local bound, inbounds = assert(core_math.bound), assert(core_math.inbounds)
 
 function Txtbuf.makeCursor(txtbuf, rowOrTable, col, basedOn)
    local row
@@ -562,7 +563,7 @@ inserting a newline.
 
 ```lua
 
-local slice = assert(core.slice)
+local slice = assert(core_table.slice)
 
 function Txtbuf.nl(txtbuf)
    local cur_row, cur_col = txtbuf:getCursor()
@@ -614,7 +615,7 @@ function Txtbuf.resume(txtbuf)
 end
 ```
 ```lua
-local table_clone = assert(table.clone)
+local table_clone = assert(core_table.clone)
 function Txtbuf.clone(txtbuf)
    -- Clone to depth of 3 to get tb, tb.lines, and each lines
    local tb = table_clone(txtbuf, 3)
