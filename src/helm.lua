@@ -38,7 +38,7 @@ local function _helm(_ENV)
 setfenv(1, _ENV)
 
 meta = require "core/meta" . meta
-
+core = require "core:core"
 jit.vmdef = require "helm:helm/vmdef"
 jit.p = require "helm:helm/ljprof"
 
