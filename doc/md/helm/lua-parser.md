@@ -99,7 +99,10 @@ parameters = "(" _ (symbollist (_ "," _ vararg)*)* ")"
 string = singlestring / doublestring / longstring
 `singlestring` = "'" ("\\" "'" / (!"'" 1))* "'"
 `doublestring` = '"' ('\\' '"' / (!'"' 1))* '"'
-;`longstring` = "placeholder"
+`longstring`   = ls_open (!ls_close 1)* ls_close
+
+`ls_open` = "[" "="*@eq "["
+`ls_close` = "]" "="*@(eq) "]"
 
 symbol = reprsymbol
        / !keyword ([A-Z] / [a-z] / "_") ([A-Z] / [a-z] / [0-9] /"_" )*
@@ -127,40 +130,6 @@ keyword = ("and" / "break" / "do" / "else" / "elseif"
 `t` = !([A-Z] / [a-z] / [0-9] / "_")
 ]=]
 ```
-### Header and Postscript
-
-We need to do some code injection to cover the case of long strings.
-
-
-I intend to write a rule to cover this declaratively, but that's a task for a
-later pass.
-
-
-#### Header
-
-Adapted from the [Lpeg documentation](http://www.inf.puc-rio.br/~roberto/lpeg/).
-
-```lua
-local header = [[
-local L = require "lpeg"
-local C, Cg, Cmt, Cb, P = L.C, L.Cg, L.Cmt, L.Cb, L.P
-local equals = P"="^0
-local open = "[" * Cg(equals, "init") * "[" * P"\n"^-1
-local close = "]" * C(equals) * "]"
-local closeeq = Cmt(close * Cb("init"),
-                         function (s, i, a, b) return a == b end)
-
-]]
-```
-#### Postscript
-
-Dividing by zero is a weird way to reject all captures, but eh.
-
-```lua
-local postscript = [[
-  longstring = (open * C((P(1) - closeeq)^0) * close) / 0
-]]
-```
 ## Metatables
 
 ```lua
@@ -174,5 +143,5 @@ end
 local lua_metas = { lua = Lua }
 ```
 ```lua
-return Peg(lua_str) : toGrammar(lua_metas, postscript, header)
+return Peg(lua_str) : toGrammar(lua_metas)
 ```
