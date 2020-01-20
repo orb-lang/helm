@@ -184,12 +184,14 @@ end
 ### _renderTxtbuf(modeS, zone)
 
 ```lua
+local c = require "singletons/color" . color
+
 local function _renderTxtbuf(modeS, zone, write)
-   local lb = modeS.lex(tostring(zone.contents))
-   if type(lb) == "table" then
-      lb = concat(lb)
+   local tokens = modeS.lex(tostring(zone.contents))
+   for i, tok in ipairs(tokens) do
+      tokens[i] = tok:toString(c)
    end
-   _writeLines(write, zone, lb)
+   _writeLines(write, zone, concat(tokens))
 end
 ```
 ## Zoneherd methods
