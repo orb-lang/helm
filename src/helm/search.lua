@@ -4,11 +4,7 @@
 
 
 
-
-local clone = assert(table.clone, "requires table.clone")
-
-
-
+local clone = require "core/table" . clone
 local Nerf = require "helm/nerf"
 local Rainbuf = require "helm/rainbuf"
 

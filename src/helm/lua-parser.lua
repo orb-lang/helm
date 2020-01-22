@@ -23,13 +23,11 @@ local Node = require "espalier:espalier/node"
 
 
 local lua_str = [=[
-lua = shebang* _ chunk _ finalcomment* Error*
+lua = shebang* _ chunk _ Error*
 shebang = "#" (!"\n" 1)* "\n"
-chunk = _ (statement _ ";"?)* (_ laststatement _ (";")?)?
+chunk = _ (statement _ ";"?)* (_ laststatement _ ";"?)?
 
 Error = 1+
-
-finalcomment = "--" 1* !1
 
 statement = "do" t chunk "end" t
           / "while" t expr "do" t chunk "end" t
@@ -48,7 +46,7 @@ statement = "do" t chunk "end" t
           / "::" symbol "::"
           / functioncall
 
-laststatement = "return" t (_ explist)?
+laststatement = "return" t _ (explist)?
               / "break" t
 
 funcname = symbol _ ("." _ symbol)* (":" _ symbol)?
@@ -64,12 +62,12 @@ binop = "and" / "or" / ".." / "<=" / ">=" / "~=" / "=="
        / tableconstructor / Function
        / functioncall / var
        / "(" _ expr _ ")"
-Nil   = "nil"
-bool  = "true" / "false"
+Nil   = "nil" t
+bool  = "true" t / "false" t
 vararg = "..."
 functioncall = prefix (_ suffix &(_ suffix))* _ call
 tableconstructor = "{" _ fieldlist* _ "}"
-Function = "function" _ funcbody
+Function = "function" t _ funcbody
 
 var = prefix (_ suffix &(_ suffix))* index
     / symbol
@@ -87,11 +85,12 @@ index   = "[" expr "]" / "." _ symbol
 `call`    = args / method
 method    = ":" _ symbol _ args
 
-args = "(" _ (explist _)? ")" / string
-    ;/ tableconstructor
+args = "(" _ (explist _)? ")"
+     / string
+     / tableconstructor
 `explist` = expr ("," expr)*
 
-`funcbody` = parameters _ chunk _ "end"
+`funcbody` = parameters _ chunk _ "end" t
 parameters = "(" _ (symbollist (_ "," _ vararg)*)* ")"
           / "(" _ vararg _ ")"
 `symbollist` = (symbol ("," _ symbol)*)
@@ -100,7 +99,10 @@ parameters = "(" _ (symbollist (_ "," _ vararg)*)* ")"
 string = singlestring / doublestring / longstring
 `singlestring` = "'" ("\\" "'" / (!"'" 1))* "'"
 `doublestring` = '"' ('\\' '"' / (!'"' 1))* '"'
-;`longstring` = "placeholder"
+`longstring`   = ls_open (!ls_close 1)* ls_close
+
+`ls_open` = "[" "="*@eq "["
+`ls_close` = "]" "="*@(eq) "]"
 
 symbol = reprsymbol
        / !keyword ([A-Z] / [a-z] / "_") ([A-Z] / [a-z] / [0-9] /"_" )*
@@ -115,7 +117,7 @@ number = real / hex / integer
 
 `_` = comment+ / whitespace
 comment = whitespace longcomment
-        / whitespace "--" (!"\n" 1)* "\n" whitespace
+        / whitespace "--" (!"\n" 1)* whitespace
 
 `longcomment` = "--" longstring
 `whitespace` = { \t\n\r}*
@@ -135,43 +137,6 @@ keyword = ("and" / "break" / "do" / "else" / "elseif"
 
 
 
-
-
-
-
-
-
-
-
-
-local header = [[
-local L = require "lpeg"
-local C, Cg, Cmt, Cb, P = L.C, L.Cg, L.Cmt, L.Cb, L.P
-local equals = P"="^0
-local open = "[" * Cg(equals, "init") * "[" * P"\n"^-1
-local close = "]" * C(equals) * "]"
-local closeeq = Cmt(close * Cb("init"),
-                         function (s, i, a, b) return a == b end)
-
-]]
-
-
-
-
-
-
-
-
-local postscript = [[
-  longstring = (open * C((P(1) - closeeq)^0) * close) / 0
-]]
-
-
-
-
-
-
-
 local Lua = Node : inherit "lua"
 
 function Lua.__tostring(lua)
@@ -182,4 +147,4 @@ local lua_metas = { lua = Lua }
 
 
 
-return Peg(lua_str) : toGrammar(lua_metas, postscript, header)
+return Peg(lua_str) : toGrammar(lua_metas)

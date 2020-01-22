@@ -70,14 +70,14 @@ cleaner that transition can be.
 
 ```lua
 assert(meta)
-local codepoints = assert(string.codepoints)
-local gsub = assert(string.gsub)
-local sub = assert(string.sub)
+local Codepoints = require "singletons/codepoints"
+local lines = require "core/string" . lines
+local core_table = require "core/table"
+local collect, splice = assert(core_table.collect), assert(core_table.splice)
 
-local table_clone = assert(table.clone)
-local concat = assert(table.concat)
-local insert, splice = assert(table.insert), assert(table.splice)
-local remove = assert(table.remove)
+local concat, insert, remove = assert(table.concat),
+                               assert(table.insert),
+                               assert(table.remove)
 ```
 ## Methods
 
@@ -105,8 +105,8 @@ end
 ```lua
 
 function Txtbuf.__tostring(txtbuf)
-   local closed_lines = table_clone(txtbuf.lines)
-   for k, v in ipairs(closed_lines) do
+   local closed_lines = {}
+   for k, v in ipairs(txtbuf.lines) do
       closed_lines[k] = cat(v)
    end
    return concat(closed_lines, "\n")
@@ -143,7 +143,8 @@ Also opens the row to which the cursor is being moved.
 
 ```lua
 
-local bound, inbounds = assert(math.bound), assert(math.inbounds)
+local core_math = require "core/math"
+local bound, inbounds = assert(core_math.bound), assert(core_math.inbounds)
 
 function Txtbuf.makeCursor(txtbuf, rowOrTable, col, basedOn)
    local row
@@ -178,7 +179,7 @@ function Txtbuf.openRow(txtbuf, row_num)
       return nil
    end
    if type(txtbuf.lines[row_num]) == "string" then
-      txtbuf.lines[row_num] = codepoints(txtbuf.lines[row_num])
+      txtbuf.lines[row_num] = Codepoints(txtbuf.lines[row_num])
    end
    return txtbuf.lines[row_num], row_num
 end
@@ -195,35 +196,68 @@ end
 ```
 ### Txtbuf:insert(frag)
 
-```lua
+Inserts ``frag`` (which must be exactly one codepoint) at the current cursor
+position. Intended for when the user has pressed the corresponding key--
+performs automatic brace pairing.
 
-local _brace_pairs = { ["("] = ")",
-                       ['"'] = '"',
-                       ["'"] = "'",
-                       ["{"] = "}",
-                       ["["] = "]"}
--- pronounced clozer
-local function _is_closer(frag)
-   for _, cha in pairs(_brace_pairs) do
-      if cha == frag then return true end
-   end
-   return false
+```lua
+local _openers = { ["("] = ")",
+                   ['"'] = '"',
+                   ["'"] = "'",
+                   ["{"] = "}",
+                   ["["] = "]"}
+
+local _closers = {}
+for o, c in pairs(_openers) do
+   _closers[c] = o
 end
 
 local function _should_insert(line, cursor, frag)
-   return not (frag == line[cursor] and _is_closer(frag))
+   return not (frag == line[cursor] and _closers[frag])
+end
+
+local function _should_pair(line, cursor, frag)
+   -- Only consider inserting a pairing character if this is an "opener"
+   if not _openers[frag] then return false end
+   -- Translate end-of-line to the implied newline
+   local next_char = line[cursor] or "\n"
+   -- Insert a pair if we are before whitespace, or the next char is a
+   -- closing brace--that is, a closing character that is different
+   -- from its corresponding open character, i.e. not a quote
+   return next_char:match("%s") or
+      _closers[next_char] and _closers[next_char] ~= next_char
 end
 
 function Txtbuf.insert(txtbuf, frag)
    local line, cur_col = txtbuf.lines[txtbuf.cursor.row], txtbuf.cursor.col
    if _should_insert(line, cur_col, frag) then
-      if _brace_pairs[frag] then
-         insert(line, cur_col, _brace_pairs[frag])
+      if _should_pair(line, cur_col, frag) then
+         insert(line, cur_col, _openers[frag])
       end
       insert(line, cur_col, frag)
    end
    txtbuf:setCursor(nil, cur_col + 1)
    return true
+end
+```
+### Txtbuf:paste(frag)
+
+Pastes ``frag`` (which may be many characters and may include newlines)
+at the current cursor position. The only translation performed is
+tab to three spaces.
+
+```lua
+function Txtbuf.paste(txtbuf, frag)
+   frag = frag:gsub("\t", "   ")
+   local frag_lines = collect(lines, frag)
+   local num_lines_before = #txtbuf.lines
+   for i, frag_line in ipairs(frag_lines) do
+      if i > 1 then txtbuf:nl() end
+      local codes = Codepoints(frag_line)
+      local cur_row, cur_col = txtbuf:getCursor()
+      splice(txtbuf.lines[cur_row], cur_col, codes)
+      txtbuf:setCursor(nil, cur_col + #codes)
+   end
 end
 ```
 ### Txtbuf:deleteBackward()
@@ -234,7 +268,7 @@ clear it off the screen (true of deleteForward as well).
 ```lua
 
 local function _is_paired(a, b)
-   return _brace_pairs[a] == b
+   return _openers[a] == b
 end
 
 function Txtbuf.deleteBackward(txtbuf)
@@ -528,14 +562,17 @@ Splits the line at the current cursor position, effectively
 inserting a newline.
 
 ```lua
+
+local slice = assert(core_table.slice)
+
 function Txtbuf.nl(txtbuf)
    local cur_row, cur_col = txtbuf:getCursor()
    -- split the line
-   local line = concat(txtbuf.lines[cur_row])
-   local first = sub(line, 1, cur_col - 1)
-   local second = sub(line, cur_col)
-   txtbuf.lines[cur_row] = codepoints(first)
-   insert(txtbuf.lines, cur_row + 1, codepoints(second))
+   local line = txtbuf.lines[cur_row]
+   local first = slice(line, 1, cur_col - 1)
+   local second = slice(line, cur_col)
+   txtbuf.lines[cur_row] = first
+   insert(txtbuf.lines, cur_row + 1, second)
    txtbuf:setCursor(cur_row + 1, 1)
    return false
 end
@@ -578,7 +615,7 @@ function Txtbuf.resume(txtbuf)
 end
 ```
 ```lua
-
+local table_clone = assert(core_table.clone)
 function Txtbuf.clone(txtbuf)
    -- Clone to depth of 3 to get tb, tb.lines, and each lines
    local tb = table_clone(txtbuf, 3)
@@ -588,9 +625,6 @@ end
 ### new
 
 ```lua
-
-local collect = assert(table.collect)
-local lines = assert(string.lines)
 
 local function new(str)
    str = str or ""

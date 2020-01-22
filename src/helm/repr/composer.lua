@@ -24,7 +24,7 @@
 
 
 
-local meta = require "singletons/core" . meta
+local meta = require "core/meta" . meta
 local Token = require "helm/repr/token"
 
 local concat, insert, remove = assert(table.concat),
@@ -49,7 +49,11 @@ local new
 
 
 function Composer.disp(composer)
-   local disp = composer[1].wrapped and 0 or 2 * composer.level
+   local disp = 2 * composer.level
+   -- If the first token is the second half of a wrap, skip the indent
+   if composer.pos > 0 and composer[1].wrapped then
+      disp = 0
+   end
    for i = 1, composer.pos do
       disp = disp + composer[i].total_disp
    end
@@ -352,7 +356,7 @@ local function make_window__index(composer, field)
       if FIELD_WINDOWS[field] then
          return composer[field]
       elseif FUNCTION_WINDOWS[field] then
-         return composer[field]()
+         return composer[field](composer)
       else
          error ("window has no method " .. field .. "n" .. debug.traceback())
       end
@@ -374,14 +378,18 @@ end
 
 
 
+local GUTTER_WIDTH = 3
 
 local function new(iter_gen, cfg)
    cfg = cfg or {}
    local function generator(val, disp_width, color)
       assert(color, "Must provide a color table to Composer")
+      -- For now, account for the fact that there will be a 3-column gutter
+      -- Eventually we'll probably be producing the metadata as well
+      local width = disp_width and disp_width - GUTTER_WIDTH or 80
       local composer = setmetatable({
          color = color,
-         width = disp_width or 80,
+         width = width,
          more = true,
          pos = 0,
          stages = {[0] = { long = true }},

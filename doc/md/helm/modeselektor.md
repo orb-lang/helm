@@ -126,6 +126,8 @@ local Zoneherd   = require "helm/zone"
 local repr       = require "helm/repr"
 local lua_parser = require "helm/lua-parser"
 
+local names     = require "helm/repr/names"
+
 local Nerf      = require "helm/nerf"
 local Search    = require "helm/search"
 
@@ -181,15 +183,6 @@ against ``special`` first:
 ```lua
 ModeS.special = {}
 ```
-### self-insert(modeS, category, value)
-
-Inserts the value into the txtbuf at cursor.
-
-```lua
-function ModeS.insert(modeS, category, value)
-    local success =  modeS.txtbuf:insert(value)
-end
-```
 ### ModeS:errPrint(modeS, category, value)
 
 Debug aide.
@@ -227,8 +220,9 @@ local function tf(bool)
   return bool and c["true"]("t") or c["false"]("f")
 end
 
-local function pr_mouse(m)
-   return a.magenta(m.button) .. ": "
+local function mouse_paint(m)
+   return c.userdata(STAT_ICON)
+      .. a.magenta(m.button) .. ": "
       .. a.bright(m.kind) .. " "
       .. tf(m.shift) .. " "
       .. tf(m.meta) .. " "
@@ -239,54 +233,33 @@ local function pr_mouse(m)
 end
 
 local function mk_paint(fragment, shade)
-   return function(category, action)
-      return shade(category .. fragment .. action)
+   return function(action)
+      return shade(fragment .. action)
    end
 end
 
-local act_map = { MOUSE  = pr_mouse,
-                  NAV    = mk_paint(": ", a.italic),
-                  CTRL   = mk_paint(": ", c.field),
-                  ALT    = mk_paint(": ", a.underscore),
-                  ASCII  = mk_paint(": ", c.table),
-                  UTF8   = mk_paint(": ", c.table),
-                  NYI    = mk_paint(": ", a.red)}
+local function paste_paint(frag)
+   local result
+   -- #todo handle escaping of special characters in pasted data
+   if #frag < 20 then
+      result = "PASTE: " .. frag
+   else
+      result = ("PASTE(%d): %s..."):format(#frag, frag:sub(1, 17))
+   end
+   return a.green(STAT_ICON .. result)
+end
 
-local icon_map = { MOUSE = mk_paint(STAT_ICON, c.userdata),
+local icon_map = { MOUSE = mouse_paint,
                    NAV   = mk_paint(STAT_ICON, a.magenta),
                    CTRL  = mk_paint(STAT_ICON, a.blue),
                    ALT   = mk_paint(STAT_ICON, c["function"]),
                    ASCII = mk_paint(STAT_ICON, a.green),
                    UTF8  = mk_paint(STAT_ICON, a.green),
+                   PASTE = paste_paint,
                    NYI   = mk_paint(STAT_ICON .. "! ", a.red) }
 
 local function _make_icon(category, value)
-   local icon = ""
-   local phrase
-   if category == "MOUSE" then
-      phrase = icon_map[category]("", pr_mouse(value))
-   else
-      phrase = icon_map[category]("", ts(value))
-   end
-   return phrase
-end
-```
-#### dimensional getters
-
-Any of this business needs to move to the ``zoneherd``.
-
-
-Ideally, ``modeS`` will hold values needed to reflow the ``zones`` and everything
-else will be both calculated and accessed (internally) from ``modeS.zones``.
-
-```lua
-function ModeS.cur_col(modeS)
-   return modeS.txtbuf.cursor.col + modeS.l_margin - 1
-end
-```
-#deprecated```lua
-function ModeS.replLine(modeS)
-   return modeS.repl_top + #modeS.txtbuf.lines - 1
+   return icon_map[category](value)
 end
 ```
 ### ModeS:placeCursor()
@@ -304,13 +277,9 @@ end
 
 This simply calls the same method on the zoneherd.
 
-
-``all`` is a boolean which, if ``true``, repaints everything whether ``.touched``
-or no.
-
 ```lua
-function ModeS.paint(modeS, all)
-   modeS.zones:paint(modeS, all)
+function ModeS.paint(modeS)
+   modeS.zones:paint(modeS)
    return modeS
 end
 ```
@@ -319,7 +288,8 @@ end
 ```lua
 function ModeS.reflow(modeS)
    modeS.zones:reflow(modeS)
-   modeS:paint(true)
+   modeS:paint()
+   return modeS
 end
 ```
 ### Prompts and modes / raga
@@ -327,10 +297,9 @@ end
 Time to add modes to the ``modeselektor``!
 
 
-Right now everything works on the default mode, "insert":
+Right now everything works on the default mode, "nerf":
 
 ```lua
-ModeS.raga = "nerf"
 ModeS.raga_default = "nerf"
 ```
 
@@ -366,9 +335,24 @@ Let's add some:
 ModeS.prompts = { nerf   = "👉 ",
                   search = "⁉️ " }
 ```
+#### ModeS:continuationLines()
+
+Answers the number of additional lines (beyond the first) needed
+for the command zone.
+
 ```lua
-function ModeS.prompt(modeS)
-   modeS.zones.prompt:replace(modeS.prompts[modeS.raga])
+function ModeS.continuationLines(modeS)
+   return modeS.txtbuf and #modeS.txtbuf.lines - 1 or 0
+end
+```
+#### ModeS:updatePrompt()
+
+Updates the prompt with the correct symbol and number of continuation prompts.
+
+```lua
+function ModeS.updatePrompt(modeS)
+   local prompt = modeS.prompts[modeS.raga] .. ("\n..."):rep(modeS:continuationLines())
+   modeS.zones.prompt:replace(prompt)
 end
 ```
 ### ModeS:shiftMode(raga)
@@ -400,19 +384,11 @@ function ModeS.shiftMode(modeS, raga)
       -- stash current lexer
       -- #todo do this in a less dumb way
       modeS.closet[modeS.raga].lex = modeS.lex
-      modeS.lex = modeS.closet.search.lex
-      modeS.modes = modeS.closet.search.modes
-   elseif raga == "nerf" then
-      -- do default nerfy things
-      modeS.lex = modeS.closet.nerf.lex
-      modeS.modes = modeS.closet.nerf.modes
-   elseif raga == "vril-nav" then
-      -- do vimmy navigation
-   elseif raga == "vril-ins" then
-      -- do vimmy inserts
    end
+   modeS.lex = modeS.closet[raga].lex
+   modeS.modes = modeS.closet[raga].modes
    modeS.raga = raga
-   modeS:prompt()
+   modeS:updatePrompt()
    return modeS
 end
 ```
@@ -446,7 +422,8 @@ end
 log anything unexpected.
 
 ```lua
-local assertfmt = assert(core.assertfmt)
+local assertfmt, iscallable = require "core/string" . assertfmt,
+                              require "core/table" . iscallable
 
 function ModeS.act(modeS, category, value)
    assertfmt(modeS.modes[category], "no category %s in modeS", category)
@@ -467,24 +444,13 @@ function ModeS.act(modeS, category, value)
    if type(modeS.modes[category]) == "table"
       and modeS.modes[category][value] then
       modeS.modes[category][value](modeS, category, value)
-
-   -- otherwise fall back:
-   elseif category == "ASCII" or category == "UTF8" then
-      -- hard coded for now
-      modeS:insert(category, value)
-   elseif category == "NAV" then
-      if modeS.modes.NAV[value] then
-         modeS.modes.NAV[value](modeS, category, value)
-      else
-         icon = _make_icon("NYI", "NAV::" .. value)
-      end
-   elseif category == "MOUSE" then
-      -- do mouse stuff
-      if modeS.modes.MOUSE then
-         modeS.modes.MOUSE(modeS, category, value)
-      end
+   -- Or on category if the whole category is callable
+   elseif iscallable(modeS.modes[category]) then
+      modeS.modes[category](modeS, category, value)
+   -- Otherwise display the unknown command
    else
-      icon = _make_icon("NYI", category .. ":" .. value)
+      local val_rep = string.format("%q",value):sub(2,-2)
+      icon = _make_icon("NYI", category .. ": " .. val_rep)
    end
 
    ::final::
@@ -495,8 +461,9 @@ function ModeS.act(modeS, category, value)
    -- Replace zones
    modeS.zones.stat_col:replace(icon)
    modeS.zones.command:replace(modeS.txtbuf)
-   modeS.zones:adjustCommand()
-   modeS:paint()
+   modeS:updatePrompt()
+   -- Reflow in case command height has changed. Includes a paint.
+   modeS:reflow()
    collectgarbage()
 end
 ```
@@ -529,7 +496,7 @@ if it happens to, this code should do the right thing, which is nothing.
 ```lua
 local eval_ENV = {}
 local eval_M = {}
-setmeta(eval_ENV, eval_M)
+setmetatable(eval_ENV, eval_M)
 
 
 local function indexer(Env, key)
@@ -552,12 +519,14 @@ local function newindexer(Env, key, value)
    Env[key] = value
 end
 
+local addName = assert(names.addName)
+
 function eval_M.__newindex(eval_ENV, key, value)
    local ok = pcall(newindexer, _G, key, value)
    if not ok then
       rawset(_G, key, value)
    end
-   repr.addName { [key] = value }
+   addName { [key] = value }
 end
 ```
 ```lua
@@ -639,7 +608,7 @@ function ModeS.__eval(modeS, chunk, no_append)
         for i = 1, results.n do
            -- create line generators for each result
            lineGens[i] = repr.lineGen(results[i], modeS.zones.results:width())
-           result_tostring[i] = setmeta({}, result_repr_M)
+           result_tostring[i] = setmetatable({}, result_repr_M)
         end
         local i = 1
         local result_idler = uv.new_idle()
@@ -680,7 +649,7 @@ local _stat_M = meta {}
 _stat_M.__repr = _status__repr
 
 function _stat_M.clear(status_table)
-  return setmeta({}, getmeta(status_table))
+  return setmetatable({}, getmetatable(status_table))
 end
 ```
 ## new
@@ -691,22 +660,19 @@ local function new(max_col, max_row)
   local modeS = meta(ModeS)
   modeS.txtbuf = Txtbuf()
   modeS.hist  = Historian()
-  modeS.status = setmeta({}, _stat_M)
+  modeS.status = setmetatable({}, _stat_M)
   rawset(__G, "stat", modeS.status)
-  modeS.lex  = Lex.lua_thor
-  modeS.hist.cursor = modeS.hist.n + 1
   modeS.max_col = max_col
   modeS.max_row = max_row
   -- this will be replaced with Zones
   modeS.l_margin = 4
   modeS.r_margin = 80
-  modeS.row = 2
-  modeS.repl_top  = ModeS.REPL_LINE
+  modeS.repl_top = ModeS.REPL_LINE
   modeS.zones = Zoneherd(modeS, write)
   modeS.zones.status:replace "an repl, plz reply uwu 👀"
-  modeS.zones.prompt:replace "👉  "
   -- initial state
   modeS.firstChar = true
+  modeS:shiftMode(modeS.raga_default)
   return modeS
 end
 

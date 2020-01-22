@@ -21,7 +21,7 @@ acquire them.  This table is from value to key where =_G= is key to value,
 hence, =anti_G=.
 
 #!lua
-local anti_G = { _G = "_G" }
+local anti_G = setmetatable({ _G = "_G" }, {__mode = "k"})
 #/lua
 
 Now to populate it:

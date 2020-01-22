@@ -34,19 +34,10 @@ No sense wasting a level of indent on a wrapper imho
 ```lua
 setfenv(1, _ENV)
 
-L    = require "lpeg"
-lfs  = require "lfs"
-ffi  = require "ffi"
-bit  = require "bit"
-uv   = require "luv"
-utf8 = require "lua-utf8"
-core = require "singletons/core"
-
+meta = require "core/meta" . meta
+core = require "core:core"
 jit.vmdef = require "helm:helm/vmdef"
 jit.p = require "helm:helm/ljprof"
-
---apparently this is a hidden, undocumented LuaJIT thing?
-require "table.clear"
 
 sql = assert(sql, "sql must be in _G")
 ```
@@ -56,56 +47,15 @@ Although we're not doing so yet, this is where we will set up Djikstra mode
 for participating code.  We then push that up through the layers, and it lands
 as close to C level as practical.
 
-## core
-
-The ``core`` library is shaping up as a place to keep alterations to the global
-namespace and standard library.
-
-
-This prelude belongs in ``pylon``; it, and ``core``, will eventually end up there.
-
-```lua
-string.cleave, string.litpat = core.cleave, core.litpat
-string.utf8 = core.utf8 -- deprecated
-string.codepoints = core.codepoints
-string.lines = core.lines
-table.splice = core.splice
-table.clone = core.clone
-table.isarray = core.isarray
-table.arrayof = core.arrayof
-table.collect = core.collect
-table.select = core.select
-table.reverse = core.reverse
-table.hasfield = core.hasfield
-table.keys = core.keys
-math.bound = core.bound
-math.inbounds = core.inbounds
-
-table.pack = rawget(table, "pack") and table.pack or core.pack
-table.unpack = rawget(table, "unpack") and table.unpack or unpack
-
-meta = core.meta
-getmeta, setmeta = getmetatable, setmetatable
-coro = coroutine
---assert = core.assertfmt
-
-local concat = assert(table.concat)
-```
-
-Primitives for terminal manipulation.
-
-```lua
-a = require "singletons/anterm"
-local names = require "helm/repr/names"
---watch = require "watcher"
-
-```
+## Boot sequence
 
 This boot sequence builds on Tim Caswell and the Luvit Author's repl example.
 
 
 Couple pieces I'm not using but should:
 ```lua
+uv = require "luv"
+
 local usecolors
 stdout = ""
 
@@ -127,11 +77,13 @@ end
 Not-blocking ``write`` and ``print``:
 
 ```lua
-function write(str)
-   uv.write(stdout, str)
+function write(...)
+   uv.write(stdout, {...})
 end
 ```
 ```lua
+local concat = assert(table.concat)
+
 function print(...)
   local n = select('#', ...)
   local arguments = {...}
@@ -151,6 +103,11 @@ if uv.guess_handle(0) ~= "tty" or
 end
 
 local stdin = uv.new_tty(0, true)
+```
+```lua
+a = require "anterm:anterm"
+--watch = require "watcher"
+
 ```
 ## Modeselektor
 
@@ -190,24 +147,24 @@ processes it into tokens, which stream to the ``modeselektor``.
 ### process_escapes(seq)
 
 ```lua
-local byte, sub, codepoints, char = assert(string.byte),
-                                    assert(string.sub),
-                                    assert(string.codepoints),
-                                    assert(string.char)
+local Codepoints = require "singletons/codepoints"
+local byte, sub, char = assert(string.byte),
+                        assert(string.sub),
+                        assert(string.char)
 local m_parse, is_mouse = a.mouse.parse_fast, a.mouse.ismousemove
 local navigation, is_nav = a.navigation, a.is_nav
 
 local function process_escapes(seq)
    if is_nav(seq) then
       return modeS("NAV", navigation[seq])
-   end
-   if is_mouse(seq) then
-      local m = m_parse(seq)
-      return modeS("MOUSE", m)
-   elseif #seq == 2 and byte(sub(seq,2,2)) < 128 then
+   elseif is_mouse(seq) then
+      return modeS("MOUSE", m_parse(seq))
+   elseif #seq == 2 and byte(seq, 2) < 128 then
       -- Meta
       local key = "M-" .. sub(seq,2,2)
       return modeS("ALT", key)
+   elseif a.is_paste(seq) then
+      return modeS("PASTE", a.parse_paste(seq))
    else
       return modeS("NYI", seq)
    end
@@ -242,24 +199,22 @@ local function onseq(err,seq)
    -- Control sequences
    if navigation[seq] then
       return modeS("NAV", navigation[seq])
-    elseif head <= 31 then
+   elseif head <= 31 then
       local ctrl = "^" .. char(head + 64)
       return modeS("CTRL", ctrl)
    end
-   -- Printables
-   if head > 31 and head < 127 then
-      if #seq > 1 then
-         -- break it up and feed it
-         local points = codepoints(seq)
-         for _, pt in ipairs(points) do
-            onseq(nil, pt)
-         end
-      else
-         return modeS("ASCII", seq)
-      end
+   -- Printables--break into codepoints in case of multi-char input sequence
+   -- But first, optimize common case of single ascii printable
+   -- Note that bytes <= 31 and 127 (DEL) will have been taken care of earlier
+   if #seq == 1 and head < 128 then
+      return modeS("ASCII", seq)
    else
-      -- wchars go here
-      return modeS("UTF8", seq)
+      local points = Codepoints(seq)
+      for i, pt in ipairs(points) do
+         -- #todo handle decode errors here--right now we'll just insert an
+         -- actual Unicode "replacement character"
+         modeS(byte(pt) < 128 and "ASCII" or "UTF8", pt)
+      end
    end
 end
 ```
@@ -268,6 +223,7 @@ end
 
 -- Get names for as many values as possible
 -- into the colorizer
+local names = require "helm/repr/names"
 names.allNames(__G)
 
 -- assuming we survived that, set up our repling environment:
@@ -275,17 +231,19 @@ names.allNames(__G)
 -- raw mode
 uv.tty_set_mode(stdin, 2)
 
--- mouse mode
-write(a.mouse.track(true))
-uv.read_start(stdin, onseq)
-
--- This saves the cursor, switches screens and does a wipe,
--- then puts the cursor at 1,1.
+-- Enable mouse tracking, save the cursor, switch screens and wipe,
+-- then put the cursor at 1,1.
 -- #todo Cursor save/restore supposedly may not work on all terminals?
 -- Test this and, if necessary, explicitly read and store the cursor position
 -- and manually restore it at the end.
--- #todo Implement this in terms of anterm functions
-write("\x1b7\x1b[?47h\x1b[2J\x1b[H")
+write(a.cursor.stash(),
+      a.alternate_screen(true),
+      a.erase.all(),
+      a.jump(1, 1),
+      a.paste_bracketing(true),
+      a.mouse.track(true)
+)
+uv.read_start(stdin, onseq)
 
 -- paint screen
 modeS:paint()
@@ -293,11 +251,13 @@ modeS:paint()
 -- main loop
 local retcode =  uv.run('default')
 
--- Mouse tracking off
-io.write(a.mouse.track(false))
+-- Teardown: Mouse tracking off, restore main screen and cursor
+write(a.mouse.track(false),
+      a.paste_bracketing(false),
+      a.alternate_screen(false),
+      a.cursor.pop())
 
--- Restore main screen and cursor
-io.write('\x1b[?47l\x1b8')
+
 
 -- remove any spurious mouse inputs or other stdin stuff
 io.stdin:read "*a"

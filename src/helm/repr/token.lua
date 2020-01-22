@@ -63,14 +63,13 @@
 
 
 
-local codepoints = require "singletons/codepoints"
+local Codepoints = require "singletons/codepoints"
 local utf8 = require "lua-utf8"
 local utf8_len, utf8_sub = utf8.len, utf8.sub
 local concat, insert, remove = assert(table.concat),
                                assert(table.insert),
                                assert(table.remove)
-
-local meta = require "singletons/core" . meta
+local meta = require "core/meta" . meta
 
 
 
@@ -289,7 +288,6 @@ end
 
 
 
-
 local escapes_map = {
    ['"'] = '\\"',
    ["'"] = "\\'",
@@ -314,7 +312,7 @@ new = function(str, color, cfg)
    token.color = color
    cfg = cfg or {}
    if cfg.wrappable then
-      token.codepoints = codepoints(str or "")
+      token.codepoints = Codepoints(str or "")
       token.err = token.codepoints.err
       token.disps = {}
       token.escapes = {}
@@ -339,6 +337,8 @@ new = function(str, color, cfg)
       -- empty string. nil is used to create a blank token into which chars
       -- will later be inserted (see :split()).
       if str and find(str, '^ *$') then
+         -- Need to assign this over now so :insert() behaves properly
+         token.wrappable = true
          token:insert(1, '"')
          token:insert('"')
       end
