@@ -86,8 +86,9 @@ index   = "[" expr "]" / "." _ symbol
 `call`    = args / method
 method    = ":" _ symbol _ args
 
-args = "(" _ (explist _)? ")" / string
-    ;/ tableconstructor
+args = "(" _ (explist _)? ")"
+     / string
+     / tableconstructor
 `explist` = expr ("," expr)*
 
 `funcbody` = parameters _ chunk _ "end" t
