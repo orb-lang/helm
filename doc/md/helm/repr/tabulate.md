@@ -174,10 +174,12 @@ local function tabulate(tab, window, c)
          function(err)
             err_lines = collect(lines, debug.traceback(tostring(err)))
             err_lines[1] = "error in __repr: " .. err_lines[1]
-            for _, line in ipairs(err_lines) do
-               yield(Token(line, c.alert, { event = "repr_line" }))
-            end
          end)
+      if err_lines then
+         for _, line in ipairs(err_lines) do
+            yield(Token(line, c.alert, { event = "repr_line" }))
+         end
+      end
    end)
 end
 
