@@ -21,8 +21,12 @@ local names = {}
 
 
 
-local anti_G = setmetatable({ _G = "_G" }, {__mode = "k"})
 
+
+
+
+local anti_G = setmetatable({ _G = "_G" }, {__mode = "k"})
+names.all_symbols = { _G = true }
 
 
 
@@ -45,70 +49,57 @@ local function tie_break(old, new)
    return #old > #new
 end
 
-local function addName(t, aG, pre)
-   pre = pre or ""
-   aG = aG or anti_G
-   if pre ~= "" then
-      pre = pre .. "."
-   end
-   for k, v in pairs(t) do
-      local T = type(v)
-      if (T == "table") then
-         local key = pre ..
-            (type(k) == "string" and k or "<" .. tostring(k) .. ">")
-         if not aG[v] then
-            aG[v] = key
-            if not (pre == "" and k == "package") then
-               addName(v, aG, key)
-            end
-         else
-            local kv = aG[v]
-            if tie_break(kv, key) then
-               -- quadradic lol
-               aG[v] = key
-               addName(v, aG, key)
-            end
-         end
-         local _M = getmetatable(v)
-         local _M_id = _M and "⟨" .. key.. "⟩" or ""
-         if _M then
-            if not aG[_M] then
-               aG[_M] = _M_id
-               addName(_M, aG, _M_id)
-            else
-               local aG_M_id = aG[_M]
-               if tie_break(aG_M_id, _M_id) then
-                  aG[_M] = _M_id
-                  addName(_M, aG, _M_id)
-               end
-            end
-         end
-      elseif T == "function" or
-         T == "thread" or
-         T == "userdata" then
-         aG[v] = pre .. k
+local addName, loadNames
+
+addName = function(value, name, aG)
+   local existing = aG[value]
+   if not existing or tie_break(existing, name) then
+      aG[value] = name
+      if type(value) == "table" then
+         loadNames(value, name, aG)
       end
    end
-   return aG
 end
-names.addName = addName
 
+loadNames = function(tab, prefix, aG)
+   if prefix ~= "" then
+      prefix = prefix .. "."
+   end
+   aG = aG or anti_G
+   for k, v in pairs(tab) do
+      if type(k) == "string" then
+         names.all_symbols[k] = true
+      else
+         k = "<" .. tostring(k) .. ">"
+      end
+      local typica = type(v)
+      if typica == "table"
+      or typica == "function"
+      or typica == "thread"
+      or typica == "userdata" then
+         addName(v, k, aG)
+      end
+      local _M = getmetatable(v)
+      if typica == "table" and _M then
+         local _M_id = "⟨" .. k.. "⟩"
+         addName(_M, _M_id, aG)
+      end
+   end
+end
 
+function names.addName(value, name)
+   addName(value, name, anti_G)
+end
 
-
-
-
-
-
-
-function names.allNames(tab)
+function names.loadNames(tab, prefix)
    tab = tab or _G
-   return addName(package.loaded, addName(tab))
+   prefix = prefix or ""
+   loadNames(tab, prefix, anti_G)
 end
 
 function names.clearNames()
    anti_G = {_G = "_G"}
-   return anti_G
+   names.all_symbols = {}
 end
 
 

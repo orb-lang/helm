@@ -110,8 +110,6 @@ local Zoneherd   = require "helm/zone"
 local repr       = require "helm/repr"
 local lua_parser = require "helm/lua-parser"
 
-local names     = require "helm/repr/names"
-
 local Nerf      = require "helm/nerf"
 local Search    = require "helm/search"
 
@@ -504,14 +502,17 @@ local function newindexer(Env, key, value)
    Env[key] = value
 end
 
-local addName = assert(names.addName)
+local loadNames = assert(require "helm/repr/names" . loadNames)
 
 function eval_M.__newindex(eval_ENV, key, value)
    local ok = pcall(newindexer, _G, key, value)
    if not ok then
       rawset(_G, key, value)
    end
-   addName { [key] = value }
+   -- Use loadNames() to get the key added to all_symbols
+   -- Should really divide up responsibility better between
+   -- loadNames() and addName()
+   loadNames{ [key] = value }
 end
 
 

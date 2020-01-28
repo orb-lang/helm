@@ -223,8 +223,12 @@ end
 
 -- Get names for as many values as possible
 -- into the colorizer
+-- Treat package names as existing in the global namespace
+-- rather than having a "package.loaded." prefix
 local names = require "helm/repr/names"
-names.allNames(__G)
+names.loadNames(package.loaded)
+names.loadNames(_G)
+names.loadNames(__G)
 
 -- assuming we survived that, set up our repling environment:
 
