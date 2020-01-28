@@ -350,93 +350,6 @@ local function fuzz_patt(frag)
    return patt
 end
 ```
-### __repr for collection
-
-We use a pseudo-metamethod called ``__repr`` to specify custom table
-representations.  These take the table as the first value and receive the
-local color palette for consistency.
-
-
-In this case we want to highlight the letters of the fragment, which we
-attach to the collection.
-
-```lua
-
-local function _highlight(line, frag, best, max_disp, c)
-   local frag_index = 1
-   -- Collapse multiple spaces into one for display
-   line = line:gsub(" +"," ")
-   local codes = Codepoints(line)
-   local disp = 0
-   local stop_at
-   for i, char in ipairs(codes) do
-      local char_disp = 1
-      if char == "\n" then
-         char = c.stresc .. "\\n" .. c.base
-         codes[i] = char
-         char_disp =  2
-      end
-      -- Reserve one space for ellipsis unless this is the
-      -- last character on the line
-      local reserved_space = i < #codes and 1 or 0
-      if disp + char_disp + reserved_space > max_disp then
-         char = c.alert("…")
-         codes[i] = char
-         disp = disp + 1
-         stop_at = i
-         break
-      end
-      disp = disp + char_disp
-      if frag_index <= #frag and char == frag:sub(frag_index, frag_index) then
-         local char_color
-         -- highlight the last two differently if this is a
-         -- 'second best' search
-         if not best and #frag - frag_index < 2 then
-            char_color = c.alert
-         else
-            char_color = c.search_hl
-         end
-         char = char_color .. char .. c.base
-         codes[i] = char
-         frag_index = frag_index + 1
-      end
-   end
-   return c.base(concat(codes, "", 1, stop_at)), disp
-end
-
-local function _collect_repr(collection, window, c)
-   assert(c, "must provide a color table")
-   local i = 1
-   local first = true
-   return function()
-      if #collection == 0 then
-         if first then
-            first = false
-            return c.alert "No results found"
-         else
-            return nil
-         end
-      end
-      local line = collection[i]
-      if line == nil then return nil end
-      local alt_seq = "    "
-      if i < 10 then
-         alt_seq = c.bold("M-" .. tostring(i) .. " ")
-      end
-      line, len = _highlight(line, collection.frag, collection.best, window.remains - 4, c)
-      line = alt_seq .. line
-      len = len + 4
-      if i == collection.hl then
-         line = c.highlight(line)
-      end
-      i = i + 1
-      return line, len
-   end
-end
-
-local collect_M = {__repr = _collect_repr}
-collect_M.__index = collect_M
-```
 ## Historian:search(frag)
 
 This is an incremental 'fuzzy' search, returning a ``collection``.
@@ -466,61 +379,49 @@ The other fields are:
 
 
 ```lua
+
+local SelectionList = require "helm/selection_list"
+local insert, remove = assert(table.insert), assert(table.remove)
+-- local import = assert(require "core/module" . import)
+-- local insert, remove = import("core/table", "ninsert", "nremove")
+
 function Historian.search(historian, frag)
    if historian.last_collection
       and historian.last_collection[1].lit_frag == frag then
       -- don't repeat a search
       return historian.last_collection
    end
-   local matches = {}
-   local lit_frag = frag
    if frag == "" then
-      return Rainbuf {[1] = matches, n = 1}, false
+      return ""
    end
-   local slip = nil
-   local cursors = {}
-   local best = true
-   local patt = fuzz_patt(frag)
-   for i = historian.n, 1, -1 do
-      local score = match(patt, tostring(historian[i]))
-      if score then
-         matches[#matches + 1] = tostring(historian[i])
-         cursors[#cursors + 1] = i
-      end
-   end
-   if #matches == 0 then
-      -- try the transpose
-      best = false
-      slip = frag:sub(1, -3) .. frag:sub(-1, -1) .. frag:sub(-2, -2)
-      patt = fuzz_patt(slip)
+   local result = SelectionList()
+   result.cursors = {}
+   result.frag = frag
+   result.lit_frag = frag
+   result.best = true
+   result.show_shortcuts = true
+   local function try_search()
+      local patt = fuzz_patt(result.frag)
+      local dup = {}
       for i = historian.n, 1, -1 do
-         local score = match(patt, tostring(historian[i]))
-         if score then
-            matches[#matches + 1] = tostring(historian[i])
-            cursors[#cursors + 1] = i
+         local item_str = tostring(historian[i])
+         if not dup[item_str] and match(patt, item_str) then
+            dup[item_str] = true
+            insert(result, item_str)
+            insert(result.cursors, i)
          end
       end
    end
-   -- deduplicate
-   local collection = setmetatable({}, collect_M)
-   local collect_cursors = {}
-   local dup = {}
-   for i, line in ipairs(matches) do
-      if not dup[line] then
-         dup[line] = true
-         collection[#collection + 1] = line
-         collect_cursors[#collect_cursors + 1] = cursors[i]
-      end
+   try_search()
+   if #result == 0 then
+      result.best = false
+      result.frag = frag:sub(1, -3) .. frag:sub(-1, -1) .. frag:sub(-2, -2)
+      try_search()
    end
-
-   collection.frag = slip or frag
-   collection.lit_frag = lit_frag
-   collection.best = best
-   collection.cursors = collect_cursors
-   collection.hl = 1
-   historian.last_collection = Rainbuf {[1] = collection, n = 1, live = true}
+   result.hl = 1
+   historian.last_collection = Rainbuf {[1] = result, n = 1, live = true}
    historian.last_collection.made_in = "historian.search"
-   return historian.last_collection, best
+   return historian.last_collection
 end
 ```
 #### _resultsFrom(historian, line_id)
