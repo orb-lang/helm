@@ -143,4 +143,13 @@ end
 
 
 
+
+
+
+function Lex.null(txtbuf)
+   return { Token(tostring(txtbuf), c.no_color) }
+end
+
+
+
 return Lex

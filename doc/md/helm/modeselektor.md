@@ -377,7 +377,7 @@ retrieve.
 ModeS.closet = { nerf = { modes = Nerf,
                           lex   = Lex.lua_thor },
                  search = { modes = Search,
-                            lex   = c.base } }
+                            lex   = Lex.null } }
 
 function ModeS.shiftMode(modeS, raga)
    if raga == "search" then

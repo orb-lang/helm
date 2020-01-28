@@ -134,6 +134,15 @@ function Lex.lua_thor(txtbuf)
    return toks
 end
 ```
+## Lex.null
+
+A lexer that does no actual lexing (used by search)
+
+```lua
+function Lex.null(txtbuf)
+   return { Token(tostring(txtbuf), c.no_color) }
+end
+```
 ```lua
 return Lex
 ```
