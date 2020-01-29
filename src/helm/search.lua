@@ -101,4 +101,18 @@ end
 
 
 
+
+
+function Search.MOUSE(modeS, category, value)
+   if value.scrolling then
+      if value.button == "MB0" then
+         modeS.modes.NAV.SHIFT_DOWN(modeS, category, value)
+      elseif value.button == "MB1" then
+         modeS.modes.NAV.SHIFT_UP(modeS, category, value)
+      end
+   end
+end
+
+
+
 return Search
