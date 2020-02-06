@@ -418,7 +418,7 @@ function ModeS.act(modeS, category, value)
    local icon = _make_icon(category, value)
    -- Special first-character handling
    if modeS.firstChar and not (category == "MOUSE" or category == "NAV") then
-      modeS.zones.results:replace ""
+      modeS:setResults ""
       local shifted = _firstCharHandler(modeS, category, value)
       if shifted then
         goto final
@@ -440,7 +440,7 @@ function ModeS.act(modeS, category, value)
    ::final::
    if modeS.raga == "search" then
       local searchResult = modeS.hist:search(tostring(modeS.txtbuf))
-      modeS.zones.results:replace(searchResult)
+      modeS:setResults(searchResult)
    end
    -- Replace zones
    modeS.zones.stat_col:replace(icon)
@@ -459,6 +459,27 @@ function ModeS.__call(modeS, category, value)
   return modeS:act(category, value)
 end
 
+
+
+
+
+
+
+
+local instanceof = import("core/meta", "instanceof")
+
+function ModeS.setResults(modeS, results)
+   results = results or ""
+   if results == "" then
+      modeS.zones.results:replace(results)
+      return
+   end
+   if type(results) == "string" then
+      results = { results, n = 1, frozen = true }
+   end
+   local rb = instanceof(results, Rainbuf) and results or Rainbuf(results)
+   modeS.zones.results:replace(rb)
+end
 
 
 
@@ -561,15 +582,7 @@ function ModeS.__eval(modeS, chunk, no_append)
    if f then
       setfenv(f, eval_ENV)
       success, results = gatherResults(xpcall(f, debug.traceback))
-      if success then
-         -- successful call
-         if results.n > 0 then
-            local rb = Rainbuf(results)
-            modeS.zones.results:replace(rb)
-         else
-            modeS.zones.results:replace ""
-         end
-      else
+      if not success then
          -- error
          results.frozen = true
       end
@@ -587,9 +600,8 @@ function ModeS.__eval(modeS, chunk, no_append)
       end
    end
    if not no_append then
-     modeS.zones.results:replace(results)
+      modeS:setResults(results)
      modeS.hist:append(modeS.txtbuf, results, success)
-     local line_id = modeS.hist.line_ids[modeS.hist.n]
      if success then
         -- async render of resbuf
         -- set up closed-over state

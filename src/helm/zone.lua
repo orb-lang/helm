@@ -97,13 +97,14 @@ end
 
 
 
-function Zone.replace(zone, rainbuf)
-   zone.contents = rainbuf or zone.contents
+
+
+function Zone.replace(zone, contents)
+   zone.contents = contents or ""
    zone.touched = true
 
    return zone
 end
-
 
 
 
@@ -154,18 +155,15 @@ end
 
 
 
-local function _writeResults(write, zone, new)
-   local results = zone.contents
-   if not results then
+local instanceof = import("core/meta", "instanceof")
+
+local function _renderRainbuf(write, zone)
+   if not zone.contents then
       return nil
    end
-   if results.idEst ~= Rainbuf then
-      results = Rainbuf(results)
-      results.made_in = "writeResults"
-      zone.contents = results
-   end
+   assert(instanceof(zone.contents, Rainbuf))
    local nl = a.col(zone.tc) .. a.jump.down(1)
-   for line in results:lineGen(zone:height(), zone:width()) do
+   for line in zone.contents:lineGen(zone:height(), zone:width()) do
       write(line)
       write(nl)
    end
@@ -288,8 +286,8 @@ function Zoneherd.paint(zoneherd, modeS)
          elseif type(zone.contents) == "table"
             and zone.contents.idEst == Txtbuf then
             _renderTxtbuf(modeS, zone, write)
-         elseif zone == zoneherd.results then
-            _writeResults(write, zone)
+         else
+            _renderRainbuf(write, zone)
          end
          zone.touched = false
       end

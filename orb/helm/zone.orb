@@ -94,11 +94,13 @@ end
 #/lua
 
 
-*** Zone:replace(zone, rainbuf)
+*** Zone:replace(zone, contents)
+
+Replaces the contents of the zone with the provided value.
 
 #!lua
-function Zone.replace(zone, rainbuf)
-   zone.contents = rainbuf or zone.contents
+function Zone.replace(zone, contents)
+   zone.contents = contents or ""
    zone.touched = true
 
    return zone
@@ -107,8 +109,7 @@ end
 
 *** Zone:set(tc, tr, bc, br)
 
-Updates the bounds of the zone. A value of nil means "do not change".
-Marks the zone as touched if the bounds actually change.
+Updates the bounds of the zone, marking it as touched if they actually change.
 
 #!lua
 function Zone.set(zone, tc, tr, bc, br)
@@ -149,23 +150,20 @@ end
 #/lua
 
 
-*** _writeResults
+*** _renderRainbuf
 
-We'll special-case the results buffer for now.
+Render the zone contents as a Rainbuf, wrapping them *in* a Rainbuf if needed.
 
 #!lua
-local function _writeResults(write, zone, new)
-   local results = zone.contents
-   if not results then
+local instanceof = import("core/meta", "instanceof")
+
+local function _renderRainbuf(write, zone)
+   if not zone.contents then
       return nil
    end
-   if results.idEst ~= Rainbuf then
-      results = Rainbuf(results)
-      results.made_in = "writeResults"
-      zone.contents = results
-   end
+   assert(instanceof(zone.contents, Rainbuf))
    local nl = a.col(zone.tc) .. a.jump.down(1)
-   for line in results:lineGen(zone:height(), zone:width()) do
+   for line in zone.contents:lineGen(zone:height(), zone:width()) do
       write(line)
       write(nl)
    end
@@ -288,8 +286,8 @@ function Zoneherd.paint(zoneherd, modeS)
          elseif type(zone.contents) == "table"
             and zone.contents.idEst == Txtbuf then
             _renderTxtbuf(modeS, zone, write)
-         elseif zone == zoneherd.results then
-            _writeResults(write, zone)
+         else
+            _renderRainbuf(write, zone)
          end
          zone.touched = false
       end

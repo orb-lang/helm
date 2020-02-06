@@ -88,8 +88,7 @@ local function _prev(modeS)
    if linestash then
       modeS.hist:append(linestash)
    end
-   prev_result = prev_result and Rainbuf(prev_result) or ""
-   modeS.zones.results:replace(prev_result)
+   modeS:setResults(prev_result)
    return modeS
 end
 
@@ -115,8 +114,7 @@ local function _advance(modeS)
    else
       modeS.txtbuf = new_txtbuf
    end
-   next_result = next_result and Rainbuf(next_result) or ""
-   modeS.zones.results:replace(next_result)
+   modeS:setResults(next_result)
    return modeS
 end
 
@@ -188,7 +186,7 @@ local function _modeShiftOnEmpty(modeS)
    if buf == "" then
       modeS:shiftMode(modeS.raga_default)
       modeS.firstChar = true
-      modeS.zones.results:replace ""
+      modeS:setResults("")
    end
 end
 
@@ -237,8 +235,7 @@ local function clear_txtbuf(modeS, category, value)
    modeS.txtbuf = Txtbuf()
    modeS.hist.cursor = modeS.hist.n + 1
    modeS.firstChar = true
-   modeS.zones.results:replace ""
-   modeS.zones:reflow(modeS)
+   modeS:setResults("")
 end
 
 CTRL ["^L"] = clear_txtbuf
