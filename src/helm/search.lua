@@ -4,7 +4,7 @@
 
 
 
-local clone = require "core/table" . clone
+local clone = import("core/table", "clone")
 local Nerf = require "helm/nerf"
 local Rainbuf = require "helm/rainbuf"
 

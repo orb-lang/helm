@@ -34,7 +34,8 @@ No sense wasting a level of indent on a wrapper imho
 ```lua
 setfenv(1, _ENV)
 
-meta = require "core/meta" . meta
+import = assert(require "core/module" . import)
+meta = import("core/meta", "meta")
 core = require "core:core"
 jit.vmdef = require "helm:helm/vmdef"
 jit.p = require "helm:helm/ljprof"

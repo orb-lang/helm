@@ -23,13 +23,12 @@ local sql     = assert(sql, "sql must be in bridge _G")
 
 local Txtbuf  = require "helm/txtbuf"
 local Rainbuf = require "helm/rainbuf"
-local c       = (require "singletons/color").color
+local c       = import("singletons/color", "color")
 local repr    = require "helm/repr"
 local Codepoints = require "singletons/codepoints"
 
 local concat = assert(table.concat)
-local reverse = require "core/table" . reverse
-local meta = require "core/meta" . meta
+local reverse = import("core/table", "reverse")
 ```
 ```lua
 local Historian = meta {}
@@ -382,7 +381,6 @@ The other fields are:
 
 local SelectionList = require "helm/selection_list"
 local insert, remove = assert(table.insert), assert(table.remove)
--- local import = assert(require "core/module" . import)
 -- local insert, remove = import("core/table", "ninsert", "nremove")
 
 function Historian.search(historian, frag)
@@ -429,7 +427,7 @@ end
 Retrieve a set of results reprs from the database, given a line_id.
 
 ```lua
-local lines = require "core/string" . lines
+local lines = import("core/string", "lines")
 local function _db_result__repr(result)
    local result_iter = lines(result[1])
    return function()

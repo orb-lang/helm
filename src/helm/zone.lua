@@ -67,19 +67,14 @@
 
 
 
-assert(meta)
-
+local ts = import("helm/repr", "ts")
 local concat = assert(table.concat)
 
 local Txtbuf = require "helm/txtbuf"
-
 local Rainbuf = require "helm/rainbuf"
+local a = require "anterm:anterm"
 
-local a = require "singletons:anterm"
-
-local ts = require "helm/repr" . ts
 local Zone = meta {}
-
 local Zoneherd = meta {}
 
 
@@ -137,7 +132,7 @@ end
 
 
 
-local lines = require "core/string" . lines
+local lines = import("core/string", "lines")
 
 local function _writeLines(write, zone, str)
    local nl = a.col(zone.tc) .. a.jump.down(1)
@@ -180,7 +175,7 @@ end
 
 
 
-local c = require "singletons/color" . color
+local c = import("singletons/color", "color")
 
 local function _renderTxtbuf(modeS, zone, write)
    local tokens = modeS.lex(tostring(zone.contents))

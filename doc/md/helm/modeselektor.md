@@ -115,7 +115,7 @@ The easiest way to go mad in concurrent environments is to share memory.
 ``modeselektor`` will own txtbuf, historian, and the entire screen.
 
 ```lua
-local c = (require "singletons/color").color
+local c = import("singletons/color", "color")
 
 local Txtbuf     = require "helm/txtbuf"
 local Resbuf     = require "helm/resbuf" -- Not currently used...
@@ -420,8 +420,8 @@ end
 log anything unexpected.
 
 ```lua
-local assertfmt, iscallable = require "core/string" . assertfmt,
-                              require "core/table" . iscallable
+local assertfmt, iscallable = import("core/string", "assertfmt"),
+                              import("core/table", "iscallable")
 
 function ModeS.act(modeS, category, value)
    assertfmt(modeS.modes[category], "no category %s in modeS", category)
@@ -517,7 +517,7 @@ local function newindexer(Env, key, value)
    Env[key] = value
 end
 
-local loadNames = assert(require "helm/repr/names" . loadNames)
+local loadNames = import("helm/repr/names", "loadNames")
 
 function eval_M.__newindex(eval_ENV, key, value)
    local ok = pcall(newindexer, _G, key, value)

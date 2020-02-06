@@ -71,7 +71,7 @@ continues past the edge of the zone and otherwise falsy.
 #### includes
 
 ```lua
-local lineGen = (require "helm/repr").lineGen
+local lineGen = import("helm/repr", "lineGen")
 ```
 #### Rainbuf metatable
 
@@ -93,7 +93,7 @@ generate these on the fly.
 ```lua
 local clear, insert = assert(table.clear),
                       assert(table.insert)
-local lines = require "core/string" . lines
+local lines = import("core/string", "lines")
 
 function Rainbuf.lineGen(rainbuf, rows, cols)
    local offset = rainbuf.offset or 0
