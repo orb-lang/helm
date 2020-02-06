@@ -98,6 +98,9 @@ local lines = import("core/string", "lines")
 function Rainbuf.lineGen(rainbuf, rows, cols)
    local offset = rainbuf.offset or 0
    cols = cols or 80
+   if rainbuf.scrollable then
+      cols = cols - 3
+   end
    if rainbuf.live then
       -- this buffer needs a fresh render each time
       rainbuf.reprs = nil
@@ -139,11 +142,14 @@ function Rainbuf.lineGen(rainbuf, rows, cols)
             end
          end
       end
-      -- If this is the last line requested, but more are available,
-      -- prepend a continuation marker, otherwise left padding
-      local prefix = "   "
-      if cursor == max_row and rainbuf.more then
-         prefix = a.red "..."
+      local prefix = ""
+      if rainbuf.scrollable then
+         -- If this is the last line requested, but more are available,
+         -- prepend a continuation marker, otherwise left padding
+         prefix = "   "
+         if cursor == max_row and rainbuf.more then
+            prefix = a.red "..."
+         end
       end
       return rainbuf.lines[cursor] and prefix .. rainbuf.lines[cursor]
    end
@@ -166,6 +172,7 @@ local function new(res)
       rainbuf.n = res.n
       rainbuf.frozen = res.frozen
       rainbuf.live = res.live
+      rainbuf.scrollable = res.scrollable
    end
    rainbuf.offset = 0
    rainbuf.lines = {}

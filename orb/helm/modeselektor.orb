@@ -478,6 +478,7 @@ function ModeS.setResults(modeS, results)
       results = { results, n = 1, frozen = true }
    end
    local rb = instanceof(results, Rainbuf) and results or Rainbuf(results)
+   rb.scrollable = true
    modeS.zones.results:replace(rb)
 end
 #/lua
