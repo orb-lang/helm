@@ -107,6 +107,7 @@ local Rainbuf    = require "helm/rainbuf"
 local Historian  = require "helm/historian"
 local Lex        = require "helm/lex"
 local Zoneherd   = require "helm/zone"
+local Suggest    = require "helm/suggest"
 local repr       = require "helm/repr"
 local lua_parser = require "helm/lua-parser"
 
@@ -446,6 +447,7 @@ function ModeS.act(modeS, category, value)
    modeS.zones.stat_col:replace(icon)
    modeS.zones.command:replace(modeS.txtbuf)
    modeS:updatePrompt()
+   modeS.suggest:update(modeS, category, value)
    -- Reflow in case command height has changed. Includes a paint.
    modeS:reflow()
    collectgarbage()
@@ -540,8 +542,7 @@ end
 
 
 local function gatherResults(success, ...)
-  local n = select('#', ...)
-  return success, { n = n, ... }
+  return success, pack(...)
 end
 
 
@@ -597,40 +598,40 @@ function ModeS.__eval(modeS, chunk, no_append)
          -- make the error into the result
          results = { err,
                      n = 1,
-                     frozen = true}
+                     frozen = true }
       end
    end
    if not no_append then
       modeS:setResults(results)
-     modeS.hist:append(modeS.txtbuf, results, success)
-     if success then
-        -- async render of resbuf
-        -- set up closed-over state
-        local lineGens, result_tostring = {}, {n = results.n}
-        for i = 1, results.n do
-           -- create line generators for each result
-           lineGens[i] = repr.lineGen(results[i], modeS.zones.results:width())
-           result_tostring[i] = setmetatable({}, result_repr_M)
-        end
-        local i = 1
-        local result_idler = uv.new_idle()
-        -- run string generator as idle process
-        result_idler:start(function()
-           while i <= results.n do
-              local line = lineGens[i]()
-              if line then
-                 insert(result_tostring[i],line)
-                 return nil
-              else
-                 i = i + 1
-                 return nil
-              end
-           end
-           result_idler:stop()
-        end)
-        modeS.hist.result_buffer[modeS.hist.n] = result_tostring
-     end
-     modeS.hist.cursor = modeS.hist.n
+      modeS.hist:append(modeS.txtbuf, results, success)
+      if success then
+         -- async render of resbuf
+         -- set up closed-over state
+         local lineGens, result_tostring = {}, {n = results.n}
+         for i = 1, results.n do
+            -- create line generators for each result
+            lineGens[i] = repr.lineGen(results[i], modeS.zones.results:width())
+            result_tostring[i] = setmetatable({}, result_repr_M)
+         end
+         local i = 1
+         local result_idler = uv.new_idle()
+         -- run string generator as idle process
+         result_idler:start(function()
+            while i <= results.n do
+               local line = lineGens[i]()
+               if line then
+                  insert(result_tostring[i],line)
+                  return nil
+               else
+                  i = i + 1
+                  return nil
+               end
+            end
+            result_idler:stop()
+         end)
+         modeS.hist.result_buffer[modeS.hist.n] = result_tostring
+      end
+      modeS.hist.cursor = modeS.hist.n
    end
 end
 
@@ -665,6 +666,7 @@ local function new(max_col, max_row)
   local modeS = meta(ModeS)
   modeS.txtbuf = Txtbuf()
   modeS.hist  = Historian()
+  modeS.suggest = Suggest()
   modeS.status = setmetatable({}, _stat_M)
   rawset(__G, "stat", modeS.status)
   modeS.max_col = max_col

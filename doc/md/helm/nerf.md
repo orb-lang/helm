@@ -23,7 +23,7 @@ assert(meta, "must have meta in _G")
 assert(write, "must have write in _G")
 ```
 ```lua
-local a         = require "singletons/anterm"
+local a         = require "anterm:anterm"
 local Txtbuf    = require "helm/txtbuf"
 local Rainbuf   = require "helm/rainbuf"
 local Historian = require "helm/historian"
