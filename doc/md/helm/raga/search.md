@@ -1,18 +1,16 @@
-* Search
+# Search
 
 
-A light wrapper over =nerf=.
+A light wrapper over ``nerf``.
 
-#!lua
+```lua
 local clone = import("core/table", "clone")
-local Nerf = require "helm/nerf"
+local Nerf = require "helm/raga/nerf"
 local Rainbuf = require "helm/rainbuf"
 
 local Search = clone(Nerf, 3)
-#/lua
-
-
-#!lua
+```
+```lua
 function Search.NAV.RETURN(modeS, category, value)
    local search_result = modeS.hist.last_collection[1]
    local result
@@ -23,9 +21,8 @@ function Search.NAV.RETURN(modeS, category, value)
    modeS:shiftMode(modeS.raga_default)
    modeS:setResults(result)
 end
-#/lua
-
-#!lua
+```
+```lua
 function Search.NAV.SHIFT_DOWN(modeS, category, value)
    local search_buf = modeS.hist.last_collection
    if not search_buf then return end
@@ -39,9 +36,8 @@ function Search.NAV.SHIFT_DOWN(modeS, category, value)
       modeS.zones.results.touched = true
    end
 end
-#/lua
-
-#!lua
+```
+```lua
 function Search.NAV.SHIFT_UP(modeS, category, value)
    local search_buf = modeS.hist.last_collection
    if not search_buf then return end
@@ -54,23 +50,24 @@ function Search.NAV.SHIFT_UP(modeS, category, value)
       modeS.zones.results.touched = true
    end
 end
-#/lua
+```
 
 - [ ]  #Todo
+
 
   - [ ]  Add Search.NAV.SHIFT_ALT_(UP|DOWN), to move a page at a time.
          Hook them to PgUp and PgDown while we're at it.
 
+
   - [ ]  Add Search.NAV.HYPER_UP and Search.NAV.HYPER_DOWN to snap to the
          top and bottom.  These are synonymous with Home and End.
 
-#!lua
+```lua
 Search.NAV.UP = Search.NAV.SHIFT_UP
 Search.NAV.DOWN = Search.NAV.SHIFT_DOWN
 
-#/lua
-
-#!lua
+```
+```lua
 local function _makeControl(num)
    return function(modeS, category, value)
        local searchResult = modeS.hist:search(tostring(modeS.txtbuf))[1]
@@ -92,8 +89,7 @@ end
 for i = 1, 9 do
    Search.ALT["M-" ..tostring(i)] = _makeControl(i)
 end
-#/lua
-
-#!lua
+```
+```lua
 return Search
-#/lua
+```

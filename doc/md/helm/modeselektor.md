@@ -127,8 +127,8 @@ local Suggest    = require "helm/suggest"
 local repr       = require "helm/repr"
 local lua_parser = require "helm/lua-parser"
 
-local Nerf      = require "helm/nerf"
-local Search    = require "helm/search"
+local Nerf      = require "helm/raga/nerf"
+local Search    = require "helm/raga/search"
 
 local concat               = assert(table.concat)
 local sub, gsub, rep, find = assert(string.sub),
