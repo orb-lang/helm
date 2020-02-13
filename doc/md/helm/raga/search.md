@@ -9,6 +9,8 @@ local Nerf = require "helm/raga/nerf"
 local Rainbuf = require "helm/rainbuf"
 
 local Search = clone(Nerf, 3)
+
+Search.prompt_char = "⁉️"
 ```
 ```lua
 function Search.NAV.RETURN(modeS, category, value)

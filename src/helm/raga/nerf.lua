@@ -58,12 +58,14 @@ local Nerf = { NAV    = NAV,
                ALT    = ALT,
                NYI    = NYI }
 
+Nerf.prompt_char = "👉"
 
 
 
 
 
-function _insert(modeS, category, value)
+
+local function _insert(modeS, category, value)
    modeS.txtbuf:insert(value)
 end
 

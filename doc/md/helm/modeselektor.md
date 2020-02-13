@@ -325,15 +325,6 @@ repainting is a good example of this.
 
 The next mode we're going to write is ``"search"``.
 
-
-#### Prompts
-
-Let's add some:
-
-```lua
-ModeS.prompts = { nerf   = "👉 ",
-                  search = "⁉️ " }
-```
 #### ModeS:continuationLines()
 
 Answers the number of additional lines (beyond the first) needed
@@ -350,7 +341,7 @@ Updates the prompt with the correct symbol and number of continuation prompts.
 
 ```lua
 function ModeS.updatePrompt(modeS)
-   local prompt = modeS.prompts[modeS.raga] .. ("\n..."):rep(modeS:continuationLines())
+   local prompt = modeS.modes.prompt_char .. " " .. ("\n..."):rep(modeS:continuationLines())
    modeS.zones.prompt:replace(prompt)
 end
 ```

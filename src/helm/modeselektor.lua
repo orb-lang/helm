@@ -313,16 +313,6 @@ ModeS.raga_default = "nerf"
 
 
 
-ModeS.prompts = { nerf   = "👉 ",
-                  search = "⁉️ " }
-
-
-
-
-
-
-
-
 function ModeS.continuationLines(modeS)
    return modeS.txtbuf and #modeS.txtbuf.lines - 1 or 0
 end
@@ -334,7 +324,7 @@ end
 
 
 function ModeS.updatePrompt(modeS)
-   local prompt = modeS.prompts[modeS.raga] .. ("\n..."):rep(modeS:continuationLines())
+   local prompt = modeS.modes.prompt_char .. " " .. ("\n..."):rep(modeS:continuationLines())
    modeS.zones.prompt:replace(prompt)
 end
 

@@ -10,6 +10,8 @@ local Rainbuf = require "helm/rainbuf"
 
 local Search = clone(Nerf, 3)
 
+Search.prompt_char = "⁉️"
+
 
 
 

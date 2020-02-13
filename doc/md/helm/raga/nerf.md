@@ -57,12 +57,14 @@ local Nerf = { NAV    = NAV,
                CTRL   = CTRL,
                ALT    = ALT,
                NYI    = NYI }
+
+Nerf.prompt_char = "👉"
 ```
 ### Insertion
 
 ```lua
 
-function _insert(modeS, category, value)
+local function _insert(modeS, category, value)
    modeS.txtbuf:insert(value)
 end
 
