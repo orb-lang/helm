@@ -223,7 +223,16 @@ function NAV.SHIFT_UP(modeS, category, value)
    end
 end
 
-
+function NAV.TAB(modeS, category, value)
+   if modeS.suggest.active_suggestions then
+      modeS:shiftMode("complete")
+      -- #todo seems like this should be able to be handled more centrally
+      modeS.suggest.active_suggestions[1].hl = 1
+      modeS.zones.suggest.touched = true
+   else
+      modeS.txtbuf:paste("   ")
+   end
+end
 
 
 

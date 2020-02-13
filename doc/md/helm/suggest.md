@@ -23,6 +23,28 @@ local Suggest = meta {}
 local new
 
 ```
+### _shouldUpdate
+
+Decides whether we should respond to a given event by updating the
+completion list.
+
+```lua
+
+local function _shouldUpdate(modeS, category, value)
+   if category == "ASCII" or category == "UTF8" then
+      return true
+   end
+   -- Deletion and moving the cursor should update the completion list
+   -- #todo there's got to be a better way to do this
+   if category == "NAV" and
+      value == "BACKSPACE" or value == "DELETE" or
+      value == "LEFT" or value == "RIGHT" then
+      return true
+   end
+   return false
+end
+
+```
 ### update(modeS, category, value)
 
 Updates the completion list based on the current contents of the Txtbuf.
@@ -60,8 +82,7 @@ end
 local litpat = import("core/string", "litpat")
 
 function Suggest.update(suggest, modeS, category, value)
-   -- Ignore mouse events to reduce flicker
-   if category == "MOUSE" then
+   if not _shouldUpdate(modeS, category, value) then
       return
    end
    local context = _cursorContext(modeS)
@@ -81,10 +102,18 @@ function Suggest.update(suggest, modeS, category, value)
          insert(suggestions, sym)
       end
    end
-   sort(suggestions, _suggest_sort)
-   suggestions = Rainbuf { [1] = suggestions, n = 1,
-                               live = true, made_in = "suggest.update" }
-   modeS.zones.suggest:replace(suggestions)
+   if #suggestions > 0 then
+      sort(suggestions, _suggest_sort)
+      if modeS.raga == "complete" then
+         suggestions.hl = 1
+      end
+      suggestions = Rainbuf { [1] = suggestions, n = 1,
+                                  live = true, made_in = "suggest.update" }
+      suggest.active_suggestions = suggestions
+      modeS.zones.suggest:replace(suggestions)
+   else
+      suggest:cancel(modeS)
+   end
 end
 
 ```
@@ -92,6 +121,7 @@ end
 
 ```lua
 function Suggest.cancel(suggest, modeS)
+   suggest.active_suggestions = nil
    modeS.zones.suggest:replace("")
 end
 ```

@@ -113,6 +113,7 @@ local lua_parser = require "helm/lua-parser"
 
 local Nerf      = require "helm/raga/nerf"
 local Search    = require "helm/raga/search"
+local Complete  = require "helm/raga/complete"
 
 local concat               = assert(table.concat)
 local sub, gsub, rep, find = assert(string.sub),
@@ -347,10 +348,12 @@ end
 
 
 
-ModeS.closet = { nerf = { modes = Nerf,
-                          lex   = Lex.lua_thor },
-                 search = { modes = Search,
-                            lex   = Lex.null } }
+ModeS.closet = { nerf =     { modes = Nerf,
+                              lex   = Lex.lua_thor },
+                 search =   { modes = Search,
+                              lex   = Lex.null },
+                 complete = { modes = Complete,
+                              lex   = Lex.lua_thor } }
 
 function ModeS.shiftMode(modeS, raga)
    if raga == "search" then
