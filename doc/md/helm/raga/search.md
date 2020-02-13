@@ -29,9 +29,8 @@ function Search.NAV.SHIFT_DOWN(modeS, category, value)
    local search_buf = modeS.hist.last_collection
    if not search_buf then return end
    local search_result = search_buf[1]
-   if search_result.hl < #search_result then
-      search_result.hl = search_result.hl + 1
-      if search_result.hl >= modeS.zones.results:height() + search_buf.offset
+   if search_result:selectNext() then
+      if search_result.hl >= search_buf.offset + modeS.zones.results:height()
         and search_buf.more then
         search_buf.offset = search_buf.offset + 1
       end
@@ -44,8 +43,7 @@ function Search.NAV.SHIFT_UP(modeS, category, value)
    local search_buf = modeS.hist.last_collection
    if not search_buf then return end
    local search_result = search_buf[1]
-   if search_result.hl > 1 then
-      search_result.hl = search_result.hl - 1
+   if search_result:selectPrevious() then
       if search_result.hl < search_buf.offset then
          search_buf.offset = search_buf.offset - 1
       end

@@ -30,6 +30,32 @@ local new
 
 
 
+function SelectionList.selectNext(list)
+   if list.hl < #list then
+      list.hl = list.hl + 1
+      return true
+   else
+      return false
+   end
+end
+
+function SelectionList.selectPrevious(list)
+   if list.hl > 1 then
+      list.hl = list.hl - 1
+      return true
+   else
+      return false
+   end
+end
+
+
+
+
+
+
+
+
+
 
 
 local Codepoints = require "singletons/codepoints"
@@ -111,6 +137,7 @@ end
 
 new = function()
    local list = meta(SelectionList)
+   list.hl = 0
    -- list.n = 0
    return list
 end

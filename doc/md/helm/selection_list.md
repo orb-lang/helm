@@ -24,6 +24,31 @@ Search-specific fields:
 local SelectionList = meta {}
 local new
 ```
+### SelectionList:selectNext(), SelectionList:selectPrevious()
+
+Moves the highlight to the next or previous item in the list.
+Answers whether the highlight was able to be moved (false if we're
+already at the end/beginning of the list)
+
+```lua
+function SelectionList.selectNext(list)
+   if list.hl < #list then
+      list.hl = list.hl + 1
+      return true
+   else
+      return false
+   end
+end
+
+function SelectionList.selectPrevious(list)
+   if list.hl > 1 then
+      list.hl = list.hl - 1
+      return true
+   else
+      return false
+   end
+end
+```
 ### __repr
 
 Displays the list, highlighting the currently selected item.
@@ -111,6 +136,7 @@ end
 ```lua
 new = function()
    local list = meta(SelectionList)
+   list.hl = 0
    -- list.n = 0
    return list
 end
