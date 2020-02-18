@@ -154,12 +154,10 @@ if old_helm:exists() then
       print "please shut down all helm instances before running migration"
       os.exit()
    end
-   --[[
    local sh = require "orb:util/sh"
    sh("mkdir " .. _Bridge.bridge_home .. "/helm")
    sh("mv " .. tostring(old_helm) .. " "
       .. _Bridge.bridge_home .. "/helm/helm.sqlite")
-   --]]
 end
 
 
