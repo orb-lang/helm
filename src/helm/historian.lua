@@ -30,6 +30,12 @@ local meta = require "core/meta" . meta
 
 
 
+
+local File = require "fs:fs/file"
+
+
+
+
 local Historian = meta {}
 
 
@@ -127,7 +133,32 @@ WHERE result.line_id = :line_id
 ORDER BY result.result_id;
 ]]
 
-Historian.helm_db = _Bridge.bridge_home .. "/.helm"
+
+
+
+
+
+
+
+
+
+
+
+
+
+local old_helm = File (_Bridge.bridge_home .. "/.helm")
+
+if old_helm:exists() then
+   -- move it
+   local sh = require "orb:util/sh"
+   sh("mkdir " .. _Bridge.bridge_home .. "/helm")
+end
+
+
+
+
+
+Historian.helm_db = _Bridge.bridge_home
 
 Historian.project = uv.cwd()
 
