@@ -94,7 +94,7 @@ function Suggest.update(suggest, modeS, category, value)
    end
    local suggestions = SelectionList()
    suggestions.best = true
-   suggestions.frag = context:toStringBW()
+   suggestions.frag = tostring(context)
    suggestions.lit_frag = suggestions.frag
    local match_string = "^" .. litpat(suggestions.frag)
    for sym in pairs(names.all_symbols) do
