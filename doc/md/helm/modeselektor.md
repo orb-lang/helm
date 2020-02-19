@@ -414,8 +414,8 @@ end
 log anything unexpected.
 
 ```lua
-local assertfmt, iscallable = import("core/string", "assertfmt"),
-                              import("core/table", "iscallable")
+local assertfmt = import("core/string", "assertfmt")
+local hasfield, iscallable = import("core/table", "hasfield", "iscallable")
 
 function ModeS.act(modeS, category, value)
    assertfmt(modeS.modes[category], "no category %s in modeS", category)
@@ -433,8 +433,7 @@ function ModeS.act(modeS, category, value)
       end
    end
    -- Dispatch on value if possible
-   if type(modeS.modes[category]) == "table"
-      and modeS.modes[category][value] then
+   if hasfield(modeS.modes[category], value) then
       modeS.modes[category][value](modeS, category, value)
    -- Or on category if the whole category is callable
    elseif iscallable(modeS.modes[category]) then
