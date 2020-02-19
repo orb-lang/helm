@@ -615,7 +615,7 @@ end
 ```lua
 function Txtbuf.clone(txtbuf)
    -- Clone to depth of 3 to get tb, tb.lines, and each lines
-   local tb = table_clone(txtbuf, 3)
+   local tb = clone(txtbuf, 3)
    return tb:resume()
 end
 ```
