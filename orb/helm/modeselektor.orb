@@ -206,7 +206,6 @@ end
 local function mouse_paint(m)
    return c.userdata(STAT_ICON)
       .. a.magenta(m.button) .. ": "
-      .. a.bright(m.kind) .. " "
       .. tf(m.shift) .. " "
       .. tf(m.meta) .. " "
       .. tf(m.ctrl) .. " "
