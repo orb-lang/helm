@@ -32,6 +32,9 @@ local reverse = require "core/table" . reverse
 local meta = require "core/meta" . meta
 ```
 ```lua
+local File = require "fs:fs/file"
+```
+```lua
 local Historian = meta {}
 ```
 ## Persistence
@@ -126,8 +129,39 @@ FROM result
 WHERE result.line_id = :line_id
 ORDER BY result.result_id;
 ]]
+```
+### Migration shim
 
-Historian.helm_db = _Bridge.bridge_home .. "/.helm"
+  Having the database in a hidden file is a holdover from when it was living
+in ``~``.  It's a bad idea, hidden files interact badly with the Trash, it makes
+it pointlessly difficult to check for a WAL file, and so on.
+
+
+We have enough users (like, five I think) that I'm going to add a shim to
+perform a migration to a new ``$BRIDGE_HOME/helm/`` directory.  Inside that
+directory, the new name of ``.helm`` will be ``helm.sqlite``.
+
+```lua
+local old_helm = File (_Bridge.bridge_home .. "/.helm")
+
+if old_helm:exists() then
+   -- move it
+   if File(_Bridge.bridge_home .. "/.helm-wal"):exists() then
+      print "please shut down all helm instances before running migration"
+      os.exit()
+   end
+   local sh = require "orb:util/sh"
+   sh("mkdir " .. _Bridge.bridge_home .. "/helm")
+   sh("mv " .. tostring(old_helm) .. " "
+      .. _Bridge.bridge_home .. "/helm/helm.sqlite")
+end
+```
+
+Fingers crossed... I'm definitely backing my database up before I run this!
+
+
+```lua
+Historian.helm_db = _Bridge.bridge_home .. "/helm/helm.sqlite"
 
 Historian.project = uv.cwd()
 
