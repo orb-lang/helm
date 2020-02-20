@@ -187,7 +187,6 @@ We want as much history as practical, because we search in it, but most of
 the results never get used.
 
 ```lua
-
 local core_math = require "core/math"
 local bound = assert(core_math.bound)
 
@@ -243,6 +242,7 @@ function Historian.load(historian)
                       : bindkv { project = project_id,
                                  num_lines = number_of_lines }
    historian.cursor = number_of_lines + 1
+   historian.cursor_start = historian.cursor
    historian.n = number_of_lines
    local counter = number_of_lines
    local idler
@@ -254,7 +254,7 @@ function Historian.load(historian)
       end
       historian[counter] = Txtbuf(res[2])
       historian.line_ids[counter] = res[1]
-      -- Results are loaded *backward* so the most recent one is available ASAP
+      -- Results are loaded backwards because that's how they're accessed
       counter = counter - 1
    end
    -- add one line to ensure we have history on startup
