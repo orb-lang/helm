@@ -167,6 +167,13 @@ function Historian.load(historian)
    conn:exec(create_result_table)
    conn:exec(create_repl_table)
    conn:exec(create_session_table)
+   -- Set the user_version pragma if not set.
+   -- This is an insertion point for migrations, when
+   -- we start to perform them.
+   if not conn.pragma.user_version() then
+      -- 1 is 'true' in this context, so we skip it:
+      conn.pragma.user_version(2)
+   end
    -- Retrive project id
    local proj_val, proj_row = sql.pexec(conn,
                                   sql.format(get_project, historian.project),
