@@ -52,6 +52,10 @@ sql = assert(sql, "sql must be in _G")
 
 
 
+local deepclone = assert(core.deepclone)
+_G_back = deepclone(_G)
+
+
 
 
 
@@ -215,7 +219,6 @@ local function onseq(err,seq)
           return nil
         else
           close_idler:stop()
-          uv.stop()
         end
       end)
       return 0
