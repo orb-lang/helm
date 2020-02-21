@@ -8,7 +8,7 @@ specialized for search results, from either an actual search or ``suggest``.
 ### Instance Fields
 
 -  <numbers>:        The items available to select
--  hl:               Index of the currently selected item
+-  selected_index:   Index of the currently selected item
 -  show_shortcuts:   Whether to show M-n shortcut indicators
 
 
@@ -32,8 +32,8 @@ already at the end/beginning of the list)
 
 ```lua
 function SelectionList.selectNext(list)
-   if list.hl < #list then
-      list.hl = list.hl + 1
+   if list.selected_index < #list then
+      list.selected_index = list.selected_index + 1
       return true
    else
       return false
@@ -41,12 +41,21 @@ function SelectionList.selectNext(list)
 end
 
 function SelectionList.selectPrevious(list)
-   if list.hl > 1 then
-      list.hl = list.hl - 1
+   if list.selected_index > 1 then
+      list.selected_index = list.selected_index - 1
       return true
    else
       return false
    end
+end
+```
+### SelectionList:selectedItem()
+
+Answers the actual selected item from the list (as opposed to its index).
+
+```lua
+function SelectionList.selectedItem(list)
+   return list[list.selected_index]
 end
 ```
 ### __repr
@@ -122,7 +131,7 @@ function SelectionList.__repr(list, window, c)
          line = alt_seq .. line
          len = len + 4
       end
-      if i == list.hl then
+      if i == list.selected_index then
          line = c.highlight(line)
       end
       i = i + 1
@@ -136,7 +145,7 @@ end
 ```lua
 new = function()
    local list = meta(SelectionList)
-   list.hl = 0
+   list.selected_index = 0
    -- list.n = 0
    return list
 end

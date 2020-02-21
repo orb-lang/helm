@@ -416,7 +416,7 @@ function Historian.search(historian, frag)
       result.frag = frag:sub(1, -3) .. frag:sub(-1, -1) .. frag:sub(-2, -2)
       try_search()
    end
-   result.hl = 1
+   result.selected_index = 1
    historian.last_collection = Rainbuf {[1] = result, n = 1, live = true}
    historian.last_collection.made_in = "historian.search"
    return historian.last_collection

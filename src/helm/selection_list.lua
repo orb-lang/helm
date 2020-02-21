@@ -31,8 +31,8 @@ local new
 
 
 function SelectionList.selectNext(list)
-   if list.hl < #list then
-      list.hl = list.hl + 1
+   if list.selected_index < #list then
+      list.selected_index = list.selected_index + 1
       return true
    else
       return false
@@ -40,12 +40,22 @@ function SelectionList.selectNext(list)
 end
 
 function SelectionList.selectPrevious(list)
-   if list.hl > 1 then
-      list.hl = list.hl - 1
+   if list.selected_index > 1 then
+      list.selected_index = list.selected_index - 1
       return true
    else
       return false
    end
+end
+
+
+
+
+
+
+
+function SelectionList.selectedItem(list)
+   return list[list.selected_index]
 end
 
 
@@ -122,7 +132,7 @@ function SelectionList.__repr(list, window, c)
          line = alt_seq .. line
          len = len + 4
       end
-      if i == list.hl then
+      if i == list.selected_index then
          line = c.highlight(line)
       end
       i = i + 1
@@ -137,7 +147,7 @@ end
 
 new = function()
    local list = meta(SelectionList)
-   list.hl = 0
+   list.selected_index = 0
    -- list.n = 0
    return list
 end

@@ -17,8 +17,8 @@ function Search.NAV.RETURN(modeS, category, value)
    local search_result = modeS.hist.last_collection[1]
    local result
    if #search_result > 0 then
-      local hl = search_result.hl
-      modeS.txtbuf, result = modeS.hist:index(search_result.cursors[hl])
+      local selected_index = search_result.selected_index
+      modeS.txtbuf, result = modeS.hist:index(search_result.cursors[selected_index])
    end
    modeS:shiftMode(modeS.raga_default)
    modeS:setResults(result)
@@ -30,7 +30,7 @@ function Search.NAV.SHIFT_DOWN(modeS, category, value)
    if not search_buf then return end
    local search_result = search_buf[1]
    if search_result:selectNext() then
-      if search_result.hl >= search_buf.offset + modeS.zones.results:height()
+      if search_result.selected_index >= search_buf.offset + modeS.zones.results:height()
         and search_buf.more then
         search_buf.offset = search_buf.offset + 1
       end
@@ -44,7 +44,7 @@ function Search.NAV.SHIFT_UP(modeS, category, value)
    if not search_buf then return end
    local search_result = search_buf[1]
    if search_result:selectPrevious() then
-      if search_result.hl < search_buf.offset then
+      if search_result.selected_index < search_buf.offset then
          search_buf.offset = search_buf.offset - 1
       end
       modeS.zones.results.touched = true

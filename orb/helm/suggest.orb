@@ -108,7 +108,7 @@ function Suggest.update(suggest, modeS, category, value)
    if #suggestions > 0 then
       sort(suggestions, _suggest_sort)
       if modeS.raga == "complete" then
-         suggestions.hl = 1
+         suggestions.selected_index = 1
       end
       suggestions = Rainbuf { [1] = suggestions, n = 1,
                                   live = true, made_in = "suggest.update" }
