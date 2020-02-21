@@ -122,6 +122,17 @@ end
 
 *** accept()
 
+#!lua
+
+local Txtbuf = require "helm/txtbuf"
+
+function Suggest.accept(suggest, modeS)
+   local suggestion = suggest.active_suggestions[1]:selectedItem()
+   local context = _cursorContext(modeS)
+   modeS.txtbuf:paste(suggestion:sub(context.cursor_offset + 1))
+end
+#/lua
+
 *** new()
 
 #!lua
