@@ -7,7 +7,7 @@
 -  #Todo
 
 
-  - [ ]  All of the content for the first draft is in ``modeselektor``, so
+  - [X]  All of the content for the first draft is in ``modeselektor``, so
          let's transfer that.
 
 

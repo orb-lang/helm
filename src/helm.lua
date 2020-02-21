@@ -204,6 +204,21 @@ local function onseq(err,seq)
       modeS:paint()
       uv.read_stop(stdin)
       uv.timer_stop(timer)
+      -- Shut down the database conn:
+      local conn = modeS.hist.conn
+      pcall(conn.pragma.wal_checkpoint, "0") -- 0 == SQLITE_CHECKPOINT_PASSIVE
+      -- set up an idler to close the conn, so that e.g. busy
+      -- exceptions don't blow up the hook
+      local close_idler = uv.new_idle()
+      close_idler:start(function()
+        local success = pcall(conn.close, conn)
+        if not success then
+          return nil
+        else
+          close_idler:stop()
+          uv.stop()
+        end
+      end)
       return 0
    end
    -- Escape sequences

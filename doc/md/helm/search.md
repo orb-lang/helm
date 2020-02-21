@@ -90,6 +90,19 @@ for i = 1, 9 do
    Search.ALT["M-" ..tostring(i)] = _makeControl(i)
 end
 ```
+### MOUSE
+
+```lua
+function Search.MOUSE(modeS, category, value)
+   if value.scrolling then
+      if value.button == "MB0" then
+         modeS.modes.NAV.SHIFT_DOWN(modeS, category, value)
+      elseif value.button == "MB1" then
+         modeS.modes.NAV.SHIFT_UP(modeS, category, value)
+      end
+   end
+end
+```
 ```lua
 return Search
 ```
