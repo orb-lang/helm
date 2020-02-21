@@ -176,7 +176,7 @@ end
 local c = import("singletons/color", "color")
 
 local function _renderTxtbuf(modeS, zone, write)
-   local tokens = modeS.lex(tostring(zone.contents))
+   local tokens = modeS.lex(zone.contents)
    for i, tok in ipairs(tokens) do
       tokens[i] = tok:toString(c)
    end

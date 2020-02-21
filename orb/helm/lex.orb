@@ -110,32 +110,36 @@ This is an almost pessimal way to use =lpeg=, which is quite capable of
 handling a full line in one pass.
 
 #!lua
-local function chomp_token(lb)
+local function chomp_token(lb, start_pos)
    for _,v in ipairs(lua_toks) do
-      local bite = match(v, lb)
-      if bite ~= nil then
-         return sub(lb, 1, bite - 1), sub(lb, bite), v
+      local end_pos = match(v, lb, start_pos)
+      if end_pos ~= nil then
+         return sub(lb, start_pos, end_pos - 1), end_pos, v
       end
    end
    return nil
 end
 
 local Token = require "helm/repr/token"
+local inbounds = import("core/math", "inbounds")
 
 function Lex.lua_thor(txtbuf)
    local toks = {}
    local lb = tostring(txtbuf)
-   while lb ~= "" do
-      local bite, tok_t
-      bite, lb, tok_t = chomp_token(lb)
-      if bite then
-         assert(#bite > 0, "lua-thor has failed you")
-         local col = color_map[tok_t] or c.no_color
-         local cfg = {}
-         -- Would love to highlight escape sequences in strings,
-         -- but this turns out to be rather difficult...
-         insert(toks, Token(bite, col, cfg))
+   local cursor_index = txtbuf:cursorIndex()
+   local pos = 1
+   while pos <= #lb do
+      local bite, new_pos, tok_t = chomp_token(lb, pos)
+      assert(bite and #bite > 0, "lua-thor has failed you")
+      local color = color_map[tok_t] or c.no_color
+      local cfg = { }
+      if inbounds(cursor_index, pos + 1, new_pos) then
+         cfg.cursor_offset = cursor_index - pos
       end
+      -- Would love to highlight escape sequences in strings,
+      -- but this turns out to be rather difficult...
+      insert(toks, Token(bite, color, cfg))
+      pos = new_pos
    end
    return toks
 end

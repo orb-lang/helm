@@ -170,6 +170,21 @@ end
 
 
 
+function Txtbuf.cursorIndex(txtbuf)
+   local index = txtbuf.cursor.col
+   for row = txtbuf.cursor.row - 1, 1, -1 do
+      index = index + #txtbuf.lines[row] + 1
+   end
+   return index
+end
+
+
+
+
+
+
+
+
 
 function Txtbuf.openRow(txtbuf, row_num)
    if row_num < 1 or row_num > #txtbuf.lines then

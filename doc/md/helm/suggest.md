@@ -52,23 +52,13 @@ Updates the completion list based on the current contents of the Txtbuf.
 ```lua
 
 local function _cursorContext(modeS)
-   local cur_row, cur_col = modeS.txtbuf:getCursor()
-   cur_col = cur_col - 1
-   local tokens = modeS.lex(tostring(modeS.txtbuf))
-   local row, disp = 1, 0
-   for _, token in ipairs(tokens) do
-      if row < cur_row then
-         if token:toStringBW() == "\n" then
-            row = row + 1
-         end
-      else
-         disp = disp + token.total_disp
-         -- #todo handle typing in the middle of a token
-         if disp >= cur_col then
-            return token
-         end
+   local lex_tokens = modeS.lex(modeS.txtbuf)
+   for _, token in ipairs(lex_tokens) do
+      if token.cursor_offset then
+         return token
       end
    end
+   return nil
 end
 
 local function _suggest_sort(a, b)
@@ -94,7 +84,7 @@ function Suggest.update(suggest, modeS, category, value)
    end
    local suggestions = SelectionList()
    suggestions.best = true
-   suggestions.frag = tostring(context)
+   suggestions.frag = tostring(context):sub(1, context.cursor_offset)
    suggestions.lit_frag = suggestions.frag
    local match_string = "^" .. litpat(suggestions.frag)
    for sym in pairs(names.all_symbols) do

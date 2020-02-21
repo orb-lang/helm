@@ -164,6 +164,21 @@ end
 
 #/lua
 
+*** Txtbuf:cursorIndex()
+
+Answers the index of the cursor in the string represented by the Txtbuf,
+with newlines counted as a single slot/character.
+
+#!lua
+function Txtbuf.cursorIndex(txtbuf)
+   local index = txtbuf.cursor.col
+   for row = txtbuf.cursor.row - 1, 1, -1 do
+      index = index + #txtbuf.lines[row] + 1
+   end
+   return index
+end
+#/lua
+
 *** Txtbuf:openRow(row_num)
 
 Opens the row at index =row_num= for editing, breaking it into a grid of characters.
