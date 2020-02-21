@@ -49,6 +49,8 @@ local function tie_break(old, new)
    return #old > #new
 end
 
+local isidentifier = import("core/string", "isidentifier")
+
 local addName, loadNames
 
 addName = function(value, name, aG)
@@ -68,8 +70,14 @@ loadNames = function(tab, prefix, aG)
    aG = aG or anti_G
    for k, v in pairs(tab) do
       if type(k) == "string" then
-         names.all_symbols[k] = true
+         -- Only add legal identifiers to all_symbols, since this is
+         -- used for autocomplete
+         if isidentifier(k) then
+            names.all_symbols[k] = true
+         end
       else
+         -- #todo should we put <> around non-identifier strings? I guess
+         -- it seems fine not to, since this is just for display...
          k = "<" .. tostring(k) .. ">"
       end
       local typica = type(v)
