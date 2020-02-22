@@ -287,6 +287,9 @@ uv.stop()
 
 io.stdout:flush()
 
+-- nil out our extra copy of _G
+_G_back = nil
+
 end -- of _helm
 ```
 #### Call helm

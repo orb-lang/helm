@@ -602,33 +602,11 @@ function ModeS.__eval(modeS, chunk, no_append)
      modeS.hist:append(modeS.txtbuf, results, success)
      local line_id = modeS.hist.line_ids[modeS.hist.n]
      if success then
-        -- async render of resbuf
-        -- set up closed-over state
-        local lineGens, result_tostring = {}, {n = results.n}
-        for i = 1, results.n do
-           -- create line generators for each result
-           lineGens[i] = repr.lineGen(results[i], modeS.zones.results:width())
-           result_tostring[i] = setmetatable({}, result_repr_M)
-        end
-        local i = 1
-        local result_idler = uv.new_idle()
-        -- run string generator as idle process
-        result_idler:start(function()
-           while i <= results.n do
-              local line = lineGens[i]()
-              if line then
-                 insert(result_tostring[i],line)
-                 return nil
-              else
-                 i = i + 1
-                 return nil
-              end
-           end
-           result_idler:stop()
-        end)
-        modeS.hist.result_buffer[modeS.hist.n] = result_tostring
+        modeS.hist.result_buffer[modeS.hist.n] = results
      end
      modeS.hist.cursor = modeS.hist.n
+   else
+     return results
    end
 end
 
@@ -645,12 +623,32 @@ function ModeS.restart(modeS)
    -- we might want to do this again, so:
    local _G_backback = core.deepclone(_G_back)
    _G = _G_back
-   -- we need the existing __G, not the clone, in _G:
+   -- we need the existing __G, not the empty clone, in _G:
    _G.__G = __G
    -- and we need the new _G, not the old one, as the index for __G:
    getmetatable(__G).__index = _G
    _G_back = _G_backback
-   -- perform rerun:
+   -- perform rerun
+   -- Replace results:
+   local hist = modeS.hist
+   local top = hist.cursor
+   local session_count = hist.cursor - hist.cursor_start - 1
+   hist.cursor = hist.cursor_start
+   local report = {{cursor = top,
+                    session_count = session_count,
+                    cursor_start = hist.cursor_start,
+                    hist_len = #hist,
+                    n = hist.n}}
+   hist.n  = hist.n - session_count
+   for i = modeS.hist.cursor_start, top do
+      local results = modeS:__eval(tostring(hist[i], true)) -- false == do append
+      hist.result_buffer[hist.n] = results
+      hist.n = hist.n + 1
+   end
+   hist.cursor = top
+   report[#report + 1] = {cursor = hist.cursor, n = hist.n, hist_len = #hist}
+   modeS.report = report
+   modeS:paint()
 end
 ```
 #### modeS.status

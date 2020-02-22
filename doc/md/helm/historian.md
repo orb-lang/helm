@@ -250,7 +250,7 @@ function Historian.load(historian)
                       : bindkv { project = project_id,
                                  num_lines = number_of_lines }
    historian.cursor = number_of_lines + 1
-   historian.cursor_start = historian.cursor
+   historian.cursor_start = number_of_lines
    historian.n = number_of_lines
    local counter = number_of_lines
    local idler
@@ -613,7 +613,9 @@ local function _resultsFrom(historian, cursor)
    end
    historian.get_results:reset()
    -- may as well memoize the database call, while we're here
-   historian.result_buffer[line_id] = results
+   if line_id then
+      historian.result_buffer[line_id] = results
+   end
    return results
 end
 ```
