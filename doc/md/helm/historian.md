@@ -337,7 +337,8 @@ function Historian.persist(historian, txtbuf, results)
       -- A blank line can have no results and is uninteresting.
       return false
    end
-   historian.conn:exec "BEGIN TRANSACTION;"
+   local savepoint_uniq = tostring(os.time()) .. math.random(1, 10000)
+   historian.conn:exec("SAVEPOINT save_" .. savepoint_uniq .. ";")
    historian.insert_line:bindkv { project = historian.project_id,
                                        line    = lb }
    local err = historian.insert_line:step()
@@ -386,7 +387,7 @@ function Historian.persist(historian, txtbuf, results)
             end
          end
       end
-      historian.conn:exec "END TRANSACTION;"
+      historian.conn:exec("RELEASE save_" .. savepoint_uniq .. ";")
       persist_idler:stop()
    end)
    return true
