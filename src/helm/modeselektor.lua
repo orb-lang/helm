@@ -630,6 +630,25 @@ end
 
 
 
+
+function ModeS.restart(modeS)
+   -- we might want to do this again, so:
+   local _G_backback = core.deepclone(_G_back)
+   _G = _G_back
+   -- we need the existing __G, not the clone, in _G:
+   _G.__G = __G
+   -- and we need the new _G, not the old one, as the index for __G:
+   getmetatable(__G).__index = _G
+   _G_back = _G_backback
+   -- perform rerun:
+end
+
+
+
+
+
+
+
 local function _status__repr(status_table)
   return concat(status_table)
 end

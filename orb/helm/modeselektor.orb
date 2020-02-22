@@ -625,6 +625,25 @@ function ModeS.eval(modeS)
 end
 #/lua
 
+
+*** ModeS:restart()
+
+This resets =_G= and runs all commands in the current session.
+
+#!lua
+function ModeS.restart(modeS)
+   -- we might want to do this again, so:
+   local _G_backback = core.deepclone(_G_back)
+   _G = _G_back
+   -- we need the existing __G, not the empty clone, in _G:
+   _G.__G = __G
+   -- and we need the new _G, not the old one, as the index for __G:
+   getmetatable(__G).__index = _G
+   _G_back = _G_backback
+   -- perform rerun:
+end
+#/lua
+
 **** modeS.status
 
 A way to jack into =singletons/status=.
