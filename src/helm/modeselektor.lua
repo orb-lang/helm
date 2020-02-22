@@ -610,6 +610,7 @@ end
 
 function ModeS.restart(modeS)
    -- we might want to do this again, so:
+   modeS.zones.status:replace "Restarting an repl ↩️"
    local _G_backback = core.deepclone(_G_back)
    _G = _G_back
    -- we need the existing __G, not the empty clone, in _G:
@@ -620,14 +621,9 @@ function ModeS.restart(modeS)
    -- perform rerun
    -- Replace results:
    local hist = modeS.hist
-   local top = hist.cursor
+   local top = hist.cursor - 1
    local session_count = hist.cursor - hist.cursor_start
    hist.cursor = hist.cursor_start
-   local report = {{cursor = top,
-                    session_count = session_count,
-                    cursor_start = hist.cursor_start,
-                    hist_len = #hist,
-                    n = hist.n}}
    hist.n  = hist.n - session_count
    for i = modeS.hist.cursor_start, top do
       local results = modeS:__eval(tostring(hist[i]), true)
@@ -636,9 +632,12 @@ function ModeS.restart(modeS)
    end
    hist.cursor = top
    hist.n = #hist
-   report[#report + 1] = {cursor = hist.cursor, n = hist.n, hist_len = #hist}
-   modeS.report = report
    modeS:paint()
+   uv.timer_start(uv.new_timer(), 2000, 0,
+                  function()
+                     modeS.zones.status:replace(modeS.prompt_lines.default)
+                     modeS:paint()
+                  end)
 end
 
 
@@ -677,7 +676,8 @@ local function new(max_col, max_row)
   modeS.r_margin = 80
   modeS.repl_top = ModeS.REPL_LINE
   modeS.zones = Zoneherd(modeS, write)
-  modeS.zones.status:replace "an repl, plz reply uwu 👀"
+  modeS.prompt_lines = { default = "an repl, plz reply uwu 👀" }
+  modeS.zones.status:replace(modeS.prompt_lines.default)
   -- initial state
   modeS.firstChar = true
   modeS:shiftMode(modeS.raga_default)

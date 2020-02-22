@@ -47,6 +47,21 @@ local Historian = meta {}
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Historian.HISTORY_LIMIT = 2000
 
 local create_project_table = [[
@@ -625,9 +640,7 @@ local function _resultsFrom(historian, cursor)
    end
    historian.get_results:reset()
    -- may as well memoize the database call, while we're here
-   if line_id then
-      historian.result_buffer[line_id] = results
-   end
+   historian.result_buffer[line_id] = results
    return results
 end
 

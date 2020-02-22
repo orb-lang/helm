@@ -43,6 +43,25 @@ This defines the persistence model for bridge.
 
 ### SQLite battery
 
+-  #Todo write a migration to convert timestamps to use this format:
+
+
+   -  strftime('%Y-%m-%dT%H:%M:%f', 'now'))
+
+
+      This replaces CURRENT_TIMESTAMP in the DEFAULT clause.
+
+
+-  Then start using that instead, to get millisecond resolution.
+   Sorting by line_id is better anyway, but we should get as much
+   resolution out of the machine as we can.
+
+
+-  #Todo write a migration to fix some of these silly table names:
+   -  The repl table is mostly a line, and the result table is a repr,
+      these could and should just be a line table with line.line and a
+      result table with result.result.
+
 ```lua
 Historian.HISTORY_LIMIT = 2000
 
@@ -613,9 +632,7 @@ local function _resultsFrom(historian, cursor)
    end
    historian.get_results:reset()
    -- may as well memoize the database call, while we're here
-   if line_id then
-      historian.result_buffer[line_id] = results
-   end
+   historian.result_buffer[line_id] = results
    return results
 end
 ```
