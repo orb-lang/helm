@@ -567,6 +567,16 @@ function ModeS.__eval(modeS, chunk, no_append)
       parsed_chunk = lua_parser(chunk)
    end
    -- #Todo tinker with the chunk, finding $1-type vars
+   if parsed_chunk:select "Error" () then
+      -- our parser isn't perfect, let's see what lua thinks
+      local is_expr = loadstring(return_chunk)
+      if is_expr then
+         -- we have an expression which needs a return, and didn't
+         -- detect it:
+         chunk = return_chunk
+         -- otherwise, we'll try our luck with the chunk, as-is
+      end
+   end
    local success, results
    local f, err = loadstring(chunk, 'REPL')
    if f then
