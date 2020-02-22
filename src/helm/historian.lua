@@ -326,7 +326,7 @@ end
 
 local insert = assert(table.insert)
 
-function Historian.persist(historian, txtbuf, results, block)
+function Historian.persist(historian, txtbuf, results)
    local lb = tostring(txtbuf)
    local have_results = results
                         and type(results) == "table"
@@ -335,6 +335,19 @@ function Historian.persist(historian, txtbuf, results, block)
       -- A blank line can have no results and is uninteresting.
       return false
    end
+   historian.conn:exec "BEGIN TRANSACTION;"
+   historian.insert_line:bindkv { project = historian.project_id,
+                                       line    = lb }
+   local err = historian.insert_line:step()
+   if not err then
+      historian.insert_line:clearbind():reset()
+   else
+      error(err)
+   end
+   local line_id = sql.lastRowId(historian.conn)
+   insert(historian.line_ids, line_id)
+
+   local persist_idler = uv.new_idle()
    local results_tostring, results_lineGens = {}, {}
    if have_results then
       for i = 1, results.n do
@@ -343,7 +356,7 @@ function Historian.persist(historian, txtbuf, results, block)
       end
    end
    local i = 1
-   local function collate_results()
+   persist_idler:start(function()
       while have_results and i <= results.n do
          local success, line = pcall(results_lineGens[i])
          if success and line then
@@ -357,21 +370,7 @@ function Historian.persist(historian, txtbuf, results, block)
          end
          return nil
       end
-      return true
-   end
-   local function persist_results()
       -- now persist
-      historian.conn:exec "BEGIN TRANSACTION;"
-      historian.insert_line:bindkv { project = historian.project_id,
-                                          line    = lb }
-      local err = historian.insert_line:step()
-      if not err then
-         historian.insert_line:clearbind():reset()
-      else
-         error(err)
-      end
-      local line_id = sql.lastRowId(historian.conn)
-      insert(historian.line_ids, line_id)
       if have_results then
          for i = 1, results.n do
             historian.insert_result:bindkv { line_id = line_id,
@@ -385,24 +384,8 @@ function Historian.persist(historian, txtbuf, results, block)
          end
       end
       historian.conn:exec "END TRANSACTION;"
-   end
-   if not block then
-      local persist_idler = uv.new_idle()
-      local ready_to_commit = false
-      persist_idler:start(function()
-         while not ready_to_commit do
-            ready_to_commit = collate_results()
-         end
-         persist_results()
-         persist_idler:stop()
-      end)
-   else
-      local done = false
-      repeat
-         done = collate_results()
-      until done
-      persist_results()
-   end
+      persist_idler:stop()
+   end)
    return true
 end
 

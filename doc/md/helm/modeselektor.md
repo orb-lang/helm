@@ -639,7 +639,7 @@ function ModeS.restart(modeS)
       local results = modeS:__eval(tostring(hist[i]), true)
       hist.n = hist.n + 1
       hist.result_buffer[hist.n] = results
-      hist:persist(hist[i], results, true) -- true is blocking
+      hist:persist(hist[i], results)
    end
    hist.cursor = top
    hist.n = #hist
