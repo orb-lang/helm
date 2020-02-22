@@ -108,7 +108,7 @@ INSERT INTO project (directory) VALUES (?);
 local get_recent = [[
 SELECT CAST (line_id AS REAL), line FROM repl
    WHERE project = :project
-   ORDER BY time DESC
+   ORDER BY line_id DESC
    LIMIT :num_lines;
 ]]
 
