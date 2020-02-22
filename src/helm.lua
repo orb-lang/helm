@@ -215,7 +215,6 @@ local function onseq(err,seq)
           return nil
         else
           close_idler:stop()
-          uv.stop()
         end
       end)
       return 0
