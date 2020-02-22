@@ -258,7 +258,7 @@ function Historian.load(historian)
                       : bindkv { project = project_id,
                                  num_lines = number_of_lines }
    historian.cursor = number_of_lines + 1
-   historian.cursor_start = number_of_lines
+   historian.cursor_start = number_of_lines + 1
    historian.n = number_of_lines
    local counter = number_of_lines
    local idler

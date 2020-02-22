@@ -600,7 +600,6 @@ function ModeS.__eval(modeS, chunk, no_append)
    if not no_append then
      modeS.zones.results:replace(results)
      modeS.hist:append(modeS.txtbuf, results, success)
-     local line_id = modeS.hist.line_ids[modeS.hist.n]
      if success then
         modeS.hist.result_buffer[modeS.hist.n] = results
      end
@@ -632,7 +631,7 @@ function ModeS.restart(modeS)
    -- Replace results:
    local hist = modeS.hist
    local top = hist.cursor
-   local session_count = hist.cursor - hist.cursor_start - 1
+   local session_count = hist.cursor - hist.cursor_start
    hist.cursor = hist.cursor_start
    local report = {{cursor = top,
                     session_count = session_count,
@@ -641,11 +640,12 @@ function ModeS.restart(modeS)
                     n = hist.n}}
    hist.n  = hist.n - session_count
    for i = modeS.hist.cursor_start, top do
-      local results = modeS:__eval(tostring(hist[i], true)) -- false == do append
-      hist.result_buffer[hist.n] = results
+      local results = modeS:__eval(tostring(hist[i]), true)
       hist.n = hist.n + 1
+      hist.result_buffer[hist.n] = results
    end
    hist.cursor = top
+   hist.n = #hist
    report[#report + 1] = {cursor = hist.cursor, n = hist.n, hist_len = #hist}
    modeS.report = report
    modeS:paint()
