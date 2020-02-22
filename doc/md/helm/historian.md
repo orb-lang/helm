@@ -131,6 +131,12 @@ SELECT CAST (line_id AS REAL), line FROM repl
    LIMIT :num_lines;
 ]]
 
+local get_latest_line_id = [[
+SELECT CAST (line_id AS REAL) FROM repl
+   WHERE project = ?
+   ORDER BY line_id DESC LIMIT 1;
+]]
+
 local get_number_of_lines = [[
 SELECT CAST (count(line) AS REAL) from repl
    WHERE project = ?
@@ -340,7 +346,8 @@ function Historian.persist(historian, txtbuf, results)
    else
       error(err)
    end
-   local line_id = sql.lastRowId(historian.conn)
+   local line_id = historian.conn:prepare(get_latest_line_id)
+                   :bind(historian.project_id):step()[1]
    insert(historian.line_ids, line_id)
 
    local persist_idler = uv.new_idle()
