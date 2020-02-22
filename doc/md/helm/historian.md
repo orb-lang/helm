@@ -327,6 +327,8 @@ common value for any identical semantics.
 
 ```lua
 local insert = assert(table.insert)
+local time  = assert(os.time)
+local random = assert(math.random)
 
 function Historian.persist(historian, txtbuf, results)
    local lb = tostring(txtbuf)
@@ -337,7 +339,7 @@ function Historian.persist(historian, txtbuf, results)
       -- A blank line can have no results and is uninteresting.
       return false
    end
-   local savepoint_uniq = tostring(os.time()) .. math.random(1, 10000)
+   local savepoint_uniq = tostring(time()) .. random(1, 10000)
    historian.conn:exec("SAVEPOINT save_" .. savepoint_uniq .. ";")
    historian.insert_line:bindkv { project = historian.project_id,
                                        line    = lb }

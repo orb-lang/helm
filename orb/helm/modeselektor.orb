@@ -634,8 +634,10 @@ function ModeS.restart(modeS)
    hist.cursor = top
    hist.n = #hist
    modeS:paint()
-   uv.timer_start(uv.new_timer(), 2000, 0,
+   local timeout = uv.new_timer()
+   uv.timer_start(timeout, 2000, 0,
                   function()
+                     uv.timer_stop(timeout)
                      modeS.zones.status:replace(modeS.prompt_lines.default)
                      modeS:paint()
                   end)
