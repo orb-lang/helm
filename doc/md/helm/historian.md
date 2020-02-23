@@ -47,6 +47,8 @@ This defines the persistence model for bridge.
 ```lua
 Historian.HISTORY_LIMIT = 2000
 
+local HELM_DB_VERSION = 2
+
 local create_project_table = [[
 CREATE TABLE IF NOT EXISTS project (
    project_id INTEGER PRIMARY KEY AUTOINCREMENT,
