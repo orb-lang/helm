@@ -260,13 +260,6 @@ function Historian.load(historian)
          error "Could not create project in .bridge"
       end
    end
-   -- Set the user_version pragma if not set.
-   -- This is an insertion point for migrations, when
-   -- we start to perform them.
-   if not conn.pragma.user_version() then
-      -- set to current version
-      conn.pragma.user_version(HELM_DB_VERSION)
-   end
    local project_id = proj_val[1][1]
    historian.project_id = project_id
    -- Create insert prepared statements
