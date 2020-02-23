@@ -145,8 +145,8 @@ directory, the new name of ``.helm`` will be ``helm.sqlite``.
 ```lua
 -- make the /helm directory (no-op if it already exists)
 Dir(_Bridge.bridge_home .. "/helm"):mkdir()
-local old_helm = File (_Bridge.bridge_home .. "/.helm")
 
+local old_helm = File (_Bridge.bridge_home .. "/.helm")
 if old_helm:exists() then
    -- move it
    if File(_Bridge.bridge_home .. "/.helm-wal"):exists() then
@@ -162,7 +162,6 @@ if old_helm:exists() then
       os.exit()
    end
    local sh = require "orb:util/sh"
-   sh("mkdir " .. _Bridge.bridge_home .. "/helm")
    sh("mv " .. tostring(old_helm) .. " "
       .. _Bridge.bridge_home .. "/helm/helm.sqlite")
 end
