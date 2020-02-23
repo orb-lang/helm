@@ -33,6 +33,7 @@ local meta = require "core/meta" . meta
 ```
 ```lua
 local File = require "fs:fs/file"
+local Dir  = require "fs:fs/directory"
 ```
 ```lua
 local Historian = meta {}
@@ -167,6 +168,8 @@ perform a migration to a new ``$BRIDGE_HOME/helm/`` directory.  Inside that
 directory, the new name of ``.helm`` will be ``helm.sqlite``.
 
 ```lua
+-- make the /helm directory (no-op if it already exists)
+Dir(_Bridge.bridge_home .. "/helm"):mkdir()
 local old_helm = File (_Bridge.bridge_home .. "/.helm")
 
 if old_helm:exists() then
@@ -224,7 +227,7 @@ local core_math = require "core/math"
 local bound = assert(core_math.bound)
 
 function Historian.load(historian)
-   local conn = sql.open(historian.helm_db)
+   local conn = sql.open(historian.helm_db, "rwc")
    historian.conn = conn
    -- Set up bridge tables
    conn.pragma.foreign_keys(true)
