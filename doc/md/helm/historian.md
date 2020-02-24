@@ -32,6 +32,7 @@ local reverse = import("core/table", "reverse")
 ```
 ```lua
 local File = require "fs:fs/file"
+local Dir  = require "fs:fs/directory"
 ```
 ```lua
 local Historian = meta {}
@@ -44,6 +45,8 @@ This defines the persistence model for bridge.
 
 ```lua
 Historian.HISTORY_LIMIT = 2000
+
+local HELM_DB_VERSION = 2
 
 local create_project_table = [[
 CREATE TABLE IF NOT EXISTS project (
@@ -141,8 +144,10 @@ perform a migration to a new ``$BRIDGE_HOME/helm/`` directory.  Inside that
 directory, the new name of ``.helm`` will be ``helm.sqlite``.
 
 ```lua
-local old_helm = File (_Bridge.bridge_home .. "/.helm")
+-- make the /helm directory (no-op if it already exists)
+Dir(_Bridge.bridge_home .. "/helm"):mkdir()
 
+local old_helm = File (_Bridge.bridge_home .. "/.helm")
 if old_helm:exists() then
    -- move it
    if File(_Bridge.bridge_home .. "/.helm-wal"):exists() then
@@ -158,7 +163,6 @@ if old_helm:exists() then
       os.exit()
    end
    local sh = require "orb:util/sh"
-   sh("mkdir " .. _Bridge.bridge_home .. "/helm")
    sh("mv " .. tostring(old_helm) .. " "
       .. _Bridge.bridge_home .. "/helm/helm.sqlite")
 end
@@ -199,7 +203,7 @@ local core_math = require "core/math"
 local bound = assert(core_math.bound)
 
 function Historian.load(historian)
-   local conn = sql.open(historian.helm_db)
+   local conn = sql.open(historian.helm_db, "rwc")
    historian.conn = conn
    -- Set up bridge tables
    conn.pragma.foreign_keys(true)
@@ -208,6 +212,13 @@ function Historian.load(historian)
    conn:exec(create_result_table)
    conn:exec(create_repl_table)
    conn:exec(create_session_table)
+   -- Set the user_version pragma if not set.
+   -- This is an insertion point for migrations, when
+   -- we start to perform them.
+   if not conn.pragma.user_version() then
+      -- set to current version
+      conn.pragma.user_version(HELM_DB_VERSION)
+   end
    -- Retrive project id
    local proj_val, proj_row = sql.pexec(conn,
                                   sql.format(get_project, historian.project),
@@ -224,7 +235,6 @@ function Historian.load(historian)
          error "Could not create project in .bridge"
       end
    end
-
    local project_id = proj_val[1][1]
    historian.project_id = project_id
    -- Create insert prepared statements
