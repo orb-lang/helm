@@ -24,7 +24,7 @@ local c       = (require "singletons/color").color
 local repr    = require "helm/repr"
 local Codepoints = require "singletons/codepoints"
 
-local concat = assert(table.concat)
+local concat, insert = assert(table.concat), assert(table.insert)
 local reverse = require "core/table" . reverse
 local meta = require "core/meta" . meta
 
@@ -64,8 +64,6 @@ local Historian = meta {}
 
 
 Historian.HISTORY_LIMIT = 2000
-
-local HELM_DB_VERSION = 2
 
 local create_project_table = [[
 CREATE TABLE IF NOT EXISTS project (
@@ -170,6 +168,45 @@ ORDER BY result.result_id;
 
 
 
+
+
+
+
+
+
+
+local HELM_DB_VERSION = 2
+
+local migrations = {function() return true end}
+
+
+
+
+
+
+local function migration_2(conn)
+   conn:exec(create_project_table)
+   conn:exec(create_result_table)
+   conn:exec(create_repl_table)
+   conn:exec(create_session_table)
+   return true
+end
+
+insert(migrations, migration_2)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 -- make the /helm directory (no-op if it already exists)
 Dir(_Bridge.bridge_home .. "/helm"):mkdir()
 
@@ -230,6 +267,7 @@ end
 
 local core_math = require "core/math"
 local bound = assert(core_math.bound)
+local assertfmt = require "core:core/string".assertfmt
 
 function Historian.load(historian)
    local conn = sql.open(historian.helm_db, "rwc")
@@ -237,17 +275,21 @@ function Historian.load(historian)
    -- Set up bridge tables
    conn.pragma.foreign_keys(true)
    conn.pragma.journal_mode "wal"
-   conn:exec(create_project_table)
-   conn:exec(create_result_table)
-   conn:exec(create_repl_table)
-   conn:exec(create_session_table)
-   -- Set the user_version pragma if not set.
-   -- This is an insertion point for migrations, when
-   -- we start to perform them.
-   if not conn.pragma.user_version() then
-      -- set to current version
-      conn.pragma.user_version(HELM_DB_VERSION)
+   -- check the user_version and perform migrations if necessary.
+   assertfmt(#migrations == HELM_DB_VERSION,
+             "number of migrations (%d) must equal HELM_DB_VERSION (%d) ",
+             #migrations, HELM_DB_VERSION)
+   local user_version = conn.pragma.user_version()
+   if not user_version then
+      for _, migration in ipairs(migrations) do
+         migration(conn)
+      end
+   elseif user_version < HELM_DB_VERSION then
+      for i = user_version, HELM_DB_VERSION do
+         migration[i](conn)
+      end
    end
+   conn.pragma.user_version(HELM_DB_VERSION)
    -- Retrive project id
    local proj_val, proj_row = sql.pexec(conn,
                                   sql.format(get_project, historian.project),
@@ -333,7 +375,6 @@ end
 
 
 
-local insert = assert(table.insert)
 local time  = assert(os.time)
 local random = assert(math.random)
 
