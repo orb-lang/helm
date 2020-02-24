@@ -555,6 +555,8 @@ end
 local insert = assert(table.insert)
 
 function ModeS.__eval(modeS, chunk, no_append)
+   -- Getting ready to eval, cancel any active autocompletion
+   modeS.suggest:cancel(modeS)
    -- check for leading =, old-school style
    local head = sub(chunk, 1, 1)
    if head == "=" then -- take pity on old-school Lua hackers
