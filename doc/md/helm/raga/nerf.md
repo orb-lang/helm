@@ -216,19 +216,13 @@ end
 
 function NAV.SHIFT_DOWN(modeS, category, value)
    if not _activateCompletion(modeS) then
-      local results = modeS.zones.results.contents
-      if results and results:scrollDown() then
-         modeS.zones.results.touched = true
-      end
+      modeS.zones.results:scrollDown()
    end
 end
 
 function NAV.SHIFT_UP(modeS, category, value)
    if not _activateCompletion(modeS) then
-      local results = modeS.zones.results.contents
-      if results and results:scrollUp() then
-         modeS.zones.results.touched = true
-      end
+      modeS.zones.results:scrollUp()
    end
 end
 
@@ -278,9 +272,9 @@ ALT ["M-b"] = NAV.ALT_LEFT
 function Nerf.MOUSE(modeS, category, value)
    if value.scrolling then
       if value.button == "MB0" then
-         modeS.modes.NAV.SHIFT_UP(modeS, category, value)
+         modeS.zones.results:scrollUp()
       elseif value.button == "MB1" then
-         modeS.modes.NAV.SHIFT_DOWN(modeS, category, value)
+         modeS.zones.results:scrollDown()
       end
    end
 end

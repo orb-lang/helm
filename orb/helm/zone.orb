@@ -107,6 +107,36 @@ function Zone.replace(zone, contents)
 end
 #/lua
 
+*** Zone:scrollUp(), Zone:scrollDown()
+
+Scrolls the contents of the Zone by one line. Marks the zone as touched
+and answers true if scrolling occurred, otherwise false. Only works if
+the contents is a Rainbuf (which handles the actual scrolling).
+
+#!lua
+local instanceof = import("core/meta", "instanceof")
+
+function Zone.scrollUp(zone)
+   if instanceof(zone.contents, Rainbuf)
+      and zone.contents:scrollUp() then
+      zone.touched = true
+      return true
+   else
+      return false
+   end
+end
+
+function Zone.scrollDown(zone)
+   if instanceof(zone.contents, Rainbuf)
+      and zone.contents:scrollDown() then
+      zone.touched = true
+      return true
+   else
+      return false
+   end
+end
+#/lua
+
 *** Zone:set(tc, tr, bc, br)
 
 Updates the bounds of the zone, marking it as touched if they actually change.

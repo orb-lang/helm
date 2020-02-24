@@ -112,6 +112,36 @@ end
 
 
 
+
+
+local instanceof = import("core/meta", "instanceof")
+
+function Zone.scrollUp(zone)
+   if instanceof(zone.contents, Rainbuf)
+      and zone.contents:scrollUp() then
+      zone.touched = true
+      return true
+   else
+      return false
+   end
+end
+
+function Zone.scrollDown(zone)
+   if instanceof(zone.contents, Rainbuf)
+      and zone.contents:scrollDown() then
+      zone.touched = true
+      return true
+   else
+      return false
+   end
+end
+
+
+
+
+
+
+
 function Zone.set(zone, tc, tr, bc, br)
    assert(tc <= bc, "tc: " .. tc .. ", bc: " .. bc)
    assert(tr <= br, "tr: " .. tr .. ", br: " .. br)
