@@ -146,6 +146,30 @@ function Rainbuf.lineGen(rainbuf, rows, cols)
 end
 #/lua
 
+*** Rainbuf:scrollUp(), Rainbuf:scrollDown()
+
+Scrolls the visible portion up or down one line. Returns a boolean
+indicating whether scrolling actually ocurred.
+
+#!lua
+function Rainbuf.scrollUp(rainbuf)
+   if rainbuf.offset > 0 then
+      rainbuf.offset = rainbuf.offset - 1
+      return true
+   else
+      return false
+   end
+end
+
+function Rainbuf.scrollDown(rainbuf)
+   if rainbuf.more then
+      rainbuf.offset = rainbuf.offset + 1
+      return true
+   else
+      return false
+   end
+end
+#/lua
 
 *** new(res?)
 

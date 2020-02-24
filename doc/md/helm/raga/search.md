@@ -30,9 +30,8 @@ function Search.NAV.SHIFT_DOWN(modeS, category, value)
    if not search_buf then return end
    local search_result = search_buf[1]
    if search_result:selectNext() then
-      if search_result.selected_index >= search_buf.offset + modeS.zones.results:height()
-        and search_buf.more then
-        search_buf.offset = search_buf.offset + 1
+      if search_result.selected_index >= search_buf.offset + modeS.zones.results:height() then
+        search_buf:scrollDown()
       end
       modeS.zones.results.touched = true
    end
@@ -45,7 +44,7 @@ function Search.NAV.SHIFT_UP(modeS, category, value)
    local search_result = search_buf[1]
    if search_result:selectPrevious() then
       if search_result.selected_index < search_buf.offset then
-         search_buf.offset = search_buf.offset - 1
+         search_buf:scrollUp()
       end
       modeS.zones.results.touched = true
    end
@@ -88,6 +87,19 @@ end
 
 for i = 1, 9 do
    Search.ALT["M-" ..tostring(i)] = _makeControl(i)
+end
+```
+### MOUSE
+
+```lua
+function Search.MOUSE(modeS, category, value)
+   if value.scrolling then
+      if value.button == "MB0" then
+         modeS.modes.NAV.SHIFT_DOWN(modeS, category, value)
+      elseif value.button == "MB1" then
+         modeS.modes.NAV.SHIFT_UP(modeS, category, value)
+      end
+   end
 end
 ```
 ```lua

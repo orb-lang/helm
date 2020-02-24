@@ -7,7 +7,7 @@
 -  #Todo
 
 
-  - [ ]  All of the content for the first draft is in ``modeselektor``, so
+  - [X]  All of the content for the first draft is in ``modeselektor``, so
          let's transfer that.
 
 
@@ -202,33 +202,45 @@ function NAV.DELETE(modeS, category, value)
    _modeShiftOnEmpty(modeS)
 end
 
-function NAV.SHIFT_DOWN(modeS, category, value)
-   local results = modeS.zones.results.contents
-   if results and results.more then
-      results.offset = results.offset + 1
-      modeS.zones.results.touched = true
-   end
-end
-
-function NAV.SHIFT_UP(modeS, category, value)
-   local results = modeS.zones.results.contents
-   if results
-    and results.offset
-    and results.offset > 0 then
-      results.offset = results.offset - 1
-      modeS.zones.results.touched = true
-   end
-end
-
-function NAV.TAB(modeS, category, value)
+local function _activateCompletion(modeS)
    if modeS.suggest.active_suggestions then
       modeS:shiftMode("complete")
       -- #todo seems like this should be able to be handled more centrally
       modeS.suggest.active_suggestions[1].selected_index = 1
       modeS.zones.suggest.touched = true
+      return true
    else
+      return false
+   end
+end
+
+function NAV.SHIFT_DOWN(modeS, category, value)
+   if not _activateCompletion(modeS) then
+      local results = modeS.zones.results.contents
+      if results and results:scrollDown() then
+         modeS.zones.results.touched = true
+      end
+   end
+end
+
+function NAV.SHIFT_UP(modeS, category, value)
+   if not _activateCompletion(modeS) then
+      local results = modeS.zones.results.contents
+      if results and results:scrollUp() then
+         modeS.zones.results.touched = true
+      end
+   end
+end
+
+function NAV.TAB(modeS, category, value)
+   if not _activateCompletion(modeS) then
       modeS.txtbuf:paste("   ")
    end
+end
+
+function NAV.SHIFT_TAB(modeS, category, value)
+   -- If we can't activate completion, nothing to do really
+   _activateCompletion(modeS)
 end
 ```
 ### CTRL
