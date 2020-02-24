@@ -359,6 +359,8 @@ the results never get used.
 local core_math = require "core/math"
 local bound = assert(core_math.bound)
 local assertfmt = require "core:core/string".assertfmt
+local format = assert(string.format)
+
 
 function Historian.load(historian)
    local conn = sql.open(historian.helm_db, "rwc")
@@ -379,6 +381,10 @@ function Historian.load(historian)
          migrations[i](conn)
       end
       conn.pragma.user_version(HELM_DB_VERSION)
+   elseif user_version > HELM_DB_VERSION then
+      error(format("Error: helm.sqlite is version %d, expected %d",
+                   user_version, HELM_DB_VERSION))
+      os.exit(HELM_DB_VERSION)
    end
    -- Retrieve project id
    local proj_val, proj_row = sql.pexec(conn,
