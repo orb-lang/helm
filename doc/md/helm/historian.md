@@ -37,6 +37,7 @@ local Dir  = require "fs:fs/directory"
 ```
 ```lua
 local Historian = meta {}
+Historian.HISTORY_LIMIT = 2000
 ```
 ## Persistence
 
@@ -63,9 +64,20 @@ This defines the persistence model for bridge.
       these could and should just be a line table with line.line and a
       result table with result.result.
 
-```lua
-Historian.HISTORY_LIMIT = 2000
 
+#### Create tables
+
+The schema with the highest version number is the one which is current for
+that table.  The table will of course not have the ``_n`` suffix in the
+database.  The number is that of the migration where the table was recreated.
+
+
+Other than that, SQLite lets you add columns and rename tables.
+
+
+When this is done, it will be noted.
+
+```lua
 local create_project_table = [[
 CREATE TABLE IF NOT EXISTS project (
    project_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -132,7 +144,10 @@ FOREIGN KEY (project)
    REFERENCES project (project_id)
    ON DELETE CASCADE );
 ]]
+```
+#### Insertions
 
+```lua
 local insert_line = [[
 INSERT INTO repl (project, line) VALUES (:project, :line);
 ]]
@@ -144,7 +159,10 @@ INSERT INTO result (line_id, repr) VALUES (:line_id, :repr);
 local insert_project = [[
 INSERT INTO project (directory) VALUES (?);
 ]]
+```
+#### Selections
 
+```lua
 local get_recent = [[
 SELECT CAST (line_id AS REAL), line FROM repl
    WHERE project = :project
@@ -176,7 +194,7 @@ WHERE result.line_id = :line_id
 ORDER BY result.result_id;
 ]]
 ```
-## Migrations
+### Migrations
 
   We follow a simple format for migrations, incrementing the ``user_version``
 pragma by 1 for each alteration of the schema.
@@ -217,7 +235,7 @@ insert(migrations, migration_2)
 ```
 #### Version 3: Millisecond-resolution timestamps.
 
-  We want to accomplish two things here: change the format of all exissting
+  We want to accomplish two things here: change the format of all existing
 timestamps, and change the default to have millisecond resolution and use
 "T" instead of " " as the separator.
 
@@ -343,20 +361,19 @@ function Historian.load(historian)
    conn.pragma.journal_mode "wal"
    -- check the user_version and perform migrations if necessary.
    assertfmt(#migrations == HELM_DB_VERSION,
-             "number of migrations (%d) must equal HELM_DB_VERSION (%d) ",
+             "number of migrations (%d) must equal HELM_DB_VERSION (%d)",
              #migrations, HELM_DB_VERSION)
    local user_version = tonumber(conn.pragma.user_version())
    if not user_version then
-      for _, migration in ipairs(migrations) do
-         migration(conn)
-      end
-   elseif user_version < HELM_DB_VERSION then
+      user_version = 1
+   end
+   if user_version < HELM_DB_VERSION then
       for i = user_version, HELM_DB_VERSION do
          migrations[i](conn)
       end
+      conn.pragma.user_version(HELM_DB_VERSION)
    end
-   conn.pragma.user_version(HELM_DB_VERSION)
-   -- Retrive project id
+   -- Retrieve project id
    local proj_val, proj_row = sql.pexec(conn,
                                   sql.format(get_project, historian.project),
                                   "i")
@@ -852,6 +869,7 @@ local function new()
    local historian = meta(Historian)
    historian.line_ids = {}
    historian.cursor = 0
+   historian.cursor_start = 0
    historian.n = 0
    historian:load()
    historian.result_buffer = setmetatable({}, __result_buffer_M)

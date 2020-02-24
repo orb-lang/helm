@@ -38,32 +38,42 @@ local Dir  = require "fs:fs/directory"
 
 
 local Historian = meta {}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 Historian.HISTORY_LIMIT = 2000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 local create_project_table = [[
 CREATE TABLE IF NOT EXISTS project (
@@ -132,6 +142,11 @@ FOREIGN KEY (project)
    ON DELETE CASCADE );
 ]]
 
+
+
+
+
+
 local insert_line = [[
 INSERT INTO repl (project, line) VALUES (:project, :line);
 ]]
@@ -143,6 +158,11 @@ INSERT INTO result (line_id, repr) VALUES (:line_id, :repr);
 local insert_project = [[
 INSERT INTO project (directory) VALUES (?);
 ]]
+
+
+
+
+
 
 local get_recent = [[
 SELECT CAST (line_id AS REAL), line FROM repl
@@ -348,20 +368,19 @@ function Historian.load(historian)
    conn.pragma.journal_mode "wal"
    -- check the user_version and perform migrations if necessary.
    assertfmt(#migrations == HELM_DB_VERSION,
-             "number of migrations (%d) must equal HELM_DB_VERSION (%d) ",
+             "number of migrations (%d) must equal HELM_DB_VERSION (%d)",
              #migrations, HELM_DB_VERSION)
    local user_version = tonumber(conn.pragma.user_version())
    if not user_version then
-      for _, migration in ipairs(migrations) do
-         migration(conn)
-      end
-   elseif user_version < HELM_DB_VERSION then
+      user_version = 1
+   end
+   if user_version < HELM_DB_VERSION then
       for i = user_version, HELM_DB_VERSION do
          migrations[i](conn)
       end
+      conn.pragma.user_version(HELM_DB_VERSION)
    end
-   conn.pragma.user_version(HELM_DB_VERSION)
-   -- Retrive project id
+   -- Retrieve project id
    local proj_val, proj_row = sql.pexec(conn,
                                   sql.format(get_project, historian.project),
                                   "i")
@@ -863,6 +882,7 @@ local function new()
    local historian = meta(Historian)
    historian.line_ids = {}
    historian.cursor = 0
+   historian.cursor_start = 0
    historian.n = 0
    historian:load()
    historian.result_buffer = setmetatable({}, __result_buffer_M)
