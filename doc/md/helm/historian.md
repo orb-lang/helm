@@ -241,7 +241,7 @@ function Historian.load(historian)
    -- This is an insertion point for migrations, when
    -- we start to perform them.
    if not conn.pragma.user_version() then
-      -- 1 is 'true' in this context, so we skip it:
+      -- set to current version
       conn.pragma.user_version(HELM_DB_VERSION)
    end
    -- Retrive project id
