@@ -641,7 +641,7 @@ function ModeS.restart(modeS)
       hist.result_buffer[hist.n] = results
       hist:persist(hist[i], results)
    end
-   hist.cursor = top
+   hist.cursor = top + 1
    hist.n = #hist
    modeS:paint()
    uv.timer_start(uv.new_timer(), 2000, 0,
