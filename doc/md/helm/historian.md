@@ -74,12 +74,32 @@ CREATE TABLE IF NOT EXISTS project (
 );
 ]]
 
+local create_project_table_3 = [[
+CREATE TABLE IF NOT EXISTS project_3 (
+   project_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   directory TEXT UNIQUE,
+   time DATETIME DEFAULT (strftime('%Y-%m-%dT%H:%M:%f', 'now'))
+);
+]]
+
 local create_repl_table = [[
 CREATE TABLE IF NOT EXISTS repl (
    line_id INTEGER PRIMARY KEY AUTOINCREMENT,
    project INTEGER,
    line TEXT,
    time DATETIME DEFAULT CURRENT_TIMESTAMP,
+   FOREIGN KEY (project)
+      REFERENCES project (project_id)
+      ON DELETE CASCADE
+);
+]]
+
+local create_repl_table_3 = [[
+CREATE TABLE IF NOT EXISTS repl_3 (
+   line_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   project INTEGER,
+   line TEXT,
+   time DATETIME DEFAULT (strftime('%Y-%m-%dT%H:%M:%f', 'now')),
    FOREIGN KEY (project)
       REFERENCES project (project_id)
       ON DELETE CASCADE
@@ -178,7 +198,7 @@ Migrations return ``true``, in case we find a migration that needs a check to
 pass.  Unless that happens, we won't bother to check the return value.
 
 ```lua
-local HELM_DB_VERSION = 2
+local HELM_DB_VERSION = 3
 
 local migrations = {function() return true end}
 ```
@@ -194,6 +214,56 @@ local function migration_2(conn)
 end
 
 insert(migrations, migration_2)
+```
+#### Version 3: Millisecond-resolution timestamps.
+
+  We want to accomplish two things here: change the format of all exissting
+timestamps, and change the default to have millisecond resolution and use
+"T" instead of " " as the separator.
+
+
+SQLite being what it is, the latter requires us to copy everything to a new
+table.  This must be done for the ``project`` and ``repl`` tables.
+
+```lua
+local function migration_3(conn)
+   conn.pragma.foreign_keys(false)
+   conn:exec "BEGIN TRANSACTION;"
+   conn:exec [[
+      UPDATE project
+      SET time = strftime('%Y-%m-%dT%H:%M:%f', time);
+   ]]
+   conn:exec(create_project_table_3)
+   conn:exec [[
+      INSERT INTO project_3 (project_id, directory, time)
+      SELECT project_id, directory, time
+      FROM project;
+   ]]
+   conn:exec "DROP TABLE project;"
+   conn:exec [[
+      ALTER TABLE project_3
+      RENAME TO project;
+   ]]
+   conn:exec [[
+      UPDATE repl
+      SET time = strftime('%Y-%m-%dT%H:%M:%f', time);
+   ]]
+   conn:exec(create_repl_table_3)
+   conn:exec [[
+      INSERT INTO repl_3 (line_id, project, line, time)
+      SELECT line_id, project, line, time
+      FROM repl;
+   ]]
+   conn:exec "DROP TABLE repl;"
+   conn:exec [[
+      ALTER TABLE repl_3
+      RENAME to repl;
+   ]]
+   conn:exec "COMMIT;"
+   conn.pragma.foreign_keys(true)
+   return true
+end
+insert(migrations, migration_3)
 ```
 ### Migration shim
 
@@ -275,14 +345,14 @@ function Historian.load(historian)
    assertfmt(#migrations == HELM_DB_VERSION,
              "number of migrations (%d) must equal HELM_DB_VERSION (%d) ",
              #migrations, HELM_DB_VERSION)
-   local user_version = conn.pragma.user_version()
+   local user_version = tonumber(conn.pragma.user_version())
    if not user_version then
       for _, migration in ipairs(migrations) do
          migration(conn)
       end
    elseif user_version < HELM_DB_VERSION then
       for i = user_version, HELM_DB_VERSION do
-         migration[i](conn)
+         migrations[i](conn)
       end
    end
    conn.pragma.user_version(HELM_DB_VERSION)
