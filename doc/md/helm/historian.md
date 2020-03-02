@@ -44,6 +44,25 @@ This defines the persistence model for bridge.
 
 ### SQLite battery
 
+-  #Todo write a migration to convert timestamps to use this format:
+
+
+   -  strftime('%Y-%m-%dT%H:%M:%f', 'now'))
+
+
+      This replaces CURRENT_TIMESTAMP in the DEFAULT clause.
+
+
+-  Then start using that instead, to get millisecond resolution.
+   Sorting by line_id is better anyway, but we should get as much
+   resolution out of the machine as we can.
+
+
+-  #Todo write a migration to fix some of these silly table names:
+   -  The repl table is mostly a line, and the result table is a repr,
+      these could and should just be a line table with line.line and a
+      result table with result.result.
+
 ```lua
 Historian.HISTORY_LIMIT = 2000
 
@@ -111,7 +130,7 @@ INSERT INTO project (directory) VALUES (?);
 local get_recent = [[
 SELECT CAST (line_id AS REAL), line FROM repl
    WHERE project = :project
-   ORDER BY time DESC
+   ORDER BY line_id DESC
    LIMIT :num_lines;
 ]]
 
@@ -203,7 +222,6 @@ We want as much history as practical, because we search in it, but most of
 the results never get used.
 
 ```lua
-
 local core_math = require "core/math"
 local bound = assert(core_math.bound)
 
@@ -258,6 +276,7 @@ function Historian.load(historian)
                       : bindkv { project = project_id,
                                  num_lines = number_of_lines }
    historian.cursor = number_of_lines + 1
+   historian.cursor_start = number_of_lines + 1
    historian.n = number_of_lines
    local counter = number_of_lines
    local idler
@@ -269,7 +288,7 @@ function Historian.load(historian)
       end
       historian[counter] = Txtbuf(res[2])
       historian.line_ids[counter] = res[1]
-      -- Results are loaded *backward* so the most recent one is available ASAP
+      -- Results are loaded backwards because that's how they're accessed
       counter = counter - 1
    end
    -- add one line to ensure we have history on startup
@@ -289,7 +308,7 @@ To do this, we need to borrow the modeselektor.
 ```lua
 
 ```
-### Historian:persist(txtbuf)
+### Historian:persist(txtbuf, results)
 
 Persists a line and results to store.
 
@@ -298,7 +317,8 @@ The hooks are in place to persist the results. I'm starting with a string
 representation; the goal is to provide the sense of persistence across
 sessions, and supplement that over time with better and better approximations.
 
-#todo storing the colorized results is lazy and they should be greyed-out in
+
+To really nail it down will require semantic analysis and hence thorough
 parsing.  General-purpose persistence tools belong in ``sqlayer``, which will
 merge with our increasingly-modified ``sqlite`` bindings.
 
@@ -318,6 +338,18 @@ function Historian.persist(historian, txtbuf, results)
       -- A blank line can have no results and is uninteresting.
       return false
    end
+   historian.conn:exec("SAVEPOINT save_persist")
+   historian.insert_line:bindkv { project = historian.project_id,
+                                       line    = lb }
+   local err = historian.insert_line:step()
+   if not err then
+      historian.insert_line:clearbind():reset()
+   else
+      error(err)
+   end
+   local line_id = sql.lastRowId(historian.conn)
+   insert(historian.line_ids, line_id)
+
    local persist_idler = uv.new_idle()
    local results_tostring, results_lineGens = {}, {}
    if have_results then
@@ -342,17 +374,6 @@ function Historian.persist(historian, txtbuf, results)
          return nil
       end
       -- now persist
-      historian.conn:exec "BEGIN TRANSACTION;"
-      historian.insert_line:bindkv { project = historian.project_id,
-                                          line    = lb }
-      local err = historian.insert_line:step()
-      if not err then
-         historian.insert_line:clearbind():reset()
-      else
-         error(err)
-      end
-      local line_id = sql.lastRowId(historian.conn)
-      insert(historian.line_ids, line_id)
       if have_results then
          for i = 1, results.n do
             historian.insert_result:bindkv { line_id = line_id,
@@ -365,7 +386,7 @@ function Historian.persist(historian, txtbuf, results)
             end
          end
       end
-      historian.conn:exec "END TRANSACTION;"
+      historian.conn:exec("RELEASE save_persist")
       persist_idler:stop()
    end)
    return true

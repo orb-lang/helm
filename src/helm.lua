@@ -52,6 +52,10 @@ sql = assert(sql, "sql must be in _G")
 
 
 
+local deepclone = assert(core.deepclone)
+_G_back = deepclone(_G)
+
+
 
 
 
@@ -296,6 +300,9 @@ uv.tty_reset_mode()
 uv.stop()
 
 io.stdout:flush()
+
+-- nil out our extra copy of _G
+_G_back = nil
 
 end -- of _helm
 

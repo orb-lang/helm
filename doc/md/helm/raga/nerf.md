@@ -1,27 +1,29 @@
-* Nerf mode
+# Nerf mode
 
 
-=nerf= is the default mode for the repl.
+``nerf`` is the default mode for the repl.
+
 
 -  #Todo
 
-  - [X]  All of the content for the first draft is in =modeselektor=, so
+
+  - [X]  All of the content for the first draft is in ``modeselektor``, so
          let's transfer that.
+
 
   - [?]  There should probably be a metatable for Mode objects.
 
 
-**** includes
+#### includes
 
 This is copypasta from Modeselektor, but yeah, we'll need most of this.
 
-#!lua
+```lua
 assert(meta, "must have meta in _G")
 assert(write, "must have write in _G")
-#/lua
-
-#!lua
-local a         = require "singletons/anterm"
+```
+```lua
+local a         = require "anterm:anterm"
 local Txtbuf    = require "helm/txtbuf"
 local Rainbuf   = require "helm/rainbuf"
 local Historian = require "helm/historian"
@@ -32,38 +34,37 @@ local concat         = assert(table.concat)
 local sub, gsub, rep = assert(string.sub),
                        assert(string.gsub),
                        assert(string.rep)
-#/lua
+```
+## Nerf
 
 
-** Nerf
-
-
-*** Categories
+### Categories
 
 These are the broad types of event.
 
-#!lua
+```lua
 local NAV    = {}
 local CTRL   = {}
 local ALT    = {}
 -- ASCII, UTF8, PASTE and MOUSE are functions
 local NYI    = {}
-#/lua
+```
 
 While we will likely want a metatable going forward, this will do for now:
 
-#!lua
+```lua
 local Nerf = { NAV    = NAV,
                CTRL   = CTRL,
                ALT    = ALT,
                NYI    = NYI }
-#/lua
 
-*** Insertion
+Nerf.prompt_char = "👉"
+```
+### Insertion
 
-#!lua
+```lua
 
-function _insert(modeS, category, value)
+local function _insert(modeS, category, value)
    modeS.txtbuf:insert(value)
 end
 
@@ -74,11 +75,10 @@ function Nerf.PASTE(modeS, category, value)
    modeS.txtbuf:paste(value)
 end
 
-#/lua
+```
+### NAV
 
-*** NAV
-
-#!lua
+```lua
 
 local function _prev(modeS)
    local prev_result, linestash
@@ -90,8 +90,7 @@ local function _prev(modeS)
    if linestash then
       modeS.hist:append(linestash)
    end
-   prev_result = prev_result and Rainbuf(prev_result) or ""
-   modeS.zones.results:replace(prev_result)
+   modeS:setResults(prev_result)
    return modeS
 end
 
@@ -117,8 +116,7 @@ local function _advance(modeS)
    else
       modeS.txtbuf = new_txtbuf
    end
-   next_result = next_result and Rainbuf(next_result) or ""
-   modeS.zones.results:replace(next_result)
+   modeS:setResults(next_result)
    return modeS
 end
 
@@ -130,9 +128,8 @@ function NAV.DOWN(modeS, category, value)
 
    return modeS
 end
-#/lua
-
-#!lua
+```
+```lua
 function NAV.LEFT(modeS, category, value)
    return modeS.txtbuf:left()
 end
@@ -191,7 +188,7 @@ local function _modeShiftOnEmpty(modeS)
    if buf == "" then
       modeS:shiftMode(modeS.raga_default)
       modeS.firstChar = true
-      modeS.zones.results:replace ""
+      modeS:setResults("")
    end
 end
 
@@ -222,18 +219,26 @@ function NAV.SHIFT_UP(modeS, category, value)
       modeS.zones.results.touched = true
    end
 end
-#/lua
 
-
-
-
-*** CTRL
+function NAV.TAB(modeS, category, value)
+   if modeS.suggest.active_suggestions then
+      modeS:shiftMode("complete")
+      -- #todo seems like this should be able to be handled more centrally
+      modeS.suggest.active_suggestions[1].selected_index = 1
+      modeS.zones.suggest.touched = true
+   else
+      modeS.txtbuf:paste("   ")
+   end
+end
+```
+### CTRL
 
 Many/most of these will be re-used as e.g. "^" and "$" in vim mode.
 
+
 Thus we will declare them as bare functions and assign them to slots.
 
-#!lua
+```lua
 
 CTRL["^A"] = NAV.HYPER_LEFT
 
@@ -243,33 +248,21 @@ local function clear_txtbuf(modeS, category, value)
    modeS.txtbuf = Txtbuf()
    modeS.hist.cursor = modeS.hist.n + 1
    modeS.firstChar = true
-   modeS.zones.results:replace ""
-   modeS.zones:reflow(modeS)
+   modeS:setResults("")
 end
 
 CTRL ["^L"] = clear_txtbuf
+```
+### ALT
 
-CTRL ["^R"] = function(modeS, category, value)
-                 modeS:restart()
-              end
-#/lua
-
-
-
-
-
-*** ALT
-
-#!lua
+```lua
 ALT ["M-w"] = NAV.ALT_RIGHT
 
 ALT ["M-b"] = NAV.ALT_LEFT
-#/lua
+```
+### MOUSE
 
-
-*** MOUSE
-
-#!lua
+```lua
 function Nerf.MOUSE(modeS, category, value)
    if value.scrolling then
       if value.button == "MB0" then
@@ -279,8 +272,7 @@ function Nerf.MOUSE(modeS, category, value)
       end
    end
 end
-#/lua
-
-#!lua
+```
+```lua
 return Nerf
-#/lua
+```

@@ -41,12 +41,16 @@ jit.p = require "helm:helm/ljprof"
 
 sql = assert(sql, "sql must be in _G")
 ```
-### Djikstra Insertion Point
+### make a snapshot of _G
 
-Although we're not doing so yet, this is where we will set up Djikstra mode
-for participating code.  We then push that up through the layers, and it lands
-as close to C level as practical.
+We use this for reloading; since all userspace is stored in _G, including
+``package.loaded``, this allows us to drop all data held in a session, while
+keeping our own state separate.
 
+```lua
+local deepclone = assert(core.deepclone)
+_G_back = deepclone(_G)
+```
 ## Boot sequence
 
 This boot sequence builds on Tim Caswell and the Luvit Author's repl example.
@@ -282,6 +286,9 @@ uv.tty_reset_mode()
 uv.stop()
 
 io.stdout:flush()
+
+-- nil out our extra copy of _G
+_G_back = nil
 
 end -- of _helm
 ```
