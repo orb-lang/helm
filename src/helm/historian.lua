@@ -149,8 +149,12 @@ ORDER BY result.result_id;
 
 
 
--- make the /helm directory (no-op if it already exists)
-Dir(_Bridge.bridge_home .. "/helm"):mkdir()
+-- make the /helm directory
+-- use sh to avoid a permissions issue with stale versions of fs
+if not Dir(_Bridge.bridge_home .. "/helm"):exists() then
+   local sh = require "orb:util/sh"
+   sh("mkdir", "-p", _Bridge.bridge_home .. "/helm")
+end
 
 local old_helm = File (_Bridge.bridge_home .. "/.helm")
 if old_helm:exists() then
