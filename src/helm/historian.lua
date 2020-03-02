@@ -28,6 +28,8 @@ local concat, insert = assert(table.concat), assert(table.insert)
 local reverse = require "core/table" . reverse
 local meta = require "core/meta" . meta
 
+local Set = require "set:set"
+
 
 
 
@@ -501,6 +503,7 @@ function Historian.persist(historian, txtbuf, results)
       end
    end
    local i = 1
+   historian.idlers:insert(persist_idler)
    persist_idler:start(function()
       while have_results and i <= results.n do
          local success, line = pcall(results_lineGens[i])
@@ -530,6 +533,7 @@ function Historian.persist(historian, txtbuf, results)
       end
       historian.conn:exec("RELEASE save_persist")
       persist_idler:stop()
+      assert(historian.idlers:remove(persist_idler) == true)
    end)
    return true
 end
@@ -887,6 +891,7 @@ local function new()
    historian.n = 0
    historian:load()
    historian.result_buffer = setmetatable({}, __result_buffer_M)
+   historian.idlers = Set()
    return historian
 end
 Historian.idEst = new
