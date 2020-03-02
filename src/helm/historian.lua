@@ -171,12 +171,6 @@ SELECT CAST (line_id AS REAL), line FROM repl
    LIMIT :num_lines;
 ]]
 
-local get_latest_line_id = [[
-SELECT CAST (line_id AS REAL) FROM repl
-   WHERE project = ?
-   ORDER BY line_id DESC LIMIT 1;
-]]
-
 local get_number_of_lines = [[
 SELECT CAST (count(line) AS REAL) from repl
    WHERE project = ?
@@ -298,8 +292,12 @@ insert(migrations, migration_3)
 
 
 
--- make the /helm directory (no-op if it already exists)
-Dir(_Bridge.bridge_home .. "/helm"):mkdir()
+-- make the /helm directory
+-- use sh to avoid a permissions issue with stale versions of fs
+if not Dir(_Bridge.bridge_home .. "/helm"):exists() then
+   local sh = require "orb:util/sh"
+   sh("mkdir", "-p", _Bridge.bridge_home .. "/helm")
+end
 
 local old_helm = File (_Bridge.bridge_home .. "/.helm")
 if old_helm:exists() then
@@ -471,8 +469,7 @@ end
 
 
 
-local time  = assert(os.time)
-local random = assert(math.random)
+local insert = assert(table.insert)
 
 function Historian.persist(historian, txtbuf, results)
    local lb = tostring(txtbuf)
@@ -483,8 +480,7 @@ function Historian.persist(historian, txtbuf, results)
       -- A blank line can have no results and is uninteresting.
       return false
    end
-   local savepoint_uniq = tostring(time()) .. random(1, 10000)
-   historian.conn:exec("SAVEPOINT save_" .. savepoint_uniq .. ";")
+   historian.conn:exec("SAVEPOINT save_persist")
    historian.insert_line:bindkv { project = historian.project_id,
                                        line    = lb }
    local err = historian.insert_line:step()
@@ -493,8 +489,7 @@ function Historian.persist(historian, txtbuf, results)
    else
       error(err)
    end
-   local line_id = historian.conn:prepare(get_latest_line_id)
-                   :bind(historian.project_id):step()[1]
+   local line_id = sql.lastRowId(historian.conn)
    insert(historian.line_ids, line_id)
 
    local persist_idler = uv.new_idle()
@@ -533,7 +528,7 @@ function Historian.persist(historian, txtbuf, results)
             end
          end
       end
-      historian.conn:exec("RELEASE save_" .. savepoint_uniq .. ";")
+      historian.conn:exec("RELEASE save_persist")
       persist_idler:stop()
    end)
    return true
