@@ -47,6 +47,21 @@ local Historian = meta {}
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Historian.HISTORY_LIMIT = 2000
 
 local HELM_DB_VERSION = 2
@@ -113,7 +128,7 @@ INSERT INTO project (directory) VALUES (?);
 local get_recent = [[
 SELECT CAST (line_id AS REAL), line FROM repl
    WHERE project = :project
-   ORDER BY time DESC
+   ORDER BY line_id DESC
    LIMIT :num_lines;
 ]]
 
@@ -206,7 +221,6 @@ end
 
 
 
-
 local core_math = require "core/math"
 local bound = assert(core_math.bound)
 
@@ -261,6 +275,7 @@ function Historian.load(historian)
                       : bindkv { project = project_id,
                                  num_lines = number_of_lines }
    historian.cursor = number_of_lines + 1
+   historian.cursor_start = number_of_lines + 1
    historian.n = number_of_lines
    local counter = number_of_lines
    local idler
@@ -272,7 +287,7 @@ function Historian.load(historian)
       end
       historian[counter] = Txtbuf(res[2])
       historian.line_ids[counter] = res[1]
-      -- Results are loaded *backward* so the most recent one is available ASAP
+      -- Results are loaded backwards because that's how they're accessed
       counter = counter - 1
    end
    -- add one line to ensure we have history on startup
@@ -281,10 +296,6 @@ function Historian.load(historian)
    idler = uv.new_idle()
    idler:start(load_one)
 end
-
-
-
-
 
 
 
@@ -326,6 +337,18 @@ function Historian.persist(historian, txtbuf, results)
       -- A blank line can have no results and is uninteresting.
       return false
    end
+   historian.conn:exec("SAVEPOINT save_persist")
+   historian.insert_line:bindkv { project = historian.project_id,
+                                       line    = lb }
+   local err = historian.insert_line:step()
+   if not err then
+      historian.insert_line:clearbind():reset()
+   else
+      error(err)
+   end
+   local line_id = sql.lastRowId(historian.conn)
+   insert(historian.line_ids, line_id)
+
    local persist_idler = uv.new_idle()
    local results_tostring, results_lineGens = {}, {}
    if have_results then
@@ -350,17 +373,6 @@ function Historian.persist(historian, txtbuf, results)
          return nil
       end
       -- now persist
-      historian.conn:exec "BEGIN TRANSACTION;"
-      historian.insert_line:bindkv { project = historian.project_id,
-                                          line    = lb }
-      local err = historian.insert_line:step()
-      if not err then
-         historian.insert_line:clearbind():reset()
-      else
-         error(err)
-      end
-      local line_id = sql.lastRowId(historian.conn)
-      insert(historian.line_ids, line_id)
       if have_results then
          for i = 1, results.n do
             historian.insert_result:bindkv { line_id = line_id,
@@ -373,7 +385,7 @@ function Historian.persist(historian, txtbuf, results)
             end
          end
       end
-      historian.conn:exec "END TRANSACTION;"
+      historian.conn:exec("RELEASE save_persist")
       persist_idler:stop()
    end)
    return true

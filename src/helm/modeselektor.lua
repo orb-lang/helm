@@ -572,6 +572,16 @@ function ModeS.__eval(modeS, chunk, no_append)
       parsed_chunk = lua_parser(chunk)
    end
    -- #Todo tinker with the chunk, finding $1-type vars
+   if parsed_chunk:select "Error" () then
+      -- our parser isn't perfect, let's see what lua thinks
+      local is_expr = loadstring(return_chunk)
+      if is_expr then
+         -- we have an expression which needs a return, and didn't
+         -- detect it:
+         chunk = return_chunk
+         -- otherwise, we'll try our luck with the chunk, as-is
+      end
+   end
    local success, results
    local f, err = loadstring(chunk, 'REPL')
    if f then
@@ -597,38 +607,56 @@ function ModeS.__eval(modeS, chunk, no_append)
       modeS:setResults(results)
       modeS.hist:append(modeS.txtbuf, results, success)
       if success then
-         -- async render of resbuf
-         -- set up closed-over state
-         local lineGens, result_tostring = {}, {n = results.n}
-         for i = 1, results.n do
-            -- create line generators for each result
-            lineGens[i] = repr.lineGen(results[i], modeS.zones.results:width())
-            result_tostring[i] = setmetatable({}, result_repr_M)
-         end
-         local i = 1
-         local result_idler = uv.new_idle()
-         -- run string generator as idle process
-         result_idler:start(function()
-            while i <= results.n do
-               local line = lineGens[i]()
-               if line then
-                  insert(result_tostring[i],line)
-                  return nil
-               else
-                  i = i + 1
-                  return nil
-               end
-            end
-            result_idler:stop()
-         end)
-         modeS.hist.result_buffer[modeS.hist.n] = result_tostring
+         modeS.hist.result_buffer[modeS.hist.n] = results
       end
       modeS.hist.cursor = modeS.hist.n
+   else
+      return results
    end
 end
 
 function ModeS.eval(modeS)
    modeS:__eval(tostring(modeS.txtbuf))
+end
+
+
+
+
+
+
+
+
+function ModeS.restart(modeS)
+   -- we might want to do this again, so:
+   modeS.zones.status:replace "Restarting an repl ↩️"
+   local _G_backback = core.deepclone(_G_back)
+   _G = _G_back
+   -- we need the existing __G, not the empty clone, in _G:
+   _G.__G = __G
+   -- and we need the new _G, not the old one, as the index for __G:
+   getmetatable(__G).__index = _G
+   _G_back = _G_backback
+   -- perform rerun
+   -- Replace results:
+   local hist = modeS.hist
+   local top = hist.cursor - 1
+   local session_count = hist.cursor - hist.cursor_start
+   hist.cursor = hist.cursor_start
+   hist.n  = hist.n - session_count
+   for i = modeS.hist.cursor_start, top do
+      local results = modeS:__eval(tostring(hist[i]), true)
+      hist.n = hist.n + 1
+      hist.result_buffer[hist.n] = results
+      hist:persist(hist[i], results)
+   end
+   hist.cursor = top + 1
+   hist.n = #hist
+   modeS:paint()
+   uv.timer_start(uv.new_timer(), 2000, 0,
+                  function()
+                     modeS.zones.status:replace(modeS.prompt_lines.default)
+                     modeS:paint()
+                  end)
 end
 
 
@@ -668,7 +696,8 @@ local function new(max_col, max_row)
   modeS.r_margin = 80
   modeS.repl_top = ModeS.REPL_LINE
   modeS.zones = Zoneherd(modeS, write)
-  modeS.zones.status:replace "an repl, plz reply uwu 👀"
+  modeS.prompt_lines = { default = "an repl, plz reply uwu 👀" }
+  modeS.zones.status:replace(modeS.prompt_lines.default)
   -- initial state
   modeS.firstChar = true
   modeS:shiftMode(modeS.raga_default)
