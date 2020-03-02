@@ -328,8 +328,6 @@ end
 
 
 local insert = assert(table.insert)
-local time  = assert(os.time)
-local random = assert(math.random)
 
 function Historian.persist(historian, txtbuf, results)
    local lb = tostring(txtbuf)
