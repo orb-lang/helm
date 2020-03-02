@@ -58,6 +58,7 @@ local Nerf = { NAV    = NAV,
                ALT    = ALT,
                NYI    = NYI }
 
+Nerf.name = "nerf"
 Nerf.prompt_char = "👉"
 #/lua
 

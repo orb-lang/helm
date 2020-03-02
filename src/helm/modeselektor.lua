@@ -151,10 +151,6 @@ local ModeS = meta()
 
 
 
-ModeS.modes = Nerf
-
-
-
 
 
 ModeS.REPL_LINE = 2
@@ -286,10 +282,9 @@ end
 
 
 
+
+
 ModeS.raga_default = "nerf"
-
-
-
 
 
 
@@ -324,7 +319,7 @@ end
 
 
 function ModeS.updatePrompt(modeS)
-   local prompt = modeS.modes.prompt_char .. " " .. ("\n..."):rep(modeS:continuationLines())
+   local prompt = modeS.raga.prompt_char .. " " .. ("\n..."):rep(modeS:continuationLines())
    modeS.zones.prompt:replace(prompt)
 end
 
@@ -347,22 +342,18 @@ end
 
 
 
-ModeS.closet = { nerf =     { modes = Nerf,
-                              lex   = Lex.lua_thor },
-                 search =   { modes = Search,
-                              lex   = Lex.null },
-                 complete = { modes = Complete,
-                              lex   = Lex.lua_thor } }
+ModeS.closet = { nerf =     { raga = Nerf,
+                              lex  = Lex.lua_thor },
+                 search =   { raga = Search,
+                              lex  = Lex.null },
+                 complete = { raga = Complete,
+                              lex  = Lex.lua_thor } }
 
-function ModeS.shiftMode(modeS, raga)
-   if raga == "search" then
-      -- stash current lexer
-      -- #todo do this in a less dumb way
-      modeS.closet[modeS.raga].lex = modeS.lex
-   end
-   modeS.lex = modeS.closet[raga].lex
-   modeS.modes = modeS.closet[raga].modes
-   modeS.raga = raga
+function ModeS.shiftMode(modeS, raga_name)
+   -- #todo we were stashing the lexer, but never changing
+   -- it so that was useless. Do we need to at some point?
+   modeS.lex = modeS.closet[raga_name].lex
+   modeS.raga = modeS.closet[raga_name].raga
    modeS:updatePrompt()
    return modeS
 end
@@ -403,7 +394,7 @@ local assertfmt = import("core/string", "assertfmt")
 local hasfield, iscallable = import("core/table", "hasfield", "iscallable")
 
 function ModeS.act(modeS, category, value)
-   assertfmt(modeS.modes[category], "no category %s in modeS", category)
+   assertfmt(modeS.raga[category], "no category %s in modeS", category)
    -- catch special handlers first
    if modeS.special[value] then
       return modeS.special[value](modeS, category, value)
@@ -418,11 +409,11 @@ function ModeS.act(modeS, category, value)
       end
    end
    -- Dispatch on value if possible
-   if hasfield(modeS.modes[category], value) then
-      modeS.modes[category][value](modeS, category, value)
+   if hasfield(modeS.raga[category], value) then
+      modeS.raga[category][value](modeS, category, value)
    -- Or on category if the whole category is callable
-   elseif iscallable(modeS.modes[category]) then
-      modeS.modes[category](modeS, category, value)
+   elseif iscallable(modeS.raga[category]) then
+      modeS.raga[category](modeS, category, value)
    -- Otherwise display the unknown command
    else
       local val_rep = string.format("%q",value):sub(2,-2)
@@ -430,7 +421,7 @@ function ModeS.act(modeS, category, value)
    end
 
    ::final::
-   if modeS.raga == "search" then
+   if modeS.raga.name == "search" then
       local searchResult = modeS.hist:search(tostring(modeS.txtbuf))
       modeS:setResults(searchResult)
    end

@@ -12,6 +12,8 @@ local Nerf = require "helm/raga/nerf"
 
 local Complete = clone(Nerf, 3)
 
+Complete.name = "complete"
+
 
 
 
@@ -30,7 +32,7 @@ end
 
 function Complete.PASTE(modeS, category, value)
    _quit(modeS, category, value)
-   modeS.modes.PASTE(modeS, category, value)
+   modeS.raga.PASTE(modeS, category, value)
 end
 
 
@@ -47,7 +49,7 @@ local function _insert(modeS, category, value)
       _accept(modeS, category, value)
       -- Retry with the new raga
       -- #todo should we defer to modeS:act() here instead?
-      modeS.modes[category](modeS, category, value)
+      modeS.raga[category](modeS, category, value)
    else
       _default_insert(modeS, category, value)
    end
@@ -81,14 +83,14 @@ function NAV.RIGHT(modeS, category, value)
    _quit(modeS, category, value)
    -- #todo dispatch this properly, technically the new raga
    -- may not have a handler for it
-   modeS.modes.NAV.RIGHT(modeS, category, value)
+   modeS.raga.NAV.RIGHT(modeS, category, value)
 end
 
 NAV.RETURN = _accept
 function NAV.LEFT(modeS, category, value)
    _accept(modeS, category, value)
    -- #todo dispatch this properly
-   modeS.modes.NAV.LEFT(modeS, category, value)
+   modeS.raga.NAV.LEFT(modeS, category, value)
 end
 
 

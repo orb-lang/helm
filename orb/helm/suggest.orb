@@ -203,7 +203,7 @@ function Suggest.update(suggest, modeS, category, value)
    for _, match in ipairs(matches) do
       insert(suggestions, match.sym)
    end
-   if modeS.raga == "complete" then
+   if modeS.raga.name == "complete" then
       suggestions.selected_index = 1
    end
    suggestions = Rainbuf { [1] = suggestions, n = 1,
