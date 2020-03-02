@@ -249,6 +249,13 @@ end
 
 CTRL ["^L"] = clear_txtbuf
 
+CTRL ["^R"] = function(modeS, category, value)
+                 modeS:restart()
+              end
+
+
+
+
 
 
 
