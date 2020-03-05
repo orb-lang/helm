@@ -120,8 +120,6 @@ Primitives for terminal manipulation.
 
 #!lua
 a = require "anterm:anterm"
---watch = require "watcher"
-
 #/lua
 
 ** Modeselektor

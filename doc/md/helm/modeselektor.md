@@ -287,8 +287,17 @@ end
 
 ```lua
 function ModeS.reflow(modeS)
+   local have_rainbuf = type(modeS.zones.results.contents) == 'table'
+                        and modeS.zones.results.contents.idEst == Rainbuf
+   if have_rainbuf then
+      modeS.zones.results.contents.live = true
+      modeS.zones.results.touched = true
+   end
    modeS.zones:reflow(modeS)
    modeS:paint()
+   if have_rainbuf then
+      modeS.zones.results.contents.live = false
+   end
    return modeS
 end
 ```

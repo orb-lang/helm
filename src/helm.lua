@@ -120,8 +120,6 @@ local stdin = uv.new_tty(0, true)
 
 
 a = require "anterm:anterm"
---watch = require "watcher"
-
 
 
 

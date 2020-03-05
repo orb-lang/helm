@@ -110,8 +110,6 @@ local stdin = uv.new_tty(0, true)
 ```
 ```lua
 a = require "anterm:anterm"
---watch = require "watcher"
-
 ```
 ## Modeselektor
 
