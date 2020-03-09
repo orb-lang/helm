@@ -169,8 +169,8 @@ local function _eval(modeS)
    local more = modeS:eval()
    if not more then
       modeS.txtbuf = Txtbuf()
+      modeS.hist.cursor = modeS.hist.cursor + 1
    end
-   modeS.hist.cursor = modeS.hist.cursor + 1
 end
 
 function NAV.RETURN(modeS, category, value)
@@ -194,21 +194,25 @@ CTRL["^\\"] = NAV.CTRL_RETURN
 NAV.ALT_RETURN = NAV.SHIFT_RETURN
 
 local function _modeShiftOnEmpty(modeS)
-   local buf = tostring(modeS.txtbuf)
-   if buf == "" then
+   if tostring(modeS.txtbuf) == "" then
       modeS:shiftMode(modeS.raga_default)
       modeS:setResults("")
+      return true
+   else
+      return false
    end
 end
 
 function NAV.BACKSPACE(modeS, category, value)
-   local shrunk =  modeS.txtbuf:deleteBackward()
-   _modeShiftOnEmpty(modeS)
+   if not _modeShiftOnEmpty(modeS) then
+      modeS.txtbuf:deleteBackward()
+   end
 end
 
 function NAV.DELETE(modeS, category, value)
-   local shrunk = modeS.txtbuf:deleteForward()
-   _modeShiftOnEmpty(modeS)
+   if not _modeShiftOnEmpty(modeS) then
+      modeS.txtbuf:deleteForward()
+   end
 end
 
 local function _activateCompletion(modeS)
