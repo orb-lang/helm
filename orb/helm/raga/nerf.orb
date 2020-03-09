@@ -67,6 +67,13 @@ Nerf.prompt_char = "👉"
 #!lua
 
 local function _insert(modeS, category, value)
+   if tostring(modeS.txtbuf) == "" then
+      modeS:setResults ""
+      if value == "/" then
+         modeS:shiftMode("search")
+         return
+      end
+   end
    modeS.txtbuf:insert(value)
 end
 
@@ -74,6 +81,9 @@ Nerf.ASCII = _insert
 Nerf.UTF8 = _insert
 
 function Nerf.PASTE(modeS, category, value)
+   if tostring(modeS.txtbuf) == "" then
+      modeS:setResults ""
+   end
    modeS.txtbuf:paste(value)
 end
 
@@ -98,19 +108,16 @@ local function _prev(modeS)
 end
 
 function NAV.UP(modeS, category, value)
-   modeS.firstChar = false
    local inline = modeS.txtbuf:up()
    if not inline then
       _prev(modeS)
    end
-
    return modeS
 end
 
 local function _advance(modeS)
    local new_txtbuf, next_result = modeS.hist:next()
    if not new_txtbuf then
-      modeS.firstChar = true
       local added = modeS.hist:append(modeS.txtbuf)
       if added then
          modeS.hist.cursor = modeS.hist.n + 1
@@ -162,7 +169,6 @@ local function _eval(modeS)
    local more = modeS:eval()
    if not more then
       modeS.txtbuf = Txtbuf()
-      modeS.firstChar = true
    end
    modeS.hist.cursor = modeS.hist.cursor + 1
 end
@@ -191,7 +197,6 @@ local function _modeShiftOnEmpty(modeS)
    local buf = tostring(modeS.txtbuf)
    if buf == "" then
       modeS:shiftMode(modeS.raga_default)
-      modeS.firstChar = true
       modeS:setResults("")
    end
 end
@@ -258,7 +263,6 @@ CTRL["^E"] = NAV.HYPER_RIGHT
 local function clear_txtbuf(modeS, category, value)
    modeS.txtbuf = Txtbuf()
    modeS.hist.cursor = modeS.hist.n + 1
-   modeS.firstChar = true
    modeS:setResults("")
 end
 

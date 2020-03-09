@@ -365,26 +365,6 @@ end
 
 
 
-local function _firstCharHandler(modeS, category, value)
-   local shifted = false
-   if category == "ASCII" then
-      if value == "/" then
-         modeS:shiftMode "search"
-         shifted = true
-      end
-   end
-   modeS.firstChar = false
-   return shifted
-end
-
-
-
-
-
-
-
-
-
 
 
 
@@ -400,14 +380,6 @@ function ModeS.act(modeS, category, value)
       return modeS.special[value](modeS, category, value)
    end
    local icon = _make_icon(category, value)
-   -- Special first-character handling
-   if modeS.firstChar and not (category == "MOUSE" or category == "NAV") then
-      modeS:setResults ""
-      local shifted = _firstCharHandler(modeS, category, value)
-      if shifted then
-        goto final
-      end
-   end
    -- Dispatch on value if possible
    if hasfield(modeS.raga[category], value) then
       modeS.raga[category][value](modeS, category, value)
@@ -699,7 +671,6 @@ local function new(max_col, max_row)
   modeS.prompt_lines = { default = "an repl, plz reply uwu 👀" }
   modeS.zones.status:replace(modeS.prompt_lines.default)
   -- initial state
-  modeS.firstChar = true
   modeS:shiftMode(modeS.raga_default)
   return modeS
 end
