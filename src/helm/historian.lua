@@ -24,7 +24,7 @@ local c       = import("singletons/color", "color")
 local repr    = require "helm/repr"
 local Codepoints = require "singletons/codepoints"
 
-local concat = assert(table.concat)
+local concat, insert = assert(table.concat), assert(table.insert)
 local reverse = import("core/table", "reverse")
 
 
@@ -37,34 +37,42 @@ local Dir  = require "fs:fs/directory"
 
 
 local Historian = meta {}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 Historian.HISTORY_LIMIT = 2000
 
-local HELM_DB_VERSION = 2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 local create_project_table = [[
 CREATE TABLE IF NOT EXISTS project (
@@ -74,12 +82,32 @@ CREATE TABLE IF NOT EXISTS project (
 );
 ]]
 
+local create_project_table_3 = [[
+CREATE TABLE IF NOT EXISTS project_3 (
+   project_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   directory TEXT UNIQUE,
+   time DATETIME DEFAULT (strftime('%Y-%m-%dT%H:%M:%f', 'now'))
+);
+]]
+
 local create_repl_table = [[
 CREATE TABLE IF NOT EXISTS repl (
    line_id INTEGER PRIMARY KEY AUTOINCREMENT,
    project INTEGER,
    line TEXT,
    time DATETIME DEFAULT CURRENT_TIMESTAMP,
+   FOREIGN KEY (project)
+      REFERENCES project (project_id)
+      ON DELETE CASCADE
+);
+]]
+
+local create_repl_table_3 = [[
+CREATE TABLE IF NOT EXISTS repl_3 (
+   line_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   project INTEGER,
+   line TEXT,
+   time DATETIME DEFAULT (strftime('%Y-%m-%dT%H:%M:%f', 'now')),
    FOREIGN KEY (project)
       REFERENCES project (project_id)
       ON DELETE CASCADE
@@ -113,6 +141,11 @@ FOREIGN KEY (project)
    ON DELETE CASCADE );
 ]]
 
+
+
+
+
+
 local insert_line = [[
 INSERT INTO repl (project, line) VALUES (:project, :line);
 ]]
@@ -124,6 +157,11 @@ INSERT INTO result (line_id, repr) VALUES (:line_id, :repr);
 local insert_project = [[
 INSERT INTO project (directory) VALUES (?);
 ]]
+
+
+
+
+
 
 local get_recent = [[
 SELECT CAST (line_id AS REAL), line FROM repl
@@ -163,8 +201,102 @@ ORDER BY result.result_id;
 
 
 
--- make the /helm directory (no-op if it already exists)
-Dir(_Bridge.bridge_home .. "/helm"):mkdir()
+
+
+
+
+
+
+
+local HELM_DB_VERSION = 3
+
+local migrations = {function() return true end}
+
+
+
+
+
+
+local function migration_2(conn)
+   conn:exec(create_project_table)
+   conn:exec(create_result_table)
+   conn:exec(create_repl_table)
+   conn:exec(create_session_table)
+   return true
+end
+
+insert(migrations, migration_2)
+
+
+
+
+
+
+
+
+
+
+
+
+
+local function migration_3(conn)
+   conn.pragma.foreign_keys(false)
+   conn:exec "BEGIN TRANSACTION;"
+   conn:exec [[
+      UPDATE project
+      SET time = strftime('%Y-%m-%dT%H:%M:%f', time);
+   ]]
+   conn:exec(create_project_table_3)
+   conn:exec [[
+      INSERT INTO project_3 (project_id, directory, time)
+      SELECT project_id, directory, time
+      FROM project;
+   ]]
+   conn:exec "DROP TABLE project;"
+   conn:exec [[
+      ALTER TABLE project_3
+      RENAME TO project;
+   ]]
+   conn:exec [[
+      UPDATE repl
+      SET time = strftime('%Y-%m-%dT%H:%M:%f', time);
+   ]]
+   conn:exec(create_repl_table_3)
+   conn:exec [[
+      INSERT INTO repl_3 (line_id, project, line, time)
+      SELECT line_id, project, line, time
+      FROM repl;
+   ]]
+   conn:exec "DROP TABLE repl;"
+   conn:exec [[
+      ALTER TABLE repl_3
+      RENAME to repl;
+   ]]
+   conn:exec "COMMIT;"
+   conn.pragma.foreign_keys(true)
+   return true
+end
+insert(migrations, migration_3)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- make the /helm directory
+-- use sh to avoid a permissions issue with stale versions of fs
+if not Dir(_Bridge.bridge_home .. "/helm"):exists() then
+   local sh = require "orb:util/sh"
+   sh("mkdir", "-p", _Bridge.bridge_home .. "/helm")
+end
 
 local old_helm = File (_Bridge.bridge_home .. "/.helm")
 if old_helm:exists() then
@@ -223,6 +355,9 @@ end
 
 local core_math = require "core/math"
 local bound = assert(core_math.bound)
+local assertfmt = require "core:core/string".assertfmt
+local format = assert(string.format)
+
 
 function Historian.load(historian)
    local conn = sql.open(historian.helm_db, "rwc")
@@ -230,18 +365,25 @@ function Historian.load(historian)
    -- Set up bridge tables
    conn.pragma.foreign_keys(true)
    conn.pragma.journal_mode "wal"
-   conn:exec(create_project_table)
-   conn:exec(create_result_table)
-   conn:exec(create_repl_table)
-   conn:exec(create_session_table)
-   -- Set the user_version pragma if not set.
-   -- This is an insertion point for migrations, when
-   -- we start to perform them.
-   if not conn.pragma.user_version() then
-      -- set to current version
-      conn.pragma.user_version(HELM_DB_VERSION)
+   -- check the user_version and perform migrations if necessary.
+   assertfmt(#migrations == HELM_DB_VERSION,
+             "number of migrations (%d) must equal HELM_DB_VERSION (%d)",
+             #migrations, HELM_DB_VERSION)
+   local user_version = tonumber(conn.pragma.user_version())
+   if not user_version then
+      user_version = 1
    end
-   -- Retrive project id
+   if user_version < HELM_DB_VERSION then
+      for i = user_version, HELM_DB_VERSION do
+         migrations[i](conn)
+      end
+      conn.pragma.user_version(HELM_DB_VERSION)
+   elseif user_version > HELM_DB_VERSION then
+      error(format("Error: helm.sqlite is version %d, expected %d",
+                   user_version, HELM_DB_VERSION))
+      os.exit(HELM_DB_VERSION)
+   end
+   -- Retrieve project id
    local proj_val, proj_row = sql.pexec(conn,
                                   sql.format(get_project, historian.project),
                                   "i")
@@ -638,6 +780,7 @@ local function new()
    local historian = meta(Historian)
    historian.line_ids = {}
    historian.cursor = 0
+   historian.cursor_start = 0
    historian.n = 0
    historian:load()
    historian.result_buffer = setmetatable({}, __result_buffer_M)

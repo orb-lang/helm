@@ -27,7 +27,7 @@ local c       = import("singletons/color", "color")
 local repr    = require "helm/repr"
 local Codepoints = require "singletons/codepoints"
 
-local concat = assert(table.concat)
+local concat, insert = assert(table.concat), assert(table.insert)
 local reverse = import("core/table", "reverse")
 ```
 ```lua
@@ -36,6 +36,7 @@ local Dir  = require "fs:fs/directory"
 ```
 ```lua
 local Historian = meta {}
+Historian.HISTORY_LIMIT = 2000
 ```
 ## Persistence
 
@@ -62,16 +63,33 @@ This defines the persistence model for bridge.
       these could and should just be a line table with line.line and a
       result table with result.result.
 
+
+#### Create tables
+
+The schema with the highest version number is the one which is current for
+that table.  The table will of course not have the ``_n`` suffix in the
+database.  The number is that of the migration where the table was recreated.
+
+
+Other than that, SQLite lets you add columns and rename tables.
+
+
+When this is done, it will be noted.
+
 ```lua
-Historian.HISTORY_LIMIT = 2000
-
-local HELM_DB_VERSION = 2
-
 local create_project_table = [[
 CREATE TABLE IF NOT EXISTS project (
    project_id INTEGER PRIMARY KEY AUTOINCREMENT,
    directory TEXT UNIQUE,
    time DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+]]
+
+local create_project_table_3 = [[
+CREATE TABLE IF NOT EXISTS project_3 (
+   project_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   directory TEXT UNIQUE,
+   time DATETIME DEFAULT (strftime('%Y-%m-%dT%H:%M:%f', 'now'))
 );
 ]]
 
@@ -81,6 +99,18 @@ CREATE TABLE IF NOT EXISTS repl (
    project INTEGER,
    line TEXT,
    time DATETIME DEFAULT CURRENT_TIMESTAMP,
+   FOREIGN KEY (project)
+      REFERENCES project (project_id)
+      ON DELETE CASCADE
+);
+]]
+
+local create_repl_table_3 = [[
+CREATE TABLE IF NOT EXISTS repl_3 (
+   line_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   project INTEGER,
+   line TEXT,
+   time DATETIME DEFAULT (strftime('%Y-%m-%dT%H:%M:%f', 'now')),
    FOREIGN KEY (project)
       REFERENCES project (project_id)
       ON DELETE CASCADE
@@ -113,7 +143,10 @@ FOREIGN KEY (project)
    REFERENCES project (project_id)
    ON DELETE CASCADE );
 ]]
+```
+#### Insertions
 
+```lua
 local insert_line = [[
 INSERT INTO repl (project, line) VALUES (:project, :line);
 ]]
@@ -125,7 +158,10 @@ INSERT INTO result (line_id, repr) VALUES (:line_id, :repr);
 local insert_project = [[
 INSERT INTO project (directory) VALUES (?);
 ]]
+```
+#### Selections
 
+```lua
 local get_recent = [[
 SELECT CAST (line_id AS REAL), line FROM repl
    WHERE project = :project
@@ -151,6 +187,95 @@ WHERE result.line_id = :line_id
 ORDER BY result.result_id;
 ]]
 ```
+### Migrations
+
+  We follow a simple format for migrations, incrementing the ``user_version``
+pragma by 1 for each alteration of the schema.
+
+
+We write a single function, which receives the database conn, for each change,
+such that we should be able to take a database at any schema and bring it up
+to the standard needed for this version of ``helm``.
+
+
+We store these migrations in an array, such that ``migration[i]`` creates
+``user_version`` ``i``.
+
+
+We skip ``1`` because a pragma equal to 1 is translated to the boolean ``true``.
+
+
+Migrations return ``true``, in case we find a migration that needs a check to
+pass.  Unless that happens, we won't bother to check the return value.
+
+```lua
+local HELM_DB_VERSION = 3
+
+local migrations = {function() return true end}
+```
+#### Version 2: Creates tables.
+
+```lua
+local function migration_2(conn)
+   conn:exec(create_project_table)
+   conn:exec(create_result_table)
+   conn:exec(create_repl_table)
+   conn:exec(create_session_table)
+   return true
+end
+
+insert(migrations, migration_2)
+```
+#### Version 3: Millisecond-resolution timestamps.
+
+  We want to accomplish two things here: change the format of all existing
+timestamps, and change the default to have millisecond resolution and use
+"T" instead of " " as the separator.
+
+
+SQLite being what it is, the latter requires us to copy everything to a new
+table.  This must be done for the ``project`` and ``repl`` tables.
+
+```lua
+local function migration_3(conn)
+   conn.pragma.foreign_keys(false)
+   conn:exec "BEGIN TRANSACTION;"
+   conn:exec [[
+      UPDATE project
+      SET time = strftime('%Y-%m-%dT%H:%M:%f', time);
+   ]]
+   conn:exec(create_project_table_3)
+   conn:exec [[
+      INSERT INTO project_3 (project_id, directory, time)
+      SELECT project_id, directory, time
+      FROM project;
+   ]]
+   conn:exec "DROP TABLE project;"
+   conn:exec [[
+      ALTER TABLE project_3
+      RENAME TO project;
+   ]]
+   conn:exec [[
+      UPDATE repl
+      SET time = strftime('%Y-%m-%dT%H:%M:%f', time);
+   ]]
+   conn:exec(create_repl_table_3)
+   conn:exec [[
+      INSERT INTO repl_3 (line_id, project, line, time)
+      SELECT line_id, project, line, time
+      FROM repl;
+   ]]
+   conn:exec "DROP TABLE repl;"
+   conn:exec [[
+      ALTER TABLE repl_3
+      RENAME to repl;
+   ]]
+   conn:exec "COMMIT;"
+   conn.pragma.foreign_keys(true)
+   return true
+end
+insert(migrations, migration_3)
+```
 ### Migration shim
 
   Having the database in a hidden file is a holdover from when it was living
@@ -163,8 +288,12 @@ perform a migration to a new ``$BRIDGE_HOME/helm/`` directory.  Inside that
 directory, the new name of ``.helm`` will be ``helm.sqlite``.
 
 ```lua
--- make the /helm directory (no-op if it already exists)
-Dir(_Bridge.bridge_home .. "/helm"):mkdir()
+-- make the /helm directory
+-- use sh to avoid a permissions issue with stale versions of fs
+if not Dir(_Bridge.bridge_home .. "/helm"):exists() then
+   local sh = require "orb:util/sh"
+   sh("mkdir", "-p", _Bridge.bridge_home .. "/helm")
+end
 
 local old_helm = File (_Bridge.bridge_home .. "/.helm")
 if old_helm:exists() then
@@ -219,6 +348,9 @@ the results never get used.
 ```lua
 local core_math = require "core/math"
 local bound = assert(core_math.bound)
+local assertfmt = require "core:core/string".assertfmt
+local format = assert(string.format)
+
 
 function Historian.load(historian)
    local conn = sql.open(historian.helm_db, "rwc")
@@ -226,18 +358,25 @@ function Historian.load(historian)
    -- Set up bridge tables
    conn.pragma.foreign_keys(true)
    conn.pragma.journal_mode "wal"
-   conn:exec(create_project_table)
-   conn:exec(create_result_table)
-   conn:exec(create_repl_table)
-   conn:exec(create_session_table)
-   -- Set the user_version pragma if not set.
-   -- This is an insertion point for migrations, when
-   -- we start to perform them.
-   if not conn.pragma.user_version() then
-      -- set to current version
-      conn.pragma.user_version(HELM_DB_VERSION)
+   -- check the user_version and perform migrations if necessary.
+   assertfmt(#migrations == HELM_DB_VERSION,
+             "number of migrations (%d) must equal HELM_DB_VERSION (%d)",
+             #migrations, HELM_DB_VERSION)
+   local user_version = tonumber(conn.pragma.user_version())
+   if not user_version then
+      user_version = 1
    end
-   -- Retrive project id
+   if user_version < HELM_DB_VERSION then
+      for i = user_version, HELM_DB_VERSION do
+         migrations[i](conn)
+      end
+      conn.pragma.user_version(HELM_DB_VERSION)
+   elseif user_version > HELM_DB_VERSION then
+      error(format("Error: helm.sqlite is version %d, expected %d",
+                   user_version, HELM_DB_VERSION))
+      os.exit(HELM_DB_VERSION)
+   end
+   -- Retrieve project id
    local proj_val, proj_row = sql.pexec(conn,
                                   sql.format(get_project, historian.project),
                                   "i")
@@ -630,6 +769,7 @@ local function new()
    local historian = meta(Historian)
    historian.line_ids = {}
    historian.cursor = 0
+   historian.cursor_start = 0
    historian.n = 0
    historian:load()
    historian.result_buffer = setmetatable({}, __result_buffer_M)
