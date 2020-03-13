@@ -280,7 +280,6 @@ The return value tells us if we have one less line, since we need to
 clear it off the screen (true of deleteForward as well).
 
 ```lua
-
 local function _is_paired(a, b)
    return _openers[a] == b
 end

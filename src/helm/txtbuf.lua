@@ -282,10 +282,6 @@ end
 
 
 
-
-
-
-
 local function _is_paired(a, b)
    return _openers[a] == b
 end

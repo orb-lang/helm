@@ -17,7 +17,6 @@ record.  We should store the line as a string, to facilitate fuzzy matching.
 
 
 ```lua
-local L       = require "lpeg"
 local uv      = require "luv"
 local sql     = assert(sql, "sql must be in bridge _G")
 
@@ -25,10 +24,8 @@ local Txtbuf  = require "helm/txtbuf"
 local Rainbuf = require "helm/rainbuf"
 local c       = import("singletons/color", "color")
 local repr    = require "helm/repr"
-local Codepoints = require "singletons/codepoints"
 
 local concat, insert = assert(table.concat), assert(table.insert)
-local reverse = import("core/table", "reverse")
 ```
 ```lua
 local File = require "fs:fs/file"
@@ -346,9 +343,8 @@ We want as much history as practical, because we search in it, but most of
 the results never get used.
 
 ```lua
-local core_math = require "core/math"
-local bound = assert(core_math.bound)
-local assertfmt = require "core:core/string".assertfmt
+local bound, inbounds = import("core:core/math", "bound", "inbounds")
+local assertfmt = import("core:core/string", "assertfmt")
 local format = assert(string.format)
 
 
@@ -461,8 +457,6 @@ Medium-term goal is to hash any Lua object in a way that will resolve to a
 common value for any identical semantics.
 
 ```lua
-local insert = assert(table.insert)
-
 function Historian.persist(historian, txtbuf, results)
    local lb = tostring(txtbuf)
    local have_results = results
@@ -537,39 +531,8 @@ is an affordance for incremental searches, it's easy to make this mistake and
 harmless to suggest the alternative.
 
 
-### fuzz_patt
-
-Here we incrementally build up a single ``lpeg`` pattern which will recognize
-our desired lines.
-
-
-``(P(1) - P(frag[n]))^0`` matches anything that isn't the next fragment,
-including ``""``.  We then require this to be followed by the next fragment,
-and so on.
-
-```lua
-local P, match = L.P, L.match
-
-local function fuzz_patt(frag)
-   frag = type(frag) == "string" and Codepoints(frag) or frag
-   local patt =  (P(1) - P(frag[1]))^0
-   for i = 1 , #frag - 1 do
-      local v = frag[i]
-      patt = patt * (P(v) * (P(1) - P(frag[i + 1]))^0)
-   end
-   patt = patt * P(frag[#frag])
-   return patt
-end
-```
-## Historian:search(frag)
-
-This is an incremental 'fuzzy' search, returning a ``collection``.
-
-
-The array portion of a collection is any line which matches the search.
-
-
-The other fields are:
+Returns a ``collection``. The array portion of a collection is any line
+which matches the search. The other fields are:
 
 
 - #fields
@@ -590,10 +553,8 @@ The other fields are:
 
 
 ```lua
-
 local SelectionList = require "helm/selection_list"
-local insert, remove = assert(table.insert), assert(table.remove)
--- local insert, remove = import("core/table", "ninsert", "nremove")
+local fuzz_patt = require "helm:helm/fuzz_patt"
 
 function Historian.search(historian, frag)
    if historian.last_collection
@@ -615,7 +576,7 @@ function Historian.search(historian, frag)
       local dup = {}
       for i = historian.n, 1, -1 do
          local item_str = tostring(historian[i])
-         if not dup[item_str] and match(patt, item_str) then
+         if not dup[item_str] and patt:match(item_str) then
             dup[item_str] = true
             insert(result, item_str)
             insert(result.cursors, i)
@@ -723,8 +684,6 @@ Loads the history to an exact index. The index must be one that actually exists,
 i.e. 1 <= index <= historian.n--historian.n + 1 is not allowed.
 
 ```lua
-local inbounds = assert(core_math.inbounds)
-
 function Historian.index(historian, cursor)
    assert(inbounds(cursor, 1, historian.n))
    local txtbuf = historian[cursor]:clone()

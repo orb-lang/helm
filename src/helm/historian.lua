@@ -14,7 +14,6 @@
 
 
 
-local L       = require "lpeg"
 local uv      = require "luv"
 local sql     = assert(sql, "sql must be in bridge _G")
 
@@ -22,10 +21,8 @@ local Txtbuf  = require "helm/txtbuf"
 local Rainbuf = require "helm/rainbuf"
 local c       = import("singletons/color", "color")
 local repr    = require "helm/repr"
-local Codepoints = require "singletons/codepoints"
 
 local concat, insert = assert(table.concat), assert(table.insert)
-local reverse = import("core/table", "reverse")
 
 
 
@@ -353,9 +350,8 @@ end
 
 
 
-local core_math = require "core/math"
-local bound = assert(core_math.bound)
-local assertfmt = require "core:core/string".assertfmt
+local bound, inbounds = import("core:core/math", "bound", "inbounds")
+local assertfmt = import("core:core/string", "assertfmt")
 local format = assert(string.format)
 
 
@@ -468,8 +464,6 @@ end
 
 
 
-local insert = assert(table.insert)
-
 function Historian.persist(historian, txtbuf, results)
    local lb = tostring(txtbuf)
    local have_results = results
@@ -555,37 +549,6 @@ end
 
 
 
-local P, match = L.P, L.match
-
-local function fuzz_patt(frag)
-   frag = type(frag) == "string" and Codepoints(frag) or frag
-   local patt =  (P(1) - P(frag[1]))^0
-   for i = 1 , #frag - 1 do
-      local v = frag[i]
-      patt = patt * (P(v) * (P(1) - P(frag[i + 1]))^0)
-   end
-   patt = patt * P(frag[#frag])
-   return patt
-end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -594,8 +557,7 @@ end
 
 
 local SelectionList = require "helm/selection_list"
-local insert, remove = assert(table.insert), assert(table.remove)
--- local insert, remove = import("core/table", "ninsert", "nremove")
+local fuzz_patt = require "helm:helm/fuzz_patt"
 
 function Historian.search(historian, frag)
    if historian.last_collection
@@ -617,7 +579,7 @@ function Historian.search(historian, frag)
       local dup = {}
       for i = historian.n, 1, -1 do
          local item_str = tostring(historian[i])
-         if not dup[item_str] and match(patt, item_str) then
+         if not dup[item_str] and patt:match(item_str) then
             dup[item_str] = true
             insert(result, item_str)
             insert(result.cursors, i)
@@ -732,8 +694,6 @@ end
 
 
 
-
-local inbounds = assert(core_math.inbounds)
 
 function Historian.index(historian, cursor)
    assert(inbounds(cursor, 1, historian.n))

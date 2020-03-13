@@ -13,7 +13,6 @@ local names = require "helm/repr/names"
 local concat, insert, sort = assert(table.concat),
                              assert(table.insert),
                              assert(table.sort)
-local match = assert(string.match)
 local c = import("singletons/color", "color")
 
 #/lua
@@ -128,16 +127,19 @@ Updates the completion list based on the current contents of the Txtbuf.
 #!lua
 
 local function _suggest_sort(a, b)
-   if #a ~= #b then
-      return #a < #b
+   if a.score ~= b.score then
+      return a.score < b.score
+   elseif #a.sym ~= #b.sym then
+      return #a.sym < #b.sym
    else
-      return a < b
+      return a.sym < b.sym
    end
 end
 
-local litpat = import("core/string", "litpat")
 local isidentifier = import("core/string", "isidentifier")
 local hasmetamethod = import("core/meta", "hasmetamethod")
+local hasfield = import("core:core/table", "hasfield")
+local fuzz_patt = require "helm:helm/fuzz_patt"
 
 function Suggest.update(suggest, modeS, category, value)
    if not _shouldUpdate(modeS, category, value) then
@@ -148,18 +150,22 @@ function Suggest.update(suggest, modeS, category, value)
       suggest:cancel(modeS)
       return
    end
-   local suggestions = SelectionList()
-   suggestions.best = true
-   suggestions.frag = tostring(context):sub(1, context.cursor_offset)
-   suggestions.lit_frag = suggestions.frag
-   local match_string = "^" .. litpat(suggestions.frag)
-   local candidate_symbols
+
+   -- First, build a list of candidate symbols--those that would be valid
+   -- in the current position.
+   local candidate_symbols, complete_against
    if path then
-      candidate_symbols = {}
-      local complete_against = __G
+      complete_against = __G
       for _, key in ipairs(path) do
-         complete_against = complete_against[key]
+         complete_against = hasfield(complete_against, key)
       end
+      -- If what we end up with isn't a table, we can't complete against it
+      if type(complete_against) ~= "table" then
+         complete_against = nil
+      end
+   end
+   if complete_against ~= nil then
+      candidate_symbols = {}
       repeat
          for k, _ in pairs(complete_against) do
             if isidentifier(k) then
@@ -170,26 +176,40 @@ function Suggest.update(suggest, modeS, category, value)
          -- Ignore __index functions, no way to know what they might handle
          complete_against = type(index_table) == "table" and index_table or nil
       until complete_against == nil
+   -- Either no path was provided, or some part of it doesn't
+   -- actually exist, fall back to completing against all symbols
    else
       candidate_symbols = names.all_symbols
    end
+
+   -- Now we can actually filter those candidates for whether they match or not
+   local suggestions = SelectionList()
+   suggestions.best = true
+   suggestions.frag = tostring(context):sub(1, context.cursor_offset)
+   suggestions.lit_frag = suggestions.frag
+   local match_patt = fuzz_patt(suggestions.frag)
+   local matches = {}
    for sym in pairs(candidate_symbols) do
-      if match(sym, match_string) then
-         insert(suggestions, sym)
+      local score = match_patt:match(sym)
+      if score then
+         insert(matches, { score = score, sym = sym })
       end
    end
-   if #suggestions > 0 then
-      sort(suggestions, _suggest_sort)
-      if modeS.raga == "complete" then
-         suggestions.selected_index = 1
-      end
-      suggestions = Rainbuf { [1] = suggestions, n = 1,
-                                  live = true, made_in = "suggest.update" }
-      suggest.active_suggestions = suggestions
-      modeS.zones.suggest:replace(suggestions)
-   else
+   if #matches == 0 then
       suggest:cancel(modeS)
+      return
    end
+   sort(matches, _suggest_sort)
+   for _, match in ipairs(matches) do
+      insert(suggestions, match.sym)
+   end
+   if modeS.raga == "complete" then
+      suggestions.selected_index = 1
+   end
+   suggestions = Rainbuf { [1] = suggestions, n = 1,
+                               live = true, made_in = "suggest.update" }
+   suggest.active_suggestions = suggestions
+   modeS.zones.suggest:replace(suggestions)
 end
 
 #/lua
@@ -206,13 +226,15 @@ end
 *** accept()
 
 #!lua
-
-local Txtbuf = require "helm/txtbuf"
-
 function Suggest.accept(suggest, modeS)
    local suggestion = suggest.active_suggestions[1]:selectedItem()
    local context = _cursorContext(modeS)
-   modeS.txtbuf:paste(suggestion:sub(context.cursor_offset + 1))
+   -- #todo do this in one call, probably by making :deleteBackward()
+   -- accept a parameter of how many characters to delete
+   for i = 1, context.cursor_offset do
+      modeS.txtbuf:deleteBackward()
+   end
+   modeS.txtbuf:paste(suggestion)
 end
 #/lua
 

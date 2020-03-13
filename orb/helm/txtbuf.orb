@@ -281,11 +281,7 @@ end
 The return value tells us if we have one less line, since we need to
 clear it off the screen (true of deleteForward as well).
 
-#NB this leave ghost lines on the screen during some kinds of multi-line
-edits, which must be addressed.
-
 #!lua
-
 local function _is_paired(a, b)
    return _openers[a] == b
 end
