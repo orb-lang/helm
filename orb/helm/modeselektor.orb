@@ -643,6 +643,7 @@ function ModeS.restart(modeS)
    local session_count = hist.cursor - hist.cursor_start
    hist.cursor = hist.cursor_start
    hist.n  = hist.n - session_count
+   hist.conn:exec "SAVEPOINT restart_session;"
    for i = modeS.hist.cursor_start, top do
       local results = modeS:__eval(tostring(hist[i]), true)
       hist.n = hist.n + 1
@@ -657,6 +658,14 @@ function ModeS.restart(modeS)
                      modeS.zones.status:replace(modeS.prompt_lines.default)
                      modeS:paint()
                   end)
+   local restart_idle = uv.new_idle()
+   restart_idle:start(function()
+      if #hist.idlers > 0 then
+         return nil
+      end
+      hist.conn:exec "RELEASE restart_session;"
+      restart_idle:stop()
+   end)
 end
 #/lua
 
