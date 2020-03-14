@@ -12,20 +12,25 @@ local Token = require "helm/repr/token"
 ```lua
 local names = {}
 ```
-### anti_G
+### anti_G, all_symbols
 
 In order to provide names for values, we want to trawl through ``_G`` and
 acquire them.  This table is from value to key where ``_G`` is key to value,
 hence, ``anti_G``.
 
+
+We also maintain a unique list of all names (but not paths, e.g.
+"foo" and "bar" but not "foo.bar") encountered. For ease of uniqueing
+we store the names as the keys of a table rather than the values.
+
 ```lua
 local anti_G = setmetatable({ _G = "_G" }, {__mode = "k"})
+names.all_symbols = { _G = true }
 ```
 
 Now to populate it:
 
-
-### names.allNames()
+### names.addName(), names.loadNames()
 
 Ransacks ``_G`` looking for names to put on things.
 
@@ -44,68 +49,65 @@ local function tie_break(old, new)
    return #old > #new
 end
 
-local function addName(t, aG, pre)
-   pre = pre or ""
-   aG = aG or anti_G
-   if pre ~= "" then
-      pre = pre .. "."
-   end
-   for k, v in pairs(t) do
-      local T = type(v)
-      if (T == "table") then
-         local key = pre ..
-            (type(k) == "string" and k or "<" .. tostring(k) .. ">")
-         if not aG[v] then
-            aG[v] = key
-            if not (pre == "" and k == "package") then
-               addName(v, aG, key)
-            end
-         else
-            local kv = aG[v]
-            if tie_break(kv, key) then
-               -- quadradic lol
-               aG[v] = key
-               addName(v, aG, key)
-            end
-         end
-         local _M = getmetatable(v)
-         local _M_id = _M and "⟨" .. key.. "⟩" or ""
-         if _M then
-            if not aG[_M] then
-               aG[_M] = _M_id
-               addName(_M, aG, _M_id)
-            else
-               local aG_M_id = aG[_M]
-               if tie_break(aG_M_id, _M_id) then
-                  aG[_M] = _M_id
-                  addName(_M, aG, _M_id)
-               end
-            end
-         end
-      elseif T == "function" or
-         T == "thread" or
-         T == "userdata" then
-         aG[v] = pre .. k
+local isidentifier = import("core/string", "isidentifier")
+
+local addName, loadNames
+
+addName = function(value, name, aG)
+   local existing = aG[value]
+   if not existing or tie_break(existing, name) then
+      aG[value] = name
+      if type(value) == "table" then
+         loadNames(value, name, aG)
       end
    end
-   return aG
 end
-names.addName = addName
-```
-#### names.allNames(), names.clearNames()
 
-The trick here is that we scan ``package.loaded`` after ``_G``, which gives
-better names for things.
+loadNames = function(tab, prefix, aG)
+   if prefix ~= "" then
+      prefix = prefix .. "."
+   end
+   aG = aG or anti_G
+   for k, v in pairs(tab) do
+      if type(k) == "string" then
+         -- Only add legal identifiers to all_symbols, since this is
+         -- used for autocomplete
+         if isidentifier(k) then
+            names.all_symbols[k] = true
+         end
+      else
+         -- #todo should we put <> around non-identifier strings? I guess
+         -- it seems fine not to, since this is just for display...
+         k = "<" .. tostring(k) .. ">"
+      end
+      local typica = type(v)
+      if typica == "table"
+      or typica == "function"
+      or typica == "thread"
+      or typica == "userdata" then
+         addName(v, k, aG)
+      end
+      local _M = getmetatable(v)
+      if typica == "table" and _M then
+         local _M_id = "⟨" .. k.. "⟩"
+         addName(_M, _M_id, aG)
+      end
+   end
+end
 
-```lua
-function names.allNames(tab)
+function names.addName(value, name)
+   addName(value, name, anti_G)
+end
+
+function names.loadNames(tab, prefix)
    tab = tab or _G
-   return addName(package.loaded, addName(tab))
+   prefix = prefix or ""
+   loadNames(tab, prefix, anti_G)
 end
 
 function names.clearNames()
    anti_G = {_G = "_G"}
-   return anti_G
+   names.all_symbols = {}
 end
 ```
 ### names.nameFor(value, c, hint)

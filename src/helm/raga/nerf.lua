@@ -21,7 +21,7 @@ assert(write, "must have write in _G")
 
 
 
-local a         = require "singletons/anterm"
+local a         = require "anterm:anterm"
 local Txtbuf    = require "helm/txtbuf"
 local Rainbuf   = require "helm/rainbuf"
 local Historian = require "helm/historian"
@@ -58,12 +58,14 @@ local Nerf = { NAV    = NAV,
                ALT    = ALT,
                NYI    = NYI }
 
+Nerf.prompt_char = "👉"
 
 
 
 
 
-function _insert(modeS, category, value)
+
+local function _insert(modeS, category, value)
    modeS.txtbuf:insert(value)
 end
 
@@ -90,8 +92,7 @@ local function _prev(modeS)
    if linestash then
       modeS.hist:append(linestash)
    end
-   prev_result = prev_result and Rainbuf(prev_result) or ""
-   modeS.zones.results:replace(prev_result)
+   modeS:setResults(prev_result)
    return modeS
 end
 
@@ -117,8 +118,7 @@ local function _advance(modeS)
    else
       modeS.txtbuf = new_txtbuf
    end
-   next_result = next_result and Rainbuf(next_result) or ""
-   modeS.zones.results:replace(next_result)
+   modeS:setResults(next_result)
    return modeS
 end
 
@@ -191,7 +191,7 @@ local function _modeShiftOnEmpty(modeS)
    if buf == "" then
       modeS:shiftMode(modeS.raga_default)
       modeS.firstChar = true
-      modeS.zones.results:replace ""
+      modeS:setResults("")
    end
 end
 
@@ -205,25 +205,40 @@ function NAV.DELETE(modeS, category, value)
    _modeShiftOnEmpty(modeS)
 end
 
+local function _activateCompletion(modeS)
+   if modeS.suggest.active_suggestions then
+      modeS:shiftMode("complete")
+      -- #todo seems like this should be able to be handled more centrally
+      modeS.suggest.active_suggestions[1].selected_index = 1
+      modeS.zones.suggest.touched = true
+      return true
+   else
+      return false
+   end
+end
+
 function NAV.SHIFT_DOWN(modeS, category, value)
-   local results = modeS.zones.results.contents
-   if results and results.more then
-      results.offset = results.offset + 1
-      modeS.zones.results.touched = true
+   if not _activateCompletion(modeS) then
+      modeS.zones.results:scrollDown()
    end
 end
 
 function NAV.SHIFT_UP(modeS, category, value)
-   local results = modeS.zones.results.contents
-   if results
-    and results.offset
-    and results.offset > 0 then
-      results.offset = results.offset - 1
-      modeS.zones.results.touched = true
+   if not _activateCompletion(modeS) then
+      modeS.zones.results:scrollUp()
    end
 end
 
+function NAV.TAB(modeS, category, value)
+   if not _activateCompletion(modeS) then
+      modeS.txtbuf:paste("   ")
+   end
+end
 
+function NAV.SHIFT_TAB(modeS, category, value)
+   -- If we can't activate completion, nothing to do really
+   _activateCompletion(modeS)
+end
 
 
 
@@ -243,8 +258,7 @@ local function clear_txtbuf(modeS, category, value)
    modeS.txtbuf = Txtbuf()
    modeS.hist.cursor = modeS.hist.n + 1
    modeS.firstChar = true
-   modeS.zones.results:replace ""
-   modeS.zones:reflow(modeS)
+   modeS:setResults("")
 end
 
 CTRL ["^L"] = clear_txtbuf
@@ -273,9 +287,9 @@ ALT ["M-b"] = NAV.ALT_LEFT
 function Nerf.MOUSE(modeS, category, value)
    if value.scrolling then
       if value.button == "MB0" then
-         modeS.modes.NAV.SHIFT_UP(modeS, category, value)
+         modeS.zones.results:scrollUp()
       elseif value.button == "MB1" then
-         modeS.modes.NAV.SHIFT_DOWN(modeS, category, value)
+         modeS.zones.results:scrollDown()
       end
    end
 end

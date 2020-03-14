@@ -67,19 +67,14 @@
 
 
 
-assert(meta)
-
+local ts = import("helm/repr", "ts")
 local concat = assert(table.concat)
 
 local Txtbuf = require "helm/txtbuf"
-
 local Rainbuf = require "helm/rainbuf"
+local a = require "anterm:anterm"
 
-local a = require "singletons:anterm"
-
-local ts = require "helm/repr" . ts
 local Zone = meta {}
-
 local Zoneherd = meta {}
 
 
@@ -102,13 +97,44 @@ end
 
 
 
-function Zone.replace(zone, rainbuf)
-   zone.contents = rainbuf or zone.contents
+
+
+function Zone.replace(zone, contents)
+   zone.contents = contents or ""
    zone.touched = true
 
    return zone
 end
 
+
+
+
+
+
+
+
+
+local instanceof = import("core/meta", "instanceof")
+
+function Zone.scrollUp(zone)
+   if instanceof(zone.contents, Rainbuf)
+      and zone.contents:scrollUp() then
+      zone.touched = true
+      return true
+   else
+      return false
+   end
+end
+
+function Zone.scrollDown(zone)
+   if instanceof(zone.contents, Rainbuf)
+      and zone.contents:scrollDown() then
+      zone.touched = true
+      return true
+   else
+      return false
+   end
+end
 
 
 
@@ -137,7 +163,7 @@ end
 
 
 
-local lines = require "core/string" . lines
+local lines = import("core/string", "lines")
 
 local function _writeLines(write, zone, str)
    local nl = a.col(zone.tc) .. a.jump.down(1)
@@ -159,18 +185,15 @@ end
 
 
 
-local function _writeResults(write, zone, new)
-   local results = zone.contents
-   if not results then
+local instanceof = import("core/meta", "instanceof")
+
+local function _renderRainbuf(write, zone)
+   if not zone.contents then
       return nil
    end
-   if results.idEst ~= Rainbuf then
-      results = Rainbuf(results)
-      results.made_in = "writeResults"
-      zone.contents = results
-   end
+   assert(instanceof(zone.contents, Rainbuf))
    local nl = a.col(zone.tc) .. a.jump.down(1)
-   for line in results:lineGen(zone:height(), zone:width()) do
+   for line in zone.contents:lineGen(zone:height(), zone:width()) do
       write(line)
       write(nl)
    end
@@ -180,12 +203,23 @@ end
 
 
 
+local c = import("singletons/color", "color")
+local Token = require "helm/repr/token"
+
 local function _renderTxtbuf(modeS, zone, write)
-   local lb = modeS.lex(tostring(zone.contents))
-   if type(lb) == "table" then
-      lb = concat(lb)
+   local tokens = modeS.lex(zone.contents)
+   for i, tok in ipairs(tokens) do
+      -- If suggestions are active and one is highlighted,
+      -- display it in grey instead of what the user has typed so far
+      -- Note this only applies once Tab has been pressed, as until then
+      -- :selectedItem() will be nil
+      if tok.cursor_offset and modeS.suggest.active_suggestions
+         and modeS.suggest.active_suggestions[1]:selectedItem() then
+         tok = Token(modeS.suggest.active_suggestions[1]:selectedItem(), c.base)
+      end
+      tokens[i] = tok:toString(c)
    end
-   _writeLines(write, zone, lb)
+   _writeLines(write, zone, concat(tokens))
 end
 
 
@@ -291,8 +325,8 @@ function Zoneherd.paint(zoneherd, modeS)
          elseif type(zone.contents) == "table"
             and zone.contents.idEst == Txtbuf then
             _renderTxtbuf(modeS, zone, write)
-         elseif zone == zoneherd.results then
-            _writeResults(write, zone)
+         else
+            _renderRainbuf(write, zone)
          end
          zone.touched = false
       end

@@ -34,7 +34,8 @@ No sense wasting a level of indent on a wrapper imho
 ```lua
 setfenv(1, _ENV)
 
-meta = require "core/meta" . meta
+import = assert(require "core/module" . import)
+meta = import("core/meta", "meta")
 core = require "core:core"
 jit.vmdef = require "helm:helm/vmdef"
 jit.p = require "helm:helm/ljprof"
@@ -241,8 +242,12 @@ end
 
 -- Get names for as many values as possible
 -- into the colorizer
+-- Treat package names as existing in the global namespace
+-- rather than having a "package.loaded." prefix
 local names = require "helm/repr/names"
-names.allNames(__G)
+names.loadNames(package.loaded)
+names.loadNames(_G)
+names.loadNames(__G)
 
 -- assuming we survived that, set up our repling environment:
 

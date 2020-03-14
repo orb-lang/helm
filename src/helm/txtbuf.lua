@@ -63,9 +63,9 @@
 
 assert(meta)
 local Codepoints = require "singletons/codepoints"
-local lines = require "core/string" . lines
-local core_table = require "core/table"
-local collect, splice = assert(core_table.collect), assert(core_table.splice)
+local lines = import("core/string", "lines")
+local clone, collect, slice, splice =
+   import("core/table", "clone", "collect", "slice", "splice")
 
 local concat, insert, remove = assert(table.concat),
                                assert(table.insert),
@@ -170,6 +170,21 @@ end
 
 
 
+function Txtbuf.cursorIndex(txtbuf)
+   local index = txtbuf.cursor.col
+   for row = txtbuf.cursor.row - 1, 1, -1 do
+      index = index + #txtbuf.lines[row] + 1
+   end
+   return index
+end
+
+
+
+
+
+
+
+
 
 function Txtbuf.openRow(txtbuf, row_num)
    if row_num < 1 or row_num > #txtbuf.lines then
@@ -259,10 +274,6 @@ function Txtbuf.paste(txtbuf, frag)
       txtbuf:setCursor(nil, cur_col + #codes)
    end
 end
-
-
-
-
 
 
 
@@ -574,8 +585,6 @@ end
 
 
 
-local slice = assert(core_table.slice)
-
 function Txtbuf.nl(txtbuf)
    local cur_row, cur_col = txtbuf:getCursor()
    -- split the line
@@ -630,10 +639,9 @@ end
 
 
 
-local table_clone = assert(core_table.clone)
 function Txtbuf.clone(txtbuf)
    -- Clone to depth of 3 to get tb, tb.lines, and each lines
-   local tb = table_clone(txtbuf, 3)
+   local tb = clone(txtbuf, 3)
    return tb:resume()
 end
 

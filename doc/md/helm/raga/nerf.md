@@ -202,33 +202,39 @@ function NAV.DELETE(modeS, category, value)
    _modeShiftOnEmpty(modeS)
 end
 
-function NAV.SHIFT_DOWN(modeS, category, value)
-   local results = modeS.zones.results.contents
-   if results and results.more then
-      results.offset = results.offset + 1
-      modeS.zones.results.touched = true
-   end
-end
-
-function NAV.SHIFT_UP(modeS, category, value)
-   local results = modeS.zones.results.contents
-   if results
-    and results.offset
-    and results.offset > 0 then
-      results.offset = results.offset - 1
-      modeS.zones.results.touched = true
-   end
-end
-
-function NAV.TAB(modeS, category, value)
+local function _activateCompletion(modeS)
    if modeS.suggest.active_suggestions then
       modeS:shiftMode("complete")
       -- #todo seems like this should be able to be handled more centrally
       modeS.suggest.active_suggestions[1].selected_index = 1
       modeS.zones.suggest.touched = true
+      return true
    else
+      return false
+   end
+end
+
+function NAV.SHIFT_DOWN(modeS, category, value)
+   if not _activateCompletion(modeS) then
+      modeS.zones.results:scrollDown()
+   end
+end
+
+function NAV.SHIFT_UP(modeS, category, value)
+   if not _activateCompletion(modeS) then
+      modeS.zones.results:scrollUp()
+   end
+end
+
+function NAV.TAB(modeS, category, value)
+   if not _activateCompletion(modeS) then
       modeS.txtbuf:paste("   ")
    end
+end
+
+function NAV.SHIFT_TAB(modeS, category, value)
+   -- If we can't activate completion, nothing to do really
+   _activateCompletion(modeS)
 end
 ```
 ### CTRL
@@ -252,6 +258,10 @@ local function clear_txtbuf(modeS, category, value)
 end
 
 CTRL ["^L"] = clear_txtbuf
+
+CTRL ["^R"] = function(modeS, category, value)
+                 modeS:restart()
+              end
 ```
 ### ALT
 
@@ -266,9 +276,9 @@ ALT ["M-b"] = NAV.ALT_LEFT
 function Nerf.MOUSE(modeS, category, value)
    if value.scrolling then
       if value.button == "MB0" then
-         modeS.modes.NAV.SHIFT_UP(modeS, category, value)
+         modeS.zones.results:scrollUp()
       elseif value.button == "MB1" then
-         modeS.modes.NAV.SHIFT_DOWN(modeS, category, value)
+         modeS.zones.results:scrollDown()
       end
    end
 end

@@ -105,14 +105,13 @@ function Token.toString(token, c)
 end
 
 ```
-### Token.toStringBW()
+### Token.__tostring()
 
-Produces a string with no coloring sequences, regardless of the value of
-token.color. Mostly useful for debugging.
+Converts the Token back into a string, without coloring sequences.
 
 ```lua
 
-function Token.toStringBW(token)
+function Token.__tostring(token)
    if token.wrappable then
       return concat(token.codepoints, "", token.start)
    else

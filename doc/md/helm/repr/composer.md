@@ -279,7 +279,7 @@ function Composer.composeLine(composer)
       end
       local stage = composer:checkPushStage()
       if not stage then
-         error("No stage while processing: " .. token:toStringBW())
+         error("No stage while processing: " .. tostring(token))
       end
       if (token.event == "repr_line" or token.event == "break")
          and not stage.long then

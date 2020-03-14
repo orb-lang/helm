@@ -99,7 +99,7 @@ The easiest way to go mad in concurrent environments is to share memory.
 =modeselektor= will own txtbuf, historian, and the entire screen.
 
 #!lua
-local c = (require "singletons/color").color
+local c = import("singletons/color", "color")
 
 local Txtbuf     = require "helm/txtbuf"
 local Resbuf     = require "helm/resbuf" -- Not currently used...
@@ -107,13 +107,13 @@ local Rainbuf    = require "helm/rainbuf"
 local Historian  = require "helm/historian"
 local Lex        = require "helm/lex"
 local Zoneherd   = require "helm/zone"
+local Suggest    = require "helm/suggest"
 local repr       = require "helm/repr"
 local lua_parser = require "helm/lua-parser"
 
-local names     = require "helm/repr/names"
-
-local Nerf      = require "helm/nerf"
-local Search    = require "helm/search"
+local Nerf      = require "helm/raga/nerf"
+local Search    = require "helm/raga/search"
+local Complete  = require "helm/raga/complete"
 
 local concat               = assert(table.concat)
 local sub, gsub, rep, find = assert(string.sub),
@@ -206,7 +206,6 @@ end
 local function mouse_paint(m)
    return c.userdata(STAT_ICON)
       .. a.magenta(m.button) .. ": "
-      .. a.bright(m.kind) .. " "
       .. tf(m.shift) .. " "
       .. tf(m.meta) .. " "
       .. tf(m.ctrl) .. " "
@@ -308,16 +307,6 @@ repainting is a good example of this.
 
 The next mode we're going to write is ="search"=.
 
-
-**** Prompts
-
-Let's add some:
-
-#!lua
-ModeS.prompts = { nerf   = "👉 ",
-                  search = "⁉️ " }
-#/lua
-
 **** ModeS:continuationLines()
 
 Answers the number of additional lines (beyond the first) needed
@@ -335,7 +324,7 @@ Updates the prompt with the correct symbol and number of continuation prompts.
 
 #!lua
 function ModeS.updatePrompt(modeS)
-   local prompt = modeS.prompts[modeS.raga] .. ("\n..."):rep(modeS:continuationLines())
+   local prompt = modeS.modes.prompt_char .. " " .. ("\n..."):rep(modeS:continuationLines())
    modeS.zones.prompt:replace(prompt)
 end
 #/lua
@@ -358,10 +347,12 @@ A storage table for modes and other things we aren't using and need to
 retrieve.
 
 #!lua
-ModeS.closet = { nerf = { modes = Nerf,
-                          lex   = Lex.lua_thor },
-                 search = { modes = Search,
-                            lex   = c.base } }
+ModeS.closet = { nerf =     { modes = Nerf,
+                              lex   = Lex.lua_thor },
+                 search =   { modes = Search,
+                              lex   = Lex.null },
+                 complete = { modes = Complete,
+                              lex   = Lex.lua_thor } }
 
 function ModeS.shiftMode(modeS, raga)
    if raga == "search" then
@@ -408,8 +399,8 @@ end
 log anything unexpected.
 
 #!lua
-local assertfmt, iscallable = require "core/string" . assertfmt,
-                              require "core/table" . iscallable
+local assertfmt = import("core/string", "assertfmt")
+local hasfield, iscallable = import("core/table", "hasfield", "iscallable")
 
 function ModeS.act(modeS, category, value)
    assertfmt(modeS.modes[category], "no category %s in modeS", category)
@@ -420,15 +411,14 @@ function ModeS.act(modeS, category, value)
    local icon = _make_icon(category, value)
    -- Special first-character handling
    if modeS.firstChar and not (category == "MOUSE" or category == "NAV") then
-      modeS.zones.results:replace ""
+      modeS:setResults ""
       local shifted = _firstCharHandler(modeS, category, value)
       if shifted then
         goto final
       end
    end
    -- Dispatch on value if possible
-   if type(modeS.modes[category]) == "table"
-      and modeS.modes[category][value] then
+   if hasfield(modeS.modes[category], value) then
       modeS.modes[category][value](modeS, category, value)
    -- Or on category if the whole category is callable
    elseif iscallable(modeS.modes[category]) then
@@ -442,12 +432,13 @@ function ModeS.act(modeS, category, value)
    ::final::
    if modeS.raga == "search" then
       local searchResult = modeS.hist:search(tostring(modeS.txtbuf))
-      modeS.zones.results:replace(searchResult)
+      modeS:setResults(searchResult)
    end
    -- Replace zones
    modeS.zones.stat_col:replace(icon)
    modeS.zones.command:replace(modeS.txtbuf)
    modeS:updatePrompt()
+   modeS.suggest:update(modeS, category, value)
    -- Reflow in case command height has changed. Includes a paint.
    modeS:reflow()
    collectgarbage()
@@ -462,6 +453,28 @@ function ModeS.__call(modeS, category, value)
 end
 #/lua
 
+*** ModeS:setResults(results)
+
+Sets the contents of the results area to =results=, wrapping it in a Rainbuf
+if necessary. Strings are passed through unchanged.
+
+#!lua
+local instanceof = import("core/meta", "instanceof")
+
+function ModeS.setResults(modeS, results)
+   results = results or ""
+   if results == "" then
+      modeS.zones.results:replace(results)
+      return
+   end
+   if type(results) == "string" then
+      results = { results, n = 1, frozen = true }
+   end
+   local rb = instanceof(results, Rainbuf) and results or Rainbuf(results)
+   rb.scrollable = true
+   modeS.zones.results:replace(rb)
+end
+#/lua
 
 *** ModeS:eval()
 
@@ -504,21 +517,23 @@ local function newindexer(Env, key, value)
    Env[key] = value
 end
 
-local addName = assert(names.addName)
+local loadNames = import("helm/repr/names", "loadNames")
 
 function eval_M.__newindex(eval_ENV, key, value)
    local ok = pcall(newindexer, _G, key, value)
    if not ok then
       rawset(_G, key, value)
    end
-   addName { [key] = value }
+   -- Use loadNames() to get the key added to all_symbols
+   -- Should really divide up responsibility better between
+   -- loadNames() and addName()
+   loadNames{ [key] = value }
 end
 #/lua
 
 #!lua
 local function gatherResults(success, ...)
-  local n = select('#', ...)
-  return success, { n = n, ... }
+  return success, pack(...)
 end
 #/lua
 
@@ -540,6 +555,8 @@ end
 local insert = assert(table.insert)
 
 function ModeS.__eval(modeS, chunk, no_append)
+   -- Getting ready to eval, cancel any active autocompletion
+   modeS.suggest:cancel(modeS)
    -- check for leading =, old-school style
    local head = sub(chunk, 1, 1)
    if head == "=" then -- take pity on old-school Lua hackers
@@ -570,15 +587,7 @@ function ModeS.__eval(modeS, chunk, no_append)
    if f then
       setfenv(f, eval_ENV)
       success, results = gatherResults(xpcall(f, debug.traceback))
-      if success then
-         -- successful call
-         if results.n > 0 then
-            local rb = Rainbuf(results)
-            modeS.zones.results:replace(rb)
-         else
-            modeS.zones.results:replace ""
-         end
-      else
+      if not success then
          -- error
          results.frozen = true
       end
@@ -586,24 +595,23 @@ function ModeS.__eval(modeS, chunk, no_append)
       if err:match "'<eof>'$" then
          -- Lua expects some more input, advance the txtbuf
          modeS.txtbuf:advance()
-         write(a.colrow(1, modeS.repl_top + 1) .. "...")
          return true
       else
          -- make the error into the result
          results = { err,
                      n = 1,
-                     frozen = true}
+                     frozen = true }
       end
    end
    if not no_append then
-     modeS.zones.results:replace(results)
-     modeS.hist:append(modeS.txtbuf, results, success)
-     if success then
-        modeS.hist.result_buffer[modeS.hist.n] = results
-     end
-     modeS.hist.cursor = modeS.hist.n
+      modeS:setResults(results)
+      modeS.hist:append(modeS.txtbuf, results, success)
+      if success then
+         modeS.hist.result_buffer[modeS.hist.n] = results
+      end
+      modeS.hist.cursor = modeS.hist.n
    else
-     return results
+      return results
    end
 end
 
@@ -687,6 +695,7 @@ local function new(max_col, max_row)
   local modeS = meta(ModeS)
   modeS.txtbuf = Txtbuf()
   modeS.hist  = Historian()
+  modeS.suggest = Suggest()
   modeS.status = setmetatable({}, _stat_M)
   rawset(__G, "stat", modeS.status)
   modeS.max_col = max_col

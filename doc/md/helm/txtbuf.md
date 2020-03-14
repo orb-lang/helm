@@ -71,9 +71,9 @@ cleaner that transition can be.
 ```lua
 assert(meta)
 local Codepoints = require "singletons/codepoints"
-local lines = require "core/string" . lines
-local core_table = require "core/table"
-local collect, splice = assert(core_table.collect), assert(core_table.splice)
+local lines = import("core/string", "lines")
+local clone, collect, slice, splice =
+   import("core/table", "clone", "collect", "slice", "splice")
 
 local concat, insert, remove = assert(table.concat),
                                assert(table.insert),
@@ -166,6 +166,20 @@ function Txtbuf.setCursor(txtbuf, rowOrTable, col)
    txtbuf.cursor = txtbuf:makeCursor(rowOrTable, col, txtbuf.cursor)
 end
 
+```
+### Txtbuf:cursorIndex()
+
+Answers the index of the cursor in the string represented by the Txtbuf,
+with newlines counted as a single slot/character.
+
+```lua
+function Txtbuf.cursorIndex(txtbuf)
+   local index = txtbuf.cursor.col
+   for row = txtbuf.cursor.row - 1, 1, -1 do
+      index = index + #txtbuf.lines[row] + 1
+   end
+   return index
+end
 ```
 ### Txtbuf:openRow(row_num)
 
@@ -266,7 +280,6 @@ The return value tells us if we have one less line, since we need to
 clear it off the screen (true of deleteForward as well).
 
 ```lua
-
 local function _is_paired(a, b)
    return _openers[a] == b
 end
@@ -563,8 +576,6 @@ inserting a newline.
 
 ```lua
 
-local slice = assert(core_table.slice)
-
 function Txtbuf.nl(txtbuf)
    local cur_row, cur_col = txtbuf:getCursor()
    -- split the line
@@ -615,10 +626,9 @@ function Txtbuf.resume(txtbuf)
 end
 ```
 ```lua
-local table_clone = assert(core_table.clone)
 function Txtbuf.clone(txtbuf)
    -- Clone to depth of 3 to get tb, tb.lines, and each lines
-   local tb = table_clone(txtbuf, 3)
+   local tb = clone(txtbuf, 3)
    return tb:resume()
 end
 ```

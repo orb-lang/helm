@@ -114,8 +114,7 @@ end
 
 
 
-
-function Token.toStringBW(token)
+function Token.__tostring(token)
    if token.wrappable then
       return concat(token.codepoints, "", token.start)
    else

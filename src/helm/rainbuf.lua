@@ -58,7 +58,7 @@
 
 
 
-local lineGen = (require "helm/repr").lineGen
+local lineGen = import("helm/repr", "lineGen")
 
 
 
@@ -82,11 +82,14 @@ local Rainbuf = meta {}
 
 local clear, insert = assert(table.clear),
                       assert(table.insert)
-local lines = require "core/string" . lines
+local lines = import("core/string", "lines")
 
 function Rainbuf.lineGen(rainbuf, rows, cols)
    local offset = rainbuf.offset or 0
    cols = cols or 80
+   if rainbuf.scrollable then
+      cols = cols - 3
+   end
    if rainbuf.live then
       -- this buffer needs a fresh render each time
       rainbuf.reprs = nil
@@ -128,17 +131,44 @@ function Rainbuf.lineGen(rainbuf, rows, cols)
             end
          end
       end
-      -- If this is the last line requested, but more are available,
-      -- prepend a continuation marker, otherwise left padding
-      local prefix = "   "
-      if cursor == max_row and rainbuf.more then
-         prefix = a.red "..."
+      local prefix = ""
+      if rainbuf.scrollable then
+         -- If this is the last line requested, but more are available,
+         -- prepend a continuation marker, otherwise left padding
+         prefix = "   "
+         if cursor == max_row and rainbuf.more then
+            prefix = a.red "..."
+         end
       end
       return rainbuf.lines[cursor] and prefix .. rainbuf.lines[cursor]
    end
    return _nextLine
 end
 
+
+
+
+
+
+
+
+function Rainbuf.scrollUp(rainbuf)
+   if rainbuf.offset > 0 then
+      rainbuf.offset = rainbuf.offset - 1
+      return true
+   else
+      return false
+   end
+end
+
+function Rainbuf.scrollDown(rainbuf)
+   if rainbuf.more then
+      rainbuf.offset = rainbuf.offset + 1
+      return true
+   else
+      return false
+   end
+end
 
 
 
@@ -157,6 +187,7 @@ local function new(res)
       rainbuf.n = res.n
       rainbuf.frozen = res.frozen
       rainbuf.live = res.live
+      rainbuf.scrollable = res.scrollable
    end
    rainbuf.offset = 0
    rainbuf.lines = {}
