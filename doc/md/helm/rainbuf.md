@@ -80,7 +80,17 @@ local Rainbuf = meta {}
 ```
 ## Methods
 
+### Rainbuf:clearCaches()
 
+Clears any cached lineGen iterators and their output, causing a full re-render
+the next time lingeGen is called.
+
+```lua
+function Rainbuf.clearCaches(rainbuf)
+   rainbuf.reprs = nil
+   clear(rainbuf.lines)
+end
+```
 ### Rainbuf:lineGen(rows, offset)
 
 This is a generator which yields ``rows`` number of lines.
@@ -103,8 +113,7 @@ function Rainbuf.lineGen(rainbuf, rows, cols)
    end
    if rainbuf.live then
       -- this buffer needs a fresh render each time
-      rainbuf.reprs = nil
-      clear(rainbuf.lines)
+      rainbuf:clearCaches()
    end
    if not rainbuf.reprs then
       rainbuf.reprs = {}

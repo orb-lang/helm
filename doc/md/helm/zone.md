@@ -80,13 +80,13 @@ switch the REPL to a 'reflow mode' that just draws characters to a screen,
 then add a popup.
 
 ```lua
-local ts = import("helm/repr", "ts")
-local concat = assert(table.concat)
-
 local Txtbuf = require "helm/txtbuf"
 local Rainbuf = require "helm/rainbuf"
 local a = require "anterm:anterm"
 
+local instanceof = import("core/meta", "instanceof")
+```
+```lua
 local Zone = meta {}
 local Zoneherd = meta {}
 ```
@@ -123,7 +123,6 @@ and answers true if scrolling occurred, otherwise false. Only works if
 the contents is a Rainbuf (which handles the actual scrolling).
 
 ```lua
-local instanceof = import("core/meta", "instanceof")
 
 function Zone.scrollUp(zone)
    if instanceof(zone.contents, Rainbuf)
@@ -157,6 +156,11 @@ function Zone.set(zone, tc, tr, bc, br)
           zone.tc == tc and
           zone.br == br and
           zone.bc == bc) then
+      -- If zone width is changing, clear caches of the contained Rainbuf
+      if (bc - tc) ~= (zone.bc - zone.tc)
+         and instanceof(zone.contents, Rainbuf) then
+         zone.contents:clearCaches()
+      end
       zone.tr = tr
       zone.tc = tc
       zone.br = br
@@ -206,6 +210,7 @@ end
 ### _renderTxtbuf(modeS, zone)
 
 ```lua
+local concat = assert(table.concat)
 local c = import("singletons/color", "color")
 local Token = require "helm/repr/token"
 

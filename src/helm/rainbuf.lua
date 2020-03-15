@@ -76,6 +76,17 @@ local Rainbuf = meta {}
 
 
 
+function Rainbuf.clearCaches(rainbuf)
+   rainbuf.reprs = nil
+   clear(rainbuf.lines)
+end
+
+
+
+
+
+
+
 
 
 
@@ -92,8 +103,7 @@ function Rainbuf.lineGen(rainbuf, rows, cols)
    end
    if rainbuf.live then
       -- this buffer needs a fresh render each time
-      rainbuf.reprs = nil
-      clear(rainbuf.lines)
+      rainbuf:clearCaches()
    end
    if not rainbuf.reprs then
       rainbuf.reprs = {}

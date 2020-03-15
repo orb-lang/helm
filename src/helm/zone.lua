@@ -67,12 +67,13 @@
 
 
 
-local ts = import("helm/repr", "ts")
-local concat = assert(table.concat)
-
 local Txtbuf = require "helm/txtbuf"
 local Rainbuf = require "helm/rainbuf"
 local a = require "anterm:anterm"
+
+local instanceof = import("core/meta", "instanceof")
+
+
 
 local Zone = meta {}
 local Zoneherd = meta {}
@@ -114,7 +115,6 @@ end
 
 
 
-local instanceof = import("core/meta", "instanceof")
 
 function Zone.scrollUp(zone)
    if instanceof(zone.contents, Rainbuf)
@@ -149,6 +149,11 @@ function Zone.set(zone, tc, tr, bc, br)
           zone.tc == tc and
           zone.br == br and
           zone.bc == bc) then
+      -- If zone width is changing, clear caches of the contained Rainbuf
+      if (bc - tc) ~= (zone.bc - zone.tc)
+         and instanceof(zone.contents, Rainbuf) then
+         zone.contents:clearCaches()
+      end
       zone.tr = tr
       zone.tc = tc
       zone.br = br
@@ -203,6 +208,7 @@ end
 
 
 
+local concat = assert(table.concat)
 local c = import("singletons/color", "color")
 local Token = require "helm/repr/token"
 
