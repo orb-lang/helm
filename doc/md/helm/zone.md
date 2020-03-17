@@ -157,7 +157,10 @@ function Zone.set(zone, tc, tr, bc, br)
           zone.br == br and
           zone.bc == bc) then
       -- If zone width is changing, clear caches of the contained Rainbuf
-      if (bc - tc) ~= (zone.bc - zone.tc)
+      -- Note that :set() is called to set zone.(tc,bc,tr,br) for the first time,
+      -- so we only check for a change if there are previous values
+      if zone.bc and zone.tc
+         and (bc - tc) ~= (zone.bc - zone.tc)
          and instanceof(zone.contents, Rainbuf) then
          zone.contents:clearCaches()
       end

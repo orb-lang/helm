@@ -76,6 +76,7 @@ local Rainbuf = meta {}
 
 
 
+local clear = assert(table.clear)
 function Rainbuf.clearCaches(rainbuf)
    rainbuf.reprs = nil
    clear(rainbuf.lines)
@@ -91,8 +92,7 @@ end
 
 
 
-local clear, insert = assert(table.clear),
-                      assert(table.insert)
+local insert = assert(table.insert)
 local lines = import("core/string", "lines")
 
 function Rainbuf.lineGen(rainbuf, rows, cols)
