@@ -629,7 +629,7 @@ function ModeS.__eval(modeS, chunk, no_append)
 end
 
 function ModeS.eval(modeS)
-   modeS:__eval(tostring(modeS.txtbuf))
+   return modeS:__eval(tostring(modeS.txtbuf))
 end
 ```
 ### ModeS:restart()
