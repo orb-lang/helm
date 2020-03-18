@@ -137,8 +137,13 @@ local timer = uv.new_timer()
 uv.timer_start(timer, 500, 500, function()
    max_col, max_row = uv.tty_get_winsize(stdin)
    if max_col ~= modeS.max_col or max_row ~= modeS.max_row then
-      -- reflow screen.
       modeS.max_col, modeS.max_row = max_col, max_row
+      -- Mark all zones as touched since we don't know the state of the screen
+      -- (some terminals, iTerm for sure, will attempt to reflow the screen
+      -- themselves and fail miserably)
+      for _, zone in ipairs(modeS.zones) do
+         zone.touched = true
+      end
       modeS:reflow()
    end
 end)

@@ -76,12 +76,23 @@ local Rainbuf = meta {}
 
 
 
+local clear = assert(table.clear)
+function Rainbuf.clearCaches(rainbuf)
+   rainbuf.reprs = nil
+   clear(rainbuf.lines)
+end
 
 
 
 
-local clear, insert = assert(table.clear),
-                      assert(table.insert)
+
+
+
+
+
+
+
+local insert = assert(table.insert)
 local lines = import("core/string", "lines")
 
 function Rainbuf.lineGen(rainbuf, rows, cols)
@@ -92,8 +103,7 @@ function Rainbuf.lineGen(rainbuf, rows, cols)
    end
    if rainbuf.live then
       -- this buffer needs a fresh render each time
-      rainbuf.reprs = nil
-      clear(rainbuf.lines)
+      rainbuf:clearCaches()
    end
    if not rainbuf.reprs then
       rainbuf.reprs = {}

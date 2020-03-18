@@ -80,7 +80,18 @@ local Rainbuf = meta {}
 ```
 ## Methods
 
+### Rainbuf:clearCaches()
 
+Clears any cached lineGen iterators and their output, causing a full re-render
+the next time lineGen is called.
+
+```lua
+local clear = assert(table.clear)
+function Rainbuf.clearCaches(rainbuf)
+   rainbuf.reprs = nil
+   clear(rainbuf.lines)
+end
+```
 ### Rainbuf:lineGen(rows, offset)
 
 This is a generator which yields ``rows`` number of lines.
@@ -91,8 +102,7 @@ a line at a time (and it only took, oh, six months), we're finally able to
 generate these on the fly.
 
 ```lua
-local clear, insert = assert(table.clear),
-                      assert(table.insert)
+local insert = assert(table.insert)
 local lines = import("core/string", "lines")
 
 function Rainbuf.lineGen(rainbuf, rows, cols)
@@ -103,8 +113,7 @@ function Rainbuf.lineGen(rainbuf, rows, cols)
    end
    if rainbuf.live then
       -- this buffer needs a fresh render each time
-      rainbuf.reprs = nil
-      clear(rainbuf.lines)
+      rainbuf:clearCaches()
    end
    if not rainbuf.reprs then
       rainbuf.reprs = {}
