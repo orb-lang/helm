@@ -173,13 +173,6 @@ With some semi-constants:
 ```lua
 ModeS.REPL_LINE = 2
 ```
-
-Sometimes its useful to briefly override handlers, so we check values
-against ``special`` first:
-
-```lua
-ModeS.special = {}
-```
 ### ModeS:errPrint(modeS, category, value)
 
 Debug aide.
@@ -392,10 +385,6 @@ local hasfield, iscallable = import("core/table", "hasfield", "iscallable")
 
 function ModeS.act(modeS, category, value)
    assertfmt(modeS.raga[category], "no category %s in modeS", category)
-   -- catch special handlers first
-   if modeS.special[value] then
-      return modeS.special[value](modeS, category, value)
-   end
    local icon = _make_icon(category, value)
    -- Dispatch on value if possible
    if hasfield(modeS.raga[category], value) then

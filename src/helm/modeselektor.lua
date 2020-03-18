@@ -160,13 +160,6 @@ ModeS.REPL_LINE = 2
 
 
 
-ModeS.special = {}
-
-
-
-
-
-
 
 function ModeS.errPrint(modeS, log_stmt)
    modeS.zones.suggest:replace(log_stmt)
@@ -375,10 +368,6 @@ local hasfield, iscallable = import("core/table", "hasfield", "iscallable")
 
 function ModeS.act(modeS, category, value)
    assertfmt(modeS.raga[category], "no category %s in modeS", category)
-   -- catch special handlers first
-   if modeS.special[value] then
-      return modeS.special[value](modeS, category, value)
-   end
    local icon = _make_icon(category, value)
    -- Dispatch on value if possible
    if hasfield(modeS.raga[category], value) then
