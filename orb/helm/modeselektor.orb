@@ -364,19 +364,21 @@ log anything unexpected.
 
 #!lua
 local assertfmt = import("core/string", "assertfmt")
-local hasfield, iscallable = import("core/table", "hasfield", "iscallable")
 
 function ModeS.act(modeS, category, value)
-   assertfmt(modeS.raga[category], "no category %s in modeS", category)
    local icon = _make_icon(category, value)
-   -- Dispatch on value if possible
-   if hasfield(modeS.raga[category], value) then
-      modeS.raga[category][value](modeS, category, value)
-   -- Or on category if the whole category is callable
-   elseif iscallable(modeS.raga[category]) then
-      modeS.raga[category](modeS, category, value)
-   -- Otherwise display the unknown command
-   else
+   local handled = false
+   while not modeS.action_complete do
+      modeS.action_complete = true
+      if modeS.raga(modeS, category, value) then
+         handled = true
+      end
+      if modeS.shift_to then
+         modeS:shiftMode(modeS.shift_to)
+         modeS.shift_to = nil
+      end
+   end
+   if not handled then
       local val_rep = string.format("%q",value):sub(2,-2)
       icon = _make_icon("NYI", category .. ": " .. val_rep)
    end
@@ -661,6 +663,8 @@ local function new(max_col, max_row)
   modeS.zones.status:replace(modeS.prompt_lines.default)
   -- initial state
   modeS:shiftMode(modeS.raga_default)
+  modeS.action_complete = true
+  modeS.shift_to = nil
   return modeS
 end
 
