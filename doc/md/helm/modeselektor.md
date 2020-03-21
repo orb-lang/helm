@@ -260,6 +260,7 @@ function ModeS.placeCursor(modeS)
    local col = modeS.zones.command.tc + modeS.txtbuf.cursor.col - 1
    local row = modeS.zones.command.tr + modeS.txtbuf.cursor.row - 1
    write(a.colrow(col, row))
+   return modeS
 end
 ```
 ### ModeS:paint()
@@ -331,6 +332,7 @@ Updates the prompt with the correct symbol and number of continuation prompts.
 function ModeS.updatePrompt(modeS)
    local prompt = modeS.raga.prompt_char .. " " .. ("\n..."):rep(modeS:continuationLines())
    modeS.zones.prompt:replace(prompt)
+   return modeS
 end
 ```
 ### ModeS:shiftMode(raga)
@@ -413,6 +415,7 @@ function ModeS.act(modeS, category, value)
    -- Reflow in case command height has changed. Includes a paint.
    modeS:reflow()
    collectgarbage()
+   return modeS
 end
 ```
 
@@ -435,7 +438,7 @@ function ModeS.setResults(modeS, results)
    results = results or ""
    if results == "" then
       modeS.zones.results:replace(results)
-      return
+      return modeS
    end
    if type(results) == "string" then
       results = { results, n = 1, frozen = true }
@@ -443,6 +446,7 @@ function ModeS.setResults(modeS, results)
    local rb = instanceof(results, Rainbuf) and results or Rainbuf(results)
    rb.scrollable = true
    modeS.zones.results:replace(rb)
+   return modeS
 end
 ```
 ### ModeS:eval()
@@ -633,6 +637,7 @@ function ModeS.restart(modeS)
       hist.conn:exec "RELEASE restart_session;"
       restart_idle:stop()
    end)
+   return modeS
 end
 ```
 #### modeS.status
