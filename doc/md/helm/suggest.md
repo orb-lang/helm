@@ -22,28 +22,6 @@ local Suggest = meta {}
 local new
 
 ```
-### _shouldUpdate
-
-Decides whether we should respond to a given event by updating the
-completion list.
-
-```lua
-
-local function _shouldUpdate(modeS, category, value)
-   if category == "ASCII" or category == "UTF8" then
-      return true
-   end
-   -- Deletion and moving the cursor should update the completion list
-   -- #todo there's got to be a better way to do this
-   if category == "NAV" and
-      value == "BACKSPACE" or value == "DELETE" or
-      value == "LEFT" or value == "RIGHT" then
-      return true
-   end
-   return false
-end
-
-```
 ### _cursorContext(modeS)
 
 Examines the text before the cursor to determine (a) what token we are in the
@@ -137,10 +115,7 @@ local hasmetamethod = import("core/meta", "hasmetamethod")
 local hasfield = import("core:core/table", "hasfield")
 local fuzz_patt = require "helm:helm/fuzz_patt"
 
-function Suggest.update(suggest, modeS, category, value)
-   if not _shouldUpdate(modeS, category, value) then
-      return
-   end
+function Suggest.update(suggest, modeS)
    local context, path = _cursorContext(modeS)
    if context == nil then
       suggest:cancel(modeS)

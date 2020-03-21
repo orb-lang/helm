@@ -13,6 +13,18 @@ local Search = clone(EditBase, 2)
 Search.name = "search"
 Search.prompt_char = "⁉️"
 ```
+## Input/updating search results
+
+We need to update the search result whenever the contents of the Txtbuf change.
+
+```lua
+
+function Search.txtbufChanged(modeS)
+   local searchResult = modeS.hist:search(tostring(modeS.txtbuf))
+   modeS:setResults(searchResult)
+end
+
+```
 ## Navigation
 
 ```lua

@@ -18,6 +18,19 @@ Search.prompt_char = "⁉️"
 
 
 
+
+
+function Search.txtbufChanged(modeS)
+   local searchResult = modeS.hist:search(tostring(modeS.txtbuf))
+   modeS:setResults(searchResult)
+end
+
+
+
+
+
+
+
 function Search.NAV.SHIFT_DOWN(modeS, category, value)
    local search_buf = modeS.hist.last_collection
    if not search_buf then return end

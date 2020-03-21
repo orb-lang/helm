@@ -199,4 +199,16 @@ end
 
 
 
+
+
+
+
+
+function Nerf.cursorChanged(modeS)
+   modeS.suggest:update(modeS)
+   EditBase.cursorChanged(modeS)
+end
+
+
+
 return Nerf

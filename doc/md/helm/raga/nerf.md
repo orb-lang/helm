@@ -193,6 +193,17 @@ function Nerf.MOUSE(modeS, category, value)
    end
 end
 ```
+### Nerf.cursorChanged(modeS)
+
+Whenever the cursor moves (which is likely because the txtbuf contents changed,
+but we don't really care), need to update the suggestions.
+
+```lua
+function Nerf.cursorChanged(modeS)
+   modeS.suggest:update(modeS)
+   EditBase.cursorChanged(modeS)
+end
+```
 ```lua
 return Nerf
 ```

@@ -394,18 +394,11 @@ function ModeS.act(modeS, category, value)
       icon = _make_icon("NYI", category .. ": " .. val_rep)
    end
 
-   ::final::
-   if modeS.raga.name == "search" then
-      local searchResult = modeS.hist:search(tostring(modeS.txtbuf))
-      modeS:setResults(searchResult)
-   end
    -- Replace zones
    modeS.zones.stat_col:replace(icon)
    modeS.zones.command:replace(modeS.txtbuf)
-   modeS:updatePrompt()
-   modeS.suggest:update(modeS, category, value)
    -- Reflow in case command height has changed. Includes a paint.
-   modeS:reflow()
+   modeS:updatePrompt():reflow()
    collectgarbage()
    return modeS
 end

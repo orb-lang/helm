@@ -31,29 +31,6 @@ local new
 
 
 
-local function _shouldUpdate(modeS, category, value)
-   if category == "ASCII" or category == "UTF8" then
-      return true
-   end
-   -- Deletion and moving the cursor should update the completion list
-   -- #todo there's got to be a better way to do this
-   if category == "NAV" and
-      value == "BACKSPACE" or value == "DELETE" or
-      value == "LEFT" or value == "RIGHT" then
-      return true
-   end
-   return false
-end
-
-
-
-
-
-
-
-
-
-
 
 
 local function _cursorContext(modeS)
@@ -141,10 +118,7 @@ local hasmetamethod = import("core/meta", "hasmetamethod")
 local hasfield = import("core:core/table", "hasfield")
 local fuzz_patt = require "helm:helm/fuzz_patt"
 
-function Suggest.update(suggest, modeS, category, value)
-   if not _shouldUpdate(modeS, category, value) then
-      return
-   end
+function Suggest.update(suggest, modeS)
    local context, path = _cursorContext(modeS)
    if context == nil then
       suggest:cancel(modeS)
