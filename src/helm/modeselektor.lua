@@ -370,6 +370,7 @@ local assertfmt = import("core/string", "assertfmt")
 function ModeS.act(modeS, category, value)
    local icon = _make_icon(category, value)
    local handled = false
+   modeS.action_complete = false
    while not modeS.action_complete do
       modeS.action_complete = true
       if modeS.raga(modeS, category, value) then

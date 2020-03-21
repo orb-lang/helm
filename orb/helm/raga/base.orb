@@ -18,7 +18,8 @@ local sub, gsub, rep = assert(string.sub),
 These are the broad types of event.
 
 #!lua
-local RagaBase = meta {}
+local RagaBase_meta = {}
+local RagaBase = setmetatable({}, RagaBase_meta)
 
 for _, cat in ipairs{"NAV", "CTRL", "ALT", "ASCII",
                      "UTF8", "PASTE", "MOUSE", "NYI"} do
@@ -38,7 +39,7 @@ RagaBase.prompt_char = "$"
 
 local hasfield, iscallable = import("core/table", "hasfield", "iscallable")
 
-function RagaBase.__call(modeS, category, value)
+function RagaBase_meta.__call(raga, modeS, category, value)
    -- Dispatch on value if possible
    if hasfield(modeS.raga[category], value) then
       modeS.raga[category][value](modeS, category, value)
