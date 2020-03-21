@@ -375,6 +375,14 @@ function ModeS.act(modeS, category, value)
       if modeS.raga(modeS, category, value) then
          handled = true
       end
+      if modeS.txtbuf.contents_changed then
+        modeS.raga.txtbufChanged(modeS)
+        modeS.txtbuf.contents_changed = false
+      end
+      if modeS.txtbuf.cursor_changed then
+        modeS.raga.cursorChanged(modeS)
+        modeS.txtbuf.cursor_changed = false
+      end
       if modeS.shift_to then
          modeS:shiftMode(modeS.shift_to)
          modeS.shift_to = nil

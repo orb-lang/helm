@@ -51,6 +51,26 @@ function RagaBase.__call(modeS, category, value)
 end
 
 ```
+## Events
+
+### <Raga>.txtbufChanged(modeS)
+
+Called whenever the txtbuf's contents have changed while processing a seq.
+
+```lua
+function RagaBase.txtbufChanged(modeS)
+end
+```
+### <Raga>.cursorChanged(modeS)
+
+Called whenever the cursor has moved while processing a seq.
+Both txtbufChanged and cursorChanged will be called in the
+common case of a simple insertion.
+
+```lua
+function RagaBase.cursorChanged(modeS)
+end
+```
 ```lua
 return RagaBase
 ```

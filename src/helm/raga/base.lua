@@ -55,4 +55,26 @@ end
 
 
 
+
+
+
+
+
+
+function RagaBase.txtbufChanged(modeS)
+end
+
+
+
+
+
+
+
+
+
+function RagaBase.cursorChanged(modeS)
+end
+
+
+
 return RagaBase

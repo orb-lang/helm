@@ -54,6 +54,28 @@ end
 
 #/lua
 
+** Events
+
+*** <Raga>.txtbufChanged(modeS)
+
+Called whenever the txtbuf's contents have changed while processing a seq.
+
+#!lua
+function RagaBase.txtbufChanged(modeS)
+end
+#/lua
+
+*** <Raga>.cursorChanged(modeS)
+
+Called whenever the cursor has moved while processing a seq.
+Both txtbufChanged and cursorChanged will be called in the
+common case of a simple insertion.
+
+#!lua
+function RagaBase.cursorChanged(modeS)
+end
+#/lua
+
 #!lua
 return RagaBase
 #/lua

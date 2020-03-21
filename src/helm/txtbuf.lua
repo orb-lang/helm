@@ -61,6 +61,11 @@
 
 
 
+
+
+
+
+
 assert(meta)
 local Codepoints = require "singletons/codepoints"
 local lines = import("core/string", "lines")
@@ -160,6 +165,7 @@ end
 
 function Txtbuf.setCursor(txtbuf, rowOrTable, col)
    txtbuf.cursor = txtbuf:makeCursor(rowOrTable, col, txtbuf.cursor)
+   txtbuf.cursor_changed = true
 end
 
 
@@ -204,6 +210,7 @@ end
 
 function Txtbuf.advance(txtbuf)
    txtbuf.lines[#txtbuf.lines + 1] = {}
+   txtbuf.contents_changed = true
    txtbuf:setCursor(#txtbuf.lines, 1)
 end
 
@@ -249,6 +256,7 @@ function Txtbuf.insert(txtbuf, frag)
          insert(line, cur_col, _openers[frag])
       end
       insert(line, cur_col, frag)
+      txtbuf.contents_changed = true
    end
    txtbuf:setCursor(nil, cur_col + 1)
    return true
@@ -273,6 +281,7 @@ function Txtbuf.paste(txtbuf, frag)
       splice(txtbuf.lines[cur_row], cur_col, codes)
       txtbuf:setCursor(nil, cur_col + #codes)
    end
+   txtbuf.contents_changed = true
 end
 
 
@@ -288,6 +297,11 @@ end
 
 function Txtbuf.deleteBackward(txtbuf)
    local cur_row, cur_col = txtbuf:getCursor()
+   if cur_row == 1 and cur_col == 1 then
+      return false
+   end
+   -- At this point we will definitely make a change
+   txtbuf.contents_changed = true
    local line = txtbuf.lines[cur_row]
    if cur_col > 1 then
       if _is_paired(line[cur_col - 1], line[cur_col]) then
@@ -295,8 +309,6 @@ function Txtbuf.deleteBackward(txtbuf)
       end
       remove(line, cur_col - 1)
       txtbuf:setCursor(nil, cur_col - 1)
-      return false
-   elseif cur_row == 1 then
       return false
    else
       txtbuf:openRow(cur_row - 1)
@@ -315,14 +327,17 @@ end
 
 function Txtbuf.deleteForward(txtbuf)
    local cur_row, cur_col = txtbuf:getCursor()
-   if cur_col <= #txtbuf.lines[cur_row] then
-      remove(txtbuf.lines[cur_row], cur_col)
+   local line = txtbuf.lines[cur_row]
+   if cur_row == #txtbuf.lines and cur_col > #line then
       return false
-   elseif cur_row == #txtbuf.lines then
+   end
+   txtbuf.contents_changed = true
+   if cur_col <= #line then
+      remove(line, cur_col)
       return false
    else
       txtbuf:openRow(cur_row + 1)
-      splice(txtbuf.lines[cur_row], nil, txtbuf.lines[cur_row + 1])
+      splice(line, nil, txtbuf.lines[cur_row + 1])
       remove(txtbuf.lines, cur_row + 1)
       return true
    end
@@ -593,6 +608,7 @@ function Txtbuf.nl(txtbuf)
    local second = slice(line, cur_col)
    txtbuf.lines[cur_row] = first
    insert(txtbuf.lines, cur_row + 1, second)
+   txtbuf.contents_changed = true
    txtbuf:setCursor(cur_row + 1, 1)
    return false
 end
@@ -660,6 +676,8 @@ local function new(str)
    end
    txtbuf.lines = lines
    txtbuf:endOfText()
+   txtbuf.contents_changed = false
+   txtbuf.cursor_changed = false
    return txtbuf
 end
 
