@@ -451,6 +451,19 @@ function ModeS.setResults(modeS, results)
    return modeS
 end
 ```
+### ModeS:setTxtbuf(txtbuf)
+
+Replaces the current Txtbuf with ``txtbuf``. This effectively involves
+changes to the cursor and contents, so we set those flags.
+
+```lua
+function ModeS.setTxtbuf(modeS, txtbuf)
+   modeS.txtbuf = txtbuf
+   modeS.txtbuf.cursor_changed = true
+   modeS.txtbuf.contents_changed = true
+   return modeS
+end
+```
 ### ModeS:eval()
 
 

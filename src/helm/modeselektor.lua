@@ -442,6 +442,20 @@ end
 
 
 
+function ModeS.setTxtbuf(modeS, txtbuf)
+   modeS.txtbuf = txtbuf
+   modeS.txtbuf.cursor_changed = true
+   modeS.txtbuf.contents_changed = true
+   return modeS
+end
+
+
+
+
+
+
+
+
 
 
 

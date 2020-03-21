@@ -67,9 +67,9 @@ CTRL ["^A"] = NAV.HYPER_LEFT
 CTRL ["^E"] = NAV.HYPER_RIGHT
 
 local function clear_txtbuf(modeS, category, value)
-   modeS.txtbuf = Txtbuf()
-   modeS.hist.cursor = modeS.hist.n + 1
+   modeS:setTxtbuf(Txtbuf())
    modeS:setResults("")
+   modeS.hist.cursor = modeS.hist.n + 1
 end
 
 CTRL ["^L"] = clear_txtbuf

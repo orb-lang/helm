@@ -72,15 +72,16 @@ Nerf.UTF8 = _insert
 local NAV = Nerf.NAV
 
 local function _prev(modeS)
-   local prev_result, linestash
+   local linestash
    if tostring(modeS.txtbuf) ~= ""
       and modeS.hist.cursor > modeS.hist.n then
       linestash = modeS.txtbuf
    end
-   modeS.txtbuf, prev_result = modeS.hist:prev()
+   local prev_txtbuf, prev_result = modeS.hist:prev()
    if linestash then
       modeS.hist:append(linestash)
    end
+   modeS:setTxtbuf(prev_txtbuf)
    modeS:setResults(prev_result)
    return modeS
 end
@@ -100,10 +101,9 @@ local function _advance(modeS)
       if added then
          modeS.hist.cursor = modeS.hist.n + 1
       end
-      modeS.txtbuf = Txtbuf()
-   else
-      modeS.txtbuf = new_txtbuf
+      new_txtbuf = Txtbuf()
    end
+   modeS:setTxtbuf(new_txtbuf)
    modeS:setResults(next_result)
    return modeS
 end
@@ -123,7 +123,7 @@ end
 local function _eval(modeS)
    local more = modeS:eval()
    if not more then
-      modeS.txtbuf = Txtbuf()
+      modeS.setTxtbuf(Txtbuf())
       modeS.hist.cursor = modeS.hist.cursor + 1
    end
 end
