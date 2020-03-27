@@ -742,8 +742,11 @@ function __result_buffer_M.__repr()
    return c.alert "cowardly refusing to print result_buffer to avoid infinite appending"
 end
 
-local function new()
+local function new(helm_db)
    local historian = meta(Historian)
+   if helm_db then
+      historian.helm_db = helm_db
+   end
    historian.line_ids = {}
    historian.cursor = 0
    historian.cursor_start = 0
