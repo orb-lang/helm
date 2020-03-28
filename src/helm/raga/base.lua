@@ -68,6 +68,7 @@ end
 
 
 function RagaBase.txtbufChanged(modeS)
+   return
 end
 
 
@@ -79,6 +80,7 @@ end
 
 
 function RagaBase.cursorChanged(modeS)
+   return
 end
 
 

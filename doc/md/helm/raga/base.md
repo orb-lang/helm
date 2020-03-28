@@ -65,6 +65,7 @@ Called whenever the txtbuf's contents have changed while processing a seq.
 
 ```lua
 function RagaBase.txtbufChanged(modeS)
+   return
 end
 ```
 ### <Raga>.cursorChanged(modeS)
@@ -75,6 +76,7 @@ common case of a simple insertion.
 
 ```lua
 function RagaBase.cursorChanged(modeS)
+   return
 end
 ```
 ```lua
