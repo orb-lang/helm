@@ -362,39 +362,52 @@ end
 
 ** act
 
-  =act= simply dispatches. Note that our common interfaces is
-=method(modeS, category, value)=, we need to distinguish betwen the tuple
-=("INSERT", "SHIFT-LEFT")= (which could arrive from copy-paste) and
-=("NAV", "SHIFT-LEFT")= and preserve information for our fall-through method.
+=act= dispatches a single seq (which has already been parsed into (category, value)
+by =onseq=). It may try the dispatch multiple times if the raga indicates
+that reprocessing is needed by setting =modeS.action_complete= to =false.
+
+Note that our common interface is =method(modeS, category, value)=,
+we need to distinguish betwen the tuple =("INSERT", "SHIFT-LEFT")=
+(which could arrive from copy-paste) and =("NAV", "SHIFT-LEFT")=
+and preserve information for our fall-through method.
 
 =act= always succeeds, meaning we need some metatable action to absorb and
 log anything unexpected.
 
-#!lua
-local assertfmt = import("core/string", "assertfmt")
+*** _actOnce
 
+Dispatches a seq to the current raga, answering whether or not the raga could
+process it (if this never occurs, we display an NYI message in the status area).
+
+#!lua
+local function _actOnce(modeS, category, value)
+   local handled = modeS.raga(modeS, category, value)
+   if modeS.shift_to then
+      modeS:shiftMode(modeS.shift_to)
+      modeS.shift_to = nil
+   end
+   if modeS.txtbuf.contents_changed then
+     modeS.raga.txtbufChanged(modeS)
+     modeS.txtbuf.contents_changed = false
+   end
+   if modeS.txtbuf.cursor_changed then
+     modeS.raga.cursorChanged(modeS)
+     modeS.txtbuf.cursor_changed = false
+   end
+   return handled
+end
+#/lua
+
+#!lua
 function ModeS.act(modeS, category, value)
    local icon = _make_icon(category, value)
    local handled = false
    modeS.action_complete = false
-   while not modeS.action_complete do
+   repeat
       modeS.action_complete = true
-      if modeS.raga(modeS, category, value) then
-         handled = true
-      end
-      if modeS.shift_to then
-         modeS:shiftMode(modeS.shift_to)
-         modeS.shift_to = nil
-      end
-      if modeS.txtbuf.contents_changed then
-        modeS.raga.txtbufChanged(modeS)
-        modeS.txtbuf.contents_changed = false
-      end
-      if modeS.txtbuf.cursor_changed then
-        modeS.raga.cursorChanged(modeS)
-        modeS.txtbuf.cursor_changed = false
-      end
-   end
+      local handledThisTime = _actOnce(modeS, category, value)
+      handled = handled or handledThisTime
+   until modeS.action_complete == true
    if not handled then
       local val_rep = string.format("%q",value):sub(2,-2)
       icon = _make_icon("NYI", category .. ": " .. val_rep)

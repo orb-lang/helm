@@ -371,30 +371,43 @@ end
 
 
 
-local assertfmt = import("core/string", "assertfmt")
+
+
+
+
+
+
+
+
+
+local function _actOnce(modeS, category, value)
+   local handled = modeS.raga(modeS, category, value)
+   if modeS.shift_to then
+      modeS:shiftMode(modeS.shift_to)
+      modeS.shift_to = nil
+   end
+   if modeS.txtbuf.contents_changed then
+     modeS.raga.txtbufChanged(modeS)
+     modeS.txtbuf.contents_changed = false
+   end
+   if modeS.txtbuf.cursor_changed then
+     modeS.raga.cursorChanged(modeS)
+     modeS.txtbuf.cursor_changed = false
+   end
+   return handled
+end
+
+
 
 function ModeS.act(modeS, category, value)
    local icon = _make_icon(category, value)
    local handled = false
    modeS.action_complete = false
-   while not modeS.action_complete do
+   repeat
       modeS.action_complete = true
-      if modeS.raga(modeS, category, value) then
-         handled = true
-      end
-      if modeS.shift_to then
-         modeS:shiftMode(modeS.shift_to)
-         modeS.shift_to = nil
-      end
-      if modeS.txtbuf.contents_changed then
-        modeS.raga.txtbufChanged(modeS)
-        modeS.txtbuf.contents_changed = false
-      end
-      if modeS.txtbuf.cursor_changed then
-        modeS.raga.cursorChanged(modeS)
-        modeS.txtbuf.cursor_changed = false
-      end
-   end
+      local handledThisTime = _actOnce(modeS, category, value)
+      handled = handled or handledThisTime
+   until modeS.action_complete == true
    if not handled then
       local val_rep = string.format("%q",value):sub(2,-2)
       icon = _make_icon("NYI", category .. ": " .. val_rep)
