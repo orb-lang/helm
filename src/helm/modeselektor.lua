@@ -345,10 +345,16 @@ ModeS.closet = { nerf =     { raga = Nerf,
                               lex  = Lex.lua_thor } }
 
 function ModeS.shiftMode(modeS, raga_name)
-   -- #todo we were stashing the lexer, but never changing
-   -- it so that was useless. Do we need to at some point?
-   modeS.lex = modeS.closet[raga_name].lex
+   -- Stash the current lexer associated with the current raga
+   -- Currently we never change the lexer separate from the raga,
+   -- but this will change when we start supporting multiple languages
+   -- Guard against nil raga or lexer during startup
+   if modeS.raga and modeS.lex then
+      modeS.closet[modeS.raga.name].lex = modeS.lex
+   end
+   -- Switch in the new raga and associated lexer
    modeS.raga = modeS.closet[raga_name].raga
+   modeS.lex = modeS.closet[raga_name].lex
    modeS:updatePrompt()
    return modeS
 end
