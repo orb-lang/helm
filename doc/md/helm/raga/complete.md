@@ -2,18 +2,14 @@
 
 Handles choosing and accepting a suggestion from ``suggest``.
 
-
-Implemented for now as a wrapper over Nerf--should really be derived
-from a common base of edit functionality, or (even better) defer somehow
-to whatever the previous raga was.
-
 ```lua
 local clone = import("core/table", "clone")
-local Nerf = require "helm/raga/nerf"
+local EditBase = require "helm/raga/edit"
 
-local Complete = clone(Nerf, 2)
+local Complete = clone(EditBase, 2)
 
 Complete.name = "complete"
+Complete.prompt_char = "👉"
 ```
 ## Inserts
 
@@ -45,7 +41,7 @@ local function _insert(modeS, category, value)
       _accept(modeS, category, value)
       modeS.action_complete = false
    else
-      Nerf(modeS, category, value)
+      EditBase(modeS, category, value)
    end
 end
 
@@ -81,6 +77,14 @@ NAV.RETURN = _accept
 function NAV.LEFT(modeS, category, value)
    _accept(modeS, category, value)
    modeS.action_complete = false
+end
+```
+### Complete.cursorChanged(modeS)
+
+```lua
+function Complete.cursorChanged(modeS)
+   modeS.suggest:update(modeS)
+   EditBase.cursorChanged(modeS)
 end
 ```
 ```lua
