@@ -380,7 +380,7 @@ end
 
 
 
-local function _actOnce(modeS, category, value)
+function ModeS.actOnce(modeS, category, value)
    local handled = modeS.raga(modeS, category, value)
    if modeS.shift_to then
       modeS:shiftMode(modeS.shift_to)
@@ -402,10 +402,11 @@ end
 function ModeS.act(modeS, category, value)
    local icon = _make_icon(category, value)
    local handled = false
-   modeS.action_complete = false
    repeat
       modeS.action_complete = true
-      local handledThisTime = _actOnce(modeS, category, value)
+      -- The raga may set action_complete to false to cause the command
+      -- to be re-processed, most likely after a mode-switch
+      local handledThisTime = modeS:actOnce(category, value)
       handled = handled or handledThisTime
    until modeS.action_complete == true
    if not handled then
