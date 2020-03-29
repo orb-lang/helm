@@ -120,7 +120,7 @@ end
 local function _eval(modeS)
    local more = modeS:eval()
    if not more then
-      modeS.setTxtbuf(Txtbuf())
+      modeS:setTxtbuf(Txtbuf())
       modeS.hist.cursor = modeS.hist.cursor + 1
    end
 end
