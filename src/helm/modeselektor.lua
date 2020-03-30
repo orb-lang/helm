@@ -606,6 +606,8 @@ function ModeS.__eval(modeS, chunk, no_append)
    else
       return results
    end
+   modeS:setTxtbuf(Txtbuf())
+   modeS.hist.cursor = modeS.hist.cursor + 1
 end
 
 function ModeS.eval(modeS)

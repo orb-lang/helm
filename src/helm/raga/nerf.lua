@@ -118,25 +118,16 @@ end
 
 
 
-
-local function _eval(modeS)
-   local more = modeS:eval()
-   if not more then
-      modeS:setTxtbuf(Txtbuf())
-      modeS.hist.cursor = modeS.hist.cursor + 1
-   end
-end
-
 function NAV.RETURN(modeS, category, value)
    if modeS.txtbuf:shouldEvaluate() then
-      _eval(modeS)
+      modeS:eval()
    else
       modeS.txtbuf:nl()
    end
 end
 
 function NAV.CTRL_RETURN(modeS, category, value)
-   _eval(modeS)
+   modeS:eval()
 end
 
 function NAV.SHIFT_RETURN(modeS, category, value)
