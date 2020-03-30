@@ -151,20 +151,9 @@ local ModeS = meta()
 
 
 
-ModeS.modes = Nerf
-
-
-
 
 
 ModeS.REPL_LINE = 2
-
-
-
-
-
-
-ModeS.special = {}
 
 
 
@@ -254,6 +243,7 @@ function ModeS.placeCursor(modeS)
    local col = modeS.zones.command.tc + modeS.txtbuf.cursor.col - 1
    local row = modeS.zones.command.tr + modeS.txtbuf.cursor.row - 1
    write(a.colrow(col, row))
+   return modeS
 end
 
 
@@ -286,10 +276,9 @@ end
 
 
 
+
+
 ModeS.raga_default = "nerf"
-
-
-
 
 
 
@@ -324,8 +313,9 @@ end
 
 
 function ModeS.updatePrompt(modeS)
-   local prompt = modeS.modes.prompt_char .. " " .. ("\n..."):rep(modeS:continuationLines())
+   local prompt = modeS.raga.prompt_char .. " " .. ("\n..."):rep(modeS:continuationLines())
    modeS.zones.prompt:replace(prompt)
+   return modeS
 end
 
 
@@ -347,22 +337,24 @@ end
 
 
 
-ModeS.closet = { nerf =     { modes = Nerf,
-                              lex   = Lex.lua_thor },
-                 search =   { modes = Search,
-                              lex   = Lex.null },
-                 complete = { modes = Complete,
-                              lex   = Lex.lua_thor } }
+ModeS.closet = { nerf =     { raga = Nerf,
+                              lex  = Lex.lua_thor },
+                 search =   { raga = Search,
+                              lex  = Lex.null },
+                 complete = { raga = Complete,
+                              lex  = Lex.lua_thor } }
 
-function ModeS.shiftMode(modeS, raga)
-   if raga == "search" then
-      -- stash current lexer
-      -- #todo do this in a less dumb way
-      modeS.closet[modeS.raga].lex = modeS.lex
+function ModeS.shiftMode(modeS, raga_name)
+   -- Stash the current lexer associated with the current raga
+   -- Currently we never change the lexer separate from the raga,
+   -- but this will change when we start supporting multiple languages
+   -- Guard against nil raga or lexer during startup
+   if modeS.raga and modeS.lex then
+      modeS.closet[modeS.raga.name].lex = modeS.lex
    end
-   modeS.lex = modeS.closet[raga].lex
-   modeS.modes = modeS.closet[raga].modes
-   modeS.raga = raga
+   -- Switch in the new raga and associated lexer
+   modeS.raga = modeS.closet[raga_name].raga
+   modeS.lex = modeS.closet[raga_name].lex
    modeS:updatePrompt()
    return modeS
 end
@@ -374,74 +366,61 @@ end
 
 
 
-local function _firstCharHandler(modeS, category, value)
-   local shifted = false
-   if category == "ASCII" then
-      if value == "/" then
-         modeS:shiftMode "search"
-         shifted = true
-      end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function ModeS.actOnce(modeS, category, value)
+   local handled = modeS.raga(modeS, category, value)
+   if modeS.shift_to then
+      modeS:shiftMode(modeS.shift_to)
+      modeS.shift_to = nil
    end
-   modeS.firstChar = false
-   return shifted
+   if modeS.txtbuf.contents_changed then
+     modeS.raga.txtbufChanged(modeS)
+     modeS.txtbuf.contents_changed = false
+   end
+   if modeS.txtbuf.cursor_changed then
+     modeS.raga.cursorChanged(modeS)
+     modeS.txtbuf.cursor_changed = false
+   end
+   return handled
 end
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-local assertfmt = import("core/string", "assertfmt")
-local hasfield, iscallable = import("core/table", "hasfield", "iscallable")
-
 function ModeS.act(modeS, category, value)
-   assertfmt(modeS.modes[category], "no category %s in modeS", category)
-   -- catch special handlers first
-   if modeS.special[value] then
-      return modeS.special[value](modeS, category, value)
-   end
    local icon = _make_icon(category, value)
-   -- Special first-character handling
-   if modeS.firstChar and not (category == "MOUSE" or category == "NAV") then
-      modeS:setResults ""
-      local shifted = _firstCharHandler(modeS, category, value)
-      if shifted then
-        goto final
-      end
-   end
-   -- Dispatch on value if possible
-   if hasfield(modeS.modes[category], value) then
-      modeS.modes[category][value](modeS, category, value)
-   -- Or on category if the whole category is callable
-   elseif iscallable(modeS.modes[category]) then
-      modeS.modes[category](modeS, category, value)
-   -- Otherwise display the unknown command
-   else
+   local handled = false
+   repeat
+      modeS.action_complete = true
+      -- The raga may set action_complete to false to cause the command
+      -- to be re-processed, most likely after a mode-switch
+      local handledThisTime = modeS:actOnce(category, value)
+      handled = handled or handledThisTime
+   until modeS.action_complete == true
+   if not handled then
       local val_rep = string.format("%q",value):sub(2,-2)
       icon = _make_icon("NYI", category .. ": " .. val_rep)
    end
 
-   ::final::
-   if modeS.raga == "search" then
-      local searchResult = modeS.hist:search(tostring(modeS.txtbuf))
-      modeS:setResults(searchResult)
-   end
    -- Replace zones
    modeS.zones.stat_col:replace(icon)
    modeS.zones.command:replace(modeS.txtbuf)
-   modeS:updatePrompt()
-   modeS.suggest:update(modeS, category, value)
    -- Reflow in case command height has changed. Includes a paint.
-   modeS:reflow()
+   modeS:updatePrompt():reflow()
    collectgarbage()
+   return modeS
 end
 
 
@@ -465,7 +444,7 @@ function ModeS.setResults(modeS, results)
    results = results or ""
    if results == "" then
       modeS.zones.results:replace(results)
-      return
+      return modeS
    end
    if type(results) == "string" then
       results = { results, n = 1, frozen = true }
@@ -473,6 +452,21 @@ function ModeS.setResults(modeS, results)
    local rb = instanceof(results, Rainbuf) and results or Rainbuf(results)
    rb.scrollable = true
    modeS.zones.results:replace(rb)
+   return modeS
+end
+
+
+
+
+
+
+
+
+function ModeS.setTxtbuf(modeS, txtbuf)
+   modeS.txtbuf = txtbuf
+   modeS.txtbuf.cursor_changed = true
+   modeS.txtbuf.contents_changed = true
+   return modeS
 end
 
 
@@ -666,6 +660,7 @@ function ModeS.restart(modeS)
       hist.conn:exec "RELEASE restart_session;"
       restart_idle:stop()
    end)
+   return modeS
 end
 
 
@@ -708,8 +703,9 @@ local function new(max_col, max_row)
   modeS.prompt_lines = { default = "an repl, plz reply uwu 👀" }
   modeS.zones.status:replace(modeS.prompt_lines.default)
   -- initial state
-  modeS.firstChar = true
   modeS:shiftMode(modeS.raga_default)
+  modeS.action_complete = true
+  modeS.shift_to = nil
   return modeS
 end
 

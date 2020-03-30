@@ -27,7 +27,6 @@ local Rainbuf   = require "helm/rainbuf"
 local Historian = require "helm/historian"
 local Lex       = require "helm/lex"
 
-
 local concat         = assert(table.concat)
 local sub, gsub, rep = assert(string.sub),
                        assert(string.gsub),
@@ -38,26 +37,11 @@ local sub, gsub, rep = assert(string.sub),
 
 
 
+local clone    = import("core/table", "clone")
+local EditBase = require "helm:helm/raga/edit"
 
-
-
-
-
-local NAV    = {}
-local CTRL   = {}
-local ALT    = {}
--- ASCII, UTF8, PASTE and MOUSE are functions
-local NYI    = {}
-
-
-
-
-
-local Nerf = { NAV    = NAV,
-               CTRL   = CTRL,
-               ALT    = ALT,
-               NYI    = NYI }
-
+local Nerf = clone(EditBase, 2)
+Nerf.name = "nerf"
 Nerf.prompt_char = "👉"
 
 
@@ -66,58 +50,60 @@ Nerf.prompt_char = "👉"
 
 
 local function _insert(modeS, category, value)
+   if tostring(modeS.txtbuf) == "" then
+      modeS:setResults ""
+      if value == "/" then
+         modeS.shift_to = "search"
+         return
+      end
+   end
    modeS.txtbuf:insert(value)
 end
 
 Nerf.ASCII = _insert
 Nerf.UTF8 = _insert
 
-function Nerf.PASTE(modeS, category, value)
-   modeS.txtbuf:paste(value)
-end
 
 
 
 
 
 
+local NAV = Nerf.NAV
 
 local function _prev(modeS)
-   local prev_result, linestash
+   local linestash
    if tostring(modeS.txtbuf) ~= ""
       and modeS.hist.cursor > modeS.hist.n then
       linestash = modeS.txtbuf
    end
-   modeS.txtbuf, prev_result = modeS.hist:prev()
+   local prev_txtbuf, prev_result = modeS.hist:prev()
    if linestash then
       modeS.hist:append(linestash)
    end
+   modeS:setTxtbuf(prev_txtbuf)
    modeS:setResults(prev_result)
    return modeS
 end
 
 function NAV.UP(modeS, category, value)
-   modeS.firstChar = false
    local inline = modeS.txtbuf:up()
    if not inline then
       _prev(modeS)
    end
-
    return modeS
 end
 
 local function _advance(modeS)
    local new_txtbuf, next_result = modeS.hist:next()
    if not new_txtbuf then
-      modeS.firstChar = true
       local added = modeS.hist:append(modeS.txtbuf)
       if added then
          modeS.hist.cursor = modeS.hist.n + 1
       end
-      modeS.txtbuf = Txtbuf()
-   else
-      modeS.txtbuf = new_txtbuf
+      new_txtbuf = Txtbuf()
    end
+   modeS:setTxtbuf(new_txtbuf)
    modeS:setResults(next_result)
    return modeS
 end
@@ -133,37 +119,13 @@ end
 
 
 
-function NAV.LEFT(modeS, category, value)
-   return modeS.txtbuf:left()
-end
-
-function NAV.RIGHT(modeS, category, value)
-   return modeS.txtbuf:right()
-end
-
-function NAV.ALT_LEFT(modeS,category,value)
-  return modeS.txtbuf:leftWordAlpha()
-end
-
-function NAV.ALT_RIGHT(modeS,category,value)
-  return modeS.txtbuf:rightWordAlpha()
-end
-
-function NAV.HYPER_LEFT(modeS,category,value)
-  return modeS.txtbuf:startOfLine()
-end
-
-function NAV.HYPER_RIGHT(modeS,category,value)
-  return modeS.txtbuf:endOfLine()
-end
 
 local function _eval(modeS)
    local more = modeS:eval()
    if not more then
-      modeS.txtbuf = Txtbuf()
-      modeS.firstChar = true
+      modeS:setTxtbuf(Txtbuf())
+      modeS.hist.cursor = modeS.hist.cursor + 1
    end
-   modeS.hist.cursor = modeS.hist.cursor + 1
 end
 
 function NAV.RETURN(modeS, category, value)
@@ -183,31 +145,12 @@ function NAV.SHIFT_RETURN(modeS, category, value)
 end
 
 -- Add aliases for terminals not in CSI u mode
-CTRL["^\\"] = NAV.CTRL_RETURN
+Nerf.CTRL["^\\"] = NAV.CTRL_RETURN
 NAV.ALT_RETURN = NAV.SHIFT_RETURN
-
-local function _modeShiftOnEmpty(modeS)
-   local buf = tostring(modeS.txtbuf)
-   if buf == "" then
-      modeS:shiftMode(modeS.raga_default)
-      modeS.firstChar = true
-      modeS:setResults("")
-   end
-end
-
-function NAV.BACKSPACE(modeS, category, value)
-   local shrunk =  modeS.txtbuf:deleteBackward()
-   _modeShiftOnEmpty(modeS)
-end
-
-function NAV.DELETE(modeS, category, value)
-   local shrunk = modeS.txtbuf:deleteForward()
-   _modeShiftOnEmpty(modeS)
-end
 
 local function _activateCompletion(modeS)
    if modeS.suggest.active_suggestions then
-      modeS:shiftMode("complete")
+      modeS.shift_to = "complete"
       -- #todo seems like this should be able to be handled more centrally
       modeS.suggest.active_suggestions[1].selected_index = 1
       modeS.zones.suggest.touched = true
@@ -244,46 +187,6 @@ end
 
 
 
-
-
-
-
-
-
-CTRL["^A"] = NAV.HYPER_LEFT
-
-CTRL["^E"] = NAV.HYPER_RIGHT
-
-local function clear_txtbuf(modeS, category, value)
-   modeS.txtbuf = Txtbuf()
-   modeS.hist.cursor = modeS.hist.n + 1
-   modeS.firstChar = true
-   modeS:setResults("")
-end
-
-CTRL ["^L"] = clear_txtbuf
-
-CTRL ["^R"] = function(modeS, category, value)
-                 modeS:restart()
-              end
-
-
-
-
-
-
-
-
-
-ALT ["M-w"] = NAV.ALT_RIGHT
-
-ALT ["M-b"] = NAV.ALT_LEFT
-
-
-
-
-
-
 function Nerf.MOUSE(modeS, category, value)
    if value.scrolling then
       if value.button == "MB0" then
@@ -292,6 +195,18 @@ function Nerf.MOUSE(modeS, category, value)
          modeS.zones.results:scrollDown()
       end
    end
+end
+
+
+
+
+
+
+
+
+function Nerf.cursorChanged(modeS)
+   modeS.suggest:update(modeS)
+   EditBase.cursorChanged(modeS)
 end
 
 

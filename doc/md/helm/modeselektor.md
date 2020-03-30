@@ -167,21 +167,11 @@ efficient than it will be, even before the JIT gets involved.
 Note also that everything is a method, our dispatch pattern will always
 include the ``modeS`` instance as the first argument.
 
-```lua
-ModeS.modes = Nerf
-```
 
 With some semi-constants:
 
 ```lua
 ModeS.REPL_LINE = 2
-```
-
-Sometimes its useful to briefly override handlers, so we check values
-against ``special`` first:
-
-```lua
-ModeS.special = {}
 ```
 ### ModeS:errPrint(modeS, category, value)
 
@@ -270,6 +260,7 @@ function ModeS.placeCursor(modeS)
    local col = modeS.zones.command.tc + modeS.txtbuf.cursor.col - 1
    local row = modeS.zones.command.tr + modeS.txtbuf.cursor.row - 1
    write(a.colrow(col, row))
+   return modeS
 end
 ```
 ### ModeS:paint()
@@ -291,9 +282,11 @@ function ModeS.reflow(modeS)
    return modeS
 end
 ```
-### Prompts and modes / raga
+### Prompts and modes / ragas
 
-Time to add modes to the ``modeselektor``!
+Time to add modes to the ``modeselektor``! Yes, I'm calling it ``raga``
+and that's a bit precious, but it's an important and heavily-used concept,
+so it's good to have a unique name.
 
 
 Right now everything works on the default mode, "nerf":
@@ -301,10 +294,6 @@ Right now everything works on the default mode, "nerf":
 ```lua
 ModeS.raga_default = "nerf"
 ```
-
-Yes, I'm calling it ``raga`` and that's a bit precious, but we have a ``modes``
-table and use it heavily.  ``modes`` is kind of short for ``modal selector``.
-
 
 We'll need several basic modes and some ways to do overlay, and we need a
 single source of truth as to what mode we're in.
@@ -341,8 +330,9 @@ Updates the prompt with the correct symbol and number of continuation prompts.
 
 ```lua
 function ModeS.updatePrompt(modeS)
-   local prompt = modeS.modes.prompt_char .. " " .. ("\n..."):rep(modeS:continuationLines())
+   local prompt = modeS.raga.prompt_char .. " " .. ("\n..."):rep(modeS:continuationLines())
    modeS.zones.prompt:replace(prompt)
+   return modeS
 end
 ```
 ### ModeS:shiftMode(raga)
@@ -364,99 +354,90 @@ A storage table for modes and other things we aren't using and need to
 retrieve.
 
 ```lua
-ModeS.closet = { nerf =     { modes = Nerf,
-                              lex   = Lex.lua_thor },
-                 search =   { modes = Search,
-                              lex   = Lex.null },
-                 complete = { modes = Complete,
-                              lex   = Lex.lua_thor } }
+ModeS.closet = { nerf =     { raga = Nerf,
+                              lex  = Lex.lua_thor },
+                 search =   { raga = Search,
+                              lex  = Lex.null },
+                 complete = { raga = Complete,
+                              lex  = Lex.lua_thor } }
 
-function ModeS.shiftMode(modeS, raga)
-   if raga == "search" then
-      -- stash current lexer
-      -- #todo do this in a less dumb way
-      modeS.closet[modeS.raga].lex = modeS.lex
+function ModeS.shiftMode(modeS, raga_name)
+   -- Stash the current lexer associated with the current raga
+   -- Currently we never change the lexer separate from the raga,
+   -- but this will change when we start supporting multiple languages
+   -- Guard against nil raga or lexer during startup
+   if modeS.raga and modeS.lex then
+      modeS.closet[modeS.raga.name].lex = modeS.lex
    end
-   modeS.lex = modeS.closet[raga].lex
-   modeS.modes = modeS.closet[raga].modes
-   modeS.raga = raga
+   -- Switch in the new raga and associated lexer
+   modeS.raga = modeS.closet[raga_name].raga
+   modeS.lex = modeS.closet[raga_name].lex
    modeS:updatePrompt()
    return modeS
 end
 ```
-#### _firstCharHandler
-
-Our first character can trigger mode switches, notably we want an initial
-``/`` to trigger search mode.
-
-```lua
-local function _firstCharHandler(modeS, category, value)
-   local shifted = false
-   if category == "ASCII" then
-      if value == "/" then
-         modeS:shiftMode "search"
-         shifted = true
-      end
-   end
-   modeS.firstChar = false
-   return shifted
-end
-```
 ## act
 
-  ``act`` simply dispatches. Note that our common interfaces is
-``method(modeS, category, value)``, we need to distinguish betwen the tuple
-``("INSERT", "SHIFT-LEFT")`` (which could arrive from copy-paste) and
-``("NAV", "SHIFT-LEFT")`` and preserve information for our fall-through method.
+``act`` dispatches a single seq (which has already been parsed into (category, value)
+by ``onseq``). It may try the dispatch multiple times if the raga indicates
+that reprocessing is needed by setting ``modeS.action_complete`` to =false.
+
+
+Note that our common interface is ``method(modeS, category, value)``,
+we need to distinguish betwen the tuple ``("INSERT", "SHIFT-LEFT")``
+(which could arrive from copy-paste) and ``("NAV", "SHIFT-LEFT")``
+and preserve information for our fall-through method.
 
 
 ``act`` always succeeds, meaning we need some metatable action to absorb and
 log anything unexpected.
 
-```lua
-local assertfmt = import("core/string", "assertfmt")
-local hasfield, iscallable = import("core/table", "hasfield", "iscallable")
+### actOnce
 
+Dispatches a seq to the current raga, answering whether or not the raga could
+process it (if this never occurs, we display an NYI message in the status area).
+
+```lua
+function ModeS.actOnce(modeS, category, value)
+   local handled = modeS.raga(modeS, category, value)
+   if modeS.shift_to then
+      modeS:shiftMode(modeS.shift_to)
+      modeS.shift_to = nil
+   end
+   if modeS.txtbuf.contents_changed then
+     modeS.raga.txtbufChanged(modeS)
+     modeS.txtbuf.contents_changed = false
+   end
+   if modeS.txtbuf.cursor_changed then
+     modeS.raga.cursorChanged(modeS)
+     modeS.txtbuf.cursor_changed = false
+   end
+   return handled
+end
+```
+```lua
 function ModeS.act(modeS, category, value)
-   assertfmt(modeS.modes[category], "no category %s in modeS", category)
-   -- catch special handlers first
-   if modeS.special[value] then
-      return modeS.special[value](modeS, category, value)
-   end
    local icon = _make_icon(category, value)
-   -- Special first-character handling
-   if modeS.firstChar and not (category == "MOUSE" or category == "NAV") then
-      modeS:setResults ""
-      local shifted = _firstCharHandler(modeS, category, value)
-      if shifted then
-        goto final
-      end
-   end
-   -- Dispatch on value if possible
-   if hasfield(modeS.modes[category], value) then
-      modeS.modes[category][value](modeS, category, value)
-   -- Or on category if the whole category is callable
-   elseif iscallable(modeS.modes[category]) then
-      modeS.modes[category](modeS, category, value)
-   -- Otherwise display the unknown command
-   else
+   local handled = false
+   repeat
+      modeS.action_complete = true
+      -- The raga may set action_complete to false to cause the command
+      -- to be re-processed, most likely after a mode-switch
+      local handledThisTime = modeS:actOnce(category, value)
+      handled = handled or handledThisTime
+   until modeS.action_complete == true
+   if not handled then
       local val_rep = string.format("%q",value):sub(2,-2)
       icon = _make_icon("NYI", category .. ": " .. val_rep)
    end
 
-   ::final::
-   if modeS.raga == "search" then
-      local searchResult = modeS.hist:search(tostring(modeS.txtbuf))
-      modeS:setResults(searchResult)
-   end
    -- Replace zones
    modeS.zones.stat_col:replace(icon)
    modeS.zones.command:replace(modeS.txtbuf)
-   modeS:updatePrompt()
-   modeS.suggest:update(modeS, category, value)
    -- Reflow in case command height has changed. Includes a paint.
-   modeS:reflow()
+   modeS:updatePrompt():reflow()
    collectgarbage()
+   return modeS
 end
 ```
 
@@ -479,7 +460,7 @@ function ModeS.setResults(modeS, results)
    results = results or ""
    if results == "" then
       modeS.zones.results:replace(results)
-      return
+      return modeS
    end
    if type(results) == "string" then
       results = { results, n = 1, frozen = true }
@@ -487,6 +468,20 @@ function ModeS.setResults(modeS, results)
    local rb = instanceof(results, Rainbuf) and results or Rainbuf(results)
    rb.scrollable = true
    modeS.zones.results:replace(rb)
+   return modeS
+end
+```
+### ModeS:setTxtbuf(txtbuf)
+
+Replaces the current Txtbuf with ``txtbuf``. This effectively involves
+changes to the cursor and contents, so we set those flags.
+
+```lua
+function ModeS.setTxtbuf(modeS, txtbuf)
+   modeS.txtbuf = txtbuf
+   modeS.txtbuf.cursor_changed = true
+   modeS.txtbuf.contents_changed = true
+   return modeS
 end
 ```
 ### ModeS:eval()
@@ -677,6 +672,7 @@ function ModeS.restart(modeS)
       hist.conn:exec "RELEASE restart_session;"
       restart_idle:stop()
    end)
+   return modeS
 end
 ```
 #### modeS.status
@@ -716,8 +712,9 @@ local function new(max_col, max_row)
   modeS.prompt_lines = { default = "an repl, plz reply uwu 👀" }
   modeS.zones.status:replace(modeS.prompt_lines.default)
   -- initial state
-  modeS.firstChar = true
   modeS:shiftMode(modeS.raga_default)
+  modeS.action_complete = true
+  modeS.shift_to = nil
   return modeS
 end
 

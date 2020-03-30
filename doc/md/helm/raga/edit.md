@@ -1,0 +1,90 @@
+# Edit base
+
+Common functionality for ragas that accept keyboard input mostly by
+directing it to the Txtbuf
+
+```lua
+local clone = import("core/table", "clone")
+local RagaBase = require "helm:helm/raga/base"
+```
+```lua
+local EditBase = clone(RagaBase, 2)
+```
+### Insertion
+
+```lua
+
+local function _insert(modeS, category, value)
+   if tostring(modeS.txtbuf) == "" then
+      modeS:setResults ""
+   end
+   modeS.txtbuf:insert(value)
+end
+
+EditBase.ASCII = _insert
+EditBase.UTF8 = _insert
+
+function EditBase.PASTE(modeS, category, value)
+   if tostring(modeS.txtbuf) == "" then
+      modeS:setResults ""
+   end
+   modeS.txtbuf:paste(value)
+end
+
+```
+### NAV
+
+```lua
+local NAV = EditBase.NAV
+
+local _nav_mappings = { LEFT        = "left",
+                        RIGHT       = "right",
+                        ALT_LEFT    = "leftWordAlpha",
+                        ALT_RIGHT   = "rightWordAlpha",
+                        HYPER_LEFT  = "startOfLine",
+                        HYPER_RIGHT = "endOfLine",
+                        BACKSPACE   = "deleteBackward",
+                        DELETE      = "deleteForward" }
+
+for event, fn in pairs(_nav_mappings) do
+   EditBase.NAV[event] = function(modeS, category, value)
+      return modeS.txtbuf[fn](modeS.txtbuf)
+   end
+end
+
+```
+### CTRL
+
+Many/most of these will be re-used as e.g. "^" and "$" in vim mode.
+
+
+Thus we will declare them as bare functions and assign them to slots.
+
+```lua
+local CTRL = EditBase.CTRL
+
+CTRL ["^A"] = NAV.HYPER_LEFT
+CTRL ["^E"] = NAV.HYPER_RIGHT
+
+local function clear_txtbuf(modeS, category, value)
+   modeS:setTxtbuf(Txtbuf())
+   modeS:setResults("")
+   modeS.hist.cursor = modeS.hist.n + 1
+end
+
+CTRL ["^L"] = clear_txtbuf
+
+CTRL ["^R"] = function(modeS, category, value)
+                 modeS:restart()
+              end
+```
+### ALT
+
+```lua
+EditBase.ALT ["M-w"] = NAV.ALT_RIGHT
+
+EditBase.ALT ["M-b"] = NAV.ALT_LEFT
+```
+```lua
+return EditBase
+```

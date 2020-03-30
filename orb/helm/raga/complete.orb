@@ -2,54 +2,48 @@
 
 Handles choosing and accepting a suggestion from =suggest=.
 
-Implemented for now as a wrapper over Nerf--should really be derived
-from a common base of edit functionality, or (even better) defer somehow
-to whatever the previous raga was.
-
 #!lua
 local clone = import("core/table", "clone")
-local Nerf = require "helm/raga/nerf"
+local EditBase = require "helm/raga/edit"
 
-local Complete = clone(Nerf, 3)
+local Complete = clone(EditBase, 2)
+
+Complete.name = "complete"
+Complete.prompt_char = "👉"
 #/lua
 
 ** Inserts
 
 #!lua
 
-local function _quit(modeS, category, value)
+local function _quit(modeS)
    modeS.suggest:cancel(modeS)
    -- #todo restore last-used raga instead of always returning to default
-   modeS:shiftMode(modeS.raga_default)
+   modeS.shift_to = modeS.raga_default
 end
 
-local function _accept(modeS, category, value)
+local function _accept(modeS)
    modeS.suggest:accept(modeS)
-   _quit(modeS, category, value)
+   _quit(modeS)
 end
 
 function Complete.PASTE(modeS, category, value)
-   _quit(modeS, category, value)
-   modeS.modes.PASTE(modeS, category, value)
+   _quit(modeS)
+   modeS.action_complete = false
 end
 
 #/lua
 
 #!lua
 local find = assert(string.find)
-
-local _default_insert = Complete.ASCII
-
 local function _insert(modeS, category, value)
    -- Non-symbol character accepts the completion
    -- #todo should be consistent with lex.orb definition
    if find(value, "[^a-zA-Z0-9_]") then
       _accept(modeS, category, value)
-      -- Retry with the new raga
-      -- #todo should we defer to modeS:act() here instead?
-      modeS.modes[category](modeS, category, value)
+      modeS.action_complete = false
    else
-      _default_insert(modeS, category, value)
+      EditBase(modeS, category, value)
    end
 end
 
@@ -79,16 +73,22 @@ NAV.SHIFT_UP = NAV.SHIFT_TAB
 NAV.ESC = _quit
 function NAV.RIGHT(modeS, category, value)
    _quit(modeS, category, value)
-   -- #todo dispatch this properly, technically the new raga
-   -- may not have a handler for it
-   modeS.modes.NAV.RIGHT(modeS, category, value)
+   modeS.action_complete = false
 end
 
 NAV.RETURN = _accept
 function NAV.LEFT(modeS, category, value)
    _accept(modeS, category, value)
-   -- #todo dispatch this properly
-   modeS.modes.NAV.LEFT(modeS, category, value)
+   modeS.action_complete = false
+end
+#/lua
+
+*** Complete.cursorChanged(modeS)
+
+#!lua
+function Complete.cursorChanged(modeS)
+   modeS.suggest:update(modeS)
+   EditBase.cursorChanged(modeS)
 end
 #/lua
 
