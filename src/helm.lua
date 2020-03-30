@@ -42,7 +42,6 @@ meta = import("core/meta", "meta")
 core = require "core:core"
 jit.vmdef = require "helm:helm/vmdef"
 jit.p = require "helm:helm/ljprof"
-
 sql = assert(sql, "sql must be in _G")
 
 
@@ -64,7 +63,6 @@ _G_back = deepclone(_G)
 
 
 uv = require "luv"
-
 local usecolors
 stdout = ""
 
@@ -129,13 +127,11 @@ a = require "anterm:anterm"
 
 
 
-
 -- Get window size and set up an idler to keep it refreshed
 
 local max_col, max_row = uv.tty_get_winsize(stdin)
 
 modeS = require "helm/modeselektor" (max_col, max_row)
-
 local insert = assert(table.insert)
 local function s_out(msg)
   insert(modeS.status, msg)

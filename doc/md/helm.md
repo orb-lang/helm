@@ -39,7 +39,6 @@ meta = import("core/meta", "meta")
 core = require "core:core"
 jit.vmdef = require "helm:helm/vmdef"
 jit.p = require "helm:helm/ljprof"
-
 sql = assert(sql, "sql must be in _G")
 ```
 ### make a snapshot of _G
@@ -60,7 +59,6 @@ This boot sequence builds on Tim Caswell and the Luvit Author's repl example.
 Couple pieces I'm not using but should:
 ```lua
 uv = require "luv"
-
 local usecolors
 stdout = ""
 
@@ -112,7 +110,6 @@ local stdin = uv.new_tty(0, true)
 ```lua
 a = require "anterm:anterm"
 --watch = require "watcher"
-
 ```
 ## Modeselektor
 
@@ -124,7 +121,6 @@ a = require "anterm:anterm"
 local max_col, max_row = uv.tty_get_winsize(stdin)
 
 modeS = require "helm/modeselektor" (max_col, max_row)
-
 local insert = assert(table.insert)
 local function s_out(msg)
   insert(modeS.status, msg)
