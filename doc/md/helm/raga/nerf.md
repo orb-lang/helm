@@ -20,7 +20,6 @@ This is copypasta from Modeselektor, but yeah, we'll need most of this.
 
 ```lua
 assert(meta, "must have meta in _G")
-assert(write, "must have write in _G")
 ```
 ```lua
 local a         = require "anterm:anterm"

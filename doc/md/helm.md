@@ -80,7 +80,7 @@ end
 Not-blocking ``write`` and ``print``:
 
 ```lua
-function write(...)
+local function write(...)
    uv.write(stdout, {...})
 end
 ```
@@ -120,7 +120,7 @@ a = require "anterm:anterm"
 
 local max_col, max_row = uv.tty_get_winsize(stdin)
 
-modeS = require "helm/modeselektor" (max_col, max_row)
+modeS = require "helm/modeselektor" (max_col, max_row, write)
 local insert = assert(table.insert)
 local function s_out(msg)
   insert(modeS.status, msg)
