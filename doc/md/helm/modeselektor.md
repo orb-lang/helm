@@ -602,7 +602,7 @@ function ModeS.__eval(modeS, chunk, no_append)
       if err:match "'<eof>'$" then
          -- Lua expects some more input, advance the txtbuf
          modeS.txtbuf:advance()
-         return
+         return modeS
       else
          -- make the error into the result
          results = { err,
@@ -618,10 +618,12 @@ function ModeS.__eval(modeS, chunk, no_append)
       end
       modeS.hist.cursor = modeS.hist.n
    else
-      return results
+      return modeS, results
    end
    modeS:setTxtbuf(Txtbuf())
    modeS.hist.cursor = modeS.hist.cursor + 1
+
+   return modeS
 end
 
 function ModeS.eval(modeS)
@@ -652,7 +654,7 @@ function ModeS.restart(modeS)
    hist.n  = hist.n - session_count
    hist.conn:exec "SAVEPOINT restart_session;"
    for i = modeS.hist.cursor_start, top do
-      local results = modeS:__eval(tostring(hist[i]), true)
+      local _, results = modeS:__eval(tostring(hist[i]), true)
       hist.n = hist.n + 1
       hist.result_buffer[hist.n] = results
       hist:persist(hist[i], results)
