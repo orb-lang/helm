@@ -602,7 +602,7 @@ function ModeS.__eval(modeS, chunk, no_append)
       if err:match "'<eof>'$" then
          -- Lua expects some more input, advance the txtbuf
          modeS.txtbuf:advance()
-         return true
+         return
       else
          -- make the error into the result
          results = { err,
