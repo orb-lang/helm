@@ -668,6 +668,7 @@ function ModeS.restart(modeS)
 end
 #/lua
 
+
 **** modeS.status
 
 A way to jack into =singletons/status=.
