@@ -601,9 +601,11 @@ function ModeS.__eval(modeS, chunk, headless)
          results.frozen = true
       end
    else
-      if not headless and err:match "'<eof>'$" then
+      if err:match "'<eof>'$" then
          -- Lua expects some more input, advance the txtbuf
-         modeS.txtbuf:advance()
+         if modeS.txtbuf and modeS.txtbuf.idEst == Txtbuf then
+            modeS.txtbuf:advance()
+         end
          return modeS
       else
          -- make the error into the result
