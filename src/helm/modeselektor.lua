@@ -88,7 +88,6 @@
 
 
 assert(meta, "must have meta in _G")
-assert(write, "must have write in _G")
 
 
 
@@ -242,7 +241,7 @@ end
 function ModeS.placeCursor(modeS)
    local col = modeS.zones.command.tc + modeS.txtbuf.cursor.col - 1
    local row = modeS.zones.command.tr + modeS.txtbuf.cursor.row - 1
-   write(a.colrow(col, row))
+   modeS.write(a.colrow(col, row))
    return modeS
 end
 
@@ -687,7 +686,7 @@ end
 
 
 
-local function new(max_col, max_row)
+local function new(max_col, max_row, writer)
   local modeS = meta(ModeS)
   modeS.txtbuf = Txtbuf()
   modeS.hist  = Historian()
@@ -696,11 +695,12 @@ local function new(max_col, max_row)
   rawset(__G, "stat", modeS.status)
   modeS.max_col = max_col
   modeS.max_row = max_row
+  modeS.write = writer
   -- this will be replaced with Zones
   modeS.l_margin = 4
   modeS.r_margin = 80
   modeS.repl_top = ModeS.REPL_LINE
-  modeS.zones = Zoneherd(modeS, write)
+  modeS.zones = Zoneherd(modeS, writer)
   modeS.prompt_lines = { default = "an repl, plz reply uwu 👀" }
   modeS.zones.status:replace(modeS.prompt_lines.default)
   -- initial state
