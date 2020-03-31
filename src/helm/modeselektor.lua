@@ -547,9 +547,11 @@ end
 
 local insert = assert(table.insert)
 
-function ModeS.__eval(modeS, chunk, no_append)
-   -- Getting ready to eval, cancel any active autocompletion
-   modeS.suggest:cancel(modeS)
+function ModeS.__eval(modeS, chunk, headless)
+   if not headless then
+      -- Getting ready to eval, cancel any active autocompletion
+      modeS.suggest:cancel(modeS)
+   end
    -- check for leading =, old-school style
    local head = sub(chunk, 1, 1)
    if head == "=" then -- take pity on old-school Lua hackers
@@ -585,7 +587,7 @@ function ModeS.__eval(modeS, chunk, no_append)
          results.frozen = true
       end
    else
-      if err:match "'<eof>'$" then
+      if not headless and err:match "'<eof>'$" then
          -- Lua expects some more input, advance the txtbuf
          modeS.txtbuf:advance()
          return modeS
@@ -596,7 +598,7 @@ function ModeS.__eval(modeS, chunk, no_append)
                      frozen = true }
       end
    end
-   if not no_append then
+   if not headless then
       modeS.hist:append(modeS.txtbuf, results, success)
       modeS.hist.cursor = modeS.hist.n + 1
       if success then
