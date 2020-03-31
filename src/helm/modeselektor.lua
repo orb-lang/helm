@@ -597,19 +597,16 @@ function ModeS.__eval(modeS, chunk, no_append)
       end
    end
    if not no_append then
-      modeS:setResults(results)
       modeS.hist:append(modeS.txtbuf, results, success)
+      modeS.hist.cursor = modeS.hist.n + 1
       if success then
          modeS.hist.result_buffer[modeS.hist.n] = results
       end
-      modeS.hist.cursor = modeS.hist.n
-   else
-      return modeS, results
+      modeS:setResults(results)
+      modeS:setTxtbuf(Txtbuf())
    end
-   modeS:setTxtbuf(Txtbuf())
-   modeS.hist.cursor = modeS.hist.cursor + 1
 
-   return modeS
+   return modeS, results
 end
 
 function ModeS.eval(modeS)
