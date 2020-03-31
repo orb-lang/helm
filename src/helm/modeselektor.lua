@@ -691,10 +691,10 @@ end
 
 
 
-local function new(max_col, max_row, writer)
+local function new(max_col, max_row, writer, db)
   local modeS = meta(ModeS)
   modeS.txtbuf = Txtbuf()
-  modeS.hist  = Historian()
+  modeS.hist  = Historian(db)
   modeS.suggest = Suggest()
   modeS.status = setmetatable({}, _stat_M)
   rawset(__G, "stat", modeS.status)
