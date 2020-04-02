@@ -645,9 +645,11 @@ function ModeS.restart(modeS)
    hist.conn:exec "SAVEPOINT restart_session;"
    for i = modeS.hist.cursor_start, top do
       local _, results = modeS:__eval(tostring(hist[i]), true)
-      hist.n = hist.n + 1
-      hist.result_buffer[hist.n] = results
-      hist:persist(hist[i], results)
+      if results ~= 'advance' then
+         hist.n = hist.n + 1
+         hist.result_buffer[hist.n] = results
+         hist:persist(hist[i], results)
+      end
    end
    hist.cursor = top + 1
    hist.n = #hist
