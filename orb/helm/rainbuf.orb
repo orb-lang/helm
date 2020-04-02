@@ -186,7 +186,7 @@ end
 #!lua
 local function new(res)
    if type(res) == "table" and res.idEst == Rainbuf then
-      error "made a Rainbuf from a Rainbuf"
+      return res
    end
    local rainbuf = meta(Rainbuf)
    assert(res.n, "must have n")

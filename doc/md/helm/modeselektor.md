@@ -464,7 +464,7 @@ function ModeS.setResults(modeS, results)
    if type(results) == "string" then
       results = { results, n = 1, frozen = true }
    end
-   local rb = instanceof(results, Rainbuf) and results or Rainbuf(results)
+   local rb = Rainbuf(results)
    rb.scrollable = true
    modeS.zones.results:replace(rb)
    return modeS
