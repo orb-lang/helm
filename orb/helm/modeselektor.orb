@@ -588,11 +588,8 @@ function ModeS.__eval(modeS, chunk, headless)
       end
    else
       if err:match "'<eof>'$" then
-         -- Lua expects some more input, advance the txtbuf
-         if modeS.txtbuf and modeS.txtbuf.idEst == Txtbuf then
-            modeS.txtbuf:advance()
-         end
-         return modeS
+         -- Lua expects some more input
+         return modeS, 'advance'
       else
          -- make the error into the result
          results = { err,
@@ -614,7 +611,11 @@ function ModeS.__eval(modeS, chunk, headless)
 end
 
 function ModeS.eval(modeS)
-   return modeS:__eval(tostring(modeS.txtbuf))
+   local _, advance = modeS:__eval(tostring(modeS.txtbuf))
+   if advance == 'advance' then
+      modeS.txtbuf:advance()
+   end
+   return modeS
 end
 #/lua
 
