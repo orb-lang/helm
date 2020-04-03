@@ -142,7 +142,7 @@ end
 
 
 
-function Zone.set(zone, tc, tr, bc, br)
+function Zone.setBounds(zone, tc, tr, bc, br)
    assert(tc <= bc, "tc: " .. tc .. ", bc: " .. bc)
    assert(tr <= br, "tr: " .. tr .. ", br: " .. br)
    if not(zone.tr == tr and
@@ -150,7 +150,7 @@ function Zone.set(zone, tc, tr, bc, br)
           zone.br == br and
           zone.bc == bc) then
       -- If zone width is changing, clear caches of the contained Rainbuf
-      -- Note that :set() is called to set zone.(tc,bc,tr,br) for the first time,
+      -- Note that :setBounds() is called to set zone.(tc,bc,tr,br) for the first time,
       -- so we only check for a change if there are previous values
       if zone.bc and zone.tc
          and (bc - tc) ~= (zone.bc - zone.tc)
@@ -305,27 +305,25 @@ end
 function Zoneherd.reflow(zoneherd, modeS)
    local right_col = modeS.max_col - _zoneOffset(modeS)
    local txt_off = modeS:continuationLines()
-   zoneherd.status:set(1, 1, right_col, 1)
-   zoneherd.stat_col:set( right_col + 1,
-                          1,
-                          modeS.max_col,
-                          1 )
-   zoneherd.prompt:set(  1,
-                         modeS.repl_top,
-                         modeS.l_margin - 1,
-                         modeS.repl_top + txt_off)
-   zoneherd.command:set( modeS.l_margin,
-                         modeS.repl_top,
-                         right_col,
-                         modeS.repl_top + txt_off )
-   zoneherd.results:set( 1,
-                         modeS.repl_top + txt_off + 1,
-                         right_col,
-                         modeS.max_row )
-   zoneherd.suggest:set( right_col + 1,
-                         modeS.repl_top + 1,
-                         modeS.max_col,
-                         modeS.max_row )
+   zoneherd.status:setBounds(  1, 1, right_col, 1)
+   zoneherd.stat_col:setBounds(right_col + 1, 1,
+                               modeS.max_col, 1 )
+   zoneherd.prompt:setBounds(  1,
+                               modeS.repl_top,
+                               modeS.l_margin - 1,
+                               modeS.repl_top + txt_off )
+   zoneherd.command:setBounds( modeS.l_margin,
+                               modeS.repl_top,
+                               right_col,
+                               modeS.repl_top + txt_off )
+   zoneherd.results:setBounds( 1,
+                               modeS.repl_top + txt_off + 1,
+                               right_col,
+                               modeS.max_row )
+   zoneherd.suggest:setBounds( right_col + 1,
+                               modeS.repl_top + 1,
+                               modeS.max_col,
+                               modeS.max_row )
    return zoneherd
 end
 
