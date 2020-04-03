@@ -547,9 +547,11 @@ end
 #!lua
 local insert = assert(table.insert)
 
-function ModeS.__eval(modeS, chunk, no_append)
-   -- Getting ready to eval, cancel any active autocompletion
-   modeS.suggest:cancel(modeS)
+function ModeS.__eval(modeS, chunk, headless)
+   if not headless then
+      -- Getting ready to eval, cancel any active autocompletion
+      modeS.suggest:cancel(modeS)
+   end
    -- check for leading =, old-school style
    local head = sub(chunk, 1, 1)
    if head == "=" then -- take pity on old-school Lua hackers
@@ -586,9 +588,8 @@ function ModeS.__eval(modeS, chunk, no_append)
       end
    else
       if err:match "'<eof>'$" then
-         -- Lua expects some more input, advance the txtbuf
-         modeS.txtbuf:advance()
-         return true
+         -- Lua expects some more input
+         return modeS, 'advance'
       else
          -- make the error into the result
          results = { err,
@@ -596,20 +597,25 @@ function ModeS.__eval(modeS, chunk, no_append)
                      frozen = true }
       end
    end
-   if not no_append then
-      modeS:setResults(results)
+   if not headless then
       modeS.hist:append(modeS.txtbuf, results, success)
+      modeS.hist.cursor = modeS.hist.n + 1
       if success then
          modeS.hist.result_buffer[modeS.hist.n] = results
       end
-      modeS.hist.cursor = modeS.hist.n
-   else
-      return results
+      modeS:setResults(results)
+      modeS:setTxtbuf(Txtbuf())
    end
+
+   return modeS, results
 end
 
 function ModeS.eval(modeS)
-   return modeS:__eval(tostring(modeS.txtbuf))
+   local _, advance = modeS:__eval(tostring(modeS.txtbuf))
+   if advance == 'advance' then
+      modeS.txtbuf:advance()
+   end
+   return modeS
 end
 #/lua
 
@@ -638,10 +644,12 @@ function ModeS.restart(modeS)
    hist.n  = hist.n - session_count
    hist.conn:exec "SAVEPOINT restart_session;"
    for i = modeS.hist.cursor_start, top do
-      local results = modeS:__eval(tostring(hist[i]), true)
-      hist.n = hist.n + 1
-      hist.result_buffer[hist.n] = results
-      hist:persist(hist[i], results)
+      local _, results = modeS:__eval(tostring(hist[i]), true)
+      if results ~= 'advance' then
+         hist.n = hist.n + 1
+         hist.result_buffer[hist.n] = results
+         hist:persist(hist[i], results)
+      end
    end
    hist.cursor = top + 1
    hist.n = #hist
