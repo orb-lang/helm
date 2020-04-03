@@ -241,6 +241,31 @@ end
 
 
 
+local insert = assert(table.insert)
+
+function Zoneherd.addZone(zoneherd, zone)
+   zoneherd[zone.name] = zone
+   local insert_index
+   for i, existing in ipairs(zoneherd) do
+      if existing.z > zone.z then
+         insert_index = i
+         break
+      end
+   end
+   if insert_index then
+      insert(zoneherd, insert_index, zone)
+   else
+      insert(zoneherd, zone)
+   end
+   return zoneherd
+end
+
+
+
+
+
+
+
 
 
 local function newZone(name, z, debug_mark)
@@ -254,12 +279,7 @@ local function newZone(name, z, debug_mark)
 end
 
 function Zoneherd.newZone(zoneherd, name, z, debug_mark)
-   zoneherd[name] = newZone(name, z, debug_mark)
-   -- this doesn't account for Z axis but for now:
-   zoneherd[#zoneherd + 1] = zoneherd[name]
-   -- todo: make a Zoneherd:add(zone, name) that handles z-ordering
-   -- and auto-adjusts proportionally.
-   return zoneherd
+   return zoneherd:addZone(newZone(name, z, debug_mark))
 end
 
 
@@ -286,6 +306,10 @@ function Zoneherd.reflow(zoneherd, modeS)
    local right_col = modeS.max_col - _zoneOffset(modeS)
    local txt_off = modeS:continuationLines()
    zoneherd.status:set(1, 1, right_col, 1)
+   zoneherd.stat_col:set( right_col + 1,
+                          1,
+                          modeS.max_col,
+                          1 )
    zoneherd.prompt:set(  1,
                          modeS.repl_top,
                          modeS.l_margin - 1,
@@ -298,10 +322,6 @@ function Zoneherd.reflow(zoneherd, modeS)
                          modeS.repl_top + txt_off + 1,
                          right_col,
                          modeS.max_row )
-   zoneherd.stat_col:set( right_col + 1,
-                          1,
-                          modeS.max_col,
-                          1 )
    zoneherd.suggest:set( right_col + 1,
                          modeS.repl_top + 1,
                          modeS.max_col,
@@ -362,7 +382,6 @@ local function new(modeS, writer)
    zoneherd:newZone("stat_col", 1, "!")
    zoneherd:newZone("prompt", 1, ">")
    zoneherd:newZone("command", 1, "$")
-   zoneherd:newZone("gutter", 1, "_")
    zoneherd:newZone("results", 1, "~")
    zoneherd:newZone("suggest", 1, "%")
    zoneherd:reflow(modeS)
