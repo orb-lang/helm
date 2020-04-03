@@ -236,24 +236,25 @@ end
 ** Zoneherd methods
 
 
-*** Zoneherd:newZone(name, tc, tr, bc, br, z, debug_mark)
+*** Zoneherd:newZone(name, z, debug_mark)
 
-Creates a new zone and adds it to the Zoneherd.
+Creates a new zone and adds it to the Zoneherd. Note that we don't
+set the zone's position and dimensions here, as we expect that to be
+determined as part of reflow.
 
 #!lua
-local function newZone(name, tc, tr, bc, br, z, debug_mark)
+local function newZone(name, z, debug_mark)
    local zone = meta(Zone)
    zone.name = name
    zone.debug_mark = debug_mark
    zone.z = z
-   zone:set(tc, tr, bc, br)
    zone.touched = false
    -- zone.contents, aspirationally a rainbuf, is provided later
    return zone
 end
 
-function Zoneherd.newZone(zoneherd, name, tc, tr, bc, br, z, debug_mark)
-   zoneherd[name] = newZone(name, tc, tr, bc, br, z, debug_mark)
+function Zoneherd.newZone(zoneherd, name, z, debug_mark)
+   zoneherd[name] = newZone(name, z, debug_mark)
    -- this doesn't account for Z axis but for now:
    zoneherd[#zoneherd + 1] = zoneherd[name]
    -- todo: make a Zoneherd:add(zone, name) that handles z-ordering
@@ -331,8 +332,7 @@ function Zoneherd.paint(zoneherd, modeS)
          -- actually render ze contents
          if type(zone.contents) == "string" then
             _writeLines(write, zone, zone.contents)
-         elseif type(zone.contents) == "table"
-            and zone.contents.idEst == Txtbuf then
+         elseif instanceof(zone.contents, Txtbuf) then
             _renderTxtbuf(modeS, zone, write)
          else
             _renderRainbuf(write, zone)
@@ -352,22 +352,19 @@ Makes a Zoneherd.  Borrows the modeselektor to get proportions, but returns
 the zoneherd, which is assigned to its slot on the modeselector at the call
 site, for consistency.
 
-Most of this code needs to be in the =reflow= method; =new= should allocate
-and then reflow.
-
 #!lua
 local function new(modeS, writer)
    local zoneherd = meta(Zoneherd)
    zoneherd.write = writer
    -- make Zones
    -- correct values are provided by reflow
-   zoneherd:newZone("status", -1, -1, -1, -1, 1, ".")
-   zoneherd:newZone("stat_col", -1, -1, -1, -1, 1, "!")
-   zoneherd:newZone("prompt", -1, -1, -1, -1, 1, ">")
-   zoneherd:newZone("command", -1, -1, -1, -1, 1, "$")
-   zoneherd:newZone("gutter", -1, -1, -1, -1, 1, "_")
-   zoneherd:newZone("results", -1, -1, -1, -1, 1, "~")
-   zoneherd:newZone("suggest", -1, -1, -1, -1, 1, "%")
+   zoneherd:newZone("status", 1, ".")
+   zoneherd:newZone("stat_col", 1, "!")
+   zoneherd:newZone("prompt", 1, ">")
+   zoneherd:newZone("command", 1, "$")
+   zoneherd:newZone("gutter", 1, "_")
+   zoneherd:newZone("results", 1, "~")
+   zoneherd:newZone("suggest", 1, "%")
    zoneherd:reflow(modeS)
 
    return zoneherd
