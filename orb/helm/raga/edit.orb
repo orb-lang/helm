@@ -68,10 +68,6 @@ NAV.DELETE      = toTxtbuf "deleteForward"
 
 *** CTRL
 
-Many/most of these will be re-used as e.g. "^" and "$" in vim mode.
-
-Thus we will declare them as bare functions and assign them to slots.
-
 #!lua
 local CTRL = EditBase.CTRL
 

@@ -69,10 +69,6 @@ NAV.DELETE      = toTxtbuf "deleteForward"
 
 
 
-
-
-
-
 local CTRL = EditBase.CTRL
 
 CTRL ["^A"] = NAV.HYPER_LEFT
