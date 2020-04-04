@@ -369,6 +369,28 @@ function Txtbuf.killToBeginningOfLine(txtbuf)
    return true
 end
 ```
+#### Txtbuf:transposeLetter()
+
+Readline has a small affordance where it will still transpose if the cursor is
+at the end of a line, which this implementation respects.
+
+```lua
+function Txtbuf.transposeLetter(txtbuf)
+   local line, cur_col, cur_row = txtbuf:currentPosition()
+   local edge, left, right = #line == cur_col, cur_col, cur_col + 1
+   if edge then
+      left, right = left - 1, right - 1
+   end
+   local stash = line[left]
+   line[left] = line[right]
+   line[right] = stash
+   if not edge then
+      txtbuf:setCursor(cur_row, cur_col + 1)
+   end
+   txtbuf.contents_changed = true
+   return true
+end
+```
 ### Txtbuf:left(disp), Txtbuf:right(disp)
 
 These methods shift a cursor left or right, handling line breaks internally.
@@ -581,6 +603,7 @@ Replaces the character to the right of the cursor with the given codepoint.
 This is called ``frag`` as a reminder that, a) it's variable width and b) to
 really nail displacement we need to be looking up displacements in some kind
 of region-defined lookup table.
+
 
 ### Txtbuf:up(), Txtbuf:down()
 

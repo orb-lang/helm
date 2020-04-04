@@ -88,6 +88,7 @@ CTRL ["^R"] = function(modeS, category, value)
 
 CTRL ["^K"] = toTxtbuf "killToEndOfLine"
 CTRL ["^U"] = toTxtbuf "killToBeginningOfLine"
+CTRL ["^T"] = toTxtbuf "transposeLetter"
 
 
 

@@ -384,6 +384,30 @@ end
 
 
 
+function Txtbuf.transposeLetter(txtbuf)
+   local line, cur_col, cur_row = txtbuf:currentPosition()
+   local edge, left, right = #line == cur_col, cur_col, cur_col + 1
+   if edge then
+      left, right = left - 1, right - 1
+   end
+   local stash = line[left]
+   line[left] = line[right]
+   line[right] = stash
+   if not edge then
+      txtbuf:setCursor(cur_row, cur_col + 1)
+   end
+   txtbuf.contents_changed = true
+   return true
+end
+
+
+
+
+
+
+
+
+
 
 
 function Txtbuf.left(txtbuf, disp)
@@ -581,6 +605,7 @@ end
 function Txtbuf.rightWordWhitespace(txtbuf, reps)
    return txtbuf:rightToBoundary('%s', reps)
 end
+
 
 
 
