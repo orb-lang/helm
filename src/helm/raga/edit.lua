@@ -49,6 +49,8 @@ local _nav_mappings = { LEFT        = "left",
                         BACKSPACE   = "deleteBackward",
                         DELETE      = "deleteForward" }
 
+
+
 for event, fn in pairs(_nav_mappings) do
    EditBase.NAV[event] = function(modeS, category, value)
       return modeS.txtbuf[fn](modeS.txtbuf)
@@ -69,6 +71,10 @@ local CTRL = EditBase.CTRL
 
 CTRL ["^A"] = NAV.HYPER_LEFT
 CTRL ["^E"] = NAV.HYPER_RIGHT
+CTRL ["^B"] = NAV.LEFT
+CTRL ["^F"] = NAV.RIGHT
+CTRL ["^N"] = NAV.DOWN
+CTRL ["^P"] = NAV.RIGHT
 
 local function clear_txtbuf(modeS, category, value)
    modeS:setTxtbuf(Txtbuf())

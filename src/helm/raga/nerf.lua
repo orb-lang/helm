@@ -177,6 +177,22 @@ end
 
 
 
+
+
+
+
+
+local CTRL = Nerf.CTRL
+
+CTRL ["^B"] = NAV.LEFT
+CTRL ["^F"] = NAV.RIGHT
+CTRL ["^N"] = NAV.DOWN
+CTRL ["^P"] = NAV.UP
+
+
+
+
+
 function Nerf.MOUSE(modeS, category, value)
    if value.scrolling then
       if value.button == "MB0" then

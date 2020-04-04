@@ -170,6 +170,21 @@ function NAV.SHIFT_TAB(modeS, category, value)
    _activateCompletion(modeS)
 end
 ```
+### Readline-style NAV
+
+Provides equivalent commands for diehard Emacsians.
+
+
+In case RMS ever takes bridge for a spin...
+
+```lua
+local CTRL = Nerf.CTRL
+
+CTRL ["^B"] = NAV.LEFT
+CTRL ["^F"] = NAV.RIGHT
+CTRL ["^N"] = NAV.DOWN
+CTRL ["^P"] = NAV.UP
+```
 ### MOUSE
 
 ```lua
