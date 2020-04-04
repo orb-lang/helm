@@ -371,19 +371,15 @@ end
 ```
 #### Txtbuf:transposeLetter()
 
-Readline has a small affordance where it will still transpose if the cursor is
-at the end of a line, which this implementation respects.
 
 ```lua
 function Txtbuf.transposeLetter(txtbuf)
    local line, cur_col, cur_row = txtbuf:currentPosition()
-   local edge, left, right = #line == cur_col, cur_col, cur_col + 1
-   if edge then
-      left, right = left - 1, right - 1
-   end
-   local stash = line[left]
-   line[left] = line[right]
-   line[right] = stash
+   if cur_col == 1 then return false end
+   local edge, left, right = #line == cur_col, cur_col - 1, cur_col
+   local stash = line[right]
+   line[right] = line[left]
+   line[left] = stash
    if not edge then
       txtbuf:setCursor(cur_row, cur_col + 1)
    end
