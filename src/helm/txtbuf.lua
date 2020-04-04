@@ -348,6 +348,42 @@ end
 
 
 
+function Txtbuf.killToEndOfLine(txtbuf)
+   local cur_row, cur_col = txtbuf:getCursor()
+   local line = txtbuf.lines[cur_row]
+   for _ = #line, cur_col, -1 do
+      remove(line)
+   end
+   return true
+end
+
+
+
+
+
+
+function Txtbuf.killToBeginningOfLine(txtbuf)
+   local cur_row, cur_col = txtbuf:getCursor()
+   local line = txtbuf.lines[cur_row]
+   local final, shift = #line, 1
+   -- copy remainder, if any
+   for i = cur_col, #line do
+      line[shift] = line[i]
+      shift = shift + 1
+   end
+   for i = shift, final do
+      line[i] = nil
+   end
+   txtbuf.cursor.col = 1
+   return true
+end
+
+
+
+
+
+
+
 
 
 

@@ -90,6 +90,9 @@ CTRL ["^R"] = function(modeS, category, value)
                  modeS:restart()
               end
 
+CTRL ["^K"] = toTxtbuf "killToEndOfLine"
+CTRL ["^U"] = toTxtbuf "killToBeginningOfLine"
+
 
 
 
