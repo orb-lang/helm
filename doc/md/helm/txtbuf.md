@@ -341,7 +341,7 @@ end
 ```lua
 function Txtbuf.killToEndOfLine(txtbuf)
    local line, cur_col, cur_row = txtbuf:currentPosition()
-   if #line == cur_col then return false end
+   if cur_col == #line + 1 then return false end
    txtbuf.contents_changed = true
    for _ = #line, cur_col, -1 do
       remove(line)
@@ -349,14 +349,13 @@ function Txtbuf.killToEndOfLine(txtbuf)
    return true
 end
 ```
-#### Txtbuf:deleteToBeginningOfLine()
+#### Txtbuf:killToBeginningOfLine()
 
 ```lua
 function Txtbuf.killToBeginningOfLine(txtbuf)
    local line, cur_col, cur_row = txtbuf:currentPosition()
+   if cur_col == 1 then return false end
    local final, shift = #line, 1
-   if final == shift then return false end
-   txtbuf.contents_changed = true
    -- copy remainder, if any
    for i = cur_col, #line do
       line[shift] = line[i]
@@ -365,7 +364,8 @@ function Txtbuf.killToBeginningOfLine(txtbuf)
    for i = shift, final do
       line[i] = nil
    end
-   txtbuf:setCursor(cur_row, 1)
+   txtbuf.contents_changed = true
+   txtbuf:setCursor(nil, 1)
    return true
 end
 ```
