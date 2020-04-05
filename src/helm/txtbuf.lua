@@ -383,16 +383,20 @@ end
 
 
 
+
+
+
 function Txtbuf.transposeLetter(txtbuf)
    local line, cur_col, cur_row = txtbuf:currentPosition()
    if cur_col == 1 then return false end
-   local edge, left, right = #line == cur_col, cur_col - 1, cur_col
+   local left, right = cur_col - 1, cur_col
+   if cur_col == #line + 1 then
+      left, right = left - 1, right - 1
+   end
    local stash = line[right]
    line[right] = line[left]
    line[left] = stash
-   if not edge then
-      txtbuf:setCursor(cur_row, cur_col + 1)
-   end
+   txtbuf:setCursor(nil, right + 1)
    txtbuf.contents_changed = true
    return true
 end
