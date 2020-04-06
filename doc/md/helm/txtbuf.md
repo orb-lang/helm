@@ -500,7 +500,8 @@ function Txtbuf.scanFor(txtbuf, pattern, reps, forward)
    local search_char
    local epsilon = forward and 0 or -1
    while true do
-      local at_boundary = forward and search_pos > #line or search_pos == 1
+      local at_boundary = (forward and search_pos > #line)
+                       or (not forward and search_pos == 1)
       search_char = at_boundary and "\n" or line[search_pos + epsilon]
       if not match(search_char, pattern) then
          found_other_char = true
@@ -509,12 +510,9 @@ function Txtbuf.scanFor(txtbuf, pattern, reps, forward)
          if reps == 0 then break end
          found_other_char = false
       end
-      if (forward and search_pos > #line)
-         or (not forward and search_pos == 1) then
+      if at_boundary then
          -- break out on txtbuf boundaries
-         if search_row == #txtbuf.lines and forward then break end
-         if search_row == 1 and not forward then break end
-
+         if search_row == (forward and #txtbuf.lines or 1) then break end
          line, search_row = txtbuf:openRow(search_row + change)
          search_pos = forward and 1 or #line + 1
       else
