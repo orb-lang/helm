@@ -94,6 +94,25 @@ function Zone.width(zone)
 end
 #/lua
 
+*** Zone:overlaps(other_zone)
+
+Determines whether there is any overlap between two zones,
+irrespective of their z-values--answers whether they affect any of
+the same cells on screen.
+
+#!lua
+function Zone.overlaps(zone, other_zone)
+   -- The other zone may be uninitialized--treat this as nonoverlapping
+   if not (other_zone.tc and other_zone.tr and
+           other_zone.bc and other_zone.br) then
+      return false
+   end
+   return zone.tc <= other_zone.bc and
+          zone.bc >= other_zone.tc and
+          zone.tr <= other_zone.br and
+          zone.br >= other_zone.tr
+end
+#/lua
 
 *** Zone:replace(contents)
 
@@ -172,13 +191,45 @@ function Zone.setBounds(zone, tc, tr, bc, br)
 end
 #/lua
 
+*** Zone:setVisibility(new_visibility), Zone:show(), Zone:hide()
+
+#!lua
+function Zone.setVisibility(zone, new_visibility)
+   if new_visibility ~= zone.visible then
+      zone.visible = new_visibility
+      zone:beTouched()
+   end
+   return zone
+end
+
+function Zone.show(zone)
+   return zone:setVisibility(true)
+end
+function Zone.hide(zone)
+   return zone:setVisibility(false)
+end
+#/lua
 
 *** Zone:beTouched()
+
+Marks a zone as touched, also marking others that may be affected based
+on overlap. If =zone= is visible, this is any overlapping zones above it,
+which may need to repaint to occlude it. If =zone= is hidden, this is
+overlapping zones below it, which (if it is *newly* hidden) may be revealed.
+We assume that zones of equal z do not overlap, so we don't check
+in that case (which handily excludes the originating zone itself)
 
 #!lua
 function Zone.beTouched(zone)
    if zone.touched then return end
    zone.touched = true
+   for _, other_zone in ipairs(zone.zoneherd) do
+      if zone.z ~= other_zone.z and
+         zone.visible == (other_zone.z > zone.z) and
+         zone:overlaps(other_zone) then
+         other_zone.touched = true
+      end
+   end
 end
 #/lua
 
@@ -259,6 +310,7 @@ local insert = assert(table.insert)
 
 function Zoneherd.addZone(zoneherd, zone)
    zoneherd[zone.name] = zone
+   zone.zoneherd = zoneherd
    local insert_index
    for i, existing in ipairs(zoneherd) do
       if existing.z > zone.z then
@@ -287,6 +339,7 @@ local function newZone(name, z, debug_mark)
    zone.name = name
    zone.debug_mark = debug_mark
    zone.z = z
+   zone.visible = true
    zone.touched = false
    -- zone.contents, aspirationally a rainbuf, is provided later
    return zone
@@ -338,6 +391,8 @@ function Zoneherd.reflow(zoneherd, modeS)
                                modeS.repl_top + 1,
                                modeS.max_col,
                                modeS.max_row )
+   zoneherd.popup:setBounds(   1, modeS.repl_top,
+                               modeS.max_col, modeS.max_row)
    return zoneherd
 end
 #/lua
@@ -354,7 +409,7 @@ function Zoneherd.paint(zoneherd, modeS)
    local write = zoneherd.write
    write(a.cursor.hide(), a.clear())
    for i, zone in ipairs(zoneherd) do
-      if zone.touched then
+      if zone.visible and zone.touched then
          -- erase
          write(a.erase.box( zone.tc,
                             zone.tr,
@@ -369,8 +424,8 @@ function Zoneherd.paint(zoneherd, modeS)
          else
             _renderRainbuf(write, zone)
          end
-         zone.touched = false
       end
+      zone.touched = false
    end
    modeS:placeCursor()
    write(a.cursor.show())
@@ -396,6 +451,8 @@ local function new(modeS, writer)
    zoneherd:newZone("command", 1, "$")
    zoneherd:newZone("results", 1, "~")
    zoneherd:newZone("suggest", 1, "%")
+   zoneherd:newZone("popup", 2, "^")
+   zoneherd.popup.visible = false
    zoneherd:reflow(modeS)
 
    return zoneherd
