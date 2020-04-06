@@ -459,7 +459,7 @@ function Txtbuf.endOfText(txtbuf)
    txtbuf:setCursor(#txtbuf.lines, #txtbuf.lines[#txtbuf.lines] + 1)
 end
 ```
-### Txtbuf:delta(pattern, reps, forward)
+### Txtbuf:scanFor(pattern, reps, forward)
 
 Search left or right for a character matching ``pattern``, after
 encountering at least one character **not** matching ``pattern``. Matches the
@@ -486,14 +486,14 @@ Returns move, the cursor delta, and the row delta.
 ```lua
 local match = assert(string.match)
 
-function Txtbuf.delta(txtbuf, pattern, reps, forward)
+function Txtbuf.scanFor(txtbuf, pattern, reps, forward)
    local change = forward and 1 or -1
    reps = reps or 1
-   local found_other_char = false
-   local moved = false
+   local found_other_char, moved = false, false
    local line, cur_col, cur_row = txtbuf:currentPosition()
    local search_pos, search_row = cur_col, cur_row
    local search_char
+
    while true do
       search_char = search_pos == 1 and "\n" or line[search_pos - 1]
       if not match(search_char, pattern) then
@@ -505,7 +505,10 @@ function Txtbuf.delta(txtbuf, pattern, reps, forward)
       end
       if (forward and search_pos > #line)
          or (not forward and search_pos == 1) then
-         if search_row == 1 then break end
+         -- break out on txtbuf boundaries
+         if search_row == #txtbuf.lines and forward then break end
+         if search_row == 1 and not forward then break end
+
          line, search_row = txtbuf:openRow(search_row + change)
          search_pos = forward and 1 or #line + 1
       else
@@ -524,7 +527,7 @@ Finds the left or right delta, and moves the cursor if the pattern was found.
 ```lua
 function Txtbuf.leftToBoundary(txtbuf, pattern, reps)
    local line, cur_col, cur_row = txtbuf:currentPosition()
-   local moved, colΔ, rowΔ = txtbuf:delta(pattern, reps, false)
+   local moved, colΔ, rowΔ = txtbuf:scanFor(pattern, reps, false)
    if moved then
       txtbuf:setCursor(cur_row + rowΔ, cur_col + colΔ)
       return true
@@ -535,7 +538,7 @@ end
 
 function Txtbuf.rightToBoundary(txtbuf, pattern, reps)
    local line, cur_col, cur_row = txtbuf:currentPosition()
-   local moved, colΔ, rowΔ = txtbuf:delta(pattern, reps, true)
+   local moved, colΔ, rowΔ = txtbuf:scanFor(pattern, reps, true)
    if moved then
       txtbuf:setCursor(cur_row + rowΔ, cur_col + colΔ)
       return true
@@ -549,7 +552,7 @@ end
 ```lua
 function Txtbuf.killToEndOfWord(txtbuf)
    local line, cur_col, cur_row = txtbuf:currentPosition()
-   local moved, colΔ, rowΔ = txtbuf:delta('%W', reps, true)
+   local moved, colΔ, rowΔ = txtbuf:scanFor('%W', reps, true)
    if moved then
       -- check if the row has changed
       -- if so, delete to end of line
@@ -566,7 +569,7 @@ end
 ```lua
 function Txtbuf.killToBeginningOfWord(txtbuf)
    local line, cur_col, cur_row = txtbuf:currentPosition()
-   local moved, colΔ, rowΔ = txtbuf:delta('%W', reps, false)
+   local moved, colΔ, rowΔ = txtbuf:scanFor('%W', reps, false)
    if moved then
       -- check if the row has changed
       -- if so, delete to beginning of line
