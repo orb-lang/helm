@@ -28,10 +28,11 @@ end
 #/lua
 
 When creating a new raga, remember to set:
+
 #!lua-example
 RagaBase.name = "raga_base"
 RagaBase.prompt_char = "$"
-#/lua
+#/lua-example
 
 ** __call (main input handling/dispatch)
 
