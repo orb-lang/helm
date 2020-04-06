@@ -475,7 +475,7 @@ end
 #/lua
 
 
-*** Txtbuf:delta(pattern, reps, forward)
+*** Txtbuf:scanFor(pattern, reps, forward)
 
 Search left or right for a character matching =pattern=, after
 encountering at least one character *not* matching =pattern=. Matches the
@@ -497,7 +497,7 @@ Returns move, the cursor delta, and the row delta.
 #!lua
 local match = assert(string.match)
 
-function Txtbuf.delta(txtbuf, pattern, reps, forward)
+function Txtbuf.scanFor(txtbuf, pattern, reps, forward)
    local change = forward and 1 or -1
    reps = reps or 1
    local found_other_char = false
@@ -537,7 +537,7 @@ Finds the left or right delta, and moves the cursor if the pattern was found.
 #!lua
 function Txtbuf.leftToBoundary(txtbuf, pattern, reps)
    local line, cur_col, cur_row = txtbuf:currentPosition()
-   local moved, colΔ, rowΔ = txtbuf:delta(pattern, reps, false)
+   local moved, colΔ, rowΔ = txtbuf:scanFor(pattern, reps, false)
    if moved then
       txtbuf:setCursor(cur_row + rowΔ, cur_col + colΔ)
       return true
@@ -548,7 +548,7 @@ end
 
 function Txtbuf.rightToBoundary(txtbuf, pattern, reps)
    local line, cur_col, cur_row = txtbuf:currentPosition()
-   local moved, colΔ, rowΔ = txtbuf:delta(pattern, reps, true)
+   local moved, colΔ, rowΔ = txtbuf:scanFor(pattern, reps, true)
    if moved then
       txtbuf:setCursor(cur_row + rowΔ, cur_col + colΔ)
       return true
@@ -564,7 +564,7 @@ end
 #!lua
 function Txtbuf.killToEndOfWord(txtbuf)
    local line, cur_col, cur_row = txtbuf:currentPosition()
-   local moved, colΔ, rowΔ = txtbuf:delta('%W', reps, true)
+   local moved, colΔ, rowΔ = txtbuf:scanFor('%W', reps, true)
    if moved then
       -- check if the row has changed
       -- if so, delete to end of line
@@ -583,7 +583,7 @@ end
 #!lua
 function Txtbuf.killToBeginningOfWord(txtbuf)
    local line, cur_col, cur_row = txtbuf:currentPosition()
-   local moved, colΔ, rowΔ = txtbuf:delta('%W', reps, false)
+   local moved, colΔ, rowΔ = txtbuf:scanFor('%W', reps, false)
    if moved then
       -- check if the row has changed
       -- if so, delete to beginning of line
