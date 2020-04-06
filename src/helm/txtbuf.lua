@@ -346,7 +346,7 @@ end
 
 function Txtbuf.killToEndOfLine(txtbuf)
    local line, cur_col, cur_row = txtbuf:currentPosition()
-   if #line == cur_col then return false end
+   if cur_col == #line + 1 then return false end
    txtbuf.contents_changed = true
    for _ = #line, cur_col, -1 do
       remove(line)
@@ -361,9 +361,8 @@ end
 
 function Txtbuf.killToBeginningOfLine(txtbuf)
    local line, cur_col, cur_row = txtbuf:currentPosition()
+   if cur_col == 1 then return false end
    local final, shift = #line, 1
-   if final == shift then return false end
-   txtbuf.contents_changed = true
    -- copy remainder, if any
    for i = cur_col, #line do
       line[shift] = line[i]
@@ -372,9 +371,13 @@ function Txtbuf.killToBeginningOfLine(txtbuf)
    for i = shift, final do
       line[i] = nil
    end
-   txtbuf:setCursor(cur_row, 1)
+   txtbuf.contents_changed = true
+   txtbuf:setCursor(nil, 1)
    return true
 end
+
+
+
 
 
 
@@ -386,13 +389,14 @@ end
 function Txtbuf.transposeLetter(txtbuf)
    local line, cur_col, cur_row = txtbuf:currentPosition()
    if cur_col == 1 then return false end
-   local edge, left, right = #line == cur_col, cur_col - 1, cur_col
+   local left, right = cur_col - 1, cur_col
+   if cur_col == #line + 1 then
+      left, right = left - 1, right - 1
+   end
    local stash = line[right]
    line[right] = line[left]
    line[left] = stash
-   if not edge then
-      txtbuf:setCursor(cur_row, cur_col + 1)
-   end
+   txtbuf:setCursor(nil, right + 1)
    txtbuf.contents_changed = true
    return true
 end
@@ -506,7 +510,8 @@ function Txtbuf.scanFor(txtbuf, pattern, reps, forward)
    local search_char
    local epsilon = forward and 0 or -1
    while true do
-      local at_boundary = forward and search_pos > #line or search_pos == 1
+      local at_boundary = (forward and search_pos > #line)
+                       or (not forward and search_pos == 1)
       search_char = at_boundary and "\n" or line[search_pos + epsilon]
       if not match(search_char, pattern) then
          found_other_char = true
@@ -515,12 +520,9 @@ function Txtbuf.scanFor(txtbuf, pattern, reps, forward)
          if reps == 0 then break end
          found_other_char = false
       end
-      if (forward and search_pos > #line)
-         or (not forward and search_pos == 1) then
+      if at_boundary then
          -- break out on txtbuf boundaries
-         if search_row == #txtbuf.lines and forward then break end
-         if search_row == 1 and not forward then break end
-
+         if search_row == (forward and #txtbuf.lines or 1) then break end
          line, search_row = txtbuf:openRow(search_row + change)
          search_pos = forward and 1 or #line + 1
       else
