@@ -492,9 +492,13 @@ end
 
 
 
+
+
+
 local match = assert(string.match)
 
-function Txtbuf.leftDelta(txtbuf, pattern, reps)
+function Txtbuf.delta(txtbuf, pattern, reps, forward)
+   local change = forward and 1 or -1
    reps = reps or 1
    local found_other_char = false
    local moved = false
@@ -510,41 +514,13 @@ function Txtbuf.leftDelta(txtbuf, pattern, reps)
          if reps == 0 then break end
          found_other_char = false
       end
-      if search_pos == 1 then
+      if (forward and search_pos > #line)
+         or (not forward and search_pos == 1) then
          if search_row == 1 then break end
-         line, search_row = txtbuf:openRow(search_row - 1)
-         search_pos = #line + 1
+         line, search_row = txtbuf:openRow(search_row + change)
+         search_pos = forward and 1 or #line + 1
       else
-         search_pos = search_pos - 1
-      end
-      moved = true
-   end
-
-   return moved, search_pos - cur_col, search_row - cur_row
-end
-
-function Txtbuf.rightDelta(txtbuf, pattern, reps)
-   reps = reps or 1
-   local found_other_char = false
-   local moved = false
-   local line, cur_col, cur_row = txtbuf:currentPosition()
-   local search_pos, search_row = cur_col, cur_row
-   local search_char
-   while true do
-      search_char = search_pos > #line and "\n" or line[search_pos]
-      if not match(search_char, pattern) then
-         found_other_char = true
-      elseif found_other_char then
-         reps = reps - 1
-         if reps == 0 then break end
-         found_other_char = false
-      end
-      if search_pos > #line then
-         if search_row == #txtbuf.lines then break end
-         line, search_row = txtbuf:openRow(search_row + 1)
-         search_pos = 1
-      else
-         search_pos = search_pos + 1
+         search_pos = search_pos + change
       end
       moved = true
    end
@@ -561,7 +537,7 @@ end
 
 function Txtbuf.leftToBoundary(txtbuf, pattern, reps)
    local line, cur_col, cur_row = txtbuf:currentPosition()
-   local moved, colΔ, rowΔ = txtbuf:leftDelta(pattern, reps)
+   local moved, colΔ, rowΔ = txtbuf:delta(pattern, reps, false)
    if moved then
       txtbuf:setCursor(cur_row + rowΔ, cur_col + colΔ)
       return true
@@ -572,7 +548,7 @@ end
 
 function Txtbuf.rightToBoundary(txtbuf, pattern, reps)
    local line, cur_col, cur_row = txtbuf:currentPosition()
-   local moved, colΔ, rowΔ = txtbuf:rightDelta(pattern, reps)
+   local moved, colΔ, rowΔ = txtbuf:delta(pattern, reps, true)
    if moved then
       txtbuf:setCursor(cur_row + rowΔ, cur_col + colΔ)
       return true
@@ -580,7 +556,6 @@ function Txtbuf.rightToBoundary(txtbuf, pattern, reps)
       return false
    end
 end
-
 
 
 
@@ -603,8 +578,6 @@ function Txtbuf.firstNonWhitespace(txtbuf)
    end
    return false
 end
-
-
 
 
 
@@ -646,8 +619,6 @@ end
 
 
 
-
-
 function Txtbuf.up(txtbuf)
    if not txtbuf:openRow(txtbuf.cursor.row - 1) then
       txtbuf:setCursor(nil, 1)
@@ -667,7 +638,6 @@ function Txtbuf.down(txtbuf)
    txtbuf:setCursor(txtbuf.cursor.row + 1, nil)
    return true
 end
-
 
 
 
@@ -735,7 +705,6 @@ function Txtbuf.clone(txtbuf)
    local tb = clone(txtbuf, 3)
    return tb:resume()
 end
-
 
 
 

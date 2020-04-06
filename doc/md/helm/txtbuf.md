@@ -459,7 +459,7 @@ function Txtbuf.endOfText(txtbuf)
    txtbuf:setCursor(#txtbuf.lines, #txtbuf.lines[#txtbuf.lines] + 1)
 end
 ```
-### Txtbuf:[left|right]Delta(pattern, reps)
+### Txtbuf:delta(pattern, reps, forward)
 
 Search left or right for a character matching ``pattern``, after
 encountering at least one character **not** matching ``pattern``. Matches the
@@ -474,14 +474,20 @@ Returns move, the cursor delta, and the row delta.
 - #parameters
 
 
-   - pattern: A pattern matching character(s) to stop at. Generally either a
-              single character or a single character class, e.g. %W
-   - reps:    Number of times to repeat the motion
+   - pattern:  A pattern matching character(s) to stop at. Generally either a
+               single character or a single character class, e.g. %W
+
+
+   - reps:     Number of times to repeat the motion
+
+
+   - forward:  Boolean, true for forward search, false for backward.
 
 ```lua
 local match = assert(string.match)
 
-function Txtbuf.leftDelta(txtbuf, pattern, reps)
+function Txtbuf.delta(txtbuf, pattern, reps, forward)
+   local change = forward and 1 or -1
    reps = reps or 1
    local found_other_char = false
    local moved = false
@@ -497,41 +503,13 @@ function Txtbuf.leftDelta(txtbuf, pattern, reps)
          if reps == 0 then break end
          found_other_char = false
       end
-      if search_pos == 1 then
+      if (forward and search_pos > #line)
+         or (not forward and search_pos == 1) then
          if search_row == 1 then break end
-         line, search_row = txtbuf:openRow(search_row - 1)
-         search_pos = #line + 1
+         line, search_row = txtbuf:openRow(search_row + change)
+         search_pos = forward and 1 or #line + 1
       else
-         search_pos = search_pos - 1
-      end
-      moved = true
-   end
-
-   return moved, search_pos - cur_col, search_row - cur_row
-end
-
-function Txtbuf.rightDelta(txtbuf, pattern, reps)
-   reps = reps or 1
-   local found_other_char = false
-   local moved = false
-   local line, cur_col, cur_row = txtbuf:currentPosition()
-   local search_pos, search_row = cur_col, cur_row
-   local search_char
-   while true do
-      search_char = search_pos > #line and "\n" or line[search_pos]
-      if not match(search_char, pattern) then
-         found_other_char = true
-      elseif found_other_char then
-         reps = reps - 1
-         if reps == 0 then break end
-         found_other_char = false
-      end
-      if search_pos > #line then
-         if search_row == #txtbuf.lines then break end
-         line, search_row = txtbuf:openRow(search_row + 1)
-         search_pos = 1
-      else
-         search_pos = search_pos + 1
+         search_pos = search_pos + change
       end
       moved = true
    end
@@ -546,7 +524,7 @@ Finds the left or right delta, and moves the cursor if the pattern was found.
 ```lua
 function Txtbuf.leftToBoundary(txtbuf, pattern, reps)
    local line, cur_col, cur_row = txtbuf:currentPosition()
-   local moved, colΔ, rowΔ = txtbuf:leftDelta(pattern, reps)
+   local moved, colΔ, rowΔ = txtbuf:delta(pattern, reps, false)
    if moved then
       txtbuf:setCursor(cur_row + rowΔ, cur_col + colΔ)
       return true
@@ -557,7 +535,7 @@ end
 
 function Txtbuf.rightToBoundary(txtbuf, pattern, reps)
    local line, cur_col, cur_row = txtbuf:currentPosition()
-   local moved, colΔ, rowΔ = txtbuf:rightDelta(pattern, reps)
+   local moved, colΔ, rowΔ = txtbuf:delta(pattern, reps, true)
    if moved then
       txtbuf:setCursor(cur_row + rowΔ, cur_col + colΔ)
       return true
@@ -573,7 +551,6 @@ indicates whether such a character exists. Does not move the cursor if the
 line is empty or all whitespace.
 
 ```lua
-
 function Txtbuf.firstNonWhitespace(txtbuf)
    local line = txtbuf.lines[txtbuf.cursor.row]
    local new_col = 1
@@ -586,12 +563,10 @@ function Txtbuf.firstNonWhitespace(txtbuf)
    end
    return false
 end
-
 ```
 ### Txtbuf:leftWordAlpha(reps), Txtbuf:rightWordAlpha(reps), Txtbuf:leftWordWhitespace(reps), Txtbuf:rightWordWhitespace(reps)
 
 ```lua
-
 function Txtbuf.leftWordAlpha(txtbuf, reps)
    return txtbuf:leftToBoundary('%W', reps)
 end
@@ -607,7 +582,6 @@ end
 function Txtbuf.rightWordWhitespace(txtbuf, reps)
    return txtbuf:rightToBoundary('%s', reps)
 end
-
 ```
 ### Txtbuf:replace(frag)
 
@@ -629,7 +603,6 @@ Returns whether it was able to move to a different line, i.e. false in the
 case of moving to the beginning/end of the first/last line.
 
 ```lua
-
 function Txtbuf.up(txtbuf)
    if not txtbuf:openRow(txtbuf.cursor.row - 1) then
       txtbuf:setCursor(nil, 1)
@@ -655,7 +628,6 @@ Splits the line at the current cursor position, effectively
 inserting a newline.
 
 ```lua
-
 function Txtbuf.nl(txtbuf)
    line, cur_col, cur_row = txtbuf:currentPosition()
    -- split the line
@@ -715,7 +687,6 @@ end
 ### new
 
 ```lua
-
 local function new(str)
    str = str or ""
    local txtbuf = meta(Txtbuf)
