@@ -562,6 +562,45 @@ end
 
 
 
+function Txtbuf.killToEndOfWord(txtbuf)
+   local line, cur_col, cur_row = txtbuf:currentPosition()
+   local moved, colΔ, rowΔ = txtbuf:delta('%W', reps, true)
+   if moved then
+      -- check if the row has changed
+      -- if so, delete to end of line
+      -- otherwise, delete colΔ codepoints
+      txtbuf.contents_changed = true
+      return true
+   else
+      return false
+   end
+end
+
+
+
+
+
+
+function Txtbuf.killToBeginningOfWord(txtbuf)
+   local line, cur_col, cur_row = txtbuf:currentPosition()
+   local moved, colΔ, rowΔ = txtbuf:delta('%W', reps, false)
+   if moved then
+      -- check if the row has changed
+      -- if so, delete to beginning of line
+      -- otherwise, delete -colΔ codepoints
+      -- and relocate the cursor accordingly
+      txtbuf.contents_changed = true
+      return true
+   else
+      return false
+   end
+end
+
+
+
+
+
+
 
 
 
