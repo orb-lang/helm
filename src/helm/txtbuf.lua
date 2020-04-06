@@ -492,21 +492,14 @@ end
 
 
 
-
-
-
-
-
-
-
-
 local match = assert(string.match)
 
-function Txtbuf.leftToBoundary(txtbuf, pattern, reps)
+function Txtbuf.leftDelta(txtbuf, pattern, reps)
    reps = reps or 1
    local found_other_char = false
    local moved = false
-   local line, search_pos, search_row = txtbuf:currentPosition()
+   local line, cur_col, cur_row = txtbuf:currentPosition()
+   local search_pos, search_row = cur_col, cur_row
    local search_char
    while true do
       search_char = search_pos == 1 and "\n" or line[search_pos - 1]
@@ -526,15 +519,16 @@ function Txtbuf.leftToBoundary(txtbuf, pattern, reps)
       end
       moved = true
    end
-   txtbuf:setCursor(search_row, search_pos)
-   return moved
+
+   return moved, search_pos - cur_col, search_row - cur_row
 end
 
-function Txtbuf.rightToBoundary(txtbuf, pattern, reps)
+function Txtbuf.rightDelta(txtbuf, pattern, reps)
    reps = reps or 1
    local found_other_char = false
    local moved = false
-   local line, search_pos, search_row = txtbuf:currentPosition()
+   local line, cur_col, cur_row = txtbuf:currentPosition()
+   local search_pos, search_row = cur_col, cur_row
    local search_char
    while true do
       search_char = search_pos > #line and "\n" or line[search_pos]
@@ -554,8 +548,37 @@ function Txtbuf.rightToBoundary(txtbuf, pattern, reps)
       end
       moved = true
    end
-   txtbuf:setCursor(search_row, search_pos)
-   return moved
+
+   return moved, search_pos - cur_col, search_row - cur_row
+end
+
+
+
+
+
+
+
+
+function Txtbuf.leftToBoundary(txtbuf, pattern, reps)
+   local line, cur_col, cur_row = txtbuf:currentPosition()
+   local moved, colΔ, rowΔ = txtbuf:leftDelta(pattern, reps)
+   if moved then
+      txtbuf:setCursor(cur_row + rowΔ, cur_col + colΔ)
+      return true
+   else
+      return false
+   end
+end
+
+function Txtbuf.rightToBoundary(txtbuf, pattern, reps)
+   local line, cur_col, cur_row = txtbuf:currentPosition()
+   local moved, colΔ, rowΔ = txtbuf:rightDelta(pattern, reps)
+   if moved then
+      txtbuf:setCursor(cur_row + rowΔ, cur_col + colΔ)
+      return true
+   else
+      return false
+   end
 end
 
 

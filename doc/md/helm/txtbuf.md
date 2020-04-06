@@ -458,16 +458,17 @@ end
 function Txtbuf.endOfText(txtbuf)
    txtbuf:setCursor(#txtbuf.lines, #txtbuf.lines[#txtbuf.lines] + 1)
 end
-
 ```
-### Txtbuf:rightToBoundary(pattern, reps), Txtbuf:leftToBoundary(pattern, reps)
+### Txtbuf:[left|right]Delta(pattern, reps)
 
-Move the cursor until it "hits" a character matching ``pattern``, after
-encountering at least one character **not** matching ``pattern``. Stops with the
-cursor on the matching character when moving right, or one cell ahead of it
-when moving left, i.e. with the cursor "between" a non-matching character
-and a matching one. Used as the basis for word (alphanumeric) and
-Word (whitespace-separated) motions.
+Search left or right for a character matching ``pattern``, after
+encountering at least one character **not** matching ``pattern``. Matches the
+position on the matching character when moving right, or one cell ahead of it
+when moving left, "between" a non-matching character
+and a matching one.
+
+
+Returns move, the cursor delta, and the row delta.
 
 
 - #parameters
@@ -477,26 +478,15 @@ Word (whitespace-separated) motions.
               single character or a single character class, e.g. %W
    - reps:    Number of times to repeat the motion
 
-
-- To be added later:
-
-
-  - mark:  A boolean: if true, the Txtbuf is annotated with a 'mark' defining
-           a region.  The first cursor is stored as the mark origin, and the
-           second cursor is given the 'cursor' slot on the txtbuf.
-
-
-           This lets us define a generalized method to kill or yank the region.
-
 ```lua
-
 local match = assert(string.match)
 
-function Txtbuf.leftToBoundary(txtbuf, pattern, reps)
+function Txtbuf.leftDelta(txtbuf, pattern, reps)
    reps = reps or 1
    local found_other_char = false
    local moved = false
-   local line, search_pos, search_row = txtbuf:currentPosition()
+   local line, cur_col, cur_row = txtbuf:currentPosition()
+   local search_pos, search_row = cur_col, cur_row
    local search_char
    while true do
       search_char = search_pos == 1 and "\n" or line[search_pos - 1]
@@ -516,15 +506,16 @@ function Txtbuf.leftToBoundary(txtbuf, pattern, reps)
       end
       moved = true
    end
-   txtbuf:setCursor(search_row, search_pos)
-   return moved
+
+   return moved, search_pos - cur_col, search_row - cur_row
 end
 
-function Txtbuf.rightToBoundary(txtbuf, pattern, reps)
+function Txtbuf.rightDelta(txtbuf, pattern, reps)
    reps = reps or 1
    local found_other_char = false
    local moved = false
-   local line, search_pos, search_row = txtbuf:currentPosition()
+   local line, cur_col, cur_row = txtbuf:currentPosition()
+   local search_pos, search_row = cur_col, cur_row
    local search_char
    while true do
       search_char = search_pos > #line and "\n" or line[search_pos]
@@ -544,10 +535,36 @@ function Txtbuf.rightToBoundary(txtbuf, pattern, reps)
       end
       moved = true
    end
-   txtbuf:setCursor(search_row, search_pos)
-   return moved
+
+   return moved, search_pos - cur_col, search_row - cur_row
+end
+```
+### Txtbuf[left|right]ToBoundary(pattern, reps)
+
+Finds the left or right delta, and moves the cursor if the pattern was found.
+
+```lua
+function Txtbuf.leftToBoundary(txtbuf, pattern, reps)
+   local line, cur_col, cur_row = txtbuf:currentPosition()
+   local moved, colΔ, rowΔ = txtbuf:leftDelta(pattern, reps)
+   if moved then
+      txtbuf:setCursor(cur_row + rowΔ, cur_col + colΔ)
+      return true
+   else
+      return false
+   end
 end
 
+function Txtbuf.rightToBoundary(txtbuf, pattern, reps)
+   local line, cur_col, cur_row = txtbuf:currentPosition()
+   local moved, colΔ, rowΔ = txtbuf:rightDelta(pattern, reps)
+   if moved then
+      txtbuf:setCursor(cur_row + rowΔ, cur_col + colΔ)
+      return true
+   else
+      return false
+   end
+end
 ```
 ### Txtbuf:firstNonWhitespace()
 
