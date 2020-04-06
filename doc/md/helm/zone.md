@@ -111,8 +111,7 @@ Replaces the contents of the zone with the provided value.
 ```lua
 function Zone.replace(zone, contents)
    zone.contents = contents or ""
-   zone.touched = true
-
+   zone:beTouched()
    return zone
 end
 ```
@@ -127,7 +126,7 @@ the contents is a Rainbuf (which handles the actual scrolling).
 function Zone.scrollUp(zone)
    if instanceof(zone.contents, Rainbuf)
       and zone.contents:scrollUp() then
-      zone.touched = true
+      zone:beTouched()
       return true
    else
       return false
@@ -137,7 +136,7 @@ end
 function Zone.scrollDown(zone)
    if instanceof(zone.contents, Rainbuf)
       and zone.contents:scrollDown() then
-      zone.touched = true
+      zone:beTouched()
       return true
    else
       return false
@@ -168,9 +167,23 @@ function Zone.setBounds(zone, tc, tr, bc, br)
       zone.tc = tc
       zone.br = br
       zone.bc = bc
-      zone.touched = true
+      -- #todo technically this is incomplete as we need to care about
+      -- cells we may previously have owned and no longer do, and what zones
+      -- *are* now responsible for them. Doing that properly requires a real
+      -- two-step layout process, though (figure out where everything is going
+      -- to be, *then* put it there and mark things touched), so we'll
+      -- hold off for now
+      zone:beTouched()
    end
    return zone
+end
+```
+### Zone:beTouched()
+
+```lua
+function Zone.beTouched(zone)
+   if zone.touched then return end
+   zone.touched = true
 end
 ```
 ### _writeLines(write, zone, str)

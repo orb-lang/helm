@@ -55,14 +55,14 @@ local NAV = Complete.NAV
 
 function NAV.TAB(modeS, category, value)
    modeS.suggest.active_suggestions[1]:selectNext()
-   modeS.zones.suggest.touched = true
+   modeS.zones.suggest:beTouched()
 end
 NAV.DOWN = NAV.TAB
 NAV.SHIFT_DOWN = NAV.TAB
 
 function NAV.SHIFT_TAB(modeS, category, value)
    modeS.suggest.active_suggestions[1]:selectPrevious()
-   modeS.zones.suggest.touched = true
+   modeS.zones.suggest:beTouched()
 end
 NAV.UP = NAV.SHIFT_TAB
 NAV.SHIFT_UP = NAV.SHIFT_TAB
