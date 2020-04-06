@@ -371,6 +371,7 @@ end
 ```
 #### Txtbuf:transposeLetter()
 
+Transposes the letter at the cursor with the one before it.
 
 ```lua
 function Txtbuf.transposeLetter(txtbuf)

@@ -382,6 +382,7 @@ end
 
 
 
+
 function Txtbuf.transposeLetter(txtbuf)
    local line, cur_col, cur_row = txtbuf:currentPosition()
    if cur_col == 1 then return false end
