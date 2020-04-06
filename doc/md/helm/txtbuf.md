@@ -493,9 +493,10 @@ function Txtbuf.scanFor(txtbuf, pattern, reps, forward)
    local line, cur_col, cur_row = txtbuf:currentPosition()
    local search_pos, search_row = cur_col, cur_row
    local search_char
-
+   local epsilon = forward and 0 or -1
    while true do
-      search_char = search_pos == 1 and "\n" or line[search_pos - 1]
+      local at_boundary = forward and search_pos > #line or search_pos == 1
+      search_char = at_boundary and "\n" or line[search_pos + epsilon]
       if not match(search_char, pattern) then
          found_other_char = true
       elseif found_other_char then
