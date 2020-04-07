@@ -389,6 +389,7 @@ at the end of a line, which this implementation respects.
 function Txtbuf.transposeLetter(txtbuf)
    local line, cur_col, cur_row = txtbuf:currentPosition()
    if cur_col == 1 then return false end
+   if cur_col == 2 and #line == 1 then return false end
    local left, right = cur_col - 1, cur_col
    if cur_col == #line + 1 then
       left, right = left - 1, right - 1
