@@ -16,6 +16,20 @@ local EditBase = clone(RagaBase, 2)
 
 
 
+
+
+
+local function toTxtbuf(fn)
+   return function(modeS, category, value)
+      return modeS.txtbuf[fn](modeS.txtbuf)
+   end
+end
+
+
+
+
+
+
 local function _insert(modeS, category, value)
    if tostring(modeS.txtbuf) == "" then
       modeS:setResults ""
@@ -38,27 +52,17 @@ end
 
 
 
+
 local NAV = EditBase.NAV
 
-local _nav_mappings = { LEFT        = "left",
-                        RIGHT       = "right",
-                        ALT_LEFT    = "leftWordAlpha",
-                        ALT_RIGHT   = "rightWordAlpha",
-                        HYPER_LEFT  = "startOfLine",
-                        HYPER_RIGHT = "endOfLine",
-                        BACKSPACE   = "deleteBackward",
-                        DELETE      = "deleteForward" }
-
-for event, fn in pairs(_nav_mappings) do
-   EditBase.NAV[event] = function(modeS, category, value)
-      return modeS.txtbuf[fn](modeS.txtbuf)
-   end
-end
-
-
-
-
-
+NAV.LEFT        = toTxtbuf "left"
+NAV.RIGHT       = toTxtbuf "right"
+NAV.ALT_LEFT    = toTxtbuf "leftWordAlpha"
+NAV.ALT_RIGHT   = toTxtbuf "rightWordAlpha"
+NAV.HYPER_LEFT  = toTxtbuf "startOfLine"
+NAV.HYPER_RIGHT = toTxtbuf "endOfLine"
+NAV.BACKSPACE   = toTxtbuf "deleteBackward"
+NAV.DELETE      = toTxtbuf "deleteForward"
 
 
 
@@ -81,6 +85,10 @@ CTRL ["^L"] = clear_txtbuf
 CTRL ["^R"] = function(modeS, category, value)
                  modeS:restart()
               end
+
+CTRL ["^K"] = toTxtbuf "killToEndOfLine"
+CTRL ["^U"] = toTxtbuf "killToBeginningOfLine"
+CTRL ["^T"] = toTxtbuf "transposeLetter"
 
 
 

@@ -27,6 +27,7 @@ end
 ```
 
 When creating a new raga, remember to set:
+
 ```lua-example
 RagaBase.name = "raga_base"
 RagaBase.prompt_char = "$"

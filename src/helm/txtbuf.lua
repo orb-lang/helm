@@ -65,7 +65,6 @@
 
 
 
-
 assert(meta)
 local Codepoints = require "singletons/codepoints"
 local lines = import("core/string", "lines")
@@ -121,12 +120,11 @@ end
 
 
 
-local function _split_cursor(cursor)
-   return cursor.row, cursor.col
-end
 
-function Txtbuf.getCursor(txtbuf)
-   return _split_cursor(txtbuf.cursor)
+
+function Txtbuf.currentPosition(txtbuf)
+   local row, col = txtbuf.cursor.row, txtbuf.cursor.col
+   return txtbuf.lines[row], col, row
 end
 
 
@@ -277,8 +275,8 @@ function Txtbuf.paste(txtbuf, frag)
    for i, frag_line in ipairs(frag_lines) do
       if i > 1 then txtbuf:nl() end
       local codes = Codepoints(frag_line)
-      local cur_row, cur_col = txtbuf:getCursor()
-      splice(txtbuf.lines[cur_row], cur_col, codes)
+      local line, cur_col, cur_row = txtbuf:currentPosition()
+      splice(line, cur_col, codes)
       txtbuf:setCursor(nil, cur_col + #codes)
    end
    txtbuf.contents_changed = true
@@ -296,13 +294,12 @@ local function _is_paired(a, b)
 end
 
 function Txtbuf.deleteBackward(txtbuf)
-   local cur_row, cur_col = txtbuf:getCursor()
+   local line, cur_col, cur_row = txtbuf:currentPosition()
    if cur_row == 1 and cur_col == 1 then
       return false
    end
    -- At this point we will definitely make a change
    txtbuf.contents_changed = true
-   local line = txtbuf.lines[cur_row]
    if cur_col > 1 then
       if _is_paired(line[cur_col - 1], line[cur_col]) then
          remove(line, cur_col)
@@ -326,8 +323,7 @@ end
 
 
 function Txtbuf.deleteForward(txtbuf)
-   local cur_row, cur_col = txtbuf:getCursor()
-   local line = txtbuf.lines[cur_row]
+   local line, cur_col, cur_row = txtbuf:currentPosition()
    if cur_row == #txtbuf.lines and cur_col > #line then
       return false
    end
@@ -348,6 +344,69 @@ end
 
 
 
+function Txtbuf.killToEndOfLine(txtbuf)
+   local line, cur_col, cur_row = txtbuf:currentPosition()
+   if cur_col == #line + 1 then return false end
+   txtbuf.contents_changed = true
+   for _ = #line, cur_col, -1 do
+      remove(line)
+   end
+   return true
+end
+
+
+
+
+
+
+function Txtbuf.killToBeginningOfLine(txtbuf)
+   local line, cur_col, cur_row = txtbuf:currentPosition()
+   if cur_col == 1 then return false end
+   local final, shift = #line, 1
+   -- copy remainder, if any
+   for i = cur_col, #line do
+      line[shift] = line[i]
+      shift = shift + 1
+   end
+   for i = shift, final do
+      line[i] = nil
+   end
+   txtbuf.contents_changed = true
+   txtbuf:setCursor(nil, 1)
+   return true
+end
+
+
+
+
+
+
+
+
+
+
+
+function Txtbuf.transposeLetter(txtbuf)
+   local line, cur_col, cur_row = txtbuf:currentPosition()
+   if cur_col == 1 then return false end
+   if cur_col == 2 and #line == 1 then return false end
+   local left, right = cur_col - 1, cur_col
+   if cur_col == #line + 1 then
+      left, right = left - 1, right - 1
+   end
+   local stash = line[right]
+   line[right] = line[left]
+   line[left] = stash
+   txtbuf:setCursor(nil, right + 1)
+   txtbuf.contents_changed = true
+   return true
+end
+
+
+
+
+
+
 
 
 
@@ -355,7 +414,7 @@ end
 
 function Txtbuf.left(txtbuf, disp)
    disp = disp or 1
-   local new_row, new_col = txtbuf:getCursor()
+   local line, new_col, new_row = txtbuf:currentPosition()
    new_col = new_col - disp
    while new_col < 1 do
       _, new_row = txtbuf:openRow(new_row - 1)
@@ -363,7 +422,7 @@ function Txtbuf.left(txtbuf, disp)
          txtbuf:setCursor(nil, 1)
          return false
       end
-      new_col = #txtbuf.lines[new_row] + 1 + new_col
+      new_col = #line + 1 + new_col
    end
    txtbuf:setCursor(new_row, new_col)
    return true
@@ -376,12 +435,12 @@ end
 
 function Txtbuf.right(txtbuf, disp)
    disp = disp or 1
-   local new_row, new_col = txtbuf:getCursor()
+   local line, new_col, new_row = txtbuf:currentPosition()
    new_col = new_col + disp
-   while new_col > #txtbuf.lines[new_row] + 1 do
+   while new_col > #line + 1 do
       _, new_row = txtbuf:openRow(new_row + 1)
       if not new_row then
-         txtbuf:setCursor(nil, #txtbuf.lines[txtbuf.cursor.row] + 1)
+         txtbuf:setCursor(nil, #line + 1)
          return false
       end
       new_col = new_col - (#txtbuf.lines[new_row - 1] + 1)
@@ -441,22 +500,20 @@ end
 
 
 
-
-
-
-
-
 local match = assert(string.match)
 
-function Txtbuf.leftToBoundary(txtbuf, pattern, reps)
+function Txtbuf.scanFor(txtbuf, pattern, reps, forward)
+   local change = forward and 1 or -1
    reps = reps or 1
-   local found_other_char = false
-   local moved = false
-   local search_row, search_pos = txtbuf:getCursor()
-   local line = txtbuf.lines[search_row]
+   local found_other_char, moved = false, false
+   local line, cur_col, cur_row = txtbuf:currentPosition()
+   local search_pos, search_row = cur_col, cur_row
    local search_char
+   local epsilon = forward and 0 or -1
    while true do
-      search_char = search_pos == 1 and "\n" or line[search_pos - 1]
+      local at_boundary = (forward and search_pos > #line)
+                       or (not forward and search_pos == 1)
+      search_char = at_boundary and "\n" or line[search_pos + epsilon]
       if not match(search_char, pattern) then
          found_other_char = true
       elseif found_other_char then
@@ -464,48 +521,87 @@ function Txtbuf.leftToBoundary(txtbuf, pattern, reps)
          if reps == 0 then break end
          found_other_char = false
       end
-      if search_pos == 1 then
-         if search_row == 1 then break end
-         line, search_row = txtbuf:openRow(search_row - 1)
-         search_pos = #line + 1
+      if at_boundary then
+         -- break out on txtbuf boundaries
+         if search_row == (forward and #txtbuf.lines or 1) then break end
+         line, search_row = txtbuf:openRow(search_row + change)
+         search_pos = forward and 1 or #line + 1
       else
-         search_pos = search_pos - 1
+         search_pos = search_pos + change
       end
       moved = true
    end
-   txtbuf:setCursor(search_row, search_pos)
-   return moved
+
+   return moved, search_pos - cur_col, search_row - cur_row
+end
+
+
+
+
+
+
+
+
+function Txtbuf.leftToBoundary(txtbuf, pattern, reps)
+   local line, cur_col, cur_row = txtbuf:currentPosition()
+   local moved, colΔ, rowΔ = txtbuf:scanFor(pattern, reps, false)
+   if moved then
+      txtbuf:setCursor(cur_row + rowΔ, cur_col + colΔ)
+      return true
+   else
+      return false
+   end
 end
 
 function Txtbuf.rightToBoundary(txtbuf, pattern, reps)
-   reps = reps or 1
-   local found_other_char = false
-   local moved = false
-   local search_row, search_pos = txtbuf:getCursor()
-   local line = txtbuf.lines[search_row]
-   local search_char
-   while true do
-      search_char = search_pos > #line and "\n" or line[search_pos]
-      if not match(search_char, pattern) then
-         found_other_char = true
-      elseif found_other_char then
-         reps = reps - 1
-         if reps == 0 then break end
-         found_other_char = false
-      end
-      if search_pos > #line then
-         if search_row == #txtbuf.lines then break end
-         line, search_row = txtbuf:openRow(search_row + 1)
-         search_pos = 1
-      else
-         search_pos = search_pos + 1
-      end
-      moved = true
+   local line, cur_col, cur_row = txtbuf:currentPosition()
+   local moved, colΔ, rowΔ = txtbuf:scanFor(pattern, reps, true)
+   if moved then
+      txtbuf:setCursor(cur_row + rowΔ, cur_col + colΔ)
+      return true
+   else
+      return false
    end
-   txtbuf:setCursor(search_row, search_pos)
-   return moved
 end
 
+
+
+
+
+
+function Txtbuf.killToEndOfWord(txtbuf)
+   local line, cur_col, cur_row = txtbuf:currentPosition()
+   local moved, colΔ, rowΔ = txtbuf:scanFor('%W', reps, true)
+   if moved then
+      -- check if the row has changed
+      -- if so, delete to end of line
+      -- otherwise, delete colΔ codepoints
+      txtbuf.contents_changed = true
+      return true
+   else
+      return false
+   end
+end
+
+
+
+
+
+
+function Txtbuf.killToBeginningOfWord(txtbuf)
+   local line, cur_col, cur_row = txtbuf:currentPosition()
+   local moved, colΔ, rowΔ = txtbuf:scanFor('%W', reps, false)
+   if moved then
+      -- check if the row has changed
+      -- if so, delete to beginning of line
+      -- otherwise, delete -colΔ codepoints
+      -- and relocate the cursor accordingly
+      txtbuf.contents_changed = true
+      return true
+   else
+      return false
+   end
+end
 
 
 
@@ -533,8 +629,6 @@ end
 
 
 
-
-
 function Txtbuf.leftWordAlpha(txtbuf, reps)
    return txtbuf:leftToBoundary('%W', reps)
 end
@@ -550,7 +644,6 @@ end
 function Txtbuf.rightWordWhitespace(txtbuf, reps)
    return txtbuf:rightToBoundary('%s', reps)
 end
-
 
 
 
@@ -599,11 +692,9 @@ end
 
 
 
-
 function Txtbuf.nl(txtbuf)
-   local cur_row, cur_col = txtbuf:getCursor()
+   line, cur_col, cur_row = txtbuf:currentPosition()
    -- split the line
-   local line = txtbuf.lines[cur_row]
    local first = slice(line, 1, cur_col - 1)
    local second = slice(line, cur_col)
    txtbuf.lines[cur_row] = first
@@ -627,7 +718,7 @@ function Txtbuf.shouldEvaluate(txtbuf)
    if linum == 1 then
       return true
    end
-   local cur_row, cur_col = txtbuf:getCursor()
+   local _, cur_col, cur_row = txtbuf:currentPosition()
    -- Evaluate if we are at the end of the first or last line (the default
    -- positions after scrolling up or down in the history)
    if (cur_row == 1 or cur_row == linum) and cur_col > #txtbuf.lines[cur_row] then
@@ -660,7 +751,6 @@ function Txtbuf.clone(txtbuf)
    local tb = clone(txtbuf, 3)
    return tb:resume()
 end
-
 
 
 
