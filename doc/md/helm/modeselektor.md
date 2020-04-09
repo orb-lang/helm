@@ -126,10 +126,6 @@ local Suggest    = require "helm/suggest"
 local repr       = require "helm/repr"
 local lua_parser = require "helm/lua-parser"
 
-local Nerf      = require "helm/raga/nerf"
-local Search    = require "helm/raga/search"
-local Complete  = require "helm/raga/complete"
-
 local concat               = assert(table.concat)
 local sub, gsub, rep, find = assert(string.sub),
                              assert(string.gsub),
@@ -353,12 +349,19 @@ A storage table for modes and other things we aren't using and need to
 retrieve.
 
 ```lua
+local Nerf      = require "helm/raga/nerf"
+local Search    = require "helm/raga/search"
+local Complete  = require "helm/raga/complete"
+local Page      = require "helm/raga/page"
+
 ModeS.closet = { nerf =     { raga = Nerf,
                               lex  = Lex.lua_thor },
                  search =   { raga = Search,
                               lex  = Lex.null },
                  complete = { raga = Complete,
-                              lex  = Lex.lua_thor } }
+                              lex  = Lex.lua_thor },
+                 page =     { raga = Page,
+                              lex  = Lex.null } }
 
 function ModeS.shiftMode(modeS, raga_name)
    -- Stash the current lexer associated with the current raga
