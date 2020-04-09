@@ -83,12 +83,12 @@ function NAV.LEFT(modeS, category, value)
 end
 #/lua
 
-*** Complete.cursorChanged(modeS)
+*** Complete.onCursorChanged(modeS)
 
 #!lua
-function Complete.cursorChanged(modeS)
+function Complete.onCursorChanged(modeS)
    modeS.suggest:update(modeS)
-   EditBase.cursorChanged(modeS)
+   EditBase.onCursorChanged(modeS)
 end
 #/lua
 

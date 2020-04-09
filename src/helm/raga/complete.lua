@@ -86,9 +86,9 @@ end
 
 
 
-function Complete.cursorChanged(modeS)
+function Complete.onCursorChanged(modeS)
    modeS.suggest:update(modeS)
-   EditBase.cursorChanged(modeS)
+   EditBase.onCursorChanged(modeS)
 end
 
 

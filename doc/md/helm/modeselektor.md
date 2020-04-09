@@ -365,12 +365,14 @@ function ModeS.shiftMode(modeS, raga_name)
    -- Currently we never change the lexer separate from the raga,
    -- but this will change when we start supporting multiple languages
    -- Guard against nil raga or lexer during startup
-   if modeS.raga and modeS.lex then
+   if modeS.raga then
+      modeS.raga.onUnshift(modeS)
       modeS.closet[modeS.raga.name].lex = modeS.lex
    end
    -- Switch in the new raga and associated lexer
    modeS.raga = modeS.closet[raga_name].raga
    modeS.lex = modeS.closet[raga_name].lex
+   modeS.raga.onShift(modeS)
    modeS:updatePrompt()
    return modeS
 end
@@ -404,11 +406,11 @@ function ModeS.actOnce(modeS, category, value)
       modeS.shift_to = nil
    end
    if modeS.txtbuf.contents_changed then
-     modeS.raga.txtbufChanged(modeS)
+     modeS.raga.onTxtbufChanged(modeS)
      modeS.txtbuf.contents_changed = false
    end
    if modeS.txtbuf.cursor_changed then
-     modeS.raga.cursorChanged(modeS)
+     modeS.raga.onCursorChanged(modeS)
      modeS.txtbuf.cursor_changed = false
    end
    return handled

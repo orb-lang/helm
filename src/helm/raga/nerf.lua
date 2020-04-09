@@ -194,9 +194,9 @@ end
 
 
 
-function Nerf.cursorChanged(modeS)
+function Nerf.onCursorChanged(modeS)
    modeS.suggest:update(modeS)
-   EditBase.cursorChanged(modeS)
+   EditBase.onCursorChanged(modeS)
 end
 
 

@@ -20,7 +20,7 @@ We need to update the search result whenever the contents of the Txtbuf change.
 
 #!lua
 
-function Search.txtbufChanged(modeS)
+function Search.onTxtbufChanged(modeS)
    local searchResult = modeS.hist:search(tostring(modeS.txtbuf))
    modeS:setResults(searchResult)
 end

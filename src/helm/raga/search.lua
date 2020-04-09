@@ -20,7 +20,7 @@ Search.prompt_char = "⁉️"
 
 
 
-function Search.txtbufChanged(modeS)
+function Search.onTxtbufChanged(modeS)
    local searchResult = modeS.hist:search(tostring(modeS.txtbuf))
    modeS:setResults(searchResult)
 end
