@@ -55,6 +55,10 @@ local function _insert(modeS, category, value)
          modeS.shift_to = "search"
          return
       end
+      if value == "?" then
+         modeS:openHelp()
+         return
+      end
    end
    modeS.txtbuf:insert(value)
 end

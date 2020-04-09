@@ -687,6 +687,21 @@ function ModeS.restart(modeS)
    return modeS
 end
 ```
+### ModeS:openHelp()
+
+Opens a simple help screen.
+
+```lua
+function ModeS.openHelp(modeS)
+   local lines = {}
+   for i = 1, 100 do
+      lines[i] = i .. ": DON'T PANIC"
+   end
+   local rb = Rainbuf{ table.concat(lines,"\n"), n = 1, frozen = true }
+   modeS.zones.popup:replace(rb)
+   modeS.shift_to = "page"
+end
+```
 #### modeS.status
 
 A way to jack into ``singletons/status``.

@@ -681,6 +681,22 @@ end
 
 
 
+function ModeS.openHelp(modeS)
+   local lines = {}
+   for i = 1, 100 do
+      lines[i] = i .. ": DON'T PANIC"
+   end
+   local rb = Rainbuf{ table.concat(lines,"\n"), n = 1, frozen = true }
+   modeS.zones.popup:replace(rb)
+   modeS.shift_to = "page"
+end
+
+
+
+
+
+
+
 
 local function _status__repr(status_table)
   return concat(status_table)
