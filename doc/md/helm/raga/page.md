@@ -10,9 +10,7 @@ local RagaBase = require "helm:helm/raga/base"
 local Page = clone(RagaBase, 2)
 
 Page.name = "page"
--- We don't actually use the prompt zone, but we might *have* a prompt, later,
--- and this is the char we would use.
-Page.prompt_char = ":"
+Page.prompt_char = "❓"
 ```
 ## NAV
 

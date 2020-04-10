@@ -369,6 +369,8 @@ end
 *** Zoneherd:reflow(modeS)
 
 #!lua
+local ceil, floor = assert(math.ceil), assert(math.floor)
+
 function Zoneherd.reflow(zoneherd, modeS)
    local right_col = modeS.max_col - _zoneOffset(modeS)
    local txt_off = modeS:continuationLines()
@@ -391,8 +393,11 @@ function Zoneherd.reflow(zoneherd, modeS)
                                modeS.repl_top + 1,
                                modeS.max_col,
                                modeS.max_row )
-   zoneherd.popup:setBounds(   1, modeS.repl_top,
-                               modeS.max_col, modeS.max_row)
+   -- Popup is centered and 2/3 of max width, i.e. from 1/6 to 5/6
+   zoneherd.popup:setBounds(   floor(modeS.max_col / 6),
+                               modeS.repl_top + txt_off + 1,
+                               ceil(modeS.max_col * 5 / 6),
+                               modeS.max_row)
    return zoneherd
 end
 #/lua
