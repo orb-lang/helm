@@ -6,6 +6,7 @@ directing it to the Txtbuf
 ```lua
 local clone = import("core/table", "clone")
 local RagaBase = require "helm:helm/raga/base"
+local Txtbuf = require "helm/txtbuf"
 ```
 ```lua
 local EditBase = clone(RagaBase, 2)
