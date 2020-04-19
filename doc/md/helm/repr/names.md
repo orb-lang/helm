@@ -6,6 +6,7 @@ Provides a consistent notion of the "name" of a value.
 
 ```lua
 local Token = require "helm/repr/token"
+local import = assert(require "core/module" . import)
 ```
 ## Setup
 

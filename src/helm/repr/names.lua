@@ -6,6 +6,7 @@
 
 
 local Token = require "helm/repr/token"
+local import = assert(require "core/module" . import)
 
 
 
