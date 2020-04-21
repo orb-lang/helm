@@ -30,7 +30,6 @@ local anti_G = setmetatable({ _G = "_G" }, {__mode = "k"})
 names.all_symbols = { _G = true }
 #/lua
 
-Now to populate it:
 
 *** names.addName(), names.loadNames()
 

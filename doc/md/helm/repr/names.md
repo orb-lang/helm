@@ -28,9 +28,6 @@ we store the names as the keys of a table rather than the values.
 local anti_G = setmetatable({ _G = "_G" }, {__mode = "k"})
 names.all_symbols = { _G = true }
 ```
-
-Now to populate it:
-
 ### names.addName(), names.loadNames()
 
 Ransacks ``_G`` looking for names to put on things.

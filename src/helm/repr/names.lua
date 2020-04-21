@@ -45,7 +45,6 @@ names.all_symbols = { _G = true }
 
 
 
-
 local function tie_break(old, new)
    return #old > #new
 end
