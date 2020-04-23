@@ -142,10 +142,10 @@ Main scrolling method. Scrolls the contents of the Zone to start ``offset``
 lines into the underlying content.
 
 
-If ``allow_overscroll`` is falsy, checks if there will be enough content
-to fill the screen after the requested scroll, and clamps the amount
-of scrolling so there will be. If truthy, the check is instead that
-there is **any** content available.
+``allow_overscroll`` determines whether we are willing to scroll past the
+available content. If falsy, scrolling stops when the last line of content
+is the last line on the screen. If truthy, scrolling stops when the last
+line of content is the **first** line on the screen.
 
 
 Returns a boolean indicating whether any scrolling occurred.
