@@ -13,6 +13,8 @@ local Page = clone(RagaBase, 2)
 Page.name = "page"
 Page.prompt_char = "❓"
 
+local alias = require "helm/raga/aliaser" (Page)
+
 
 
 
@@ -30,55 +32,32 @@ end
 
 
 
+alias{ toZone "scrollDown",
+       NAV   = {"DOWN", "SHIFT_DOWN", "RETURN"},
+       ASCII = {"e", "j"},
+       CTRL  = {"^N", "^E", "^J"} }
 
+alias{ toZone "scrollUp",
+       NAV   = {"UP", "SHIFT_UP", "SHIFT_RETURN"},
+       ASCII = {"y", "k"},
+       CTRL  = {"^Y", "^P", "^K"} }
 
+alias{ toZone "pageDown",
+       ASCII = {" ", "f"},
+       CTRL  = {"^V", "^F"} }
+alias{ toZone "pageUp",
+       ASCII = {"b"},
+       CTRL  = {"^B"} }
 
+alias{ toZone "halfPageDown",
+       ASCII = {"d"},
+       CTRL  = {"^D"} }
+alias{ toZone "halfPageUp",
+       ASCII = {"u"},
+       CTRL  = {"^U"} }
 
-
-
-
-
-
-
-
-local function alias(fn, keysDict)
-   for category, values in pairs(keysDict) do
-      for _, value in ipairs(values) do
-         Page[category][value] = fn
-      end
-   end
-end
-
-
-
-
-
-alias(toZone "scrollDown", {
-   NAV   = {"DOWN", "SHIFT_DOWN", "RETURN"},
-   ASCII = {"e", "j"},
-   CTRL  = {"^N", "^E", "^J"} })
-
-alias(toZone "scrollUp", {
-   NAV   = {"UP", "SHIFT_UP", "SHIFT_RETURN"},
-   ASCII = {"y", "k"},
-   CTRL  = {"^Y", "^P", "^K"} })
-
-alias(toZone "pageDown", {
-   ASCII = {" ", "f"},
-   CTRL  = {"^V", "^F"} })
-alias(toZone "pageUp", {
-   ASCII = {"b"},
-   CTRL  = {"^B"} })
-
-alias(toZone "halfPageDown", {
-   ASCII = {"d"},
-   CTRL  = {"^D"} })
-alias(toZone "halfPageUp", {
-   ASCII = {"u"},
-   CTRL  = {"^U"} })
-
-alias(toZone "scrollToTop", {ASCII = {"g", "<"}})
-alias(toZone "scrollToBottom", {ASCII = {"G", ">"}})
+alias{toZone "scrollToTop", ASCII = {"g", "<"}}
+alias{toZone "scrollToBottom", ASCII = {"G", ">"}}
 
 
 
@@ -89,7 +68,7 @@ local function _quit(modeS)
    modeS.shift_to = "nerf"
 end
 
-alias(_quit, { NAV = {"ESC"}, ASCII = {"q"} })
+alias{_quit, NAV = {"ESC"}, ASCII = {"q"} }
 
 
 
