@@ -17,21 +17,71 @@ Page.prompt_char = "❓"
 
 
 
-local NAV = Page.NAV
 
-local function _scrollDown(modeS)
-   modeS.zones.popup:scrollDown()
-end
-for _, key in ipairs{"DOWN", "SHIFT_DOWN", "RETURN"} do
-   NAV[key] = _scrollDown
+
+
+local function toZone(fn)
+   return function(modeS, category, value)
+      return modeS.zones.popup[fn](modeS.zones.popup)
+   end
 end
 
-local function _scrollUp(modeS)
-   modeS.zones.popup:scrollUp()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local function alias(fn, keysDict)
+   for category, values in pairs(keysDict) do
+      for _, value in ipairs(values) do
+         Page[category][value] = fn
+      end
+   end
 end
-for _, key in ipairs{"UP", "SHIFT_UP", "SHIFT_RETURN"} do
-   NAV[key] = _scrollUp
-end
+
+
+
+
+
+alias(toZone "scrollDown", {
+   NAV   = {"DOWN", "SHIFT_DOWN", "RETURN"},
+   ASCII = {"e", "j"},
+   CTRL  = {"^N", "^E", "^J"} })
+
+alias(toZone "scrollUp", {
+   NAV   = {"UP", "SHIFT_UP", "SHIFT_RETURN"},
+   ASCII = {"y", "k"},
+   CTRL  = {"^Y", "^P", "^K"} })
+
+alias(toZone "pageDown", {
+   ASCII = {" ", "f"},
+   CTRL  = {"^V", "^F"} })
+alias(toZone "pageUp", {
+   ASCII = {"b"},
+   CTRL  = {"^B"} })
+
+alias(toZone "halfPageDown", {
+   ASCII = {"d"},
+   CTRL  = {"^D"} })
+alias(toZone "halfPageUp", {
+   ASCII = {"u"},
+   CTRL  = {"^U"} })
+
+alias(toZone "scrollToTop", {ASCII = {"g", "<"}})
+alias(toZone "scrollToBottom", {ASCII = {"G", ">"}})
+
+
+
 
 local function _quit(modeS)
    -- #todo should have a stack of ragas and switch back to the one
@@ -39,18 +89,7 @@ local function _quit(modeS)
    modeS.shift_to = "nerf"
 end
 
-NAV.ESC = _quit
-
-
-
-
-
-
-
-
-local ASCII = Page.ASCII
-
-ASCII["q"] = _quit
+alias(_quit, { NAV = {"ESC"}, ASCII = {"q"} })
 
 
 
