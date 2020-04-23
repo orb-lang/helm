@@ -82,7 +82,7 @@ local Rainbuf = meta {}
 
 ### Rainbuf:clearCaches()
 
-Clears any cached lineGen iterators and their output, causing a full re-render
+Clears any cached lineGen iterators and their output, causing a full re-compose
 the next time lineGen is called.
 
 ```lua
@@ -93,13 +93,13 @@ function Rainbuf.clearCaches(rainbuf)
    clear(rainbuf.lines)
 end
 ```
-### Rainbuf:initRender(cols)
+### Rainbuf:initComposition(cols)
 
-Sets up the render process with a line width of ``cols``.
+Sets up the composition process with a line width of ``cols``.
 
 ```lua
 local lines = import("core/string", "lines")
-function Rainbuf.initRender(rainbuf, cols)
+function Rainbuf.initComposition(rainbuf, cols)
    cols = cols or 80
    if rainbuf.scrollable then
       cols = cols - 3
@@ -120,7 +120,7 @@ function Rainbuf.initRender(rainbuf, cols)
    end
 end
 ```
-### Rainbuf:renderOneLine()
+### Rainbuf:composeOneLine()
 
 Renders the next line from our ``reprs`` to the cached ``lines`` array.
 Sets ``more`` to false and returns false if we are at the end of the content,
@@ -128,7 +128,7 @@ otherwise returns true.
 
 ```lua
 local insert = assert(table.insert)
-function Rainbuf.renderOneLine(rainbuf)
+function Rainbuf.composeOneLine(rainbuf)
    while true do
       local repr = rainbuf.reprs[rainbuf.r_num]
       if not repr then
@@ -145,27 +145,27 @@ function Rainbuf.renderOneLine(rainbuf)
    end
 end
 ```
-### Rainbuf:renderThrough(line_number)
+### Rainbuf:composeUpTo(line_number)
 
-Attempts to render at least ``line_number`` lines to the cached ``lines`` array.
+Attempts to compose at least ``line_number`` lines to the cached ``lines`` array.
 Returns false if we ran out of content before that point, true otherwise.
 
 ```lua
-function Rainbuf.renderThrough(rainbuf, line_number)
+function Rainbuf.composeUpTo(rainbuf, line_number)
    while rainbuf.more and #rainbuf.lines < line_number do
-      rainbuf:renderOneLine()
+      rainbuf:composeOneLine()
    end
    return rainbuf.more
 end
 ```
-### Rainbuf:renderAll()
+### Rainbuf:composeAll()
 
 Renders all of our content to the cached ``lines`` array.
 
 ```lua
-function Rainbuf.renderAll(rainbuf)
+function Rainbuf.composeAll(rainbuf)
    while rainbuf.more do
-      rainbuf:renderOneLine()
+      rainbuf:composeOneLine()
    end
    return rainbuf
 end
@@ -181,7 +181,7 @@ generate these on the fly.
 
 ```lua
 function Rainbuf.lineGen(rainbuf, rows, cols)
-   rainbuf:initRender(cols)
+   rainbuf:initComposition(cols)
    -- state for iterator
    local cursor = rainbuf.offset
    local max_row = rainbuf.offset + rows
@@ -191,7 +191,7 @@ function Rainbuf.lineGen(rainbuf, rows, cols)
          return nil
       end
       cursor = cursor + 1
-      rainbuf:renderThrough(cursor)
+      rainbuf:composeUpTo(cursor)
       local prefix = ""
       if rainbuf.scrollable then
          -- If this is the last line requested, but more are available,

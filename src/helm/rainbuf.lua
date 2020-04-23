@@ -90,7 +90,7 @@ end
 
 
 local lines = import("core/string", "lines")
-function Rainbuf.initRender(rainbuf, cols)
+function Rainbuf.initComposition(rainbuf, cols)
    cols = cols or 80
    if rainbuf.scrollable then
       cols = cols - 3
@@ -120,7 +120,7 @@ end
 
 
 local insert = assert(table.insert)
-function Rainbuf.renderOneLine(rainbuf)
+function Rainbuf.composeOneLine(rainbuf)
    while true do
       local repr = rainbuf.reprs[rainbuf.r_num]
       if not repr then
@@ -144,9 +144,9 @@ end
 
 
 
-function Rainbuf.renderThrough(rainbuf, line_number)
+function Rainbuf.composeUpTo(rainbuf, line_number)
    while rainbuf.more and #rainbuf.lines < line_number do
-      rainbuf:renderOneLine()
+      rainbuf:composeOneLine()
    end
    return rainbuf.more
 end
@@ -157,9 +157,9 @@ end
 
 
 
-function Rainbuf.renderAll(rainbuf)
+function Rainbuf.composeAll(rainbuf)
    while rainbuf.more do
-      rainbuf:renderOneLine()
+      rainbuf:composeOneLine()
    end
    return rainbuf
 end
@@ -175,7 +175,7 @@ end
 
 
 function Rainbuf.lineGen(rainbuf, rows, cols)
-   rainbuf:initRender(cols)
+   rainbuf:initComposition(cols)
    -- state for iterator
    local cursor = rainbuf.offset
    local max_row = rainbuf.offset + rows
@@ -185,7 +185,7 @@ function Rainbuf.lineGen(rainbuf, rows, cols)
          return nil
       end
       cursor = cursor + 1
-      rainbuf:renderThrough(cursor)
+      rainbuf:composeUpTo(cursor)
       local prefix = ""
       if rainbuf.scrollable then
          -- If this is the last line requested, but more are available,

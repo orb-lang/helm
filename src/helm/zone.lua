@@ -147,7 +147,7 @@ end
 local bound = import("core/math", "bound")
 function Zone.scrollTo(zone, offset, allow_overscroll)
    -- Try to render the content that will be visible after the scroll
-   zone.contents:renderThrough(offset + zone:height())
+   zone.contents:composeUpTo(offset + zone:height())
    local required_lines_visible = allow_overscroll and 1 or zone:height()
    offset = bound(offset, 0, #zone.contents.lines - required_lines_visible)
    if offset ~= zone.contents.offset then
@@ -211,7 +211,7 @@ function Zone.scrollToTop(zone)
 end
 
 function Zone.scrollToBottom(zone, allow_overscroll)
-   zone.contents:renderAll()
+   zone.contents:composeAll()
    -- Choose a definitely out-of-range value,
    -- which scrollTo will bound appropriately
    return zone:scrollTo(#zone.contents.lines, allow_overscroll)
