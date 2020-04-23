@@ -204,31 +204,6 @@ end
 
 
 
-
-
-
-function Rainbuf.scrollUp(rainbuf)
-   if rainbuf.offset > 0 then
-      rainbuf.offset = rainbuf.offset - 1
-      return true
-   else
-      return false
-   end
-end
-
-function Rainbuf.scrollDown(rainbuf)
-   if rainbuf.more then
-      rainbuf.offset = rainbuf.offset + 1
-      return true
-   else
-      return false
-   end
-end
-
-
-
-
-
 local function new(res)
    if type(res) == "table" and res.idEst == Rainbuf then
       return res

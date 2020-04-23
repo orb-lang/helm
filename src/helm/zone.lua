@@ -134,9 +134,24 @@ end
 
 
 
-function Zone.scrollUp(zone)
-   if instanceof(zone.contents, Rainbuf)
-      and zone.contents:scrollUp() then
+
+
+
+
+
+
+
+
+
+
+local bound = import("core/math", "bound")
+function Zone.scrollTo(zone, offset, allow_overscroll)
+   -- Try to render the content that will be visible after the scroll
+   zone.contents:renderThrough(offset + zone:height())
+   local required_lines_visible = allow_overscroll and 1 or zone:height()
+   offset = bound(offset, 0, #zone.contents.lines - required_lines_visible)
+   if offset ~= zone.contents.offset then
+      zone.contents.offset = offset
       zone:beTouched()
       return true
    else
@@ -144,14 +159,62 @@ function Zone.scrollUp(zone)
    end
 end
 
+
+
+
+
+
+
+function Zone.scrollBy(zone, delta, allow_overscroll)
+   return zone:scrollTo(zone.contents.offset + delta, allow_overscroll)
+end
+
+
+
+
+
+
+
+function Zone.scrollUp(zone)
+   return zone:scrollBy(-1)
+end
 function Zone.scrollDown(zone)
-   if instanceof(zone.contents, Rainbuf)
-      and zone.contents:scrollDown() then
-      zone:beTouched()
-      return true
-   else
-      return false
-   end
+   return zone:scrollBy(1)
+end
+
+function Zone.pageUp(zone)
+   return zone:scrollBy(-zone:height())
+end
+function Zone.pageDown(zone)
+   return zone:scrollBy(zone:height())
+end
+
+local floor = assert(math.floor)
+function Zone.halfPageUp(zone)
+   return zone:scrollBy(-floor(zone:height() / 2))
+end
+function Zone.halfPageDown(zone)
+   return zone:scrollBy(floor(zone:height() / 2))
+end
+
+
+
+
+
+
+
+
+
+
+function Zone.scrollToTop(zone)
+   return zone:scrollTo(0)
+end
+
+function Zone.scrollToBottom(zone, allow_overscroll)
+   zone.contents:renderAll()
+   -- Choose a definitely out-of-range value,
+   -- which scrollTo will bound appropriately
+   return zone:scrollTo(#zone.contents.lines, allow_overscroll)
 end
 
 

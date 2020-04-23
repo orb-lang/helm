@@ -134,32 +134,95 @@ function Zone.replace(zone, contents)
    return zone
 end
 ```
-### Zone:scrollUp(), Zone:scrollDown()
+### Scrolling
 
-Scrolls the contents of the Zone by one line. Marks the zone as touched
-and answers true if scrolling occurred, otherwise false. Only works if
-the contents is a Rainbuf (which handles the actual scrolling).
+#### Zone:scrollTo(offset, allow_overscroll)
+
+Main scrolling method. Scrolls the contents of the Zone to start ``offset``
+lines into the underlying content.
+
+
+If ``allow_overscroll`` is falsy, checks if there will be enough content
+to fill the screen after the requested scroll, and clamps the amount
+of scrolling so there will be. If truthy, the check is instead that
+there is **any** content available.
+
+
+Returns a boolean indicating whether any scrolling occurred.
+
+
+Assumes that the zone contents is a Rainbuf
+(which handles the actual scrolling).
 
 ```lua
-
-function Zone.scrollUp(zone)
-   if instanceof(zone.contents, Rainbuf)
-      and zone.contents:scrollUp() then
+local bound = import("core/math", "bound")
+function Zone.scrollTo(zone, offset, allow_overscroll)
+   -- Try to render the content that will be visible after the scroll
+   zone.contents:renderThrough(offset + zone:height())
+   local required_lines_visible = allow_overscroll and 1 or zone:height()
+   offset = bound(offset, 0, #zone.contents.lines - required_lines_visible)
+   if offset ~= zone.contents.offset then
+      zone.contents.offset = offset
       zone:beTouched()
       return true
    else
       return false
    end
 end
+```
+#### Zone:scrollBy(delta, allow_overscroll)
 
+Relative scrolling operation. Change the scroll position by ``delta`` line(s).
+
+```lua
+function Zone.scrollBy(zone, delta, allow_overscroll)
+   return zone:scrollTo(zone.contents.offset + delta, allow_overscroll)
+end
+```
+#### Zone:scrollUp(), :scrollDown(), :pageUp(), :pageDown()
+
+Helpers for common scrolling operations.
+
+```lua
+function Zone.scrollUp(zone)
+   return zone:scrollBy(-1)
+end
 function Zone.scrollDown(zone)
-   if instanceof(zone.contents, Rainbuf)
-      and zone.contents:scrollDown() then
-      zone:beTouched()
-      return true
-   else
-      return false
-   end
+   return zone:scrollBy(1)
+end
+
+function Zone.pageUp(zone)
+   return zone:scrollBy(-zone:height())
+end
+function Zone.pageDown(zone)
+   return zone:scrollBy(zone:height())
+end
+
+local floor = assert(math.floor)
+function Zone.halfPageUp(zone)
+   return zone:scrollBy(-floor(zone:height() / 2))
+end
+function Zone.halfPageDown(zone)
+   return zone:scrollBy(floor(zone:height() / 2))
+end
+```
+#### Zone:scrollToTop(), Zone:scrollToBottom(allow_overscroll)
+
+Scroll to the very beginning or end of the content.
+Beginning is easy, end is a little more interesting, as we have to first
+render all the content (in order to know how much there is), then account
+for allow_overscroll in deciding how far to go.
+
+```lua
+function Zone.scrollToTop(zone)
+   return zone:scrollTo(0)
+end
+
+function Zone.scrollToBottom(zone, allow_overscroll)
+   zone.contents:renderAll()
+   -- Choose a definitely out-of-range value,
+   -- which scrollTo will bound appropriately
+   return zone:scrollTo(#zone.contents.lines, allow_overscroll)
 end
 ```
 ### Zone:setBounds(tc, tr, bc, br)
