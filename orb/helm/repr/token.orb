@@ -258,6 +258,14 @@ end
 
 #/lua
 
+*** Token:isForceBreak()
+
+#!lua
+function Token.isForceBreak(token)
+   return token.event == "break" or token.event == "repr_line"
+end
+#/lua
+
 *** new(str, color[, cfg])
 
 Creates a =Token= from the given string, color value, and optional table of

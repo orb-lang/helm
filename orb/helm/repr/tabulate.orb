@@ -117,17 +117,18 @@ local function _tabulate(tab, window, c, depth, cycle)
    -- if we have a metatable, get it first
    local _M = getmetatable(tab)
    if _M then
+      local mt_name_token = nameFor(_M, c, "metatable")
+      mt_name_token.event = "metatable"
       if cycle[_M] then
-         yield(Token("⟨", c.metatable))
+         mt_name_token:insert(1, "⟨")
+         mt_name_token:insert("⟩")
+         mt_name_token:insert(" ")
       end
-      yield_name(_M, c, "metatable")
-      if cycle[_M] then
-         yield(Token("⟩ ", c.metatable))
-      end
+      yield(mt_name_token)
       -- Skip printing the metatable altogether if it's going to end up
       -- represented by its name, since we just printed that.
       if depth < C.depth and not cycle[_M] then
-         yield(Token(" → ", c.base))
+         yield(Token(" → ", c.base, { event = "sep" }))
          yield(Token("⟨", c.metatable))
          _tabulate(_M, window, c, depth + 1, cycle)
          yield(Token("⟩ ", c.metatable, { event = "sep"}))
@@ -138,7 +139,7 @@ local function _tabulate(tab, window, c, depth, cycle)
 
    if is_array then
       for i, val in ipairs(tab) do
-         if i ~= 1 then yield(Token(", ", c.base, {event = "sep"})) end
+         if i ~= 1 then yield(Token(", ", c.base, { event = "sep" })) end
          _tabulate(val, window, c, depth + 1, cycle)
       end
    else
@@ -147,7 +148,7 @@ local function _tabulate(tab, window, c, depth, cycle)
          sort(keys, _keysort)
       end
       for i, key in ipairs(keys) do
-         if i ~= 1 then yield(Token(", ", c.base, {event = "sep"})) end
+         if i ~= 1 then yield(Token(", ", c.base, { event = "sep" })) end
          local val = tab[key]
          if type(key) == "string" and key:find("^[%a_][%a%d_]*$") then
             -- legal identifier, display it as a bareword
@@ -163,7 +164,7 @@ local function _tabulate(tab, window, c, depth, cycle)
          _tabulate(val, window, c, depth + 1, cycle)
       end
    end
-   yield(Token(" }", c.base, {event = "end"}))
+   yield(Token(" }", c.base, { event = "end" }))
    return nil
 end
 

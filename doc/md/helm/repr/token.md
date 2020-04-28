@@ -253,6 +253,13 @@ function Token.removeTrailingSpaces(token)
 end
 
 ```
+### Token:isForceBreak()
+
+```lua
+function Token.isForceBreak(token)
+   return token.event == "break" or token.event == "repr_line"
+end
+```
 ### new(str, color[, cfg])
 
 Creates a ``Token`` from the given string, color value, and optional table of

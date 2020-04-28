@@ -261,6 +261,14 @@ end
 
 
 
+function Token.isForceBreak(token)
+   return token.event == "break" or token.event == "repr_line"
+end
+
+
+
+
+
 
 
 

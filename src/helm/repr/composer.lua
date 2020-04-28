@@ -243,6 +243,40 @@ end
 
 
 
+local format = assert(string.format)
+local function errLine(...)
+   io.stderr:write(format(...))
+   io.stderr:write("\n")
+   io.stderr:flush()
+end
+function Composer.logDebugInfo(composer)
+   errLine("STAGES (level = %d):", composer.level)
+   for i = 0, #composer.stages do
+      local stage = composer.stages[i]
+      errLine("%d: %s (%s)%s",
+         i,
+         stage.event,
+         stage.long and "long" or "short",
+         i == composer.level and " <- LEVEL" or "")
+   end
+   errLine(("-"):rep(40))
+   errLine("TOKENS (width = %d, disp = %d, remains = %d):",
+      composer.width, composer:disp(), composer:remains())
+   for i, token in ipairs(composer) do
+      errLine("%02d   %s%s",
+         token.total_disp, tostring(token),
+         i == composer.pos and " <- POS" or "")
+   end
+end
+
+
+
+
+
+
+
+
+
 
 local MIN_SPLIT_WIDTH = 20
 
@@ -280,29 +314,49 @@ end
 
 
 
+function Composer.isReadyToEmit(composer)
+   local token, stage = composer[composer.pos], composer.stages[#composer.stages]
+   -- It's a forced break, obviously end of line
+   if token:isForceBreak() then return true end
+   -- We're in short mode, so no other break conditions are possible
+   if not stage.long then return false end
+   -- Break on separators, which includes after the arrow in a metatable
+   -- and after the metatable itself
+   if token.event == "sep" then return true end
+   -- We want to break after the opening brace, but only if there's no metatable
+   -- Also, don't bother with this for the very first/outermost stage
+   return #composer.stages > 1
+      and token == stage.start_token
+      and composer:peek().event ~= "metatable"
+end
+
+
+
+
+
+
 
 
 
 function Composer.composeLine(composer)
    repeat
       local token = composer:advance()
-      if not token then
-         break
-      end
+      if not token then break end
+
       local stage = composer:checkPushStage()
       if not stage then
          error("No stage while processing: " .. tostring(token))
       end
-      if (token.event == "repr_line" or token.event == "break")
-         and not stage.long then
+
+      if token:isForceBreak() and not stage.long then
          token, stage = composer:enterLongMode()
       end
       -- If we know we are going to end the line after this token no matter
       -- what, we can allow it to exactly fill the line--no need to reserve
       -- space for a ~. We can also ignore any trailing spaces it may contain.
+      -- Note, we don't want to mess with repr lines here.
       local reserved_space = 1
-      if token.event == "sep" and stage.long
-         or token.event == "break" then
+      if composer:isReadyToEmit() and token.event ~= "repr_line" then
          token:removeTrailingSpaces()
          reserved_space = 0
       end
@@ -317,9 +371,7 @@ function Composer.composeLine(composer)
          end
       end
       stage = composer:checkPopStage()
-   until token.event == "sep" and stage.long
-         or token.event == "break"
-         or token.event == "repr_line"
+   until composer:isReadyToEmit()
    return composer:emit()
 end
 
