@@ -151,7 +151,7 @@ function Token.split(token, max_disp)
       end
    else
       first = new(utf8_sub(token.str, token.start, token.start + max_disp - 1), token.color, cfg)
-      token.start = token.start + max_disp + 1
+      token.start = token.start + max_disp
       token.total_disp = token.total_disp - max_disp
    end
    return first
