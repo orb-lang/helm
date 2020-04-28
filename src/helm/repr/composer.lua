@@ -362,7 +362,7 @@ function Composer.composeLine(composer)
       end
       if composer:remains() < reserved_space then
          assert(token.event ~= "break", "~ token overflowing line")
-         if not stage.long and stage.start_token ~= token then
+         if not stage.long then
             token, stage = composer:enterLongMode()
          -- Never wrap output from __repr--likely to do more harm than good
          -- until/unless we can parse out color escape sequences
