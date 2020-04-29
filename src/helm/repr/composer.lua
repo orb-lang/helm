@@ -48,12 +48,23 @@ local new
 
 
 
+
+function Composer.indent(composer)
+   -- If the first token is the second half of a wrap,
+   -- we won't include any indentation
+   if composer.pos > 0 and composer[1].wrapped then return 0 end
+   return 2 * composer.level
+end
+
+
+
+
+
+
+
+
 function Composer.disp(composer)
-   local disp = 2 * composer.level
-   -- If the first token is the second half of a wrap, skip the indent
-   if composer.pos > 0 and composer[1].wrapped then
-      disp = 0
-   end
+   local disp = composer:indent()
    for i = 1, composer.pos do
       disp = disp + composer[i].total_disp
    end
@@ -124,8 +135,7 @@ function Composer.checkPushStage(composer)
       insert(composer.stages, {
          start_token = token,
          event = token.event,
-         long = false
-      })
+         long = false })
    end
    return composer.stages[#composer.stages]
 end
@@ -215,10 +225,7 @@ function Composer.emit(composer)
    if composer.pos == 0 then
       return nil
    end
-   local output = {}
-   if not composer[1].wrapped then
-      insert(output, ("  "):rep(composer.level))
-   end
+   local output = { (" "):rep(composer:indent()) }
    for i = 1, composer.pos do
       insert(output, composer[i]:toString(composer.color))
    end
@@ -323,11 +330,18 @@ function Composer.isReadyToEmit(composer)
    -- Break on separators, which includes after the arrow in a metatable
    -- and after the metatable itself
    if token.event == "sep" then return true end
-   -- We want to break after the opening brace, but only if there's no metatable
-   -- Also, don't bother with this for the very first/outermost stage
-   return #composer.stages > 1
-      and token == stage.start_token
-      and composer:peek().event ~= "metatable"
+   -- At this point, the only possible place to break is after an opening brace
+   if token ~= stage.start_token then return false end
+   -- But not after the very outermost opening brace
+   if #composer.stages == 1 then return false end
+   -- Nor if the table has a metatable
+   local next_token = composer:peek()
+   if next_token and next_token.event == "metatable" then return false end
+   -- Nor after the opening brace *of* a metatable
+   local prev_token = composer[composer.pos - 1]
+   if prev_token and prev_token.event == "metatable" then return false end
+   -- Okay, we've run the gauntlet, yes, this is a good place to stop
+   return true
 end
 
 

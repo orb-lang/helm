@@ -128,7 +128,7 @@ local function _tabulate(tab, window, c, depth, cycle)
       -- represented by its name, since we just printed that.
       if depth < C.depth and not cycle[_M] then
          yield(Token(" → ", c.base, { event = "sep" }))
-         yield(Token("⟨", c.metatable))
+         yield(Token("⟨", c.metatable, { event = "metatable" }))
          _tabulate(_M, window, c, depth + 1, cycle)
          yield(Token("⟩ ", c.metatable, { event = "sep"}))
       else
