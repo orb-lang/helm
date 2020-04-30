@@ -48,12 +48,23 @@ local new
 
 
 
+
+function Composer.indent(composer)
+   -- If the first token is the second half of a wrap,
+   -- we won't include any indentation
+   if composer.pos > 0 and composer[1].wrapped then return 0 end
+   return 2 * composer.level
+end
+
+
+
+
+
+
+
+
 function Composer.disp(composer)
-   local disp = 2 * composer.level
-   -- If the first token is the second half of a wrap, skip the indent
-   if composer.pos > 0 and composer[1].wrapped then
-      disp = 0
-   end
+   local disp = composer:indent()
    for i = 1, composer.pos do
       disp = disp + composer[i].total_disp
    end
@@ -124,8 +135,7 @@ function Composer.checkPushStage(composer)
       insert(composer.stages, {
          start_token = token,
          event = token.event,
-         long = false
-      })
+         long = false })
    end
    return composer.stages[#composer.stages]
 end
@@ -215,10 +225,7 @@ function Composer.emit(composer)
    if composer.pos == 0 then
       return nil
    end
-   local output = {}
-   if not composer[1].wrapped then
-      insert(output, ("  "):rep(composer.level))
-   end
+   local output = { (" "):rep(composer:indent()) }
    for i = 1, composer.pos do
       insert(output, composer[i]:toString(composer.color))
    end
@@ -233,6 +240,40 @@ function Composer.emit(composer)
    composer.pos = 0
    composer.level = #composer.stages
    return concat(output)
+end
+
+
+
+
+
+
+
+
+
+local format = assert(string.format)
+local function errLine(...)
+   io.stderr:write(format(...))
+   io.stderr:write("\n")
+   io.stderr:flush()
+end
+function Composer.logDebugInfo(composer)
+   errLine("STAGES (level = %d):", composer.level)
+   for i = 0, #composer.stages do
+      local stage = composer.stages[i]
+      errLine("%d: %s (%s)%s",
+         i,
+         stage.event,
+         stage.long and "long" or "short",
+         i == composer.level and " <- LEVEL" or "")
+   end
+   errLine(("-"):rep(40))
+   errLine("TOKENS (width = %d, disp = %d, remains = %d):",
+      composer.width, composer:disp(), composer:remains())
+   for i, token in ipairs(composer) do
+      errLine("%02d   %s%s",
+         token.total_disp, tostring(token),
+         i == composer.pos and " <- POS" or "")
+   end
 end
 
 
@@ -280,35 +321,62 @@ end
 
 
 
+function Composer.isReadyToEmit(composer)
+   local token, stage = composer[composer.pos], composer.stages[#composer.stages]
+   -- It's a forced break, obviously end of line
+   if token:isForceBreak() then return true end
+   -- We're in short mode, so no other break conditions are possible
+   if not stage.long then return false end
+   -- Break on separators, which includes after the arrow in a metatable
+   -- and after the metatable itself
+   if token.event == "sep" then return true end
+   -- At this point, the only possible place to break is after an opening brace
+   if token ~= stage.start_token then return false end
+   -- But not after the very outermost opening brace
+   if #composer.stages == 1 then return false end
+   -- Nor if the table has a metatable
+   local next_token = composer:peek()
+   if next_token and next_token.event == "metatable" then return false end
+   -- Nor after the opening brace *of* a metatable
+   local prev_token = composer[composer.pos - 1]
+   if prev_token and prev_token.event == "metatable" then return false end
+   -- Okay, we've run the gauntlet, yes, this is a good place to stop
+   return true
+end
+
+
+
+
+
+
 
 
 
 function Composer.composeLine(composer)
    repeat
       local token = composer:advance()
-      if not token then
-         break
-      end
+      if not token then break end
+
       local stage = composer:checkPushStage()
       if not stage then
          error("No stage while processing: " .. tostring(token))
       end
-      if (token.event == "repr_line" or token.event == "break")
-         and not stage.long then
+
+      if token:isForceBreak() and not stage.long then
          token, stage = composer:enterLongMode()
       end
       -- If we know we are going to end the line after this token no matter
       -- what, we can allow it to exactly fill the line--no need to reserve
       -- space for a ~. We can also ignore any trailing spaces it may contain.
+      -- Note, we don't want to mess with repr lines here.
       local reserved_space = 1
-      if token.event == "sep" and stage.long
-         or token.event == "break" then
+      if composer:isReadyToEmit() and token.event ~= "repr_line" then
          token:removeTrailingSpaces()
          reserved_space = 0
       end
       if composer:remains() < reserved_space then
          assert(token.event ~= "break", "~ token overflowing line")
-         if not stage.long and stage.start_token ~= token then
+         if not stage.long then
             token, stage = composer:enterLongMode()
          -- Never wrap output from __repr--likely to do more harm than good
          -- until/unless we can parse out color escape sequences
@@ -317,9 +385,7 @@ function Composer.composeLine(composer)
          end
       end
       stage = composer:checkPopStage()
-   until token.event == "sep" and stage.long
-         or token.event == "break"
-         or token.event == "repr_line"
+   until composer:isReadyToEmit()
    return composer:emit()
 end
 
@@ -378,15 +444,12 @@ end
 
 
 
-local GUTTER_WIDTH = 3
 
 local function new(iter_gen, cfg)
    cfg = cfg or {}
    local function generator(val, disp_width, color)
       assert(color, "Must provide a color table to Composer")
-      -- For now, account for the fact that there will be a 3-column gutter
-      -- Eventually we'll probably be producing the metadata as well
-      local width = disp_width and disp_width - GUTTER_WIDTH or 80
+      local width = disp_width or 80
       local composer = setmetatable({
          color = color,
          width = width,
