@@ -6,6 +6,7 @@ Provides a consistent notion of the "name" of a value.
 
 ```lua
 local Token = require "helm/repr/token"
+local import = assert(require "core/module" . import)
 ```
 ## Setup
 
@@ -80,17 +81,15 @@ loadNames = function(tab, prefix, aG)
          -- it seems fine not to, since this is just for display...
          k = "<" .. tostring(k) .. ">"
       end
+      local name = prefix .. k
       local typica = type(v)
-      if typica == "table"
-      or typica == "function"
-      or typica == "thread"
-      or typica == "userdata" then
-         addName(v, k, aG)
+      if typica == "table"  or typica == "function"
+      or typica == "thread" or typica == "userdata" then
+         addName(v, name, aG)
       end
       local _M = getmetatable(v)
       if typica == "table" and _M then
-         local _M_id = "⟨" .. k.. "⟩"
-         addName(_M, _M_id, aG)
+         addName(_M, "⟨" .. name .. "⟩", aG)
       end
    end
 end
