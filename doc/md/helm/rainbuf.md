@@ -92,7 +92,7 @@ function Rainbuf.clearCaches(rainbuf)
    clear(rainbuf.lines)
 end
 ```
-### Rainbuf:lineGen(rows, offset)
+### Rainbuf:lineGen(rows, cols)
 
 This is a generator which yields ``rows`` number of lines.
 
