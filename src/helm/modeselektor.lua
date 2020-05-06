@@ -99,6 +99,7 @@ assert(meta, "must have meta in _G")
 
 
 local c = import("singletons/color", "color")
+local Set = require "set:set"
 
 local Txtbuf     = require "helm/txtbuf"
 local Resbuf     = require "helm/resbuf" -- Not currently used...
@@ -489,7 +490,6 @@ local eval_ENV = {}
 local eval_M = {}
 setmetatable(eval_ENV, eval_M)
 
-
 local function indexer(Env, key)
    return Env[key]
 end
@@ -546,8 +546,13 @@ end
 
 
 local insert = assert(table.insert)
+local keys = assert(core.keys)
 
 function ModeS.__eval(modeS, chunk, headless)
+   if not modeS.original_packages then
+      -- cache the preloaded requires
+      modeS.original_packages = Set(keys(package.loaded))
+   end
    if not headless then
       -- Getting ready to eval, cancel any active autocompletion
       modeS.suggest:cancel(modeS)
@@ -625,16 +630,28 @@ end
 
 
 
+local deepclone = assert(core.deepclone)
+
 function ModeS.restart(modeS)
-   -- we might want to do this again, so:
    modeS.zones.status:replace "Restarting an repl ↩️"
-   local _G_backback = core.deepclone(_G_back)
+   -- we might want to do this again, so:
+   local _G_backback = deepclone(_G_back)
+   -- package has to be handled separately because it's in the registry
+   local _loaded = package.loaded
    _G = _G_back
    -- we need the existing __G, not the empty clone, in _G:
    _G.__G = __G
    -- and we need the new _G, not the old one, as the index for __G:
    getmetatable(__G).__index = _G
+   -- and the one-and-only package.loaded
+   _G.package.loaded = _loaded
    _G_back = _G_backback
+   -- we also need to clear the registry of package.loaded
+   local current_packages = Set(keys(package.loaded))
+   local new_packages = current_packages - modeS.original_packages
+   for pack in pairs(new_packages) do
+      package.loaded[pack] = nil
+   end
    -- perform rerun
    -- Replace results:
    local hist = modeS.hist
