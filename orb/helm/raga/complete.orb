@@ -23,7 +23,11 @@ local function _quit(modeS)
 end
 
 local function _accept(modeS)
-   modeS.suggest:accept(modeS)
+   if modeS.suggest.active_suggestions then
+      modeS.suggest:accept(modeS)
+   else
+      modeS.action_complete = false
+   end
    _quit(modeS)
 end
 
