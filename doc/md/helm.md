@@ -32,7 +32,7 @@ local function _helm(_ENV)
 No sense wasting a level of indent on a wrapper imho
 
 ```lua
-setfenv(1, _ENV)
+setfenv(1, __G)
 
 import = assert(require "core/module" . import)
 meta = import("core/meta", "meta")
@@ -46,6 +46,9 @@ sql = assert(sql, "sql must be in _G")
 We use this for reloading; since all userspace is stored in _G, including
 ``package.loaded``, this allows us to drop all data held in a session, while
 keeping our own state separate.
+
+#NB it turns out the runtime keeps a separate reference to =package.loaded= in#Todo implement proper cache busting on restart
+consideration only affects ``require``.
 
 ```lua
 local deepclone = assert(core.deepclone)
