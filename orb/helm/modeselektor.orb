@@ -550,7 +550,9 @@ local keys = assert(core.keys)
 
 function ModeS.__eval(modeS, chunk, headless)
    if not modeS.original_packages then
-      -- cache the preloaded requires
+      -- we cache the package.loaded packages here, to preserve
+      -- everything loaded by helm and modeselektor, while letting
+      -- us hot-reload anything "require"d at the repl.
       modeS.original_packages = Set(keys(package.loaded))
    end
    if not headless then
