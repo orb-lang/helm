@@ -196,7 +196,6 @@ end
 
 ```lua
 function Suggest.accept(suggest, modeS)
-   if not suggest.active_suggestions then return end
    local suggestion = suggest.active_suggestions[1]:selectedItem()
    local context = _cursorContext(modeS)
    -- #todo do this in one call, probably by making :deleteBackward()
