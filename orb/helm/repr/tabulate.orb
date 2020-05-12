@@ -56,22 +56,31 @@ incredibly intricate repl.
 
 local hasmetamethod = require "core/meta" . hasmetamethod
 local collect, lines = assert(core_table.collect), assert(core_string.lines)
+local assertfmt = import("core/fn", "assertfmt")
 
-local function _yieldReprs(tab, window, c)
+local function _yieldReprs(tab, window, c, depth, cycle)
    local _repr = hasmetamethod("repr", tab)
    assert(c, "must have a value for c")
    assert(_repr, "failed to retrieve repr metamethod")
-   local repr = _repr(tab, window, c)
+   local repr = _repr(tab, window, c, depth, cycle)
+   -- __repr may choose to use yield() directly rather than returning a value
+   if repr == nil then return end
    if type(repr) == "string" then
       repr = lines(repr)
    end
-   if type(repr) ~= "function" then
-      error("__repr must return a string or a function returning lines,\
-         got a " .. type(repr))
-   end
-   for line, len in repr do
-      -- Note that len may be nil, in which case the Token will figure things out for itself
-      yield(Token(line, c.no_color, { event = "repr_line", total_disp = len }))
+   assertfmt(type(repr) == "function",
+      "Unexpected return type from __repr: \
+      Expected string, iterator-of-string, or iterator-of-Token, got %s",
+      type(repr))
+   for line_or_token, len in repr do
+      local token
+      if type(line_or_token) == "string" then
+         -- Note that len may be nil, in which case the Token will figure things out for itself
+         token = Token(line_or_token, c.no_color, { event = "repr_line", total_disp = len })
+      else
+         token = line_or_token
+      end
+      yield(token)
    end
 end
 
@@ -102,7 +111,7 @@ local function _tabulate(tab, window, c, depth, cycle)
    -- We want to use the __repr method if and only if it is on the
    -- metatable.
    if hasmetamethod("repr", tab) and (not rawget(tab, "__repr")) then
-      _yieldReprs(tab, window, c)
+      _yieldReprs(tab, window, c, depth, cycle)
       return nil
    end
    -- add non-__repr'ed tables to cycle
