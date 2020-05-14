@@ -68,7 +68,7 @@ end
 
 
 
-function RagaBase.txtbufChanged(modeS)
+function RagaBase.onTxtbufChanged(modeS)
    return
 end
 
@@ -80,7 +80,28 @@ end
 
 
 
-function RagaBase.cursorChanged(modeS)
+function RagaBase.onCursorChanged(modeS)
+   return
+end
+
+
+
+
+
+
+
+
+function RagaBase.onShift(modeS)
+   return
+end
+
+
+
+
+
+
+
+function RagaBase.onUnshift(modeS)
    return
 end
 

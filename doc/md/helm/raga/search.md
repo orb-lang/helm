@@ -19,7 +19,7 @@ We need to update the search result whenever the contents of the Txtbuf change.
 
 ```lua
 
-function Search.txtbufChanged(modeS)
+function Search.onTxtbufChanged(modeS)
    local searchResult = modeS.hist:search(tostring(modeS.txtbuf))
    modeS:setResults(searchResult)
 end
@@ -37,7 +37,7 @@ function Search.NAV.SHIFT_DOWN(modeS, category, value)
       if search_result.selected_index >= search_buf.offset + modeS.zones.results:height() then
         search_buf:scrollDown()
       end
-      modeS.zones.results.touched = true
+      modeS.zones.results:beTouched()
    end
 end
 ```
@@ -50,7 +50,7 @@ function Search.NAV.SHIFT_UP(modeS, category, value)
       if search_result.selected_index < search_buf.offset then
          search_buf:scrollUp()
       end
-      modeS.zones.results.touched = true
+      modeS.zones.results:beTouched()
    end
 end
 ```

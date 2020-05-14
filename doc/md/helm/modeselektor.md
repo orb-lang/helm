@@ -127,10 +127,6 @@ local Suggest    = require "helm/suggest"
 local repr       = require "helm/repr"
 local lua_parser = require "helm/lua-parser"
 
-local Nerf      = require "helm/raga/nerf"
-local Search    = require "helm/raga/search"
-local Complete  = require "helm/raga/complete"
-
 local concat               = assert(table.concat)
 local sub, gsub, rep, find = assert(string.sub),
                              assert(string.gsub),
@@ -354,24 +350,33 @@ A storage table for modes and other things we aren't using and need to
 retrieve.
 
 ```lua
+local Nerf      = require "helm/raga/nerf"
+local Search    = require "helm/raga/search"
+local Complete  = require "helm/raga/complete"
+local Page      = require "helm/raga/page"
+
 ModeS.closet = { nerf =     { raga = Nerf,
                               lex  = Lex.lua_thor },
                  search =   { raga = Search,
                               lex  = Lex.null },
                  complete = { raga = Complete,
-                              lex  = Lex.lua_thor } }
+                              lex  = Lex.lua_thor },
+                 page =     { raga = Page,
+                              lex  = Lex.null } }
 
 function ModeS.shiftMode(modeS, raga_name)
    -- Stash the current lexer associated with the current raga
    -- Currently we never change the lexer separate from the raga,
    -- but this will change when we start supporting multiple languages
    -- Guard against nil raga or lexer during startup
-   if modeS.raga and modeS.lex then
+   if modeS.raga then
+      modeS.raga.onUnshift(modeS)
       modeS.closet[modeS.raga.name].lex = modeS.lex
    end
    -- Switch in the new raga and associated lexer
    modeS.raga = modeS.closet[raga_name].raga
    modeS.lex = modeS.closet[raga_name].lex
+   modeS.raga.onShift(modeS)
    modeS:updatePrompt()
    return modeS
 end
@@ -405,11 +410,11 @@ function ModeS.actOnce(modeS, category, value)
       modeS.shift_to = nil
    end
    if modeS.txtbuf.contents_changed then
-     modeS.raga.txtbufChanged(modeS)
+     modeS.raga.onTxtbufChanged(modeS)
      modeS.txtbuf.contents_changed = false
    end
    if modeS.txtbuf.cursor_changed then
-     modeS.raga.cursorChanged(modeS)
+     modeS.raga.onCursorChanged(modeS)
      modeS.txtbuf.cursor_changed = false
    end
    return handled
@@ -699,6 +704,17 @@ function ModeS.restart(modeS)
       restart_idle:stop()
    end)
    return modeS
+end
+```
+### ModeS:openHelp()
+
+Opens a simple help screen.
+
+```lua
+function ModeS.openHelp(modeS)
+   local rb = Rainbuf{ ("abcde "):rep(1000), n = 1 }
+   modeS.zones.popup:replace(rb)
+   modeS.shift_to = "page"
 end
 ```
 #### modeS.status

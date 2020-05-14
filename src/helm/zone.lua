@@ -100,10 +100,28 @@ end
 
 
 
+
+function Zone.overlaps(zone, other_zone)
+   -- The other zone may be uninitialized--treat this as nonoverlapping
+   if not (other_zone.tc and other_zone.tr and
+           other_zone.bc and other_zone.br) then
+      return false
+   end
+   return zone.tc <= other_zone.bc and
+          zone.bc >= other_zone.tc and
+          zone.tr <= other_zone.br and
+          zone.br >= other_zone.tr
+end
+
+
+
+
+
+
+
 function Zone.replace(zone, contents)
    zone.contents = contents or ""
-   zone.touched = true
-
+   zone:beTouched()
    return zone
 end
 
@@ -116,24 +134,76 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+local bound = import("core/math", "bound")
+local instanceof = import("core/meta", "instanceof")
+function Zone.scrollTo(zone, offset, allow_overscroll)
+   if not instanceof(zone.contents, Rainbuf) then
+      return false
+   end
+   -- Try to render the content that will be visible after the scroll
+   zone.contents:composeUpTo(offset + zone:height())
+   local required_lines_visible = allow_overscroll and 1 or zone:height()
+   offset = bound(offset, 0, #zone.contents.lines - required_lines_visible)
+   if offset ~= zone.contents.offset then
+      zone.contents.offset = offset
+      zone:beTouched()
+      return true
+   else
+      return false
+   end
+end
+
+
+
+
+
+
+
+function Zone.scrollBy(zone, delta, allow_overscroll)
+   -- Need to check this here even though :scrollTo already does
+   -- because we talk to the Rainbuf to figure out the new offset
+   if not instanceof(zone.contents, Rainbuf) then
+      return false
+   end
+   return zone:scrollTo(zone.contents.offset + delta, allow_overscroll)
+end
+
+
+
+
+
+
+
 function Zone.scrollUp(zone)
-   if instanceof(zone.contents, Rainbuf)
-      and zone.contents:scrollUp() then
-      zone.touched = true
-      return true
-   else
-      return false
-   end
+   return zone:scrollBy(-1)
 end
-
 function Zone.scrollDown(zone)
-   if instanceof(zone.contents, Rainbuf)
-      and zone.contents:scrollDown() then
-      zone.touched = true
-      return true
-   else
-      return false
-   end
+   return zone:scrollBy(1)
+end
+
+function Zone.pageUp(zone)
+   return zone:scrollBy(-zone:height())
+end
+function Zone.pageDown(zone)
+   return zone:scrollBy(zone:height())
+end
+
+local floor = assert(math.floor)
+function Zone.halfPageUp(zone)
+   return zone:scrollBy(-floor(zone:height() / 2))
+end
+function Zone.halfPageDown(zone)
+   return zone:scrollBy(floor(zone:height() / 2))
 end
 
 
@@ -142,7 +212,27 @@ end
 
 
 
-function Zone.set(zone, tc, tr, bc, br)
+
+
+
+function Zone.scrollToTop(zone)
+   return zone:scrollTo(0)
+end
+
+function Zone.scrollToBottom(zone, allow_overscroll)
+   zone.contents:composeAll()
+   -- Choose a definitely out-of-range value,
+   -- which scrollTo will bound appropriately
+   return zone:scrollTo(#zone.contents.lines, allow_overscroll)
+end
+
+
+
+
+
+
+
+function Zone.setBounds(zone, tc, tr, bc, br)
    assert(tc <= bc, "tc: " .. tc .. ", bc: " .. bc)
    assert(tr <= br, "tr: " .. tr .. ", br: " .. br)
    if not(zone.tr == tr and
@@ -150,7 +240,7 @@ function Zone.set(zone, tc, tr, bc, br)
           zone.br == br and
           zone.bc == bc) then
       -- If zone width is changing, clear caches of the contained Rainbuf
-      -- Note that :set() is called to set zone.(tc,bc,tr,br) for the first time,
+      -- Note that :setBounds() is called to set zone.(tc,bc,tr,br) for the first time,
       -- so we only check for a change if there are previous values
       if zone.bc and zone.tc
          and (bc - tc) ~= (zone.bc - zone.tc)
@@ -161,11 +251,58 @@ function Zone.set(zone, tc, tr, bc, br)
       zone.tc = tc
       zone.br = br
       zone.bc = bc
-      zone.touched = true
+      -- #todo technically this is incomplete as we need to care about
+      -- cells we may previously have owned and no longer do, and what zones
+      -- *are* now responsible for them. Doing that properly requires a real
+      -- two-step layout process, though (figure out where everything is going
+      -- to be, *then* put it there and mark things touched), so we'll
+      -- hold off for now
+      zone:beTouched()
    end
    return zone
 end
 
+
+
+
+
+function Zone.setVisibility(zone, new_visibility)
+   if new_visibility ~= zone.visible then
+      zone.visible = new_visibility
+      zone:beTouched()
+   end
+   return zone
+end
+
+function Zone.show(zone)
+   return zone:setVisibility(true)
+end
+function Zone.hide(zone)
+   return zone:setVisibility(false)
+end
+
+
+
+
+
+
+
+
+
+
+
+
+function Zone.beTouched(zone)
+   if zone.touched then return end
+   zone.touched = true
+   for _, other_zone in ipairs(zone.zoneherd) do
+      if zone.z ~= other_zone.z and
+         zone.visible == (other_zone.z > zone.z) and
+         zone:overlaps(other_zone) then
+         other_zone.touched = true
+      end
+   end
+end
 
 
 
@@ -241,24 +378,47 @@ end
 
 
 
-local function newZone(name, tc, tr, bc, br, z, debug_mark)
+local insert = assert(table.insert)
+
+function Zoneherd.addZone(zoneherd, zone)
+   zoneherd[zone.name] = zone
+   zone.zoneherd = zoneherd
+   local insert_index
+   for i, existing in ipairs(zoneherd) do
+      if existing.z > zone.z then
+         insert_index = i
+         break
+      end
+   end
+   if insert_index then
+      insert(zoneherd, insert_index, zone)
+   else
+      insert(zoneherd, zone)
+   end
+   return zoneherd
+end
+
+
+
+
+
+
+
+
+
+local function newZone(name, z, debug_mark)
    local zone = meta(Zone)
    zone.name = name
    zone.debug_mark = debug_mark
    zone.z = z
-   zone:set(tc, tr, bc, br)
+   zone.visible = true
    zone.touched = false
    -- zone.contents, aspirationally a rainbuf, is provided later
    return zone
 end
 
-function Zoneherd.newZone(zoneherd, name, tc, tr, bc, br, z, debug_mark)
-   zoneherd[name] = newZone(name, tc, tr, bc, br, z, debug_mark)
-   -- this doesn't account for Z axis but for now:
-   zoneherd[#zoneherd + 1] = zoneherd[name]
-   -- todo: make a Zoneherd:add(zone, name) that handles z-ordering
-   -- and auto-adjusts proportionally.
-   return zoneherd
+function Zoneherd.newZone(zoneherd, name, z, debug_mark)
+   return zoneherd:addZone(newZone(name, z, debug_mark))
 end
 
 
@@ -281,30 +441,35 @@ end
 
 
 
+local ceil, floor = assert(math.ceil), assert(math.floor)
+
 function Zoneherd.reflow(zoneherd, modeS)
    local right_col = modeS.max_col - _zoneOffset(modeS)
    local txt_off = modeS:continuationLines()
-   zoneherd.status:set(1, 1, right_col, 1)
-   zoneherd.prompt:set(  1,
-                         modeS.repl_top,
-                         modeS.l_margin - 1,
-                         modeS.repl_top + txt_off)
-   zoneherd.command:set( modeS.l_margin,
-                         modeS.repl_top,
-                         right_col,
-                         modeS.repl_top + txt_off )
-   zoneherd.results:set( 1,
-                         modeS.repl_top + txt_off + 1,
-                         right_col,
-                         modeS.max_row )
-   zoneherd.stat_col:set( right_col + 1,
-                          1,
-                          modeS.max_col,
-                          1 )
-   zoneherd.suggest:set( right_col + 1,
-                         modeS.repl_top + 1,
-                         modeS.max_col,
-                         modeS.max_row )
+   zoneherd.status:setBounds(  1, 1, right_col, 1)
+   zoneherd.stat_col:setBounds(right_col + 1, 1,
+                               modeS.max_col, 1 )
+   zoneherd.prompt:setBounds(  1,
+                               modeS.repl_top,
+                               modeS.l_margin - 1,
+                               modeS.repl_top + txt_off )
+   zoneherd.command:setBounds( modeS.l_margin,
+                               modeS.repl_top,
+                               right_col,
+                               modeS.repl_top + txt_off )
+   zoneherd.results:setBounds( 1,
+                               modeS.repl_top + txt_off + 1,
+                               right_col,
+                               modeS.max_row )
+   zoneherd.suggest:setBounds( right_col + 1,
+                               modeS.repl_top + 1,
+                               modeS.max_col,
+                               modeS.max_row )
+   -- Popup is centered and 2/3 of max width, i.e. from 1/6 to 5/6
+   zoneherd.popup:setBounds(   floor(modeS.max_col / 6),
+                               modeS.repl_top + txt_off + 1,
+                               ceil(modeS.max_col * 5 / 6),
+                               modeS.max_row)
    return zoneherd
 end
 
@@ -321,7 +486,7 @@ function Zoneherd.paint(zoneherd, modeS)
    local write = zoneherd.write
    write(a.cursor.hide(), a.clear())
    for i, zone in ipairs(zoneherd) do
-      if zone.touched then
+      if zone.visible and zone.touched then
          -- erase
          write(a.erase.box( zone.tc,
                             zone.tr,
@@ -331,14 +496,13 @@ function Zoneherd.paint(zoneherd, modeS)
          -- actually render ze contents
          if type(zone.contents) == "string" then
             _writeLines(write, zone, zone.contents)
-         elseif type(zone.contents) == "table"
-            and zone.contents.idEst == Txtbuf then
+         elseif instanceof(zone.contents, Txtbuf) then
             _renderTxtbuf(modeS, zone, write)
          else
             _renderRainbuf(write, zone)
          end
-         zone.touched = false
       end
+      zone.touched = false
    end
    modeS:placeCursor()
    write(a.cursor.show())
@@ -353,21 +517,19 @@ end
 
 
 
-
-
-
 local function new(modeS, writer)
    local zoneherd = meta(Zoneherd)
    zoneherd.write = writer
    -- make Zones
    -- correct values are provided by reflow
-   zoneherd:newZone("status", -1, -1, -1, -1, 1, ".")
-   zoneherd:newZone("stat_col", -1, -1, -1, -1, 1, "!")
-   zoneherd:newZone("prompt", -1, -1, -1, -1, 1, ">")
-   zoneherd:newZone("command", -1, -1, -1, -1, 1, "$")
-   zoneherd:newZone("gutter", -1, -1, -1, -1, 1, "_")
-   zoneherd:newZone("results", -1, -1, -1, -1, 1, "~")
-   zoneherd:newZone("suggest", -1, -1, -1, -1, 1, "%")
+   zoneherd:newZone("status", 1, ".")
+   zoneherd:newZone("stat_col", 1, "!")
+   zoneherd:newZone("prompt", 1, ">")
+   zoneherd:newZone("command", 1, "$")
+   zoneherd:newZone("results", 1, "~")
+   zoneherd:newZone("suggest", 1, "%")
+   zoneherd:newZone("popup", 2, "^")
+   zoneherd.popup.visible = false
    zoneherd:reflow(modeS)
 
    return zoneherd

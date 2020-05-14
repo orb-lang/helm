@@ -63,24 +63,45 @@ end
 
 ** Events
 
-*** <Raga>.txtbufChanged(modeS)
+*** <Raga>.onTxtbufChanged(modeS)
 
 Called whenever the txtbuf's contents have changed while processing a seq.
 
 #!lua
-function RagaBase.txtbufChanged(modeS)
+function RagaBase.onTxtbufChanged(modeS)
    return
 end
 #/lua
 
-*** <Raga>.cursorChanged(modeS)
+*** <Raga>.onCursorChanged(modeS)
 
 Called whenever the cursor has moved while processing a seq.
-Both txtbufChanged and cursorChanged will be called in the
+Both onTxtbufChanged and onCursorChanged will be called in the
 common case of a simple insertion.
 
 #!lua
-function RagaBase.cursorChanged(modeS)
+function RagaBase.onCursorChanged(modeS)
+   return
+end
+#/lua
+
+*** <Raga>.onShift(modeS)
+
+Called when first switching to the raga. Provides an opportunity to
+reconfigure zones or perform other set-up work.
+
+#!lua
+function RagaBase.onShift(modeS)
+   return
+end
+#/lua
+
+*** <Raga>.onUnshift(modeS)
+
+Opposite of onShift--called when switching away to another raga.
+
+#!lua
+function RagaBase.onUnshift(modeS)
    return
 end
 #/lua

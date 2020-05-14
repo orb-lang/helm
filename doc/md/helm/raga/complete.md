@@ -59,14 +59,14 @@ local NAV = Complete.NAV
 
 function NAV.TAB(modeS, category, value)
    modeS.suggest.active_suggestions[1]:selectNext()
-   modeS.zones.suggest.touched = true
+   modeS.zones.suggest:beTouched()
 end
 NAV.DOWN = NAV.TAB
 NAV.SHIFT_DOWN = NAV.TAB
 
 function NAV.SHIFT_TAB(modeS, category, value)
    modeS.suggest.active_suggestions[1]:selectPrevious()
-   modeS.zones.suggest.touched = true
+   modeS.zones.suggest:beTouched()
 end
 NAV.UP = NAV.SHIFT_TAB
 NAV.SHIFT_UP = NAV.SHIFT_TAB
@@ -83,12 +83,12 @@ function NAV.LEFT(modeS, category, value)
    modeS.action_complete = false
 end
 ```
-### Complete.cursorChanged(modeS)
+### Complete.onCursorChanged(modeS)
 
 ```lua
-function Complete.cursorChanged(modeS)
+function Complete.onCursorChanged(modeS)
    modeS.suggest:update(modeS)
-   EditBase.cursorChanged(modeS)
+   EditBase.onCursorChanged(modeS)
 end
 ```
 ```lua
