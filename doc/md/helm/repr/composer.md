@@ -393,15 +393,9 @@ or ``"outer"`` if we're in the outer printing context (not in a nested table).
 
 ```lua
 
-local FUNCTION_WINDOWS = {
-   remains = true,
-   case = true
-}
-
-local FIELD_WINDOWS = {
-   width = true,
-   color = true
-}
+local Set = require "set"
+local FUNCTION_WINDOWS = Set{ "remains", "case" }
+local FIELD_WINDOWS = Set{ "width", "color" }
 
 local function make_window__index(composer, field)
    return function(window, field)
