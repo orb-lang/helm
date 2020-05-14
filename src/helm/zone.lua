@@ -145,7 +145,11 @@ end
 
 
 local bound = import("core/math", "bound")
+local instanceof = import("core/meta", "instanceof")
 function Zone.scrollTo(zone, offset, allow_overscroll)
+   if not instanceof(zone.contents, Rainbuf) then
+      return false
+   end
    -- Try to render the content that will be visible after the scroll
    zone.contents:composeUpTo(offset + zone:height())
    local required_lines_visible = allow_overscroll and 1 or zone:height()
@@ -166,6 +170,11 @@ end
 
 
 function Zone.scrollBy(zone, delta, allow_overscroll)
+   -- Need to check this here even though :scrollTo already does
+   -- because we talk to the Rainbuf to figure out the new offset
+   if not instanceof(zone.contents, Rainbuf) then
+      return false
+   end
    return zone:scrollTo(zone.contents.offset + delta, allow_overscroll)
 end
 
