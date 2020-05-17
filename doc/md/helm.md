@@ -3,6 +3,25 @@
 
 ``helm`` is our repl.
 
+
+##### profiler
+
+Normally commented out.
+
+
+Planning to run this from time to time if it looks like we have significant
+performance regressions.
+
+```lua
+--[[
+profile = require("jit.profile")
+profiled = {}
+profile.start("li1", function(th, samples, vmmode)
+  local d = profile.dumpstack(th, "pF", 1)
+  profiled[d] = (profiled[d] or 0) + samples
+end)
+--]]
+```
 ```lua
 if rawget(_G, "_Bridge") then
   _Bridge.helm = true

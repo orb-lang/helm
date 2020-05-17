@@ -4,6 +4,25 @@
 
 
 
+
+
+
+
+
+
+
+
+--[[
+profile = require("jit.profile")
+profiled = {}
+profile.start("li1", function(th, samples, vmmode)
+  local d = profile.dumpstack(th, "pF", 1)
+  profiled[d] = (profiled[d] or 0) + samples
+end)
+--]]
+
+
+
 if rawget(_G, "_Bridge") then
   _Bridge.helm = true
 end
