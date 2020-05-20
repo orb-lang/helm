@@ -410,6 +410,7 @@ Composer.__call = Composer.composeLine
 local Set = require "set"
 local FUNCTION_WINDOWS = Set{ "remains", "case" }
 local FIELD_WINDOWS = Set{ "width", "color" }
+local VALUE_WINDOWS = Set{ "depth", "cycle" }
 
 local function make_window__index(composer, field)
    return function(window, field)
@@ -417,6 +418,8 @@ local function make_window__index(composer, field)
          return composer[field]
       elseif FUNCTION_WINDOWS[field] then
          return composer[field](composer)
+      elseif VALUE_WINDOWS[field] then
+         return rawget(window, field)
       else
          error ("window has no method " .. field .. "n" .. debug.traceback())
       end
@@ -424,8 +427,12 @@ local function make_window__index(composer, field)
 end
 
 local function _window__newindex(window, key, value)
-   error("window is read only : {" .. tostring(key) .. tostring(value) .. "}",
-      debug.traceback())
+   if VALUE_WINDOWS[key] then
+      rawset(window, key, value)
+   else
+      error(tostring(key) .. " = " .. tostring(value) ..
+         ": not a writable field on window\n" .. debug.traceback())
+   end
 end
 
 function Composer.window(composer)
