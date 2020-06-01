@@ -54,9 +54,9 @@ incredibly intricate repl.
 
 #!lua
 
-local hasmetamethod = require "core/meta" . hasmetamethod
+local hasmetamethod = assert(require "core/meta" . hasmetamethod)
 local collect, lines = assert(core_table.collect), assert(core_string.lines)
-local assertfmt = import("core/fn", "assertfmt")
+local assertfmt = assert(require "core/fn" . assertfmt)
 
 local function _yieldReprs(tab, window, c)
    local _repr = hasmetamethod("repr", tab)
