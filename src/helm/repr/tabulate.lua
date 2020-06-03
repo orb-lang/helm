@@ -56,22 +56,31 @@ end
 
 local hasmetamethod = require "core/meta" . hasmetamethod
 local collect, lines = assert(core_table.collect), assert(core_string.lines)
+local assertfmt = import("core/fn", "assertfmt")
 
 local function _yieldReprs(tab, window, c)
    local _repr = hasmetamethod("repr", tab)
    assert(c, "must have a value for c")
    assert(_repr, "failed to retrieve repr metamethod")
    local repr = _repr(tab, window, c)
+   -- __repr may choose to use yield() directly rather than returning a value
+   if repr == nil then return end
    if type(repr) == "string" then
       repr = lines(repr)
    end
-   if type(repr) ~= "function" then
-      error("__repr must return a string or a function returning lines,\
-         got a " .. type(repr))
-   end
-   for line, len in repr do
-      -- Note that len may be nil, in which case the Token will figure things out for itself
-      yield(Token(line, c.no_color, { event = "repr_line", total_disp = len }))
+   assertfmt(type(repr) == "function",
+      "Unexpected return type from __repr: \
+      Expected string, iterator-of-string, or iterator-of-Token, got %s",
+      type(repr))
+   for line_or_token, len in repr do
+      local token
+      if type(line_or_token) == "string" then
+         -- Note that len may be nil, in which case the Token will figure things out for itself
+         token = Token(line_or_token, c.no_color, { event = "repr_line", total_disp = len })
+      else
+         token = line_or_token
+      end
+      yield(token)
    end
 end
 
@@ -89,37 +98,37 @@ local isarray, table_keys, sort = assert(core_table.isarray),
                                   assert(core_table.keys),
                                   assert(table.sort)
 
-local function _tabulate(tab, window, c, depth, cycle)
-   cycle = cycle or {}
-   depth = depth or 0
+local function _tabulate(tab, window, c)
    if type(tab) ~= "table"
-      or depth > C.depth
-      or cycle[tab] then
+      or window.depth > C.depth
+      or window.cycle[tab] then
       yield_name(tab, c)
       return nil
    end
-   -- __repr gets special treatment:
-   -- We want to use the __repr method if and only if it is on the
-   -- metatable.
+   -- Check for an __repr metamethod. If present, it replaces the rest of the
+   -- tabulation process for this table
    if hasmetamethod("repr", tab) and (not rawget(tab, "__repr")) then
+      window.depth = window.depth + 1
       _yieldReprs(tab, window, c)
+      window.depth = window.depth - 1
       return nil
    end
    -- add non-__repr'ed tables to cycle
-   cycle[tab] = true
+   window.cycle[tab] = true
 
    -- Okay, we're repring the body of a table of some kind
    -- Check to see if this is an array
    local is_array = isarray(tab)
-   -- And print an open brace
+   -- And print an open brace, noting increased depth
    yield(Token("{ ", c.base, { event = is_array and "array" or "map" }))
+   window.depth = window.depth + 1
 
    -- if we have a metatable, get it first
    local _M = getmetatable(tab)
    if _M then
       local mt_name_token = nameFor(_M, c, "metatable")
       mt_name_token.event = "metatable"
-      if cycle[_M] then
+      if window.cycle[_M] then
          mt_name_token:insert(1, "⟨")
          mt_name_token:insert("⟩")
          mt_name_token:insert(" ")
@@ -127,10 +136,10 @@ local function _tabulate(tab, window, c, depth, cycle)
       yield(mt_name_token)
       -- Skip printing the metatable altogether if it's going to end up
       -- represented by its name, since we just printed that.
-      if depth < C.depth and not cycle[_M] then
+      if window.depth < C.depth and not window.cycle[_M] then
          yield(Token(" → ", c.base, { event = "sep" }))
          yield(Token("⟨", c.metatable, { event = "metatable" }))
-         _tabulate(_M, window, c, depth + 1, cycle)
+         _tabulate(_M, window, c)
          yield(Token("⟩ ", c.metatable, { event = "sep"}))
       else
          yield(Token(" ", c.no_color, { event = "sep" }))
@@ -140,7 +149,7 @@ local function _tabulate(tab, window, c, depth, cycle)
    if is_array then
       for i, val in ipairs(tab) do
          if i ~= 1 then yield(Token(", ", c.base, { event = "sep" })) end
-         _tabulate(val, window, c, depth + 1, cycle)
+         _tabulate(val, window, c)
       end
    else
       local keys = table_keys(tab)
@@ -161,15 +170,18 @@ local function _tabulate(tab, window, c, depth, cycle)
             yield(Token("]", c.base))
          end
          yield(Token(" = ", c.base))
-         _tabulate(val, window, c, depth + 1, cycle)
+         _tabulate(val, window, c)
       end
    end
    yield(Token(" }", c.base, { event = "end" }))
+   window.depth = window.depth - 1
    return nil
 end
 
 local function tabulate(tab, window, c)
    return wrap(function()
+      window.depth = 0
+      window.cycle = {}
       local err_lines
       local success, result = xpcall(
          function() return _tabulate(tab, window, c) end,
