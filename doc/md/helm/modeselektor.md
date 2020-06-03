@@ -644,6 +644,21 @@ function ModeS.eval(modeS)
    return modeS
 end
 ```
+### ModeS:evalFromCursor()
+
+Evaluates every result from the current historian cursor to the top of the
+history.
+
+```lua
+function ModeS.evalFromCursor(modeS)
+   local top = modeS.hist.n
+   local cursor = modeS.hist.cursor
+   for i = cursor, top do
+      modeS.txtbuf = modeS.hist:index(i)
+      modeS:eval()
+   end
+end
+```
 ### ModeS:restart()
 
 This resets ``_G`` and runs all commands in the current session.
