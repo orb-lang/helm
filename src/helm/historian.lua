@@ -644,24 +644,39 @@ local find, match, sub = assert(string.find),
 local Token = require "helm/repr/token"
 local SOH, STX = "\x01", "\x02"
 local function _db_result__repr(result)
-   assert(sub(result[1], 1, 1) == SOH)
-   local header_position = 1
-   local text_position = 0
-   return function()
-      text_position = find(result[1], STX, header_position + 1)
-      if not text_position then
-         return nil
+   if sub(result[1], 1, 1) == SOH then
+      -- New format--tokens delimited by SOH/STX
+      local header_position = 1
+      local text_position = 0
+      return function()
+         text_position = find(result[1], STX, header_position + 1)
+         if not text_position then
+            return nil
+         end
+         local metadata = sub(result[1], header_position + 1, text_position - 1)
+         local cfg = {}
+         if find(metadata, "wrappable") then cfg.wrappable = true end
+         cfg.event = match(metadata, "event=(%w+)")
+         header_position = find(result[1], SOH, text_position + 1)
+         if not header_position then
+            header_position = #result[1] + 1
+         end
+         local text = sub(result[1], text_position + 1, header_position - 1)
+         return Token(text, C.color.greyscale, cfg)
       end
-      local metadata = sub(result[1], header_position + 1, text_position - 1)
-      local cfg = {}
-      if find(metadata, "wrappable") then cfg.wrappable = true end
-      cfg.event = match(metadata, "event=(%w+)")
-      header_position = find(result[1], SOH, text_position)
-      if not header_position then
-         header_position = #result[1] + 1
+   else
+      -- Old format--just a string, which we'll break up into lines
+      local line_iter = lines(result[1])
+      return function()
+         local line = line_iter()
+         if line then
+            -- Might as well return a Token in order to attach the color properly,
+            -- rather than just including the color escapes in the string
+            return Token(line, C.color.greyscale, { event = "repr_line" })
+         else
+            return nil
+         end
       end
-      local text = sub(result[1], text_position + 1, header_position - 1)
-      return Token(text, C.color.greyscale, cfg)
    end
 end
 
