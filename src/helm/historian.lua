@@ -19,7 +19,7 @@ local sql     = assert(sql, "sql must be in bridge _G")
 
 local Txtbuf  = require "helm/txtbuf"
 local Rainbuf = require "helm/rainbuf"
-local c       = import("singletons/color", "color")
+local C       = require "singletons/color"
 local repr    = require "helm/repr"
 
 local concat, insert = assert(table.concat), assert(table.insert)
@@ -468,6 +468,29 @@ end
 
 
 
+
+
+
+
+
+
+
+local function dump_token(token, stream)
+   insert(stream, "\x01")
+   if token.event then
+      insert(stream, "event=")
+      insert(stream, token.event)
+   end
+   if token.wrappable then
+      if token.event then insert(stream, " ") end
+      insert(stream, "wrappable")
+   end
+   insert(stream, "\x02")
+   insert(stream, tostring(token))
+   return stream
+end
+
+local tabulate = require "helm/repr/tabulate"
 function Historian.persist(historian, txtbuf, results)
    local lb = tostring(txtbuf)
    local have_results = results
@@ -490,10 +513,13 @@ function Historian.persist(historian, txtbuf, results)
    insert(historian.line_ids, line_id)
 
    local persist_idler = uv.new_idle()
-   local results_tostring, results_lineGens = {}, {}
+   local results_tostring, results_tabulates = {}, {}
+   -- Make a dummy table to stand in for Composer:window(),
+   -- since we won't be making a Composer at all.
+   local dummy_window = { width = 80, remains = 80, color = C.no_color }
    if have_results then
       for i = 1, results.n do
-         results_lineGens[i] = repr.lineGenBW(results[i])
+         results_tabulates[i] = tabulate(results[i], dummy_window, C.no_color)
          results_tostring[i] = {}
       end
    end
@@ -501,14 +527,14 @@ function Historian.persist(historian, txtbuf, results)
    historian.idlers:insert(persist_idler)
    persist_idler:start(function()
       while have_results and i <= results.n do
-         local success, line = pcall(results_lineGens[i])
-         if success and line then
-            insert(results_tostring[i], line)
+         local success, token = pcall(results_tabulates[i])
+         if success and token then
+            dump_token(token, results_tostring[i])
          else
-            results_tostring[i] = concat(results_tostring[i], "\n")
+            results_tostring[i] = concat(results_tostring[i], "")
             i = i + 1
             if not success then
-               error(line)
+               error(token)
             end
          end
          return nil
@@ -612,14 +638,44 @@ end
 
 
 local lines = import("core/string", "lines")
+local find, match, sub = assert(string.find),
+                         assert(string.match),
+                         assert(string.sub)
+local Token = require "helm/repr/token"
+local SOH, STX = "\x01", "\x02"
 local function _db_result__repr(result)
-   local result_iter = lines(result[1])
-   return function()
-      local line = result_iter()
-      if line then
-         return c.greyscale(line)
-      else
-         return nil
+   if sub(result[1], 1, 1) == SOH then
+      -- New format--tokens delimited by SOH/STX
+      local header_position = 1
+      local text_position = 0
+      return function()
+         text_position = find(result[1], STX, header_position + 1)
+         if not text_position then
+            return nil
+         end
+         local metadata = sub(result[1], header_position + 1, text_position - 1)
+         local cfg = {}
+         if find(metadata, "wrappable") then cfg.wrappable = true end
+         cfg.event = match(metadata, "event=(%w+)")
+         header_position = find(result[1], SOH, text_position + 1)
+         if not header_position then
+            header_position = #result[1] + 1
+         end
+         local text = sub(result[1], text_position + 1, header_position - 1)
+         return Token(text, C.color.greyscale, cfg)
+      end
+   else
+      -- Old format--just a string, which we'll break up into lines
+      local line_iter = lines(result[1])
+      return function()
+         local line = line_iter()
+         if line then
+            -- Might as well return a Token in order to attach the color properly,
+            -- rather than just including the color escapes in the string
+            return Token(line, C.color.greyscale, { event = "repr_line" })
+         else
+            return nil
+         end
       end
    end
 end
@@ -635,7 +691,7 @@ local function _resultsFrom(historian, cursor)
    local line_id = historian.line_ids[cursor]
    local stmt = historian.get_results
    stmt:bindkv {line_id = line_id}
-   local results = stmt :resultset "i"
+   local results = stmt :resultset 'i'
    if results then
       results = results[1]
       results.n = #results
@@ -738,7 +794,7 @@ end
 
 
 local __result_buffer_M = meta {}
-function __result_buffer_M.__repr()
+function __result_buffer_M.__repr(buf, window, c)
    return c.alert "cowardly refusing to print result_buffer to avoid infinite appending"
 end
 
