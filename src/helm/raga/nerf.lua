@@ -213,6 +213,22 @@ end
 
 
 
+local ALT = Nerf.ALT
+
+
+
+
+
+
+ALT ["M-e"] = function(modeS, category, value)
+   modeS:evalFromCursor()
+end
+
+
+
+
+
+
 
 
 function Nerf.onCursorChanged(modeS)

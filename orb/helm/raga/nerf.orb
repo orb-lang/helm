@@ -209,6 +209,22 @@ function Nerf.MOUSE(modeS, category, value)
 end
 #/lua
 
+
+*** ALT
+
+#!lua
+local ALT = Nerf.ALT
+#/lua
+
+
+**** M-e
+
+#!lua
+ALT ["M-e"] = function(modeS, category, value)
+   modeS:evalFromCursor()
+end
+#/lua
+
 *** Nerf.onCursorChanged(modeS)
 
 Whenever the cursor moves (which is likely because the txtbuf contents changed,

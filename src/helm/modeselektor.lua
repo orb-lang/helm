@@ -637,6 +637,23 @@ end
 
 
 
+
+function ModeS.evalFromCursor(modeS)
+   local top = modeS.hist.n
+   local cursor = modeS.hist.cursor
+   for i = cursor, top do
+      modeS.txtbuf = modeS.hist:index(i)
+      modeS:eval()
+   end
+end
+
+
+
+
+
+
+
+
 local deepclone = assert(core.deepclone)
 
 function ModeS.restart(modeS)
