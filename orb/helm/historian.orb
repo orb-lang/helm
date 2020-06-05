@@ -691,7 +691,7 @@ local function _resultsFrom(historian, cursor)
    local line_id = historian.line_ids[cursor]
    local stmt = historian.get_results
    stmt:bindkv {line_id = line_id}
-   local results = stmt:resultset()
+   local results = stmt:resultset('i')
    if results then
       results = results[1]
       results.n = #results
