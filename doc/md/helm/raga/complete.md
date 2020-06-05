@@ -1,6 +1,6 @@
 # Complete
 
-Handles choosing and accepting a suggestion from ``suggest``.
+Handles choosing and accepting a suggestion from `suggest`\.
 
 ```lua
 local clone = import("core/table", "clone")
@@ -11,6 +11,7 @@ local Complete = clone(EditBase, 2)
 Complete.name = "complete"
 Complete.prompt_char = "👉"
 ```
+
 ## Inserts
 
 ```lua
@@ -36,6 +37,7 @@ function Complete.PASTE(modeS, category, value)
 end
 
 ```
+
 ```lua
 local find = assert(string.find)
 local function _insert(modeS, category, value)
@@ -52,6 +54,7 @@ end
 Complete.ASCII = _insert
 Complete.UTF8 = _insert
 ```
+
 ## NAV
 
 ```lua
@@ -83,7 +86,8 @@ function NAV.LEFT(modeS, category, value)
    modeS.action_complete = false
 end
 ```
-### Complete.onCursorChanged(modeS)
+
+### Complete\.onCursorChanged\(modeS\)
 
 ```lua
 function Complete.onCursorChanged(modeS)
@@ -91,6 +95,7 @@ function Complete.onCursorChanged(modeS)
    EditBase.onCursorChanged(modeS)
 end
 ```
+
 ```lua
 return Complete
 ```

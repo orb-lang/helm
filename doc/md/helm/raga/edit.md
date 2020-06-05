@@ -8,13 +8,16 @@ local clone = import("core/table", "clone")
 local RagaBase = require "helm:helm/raga/base"
 local Txtbuf = require "helm/txtbuf"
 ```
+
 ```lua
 local EditBase = clone(RagaBase, 2)
 ```
-### toTxtbuf(fn)
+
+
+### toTxtbuf\(fn\)
 
 This returns a function which implements the most common result of an action,
-which is to pass a message to the Txtbuf.
+which is to pass a message to the Txtbuf\.
 
 ```lua
 local function toTxtbuf(fn)
@@ -23,6 +26,7 @@ local function toTxtbuf(fn)
    end
 end
 ```
+
 ### Insertion
 
 ```lua
@@ -45,6 +49,8 @@ function EditBase.PASTE(modeS, category, value)
 end
 
 ```
+
+
 ### NAV
 
 ```lua
@@ -59,6 +65,8 @@ NAV.HYPER_RIGHT = toTxtbuf "endOfLine"
 NAV.BACKSPACE   = toTxtbuf "deleteBackward"
 NAV.DELETE      = toTxtbuf "deleteForward"
 ```
+
+
 ### CTRL
 
 ```lua
@@ -83,6 +91,8 @@ CTRL ["^K"] = toTxtbuf "killToEndOfLine"
 CTRL ["^U"] = toTxtbuf "killToBeginningOfLine"
 CTRL ["^T"] = toTxtbuf "transposeLetter"
 ```
+
+
 ### ALT
 
 ```lua
@@ -90,6 +100,7 @@ EditBase.ALT ["M-w"] = NAV.ALT_RIGHT
 
 EditBase.ALT ["M-b"] = NAV.ALT_LEFT
 ```
+
 ```lua
 return EditBase
 ```

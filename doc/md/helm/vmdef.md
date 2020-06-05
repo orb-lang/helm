@@ -1,6 +1,6 @@
 # vmdef
 
-Spooky Mike Pall voodoo.
+Spooky Mike Pall voodoo\.
 
 ```lua
 -- This is a generated file. DO NOT EDIT!

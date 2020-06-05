@@ -1,11 +1,12 @@
 # tabulator
 
-This is fundamentally [[Tim Caswell's][https://github.com/creationix]] code.
+This is fundamentally [Tim Caswell's](https://github.com/creationix) code\.
 
+I've dressed it up a bit\. Okay, a lot\.
 
-I've dressed it up a bit. Okay, a lot.
+\#todo
 
-#todo add rainbow braces## Dependencies
+## Dependencies
 
 ```lua
 local core_table, core_string = require "core/table", require "core/string"
@@ -15,6 +16,7 @@ local C = require "singletons/color"
 
 local yield, wrap = assert(coroutine.yield), assert(coroutine.wrap)
 ```
+
 ### Sorting
 
 ```lua
@@ -35,22 +37,20 @@ local function _keysort(a, b)
 end
 
 ```
-### _yieldReprs(tab, window, c)
 
-I want to deliver ``__repr``s from inside the funky coroutine brew,
-because, well, because. ``ts`` is meant to be general.
+### \_yieldReprs\(tab, window, c\)
 
+I want to deliver `__repr`s from inside the funky coroutine brew,
+because, well, because\. `ts` is meant to be general\.
 
 I also want a lot of flexibility in how reprs are written, so we need to
-handle several cases.
+handle several cases\.
 
-
-We're going to start with returning a string, and returning an iterator.
-
+We're going to start with returning a string, and returning an iterator\.
 
 I might get around to returning tables with tokens in them and other intel,
 I might not; I do have plans that are broader than merely writing an
-incredibly intricate repl.
+incredibly intricate repl\.
 
 ```lua
 
@@ -85,10 +85,11 @@ local function _yieldReprs(tab, window, c)
 end
 
 ```
-### tabulate(tab, window, c)
+
+### tabulate\(tab, window, c\)
 
 Returns an iterator that produces Tokens representing pieces of a table,
-recursively, one at a time. Implemented internally as a coroutine.
+recursively, one at a time\. Implemented internally as a coroutine\.
 
 ```lua
 local function yield_name(...) yield(nameFor(...)) end

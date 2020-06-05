@@ -1,6 +1,6 @@
 # Names
 
-Provides a consistent notion of the "name" of a value.
+Provides a consistent notion of the "name" of a value\.
 
 ## Dependencies
 
@@ -8,39 +8,41 @@ Provides a consistent notion of the "name" of a value.
 local Token = require "helm/repr/token"
 local import = assert(require "core/module" . import)
 ```
+
 ## Setup
 
 ```lua
 local names = {}
 ```
-### anti_G, all_symbols
 
-In order to provide names for values, we want to trawl through ``_G`` and
-acquire them.  This table is from value to key where ``_G`` is key to value,
-hence, ``anti_G``.
+### anti\_G, all\_symbols
 
+In order to provide names for values, we want to trawl through `_G` and
+acquire them\.  This table is from value to key where `_G` is key to value,
+hence, `anti_G`\.
 
-We also maintain a unique list of all names (but not paths, e.g.
-"foo" and "bar" but not "foo.bar") encountered. For ease of uniqueing
-we store the names as the keys of a table rather than the values.
+We also maintain a unique list of all names \(but not paths, e\.g\.
+"foo" and "bar" but not "foo\.bar"\) encountered\. For ease of uniqueing
+we store the names as the keys of a table rather than the values\.
 
 ```lua
 local anti_G = setmetatable({ _G = "_G" }, {__mode = "k"})
 names.all_symbols = { _G = true }
 ```
-### names.addName(), names.loadNames()
 
-Ransacks ``_G`` looking for names to put on things.
 
+### names\.addName\(\), names\.loadNames\(\)
+
+Ransacks `_G` looking for names to put on things\.
 
 To really dig out a good name for metatables we're going to need to write
 some kind of reflection function that will dig around in upvalues to find
-local names for things.
+local names for things\.
 
 
-#### tie_break(old, new)
+#### tie\_break\(old, new\)
 
-A helper function to decide which name is better.
+A helper function to decide which name is better\.
 
 ```lua
 local function tie_break(old, new)
@@ -106,15 +108,15 @@ function names.clearNames()
    names.all_symbols = {}
 end
 ```
-### names.nameFor(value, c, hint)
 
-Generates a simple, name-like representation of ``value``. For simple types
-(strings, numbers, booleans, nil) this is the stringified value itself.
-For tables, functions, etc. attempts to retrieve a name from anti_G, falling
-back to generating a name from the hash if none is found.
+### names\.nameFor\(value, c, hint\)
 
+Generates a simple, name\-like representation of `value`\. For simple types
+\(strings, numbers, booleans, nil\) this is the stringified value itself\.
+For tables, functions, etc\. attempts to retrieve a name from anti\_G, falling
+back to generating a name from the hash if none is found\.
 
-Lots of small, nice things in this one.
+Lots of small, nice things in this one\.
 
 ```lua
 
@@ -195,19 +197,20 @@ function names.nameFor(value, c, hint)
 end
 
 ```
-### cdata pretty-printing
 
-Note: the reflect library appears to be broken for LuaJIT 2.1 so we're
-not going to use it.
+### cdata pretty\-printing
 
+Note: the reflect library appears to be broken for LuaJIT 2\.1 so we're
+not going to use it\.
 
-I'm leaving in the code for now, because I'd like to repair and use it...
-
+I'm leaving in the code for now, because I'd like to repair and use it\.\.\.
 
 lol
 
-#Todo fix
-yielding multiple tokens in this case.
+\#Todo
+
+Will also need to change the structure of name\_for slightly to account for
+yielding multiple tokens in this case\.
 
 ```lua
 local function c_data(value, str, phrase)
@@ -221,6 +224,7 @@ local function c_data(value, str, phrase)
    --]]
 end
 ```
+
 ```lua
 return names
 ```

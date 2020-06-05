@@ -1,19 +1,16 @@
 # Txtbuf
 
 This is not much more than an ordinary array of lines that has a bit of
-awareness, mostly about which lines have cursors and which don't.
+awareness, mostly about which lines have cursors and which don't\.
 
-
-I'll circle back for quipu but I want a basic editor as soon as possible. The
-interaction dynamics need to be worked out right away, plus I want to use it!
-
+I'll circle back for quipu but I want a basic editor as soon as possible\. The
+interaction dynamics need to be worked out right away, plus I want to use it\!
 
 Plan: A line that has a cursor on it, and there can be many, gets 'opened'
-into a grid of characters.  Lines stay open until the txtbuf is suspended,
-at which point they are all closed.
+into a grid of characters\.  Lines stay open until the txtbuf is suspended,
+at which point they are all closed\.
 
-
-A closed line is just a string.
+A closed line is just a string\.
 
 
 ## Interface
@@ -21,56 +18,49 @@ A closed line is just a string.
 
 ### Instance fields
 
--  lines :  An array of strings (closed lines), or arrays containing codepoints
-           (string fragments) (open lines).
+\-  lines :  An array of strings \(closed lines\), or arrays containing codepoints
+           \(string fragments\) \(open lines\)\.
 
+\-  cursor :  A table representing the cursor position:
+   \- row : Row containing the cursor\. Valid values are 1 to \#lines\.
+   \- col : Number of fragments to skip before an insertion\.
+           Valid values are 1 to \#lines\[row\] \+ 1\.
 
--  cursor :  A table representing the cursor position:
-   - row : Row containing the cursor. Valid values are 1 to #lines.
-   - col : Number of fragments to skip before an insertion.
-           Valid values are 1 to #lines[row] + 1.
+   These fields shouldn't be written to, use `txtbuf:setCursor()` which will
+   check bounds\.  They may be retrieved, along with the line, with
+   `txtbuf:currentPosition()`\.
 
-
-   These fields shouldn't be written to, use ``txtbuf:setCursor()`` which will
-   check bounds.  They may be retrieved, along with the line, with
-   ``txtbuf:currentPosition()``.
-
-
--  cursor_changed:   A flag indicating whether the cursor has changed since
-                     the flag was last reset.
--  contents_changed: Similar flag for whether the actual contents of the
-                     buffer have changed.
-
+\-  cursor\_changed:   A flag indicating whether the cursor has changed since
+                     the flag was last reset\.
+\-  contents\_changed: Similar flag for whether the actual contents of the
+                     buffer have changed\.
 
 The intention is that all of these fields are manipulated internally: the
-codebase doesn't completely respect this, yet, but it should.
+codebase doesn't completely respect this, yet, but it should\.
 
-
-This will let us expand, for instance, the definition of ``cursor`` to allow for
+This will let us expand, for instance, the definition of `cursor` to allow for
 an array of cursors, in the event that there's more than one, without exposing
-this elaboration to the rest of the system.
+this elaboration to the rest of the system\.
 
-
-The ``txtbuf`` is also a candidate for full replacement with the quipu data
+The `txtbuf` is also a candidate for full replacement with the quipu data
 structure, so the more we can encapsulate its region of responsiblity, the
-cleaner that transition can be.
+cleaner that transition can be\.
 
 
 #### Instance fields to be added
 
-- mark :  A structure like ``cursor``, representing the fixed end of a region,
-          with the ``cursor`` field being the mobile end. Note that ``cursor`` may
-          be earlier than ``mark``, respresenting the case where selection
-          proceeded backwards, e.g. by pressing Shift+Left. The "cursor" end
-          is always the one that moves when executing additional motions.
-
+\- mark :  A structure like =cursor=, representing the fixed end of a region,
+          with the =cursor= field being the mobile end\. Note that =cursor= may
+          be earlier than =mark=, respresenting the case where selection
+          proceeded backwards, e\.g\. by pressing Shift\+Left\. The "cursor" end
+          is always the one that moves when executing additional motions\.
 
           Mutation of these should be encapsulated such that they can be
           combined into a "region" structure, of which there may eventually be
-          multiple instances, during for instance search and replace.
-- disp :  Array of numbers, representing the furthest-right column which
-          may be reached by printing the corresponding row. Not equivalent
-          to #lines[n] as one codepoint != one column.
+          multiple instances, during for instance search and replace\.
+\- disp :  Array of numbers, representing the furthest\-right column which
+          may be reached by printing the corresponding row\. Not equivalent
+          to \#lines\[n\] as one codepoint \!= one column\.
 
 #### dependencies
 
@@ -85,12 +75,15 @@ local concat, insert, remove = assert(table.concat),
                                assert(table.insert),
                                assert(table.remove)
 ```
+
+
 ## Methods
 
 ```lua
 local Txtbuf = meta {}
 ```
-### Txtbuf.__tostring(txtbuf)
+
+### Txtbuf\.\_\_tostring\(txtbuf\)
 
 ```lua
 
@@ -108,6 +101,7 @@ local function cat(l)
    error("called private fn cat with type" .. type(l))
 end
 ```
+
 ```lua
 
 function Txtbuf.__tostring(txtbuf)
@@ -118,13 +112,14 @@ function Txtbuf.__tostring(txtbuf)
    return concat(closed_lines, "\n")
 end
 ```
-### Txtbuf:currentPosition()
 
-Getter returning ``line, cursor.col, cursor.row``.
 
+### Txtbuf:currentPosition\(\)
+
+Getter returning `line, cursor.col, cursor.row`\.
 
 In that order, because we often need the first two and occasionally need the
-third.
+third\.
 
 ```lua
 function Txtbuf.currentPosition(txtbuf)
@@ -132,18 +127,18 @@ function Txtbuf.currentPosition(txtbuf)
    return txtbuf.lines[row], col, row
 end
 ```
-### Txtbuf:setCursor(rowOrTable, col)
-
-Set the ``cursor``, ensuring that the value is not shared with the caller.
-Accepts either a cursor-like table, or two arguments representing ``row`` and ``col``.
-Either ``row`` or ``col`` may be nil, in which case the current value is retained.
 
 
-Performs bounds-checking of the proposed new values. Row out-of-bounds or
-col < 1 is an error, but col > row length is constrained to be in bounds.
+### Txtbuf:setCursor\(rowOrTable, col\)
 
+Set the `cursor`, ensuring that the value is not shared with the caller\.
+Accepts either a cursor\-like table, or two arguments representing `row` and `col`\.
+Either `row` or `col` may be nil, in which case the current value is retained\.
 
-Also opens the row to which the cursor is being moved.
+Performs bounds\-checking of the proposed new values\. Row out\-of\-bounds or
+col < 1 is an error, but col > row length is constrained to be in bounds\.
+
+Also opens the row to which the cursor is being moved\.
 
 ```lua
 
@@ -172,10 +167,11 @@ function Txtbuf.setCursor(txtbuf, rowOrTable, col)
 end
 
 ```
-### Txtbuf:cursorIndex()
+
+### Txtbuf:cursorIndex\(\)
 
 Answers the index of the cursor in the string represented by the Txtbuf,
-with newlines counted as a single slot/character.
+with newlines counted as a single slot/character\.
 
 ```lua
 function Txtbuf.cursorIndex(txtbuf)
@@ -186,10 +182,11 @@ function Txtbuf.cursorIndex(txtbuf)
    return index
 end
 ```
-### Txtbuf:openRow(row_num)
 
-Opens the row at index ``row_num`` for editing, breaking it into a grid of characters.
-Answers the newly-opened line and index, or nil if the index is out of bounds.
+### Txtbuf:openRow\(row\_num\)
+
+Opens the row at index `row_num` for editing, breaking it into a grid of characters\.
+Answers the newly\-opened line and index, or nil if the index is out of bounds\.
 
 ```lua
 
@@ -204,7 +201,8 @@ function Txtbuf.openRow(txtbuf, row_num)
 end
 
 ```
-### Txtbuf:advance()
+
+### Txtbuf:advance\(\)
 
 ```lua
 
@@ -214,11 +212,12 @@ function Txtbuf.advance(txtbuf)
    txtbuf:setCursor(#txtbuf.lines, 1)
 end
 ```
-### Txtbuf:insert(frag)
 
-Inserts ``frag`` (which must be exactly one codepoint) at the current cursor
-position. Intended for when the user has pressed the corresponding key--
-performs automatic brace pairing.
+### Txtbuf:insert\(frag\)
+
+Inserts `frag` \(which must be exactly one codepoint\) at the current cursor
+position\. Intended for when the user has pressed the corresponding key\-\-
+performs automatic brace pairing\.
 
 ```lua
 local _openers = { ["("] = ")",
@@ -261,11 +260,12 @@ function Txtbuf.insert(txtbuf, frag)
    return true
 end
 ```
-### Txtbuf:paste(frag)
 
-Pastes ``frag`` (which may be many characters and may include newlines)
-at the current cursor position. The only translation performed is
-tab to three spaces.
+### Txtbuf:paste\(frag\)
+
+Pastes `frag` \(which may be many characters and may include newlines\)
+at the current cursor position\. The only translation performed is
+tab to three spaces\.
 
 ```lua
 function Txtbuf.paste(txtbuf, frag)
@@ -282,10 +282,11 @@ function Txtbuf.paste(txtbuf, frag)
    txtbuf.contents_changed = true
 end
 ```
-### Txtbuf:deleteBackward()
+
+### Txtbuf:deleteBackward\(\)
 
 The return value tells us if we have one less line, since we need to
-clear it off the screen (true of deleteForward as well).
+clear it off the screen \(true of deleteForward as well\)\.
 
 ```lua
 local function _is_paired(a, b)
@@ -316,7 +317,9 @@ function Txtbuf.deleteBackward(txtbuf)
    end
 end
 ```
-### Txtbuf:deleteForward()
+
+
+### Txtbuf:deleteForward\(\)
 
 ```lua
 function Txtbuf.deleteForward(txtbuf)
@@ -336,7 +339,9 @@ function Txtbuf.deleteForward(txtbuf)
    end
 end
 ```
-#### Txtbuf:killToEndOfLine()
+
+
+#### Txtbuf:killToEndOfLine\(\)
 
 ```lua
 function Txtbuf.killToEndOfLine(txtbuf)
@@ -349,7 +354,9 @@ function Txtbuf.killToEndOfLine(txtbuf)
    return true
 end
 ```
-#### Txtbuf:killToBeginningOfLine()
+
+
+#### Txtbuf:killToBeginningOfLine\(\)
 
 ```lua
 function Txtbuf.killToBeginningOfLine(txtbuf)
@@ -369,13 +376,14 @@ function Txtbuf.killToBeginningOfLine(txtbuf)
    return true
 end
 ```
-#### Txtbuf:transposeLetter()
 
-Transposes the letter at the cursor with the one before it.
 
+#### Txtbuf:transposeLetter\(\)
+
+Transposes the letter at the cursor with the one before it\.
 
 Readline has a small affordance where it will still transpose if the cursor is
-at the end of a line, which this implementation respects.
+at the end of a line, which this implementation respects\.
 
 ```lua
 function Txtbuf.transposeLetter(txtbuf)
@@ -394,12 +402,13 @@ function Txtbuf.transposeLetter(txtbuf)
    return true
 end
 ```
-### Txtbuf:left(disp), Txtbuf:right(disp)
-
-These methods shift a cursor left or right, handling line breaks internally.
 
 
-``disp`` is a number of codepoints to shift.
+### Txtbuf:left\(disp\), Txtbuf:right\(disp\)
+
+These methods shift a cursor left or right, handling line breaks internally\.
+
+`disp` is a number of codepoints to shift\.
 
 ```lua
 
@@ -419,7 +428,9 @@ function Txtbuf.left(txtbuf, disp)
    return true
 end
 ```
-### Txtbuf:right(disp)
+
+
+### Txtbuf:right\(disp\)
 
 ```lua
 function Txtbuf.right(txtbuf, disp)
@@ -438,7 +449,8 @@ function Txtbuf.right(txtbuf, disp)
    return true
 end
 ```
-### Txtbuf:startOfLine(), Txtbuf:endOfLine()
+
+### Txtbuf:startOfLine\(\), Txtbuf:endOfLine\(\)
 
 ```lua
 
@@ -451,9 +463,10 @@ function Txtbuf.endOfLine(txtbuf)
 end
 
 ```
-### Txtbuf:startOfText(), Txtbuf:endOfText()
 
-Moves to the very beginning or end of the buffer.
+### Txtbuf:startOfText\(\), Txtbuf:endOfText\(\)
+
+Moves to the very beginning or end of the buffer\.
 
 ```lua
 
@@ -465,29 +478,26 @@ function Txtbuf.endOfText(txtbuf)
    txtbuf:setCursor(#txtbuf.lines, #txtbuf.lines[#txtbuf.lines] + 1)
 end
 ```
-### Txtbuf:scanFor(pattern, reps, forward)
 
-Search left or right for a character matching ``pattern``, after
-encountering at least one character **not** matching ``pattern``. Matches the
+
+### Txtbuf:scanFor\(pattern, reps, forward\)
+
+Search left or right for a character matching `pattern`, after
+encountering at least one character **not** matching `pattern`\. Matches the
 position on the matching character when moving right, or one cell ahead of it
-when moving left, "between" a non-matching character
-and a matching one.
+when moving left, "between" a non\-matching character
+and a matching one\.
 
+Returns move, the cursor delta, and the row delta\.
 
-Returns move, the cursor delta, and the row delta.
+\- \#parameters
 
+   \- pattern:  A pattern matching character\(s\) to stop at\. Generally either a
+               single character or a single character class, e\.g\. %W
 
-- #parameters
+   \- reps:     Number of times to repeat the motion
 
-
-   - pattern:  A pattern matching character(s) to stop at. Generally either a
-               single character or a single character class, e.g. %W
-
-
-   - reps:     Number of times to repeat the motion
-
-
-   - forward:  Boolean, true for forward search, false for backward.
+   \- forward:  Boolean, true for forward search, false for backward\.
 
 ```lua
 local match = assert(string.match)
@@ -525,9 +535,11 @@ function Txtbuf.scanFor(txtbuf, pattern, reps, forward)
    return moved, search_pos - cur_col, search_row - cur_row
 end
 ```
-### Txtbuf[left|right]ToBoundary(pattern, reps)
 
-Finds the left or right delta, and moves the cursor if the pattern was found.
+
+### Txtbuf\[left|right\]ToBoundary\(pattern, reps\)
+
+Finds the left or right delta, and moves the cursor if the pattern was found\.
 
 ```lua
 function Txtbuf.leftToBoundary(txtbuf, pattern, reps)
@@ -552,7 +564,9 @@ function Txtbuf.rightToBoundary(txtbuf, pattern, reps)
    end
 end
 ```
-### Txtbuf:killToEndOfWord()
+
+
+### Txtbuf:killToEndOfWord\(\)
 
 ```lua
 function Txtbuf.killToEndOfWord(txtbuf)
@@ -569,7 +583,9 @@ function Txtbuf.killToEndOfWord(txtbuf)
    end
 end
 ```
-### Txtbuf:killToBeginningOfWord()
+
+
+### Txtbuf:killToBeginningOfWord\(\)
 
 ```lua
 function Txtbuf.killToBeginningOfWord(txtbuf)
@@ -587,11 +603,13 @@ function Txtbuf.killToBeginningOfWord(txtbuf)
    end
 end
 ```
-### Txtbuf:firstNonWhitespace()
 
-Moves to the first non-whitespace character of the current line. Return value
-indicates whether such a character exists. Does not move the cursor if the
-line is empty or all whitespace.
+
+### Txtbuf:firstNonWhitespace\(\)
+
+Moves to the first non\-whitespace character of the current line\. Return value
+indicates whether such a character exists\. Does not move the cursor if the
+line is empty or all whitespace\.
 
 ```lua
 function Txtbuf.firstNonWhitespace(txtbuf)
@@ -607,7 +625,8 @@ function Txtbuf.firstNonWhitespace(txtbuf)
    return false
 end
 ```
-### Txtbuf:leftWordAlpha(reps), Txtbuf:rightWordAlpha(reps), Txtbuf:leftWordWhitespace(reps), Txtbuf:rightWordWhitespace(reps)
+
+### Txtbuf:leftWordAlpha\(reps\), Txtbuf:rightWordAlpha\(reps\), Txtbuf:leftWordWhitespace\(reps\), Txtbuf:rightWordWhitespace\(reps\)
 
 ```lua
 function Txtbuf.leftWordAlpha(txtbuf, reps)
@@ -626,24 +645,24 @@ function Txtbuf.rightWordWhitespace(txtbuf, reps)
    return txtbuf:rightToBoundary('%s', reps)
 end
 ```
-### Txtbuf:replace(frag)
-
-Replaces the character to the right of the cursor with the given codepoint.
 
 
-This is called ``frag`` as a reminder that, a) it's variable width and b) to
+### Txtbuf:replace\(frag\)
+
+Replaces the character to the right of the cursor with the given codepoint\.
+
+This is called `frag` as a reminder that, a\) it's variable width and b\) to
 really nail displacement we need to be looking up displacements in some kind
-of region-defined lookup table.
+of region\-defined lookup table\.
 
 
-### Txtbuf:up(), Txtbuf:down()
+### Txtbuf:up\(\), Txtbuf:down\(\)
 
 Moves the cursor up or down a line, or to the beginning of the first line or
-end of the last line if there is no line above/below.
+end of the last line if there is no line above/below\.
 
-
-Returns whether it was able to move to a different line, i.e. false in the
-case of moving to the beginning/end of the first/last line.
+Returns whether it was able to move to a different line, i\.e\. false in the
+case of moving to the beginning/end of the first/last line\.
 
 ```lua
 function Txtbuf.up(txtbuf)
@@ -655,6 +674,7 @@ function Txtbuf.up(txtbuf)
    return true
 end
 ```
+
 ```lua
 function Txtbuf.down(txtbuf)
    if not txtbuf:openRow(txtbuf.cursor.row + 1) then
@@ -665,10 +685,11 @@ function Txtbuf.down(txtbuf)
    return true
 end
 ```
-### Txtbuf:nl()
+
+### Txtbuf:nl\(\)
 
 Splits the line at the current cursor position, effectively
-inserting a newline.
+inserting a newline\.
 
 ```lua
 function Txtbuf.nl(txtbuf)
@@ -683,10 +704,11 @@ function Txtbuf.nl(txtbuf)
    return false
 end
 ```
-### Txtbuf:shouldEvaluate()
+
+### Txtbuf:shouldEvaluate\(\)
 
 Answers true if the txtbuf should be evaluated when Return is pressed,
-false if we should insert a newline.
+false if we should insert a newline\.
 
 ```lua
 function Txtbuf.shouldEvaluate(txtbuf)
@@ -704,7 +726,8 @@ function Txtbuf.shouldEvaluate(txtbuf)
    end
 end
 ```
-### Txtbuf:suspend(), Txtbuf:resume()
+
+### Txtbuf:suspend\(\), Txtbuf:resume\(\)
 
 ```lua
 function Txtbuf.suspend(txtbuf)
@@ -714,12 +737,14 @@ function Txtbuf.suspend(txtbuf)
    return txtbuf
 end
 ```
+
 ```lua
 function Txtbuf.resume(txtbuf)
    txtbuf:openRow(txtbuf.cursor.row)
    return txtbuf
 end
 ```
+
 ```lua
 function Txtbuf.clone(txtbuf)
    -- Clone to depth of 3 to get tb, tb.lines, and each lines
@@ -727,6 +752,8 @@ function Txtbuf.clone(txtbuf)
    return tb:resume()
 end
 ```
+
+
 ### new
 
 ```lua
@@ -746,6 +773,7 @@ end
 
 Txtbuf.idEst = new
 ```
+
 ```lua
 return new
 ```

@@ -1,24 +1,24 @@
 # Composer
 
-The Composer class is responsible for injesting [[Tokens][~/helm/token]] and
-emitting [[Reslines][~/helm/resbuf#Resline]].
+The Composer class is responsible for injesting [Tokens](~/helm/token) and
+emitting [Reslines](~/helm/resbuf#Resline)\.
 
 
 ## Interface
 
 ### Instance Fields
 
--  token_source : An iterator function returning ``Token``s to be
-   arranged into lines.
--  color : The color table to use.
--  width : The width in which to fit the output.
--  more : Are more tokens available from the token_source?
--  level : The indent level as of the start of the current line. #stages is
-   the equivalent at the current position.
--  stages : Stack of tables representing the type (array, map, others TBD)
-   and printing mode (short or long) of each level of nesting entered
-   and not finished at this point in the stream. Includes a dummy entry at
-   index 0 for the case where we are printing something other than a table.
+\-  token\_source : An iterator function returning =Token=s to be
+   arranged into lines\.
+\-  color : The color table to use\.
+\-  width : The width in which to fit the output\.
+\-  more : Are more tokens available from the token\_source?
+\-  level : The indent level as of the start of the current line\. \#stages is
+   the equivalent at the current position\.
+\-  stages : Stack of tables representing the type \(array, map, others TBD\)
+   and printing mode \(short or long\) of each level of nesting entered
+   and not finished at this point in the stream\. Includes a dummy entry at
+   index 0 for the case where we are printing something other than a table\.
 
 ## Dependencies
 
@@ -32,6 +32,7 @@ local concat, insert, remove = assert(table.concat),
                                assert(table.remove)
 
 ```
+
 ## Methods
 
 ```lua
@@ -40,11 +41,12 @@ local Composer = meta {}
 local new
 
 ```
-#### Composer:indent()
 
-Computes the current indent level--the number of spaces to print at the start
-of the line. This is **usually** 2 times the number of levels of nesting, but
-metatables take up three spaces.
+#### Composer:indent\(\)
+
+Computes the current indent level\-\-the number of spaces to print at the start
+of the line\. This is **usually** 2 times the number of levels of nesting, but
+metatables take up three spaces\.
 
 ```lua
 function Composer.indent(composer)
@@ -54,10 +56,11 @@ function Composer.indent(composer)
    return 2 * composer.level
 end
 ```
-#### Composer:disp()
+
+#### Composer:disp\(\)
 
 Computes and returns the displacement of the candidate tokens that will make
-up the next line emitted by the composer, including the initial indent if any.
+up the next line emitted by the composer, including the initial indent if any\.
 
 ```lua
 function Composer.disp(composer)
@@ -68,19 +71,21 @@ function Composer.disp(composer)
    return disp
 end
 ```
-#### Composer:remains()
 
-Returns the remaining displacement available on the current line.
+#### Composer:remains\(\)
+
+Returns the remaining displacement available on the current line\.
 
 ```lua
 function Composer.remains(composer)
    return composer.width - composer:disp()
 end
 ```
-#### Composer:peek()
 
-Answers the next token (at pos + 1), retrieving it from the token_source
-if necessary. Does not advance the composer or handle events.
+#### Composer:peek\(\)
+
+Answers the next token \(at pos \+ 1\), retrieving it from the token\_source
+if necessary\. Does not advance the composer or handle events\.
 
 ```lua
 function Composer.peek(composer)
@@ -93,11 +98,12 @@ function Composer.peek(composer)
    return composer[composer.pos + 1]
 end
 ```
-#### Composer:advance()
+
+#### Composer:advance\(\)
 
 Advances the composer by one token, either inspecting a token already
-retrieved from the token_source and subsequently "put back", or retrieving
-a new one. Answers the new current token and stage.
+retrieved from the token\_source and subsequently "put back", or retrieving
+a new one\. Answers the new current token and stage\.
 
 ```lua
 
@@ -109,12 +115,13 @@ function Composer.advance(composer)
    return token, composer.stages[#composer.stages]
 end
 ```
-#### Composer:checkPushStage()
 
-Pushes a stage if indicated by the current token's event.
-Returns the active stage (whether it has changed or not).
-Does **not** update composer.level, as this needs to reflect the indent level
-as of the **start** of the current line.
+#### Composer:checkPushStage\(\)
+
+Pushes a stage if indicated by the current token's event\.
+Returns the active stage \(whether it has changed or not\)\.
+Does **not** update composer\.level, as this needs to reflect the indent level
+as of the **start** of the current line\.
 
 ```lua
 local STAGED_EVENTS = {
@@ -133,25 +140,27 @@ function Composer.checkPushStage(composer)
    return composer.stages[#composer.stages]
 end
 ```
-#### Composer:checkPopStage()
 
-Pops a stage if indicated by the current token's event.
-Returns the active stage (whether it has changed or not).
-Does **not** update composer.level, as this needs to reflect the indent level
-as of the **start** of the current line.
+#### Composer:checkPopStage\(\)
 
+Pops a stage if indicated by the current token's event\.
+Returns the active stage \(whether it has changed or not\)\.
+Does **not** update composer\.level, as this needs to reflect the indent level
+as of the **start** of the current line\.
 
 The logic for when to pop a stage is somewhat complex in order to avoid
-wrapping separators when a child table **exactly** fits in short mode.
+wrapping separators when a child table **exactly** fits in short mode\.
 Essentially, we don't consider the stage complete until the trailing separator,
-if any, has been processed as well.
+if any, has been processed as well\.
 
-
-This can still have problems at the end of a deeply-nested table, when
-encountering lots of closing braces in a row. Technically we might want to
+This can still have problems at the end of a deeply\-nested table, when
+encountering lots of closing braces in a row\. Technically we might want to
 refuse to end the stage until **all** closing braces until the next separator
-have been consumed. But this makes the logic much more complicated, and really,
-maybe "wrapping" a brace is better than entering long mode in that case.
+have been consumed\. But this makes the logic much more complicated, and really,
+maybe "wrapping" a brace is better than entering long mode in that case\.
+
+\#todo
+starting and ending braces onto their own line as per \#2\.
 
 ```lua
 function Composer.checkPopStage(composer)
@@ -173,10 +182,11 @@ function Composer.checkPopStage(composer)
    return composer.stages[#composer.stages]
 end
 ```
-#### Composer:enterLongMode()
+
+#### Composer:enterLongMode\(\)
 
 Enters long printing mode for the first stage that is still in short mode
-and resets the composer to retry formatting that stage.
+and resets the composer to retry formatting that stage\.
 
 ```lua
 function Composer.enterLongMode(composer)
@@ -204,10 +214,11 @@ function Composer.enterLongMode(composer)
    error("Could not find start of stage")
 end
 ```
-#### Composer:emit()
 
-Emits a line consisting of the tokens inspected so far, i.e.
-composer[1..composer.pos].
+#### Composer:emit\(\)
+
+Emits a line consisting of the tokens inspected so far, i\.e\.
+composer\[1\.\.composer\.pos\]\.
 
 ```lua
 function Composer.emit(composer)
@@ -231,11 +242,12 @@ function Composer.emit(composer)
    return concat(output)
 end
 ```
-#### Composer:logDebugInfo()
 
-Logs the state of the composer to stderr. Useful for debugging issues with
-wrapping--I got tired of rewriting basically the same thing each time, and
-constantly forgetting to output newlines, flush(), etc.
+#### Composer:logDebugInfo\(\)
+
+Logs the state of the composer to stderr\. Useful for debugging issues with
+wrapping\-\-I got tired of rewriting basically the same thing each time, and
+constantly forgetting to output newlines, flush\(\), etc\.
 
 ```lua
 local format = assert(string.format)
@@ -264,12 +276,13 @@ function Composer.logDebugInfo(composer)
    end
 end
 ```
-#### Composer:splitToken()
+
+#### Composer:splitToken\(\)
 
 Splits the current token to fit in the remaining space on the line, and inserts
-a ~ at the end of the line to indicate that it has been wrapped. If the current
+a ~ at the end of the line to indicate that it has been wrapped\. If the current
 token is shorter than 20 characters, or is not marked wrappable, it is moved
-entirely to the next line instead.
+entirely to the next line instead\.
 
 ```lua
 local MIN_SPLIT_WIDTH = 20
@@ -304,7 +317,8 @@ function Composer.splitToken(composer, token)
    return token
 end
 ```
-#### Composer:isReadyToEmit()
+
+#### Composer:isReadyToEmit\(\)
 
 ```lua
 function Composer.isReadyToEmit(composer)
@@ -330,10 +344,12 @@ function Composer.isReadyToEmit(composer)
    return true
 end
 ```
-#### Composer:composeLine()
 
-Composes and emits one line, consuming tokens as needed from token_source.
-Also available as Composer.__call--a Composer is also an iterator function.
+
+#### Composer:composeLine\(\)
+
+Composes and emits one line, consuming tokens as needed from token\_source\.
+Also available as Composer\.\_\_call\-\-a Composer is also an iterator function\.
 
 ```lua
 function Composer.composeLine(composer)
@@ -375,21 +391,19 @@ end
 
 Composer.__call = Composer.composeLine
 ```
-### Composer:window()
 
-This method produces a window table into the relevant data inside a Composer.
+### Composer:window\(\)
 
+This method produces a window table into the relevant data inside a Composer\.
 
-It is passed to a custom ``__repr`` metamethod, to provide information it can
-use to return data to the composer.
+It is passed to a custom `__repr` metamethod, to provide information it can
+use to return data to the composer\.
 
+`composer:remains()` will return the amount of printable columns remaining in
+the line\.  It may need to make some calculations to the existing stream\.
 
-``composer:remains()`` will return the amount of printable columns remaining in
-the line.  It may need to make some calculations to the existing stream.
-
-
-``composer:case()`` will return e.g. ``"map_val"``, ``"map_key"``, ``"array"``,
-or ``"outer"`` if we're in the outer printing context (not in a nested table).
+`composer:case()` will return e\.g\. `"map_val"`, `"map_key"`, `"array"`,
+or `"outer"` if we're in the outer printing context \(not in a nested table\)\.
 
 ```lua
 
@@ -427,7 +441,8 @@ function Composer.window(composer)
    return window
 end
 ```
-### new(iter_gen, cfg)
+
+### new\(iter\_gen, cfg\)
 
 ```lua
 

@@ -1,34 +1,31 @@
 # Painter
 
 
-The ``modeselektor`` module responsible for display.
+The `modeselektor` module responsible for display\.
 
+`helm` is currently both the loop loader and the inbox, and I will eventually
+break the latter out into its own module\.  In any case, it wholly owns
+`stdin`, `modeselektor` runs entirely on messages\.
 
-``helm`` is currently both the loop loader and the inbox, and I will eventually
-break the latter out into its own module.  In any case, it wholly owns
-``stdin``, ``modeselektor`` runs entirely on messages.
+`painter` receives a `rainbuf` and a `region`\.  `modeselektor` triggers the
+creation of `rainbuf`s and `region`s; the former is write\-owned by
+`modeselektor`, the latter write\-owned by `painter`\.
 
-
-``painter`` receives a ``rainbuf`` and a ``region``.  ``modeselektor`` triggers the
-creation of ``rainbuf``s and ``region``s; the former is write-owned by
-``modeselektor``, the latter write-owned by ``painter``.
-
-
-First thing we're going to do with ``painter`` is encapsulate all existing use
-of ``stdout``.
+First thing we're going to do with `painter` is encapsulate all existing use
+of `stdout`\.
 
 ```lua
 assert(meta)
 assert(type)
 ```
+
 ```lua
 local Paint = meta {}
 ```
 
-Carryovers from ``modeselektor``, many from ``helm`` originally.
+Carryovers from `modeselektor`, many from `helm` originally\.
 
-
-This is the final resting place.
+This is the final resting place\.
 
 ```lua
 local STATCOL = 81
@@ -96,19 +93,19 @@ local function icon_paint(category, value)
    return colwrite(icon_map[category]("", ts(value)))
 end
 ```
-## Paint:inBox(rainbuf, box)
 
-Paints inside a bounding box.  Will paint a mere string, albeit making
-incorrect assumptions about width in the presence of escape codes or wchars.
 
+## Paint:inBox\(rainbuf, box\)
+
+Paints inside a bounding box\.  Will paint a mere string, albeit making
+incorrect assumptions about width in the presence of escape codes or wchars\.
 
 Intended for a rainbuf, where it will exhibit intelligence appropriate to the
-occasion.
+occasion\.
 
-
-Supporting a box as an indexed array for now, we can detect keys vs. indices
-if the former turns out to be cleaner.  Indexes give a cleaner literal syntax,
-which helps for now.
+Supporting a box as an indexed array for now, we can detect keys vs\. indices
+if the former turns out to be cleaner\.  Indexes give a cleaner literal syntax,
+which helps for now\.
 
 ```lua
 function Paint.inBox(painter, rainbuf, box)
@@ -120,6 +117,7 @@ function Paint.inBox(painter, rainbuf, box)
    end
 end
 ```
+
 ```lua
 local function new(_stdout)
    local painter = meta(Paint)
@@ -127,6 +125,7 @@ local function new(_stdout)
    return painter
 end
 ```
+
 ```lua
 return new
 ```

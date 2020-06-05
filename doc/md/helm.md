@@ -1,16 +1,15 @@
-# Helm
+#  Helm
 
 
-``helm`` is our repl.
+`helm` is our repl\.
 
 
 ##### profiler
 
-Normally commented out.
-
+Normally commented out\.
 
 Planning to run this from time to time if it looks like we have significant
-performance regressions.
+performance regressions\.
 
 ```lua
 --[[
@@ -22,27 +21,31 @@ profile.start("li1", function(th, samples, vmmode)
 end)
 --]]
 ```
+
 ```lua
 if rawget(_G, "_Bridge") then
   _Bridge.helm = true
 end
 ```
-#### Intercept _G
 
-We don't want to put ``helm`` into the environment of the codebase under
+
+#### Intercept \_G
+
+We don't want to put `helm` into the environment of the codebase under
 examination, so we replace the global environment with a table which falls
-back to ``_G``.
+back to `_G`\.
 
-
-Man.  I really like having first-class environments.
+Man\.  I really like having first\-class environments\.
 
 ```lua
 __G = setmetatable({}, {__index = _G})
 ```
-### _helm
+
+
+### \_helm
 
 The entire module is setup as a function, to allow our new fenv
-to be passed in.
+to be passed in\.
 
 ```lua
 local function _helm(_ENV)
@@ -60,23 +63,30 @@ jit.vmdef = require "helm:helm/vmdef"
 jit.p = require "helm:helm/ljprof"
 sql = assert(sql, "sql must be in _G")
 ```
-### make a snapshot of _G
 
-We use this for reloading; since all userspace is stored in _G, including
-``package.loaded``, this allows us to drop all data held in a session, while
-keeping our own state separate.
+### make a snapshot of \_G
 
-#NB it turns out the runtime keeps a separate reference to =package.loaded= in#Todo implement proper cache busting on restart
-consideration only affects ``require``.
+We use this for reloading; since all userspace is stored in \_G, including
+`package.loaded`, this allows us to drop all data held in a session, while
+keeping our own state separate\.
+
+\#NB
+the registry, and uses that for access within `require`\.  So we're going to
+have to be clever to successfully null out our references\.
+
+\#Todo
+
+This \_G deepclone is still useful to forget prior global variables, this
+consideration only affects `require`\.
 
 ```lua
 local deepclone = assert(core.deepclone)
 _G_back = deepclone(_G)
 ```
+
 ## Boot sequence
 
-This boot sequence builds on Tim Caswell and the Luvit Author's repl example.
-
+This boot sequence builds on Tim Caswell and the Luvit Author's repl example\.
 
 Couple pieces I'm not using but should:
 ```lua
@@ -99,13 +109,14 @@ if not usecolors then
 end
 ```
 
-Not-blocking ``write`` and ``print``:
+Not\-blocking `write` and `print`:
 
 ```lua
 local function write(...)
    uv.write(stdout, {...})
 end
 ```
+
 ```lua
 local concat = assert(table.concat)
 
@@ -118,6 +129,8 @@ function print(...)
   uv.write(stdout, concat(arguments, "\t") .. "\n")
 end
 ```
+
+
 ### tty setup
 
 ```lua
@@ -129,10 +142,14 @@ end
 
 local stdin = uv.new_tty(0, true)
 ```
+
+Primitives for terminal manipulation\.
+
 ```lua
 a = require "anterm:anterm"
 --watch = require "watcher"
 ```
+
 ## Modeselektor
 
 
@@ -166,13 +183,15 @@ uv.timer_start(timer, 500, 500, function()
    end
 end)
 ```
+
+
 ## Reader
 
-The reader takes a stream of data from ``stdin``, asynchronously, and
-processes it into tokens, which stream to the ``modeselektor``.
+The reader takes a stream of data from `stdin`, asynchronously, and
+processes it into tokens, which stream to the `modeselektor`\.
 
 
-### process_escapes(seq)
+### process\_escapes\(seq\)
 
 ```lua
 local Codepoints = require "singletons/codepoints"
@@ -260,6 +279,7 @@ local function onseq(err,seq)
    end
 end
 ```
+
 ```lua
 
 
@@ -320,6 +340,7 @@ _G_back = nil
 
 end -- of _helm
 ```
+
 #### Call helm
 
 ```lua

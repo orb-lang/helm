@@ -1,37 +1,36 @@
 # Token
 
-This represents a logical chunk of text generated as part of the repr process.
-It includes metadata to assist with wrapping, coloration, and (eventually)
-mouse handling.
+This represents a logical chunk of text generated as part of the repr process\.
+It includes metadata to assist with wrapping, coloration, and \(eventually\)
+mouse handling\.
 
 ## Interface
 
 ### Instance fields
 
--  str        : The original string this token was created from.
-                NB If ``codepoints`` exists, this does not take into account
-                any modifications made by insert(), remove(), or split().
--  start      : The index within ``str`` or ``codepoints`` at which this token
-                starts. Used when splitting to avoid copying the contents
-                after the split point (which could be arbitrarily large).
--  color      : A color value to use for the entire token.
--  event      : A string indicating that this token has a special meaning, like
-                the beginning or end of an indented block, or a separator.
--  wrappable  : If true, it is acceptable to wrap this token by breaking it
-                in the middle. If false, it should be moved entirely to the
-                next line if it does not fit.
+\-  str        : The original string this token was created from\.
+                NB If =codepoints= exists, this does not take into account
+                any modifications made by insert\(\), remove\(\), or split\(\)\.
+\-  start      : The index within =str= or =codepoints= at which this token
+                starts\. Used when splitting to avoid copying the contents
+                after the split point \(which could be arbitrarily large\)\.
+\-  color      : A color value to use for the entire token\.
+\-  event      : A string indicating that this token has a special meaning, like
+                the beginning or end of an indented block, or a separator\.
+\-  wrappable  : If true, it is acceptable to wrap this token by breaking it
+                in the middle\. If false, it should be moved entirely to the
+                next line if it does not fit\.
                 Also controls whether or not the string will be broken into
-                codepoints.
+                codepoints\.
 
-
-The following fields will be present only if ``wrappable`` is true:
--  codepoints : The codepoints of the string, if we needed to break it down.
--  disps      : Array of the number of cells occupied by the corresponding
-                codepoint string. There is no handling of Unicode widths at
+The following fields will be present only if `wrappable` is true:
+\-  codepoints : The codepoints of the string, if we needed to break it down\.
+\-  disps      : Array of the number of cells occupied by the corresponding
+                codepoint string\. There is no handling of Unicode widths at
                 this point, but this may still be >1 in the case of an escaped
-                nonprinting character, e.g. ``\t``, ``\x1b``.
--  err        : A table with information about any errors encountered
-                interpreting the original string as Unicode.
+                nonprinting character, e\.g\. =\\t=, =\\x1b=\.
+\-  err        : A table with information about any errors encountered
+                interpreting the original string as Unicode\.
 
 ### Examples
 
@@ -49,7 +48,7 @@ Wrappable:
 }
 ```
 
-Non-wrappable:
+Non\-wrappable:
 
 ```lua-example
 {
@@ -59,6 +58,7 @@ Non-wrappable:
    event = "sep"
 }
 ```
+
 ## Dependencies
 
 ```lua
@@ -71,6 +71,7 @@ local concat, insert, remove = assert(table.concat),
                                assert(table.remove)
 local meta = require "core/meta" . meta
 ```
+
 ## Methods
 
 ```lua
@@ -79,11 +80,12 @@ local Token = meta {}
 local new
 
 ```
-### Token:toString(c)
+
+### Token:toString\(c\)
 
 Produces a string that should be output when displaying the Token,
-including coloring sequences. Requires the color table in order to
-colorize escapes and errors.
+including coloring sequences\. Requires the color table in order to
+colorize escapes and errors\.
 
 ```lua
 
@@ -105,9 +107,10 @@ function Token.toString(token, c)
 end
 
 ```
-### Token.__tostring()
 
-Converts the Token back into a string, without coloring sequences.
+### Token\.\_\_tostring\(\)
+
+Converts the Token back into a string, without coloring sequences\.
 
 ```lua
 
@@ -120,12 +123,13 @@ function Token.__tostring(token)
 end
 
 ```
-### Token:split(max_disp)
 
-Splits a token such that the first part occupies no more than ``max_disp`` cells.
+### Token:split\(max\_disp\)
+
+Splits a token such that the first part occupies no more than `max_disp` cells\.
 Modifies the receiver to start later in the underlying string, without actually
-modifying said string, in order to avoid copying massive amounts of data.
-Returns only the newly-created token, the first half of the split.
+modifying said string, in order to avoid copying massive amounts of data\.
+Returns only the newly\-created token, the first half of the split\.
 
 ```lua
 
@@ -154,15 +158,15 @@ function Token.split(token, max_disp)
 end
 
 ```
-### Token:insert([pos,] frag[, disp[, err]])
 
-As ``table.insert``, but keeps ``disps`` and ``total_disp`` up to date.
-Accepts the displacement of the fragment as a second (or third) argument.
+### Token:insert\(\[pos,\] frag\[, disp\[, err\]\]\)
+
+As `table.insert`, but keeps `disps` and `total_disp` up to date\.
+Accepts the displacement of the fragment as a second \(or third\) argument\.
 Also accepts error information for the fragment as an optional third
-(or fourth) argument.
+\(or fourth\) argument\.
 
-
-For now, fails if this token is offset from the start of the underlying string.
+For now, fails if this token is offset from the start of the underlying string\.
 
 ```lua
 
@@ -196,13 +200,13 @@ function Token.insert(token, pos, frag, disp, err)
 end
 
 ```
-### Token:remove([pos])
 
-As ``table.remove``, but keeps ``disps`` and ``total_disp`` up to date.
-Answers the removed value, its displacement, and any associated error.
+### Token:remove\(\[pos\]\)
 
+As `table.remove`, but keeps `disps` and `total_disp` up to date\.
+Answers the removed value, its displacement, and any associated error\.
 
-For now, fails if this token is offset from the start of the underlying string.
+For now, fails if this token is offset from the start of the underlying string\.
 
 ```lua
 
@@ -224,15 +228,15 @@ function Token.remove(token, pos)
 end
 
 ```
-### Token:removeTrailingSpaces()
 
-Removes any trailing space characters from the token. Primarily used for
+### Token:removeTrailingSpaces\(\)
+
+Removes any trailing space characters from the token\. Primarily used for
 separators at the end of a line, to avoid bumping them to the next line
-when in fact they fit perfectly.
+when in fact they fit perfectly\.
 
-
-This does not seem relevant to wrappable tokens--could be implemented later
-if needed.
+This does not seem relevant to wrappable tokens\-\-could be implemented later
+if needed\.
 
 ```lua
 
@@ -253,42 +257,42 @@ function Token.removeTrailingSpaces(token)
 end
 
 ```
-### Token:isForceBreak()
+
+### Token:isForceBreak\(\)
 
 ```lua
 function Token.isForceBreak(token)
    return token.event == "break" or token.event == "repr_line"
 end
 ```
-### new(str, color[, cfg])
 
-Creates a ``Token`` from the given string, color value, and optional table of
-configuration options, which will be copied directly onto the token. Relevant
+### new\(str, color\[, cfg\]\)
+
+Creates a `Token` from the given string, color value, and optional table of
+configuration options, which will be copied directly onto the token\. Relevant
 options include:
--  event: A string indicating that this token is special in some way--
+\-  event: A string indicating that this token is special in some way\-\-
    a separator, the beginning or end of an indented section, a line from
-   a __repr function, etc.
--  wrappable: Should this token be subject to wrapping in the middle, or
+   a \_\_repr function, etc\.
+\-  wrappable: Should this token be subject to wrapping in the middle, or
    should it be moved entirely to the next line if it doesn't fit?
-   Also triggers a number of other bits of behavior--see below.
--  total_disp: If str contains zero-width sequences (e.g. color escapes),
-   calling code should indicate the correct total displacement of the string.
-   Note that this does not mix well with ``wrappable`` and ``:split()``, which
-   need to know the displacement of each codepoint. Re-parsing color escapes
-   is a possible future enhancement.
+   Also triggers a number of other bits of behavior\-\-see below\.
+\-  total\_disp: If str contains zero\-width sequences \(e\.g\. color escapes\),
+   calling code should indicate the correct total displacement of the string\.
+   Note that this does not mix well with =wrappable= and =:split\(\)=, which
+   need to know the displacement of each codepoint\. Re\-parsing color escapes
+   is a possible future enhancement\.
 
+Extra `wrappable` behavior:
+\-  Breaks the string up with =codepoints\(\)= and records a displacement value
+   for each codepoint\.
+\-  Converts nonprinting characters and quotation marks to their escaped forms,
+   with the =escapes= property indicating which characters this has been done
+   to\.
+\-  Wraps the string in \(un\-escaped\) quotation marks if it consists entirely of
+   space characters \(or is empty\)\.
 
-Extra ``wrappable`` behavior:
--  Breaks the string up with ``codepoints()`` and records a displacement value
-   for each codepoint.
--  Converts nonprinting characters and quotation marks to their escaped forms,
-   with the ``escapes`` property indicating which characters this has been done
-   to.
--  Wraps the string in (un-escaped) quotation marks if it consists entirely of
-   space characters (or is empty).
-
-
-If ``str`` is nil, returns a blank ``Token``.
+If `str` is nil, returns a blank `Token`\.
 
 ```lua
 local escapes_map = {
@@ -356,5 +360,4 @@ end
 
 Token.idEst = new
 
-return new
-```
+return new```

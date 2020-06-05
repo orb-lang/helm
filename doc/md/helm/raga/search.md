@@ -1,7 +1,7 @@
 # Search
 
 
-A light wrapper over ``nerf``.
+A light wrapper over `nerf`\.
 
 ```lua
 local clone = import("core/table", "clone")
@@ -13,9 +13,10 @@ local Search = clone(EditBase, 2)
 Search.name = "search"
 Search.prompt_char = "⁉️"
 ```
+
 ## Input/updating search results
 
-We need to update the search result whenever the contents of the Txtbuf change.
+We need to update the search result whenever the contents of the Txtbuf change\.
 
 ```lua
 
@@ -25,6 +26,7 @@ function Search.onTxtbufChanged(modeS)
 end
 
 ```
+
 ## Navigation
 
 ```lua
@@ -41,6 +43,7 @@ function Search.NAV.SHIFT_DOWN(modeS, category, value)
    end
 end
 ```
+
 ```lua
 function Search.NAV.SHIFT_UP(modeS, category, value)
    local search_buf = modeS.hist.last_collection
@@ -55,12 +58,13 @@ function Search.NAV.SHIFT_UP(modeS, category, value)
 end
 ```
 
-  - [ ]  Add Search.NAV.SHIFT_ALT_(UP|DOWN), to move a page at a time.
-         Hook them to PgUp and PgDown while we're at it.
+\- \[ \]  \#Todo
 
+  \- \[ \]  Add Search\.NAV\.SHIFT\_ALT\_\(UP|DOWN\), to move a page at a time\.
+         Hook them to PgUp and PgDown while we're at it\.
 
-  - [ ]  Add Search.NAV.HYPER_UP and Search.NAV.HYPER_DOWN to snap to the
-         top and bottom.  These are synonymous with Home and End.
+  \- \[ \]  Add Search\.NAV\.HYPER\_UP and Search\.NAV\.HYPER\_DOWN to snap to the
+         top and bottom\.  These are synonymous with Home and End\.
 
 ```lua
 Search.NAV.UP = Search.NAV.SHIFT_UP
@@ -79,6 +83,7 @@ Search.NAV.BACKSPACE = _modeShiftOnDeleteWhenEmpty
 Search.NAV.DELETE    = _modeShiftOnDeleteWhenEmpty
 
 ```
+
 ### Accepting results
 
 ```lua
@@ -110,6 +115,7 @@ for i = 1, 9 do
 end
 
 ```
+
 ### MOUSE
 
 ```lua
@@ -123,6 +129,7 @@ function Search.MOUSE(modeS, category, value)
    end
 end
 ```
+
 ```lua
 return Search
 ```

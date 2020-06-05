@@ -1,53 +1,44 @@
 # Table persistence via SQLite
 
 
-There's doing this, and there's doing it right.
+There's doing this, and there's doing it right\.
 
-
-Doing this right requires Merkelizing all acyclic tables.  It is painstaking
+Doing this right requires Merkelizing all acyclic tables\.  It is painstaking
 work to define this correctly over functions, threads, userdata and C data,
-and to do it over cyclic tables requires metadata.
+and to do it over cyclic tables requires metadata\.
 
-
-Which is okay. A value reference to an acyclic table is prepared by Merkle
-hashing and referred to by that hash inside the enclosing table.
-
+Which is okay\. A value reference to an acyclic table is prepared by Merkle
+hashing and referred to by that hash inside the enclosing table\.
 
 If they have circular references these must be fixed: each value reference is
 replaced with a deterministic and unique string, each table is then frozen
 once the full cycle graph is resolved, and all hashes are included in the
-container as resolutions of those strings.
+container as resolutions of those strings\.
 
-
-The containers therefore have no cycles and may be hashed also. We'll need
+The containers therefore have no cycles and may be hashed also\. We'll need
 the containing format anyway, for metatables, and any other metadata of the
-sort that is deterministic to the value and not the reference or instance.
-
+sort that is deterministic to the value and not the reference or instance\.
 
 Fortunately Lua has only the one level of reference, sparing us the need to
-serialize pointers to addresses and so on to the nth degree.  ``cdata`` is not
-so limited...
-
+serialize pointers to addresses and so on to the nth degree\.  `cdata` is not
+so limited\.\.\.
 
 For the near future I'm more interested in storing a naive string
-representation of results, than something which can be round-tripped and
-deduplicated in a generalized way, and I suspect ``fossil`` is doing a lot of
-the heavy lifting for this kind of persistence already.
+representation of results, than something which can be round\-tripped and
+deduplicated in a generalized way, and I suspect `fossil` is doing a lot of
+the heavy lifting for this kind of persistence already\.
 
+To get it *really* right will involve normalizing the whitespace \(but not
+values\) of function strings, following upvalues and tree\-shaking until we
+have a hash to go with each one\.
 
-To get it _really_ right will involve normalizing the whitespace (but not
-values) of function strings, following upvalues and tree-shaking until we
-have a hash to go with each one.
+The result will be pretty butch though: a SHA\-3 hash that would refer to the
+same object consistently across LuaJIT codebases\.  Dedup and content\-centric
+references don't have to be just for the big bois\.
 
-
-The result will be pretty butch though: a SHA-3 hash that would refer to the
-same object consistently across LuaJIT codebases.  Dedup and content-centric
-references don't have to be just for the big bois.
-
-
-The below is from the Wiki. It has some decent ideas for ordinary table
+The below is from the Wiki\. It has some decent ideas for ordinary table
 persistence, though it must be adapted to the LuaJIT SQLite library we're
-using.
+using\.
 
 ```lua
 --[[ luapersist3.lua  2004-Aug-31 e
@@ -110,5 +101,4 @@ using.
 ]]
 
 -- nb: accidentally corrupted this file (fuck) and am not using it so,
--- removed all source code -Sam
-```
+-- removed all source code -Sam```

@@ -1,34 +1,33 @@
 # SelectionList
 
-A list with a concept of an item being "selected". Currently used by and
-specialized for search results, from either an actual search or ``suggest``.
+A list with a concept of an item being "selected"\. Currently used by and
+specialized for search results, from either an actual search or `suggest`\.
 
 ## Interface
 
 ### Instance Fields
 
--  <numbers>:        The items available to select
--  selected_index:   Index of the currently selected item
--  show_shortcuts:   Whether to show M-n shortcut indicators
+\-  <numbers>:        The items available to select
+\-  selected\_index:   Index of the currently selected item
+\-  show\_shortcuts:   Whether to show M\-n shortcut indicators
 
+Search\-specific fields:
 
-Search-specific fields:
-
-
--  frag:       The search string that produced the list, to be highlighted
+\-  frag:       The search string that produced the list, to be highlighted
                in the output
--  lit_frag:   The original search string, unmodified by any fuzzy matching
--  best:       Whether a match was found without employing any fuzzy matching
+\-  lit\_frag:   The original search string, unmodified by any fuzzy matching
+\-  best:       Whether a match was found without employing any fuzzy matching
 
 ```lua
 local SelectionList = meta {}
 local new
 ```
-### SelectionList:selectNext(), SelectionList:selectPrevious()
 
-Moves the highlight to the next or previous item in the list.
-Answers whether the highlight was able to be moved (false if we're
-already at the end/beginning of the list)
+### SelectionList:selectNext\(\), SelectionList:selectPrevious\(\)
+
+Moves the highlight to the next or previous item in the list\.
+Answers whether the highlight was able to be moved \(false if we're
+already at the end/beginning of the list\)
 
 ```lua
 function SelectionList.selectNext(list)
@@ -49,21 +48,23 @@ function SelectionList.selectPrevious(list)
    end
 end
 ```
-### SelectionList:selectedItem()
 
-Answers the actual selected item from the list (as opposed to its index).
+### SelectionList:selectedItem\(\)
+
+Answers the actual selected item from the list \(as opposed to its index\)\.
 
 ```lua
 function SelectionList.selectedItem(list)
    return list[list.selected_index]
 end
 ```
-### __repr
 
-Displays the list, highlighting the currently selected item.
-Optionally provides indicators for Alt-number (M-n) shortcuts for the
-first 10 items of the list. Also highlights the characters of ``frag``
-where they appear.
+### \_\_repr
+
+Displays the list, highlighting the currently selected item\.
+Optionally provides indicators for Alt\-number \(M\-n\) shortcuts for the
+first 10 items of the list\. Also highlights the characters of `frag`
+where they appear\.
 
 ```lua
 
@@ -140,6 +141,7 @@ function SelectionList.__repr(list, window, c)
 end
 
 ```
+
 ### new
 
 ```lua
@@ -150,6 +152,7 @@ new = function()
    return list
 end
 ```
+
 ```lua
 SelectionList.idEst = new
 return new

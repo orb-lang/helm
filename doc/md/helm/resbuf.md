@@ -1,17 +1,17 @@
 # Resbuf
 
-Next in the ``buf`` series, this will encapsulate results and their various
-representations.
+Next in the `buf` series, this will encapsulate results and their various
+representations\.
 
-
-This should get us from string concatenation to a phrase-like paradigm we can
-generalize into ``rainbuf``s.
+This should get us from string concatenation to a phrase\-like paradigm we can
+generalize into `rainbuf`s\.
 
 ```lua
 assert (meta)
 assert (ipairs)
 local color = require "singletons/color"
 ```
+
 ```lua
 local Resbuf = meta {}
 

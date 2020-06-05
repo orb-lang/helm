@@ -1,19 +1,16 @@
 # Historian
 
 
-This module is responsible for REPL history.
-
+This module is responsible for REPL history\.
 
 Eventually this will include persisting and restoring from a SQLite database,
-fuzzy searching, and variable cacheing.
-
+fuzzy searching, and variable cacheing\.
 
 Currently does the basic job of retaining history and not letting subsequent
-edits munge it.
-
+edits munge it\.
 
 Next step: now that we clone a new txtbuf each time, we have an immutable
-record.  We should store the line as a string, to facilitate fuzzy matching.
+record\.  We should store the line as a string, to facilitate fuzzy matching\.
 
 
 ```lua
@@ -31,51 +28,51 @@ local meta = require "core/meta" . meta
 
 local Set = require "set:set"
 ```
+
+
 ```lua
 local File = require "fs:fs/file"
 local Dir  = require "fs:fs/directory"
 ```
+
+
 ```lua
 local Historian = meta {}
 Historian.HISTORY_LIMIT = 2000
 ```
+
+
 ## Persistence
 
-This defines the persistence model for bridge.
+This defines the persistence model for bridge\.
 
 ### SQLite battery
 
--  #Todo write a migration to convert timestamps to use this format:
+\-  \#Todo write a migration to convert timestamps to use this format:
 
+   \-  strftime\('%Y\-%m\-%dT%H:%M:%f', 'now'\)\)
 
-   -  strftime('%Y-%m-%dT%H:%M:%f', 'now'))
+      This replaces CURRENT\_TIMESTAMP in the DEFAULT clause\.
 
+\-  Then start using that instead, to get millisecond resolution\.
+   Sorting by line\_id is better anyway, but we should get as much
+   resolution out of the machine as we can\.
 
-      This replaces CURRENT_TIMESTAMP in the DEFAULT clause.
-
-
--  Then start using that instead, to get millisecond resolution.
-   Sorting by line_id is better anyway, but we should get as much
-   resolution out of the machine as we can.
-
-
--  #Todo write a migration to fix some of these silly table names:
-   -  The repl table is mostly a line, and the result table is a repr,
-      these could and should just be a line table with line.line and a
-      result table with result.result.
+\-  \#Todo write a migration to fix some of these silly table names:
+   \-  The repl table is mostly a line, and the result table is a repr,
+      these could and should just be a line table with line\.line and a
+      result table with result\.result\.
 
 
 #### Create tables
 
 The schema with the highest version number is the one which is current for
-that table.  The table will of course not have the ``_n`` suffix in the
-database.  The number is that of the migration where the table was recreated.
+that table\.  The table will of course not have the `_n` suffix in the
+database\.  The number is that of the migration where the table was recreated\.
 
+Other than that, SQLite lets you add columns and rename tables\.
 
-Other than that, SQLite lets you add columns and rename tables.
-
-
-When this is done, it will be noted.
+When this is done, it will be noted\.
 
 ```lua
 local create_project_table = [[
@@ -145,6 +142,8 @@ FOREIGN KEY (project)
    ON DELETE CASCADE );
 ]]
 ```
+
+
 #### Insertions
 
 ```lua
@@ -160,6 +159,8 @@ local insert_project = [[
 INSERT INTO project (directory) VALUES (?);
 ]]
 ```
+
+
 #### Selections
 
 ```lua
@@ -188,33 +189,33 @@ WHERE result.line_id = :line_id
 ORDER BY result.result_id;
 ]]
 ```
+
+
 ### Migrations
 
-  We follow a simple format for migrations, incrementing the ``user_version``
-pragma by 1 for each alteration of the schema.
-
+  We follow a simple format for migrations, incrementing the `user_version`
+pragma by 1 for each alteration of the schema\.
 
 We write a single function, which receives the database conn, for each change,
 such that we should be able to take a database at any schema and bring it up
-to the standard needed for this version of ``helm``.
+to the standard needed for this version of `helm`\.
 
+We store these migrations in an array, such that `migration[i]` creates
+`user_version` `i`\.
 
-We store these migrations in an array, such that ``migration[i]`` creates
-``user_version`` ``i``.
+We skip `1` because a pragma equal to 1 is translated to the boolean `true`\.
 
-
-We skip ``1`` because a pragma equal to 1 is translated to the boolean ``true``.
-
-
-Migrations return ``true``, in case we find a migration that needs a check to
-pass.  Unless that happens, we won't bother to check the return value.
+Migrations return `true`, in case we find a migration that needs a check to
+pass\.  Unless that happens, we won't bother to check the return value\.
 
 ```lua
 local HELM_DB_VERSION = 3
 
 local migrations = {function() return true end}
 ```
-#### Version 2: Creates tables.
+
+
+#### Version 2: Creates tables\.
 
 ```lua
 local function migration_2(conn)
@@ -227,15 +228,16 @@ end
 
 insert(migrations, migration_2)
 ```
-#### Version 3: Millisecond-resolution timestamps.
+
+
+#### Version 3: Millisecond\-resolution timestamps\.
 
   We want to accomplish two things here: change the format of all existing
 timestamps, and change the default to have millisecond resolution and use
-"T" instead of " " as the separator.
-
+"T" instead of " " as the separator\.
 
 SQLite being what it is, the latter requires us to copy everything to a new
-table.  This must be done for the ``project`` and ``repl`` tables.
+table\.  This must be done for the `project` and `repl` tables\.
 
 ```lua
 local function migration_3(conn)
@@ -277,16 +279,17 @@ local function migration_3(conn)
 end
 insert(migrations, migration_3)
 ```
+
+
 ### Migration shim
 
   Having the database in a hidden file is a holdover from when it was living
-in ``~``.  It's a bad idea, hidden files interact badly with the Trash, it makes
-it pointlessly difficult to check for a WAL file, and so on.
+in `~`\.  It's a bad idea, hidden files interact badly with the Trash, it makes
+it pointlessly difficult to check for a WAL file, and so on\.
 
-
-We have enough users (like, five I think) that I'm going to add a shim to
-perform a migration to a new ``$BRIDGE_HOME/helm/`` directory.  Inside that
-directory, the new name of ``.helm`` will be ``helm.sqlite``.
+We have enough users \(like, five I think\) that I'm going to add a shim to
+perform a migration to a new `$BRIDGE_HOME/helm/` directory\.  Inside that
+directory, the new name of `.helm` will be `helm.sqlite`\.
 
 ```lua
 -- make the /helm directory
@@ -317,8 +320,12 @@ if old_helm:exists() then
 end
 ```
 
-Fingers crossed... I'm definitely backing my database up before I run this!
 
+Fingers crossed\.\.\. I'm definitely backing my database up before I run this\!
+
+
+\#todo
+choosing the default location\.
 
 ```lua
 Historian.helm_db = _Bridge.bridge_home .. "/helm/helm.sqlite"
@@ -334,17 +341,17 @@ local function has(table, name)
    return false
 end
 ```
-### Historian:load()
 
-Brings up the project history and result ids.
 
+### Historian:load\(\)
+
+Brings up the project history and result ids\.
 
 Most of the complexity serves to make a simple key/value relationship
-between the regenerated txtbufs and their associated result history.
-
+between the regenerated txtbufs and their associated result history\.
 
 We want as much history as practical, because we search in it, but most of
-the results never get used.
+the results never get used\.
 
 ```lua
 local bound, inbounds = import("core:core/math", "bound", "inbounds")
@@ -432,40 +439,40 @@ function Historian.load(historian)
    idler:start(load_one)
 end
 ```
-### Historian:restore_session(modeS, session)
-
-If there is an open session, we want to replay it.
 
 
-To do this, we need to borrow the modeselektor.
+### Historian:restore\_session\(modeS, session\)
+
+If there is an open session, we want to replay it\.
+
+To do this, we need to borrow the modeselektor\.
 
 ```lua
 
 ```
-### Historian:persist(txtbuf, results)
-
-Persists a line and results to store.
 
 
-The hooks are in place to persist the results. I'm starting with a string
+### Historian:persist\(txtbuf, results\)
+
+Persists a line and results to store\.
+
+The hooks are in place to persist the results\. I'm starting with a string
 representation; the goal is to provide the sense of persistence across
-sessions, and supplement that over time with better and better approximations.
-
+sessions, and supplement that over time with better and better approximations\.
 
 To really nail it down will require semantic analysis and hence thorough
-parsing.  General-purpose persistence tools belong in ``sqlayer``, which will
-merge with our increasingly-modified ``sqlite`` bindings.
+parsing\.  General\-purpose persistence tools belong in `sqlayer`, which will
+merge with our increasingly\-modified `sqlite` bindings\.
 
+Medium\-term goal is to hash any Lua object in a way that will resolve to a
+common value for any identical semantics\.
 
-Medium-term goal is to hash any Lua object in a way that will resolve to a
-common value for any identical semantics.
+#### dump\_token\(token, phrase\)
 
-#### dump_token(token, phrase)
-
-Dumps a Token in a form that can be reconstituted later.
-``stream`` is an accumulator table that will eventually be concated.
-Uses \x01 (SOH, Start of Header) and \x02 (STX, Start of Text) as delimiters.
-Metadata is stored in a compact, hard-coded format.
+Dumps a Token in a form that can be reconstituted later\.
+`stream` is an accumulator table that will eventually be \`concat\`ed\.
+Uses \\x01 \(SOH, Start of Header\) and \\x02 \(STX, Start of Text\) as delimiters\.
+Metadata is stored in a compact, hard\-coded format\.
 
 ```lua
 local function dump_token(token, stream)
@@ -552,36 +559,32 @@ function Historian.persist(historian, txtbuf, results)
    return true
 end
 ```
-## Historian:search(frag)
+
+
+## Historian:search\(frag\)
 
 This is a 'fuzzy search', that attempts to find a string containing the
-letters of the fragment in order.
+letters of the fragment in order\.
 
-
-If it finds nothing, it switches the last two letters and tries again. This
+If it finds nothing, it switches the last two letters and tries again\. This
 is an affordance for incremental searches, it's easy to make this mistake and
-harmless to suggest the alternative.
+harmless to suggest the alternative\.
 
+Returns a `collection`\. The array portion of a collection is any line
+which matches the search\. The other fields are:
 
-Returns a ``collection``. The array portion of a collection is any line
-which matches the search. The other fields are:
+\- \#fields
+  \-  best :  Whether this is a best\-fit collection, that is, one with all
+             codepoints in order\.
 
+  \-  frag :  The fragment, used to highlight the collection\.  Is transposed
+             in a next\-best search\.
 
-- #fields
-  -  best :  Whether this is a best-fit collection, that is, one with all
-             codepoints in order.
+  \-  lit\_frag :  The literal fragment passed as the =frag= parameter\.  Used to
+                 compare to the last search\.
 
-
-  -  frag :  The fragment, used to highlight the collection.  Is transposed
-             in a next-best search.
-
-
-  -  lit_frag :  The literal fragment passed as the ``frag`` parameter.  Used to
-                 compare to the last search.
-
-
-  -  cursors :  This is an array, each value is the cursor position of
-                the corresponding line in the history.
+  \-  cursors :  This is an array, each value is the cursor position of
+                the corresponding line in the history\.
 
 
 ```lua
@@ -627,9 +630,11 @@ function Historian.search(historian, frag)
    return historian.last_collection
 end
 ```
-#### _resultsFrom(historian, line_id)
 
-Retrieve a set of results reprs from the database, given a line_id.
+
+#### \_resultsFrom\(historian, line\_id\)
+
+Retrieve a set of results reprs from the database, given a line\_id\.
 
 ```lua
 local lines = import("core/string", "lines")
@@ -702,7 +707,9 @@ local function _resultsFrom(historian, cursor)
    return results
 end
 ```
-## Historian:prev()
+
+
+## Historian:prev\(\)
 
 ```lua
 
@@ -720,10 +727,12 @@ function Historian.prev(historian)
    end
 end
 ```
-### Historian:next()
+
+
+### Historian:next\(\)
 
 Returns the next txtbuf in history, and a second flag to tell the
-``modeselektor`` it might be time for a new one.
+`modeselektor` it might be time for a new one\.
 
 
 ```lua
@@ -740,10 +749,12 @@ function Historian.next(historian)
    end
 end
 ```
-### Historian:index(cursor)
 
-Loads the history to an exact index. The index must be one that actually exists,
-i.e. 1 <= index <= historian.n--historian.n + 1 is not allowed.
+
+### Historian:index\(cursor\)
+
+Loads the history to an exact index\. The index must be one that actually exists,
+i\.e\. 1 <= index <= historian\.n\-\-historian\.n \+ 1 is not allowed\.
 
 ```lua
 function Historian.index(historian, cursor)
@@ -755,12 +766,12 @@ function Historian.index(historian, cursor)
    return txtbuf, result
 end
 ```
-### Historian:append(txtbuf, results, success)
 
-Appends a txtbuf to history and persists it.
+### Historian:append\(txtbuf, results, success\)
 
+Appends a txtbuf to history and persists it\.
 
-Doesn't adjust the cursor.
+Doesn't adjust the cursor\.
 
 ```lua
 function Historian.append(historian, txtbuf, results, success)
@@ -779,6 +790,7 @@ function Historian.append(historian, txtbuf, results, success)
    return true
 end
 ```
+
 ```lua
 
 local __result_buffer_M = meta {}
@@ -802,7 +814,7 @@ local function new(helm_db)
 end
 Historian.idEst = new
 ```
+
 ```lua
 return new
-
 ```

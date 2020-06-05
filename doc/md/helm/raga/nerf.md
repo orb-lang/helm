@@ -1,26 +1,24 @@
 # Nerf mode
 
 
-``nerf`` is the default mode for the repl.
+`nerf` is the default mode for the repl\.
 
+\-  \#Todo
 
--  #Todo
+  \- \[X\]  All of the content for the first draft is in =modeselektor=, so
+         let's transfer that\.
 
-
-  - [X]  All of the content for the first draft is in ``modeselektor``, so
-         let's transfer that.
-
-
-  - [?]  There should probably be a metatable for Mode objects.
+  \- \[?\]  There should probably be a metatable for Mode objects\.
 
 
 #### includes
 
-This is copypasta from Modeselektor, but yeah, we'll need most of this.
+This is copypasta from Modeselektor, but yeah, we'll need most of this\.
 
 ```lua
 assert(meta, "must have meta in _G")
 ```
+
 ```lua
 local a         = require "anterm:anterm"
 local Txtbuf    = require "helm/txtbuf"
@@ -33,6 +31,8 @@ local sub, gsub, rep = assert(string.sub),
                        assert(string.gsub),
                        assert(string.rep)
 ```
+
+
 ## Nerf
 
 ```lua
@@ -43,6 +43,7 @@ local Nerf = clone(EditBase, 2)
 Nerf.name = "nerf"
 Nerf.prompt_char = "👉"
 ```
+
 ### Insertion
 
 ```lua
@@ -66,6 +67,7 @@ Nerf.ASCII = _insert
 Nerf.UTF8 = _insert
 
 ```
+
 ### NAV
 
 ```lua
@@ -118,6 +120,7 @@ function NAV.DOWN(modeS, category, value)
    return modeS
 end
 ```
+
 ```lua
 function NAV.RETURN(modeS, category, value)
    if modeS.txtbuf:shouldEvaluate() then
@@ -174,12 +177,13 @@ function NAV.SHIFT_TAB(modeS, category, value)
    _activateCompletion(modeS)
 end
 ```
-### Readline-style NAV
-
-Provides equivalent commands for diehard Emacsians.
 
 
-In case RMS ever takes bridge for a spin...
+### Readline\-style NAV
+
+Provides equivalent commands for diehard Emacsians\.
+
+In case RMS ever takes bridge for a spin\.\.\.
 
 ```lua
 local CTRL = Nerf.CTRL
@@ -189,6 +193,8 @@ CTRL ["^F"] = NAV.RIGHT
 CTRL ["^N"] = NAV.DOWN
 CTRL ["^P"] = NAV.UP
 ```
+
+
 ### MOUSE
 
 ```lua
@@ -202,22 +208,27 @@ function Nerf.MOUSE(modeS, category, value)
    end
 end
 ```
+
+
 ### ALT
 
 ```lua
 local ALT = Nerf.ALT
 ```
-#### M-e
+
+
+#### M\-e
 
 ```lua
 ALT ["M-e"] = function(modeS, category, value)
    modeS:evalFromCursor()
 end
 ```
-### Nerf.onCursorChanged(modeS)
 
-Whenever the cursor moves (which is likely because the txtbuf contents changed,
-but we don't really care), need to update the suggestions.
+### Nerf\.onCursorChanged\(modeS\)
+
+Whenever the cursor moves \(which is likely because the txtbuf contents changed,
+but we don't really care\), need to update the suggestions\.
 
 ```lua
 function Nerf.onCursorChanged(modeS)
@@ -225,6 +236,7 @@ function Nerf.onCursorChanged(modeS)
    EditBase.onCursorChanged(modeS)
 end
 ```
+
 ```lua
 return Nerf
 ```

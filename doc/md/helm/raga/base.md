@@ -12,9 +12,10 @@ local sub, gsub, rep = assert(string.sub),
                        assert(string.gsub),
                        assert(string.rep)
 ```
+
 ## Categories
 
-These are the broad types of event.
+These are the broad types of event\.
 
 ```lua
 local RagaBase_meta = {}
@@ -32,12 +33,13 @@ When creating a new raga, remember to set:
 RagaBase.name = "raga_base"
 RagaBase.prompt_char = "$"
 ```
-## __call (main input handling/dispatch)
 
-Looks up and executes a handler for a seq. Note that we must perform the
+## \_\_call \(main input handling/dispatch\)
+
+Looks up and executes a handler for a seq\. Note that we must perform the
 lookup on the table that was actually called in order to support inheritance,
-e.g. an explicit call to ``EditBase(modeS, category, value)`` when
-modeS.raga == Nerf.
+e\.g\. an explicit call to `EditBase(modeS, category, value)` when
+modeS\.raga == Nerf\.
 
 ```lua
 
@@ -58,47 +60,52 @@ function RagaBase_meta.__call(raga, modeS, category, value)
 end
 
 ```
+
 ## Events
 
-### <Raga>.onTxtbufChanged(modeS)
+### <Raga>\.onTxtbufChanged\(modeS\)
 
-Called whenever the txtbuf's contents have changed while processing a seq.
+Called whenever the txtbuf's contents have changed while processing a seq\.
 
 ```lua
 function RagaBase.onTxtbufChanged(modeS)
    return
 end
 ```
-### <Raga>.onCursorChanged(modeS)
 
-Called whenever the cursor has moved while processing a seq.
+### <Raga>\.onCursorChanged\(modeS\)
+
+Called whenever the cursor has moved while processing a seq\.
 Both onTxtbufChanged and onCursorChanged will be called in the
-common case of a simple insertion.
+common case of a simple insertion\.
 
 ```lua
 function RagaBase.onCursorChanged(modeS)
    return
 end
 ```
-### <Raga>.onShift(modeS)
 
-Called when first switching to the raga. Provides an opportunity to
-reconfigure zones or perform other set-up work.
+### <Raga>\.onShift\(modeS\)
+
+Called when first switching to the raga\. Provides an opportunity to
+reconfigure zones or perform other set\-up work\.
 
 ```lua
 function RagaBase.onShift(modeS)
    return
 end
 ```
-### <Raga>.onUnshift(modeS)
 
-Opposite of onShift--called when switching away to another raga.
+### <Raga>\.onUnshift\(modeS\)
+
+Opposite of onShift\-\-called when switching away to another raga\.
 
 ```lua
 function RagaBase.onUnshift(modeS)
    return
 end
 ```
+
 ```lua
 return RagaBase
 ```

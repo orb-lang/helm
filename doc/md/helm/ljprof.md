@@ -1,6 +1,6 @@
 # LJprof
 
-Profiler for LuaJIT.
+Profiler for LuaJIT\.
 
 ```lua
 ----------------------------------------------------------------------------

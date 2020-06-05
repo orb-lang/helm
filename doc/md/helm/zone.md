@@ -1,83 +1,70 @@
 # Zone
 
 
-We need to get a lot more intelligent about how we write to the screen.
+We need to get a lot more intelligent about how we write to the screen\.
 
+`Zone` is our metatable for handling these regions\.  It's a tricky bit of
+engineering and something I've never really done before\.
 
-``Zone`` is our metatable for handling these regions.  It's a tricky bit of
-engineering and something I've never really done before.
+The result we want is to have a single `modeS:refresh()` called at the end of
+each action, which repaints the screen\.  A Zone is either affected or it
+isn't; if it is, we repaint the whole Zone, if not, nothing\.
 
+Zones have a `.z` axis, starting with 1, and monotonically increasing\. I
+expect to use `.z == 2` and leave it at that, for now, but we want to
+be able to stack as well as tile, at some point\.
 
-The result we want is to have a single ``modeS:refresh()`` called at the end of
-each action, which repaints the screen.  A Zone is either affected or it
-isn't; if it is, we repaint the whole Zone, if not, nothing.
+We'll want a `zoneherder` of some sort to manage zone changes\. Each Z plane
+has to have non\-overlapping Zones, and `1` should be completely tiled\. The
+zoneherder propagates adjustments\.
 
-
-Zones have a ``.z`` axis, starting with 1, and monotonically increasing. I
-expect to use ``.z == 2`` and leave it at that, for now, but we want to
-be able to stack as well as tile, at some point.
-
-
-We'll want a ``zoneherder`` of some sort to manage zone changes. Each Z plane
-has to have non-overlapping Zones, and ``1`` should be completely tiled. The
-zoneherder propagates adjustments.
-
-
-A paint message to a Zone will be a ``rainbuf``.  There are a few tricky things
+A paint message to a Zone will be a `rainbuf`\.  There are a few tricky things
 here, and ultimately we'll need a Unicode database to chase down all the
-edges.  We need to engineer the system so that it can use that info when the
-time comes.
-
+edges\.  We need to engineer the system so that it can use that info when the
+time comes\.
 
 The Zone needs to stay in its lane, basically, so we need to know when we've
-reached the edges.  When we start to add mouse clicks, we have to know what
-the mouse has targeted, so Zones will receive mouse messages also.
+reached the edges\.  When we start to add mouse clicks, we have to know what
+the mouse has targeted, so Zones will receive mouse messages also\.
 
-
-This is the next major push for ``helm``, and when it's complete I'll be ready
-to show it off.  It's a significant piece of engineering and I'm thinking I
-need to shore up Orb a bit to get there.
-
+This is the next major push for `helm`, and when it's complete I'll be ready
+to show it off\.  It's a significant piece of engineering and I'm thinking I
+need to shore up Orb a bit to get there\.
 
 Specifically, I need the ability to add a plantUML pipeline to the doc
 generator, and maybe cut the apron strings with respect to Markdown and public
-hosting.
+hosting\.
 
-
-This is a delicate point in the boot process.  ``helm`` needs to be able to
-interact with an already-running bridge/luv process, as it stands the two
-event loops will collide.  ``orb`` only runs an event loop with ``orb serve`` so
-the next step with ``helm`` proper is to set it up locally to run as a ``repl``
-on plain ordinary ``br`` programs, so I can use all this carefully won tooling
-on the other parts of the programme.
+This is a delicate point in the boot process\.  `helm` needs to be able to
+interact with an already\-running bridge/luv process, as it stands the two
+event loops will collide\.  `orb` only runs an event loop with `orb serve` so
+the next step with `helm` proper is to set it up locally to run as a `repl`
+on plain ordinary `br` programs, so I can use all this carefully won tooling
+on the other parts of the programme\.
 
 
 ## Design
 
-This file is going to have both the ``zoneherd``, called ``modeS.zones``, and
-a ``Zone`` metatable for handling single Zones.
-
+This file is going to have both the `zoneherd`, called `modeS.zones`, and
+a `Zone` metatable for handling single Zones\.
 
 The Zone herd will need to hold zones by name as well as by index, because
-we want to repaint in a specific order (pre-sorting by ``.z``) and pass messages
-by name, so that we send a result to ``modeS.zones.result``.
+we want to repaint in a specific order \(pre\-sorting by `.z`\) and pass messages
+by name, so that we send a result to `modeS.zones.result`\.
 
+We'll need methods for reflowing, for creating, and for refreshing\.  Each
+`Zone` will have a `.touched` field and if it's flipped we repaint; if there's
+an overlapping Zone of higher `z` we flip its touched bit as well\.
 
-We'll need methods for reflowing, for creating, and for refreshing.  Each
-``Zone`` will have a ``.touched`` field and if it's flipped we repaint; if there's
-an overlapping Zone of higher ``z`` we flip its touched bit as well.
-
-
-A ``Zone`` needs an ``onMouse`` method that receives the whole packet and acts
-accordingly.  The flow hands every input including parsed mouse messages to
-the ``modeselektor``, and some, particularly scrolls, are handled there. The
+A `Zone` needs an `onMouse` method that receives the whole packet and acts
+accordingly\.  The flow hands every input including parsed mouse messages to
+the `modeselektor`, and some, particularly scrolls, are handled there\. The
 rest are assigned by the zone herder, which sould probably normalize the
-action so, for example, a click in the upper left corner of a Zone is ``1,1``.
+action so, for example, a click in the upper left corner of a Zone is `1,1`\.
 
-
-Since the hard part is repainting, I'll start with reflow, and just hard-
+Since the hard part is repainting, I'll start with reflow, and just hard\-
 switch the REPL to a 'reflow mode' that just draws characters to a screen,
-then add a popup.
+then add a popup\.
 
 ```lua
 local Txtbuf = require "helm/txtbuf"
@@ -86,14 +73,16 @@ local a = require "anterm:anterm"
 
 local instanceof = import("core/meta", "instanceof")
 ```
+
 ```lua
 local Zone = meta {}
 local Zoneherd = meta {}
 ```
+
 ## Zone methods
 
 
-### Zone:height(), Zone:width()
+### Zone:height\(\), Zone:width\(\)
 
 ```lua
 function Zone.height(zone)
@@ -104,11 +93,12 @@ function Zone.width(zone)
    return zone.bc - zone.tc + 1
 end
 ```
-### Zone:overlaps(other_zone)
+
+### Zone:overlaps\(other\_zone\)
 
 Determines whether there is any overlap between two zones,
-irrespective of their z-values--answers whether they affect any of
-the same cells on screen.
+irrespective of their z\-values\-\-answers whether they affect any of
+the same cells on screen\.
 
 ```lua
 function Zone.overlaps(zone, other_zone)
@@ -123,9 +113,10 @@ function Zone.overlaps(zone, other_zone)
           zone.br >= other_zone.tr
 end
 ```
-### Zone:replace(contents)
 
-Replaces the contents of the zone with the provided value.
+### Zone:replace\(contents\)
+
+Replaces the contents of the zone with the provided value\.
 
 ```lua
 function Zone.replace(zone, contents)
@@ -134,25 +125,23 @@ function Zone.replace(zone, contents)
    return zone
 end
 ```
+
 ### Scrolling
 
-#### Zone:scrollTo(offset, allow_overscroll)
+#### Zone:scrollTo\(offset, allow\_overscroll\)
 
-Main scrolling method. Scrolls the contents of the Zone to start ``offset``
-lines into the underlying content.
+Main scrolling method\. Scrolls the contents of the Zone to start `offset`
+lines into the underlying content\.
 
+`allow_overscroll` determines whether we are willing to scroll past the
+available content\. If falsy, scrolling stops when the last line of content
+is the last line on the screen\. If truthy, scrolling stops when the last
+line of content is the **first** line on the screen\.
 
-``allow_overscroll`` determines whether we are willing to scroll past the
-available content. If falsy, scrolling stops when the last line of content
-is the last line on the screen. If truthy, scrolling stops when the last
-line of content is the **first** line on the screen.
-
-
-Returns a boolean indicating whether any scrolling occurred.
-
+Returns a boolean indicating whether any scrolling occurred\.
 
 Depends on the zone contents being a Rainbuf
-(which handles the actual scrolling).
+\(which handles the actual scrolling\)\.
 
 ```lua
 local bound = import("core/math", "bound")
@@ -174,9 +163,10 @@ function Zone.scrollTo(zone, offset, allow_overscroll)
    end
 end
 ```
-#### Zone:scrollBy(delta, allow_overscroll)
 
-Relative scrolling operation. Change the scroll position by ``delta`` line(s).
+#### Zone:scrollBy\(delta, allow\_overscroll\)
+
+Relative scrolling operation\. Change the scroll position by `delta` line\(s\)\.
 
 ```lua
 function Zone.scrollBy(zone, delta, allow_overscroll)
@@ -188,9 +178,10 @@ function Zone.scrollBy(zone, delta, allow_overscroll)
    return zone:scrollTo(zone.contents.offset + delta, allow_overscroll)
 end
 ```
-#### Zone:scrollUp(), :scrollDown(), :pageUp(), :pageDown()
 
-Helpers for common scrolling operations.
+#### Zone:scrollUp\(\), :scrollDown\(\), :pageUp\(\), :pageDown\(\)
+
+Helpers for common scrolling operations\.
 
 ```lua
 function Zone.scrollUp(zone)
@@ -215,12 +206,13 @@ function Zone.halfPageDown(zone)
    return zone:scrollBy(floor(zone:height() / 2))
 end
 ```
-#### Zone:scrollToTop(), Zone:scrollToBottom(allow_overscroll)
 
-Scroll to the very beginning or end of the content.
+#### Zone:scrollToTop\(\), Zone:scrollToBottom\(allow\_overscroll\)
+
+Scroll to the very beginning or end of the content\.
 Beginning is easy, end is a little more interesting, as we have to first
-render all the content (in order to know how much there is), then account
-for allow_overscroll in deciding how far to go.
+render all the content \(in order to know how much there is\), then account
+for allow\_overscroll in deciding how far to go\.
 
 ```lua
 function Zone.scrollToTop(zone)
@@ -234,9 +226,10 @@ function Zone.scrollToBottom(zone, allow_overscroll)
    return zone:scrollTo(#zone.contents.lines, allow_overscroll)
 end
 ```
-### Zone:setBounds(tc, tr, bc, br)
 
-Updates the bounds of the zone, marking it as touched if they actually change.
+### Zone:setBounds\(tc, tr, bc, br\)
+
+Updates the bounds of the zone, marking it as touched if they actually change\.
 
 ```lua
 function Zone.setBounds(zone, tc, tr, bc, br)
@@ -269,7 +262,8 @@ function Zone.setBounds(zone, tc, tr, bc, br)
    return zone
 end
 ```
-### Zone:setVisibility(new_visibility), Zone:show(), Zone:hide()
+
+### Zone:setVisibility\(new\_visibility\), Zone:show\(\), Zone:hide\(\)
 
 ```lua
 function Zone.setVisibility(zone, new_visibility)
@@ -287,14 +281,15 @@ function Zone.hide(zone)
    return zone:setVisibility(false)
 end
 ```
-### Zone:beTouched()
+
+### Zone:beTouched\(\)
 
 Marks a zone as touched, also marking others that may be affected based
-on overlap. If ``zone`` is visible, this is any overlapping zones above it,
-which may need to repaint to occlude it. If ``zone`` is hidden, this is
-overlapping zones below it, which (if it is **newly** hidden) may be revealed.
+on overlap\. If `zone` is visible, this is any overlapping zones above it,
+which may need to repaint to occlude it\. If `zone` is hidden, this is
+overlapping zones below it, which \(if it is **newly** hidden\) may be revealed\.
 We assume that zones of equal z do not overlap, so we don't check
-in that case (which handily excludes the originating zone itself)
+in that case \(which handily excludes the originating zone itself\)
 
 ```lua
 function Zone.beTouched(zone)
@@ -309,7 +304,8 @@ function Zone.beTouched(zone)
    end
 end
 ```
-### _writeLines(write, zone, str)
+
+### \_writeLines\(write, zone, str\)
 
 ```lua
 local lines = import("core/string", "lines")
@@ -327,9 +323,11 @@ local function _writeLines(write, zone, str)
    end
 end
 ```
-### _renderRainbuf
 
-Render the zone contents as a Rainbuf, wrapping them **in** a Rainbuf if needed.
+
+### \_renderRainbuf
+
+Render the zone contents as a Rainbuf, wrapping them **in** a Rainbuf if needed\.
 
 ```lua
 local instanceof = import("core/meta", "instanceof")
@@ -346,7 +344,8 @@ local function _renderRainbuf(write, zone)
    end
 end
 ```
-### _renderTxtbuf(modeS, zone)
+
+### \_renderTxtbuf\(modeS, zone\)
 
 ```lua
 local concat = assert(table.concat)
@@ -369,12 +368,14 @@ local function _renderTxtbuf(modeS, zone, write)
    _writeLines(write, zone, concat(tokens))
 end
 ```
+
+
 ## Zoneherd methods
 
-### Zoneherd:addZone(zone)
+### Zoneherd:addZone\(zone\)
 
-Adds ``zone`` to the zoneherd, maintaining the zone collection in order
-of z-value. New zones are placed after any others with the same z-value.
+Adds `zone` to the zoneherd, maintaining the zone collection in order
+of z\-value\. New zones are placed after any others with the same z\-value\.
 
 ```lua
 local insert = assert(table.insert)
@@ -397,11 +398,12 @@ function Zoneherd.addZone(zoneherd, zone)
    return zoneherd
 end
 ```
-### Zoneherd:newZone(name, z, debug_mark)
 
-Creates a new zone and adds it to the Zoneherd. Note that we don't
+### Zoneherd:newZone\(name, z, debug\_mark\)
+
+Creates a new zone and adds it to the Zoneherd\. Note that we don't
 set the zone's position and dimensions here, as we expect that to be
-determined as part of reflow.
+determined as part of reflow\.
 
 ```lua
 local function newZone(name, z, debug_mark)
@@ -419,7 +421,8 @@ function Zoneherd.newZone(zoneherd, name, z, debug_mark)
    return zoneherd:addZone(newZone(name, z, debug_mark))
 end
 ```
-#### _zoneOffset(modes)
+
+#### \_zoneOffset\(modes\)
 
 ```lua
 local function _zoneOffset(modeS)
@@ -434,7 +437,8 @@ local function _zoneOffset(modeS)
    end
 end
 ```
-### Zoneherd:reflow(modeS)
+
+### Zoneherd:reflow\(modeS\)
 
 ```lua
 local ceil, floor = assert(math.ceil), assert(math.floor)
@@ -469,10 +473,12 @@ function Zoneherd.reflow(zoneherd, modeS)
    return zoneherd
 end
 ```
-### Zoneherd:paint(modeS)
 
-Once again we pass a reference to the ``modeselektor`` to get access to things
-like the lexer.
+
+### Zoneherd:paint\(modeS\)
+
+Once again we pass a reference to the `modeselektor` to get access to things
+like the lexer\.
 
 ```lua
 
@@ -503,11 +509,12 @@ function Zoneherd.paint(zoneherd, modeS)
    return zoneherd
 end
 ```
+
 ### new
 
-Makes a Zoneherd.  Borrows the modeselektor to get proportions, but returns
+Makes a Zoneherd\.  Borrows the modeselektor to get proportions, but returns
 the zoneherd, which is assigned to its slot on the modeselector at the call
-site, for consistency.
+site, for consistency\.
 
 ```lua
 local function new(modeS, writer)
@@ -528,6 +535,7 @@ local function new(modeS, writer)
    return zoneherd
 end
 ```
+
 ```lua
 return new
 ```

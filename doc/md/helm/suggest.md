@@ -1,6 +1,6 @@
 # Suggest
 
-This is our autocomplete module.
+This is our autocomplete module\.
 
 ## Dependencies
 
@@ -16,19 +16,21 @@ local concat, insert, sort = assert(table.concat),
 local c = import("singletons/color", "color")
 
 ```
+
 ```lua
 
 local Suggest = meta {}
 local new
 
 ```
-### _cursorContext(modeS)
 
-Examines the text before the cursor to determine (a) what token we are in the
-middle of, and (b) what if any path from the global environment we should
-follow to determine a list of keys to complete from. Answers nil if the token
+### \_cursorContext\(modeS\)
+
+Examines the text before the cursor to determine \(a\) what token we are in the
+middle of, and \(b\) what if any path from the global environment we should
+follow to determine a list of keys to complete from\. Answers nil if the token
 we are in the middle of is not a symbol, and a nil second return value if the
-path cannot be determined.
+path cannot be determined\.
 
 ```lua
 local function _cursorContext(modeS)
@@ -94,9 +96,10 @@ local function _cursorContext(modeS)
    return context, path
 end
 ```
-### update(modeS, category, value)
 
-Updates the completion list based on the current contents of the Txtbuf.
+### update\(modeS, category, value\)
+
+Updates the completion list based on the current contents of the Txtbuf\.
 
 ```lua
 
@@ -184,7 +187,8 @@ function Suggest.update(suggest, modeS)
 end
 
 ```
-### cancel()
+
+### cancel\(\)
 
 ```lua
 function Suggest.cancel(suggest, modeS)
@@ -192,7 +196,8 @@ function Suggest.cancel(suggest, modeS)
    modeS.zones.suggest:replace("")
 end
 ```
-### accept()
+
+### accept\(\)
 
 ```lua
 function Suggest.accept(suggest, modeS)
@@ -206,7 +211,8 @@ function Suggest.accept(suggest, modeS)
    modeS.txtbuf:paste(suggestion)
 end
 ```
-### new()
+
+### new\(\)
 
 ```lua
 
@@ -216,6 +222,7 @@ new = function()
 end
 
 ```
+
 ```lua
 Suggest.idEst = new
 return new

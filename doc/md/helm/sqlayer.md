@@ -1,14 +1,12 @@
 # SQLayer
 
-This will be in pylon eventually.
-
+This will be in pylon eventually\.
 
 Enhances the existing SQLite bindings, which in turn will be turned into a
-statically-linked part of ``pylon``.
-
+statically\-linked part of `pylon`\.
 
 SQLite being a core competency, we want to make this really nice; see
-[[stretch goals][#stretch-goals]] for details.
+\[\[stretch goals\]\[\#stretch\-goals\]\] for details\.
 
 ```lua
 local sql = require "sqlite"
@@ -20,12 +18,13 @@ assert(ffi)
 ffi.reflect = require "reflect"
 assert(ffi.reflect)
 ```
+
+
 ### Monkey Patches
 
-It's time to start decorating the ``conn`` and ``stmt`` metatables.
+It's time to start decorating the `conn` and `stmt` metatables\.
 
-
-First we must summon them from the ether.
+First we must summon them from the ether\.
 
 ```lua
 -- get a conn object via in-memory DB
@@ -38,9 +37,10 @@ stmt:close()
 conn:close() -- polite
 conn, stmt = nil, nil
 ```
-## sql.san(str)
 
-Sanitizes a string for SQL(ite) quoting.
+## sql\.san\(str\)
+
+Sanitizes a string for SQL\(ite\) quoting\.
 
 ```lua
 local function san(str)
@@ -49,27 +49,28 @@ end
 
 sql.san = san
 ```
-## sql.format(str)
+
+
+## sql\.format\(str\)
 
 The SQLite bindings I'm using support only an impoverished subset of the
-SQLite binds.  In the meantime we're going to use format strings, which at
-least typecheck parameters.
+SQLite binds\.  In the meantime we're going to use format strings, which at
+least typecheck parameters\.
 
+**Update** I've added `bindkv` which helps\.
 
-**Update** I've added ``bindkv`` which helps.
+This `format` command sanitizes string inputs, and also replaces any `%s`
+with `'%s'` without making any `''%s''`, or more accurately trimming them
+if it creates them\.
 
+So `sql.format("it's %s!", "it's")` and `sql.format("it's '%s'!", "it's")`
+both yield `"it's 'it''s"`\.  I figure any apostrophes in the format string
+belong there\.
 
-This ``format`` command sanitizes string inputs, and also replaces any ``%s``
-with ``'%s'`` without making any ``''%s''``, or more accurately trimming them
-if it creates them.
+Failure to format returns `false, err`\.
 
-
-So ``sql.format("it's %s!", "it's")`` and ``sql.format("it's '%s'!", "it's")``
-both yield ``"it's 'it''s"``.  I figure any apostrophes in the format string
-belong there.
-
-
-Failure to format returns ``false, err``.
+\#NB
+keywords and values, and this only allows for inserting literal strings\.
 
 ```lua
 function sql.format(str, ...)
@@ -93,12 +94,12 @@ function sql.format(str, ...)
    end
 end
 ```
-## sql.pexec(conn, stmt)
 
-Executes the statement on conn in protected mode.
+## sql\.pexec\(conn, stmt\)
 
+Executes the statement on conn in protected mode\.
 
-Unwraps and returns success, or ``false`` and error.
+Unwraps and returns success, or `false` and error\.
 
 ```lua
 function sql.pexec(conn, stmt, col_str)
@@ -112,12 +113,13 @@ function sql.pexec(conn, stmt, col_str)
    end
 end
 ```
-## sql.lastid(conn)
-
-This could be improved by natively handling uint64_t ``cdata``.
 
 
-Y'know, if we ever keep more than 53 bits width of rows in uhhhhh SQLite.
+## sql\.lastid\(conn\)
+
+This could be improved by natively handling uint64\_t `cdata`\.
+
+Y'know, if we ever keep more than 53 bits width of rows in uhhhhh SQLite\.
 
 ```lua
 function sql.lastRowId(conn)
@@ -125,23 +127,21 @@ function sql.lastRowId(conn)
    return result
 end
 ```
-#### conn.pragma.etc(bool)
-
-A convenience wrapper over the SQL pragma commands.
 
 
-We can use the same interface for setting Lua-specific values, the one I need
-is ``conn.pragma.nulls_are_nil(false)``.
+#### conn\.pragma\.etc\(bool\)
 
+A convenience wrapper over the SQL pragma commands\.
 
-This is a subtle bit of function composition with a nice result.
+We can use the same interface for setting Lua\-specific values, the one I need
+is `conn.pragma.nulls_are_nil(false)`\.
 
+This is a subtle bit of function composition with a nice result\.
 
-I might be able to use this technique in ``check`` to favor ``.`` over ``:``.
+I might be able to use this technique in `check` to favor `.` over `:`\.
 
-
-Note: ``_prag_index`` closes over ``conn`` and thus does have to be generated
-fresh each time.
+Note: `_prag_index` closes over `conn` and thus does have to be generated
+fresh each time\.
 
 ```lua
 local pragma_pre = "PRAGMA "
@@ -186,7 +186,7 @@ end
 ```
 
 This is the fun part: we swap the old metatable for a function which closes
-over our ``conn``, passing it along to the pragma.
+over our `conn`, passing it along to the pragma\.
 
 ```lua
 local function new_conn_index(conn, key)
@@ -202,30 +202,32 @@ end
 
 conn_mt.__index = new_conn_index
 ```
+
+
 ```lua
 return sql
 ```
+
+
 ### Stretch goals
 
 
 
-#### sql.NULL
+#### sql\.NULL
 
-This isn't much of a stretch, just a truthy table that represents nullity.
+This isn't much of a stretch, just a truthy table that represents nullity\.
 
 
 #### Dereferencing pointers in Luaspace
 
-It would be nice to write a small C wrapper on ``sqlite3_sql()`` that gets the
-address from a statement pointer and returns the resulting string.  The whole
-dataflow layer of ``bridge`` is predicated on abstracting over some pretty
-gnarly SQL introspection.
-
+It would be nice to write a small C wrapper on `sqlite3_sql()` that gets the
+address from a statement pointer and returns the resulting string\.  The whole
+dataflow layer of `bridge` is predicated on abstracting over some pretty
+gnarly SQL introspection\.
 
 The easy way is just to denormalize the string onto a member of the stmt
-table, but that violates single-source-of-truth, and handling pointers across
-the abstraction barrier is something I'm going to need to get used to.
-
+table, but that violates single\-source\-of\-truth, and handling pointers across
+the abstraction barrier is something I'm going to need to get used to\.
 
 
 
