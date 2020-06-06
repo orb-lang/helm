@@ -7,6 +7,7 @@
 local clone = import("core/table", "clone")
 local EditBase = require "helm/raga/edit"
 local Rainbuf = require "helm/rainbuf"
+local Txtbuf = require "helm/txtbuf"
 
 local Search = clone(EditBase, 2)
 
