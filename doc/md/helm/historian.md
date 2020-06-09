@@ -74,24 +74,23 @@ Other than that, SQLite lets you add columns and rename tables\.
 
 When this is done, it will be noted\.
 
-```lua
-local create_project_table = [[
+```sql
 CREATE TABLE IF NOT EXISTS project (
    project_id INTEGER PRIMARY KEY AUTOINCREMENT,
    directory TEXT UNIQUE,
    time DATETIME DEFAULT CURRENT_TIMESTAMP
 );
-]]
+```
 
-local create_project_table_3 = [[
+```sql
 CREATE TABLE IF NOT EXISTS project_3 (
    project_id INTEGER PRIMARY KEY AUTOINCREMENT,
    directory TEXT UNIQUE,
    time DATETIME DEFAULT (strftime('%Y-%m-%dT%H:%M:%f', 'now'))
 );
-]]
+```
 
-local create_repl_table = [[
+```sql
 CREATE TABLE IF NOT EXISTS repl (
    line_id INTEGER PRIMARY KEY AUTOINCREMENT,
    project INTEGER,
@@ -101,9 +100,9 @@ CREATE TABLE IF NOT EXISTS repl (
       REFERENCES project (project_id)
       ON DELETE CASCADE
 );
-]]
+```
 
-local create_repl_table_3 = [[
+```sql
 CREATE TABLE IF NOT EXISTS repl_3 (
    line_id INTEGER PRIMARY KEY AUTOINCREMENT,
    project INTEGER,
@@ -113,9 +112,9 @@ CREATE TABLE IF NOT EXISTS repl_3 (
       REFERENCES project (project_id)
       ON DELETE CASCADE
 );
-]]
+```
 
-local create_result_table = [[
+```sql
 CREATE TABLE IF NOT EXISTS result (
    result_id INTEGER PRIMARY KEY AUTOINCREMENT,
    line_id INTEGER,
@@ -125,9 +124,9 @@ CREATE TABLE IF NOT EXISTS result (
       REFERENCES repl (line_id)
       ON DELETE CASCADE
 );
-]]
+```
 
-local create_session_table = [[
+```sql
 CREATE TABLE IF NOT EXISTS session (
 session_id INTEGER PRIMARY KEY AUTOINCREMENT,
 name TEXT,
@@ -140,54 +139,49 @@ sha TEXT,
 FOREIGN KEY (project)
    REFERENCES project (project_id)
    ON DELETE CASCADE );
-]]
 ```
 
 
 #### Insertions
 
-```lua
-local insert_line = [[
+```sql
 INSERT INTO repl (project, line) VALUES (:project, :line);
-]]
+```
 
-local insert_result = [[
+```sql
 INSERT INTO result (line_id, repr) VALUES (:line_id, :repr);
-]]
+```
 
-local insert_project = [[
+```sql
 INSERT INTO project (directory) VALUES (?);
-]]
 ```
 
 
 #### Selections
 
-```lua
-local get_recent = [[
+```sql
 SELECT CAST (line_id AS REAL), line FROM repl
    WHERE project = :project
    ORDER BY line_id DESC
    LIMIT :num_lines;
-]]
+```
 
-local get_number_of_lines = [[
+```sql
 SELECT CAST (count(line) AS REAL) from repl
    WHERE project = ?
 ;
-]]
+```
 
-local get_project = [[
+```sql
 SELECT project_id FROM project
    WHERE directory = %s;
-]]
+```
 
-local get_results = [[
+```sql
 SELECT result.repr
 FROM result
 WHERE result.line_id = :line_id
 ORDER BY result.result_id;
-]]
 ```
 
 
