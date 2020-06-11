@@ -82,8 +82,6 @@ CREATE TABLE IF NOT EXISTS project (
 );
 ]]
 
-
-
 local create_project_table_3 = [[
 CREATE TABLE IF NOT EXISTS project_3 (
    project_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -91,8 +89,6 @@ CREATE TABLE IF NOT EXISTS project_3 (
    time DATETIME DEFAULT (strftime('%Y-%m-%dT%H:%M:%f', 'now'))
 );
 ]]
-
-
 
 local create_repl_table = [[
 CREATE TABLE IF NOT EXISTS repl (
@@ -106,8 +102,6 @@ CREATE TABLE IF NOT EXISTS repl (
 );
 ]]
 
-
-
 local create_repl_table_3 = [[
 CREATE TABLE IF NOT EXISTS repl_3 (
    line_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -120,8 +114,6 @@ CREATE TABLE IF NOT EXISTS repl_3 (
 );
 ]]
 
-
-
 local create_result_table = [[
 CREATE TABLE IF NOT EXISTS result (
    result_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -133,8 +125,6 @@ CREATE TABLE IF NOT EXISTS result (
       ON DELETE CASCADE
 );
 ]]
-
-
 
 local create_session_table = [[
 CREATE TABLE IF NOT EXISTS session (
@@ -154,25 +144,17 @@ FOREIGN KEY (project)
 
 
 
-
-
 local insert_line = [[
 INSERT INTO repl (project, line) VALUES (:project, :line);
 ]]
-
-
 
 local insert_result = [[
 INSERT INTO result (line_id, repr) VALUES (:line_id, :repr);
 ]]
 
-
-
 local insert_project = [[
 INSERT INTO project (directory) VALUES (?);
 ]]
-
-
 
 
 
@@ -184,22 +166,16 @@ SELECT CAST (line_id AS REAL), line FROM repl
    LIMIT :num_lines;
 ]]
 
-
-
 local get_number_of_lines = [[
 SELECT CAST (count(line) AS REAL) from repl
    WHERE project = ?
 ;
 ]]
 
-
-
 local get_project = [[
 SELECT project_id FROM project
    WHERE directory = %s;
 ]]
-
-
 
 local get_results = [[
 SELECT result.repr
@@ -207,8 +183,6 @@ FROM result
 WHERE result.line_id = :line_id
 ORDER BY result.result_id;
 ]]
-
-
 
 
 
