@@ -63,8 +63,8 @@ end
   \- \[ \]  Add Search\.NAV\.SHIFT\_ALT\_\(UP|DOWN\), to move a page at a time\.
          Hook them to PgUp and PgDown while we're at it\.
 
-  \- \[ \]  Add Search\.NAV\.HYPER\_UP and Search\.NAV\.HYPER\_DOWN to snap to the
-         top and bottom\.  These are synonymous with Home and End\.
+  \- \[ \]  Add Search\.NAV\.HOME and Search\.NAV\.END to snap to the
+         top and bottom\.
 
 ```lua
 Search.NAV.UP = Search.NAV.SHIFT_UP

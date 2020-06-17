@@ -60,8 +60,8 @@ NAV.LEFT        = toTxtbuf "left"
 NAV.RIGHT       = toTxtbuf "right"
 NAV.ALT_LEFT    = toTxtbuf "leftWordAlpha"
 NAV.ALT_RIGHT   = toTxtbuf "rightWordAlpha"
-NAV.HYPER_LEFT  = toTxtbuf "startOfLine"
-NAV.HYPER_RIGHT = toTxtbuf "endOfLine"
+NAV.HOME        = toTxtbuf "startOfLine"
+NAV.END         = toTxtbuf "endOfLine"
 NAV.BACKSPACE   = toTxtbuf "deleteBackward"
 NAV.DELETE      = toTxtbuf "deleteForward"
 #/lua
@@ -72,8 +72,8 @@ NAV.DELETE      = toTxtbuf "deleteForward"
 #!lua
 local CTRL = EditBase.CTRL
 
-CTRL ["^A"] = NAV.HYPER_LEFT
-CTRL ["^E"] = NAV.HYPER_RIGHT
+CTRL ["^A"] = NAV.HOME
+CTRL ["^E"] = NAV.END
 
 local function clear_txtbuf(modeS, category, value)
    modeS:setTxtbuf(Txtbuf())
