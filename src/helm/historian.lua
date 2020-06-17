@@ -282,46 +282,6 @@ insert(migrations, migration_3)
 
 
 
-
-
-
-
--- make the /helm directory
--- use sh to avoid a permissions issue with stale versions of fs
-if not Dir(_Bridge.bridge_home .. "/helm"):exists() then
-   local sh = require "orb:util/sh"
-   sh("mkdir", "-p", _Bridge.bridge_home .. "/helm")
-end
-
-local old_helm = File (_Bridge.bridge_home .. "/.helm")
-if old_helm:exists() then
-   -- move it
-   if File(_Bridge.bridge_home .. "/.helm-wal"):exists() then
-      print "please shut down all helm instances before running migration"
-      os.exit()
-   end
-   if File(_Bridge.bridge_home .. "/helm/helm.sqlite"):exists() then
-      print "two databases in $BRIDGE_HOME: .helm and helm/helm.sqlite"
-      print "probably, the migration has already been performed,"
-      print "but an old copy of helm was then used."
-      print "please inspect the databases with sqlite3 and delete the one"
-      print "you don't want to keep."
-      os.exit()
-   end
-   local sh = require "orb:util/sh"
-   sh("mv " .. tostring(old_helm) .. " "
-      .. _Bridge.bridge_home .. "/helm/helm.sqlite")
-end
-
-
-
-
-
-
-
-
-
-
 Historian.helm_db = _Bridge.bridge_home .. "/helm/helm.sqlite"
 
 Historian.project = uv.cwd()
@@ -432,6 +392,7 @@ function Historian.load(historian)
    idler = uv.new_idle()
    idler:start(load_one)
 end
+
 
 
 

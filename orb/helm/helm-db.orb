@@ -19,26 +19,23 @@ Other than that, SQLite lets you add columns and rename tables.
 
 When this is done, it will be noted.
 
-#!lua
-local create_project_table = [[
+#!sql @create_project_table #asLua
 CREATE TABLE IF NOT EXISTS project (
    project_id INTEGER PRIMARY KEY AUTOINCREMENT,
    directory TEXT UNIQUE,
    time DATETIME DEFAULT CURRENT_TIMESTAMP
 );
-]]
+#/sql
 
-local create_project_table_3 = [[
+#!sql @create_project_table_3 #asLua
 CREATE TABLE IF NOT EXISTS project_3 (
    project_id INTEGER PRIMARY KEY AUTOINCREMENT,
    directory TEXT UNIQUE,
    time DATETIME DEFAULT (strftime('%Y-%m-%dT%H:%M:%f', 'now'))
 );
-]]
-#/lua
+#/sql
 
-#!lua
-local create_repl_table = [[
+#!sql @create_repl_table #asLua
 CREATE TABLE IF NOT EXISTS repl (
    line_id INTEGER PRIMARY KEY AUTOINCREMENT,
    project INTEGER,
@@ -48,9 +45,9 @@ CREATE TABLE IF NOT EXISTS repl (
       REFERENCES project (project_id)
       ON DELETE CASCADE
 );
-]]
+#/sql
 
-local create_repl_table_3 = [[
+#!sql @create_repl_table_3 #asLua
 CREATE TABLE IF NOT EXISTS repl_3 (
    line_id INTEGER PRIMARY KEY AUTOINCREMENT,
    project INTEGER,
@@ -60,11 +57,9 @@ CREATE TABLE IF NOT EXISTS repl_3 (
       REFERENCES project (project_id)
       ON DELETE CASCADE
 );
-]]
-#/lua
+#/sql
 
-#!lua
-local create_result_table = [[
+#!sql @create_result_table #asLua
 CREATE TABLE IF NOT EXISTS result (
    result_id INTEGER PRIMARY KEY AUTOINCREMENT,
    line_id INTEGER,
@@ -74,11 +69,9 @@ CREATE TABLE IF NOT EXISTS result (
       REFERENCES repl (line_id)
       ON DELETE CASCADE
 );
-]]
-#/lua
+#/sql
 
-#!lua
-local create_session_table = [[
+#!sql @create_session_table #asLua
 CREATE TABLE IF NOT EXISTS session (
 session_id INTEGER PRIMARY KEY AUTOINCREMENT,
 name TEXT,
@@ -91,9 +84,9 @@ sha TEXT,
 FOREIGN KEY (project)
    REFERENCES project (project_id)
    ON DELETE CASCADE );
-]]
+#/sql
 
-local create_session_table_4 = [[
+#!sql @create_session_table_4 #asLua
 CREATE TABLE IF NOT EXISTS session (
    session_id INTEGER PRIMARY KEY,
    title TEXT,
@@ -104,11 +97,9 @@ CREATE TABLE IF NOT EXISTS session (
       REFERENCES project (project_id)
       ON DELETE CASCADE
 );
-]]
-#/lua
+#/sql
 
-#!lua
-local create_premise_table = [[
+#!sql @create_premise_table #asLua
 CREATE TABLE IF NOT EXISTS premise (
    session INTEGER NOT NULL,
    line INTEGER NOT NULL,
@@ -124,8 +115,7 @@ CREATE TABLE IF NOT EXISTS premise (
       REFERENCES repl (line_id)
       ON DELETE CASCADE
 );
-]]
-#/lua
+#/sql
 
 
 *** Migrations
