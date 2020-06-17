@@ -43,9 +43,11 @@ alias{ toZone "scrollUp",
        CTRL  = {"^Y", "^P", "^K"} }
 
 alias{ toZone "pageDown",
+       NAV   = {"PAGE_DOWN"},
        ASCII = {" ", "f"},
        CTRL  = {"^V", "^F"} }
 alias{ toZone "pageUp",
+       NAV   = {"PAGE_UP"},
        ASCII = {"b"},
        CTRL  = {"^B"} }
 
@@ -56,8 +58,12 @@ alias{ toZone "halfPageUp",
        ASCII = {"u"},
        CTRL  = {"^U"} }
 
-alias{toZone "scrollToTop", ASCII = {"g", "<"}}
-alias{toZone "scrollToBottom", ASCII = {"G", ">"}}
+alias{ toZone "scrollToTop",
+       NAV   = {"HOME"},
+       ASCII = {"g", "<"} }
+alias{ toZone "scrollToBottom",
+       NAV   = {"END"},
+       ASCII = {"G", ">"} }
 
 
 
