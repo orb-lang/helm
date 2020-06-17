@@ -13,6 +13,8 @@ Next step: now that we clone a new txtbuf each time, we have an immutable
 record\.  We should store the line as a string, to facilitate fuzzy matching\.
 
 
+#### imports
+
 ```lua
 local uv      = require "luv"
 local sql     = assert(sql, "sql must be in bridge _G")
@@ -31,15 +33,16 @@ local Set = require "set:set"
 ```
 
 
-```lua
-local File = require "fs:fs/file"
-local Dir  = require "fs:fs/directory"
-```
+### Historian metatable
 
+\#todo
+choosing the default location\.
 
 ```lua
 local Historian = meta {}
 Historian.HISTORY_LIMIT = 2000
+Historian.helm_db_home = _Bridge.bridge_home .. "/helm/helm.sqlite"
+Historian.project = uv.cwd()
 ```
 
 
@@ -91,15 +94,7 @@ WHERE result.line_id = :line_id
 ORDER BY result.result_id;
 ```
 
-
-\#todo
-choosing the default location\.
-
 ```lua
-Historian.helm_db_home = _Bridge.bridge_home .. "/helm/helm.sqlite"
-
-Historian.project = uv.cwd()
-
 local function has(table, name)
    for _,v in ipairs(table) do
       if name == v then

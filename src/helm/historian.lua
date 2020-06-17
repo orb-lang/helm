@@ -14,6 +14,8 @@
 
 
 
+
+
 local uv      = require "luv"
 local sql     = assert(sql, "sql must be in bridge _G")
 
@@ -32,14 +34,15 @@ local Set = require "set:set"
 
 
 
-local File = require "fs:fs/file"
-local Dir  = require "fs:fs/directory"
+
 
 
 
 
 local Historian = meta {}
 Historian.HISTORY_LIMIT = 2000
+Historian.helm_db_home = _Bridge.bridge_home .. "/helm/helm.sqlite"
+Historian.project = uv.cwd()
 
 
 
@@ -91,14 +94,6 @@ WHERE result.line_id = :line_id
 ORDER BY result.result_id;
 ]]
 
-
-
-
-
-
-Historian.helm_db_home = _Bridge.bridge_home .. "/helm/helm.sqlite"
-
-Historian.project = uv.cwd()
 
 local function has(table, name)
    for _,v in ipairs(table) do
