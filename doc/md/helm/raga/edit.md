@@ -62,8 +62,8 @@ addall(NAV, {
    ALT_RIGHT      = toTxtbuf "rightWordAlpha",
    HOME           = toTxtbuf "startOfLine",
    END            = toTxtbuf "endOfLine",
-   BACKSPACE      = toTxtbuf "deleteBackward",
-   DELETE         = toTxtbuf "deleteForward",
+   BACKSPACE      = toTxtbuf "killBackward",
+   DELETE         = toTxtbuf "killForward",
    ALT_BACKSPACE  = toTxtbuf "killToBeginningOfWord",
    ALT_DELETE     = toTxtbuf "killToEndOfWord",
 })

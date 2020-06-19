@@ -362,14 +362,14 @@ function Txtbuf.paste(txtbuf, frag)
 end
 ```
 
-### Txtbuf:deleteSelected\(\)
+### Txtbuf:killSelection\(\)
 
 Deletes the selected text, if any\. Returns whether anything was deleted
 \(i\.e\. whether anything was initially selected\)\.
 
 ```lua
 local deleterange = import("core/table", "deleterange")
-function Txtbuf.deleteSelected(txtbuf)
+function Txtbuf.killSelection(txtbuf)
    if not txtbuf:hasSelection() then
       return false
    end
@@ -409,12 +409,12 @@ local function _delete_for_motion(motionName)
    return function(txtbuf, ...)
       txtbuf:beginSelection()
       txtbuf[motionName](txtbuf, ...)
-      return txtbuf:deleteSelected()
+      return txtbuf:killSelection()
    end
 end
 
 for delete_name, motion_name in pairs({
-   deleteForward = "right",
+   killForward = "right",
    killToEndOfLine = "endOfLine",
    killToBeginningOfLine = "startOfLine",
    killToEndOfWord = "rightWordAlpha",
@@ -425,9 +425,9 @@ end
 
 ```
 
-#### Txtbuf:deleteBackward\(\)
+#### Txtbuf:killBackward\(\)
 
-deleteBackward is slightly special, because we want to remove adjacent
+killBackward is slightly special, because we want to remove adjacent
 paired braces if the opening brace is deleted\. We can still handle this
 with a select\-move\-delete sequence, but need to inspect nearby chars first\.
 
@@ -436,7 +436,7 @@ local function _is_paired(a, b)
    return _openers[a] == b
 end
 
-function Txtbuf.deleteBackward(txtbuf)
+function Txtbuf.killBackward(txtbuf)
    local line, cur_col, cur_row = txtbuf:currentPosition()
    if cur_col > 1 and _is_paired(line[cur_col - 1], line[cur_col]) then
       txtbuf:right()
@@ -446,7 +446,7 @@ function Txtbuf.deleteBackward(txtbuf)
       txtbuf:beginSelection()
       txtbuf:left()
    end
-   txtbuf:deleteSelected()
+   txtbuf:killSelection()
 end
 ```
 
