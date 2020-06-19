@@ -65,6 +65,7 @@
 
 
 
+
 assert(meta)
 local Codepoints = require "singletons/codepoints"
 local lines = import("core/string", "lines")
@@ -190,6 +191,84 @@ end
 
 
 
+function Txtbuf.beginSelection(txtbuf)
+   txtbuf.mark = clone(txtbuf.cursor)
+end
+
+
+
+
+
+
+
+function Txtbuf.clearSelection(txtbuf)
+   if txtbuf:hasSelection() then
+      txtbuf.cursor_changed = true
+   end
+   txtbuf.mark = nil
+end
+
+
+
+
+
+
+
+
+
+
+
+function Txtbuf.hasSelection(txtbuf)
+   if not txtbuf.mark then return false end
+   if txtbuf.mark.row == txtbuf.cursor.row
+      and txtbuf.mark.col == txtbuf.cursor.col then
+      txtbuf.mark = nil
+      return false
+   else
+      return true
+   end
+end
+
+
+
+
+
+
+
+
+
+
+
+function Txtbuf.selectionStart(txtbuf)
+   if not txtbuf:hasSelection() then return nil end
+   local c, m = txtbuf.cursor, txtbuf.mark
+   if m.row < c.row or
+      (m.row == c.row and m.col < c.col) then
+      return m.col, m.row
+   else
+      return c.col, c.row
+   end
+end
+
+function Txtbuf.selectionEnd(txtbuf)
+   if not txtbuf:hasSelection() then return nil end
+   local c, m = txtbuf.cursor, txtbuf.mark
+   if m.row > c.row or
+      (m.row == c.row and m.col > c.col) then
+      return m.col, m.row
+   else
+      return c.col, c.row
+   end
+end
+
+
+
+
+
+
+
+
+
 function Txtbuf.openRow(txtbuf, row_num)
    if row_num < 1 or row_num > #txtbuf.lines then
       return nil
@@ -289,93 +368,86 @@ end
 
 
 
+local deleterange = import("core/table", "deleterange")
+function Txtbuf.deleteSelected(txtbuf)
+   if not txtbuf:hasSelection() then
+      return false
+   end
+   txtbuf.contents_changed = true
+   local start_col, start_row = txtbuf:selectionStart()
+   local end_col, end_row = txtbuf:selectionEnd()
+   if start_row == end_row then
+      -- Deletion within a line, just remove some chars
+      deleterange(txtbuf.lines[start_row], start_col, end_col - 1)
+   else
+      -- Grab both lines--we're about to remove the end line
+      local start_line, end_line = txtbuf.lines[start_row], txtbuf.lines[end_row]
+      deleterange(txtbuf.lines, start_row + 1, end_row)
+      -- Splice lines together
+      for i = start_col, #start_line do
+         start_line[i] = nil
+      end
+      for i = end_col, #end_line do
+         insert(start_line, end_line[i])
+      end
+   end
+   -- Cursor always ends up at the start of the formerly-selected area
+   txtbuf:setCursor(start_row, start_col)
+   -- No selection any more
+   txtbuf:clearSelection()
+end
+
+
+
+
+
+
+
+
+
+local function _delete_for_motion(motionName)
+   return function(txtbuf, ...)
+      txtbuf:beginSelection()
+      txtbuf[motionName](txtbuf, ...)
+      return txtbuf:deleteSelected()
+   end
+end
+
+for delete_name, motion_name in pairs({
+   deleteForward = "right",
+   killToEndOfLine = "endOfLine",
+   killToBeginningOfLine = "startOfLine",
+   killToEndOfWord = "rightWordAlpha",
+   killToBeginningOfWord = "leftWordAlpha"
+}) do
+   Txtbuf[delete_name] = _delete_for_motion(motion_name)
+end
+
+
+
+
+
+
+
+
+
+
 local function _is_paired(a, b)
    return _openers[a] == b
 end
 
 function Txtbuf.deleteBackward(txtbuf)
    local line, cur_col, cur_row = txtbuf:currentPosition()
-   if cur_row == 1 and cur_col == 1 then
-      return false
-   end
-   -- At this point we will definitely make a change
-   txtbuf.contents_changed = true
-   if cur_col > 1 then
-      if _is_paired(line[cur_col - 1], line[cur_col]) then
-         remove(line, cur_col)
-      end
-      remove(line, cur_col - 1)
-      txtbuf:setCursor(nil, cur_col - 1)
-      return false
+   if cur_col > 1 and _is_paired(line[cur_col - 1], line[cur_col]) then
+      txtbuf:right()
+      txtbuf:beginSelection()
+      txtbuf:left(2)
    else
-      txtbuf:openRow(cur_row - 1)
-      local new_col = #txtbuf.lines[cur_row - 1] + 1
-      splice(txtbuf.lines[cur_row - 1], nil, line)
-      remove(txtbuf.lines, cur_row)
-      txtbuf:setCursor(cur_row - 1, new_col)
-      return true
+      txtbuf:beginSelection()
+      txtbuf:left()
    end
+   txtbuf:deleteSelected()
 end
-
-
-
-
-
-
-function Txtbuf.deleteForward(txtbuf)
-   local line, cur_col, cur_row = txtbuf:currentPosition()
-   if cur_row == #txtbuf.lines and cur_col > #line then
-      return false
-   end
-   txtbuf.contents_changed = true
-   if cur_col <= #line then
-      remove(line, cur_col)
-      return false
-   else
-      txtbuf:openRow(cur_row + 1)
-      splice(line, nil, txtbuf.lines[cur_row + 1])
-      remove(txtbuf.lines, cur_row + 1)
-      return true
-   end
-end
-
-
-
-
-
-
-function Txtbuf.killToEndOfLine(txtbuf)
-   local line, cur_col, cur_row = txtbuf:currentPosition()
-   if cur_col == #line + 1 then return false end
-   txtbuf.contents_changed = true
-   for _ = #line, cur_col, -1 do
-      remove(line)
-   end
-   return true
-end
-
-
-
-
-
-
-function Txtbuf.killToBeginningOfLine(txtbuf)
-   local line, cur_col, cur_row = txtbuf:currentPosition()
-   if cur_col == 1 then return false end
-   local final, shift = #line, 1
-   -- copy remainder, if any
-   for i = cur_col, #line do
-      line[shift] = line[i]
-      shift = shift + 1
-   end
-   for i = shift, final do
-      line[i] = nil
-   end
-   txtbuf.contents_changed = true
-   txtbuf:setCursor(nil, 1)
-   return true
-end
-
 
 
 
@@ -563,46 +635,6 @@ function Txtbuf.rightToBoundary(txtbuf, pattern, reps)
       return false
    end
 end
-
-
-
-
-
-
-function Txtbuf.killToEndOfWord(txtbuf)
-   local line, cur_col, cur_row = txtbuf:currentPosition()
-   local moved, colΔ, rowΔ = txtbuf:scanFor('%W', reps, true)
-   if moved then
-      -- check if the row has changed
-      -- if so, delete to end of line
-      -- otherwise, delete colΔ codepoints
-      txtbuf.contents_changed = true
-      return true
-   else
-      return false
-   end
-end
-
-
-
-
-
-
-function Txtbuf.killToBeginningOfWord(txtbuf)
-   local line, cur_col, cur_row = txtbuf:currentPosition()
-   local moved, colΔ, rowΔ = txtbuf:scanFor('%W', reps, false)
-   if moved then
-      -- check if the row has changed
-      -- if so, delete to beginning of line
-      -- otherwise, delete -colΔ codepoints
-      -- and relocate the cursor accordingly
-      txtbuf.contents_changed = true
-      return true
-   else
-      return false
-   end
-end
-
 
 
 
