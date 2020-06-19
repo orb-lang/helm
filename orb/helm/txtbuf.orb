@@ -433,12 +433,14 @@ with a select-move-delete sequence, but need to inspect nearby chars first.
 
 #!lua
 local function _is_paired(a, b)
-   return _openers[a] == b
+   -- a or b might be out-of-bounds, and if a is not a brace and b is nil,
+   -- we would incorrectly answer true, so check that both a and b are present
+   return a and b and _openers[a] == b
 end
 
 function Txtbuf.killBackward(txtbuf)
    local line, cur_col, cur_row = txtbuf:currentPosition()
-   if cur_col > 1 and _is_paired(line[cur_col - 1], line[cur_col]) then
+   if _is_paired(line[cur_col - 1], line[cur_col]) then
       txtbuf:right()
       txtbuf:beginSelection()
       txtbuf:left(2)
