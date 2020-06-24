@@ -212,7 +212,7 @@ insert(migrations, migration_3)
 #/lua
 
 
-**** Version 4: sessions and profiles
+**** Version 4: Sessions
 
 
 ***** Sessions
@@ -236,8 +236,7 @@ We'll want to add additional affordances for easy testing, which will be
 documented elsewhere.
 
 
-
-***** Profiles
+***** Version 5? Profiles
 
 Right now, =helm= is omokase: you get some readline commands, and you get the
 colors we give you, and that's that.
@@ -263,12 +262,11 @@ do with Lua files.
 I dunno. I've been waffling on this for months. Ah well.
 
 
-
 *** boot(conn)
 
 =boot= takes an open =historian.conn= and brings it up to speed.
 
-As the conn is kept locally, this function has no return value.
+This function has no return value.
 
 #!lua
 local assertfmt = import("core:core/string", "assertfmt")
@@ -288,7 +286,7 @@ function helm_db.boot(conn)
       user_version = 1
    end
    if user_version < HELM_DB_VERSION then
-      for i = user_version, HELM_DB_VERSION do
+      for i = user_version + 1, HELM_DB_VERSION do
          migrations[i](conn)
       end
       conn.pragma.user_version(HELM_DB_VERSION)

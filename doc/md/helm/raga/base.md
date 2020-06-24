@@ -1,6 +1,7 @@
 # Raga base
 
-Some common functionality for ragas
+
+Some common functionality for ragas\.
 
 ## Dependencies
 
