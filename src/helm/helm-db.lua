@@ -286,7 +286,7 @@ function helm_db.boot(conn)
       user_version = 1
    end
    if user_version < HELM_DB_VERSION then
-      for i = user_version, HELM_DB_VERSION do
+      for i = user_version + 1, HELM_DB_VERSION do
          migrations[i](conn)
       end
       conn.pragma.user_version(HELM_DB_VERSION)
