@@ -74,24 +74,23 @@ Other than that, SQLite lets you add columns and rename tables.
 
 When this is done, it will be noted.
 
-#!lua
-local create_project_table = [[
+#!sql @create_project_table #asLua
 CREATE TABLE IF NOT EXISTS project (
    project_id INTEGER PRIMARY KEY AUTOINCREMENT,
    directory TEXT UNIQUE,
    time DATETIME DEFAULT CURRENT_TIMESTAMP
 );
-]]
+#/sql
 
-local create_project_table_3 = [[
+#!sql @create_project_table_3 #asLua
 CREATE TABLE IF NOT EXISTS project_3 (
    project_id INTEGER PRIMARY KEY AUTOINCREMENT,
    directory TEXT UNIQUE,
    time DATETIME DEFAULT (strftime('%Y-%m-%dT%H:%M:%f', 'now'))
 );
-]]
+#/sql
 
-local create_repl_table = [[
+#!sql @create_repl_table #asLua
 CREATE TABLE IF NOT EXISTS repl (
    line_id INTEGER PRIMARY KEY AUTOINCREMENT,
    project INTEGER,
@@ -101,9 +100,9 @@ CREATE TABLE IF NOT EXISTS repl (
       REFERENCES project (project_id)
       ON DELETE CASCADE
 );
-]]
+#/sql
 
-local create_repl_table_3 = [[
+#!sql @create_repl_table_3 #asLua
 CREATE TABLE IF NOT EXISTS repl_3 (
    line_id INTEGER PRIMARY KEY AUTOINCREMENT,
    project INTEGER,
@@ -113,9 +112,9 @@ CREATE TABLE IF NOT EXISTS repl_3 (
       REFERENCES project (project_id)
       ON DELETE CASCADE
 );
-]]
+#/sql
 
-local create_result_table = [[
+#!sql @create_result_table #asLua
 CREATE TABLE IF NOT EXISTS result (
    result_id INTEGER PRIMARY KEY AUTOINCREMENT,
    line_id INTEGER,
@@ -125,9 +124,9 @@ CREATE TABLE IF NOT EXISTS result (
       REFERENCES repl (line_id)
       ON DELETE CASCADE
 );
-]]
+#/sql
 
-local create_session_table = [[
+#!sql @create_session_table #asLua
 CREATE TABLE IF NOT EXISTS session (
 session_id INTEGER PRIMARY KEY AUTOINCREMENT,
 name TEXT,
@@ -140,55 +139,50 @@ sha TEXT,
 FOREIGN KEY (project)
    REFERENCES project (project_id)
    ON DELETE CASCADE );
-]]
-#/lua
+#/sql
 
 
 **** Insertions
 
-#!lua
-local insert_line = [[
+#!sql @insert_line #asLua
 INSERT INTO repl (project, line) VALUES (:project, :line);
-]]
+#/sql
 
-local insert_result = [[
+#!sql @insert_result #asLua
 INSERT INTO result (line_id, repr) VALUES (:line_id, :repr);
-]]
+#/sql
 
-local insert_project = [[
+#!sql @insert_project #asLua
 INSERT INTO project (directory) VALUES (?);
-]]
-#/lua
+#/sql
 
 
 **** Selections
 
-#!lua
-local get_recent = [[
+#!sql @get_recent #asLua
 SELECT CAST (line_id AS REAL), line FROM repl
    WHERE project = :project
    ORDER BY line_id DESC
    LIMIT :num_lines;
-]]
+#/sql
 
-local get_number_of_lines = [[
+#!sql @get_number_of_lines #asLua
 SELECT CAST (count(line) AS REAL) from repl
    WHERE project = ?
 ;
-]]
+#/sql
 
-local get_project = [[
+#!sql @get_project #asLua
 SELECT project_id FROM project
    WHERE directory = %s;
-]]
+#/sql
 
-local get_results = [[
+#!sql @get_results #asLua
 SELECT result.repr
 FROM result
 WHERE result.line_id = :line_id
 ORDER BY result.result_id;
-]]
-#/lua
+#/sql
 
 
 *** Migrations
