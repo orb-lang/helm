@@ -157,7 +157,17 @@ a = require "anterm:anterm"
 
 -- Get window size and set up an idler to keep it refreshed
 
-local max_col, max_row = uv.tty_get_winsize(stdin)
+local MOUSE_MAX = 223
+
+local function bind_pane(col, row)
+   local bound_col = col > MOUSE_MAX and MOUSE_MAX or col
+   local bound_row = row > MOUSE_MAX and MOUSE_MAX or row
+   return bound_col, bound_row
+end
+
+local max_col, max_row = bind_pane(uv.tty_get_winsize(stdin))
+
+
 
 modeS = require "helm/modeselektor" (max_col, max_row, write)
 local insert = assert(table.insert)
@@ -172,7 +182,7 @@ local timer = uv.new_timer()
 uv.timer_start(timer, 500, 500, function()
    max_col, max_row = uv.tty_get_winsize(stdin)
    if max_col ~= modeS.max_col or max_row ~= modeS.max_row then
-      modeS.max_col, modeS.max_row = max_col, max_row
+      modeS.max_col, modeS.max_row = bind_pane(max_col, max_row)
       -- Mark all zones as touched since we don't know the state of the screen
       -- (some terminals, iTerm for sure, will attempt to reflow the screen
       -- themselves and fail miserably)
