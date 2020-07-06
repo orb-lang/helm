@@ -10,13 +10,15 @@ specialized for search results, from either an actual search or `suggest`\.
 -  <numbers>:        The items available to select
 -  selected\_index:   Index of the currently selected item
 -  show\_shortcuts:   Whether to show M\-n shortcut indicators
-    Search\-specific fields:
+
+Search\-specific fields:
 
 -  frag:       The search string that produced the list, to be highlighted
-                  in the output
+    in the output
 -  lit\_frag:   The original search string, unmodified by any fuzzy matching
 -  best:       Whether a match was found without employing any fuzzy matching
-    ```lua
+
+```lua
 local SelectionList = meta {}
 local new
 ```

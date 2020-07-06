@@ -4,10 +4,13 @@
 `nerf` is the default mode for the repl\.
 
 -  \#Todo
-      - \[X\]  All of the content for the first draft is in `modeselektor`, so
-              let's transfer that\.
-        - \[?\]  There should probably be a metatable for Mode objects\.
-      
+
+  - \[X\]  All of the content for the first draft is in `modeselektor`, so
+      let's transfer that\.
+
+  - \[?\]  There should probably be a metatable for Mode objects\.
+
+
 #### includes
 
 This is copypasta from Modeselektor, but yeah, we'll need most of this\.
