@@ -502,7 +502,7 @@ function Historian.persist(historian, txtbuf, results)
    end
    historian.conn:exec("SAVEPOINT save_persist")
    historian.insert_line:bindkv { project = historian.project_id,
-                                       line    = lb }
+                                       line    = sql.blob(lb) }
    local err = historian.insert_line:step()
    if not err then
       historian.insert_line:clearbind():reset()
