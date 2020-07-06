@@ -8,14 +8,14 @@ emitting [Reslines](~/helm/resbuf#Resline)\.
 
 ### Instance Fields
 
-\-  token\_source : An iterator function returning `Token`s to be
+-  token\_source : An iterator function returning `Token`s to be
       arranged into lines\.
-\-  color : The color table to use\.
-\-  width : The width in which to fit the output\.
-\-  more : Are more tokens available from the token\_source?
-\-  level : The indent level as of the start of the current line\. \#stages is
+-  color : The color table to use\.
+-  width : The width in which to fit the output\.
+-  more : Are more tokens available from the token\_source?
+-  level : The indent level as of the start of the current line\. \#stages is
       the equivalent at the current position\.
-\-  stages : Stack of tables representing the type \(array, map, others TBD\)
+-  stages : Stack of tables representing the type \(array, map, others TBD\)
       and printing mode \(short or long\) of each level of nesting entered
       and not finished at this point in the stream\. Includes a dummy entry at
       index 0 for the case where we are printing something other than a table\.
