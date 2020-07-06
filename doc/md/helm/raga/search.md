@@ -59,13 +59,13 @@ function Search.NAV.SHIFT_UP(modeS, category, value)
 end
 ```
 
-\- \[ \]  \#Todo
+- \[ \]  \#Todo
 
-  \- \[ \]  Add Search\.NAV\.SHIFT\_ALT\_\(UP|DOWN\), to move a page at a time\.
-         Hook them to PgUp and PgDown while we're at it\.
+  - \[ \]  Add Search\.NAV\.SHIFT\_ALT\_\(UP|DOWN\), to move a page at a time\.
+      Hook them to PgUp and PgDown while we're at it\.
 
-  \- \[ \]  Add Search\.NAV\.HOME and Search\.NAV\.END to snap to the
-         top and bottom\.
+  - \[ \]  Add Search\.NAV\.HOME and Search\.NAV\.END to snap to the
+      top and bottom\.
 
 ```lua
 Search.NAV.UP = Search.NAV.SHIFT_UP

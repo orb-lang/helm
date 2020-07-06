@@ -48,20 +48,20 @@ This defines the persistence model for bridge\.
 
 ### SQLite battery
 
-\-  \#Todo write a migration to convert timestamps to use this format:
+-  \#Todo write a migration to convert timestamps to use this format:
 
-   \-  strftime\('%Y\-%m\-%dT%H:%M:%f', 'now'\)\)
+   -  strftime\('%Y\-%m\-%dT%H:%M:%f', 'now'\)\)
 
-      This replaces CURRENT\_TIMESTAMP in the DEFAULT clause\.
+       This replaces CURRENT\_TIMESTAMP in the DEFAULT clause\.
 
-\-  Then start using that instead, to get millisecond resolution\.
-   Sorting by line\_id is better anyway, but we should get as much
-   resolution out of the machine as we can\.
+-  Then start using that instead, to get millisecond resolution\.
+    Sorting by line\_id is better anyway, but we should get as much
+    resolution out of the machine as we can\.
 
-\-  \#Todo write a migration to fix some of these silly table names:
-   \-  The repl table is mostly a line, and the result table is a repr,
-      these could and should just be a line table with line\.line and a
-      result table with result\.result\.
+-  \#Todo write a migration to fix some of these silly table names:
+   -  The repl table is mostly a line, and the result table is a repr,
+       these could and should just be a line table with line\.line and a
+       result table with result\.result\.
 
 
 #### Create tables
@@ -496,7 +496,7 @@ function Historian.persist(historian, txtbuf, results)
    end
    historian.conn:exec("SAVEPOINT save_persist")
    historian.insert_line:bindkv { project = historian.project_id,
-                                       line    = lb }
+                                       line    = sql.blob(lb) }
    local err = historian.insert_line:step()
    if not err then
       historian.insert_line:clearbind():reset()
@@ -567,18 +567,18 @@ harmless to suggest the alternative\.
 Returns a `collection`\. The array portion of a collection is any line
 which matches the search\. The other fields are:
 
-\- \#fields
-  \-  best :  Whether this is a best\-fit collection, that is, one with all
-             codepoints in order\.
+- \#fields
+  -  best :  Whether this is a best\-fit collection, that is, one with all
+      codepoints in order\.
 
-  \-  frag :  The fragment, used to highlight the collection\.  Is transposed
-             in a next\-best search\.
+  -  frag :  The fragment, used to highlight the collection\.  Is transposed
+      in a next\-best search\.
 
-  \-  lit\_frag :  The literal fragment passed as the =frag= parameter\.  Used to
-                 compare to the last search\.
+  -  lit\_frag :  The literal fragment passed as the `frag` parameter\.  Used to
+      compare to the last search\.
 
-  \-  cursors :  This is an array, each value is the cursor position of
-                the corresponding line in the history\.
+  -  cursors :  This is an array, each value is the cursor position of
+      the corresponding line in the history\.
 
 
 ```lua
