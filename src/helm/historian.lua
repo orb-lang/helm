@@ -521,7 +521,7 @@ function Historian.persist(historian, txtbuf, results)
    -- Make a dummy table to stand in for Composer:window(),
    -- since we won't be making a Composer at all.
    profile.start("li1", function(th, samples, vmmode)
-                          local d = profile.dumpstack(th, "pF", 1)
+                          local d = vmmode .. " " .. profile.dumpstack(th, "pl", 1)
                           profiled[d] = (profiled[d] or 0) + samples
                         end)
    _Bridge.profiling = true
@@ -534,12 +534,7 @@ function Historian.persist(historian, txtbuf, results)
    end
    local i = 1
    historian.idlers:insert(persist_idler)
-   persist_idler:start(
-
-
-
-
-      function()
+   persist_idler:start(function()
       while have_results and i <= results.n do
          local success, token = pcall(results_tabulates[i])
          if success and token then
@@ -568,8 +563,6 @@ function Historian.persist(historian, txtbuf, results)
       end
       historian.conn:exec("RELEASE save_persist")
       persist_idler:stop()
-      profile.stop()
-      _Bridge.profiling = false
       assert(historian.idlers:remove(persist_idler) == true)
    end)
    return true

@@ -346,6 +346,18 @@ uv.tty_reset_mode()
 
 uv.stop()
 
+profile.stop()
+_Bridge.profiling = false
+local insert, sort = assert(table.insert), assert(table.sort)
+local profiled_pairs = {}
+for k, v in pairs(profiled) do
+   insert(profiled_pairs, {loc = k, samples = v})
+end
+sort(profiled_pairs, function(a,b) return a.samples > b.samples end)
+for _, v in ipairs(profiled_pairs) do
+   write(v.loc, "\t", v.samples, "\n")
+end
+
 io.stdout:flush()
 
 -- nil out our extra copy of _G
