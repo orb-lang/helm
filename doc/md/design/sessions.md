@@ -39,7 +39,7 @@ foundation already laid\.
 
 - \#Tasks \[/\]:
 
-  - \[ \]  Prepare a migration in the SQLite layer which backs `helm`\.
+  - [ ]  Prepare a migration in the SQLite layer which backs `helm`\.
 
       I've started work on this; it might take some tries to get right, the
       migration framework itself is already in place\.
@@ -47,16 +47,16 @@ foundation already laid\.
       This is the kind of system where you get the data structures right
       and everything else follows from there\.
 
-  - \[ \]  Add a "macro mode" where a session is recorded and every line is
+  - [ ]  Add a "macro mode" where a session is recorded and every line is
       marked as accepted\.  This is inflexible and somewhat painstaking to
       use, but it is the minimum viable system, and already useful as\-is\.
 
       This will also involve adding appropriate flags in `br` itself\.
 
-  - \[ \]  Use these sample sessions to build a headless `repl` which runs tests
+  - [ ]  Use these sample sessions to build a headless `repl` which runs tests
       and reports the results\.
 
-  - \[ \]  Once we have a sessions framework, we make it shine by adding an
+  - [ ]  Once we have a sessions framework, we make it shine by adding an
       interactive review mode\.  Still ironing out the details here, but it
       will allow the user to review the played session on quit, and assign
       to each line the values: `accept`, `fail`, `ignore`, and `skip`\.
@@ -72,7 +72,7 @@ foundation already laid\.
       For `accept` and `reject` tests, this will provide an opportunity to
       add a description of the invariant the test upholds\.
 
-  - \[ \]  Most unit testing suites provide a collection of verbs useful for
+  - [ ]  Most unit testing suites provide a collection of verbs useful for
       testing things\.  We don't rely on this to the same degree, since we
       can match any sort of return value, and we can do simple things like
       pinning the value of a single key through field access\.
@@ -82,7 +82,7 @@ foundation already laid\.
       Some of these already live in `core`; `table.keys` and
       `table.collect` being two prime examples\.
 
-  - \[ \]  We need a way to share these tests, so a final task is implementing
+  - [ ]  We need a way to share these tests, so a final task is implementing
       import and export for sessions\.  While we're in there, it would be
       good to leave some hooks for exporting and importing ordinary repl
       sessions\.

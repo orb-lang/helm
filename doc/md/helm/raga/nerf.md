@@ -5,10 +5,10 @@
 
 -  \#Todo
 
-  - \[X\]  All of the content for the first draft is in `modeselektor`, so
+  - [X]  All of the content for the first draft is in `modeselektor`, so
       let's transfer that\.
 
-  - \[?\]  There should probably be a metatable for Mode objects\.
+  - [?]  There should probably be a metatable for Mode objects\.
 
 
 #### includes
