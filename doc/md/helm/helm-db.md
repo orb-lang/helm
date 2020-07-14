@@ -91,7 +91,7 @@ CREATE TABLE IF NOT EXISTS session (
    session_id INTEGER PRIMARY KEY,
    title TEXT,
    project INTEGER,
-   accepted INTEGER NOT NULL CHECK (accepted = 0 or accepted = 1),
+   accepted INTEGER NOT NULL DEFAULT 0 CHECK (accepted = 0 or accepted = 1),
    vc_hash TEXT,
    FOREIGN KEY (project)
       REFERENCES project (project_id)
@@ -106,7 +106,8 @@ CREATE TABLE IF NOT EXISTS premise (
    -- order is 1-indexed for Lua compatibility
    order INTEGER NOT NULL CHECK (order > 0),
    title TEXT,
-   accepted INTEGER NOT NULL CHECK (accepted = 0 or accepted = 1),
+   status STRING NOT NULL CHECK (
+      status = 'accept' or status = 'reject' or status = 'ignore' ),
    PRIMARY KEY (session, order) ON CONFLICT IGNORE
    FOREIGN KEY (session)
       REFERENCES session (session_id)

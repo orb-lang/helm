@@ -318,18 +318,18 @@ harmless to suggest the alternative\.
 Returns a `collection`\. The array portion of a collection is any line
 which matches the search\. The other fields are:
 
-\- \#fields
-  \-  best :  Whether this is a best\-fit collection, that is, one with all
-             codepoints in order\.
+- \#fields
+  -  best :  Whether this is a best\-fit collection, that is, one with all
+      codepoints in order\.
 
-  \-  frag :  The fragment, used to highlight the collection\.  Is transposed
-             in a next\-best search\.
+  -  frag :  The fragment, used to highlight the collection\.  Is transposed
+      in a next\-best search\.
 
-  \-  lit\_frag :  The literal fragment passed as the =frag= parameter\.  Used to
-                 compare to the last search\.
+  -  lit\_frag :  The literal fragment passed as the `frag` parameter\.  Used to
+      compare to the last search\.
 
-  \-  cursors :  This is an array, each value is the cursor position of
-                the corresponding line in the history\.
+  -  cursors :  This is an array, each value is the cursor position of
+      the corresponding line in the history\.
 
 
 ```lua
