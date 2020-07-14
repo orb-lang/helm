@@ -478,19 +478,23 @@ Uses \x01 (SOH, Start of Header) and \x02 (STX, Start of Text) as delimiters.
 Metadata is stored in a compact, hard-coded format.
 
 #!lua
-
+local function ninsert(tab, val)
+   tab.n = tab.n + 1
+   tab[tab.n] = val
+end
+local SOH, STX = "\x01", "\x02"
 local function dump_token(token, stream)
-   insert(stream, "\x01")
+   ninsert(stream, SOH)
    if token.event then
-      insert(stream, "event=")
-      insert(stream, token.event)
+      ninsert(stream, "event=")
+      ninsert(stream, token.event)
    end
    if token.wrappable then
-      if token.event then insert(stream, " ") end
-      insert(stream, "wrappable")
+      if token.event then ninsert(stream, " ") end
+      ninsert(stream, "wrappable")
    end
-   insert(stream, "\x02")
-   insert(stream, tostring(token))
+   ninsert(stream, STX)
+   ninsert(stream, tostring(token))
    return stream
 end
 
@@ -529,7 +533,7 @@ function Historian.persist(historian, txtbuf, results)
    if have_results then
       for i = 1, results.n do
          results_tabulates[i] = tabulate(results[i], dummy_window, C.no_color)
-         results_tostring[i] = {}
+         results_tostring[i] = { n = 0 }
       end
    end
    local i = 1
@@ -651,7 +655,6 @@ local find, match, sub = assert(string.find),
                          assert(string.match),
                          assert(string.sub)
 local Token = require "helm/repr/token"
-local SOH, STX = "\x01", "\x02"
 local function _db_result__repr(result)
    if sub(result[1], 1, 1) == SOH then
       -- New format--tokens delimited by SOH/STX
