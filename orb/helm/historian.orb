@@ -540,13 +540,21 @@ function Historian.persist(historian, txtbuf, results)
    historian.idlers:insert(persist_idler)
    persist_idler:start(function()
       while have_results and i <= results.n do
-         local success, token = pcall(results_tabulates[i])
-         if success and token then
-            dump_token(token, results_tostring[i])
-         else
-            results_tostring[i] = concat(results_tostring[i], "")
-            i = i + 1
-            if not success then
+         local start_token_count = results_tostring[i].n
+         while results_tostring[i].n - start_token_count < 100 do
+            local success, token = pcall(results_tabulates[i])
+            if success then
+               if token then
+                  dump_token(token, results_tostring[i])
+               else
+                  results_tostring[i] = concat(results_tostring[i], "", 1, results_tostring[i].n)
+                  i = i + 1
+                  -- Stop this execution of the idler now, even if we
+                  -- haven't gotten 100 tokens--easier than keeping track
+                  -- across result boundaries
+                  return nil
+               end
+            else
                error(token)
             end
          end
