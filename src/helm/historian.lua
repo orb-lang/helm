@@ -466,15 +466,6 @@ end
 
 
 
-profile = require("jit.profile")
-profiled = {}
-
-
-
-
-
-
-
 
 
 
@@ -527,11 +518,6 @@ function Historian.persist(historian, txtbuf, results)
       return true
    end
 
-   profile.start("li1", function(th, samples, vmmode)
-                          local d = vmmode .. " " .. profile.dumpstack(th, "pl", 1)
-                          profiled[d] = (profiled[d] or 0) + samples
-                        end)
-   _Bridge.profiling = true
    local results_tostring, results_tabulates = {}, {}
    -- Make a dummy table to stand in for Composer:window(),
    -- since we won't be making a Composer at all.
