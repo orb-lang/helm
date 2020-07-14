@@ -520,26 +520,31 @@ function Historian.persist(historian, txtbuf, results)
    local line_id = sql.lastRowId(historian.conn)
    insert(historian.line_ids, line_id)
 
-   local persist_idler = uv.new_idle()
-   local results_tostring, results_tabulates = {}, {}
-   -- Make a dummy table to stand in for Composer:window(),
-   -- since we won't be making a Composer at all.
+   -- If there's nothing to persist, release our savepoint
+   -- and don't bother starting the idler
+   if not have_results then
+      historian.conn:exec("RELEASE save_persist")
+      return true
+   end
+
    profile.start("li1", function(th, samples, vmmode)
                           local d = vmmode .. " " .. profile.dumpstack(th, "pl", 1)
                           profiled[d] = (profiled[d] or 0) + samples
                         end)
    _Bridge.profiling = true
+   local results_tostring, results_tabulates = {}, {}
+   -- Make a dummy table to stand in for Composer:window(),
+   -- since we won't be making a Composer at all.
    local dummy_window = { width = 80, remains = 80, color = C.no_color }
-   if have_results then
-      for i = 1, results.n do
-         results_tabulates[i] = tabulate(results[i], dummy_window, C.no_color)
-         results_tostring[i] = { n = 0 }
-      end
+   for i = 1, results.n do
+      results_tabulates[i] = tabulate(results[i], dummy_window, C.no_color)
+      results_tostring[i] = { n = 0 }
    end
    local i = 1
+   local persist_idler = uv.new_idle()
    historian.idlers:insert(persist_idler)
    persist_idler:start(function()
-      while have_results and i <= results.n do
+      if i <= results.n then
          local start_token_count = results_tostring[i].n
          while results_tostring[i].n - start_token_count < 100 do
             local success, token = pcall(results_tabulates[i])
@@ -561,16 +566,14 @@ function Historian.persist(historian, txtbuf, results)
          return nil
       end
       -- now persist
-      if have_results then
-         for i = 1, results.n do
-            historian.insert_result:bindkv { line_id = line_id,
-                                             repr = results_tostring[i] }
-            err = historian.insert_result:step()
-            if not err then
-               historian.insert_result:clearbind():reset()
-            else
-               error(err)
-            end
+      for i = 1, results.n do
+         historian.insert_result:bindkv { line_id = line_id,
+                                          repr = results_tostring[i] }
+         err = historian.insert_result:step()
+         if not err then
+            historian.insert_result:clearbind():reset()
+         else
+            error(err)
          end
       end
       historian.conn:exec("RELEASE save_persist")
