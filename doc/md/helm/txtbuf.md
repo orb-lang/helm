@@ -18,22 +18,22 @@ A closed line is just a string\.
 
 ### Instance fields
 
--  lines :  An array of strings \(closed lines\), or arrays containing codepoints
-    \(string fragments\) \(open lines\)\.
+\-  lines :  An array of strings \(closed lines\), or arrays containing codepoints
+           \(string fragments\) \(open lines\)\.
 
--  cursor :  A table representing the cursor position:
-   - row : Row containing the cursor\. Valid values are 1 to \#lines\.
-   - col : Number of fragments to skip before an insertion\.
-       Valid values are 1 to \#lines\[row\] \+ 1\.
+\-  cursor :  A table representing the cursor position:
+   \- row : Row containing the cursor\. Valid values are 1 to \#lines\.
+   \- col : Number of fragments to skip before an insertion\.
+           Valid values are 1 to \#lines\[row\] \+ 1\.
 
    These fields shouldn't be written to, use `txtbuf:setCursor()` which will
    check bounds\.  They may be retrieved, along with the line, with
    `txtbuf:currentPosition()`\.
 
--  cursor\_changed:   A flag indicating whether the cursor has changed since
-    the flag was last reset\.
--  contents\_changed: Similar flag for whether the actual contents of the
-    buffer have changed\.
+\-  cursor\_changed:   A flag indicating whether the cursor has changed since
+                     the flag was last reset\.
+\-  contents\_changed: Similar flag for whether the actual contents of the
+                     buffer have changed\.
 
 The intention is that all of these fields are manipulated internally: the
 codebase doesn't completely respect this, yet, but it should\.
@@ -49,18 +49,18 @@ cleaner that transition can be\.
 
 #### Instance fields to be added
 
-- mark :  A structure like `cursor`, representing the fixed end of a region,
-    with the `cursor` field being the mobile end\. Note that `cursor` may
-    be earlier than `mark`, respresenting the case where selection
-    proceeded backwards, e\.g\. by pressing Shift\+Left\. The "cursor" end
-    is always the one that moves when executing additional motions\.
+\- mark :  A structure like =cursor=, representing the fixed end of a region,
+          with the =cursor= field being the mobile end\. Note that =cursor= may
+          be earlier than =mark=, respresenting the case where selection
+          proceeded backwards, e\.g\. by pressing Shift\+Left\. The "cursor" end
+          is always the one that moves when executing additional motions\.
 
-    Mutation of these should be encapsulated such that they can be
-    combined into a "region" structure, of which there may eventually be
-    multiple instances, during for instance search and replace\.
-- disp :  Array of numbers, representing the furthest\-right column which
-    may be reached by printing the corresponding row\. Not equivalent
-    to \#lines\[n\] as one codepoint \!= one column\.
+          Mutation of these should be encapsulated such that they can be
+          combined into a "region" structure, of which there may eventually be
+          multiple instances, during for instance search and replace\.
+\- disp :  Array of numbers, representing the furthest\-right column which
+          may be reached by printing the corresponding row\. Not equivalent
+          to \#lines\[n\] as one codepoint \!= one column\.
 
 #### dependencies
 
@@ -490,14 +490,14 @@ and a matching one\.
 
 Returns move, the cursor delta, and the row delta\.
 
-- \#parameters
+\- \#parameters
 
-   - pattern:  A pattern matching character\(s\) to stop at\. Generally either a
-       single character or a single character class, e\.g\. %W
+   \- pattern:  A pattern matching character\(s\) to stop at\. Generally either a
+               single character or a single character class, e\.g\. %W
 
-   - reps:     Number of times to repeat the motion
+   \- reps:     Number of times to repeat the motion
 
-   - forward:  Boolean, true for forward search, false for backward\.
+   \- forward:  Boolean, true for forward search, false for backward\.
 
 ```lua
 local match = assert(string.match)
