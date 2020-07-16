@@ -74,7 +74,6 @@ Historian.HISTORY_LIMIT = 2000
 
 
 
-
 local create_project_table = [[
 CREATE TABLE IF NOT EXISTS project (
    project_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -145,8 +144,6 @@ FOREIGN KEY (project)
 
 
 
-
-
 local insert_line = [[
 INSERT INTO repl (project, line) VALUES (:project, :line);
 ]]
@@ -158,8 +155,6 @@ INSERT INTO result (line_id, repr) VALUES (:line_id, :repr);
 local insert_project = [[
 INSERT INTO project (directory) VALUES (?);
 ]]
-
-
 
 
 
@@ -188,7 +183,6 @@ FROM result
 WHERE result.line_id = :line_id
 ORDER BY result.result_id;
 ]]
-
 
 
 
@@ -502,7 +496,7 @@ function Historian.persist(historian, txtbuf, results)
    end
    historian.conn:exec("SAVEPOINT save_persist")
    historian.insert_line:bindkv { project = historian.project_id,
-                                       line    = lb }
+                                       line    = sql.blob(lb) }
    local err = historian.insert_line:step()
    if not err then
       historian.insert_line:clearbind():reset()
