@@ -30,27 +30,20 @@ A closed line is just a string\.
    check bounds\.  They may be retrieved, along with the line, with
    `txtbuf:currentPosition()`\.
 
-<<<<<<< doc/md/helm/txtbuf.md
-\-  mark :  A structure like =cursor=, representing the fixed end of a region,
-           with the =cursor= field being the mobile end\. Note that =cursor= may
-           be earlier than =mark=, respresenting the case where selection
-           proceeded backwards, e\.g\. by pressing Shift\+Left\. The "cursor" end
-           is always the one that moves when executing additional motions\.
+-  mark :  A structure like `cursor`, representing the fixed end of a region,
+    with the `cursor` field being the mobile end\. Note that `cursor` may
+    be earlier than `mark`, respresenting the case where selection
+    proceeded backwards, e\.g\. by pressing Shift\+Left\. The "cursor" end
+    is always the one that moves when executing additional motions\.
 
-           Mutation of these should be encapsulated such that they can be
-           combined into a "region" structure, of which there may eventually be
-           multiple instances, during for instance search and replace\.
+    Mutation of these should be encapsulated such that they can be
+    combined into a "region" structure, of which there may eventually be
+    multiple instances, during for instance search and replace\.
 
-\-  cursor\_changed:   A flag indicating whether the cursor has changed since
-                     the flag was last reset\.
-\-  contents\_changed: Similar flag for whether the actual contents of the
-                     buffer have changed\.
-=======
 -  cursor\_changed:   A flag indicating whether the cursor has changed since
     the flag was last reset\.
 -  contents\_changed: Similar flag for whether the actual contents of the
     buffer have changed\.
->>>>>>> doc/md/helm/txtbuf.md
 
 The intention is that all of these fields are manipulated internally: the
 codebase doesn't completely respect this, yet, but it should\.
@@ -66,20 +59,9 @@ cleaner that transition can be\.
 
 #### Instance fields to be added
 
-
-- mark :  A structure like `cursor`, representing the fixed end of a region,
-    with the `cursor` field being the mobile end\. Note that `cursor` may
-    be earlier than `mark`, respresenting the case where selection
-    proceeded backwards, e\.g\. by pressing Shift\+Left\. The "cursor" end
-    is always the one that moves when executing additional motions\.
-
-    Mutation of these should be encapsulated such that they can be
-    combined into a "region" structure, of which there may eventually be
-    multiple instances, during for instance search and replace\.
 - disp :  Array of numbers, representing the furthest\-right column which
     may be reached by printing the corresponding row\. Not equivalent
     to \#lines\[n\] as one codepoint \!= one column\.
-
 
 #### dependencies
 

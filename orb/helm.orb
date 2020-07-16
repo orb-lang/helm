@@ -176,7 +176,7 @@ local function s_out(msg)
 end
 
 -- make a new 'status' instance
-local s = require "singletons/status" (s_out)
+local s = require "status:status" (s_out)
 
 local timer = uv.new_timer()
 uv.timer_start(timer, 500, 500, function()

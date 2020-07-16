@@ -727,7 +727,7 @@ end
 
 **** modeS.status
 
-A way to jack into =singletons/status=.
+A way to jack into =status=.
 
 #!lua
 local function _status__repr(status_table)
