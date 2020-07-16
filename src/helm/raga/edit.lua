@@ -4,7 +4,7 @@
 
 
 
-local clone = import("core/table", "clone")
+local addall, clone = import("core/table", "addall", "clone")
 local RagaBase = require "helm:helm/raga/base"
 local Txtbuf = require "helm/txtbuf"
 
@@ -55,15 +55,19 @@ end
 
 
 local NAV = EditBase.NAV
+addall(NAV, {
+   LEFT           = toTxtbuf "left",
+   RIGHT          = toTxtbuf "right",
+   ALT_LEFT       = toTxtbuf "leftWordAlpha",
+   ALT_RIGHT      = toTxtbuf "rightWordAlpha",
+   HOME           = toTxtbuf "startOfLine",
+   END            = toTxtbuf "endOfLine",
+   BACKSPACE      = toTxtbuf "killBackward",
+   DELETE         = toTxtbuf "killForward",
+   ALT_BACKSPACE  = toTxtbuf "killToBeginningOfWord",
+   ALT_DELETE     = toTxtbuf "killToEndOfWord",
+})
 
-NAV.LEFT        = toTxtbuf "left"
-NAV.RIGHT       = toTxtbuf "right"
-NAV.ALT_LEFT    = toTxtbuf "leftWordAlpha"
-NAV.ALT_RIGHT   = toTxtbuf "rightWordAlpha"
-NAV.HOME        = toTxtbuf "startOfLine"
-NAV.END         = toTxtbuf "endOfLine"
-NAV.BACKSPACE   = toTxtbuf "deleteBackward"
-NAV.DELETE      = toTxtbuf "deleteForward"
 
 
 
@@ -96,9 +100,11 @@ CTRL ["^T"] = toTxtbuf "transposeLetter"
 
 
 
-EditBase.ALT ["M-w"] = NAV.ALT_RIGHT
-
-EditBase.ALT ["M-b"] = NAV.ALT_LEFT
+addall(EditBase.ALT, {
+   ["M-w"] = NAV.ALT_RIGHT,
+   ["M-b"] = NAV.ALT_LEFT,
+   ["M-d"] = NAV.ALT_DELETE
+})
 
 
 
