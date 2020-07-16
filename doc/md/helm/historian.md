@@ -48,20 +48,20 @@ This defines the persistence model for bridge\.
 
 ### SQLite battery
 
-\-  \#Todo write a migration to convert timestamps to use this format:
+-  \#Todo write a migration to convert timestamps to use this format:
 
-   \-  strftime\('%Y\-%m\-%dT%H:%M:%f', 'now'\)\)
+   -  strftime\('%Y\-%m\-%dT%H:%M:%f', 'now'\)\)
 
-      This replaces CURRENT\_TIMESTAMP in the DEFAULT clause\.
+       This replaces CURRENT\_TIMESTAMP in the DEFAULT clause\.
 
-\-  Then start using that instead, to get millisecond resolution\.
-   Sorting by line\_id is better anyway, but we should get as much
-   resolution out of the machine as we can\.
+-  Then start using that instead, to get millisecond resolution\.
+    Sorting by line\_id is better anyway, but we should get as much
+    resolution out of the machine as we can\.
 
-\-  \#Todo write a migration to fix some of these silly table names:
-   \-  The repl table is mostly a line, and the result table is a repr,
-      these could and should just be a line table with line\.line and a
-      result table with result\.result\.
+-  \#Todo write a migration to fix some of these silly table names:
+   -  The repl table is mostly a line, and the result table is a repr,
+       these could and should just be a line table with line\.line and a
+       result table with result\.result\.
 
 
 #### Create tables
@@ -473,7 +473,9 @@ local function ninsert(tab, val)
    tab.n = tab.n + 1
    tab[tab.n] = val
 end
+
 local SOH, STX = "\x01", "\x02"
+
 local function dump_token(token, stream)
    ninsert(stream, SOH)
    if token.event then
@@ -490,6 +492,7 @@ local function dump_token(token, stream)
 end
 
 local tabulate = require "helm/repr/tabulate"
+
 function Historian.persist(historian, txtbuf, results)
    local lb = tostring(txtbuf)
    local have_results = results
@@ -532,6 +535,12 @@ function Historian.persist(historian, txtbuf, results)
    persist_idler:start(function()
       if i <= results.n then
          local start_token_count = results_tostring[i].n
+         if start_token_count > 15000 then
+            -- bail early
+            results_tostring[i] = concat(results_tostring[i], "", 1, results_tostring[i].n)
+            i  = i + 1
+            return nil
+         end
          while results_tostring[i].n - start_token_count < 100 do
             local success, token = pcall(results_tabulates[i])
             if success then
@@ -583,18 +592,18 @@ harmless to suggest the alternative\.
 Returns a `collection`\. The array portion of a collection is any line
 which matches the search\. The other fields are:
 
-\- \#fields
-  \-  best :  Whether this is a best\-fit collection, that is, one with all
-             codepoints in order\.
+- \#fields
+  -  best :  Whether this is a best\-fit collection, that is, one with all
+      codepoints in order\.
 
-  \-  frag :  The fragment, used to highlight the collection\.  Is transposed
-             in a next\-best search\.
+  -  frag :  The fragment, used to highlight the collection\.  Is transposed
+      in a next\-best search\.
 
-  \-  lit\_frag :  The literal fragment passed as the =frag= parameter\.  Used to
-                 compare to the last search\.
+  -  lit\_frag :  The literal fragment passed as the `frag` parameter\.  Used to
+      compare to the last search\.
 
-  \-  cursors :  This is an array, each value is the cursor position of
-                the corresponding line in the history\.
+  -  cursors :  This is an array, each value is the cursor position of
+      the corresponding line in the history\.
 
 
 ```lua

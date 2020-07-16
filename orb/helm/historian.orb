@@ -473,7 +473,9 @@ local function ninsert(tab, val)
    tab.n = tab.n + 1
    tab[tab.n] = val
 end
+
 local SOH, STX = "\x01", "\x02"
+
 local function dump_token(token, stream)
    ninsert(stream, SOH)
    if token.event then
@@ -490,6 +492,7 @@ local function dump_token(token, stream)
 end
 
 local tabulate = require "helm/repr/tabulate"
+
 function Historian.persist(historian, txtbuf, results)
    local lb = tostring(txtbuf)
    local have_results = results
@@ -532,6 +535,12 @@ function Historian.persist(historian, txtbuf, results)
    persist_idler:start(function()
       if i <= results.n then
          local start_token_count = results_tostring[i].n
+         if start_token_count > 15000 then
+            -- bail early
+            results_tostring[i] = concat(results_tostring[i], "", 1, results_tostring[i].n)
+            i  = i + 1
+            return nil
+         end
          while results_tostring[i].n - start_token_count < 100 do
             local success, token = pcall(results_tabulates[i])
             if success then

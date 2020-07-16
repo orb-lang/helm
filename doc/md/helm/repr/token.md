@@ -8,29 +8,29 @@ mouse handling\.
 
 ### Instance fields
 
-\-  str        : The original string this token was created from\.
-                NB If =codepoints= exists, this does not take into account
-                any modifications made by insert\(\), remove\(\), or split\(\)\.
-\-  start      : The index within =str= or =codepoints= at which this token
-                starts\. Used when splitting to avoid copying the contents
-                after the split point \(which could be arbitrarily large\)\.
-\-  color      : A color value to use for the entire token\.
-\-  event      : A string indicating that this token has a special meaning, like
-                the beginning or end of an indented block, or a separator\.
-\-  wrappable  : If true, it is acceptable to wrap this token by breaking it
-                in the middle\. If false, it should be moved entirely to the
-                next line if it does not fit\.
-                Also controls whether or not the string will be broken into
-                codepoints\.
+-  str        : The original string this token was created from\.
+    NB If `codepoints` exists, this does not take into account
+    any modifications made by insert\(\), remove\(\), or split\(\)\.
+-  start      : The index within `str` or `codepoints` at which this token
+    starts\. Used when splitting to avoid copying the contents
+    after the split point \(which could be arbitrarily large\)\.
+-  color      : A color value to use for the entire token\.
+-  event      : A string indicating that this token has a special meaning, like
+    the beginning or end of an indented block, or a separator\.
+-  wrappable  : If true, it is acceptable to wrap this token by breaking it
+    in the middle\. If false, it should be moved entirely to the
+    next line if it does not fit\.
+    Also controls whether or not the string will be broken into
+    codepoints\.
 
 The following fields will be present only if `wrappable` is true:
-\-  codepoints : The codepoints of the string, if we needed to break it down\.
-\-  disps      : Array of the number of cells occupied by the corresponding
-                codepoint string\. There is no handling of Unicode widths at
-                this point, but this may still be >1 in the case of an escaped
-                nonprinting character, e\.g\. =\\t=, =\\x1b=\.
-\-  err        : A table with information about any errors encountered
-                interpreting the original string as Unicode\.
+-  codepoints : The codepoints of the string, if we needed to break it down\.
+-  disps      : Array of the number of cells occupied by the corresponding
+    codepoint string\. There is no handling of Unicode widths at
+    this point, but this may still be >1 in the case of an escaped
+    nonprinting character, e\.g\. `\t`, `\x1b`\.
+-  err        : A table with information about any errors encountered
+    interpreting the original string as Unicode\.
 
 ### Examples
 
@@ -271,26 +271,26 @@ end
 Creates a `Token` from the given string, color value, and optional table of
 configuration options, which will be copied directly onto the token\. Relevant
 options include:
-\-  event: A string indicating that this token is special in some way\-\-
-   a separator, the beginning or end of an indented section, a line from
-   a \_\_repr function, etc\.
-\-  wrappable: Should this token be subject to wrapping in the middle, or
-   should it be moved entirely to the next line if it doesn't fit?
-   Also triggers a number of other bits of behavior\-\-see below\.
-\-  total\_disp: If str contains zero\-width sequences \(e\.g\. color escapes\),
-   calling code should indicate the correct total displacement of the string\.
-   Note that this does not mix well with =wrappable= and =:split\(\)=, which
-   need to know the displacement of each codepoint\. Re\-parsing color escapes
-   is a possible future enhancement\.
+-  event: A string indicating that this token is special in some way\-\-
+    a separator, the beginning or end of an indented section, a line from
+    a \_\_repr function, etc\.
+-  wrappable: Should this token be subject to wrapping in the middle, or
+    should it be moved entirely to the next line if it doesn't fit?
+    Also triggers a number of other bits of behavior\-\-see below\.
+-  total\_disp: If str contains zero\-width sequences \(e\.g\. color escapes\),
+    calling code should indicate the correct total displacement of the string\.
+    Note that this does not mix well with `wrappable` and `:split()`, which
+    need to know the displacement of each codepoint\. Re\-parsing color escapes
+    is a possible future enhancement\.
 
 Extra `wrappable` behavior:
-\-  Breaks the string up with =codepoints\(\)= and records a displacement value
-   for each codepoint\.
-\-  Converts nonprinting characters and quotation marks to their escaped forms,
-   with the =escapes= property indicating which characters this has been done
-   to\.
-\-  Wraps the string in \(un\-escaped\) quotation marks if it consists entirely of
-   space characters \(or is empty\)\.
+-  Breaks the string up with `codepoints()` and records a displacement value
+    for each codepoint\.
+-  Converts nonprinting characters and quotation marks to their escaped forms,
+    with the `escapes` property indicating which characters this has been done
+    to\.
+-  Wraps the string in \(un\-escaped\) quotation marks if it consists entirely of
+    space characters \(or is empty\)\.
 
 If `str` is nil, returns a blank `Token`\.
 
