@@ -172,45 +172,100 @@ insert(migrations, migration_2)
 
 
 
-local function migration_3(conn)
-   conn.pragma.foreign_keys(false)
-   conn:exec "BEGIN TRANSACTION;"
-   conn:exec [[
-      UPDATE project
-      SET time = strftime('%Y-%m-%dT%H:%M:%f', time);
-   ]]
-   conn:exec(create_project_table_3)
-   conn:exec [[
-      INSERT INTO project_3 (project_id, directory, time)
-      SELECT project_id, directory, time
-      FROM project;
-   ]]
-   conn:exec "DROP TABLE project;"
-   conn:exec [[
-      ALTER TABLE project_3
-      RENAME TO project;
-   ]]
-   conn:exec [[
-      UPDATE repl
-      SET time = strftime('%Y-%m-%dT%H:%M:%f', time);
-   ]]
-   conn:exec(create_repl_table_3)
-   conn:exec [[
-      INSERT INTO repl_3 (line_id, project, line, time)
-      SELECT line_id, project, line, time
-      FROM repl;
-   ]]
-   conn:exec "DROP TABLE repl;"
-   conn:exec [[
-      ALTER TABLE repl_3
-      RENAME to repl;
-   ]]
-   conn:exec "COMMIT;"
-   conn.pragma.foreign_keys(true)
-   return true
-end
-insert(migrations, migration_3)
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local migration_3 = {}
+
+
+local migration_3 = [[
+UPDATE project
+SET time = strftime('%Y-%m-%dT%H:%M:%f', time);
+]]
+
+
+migration_3[2] = create_project_table_3
+
+
+local migration_3 = [[
+INSERT INTO project_3 (project_id, directory, time)
+SELECT project_id, directory, time
+FROM project;
+]]
+
+local migration_3 = [[
+DROP TABLE project;
+]]
+
+local migration_3 = [[
+ALTER TABLE project_3
+RENAME TO project;
+]]
+
+local migration_3 = [[
+UPDATE repl
+SET time = strftime('%Y-%m-%dT%H:%M:%f', time);
+]]
+
+
+migration_3[7] = create_repl_table_3
+
+
+local migration_3 = [[
+INSERT INTO repl_3 (line_id, project, line, time)
+SELECT line_id, project, line, time
+FROM repl;
+]]
+
+local migration_3 = [[
+DROP TABLE repl;
+]]
+
+local migration_3 = [[
+ALTER TABLE repl_3
+RENAME to repl;
+]]
+
+
+insert(migrations, migration_3)
 
 
 

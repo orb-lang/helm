@@ -171,7 +171,7 @@ timestamps, and change the default to have millisecond resolution and use
 SQLite being what it is, the latter requires us to copy everything to a new
 table.  This must be done for the =project= and =repl= tables.
 
-#!lua
+#!lua-deprecated
 local function migration_3(conn)
    conn.pragma.foreign_keys(false)
    conn:exec "BEGIN TRANSACTION;"
@@ -210,8 +210,63 @@ local function migration_3(conn)
    return true
 end
 insert(migrations, migration_3)
+#/lua-deprecated
+
+#!lua
+local migration_3 = {}
 #/lua
 
+#!sql @migration_3[1] #asLua
+UPDATE project
+SET time = strftime('%Y-%m-%dT%H:%M:%f', time);
+#/sql
+
+#!lua
+migration_3[2] = create_project_table_3
+#/lua
+
+#!sql @migration_3[3] #asLua
+INSERT INTO project_3 (project_id, directory, time)
+SELECT project_id, directory, time
+FROM project;
+#/sql
+
+#!sql @migration_3[4] #asLua
+DROP TABLE project;
+#/sql
+
+#!sql @migration_3[5] #asLua
+ALTER TABLE project_3
+RENAME TO project;
+#/sql
+
+#!sql @migration_3[6] #asLua
+UPDATE repl
+SET time = strftime('%Y-%m-%dT%H:%M:%f', time);
+#/sql
+
+#!lua
+migration_3[7] = create_repl_table_3
+#/lua
+
+#!sql @migration_3[8] #asLua
+INSERT INTO repl_3 (line_id, project, line, time)
+SELECT line_id, project, line, time
+FROM repl;
+#/sql
+
+#!sql @migration_3[8] #asLua
+DROP TABLE repl;
+#/sql
+
+#!sql @migration_3[9] #asLua
+ALTER TABLE repl_3
+RENAME to repl;
+#/sql
+
+#!lua
+insert(migrations, migration_3)
+#/lua
 
 **** Version 4: Sessions
 
