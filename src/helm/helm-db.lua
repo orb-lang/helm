@@ -5,6 +5,18 @@
 
 
 
+
+
+
+
+
+local esquilite = require "esquilite:esquilite"
+
+
+
+
+
+
 local helm_db = {}
 
 
@@ -216,7 +228,7 @@ insert(migrations, migration_2)
 local migration_3 = {}
 
 
-local migration_3 = [[
+migration_3[1] = [[
 UPDATE project
 SET time = strftime('%Y-%m-%dT%H:%M:%f', time);
 ]]
@@ -225,22 +237,22 @@ SET time = strftime('%Y-%m-%dT%H:%M:%f', time);
 migration_3[2] = create_project_table_3
 
 
-local migration_3 = [[
+migration_3[3] = [[
 INSERT INTO project_3 (project_id, directory, time)
 SELECT project_id, directory, time
 FROM project;
 ]]
 
-local migration_3 = [[
+migration_3[4] = [[
 DROP TABLE project;
 ]]
 
-local migration_3 = [[
+migration_3[5] = [[
 ALTER TABLE project_3
 RENAME TO project;
 ]]
 
-local migration_3 = [[
+migration_3[6] = [[
 UPDATE repl
 SET time = strftime('%Y-%m-%dT%H:%M:%f', time);
 ]]
@@ -249,17 +261,17 @@ SET time = strftime('%Y-%m-%dT%H:%M:%f', time);
 migration_3[7] = create_repl_table_3
 
 
-local migration_3 = [[
+migration_3[8] = [[
 INSERT INTO repl_3 (line_id, project, line, time)
 SELECT line_id, project, line, time
 FROM repl;
 ]]
 
-local migration_3 = [[
+migration_3[8] = [[
 DROP TABLE repl;
 ]]
 
-local migration_3 = [[
+migration_3[9] = [[
 ALTER TABLE repl_3
 RENAME to repl;
 ]]
@@ -325,32 +337,12 @@ insert(migrations, migration_3)
 
 
 
+
 local assertfmt = import("core:core/string", "assertfmt")
 local format = assert(string.format)
 
 function helm_db.boot(conn)
-   local HELM_DB_VERSION = helm_db.HELM_DB_VERSION
-   -- Set up bridge tables
-   conn.pragma.foreign_keys(true)
-   conn.pragma.journal_mode "wal"
-   -- check the user_version and perform migrations if necessary.
-   assertfmt(#migrations == HELM_DB_VERSION,
-             "number of migrations (%d) must equal HELM_DB_VERSION (%d)",
-             #migrations, HELM_DB_VERSION)
-   local user_version = tonumber(conn.pragma.user_version())
-   if not user_version then
-      user_version = 1
-   end
-   if user_version < HELM_DB_VERSION then
-      for i = user_version + 1, HELM_DB_VERSION do
-         migrations[i](conn)
-      end
-      conn.pragma.user_version(HELM_DB_VERSION)
-   elseif user_version > HELM_DB_VERSION then
-      error(format("Error: helm.sqlite is version %d, expected %d",
-                   user_version, HELM_DB_VERSION))
-      os.exit(HELM_DB_VERSION)
-   end
+   esquilite.boot(conn, migrations)
 end
 
 
