@@ -184,47 +184,6 @@ insert(migrations, migration_2)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 local migration_3 = {}
 
 
@@ -340,9 +299,11 @@ insert(migrations, migration_3)
 
 local assertfmt = import("core:core/string", "assertfmt")
 local format = assert(string.format)
+local boot = assert(esquilite.boot)
+
 
 function helm_db.boot(conn)
-   esquilite.boot(conn, migrations)
+   return boot(conn, migrations)
 end
 
 
