@@ -100,6 +100,39 @@ end
 
 
 
+function Zone.clientHeight(zone)
+   if zone.border then
+      return zone:height() - 2
+   else
+      return zone:height()
+   end
+end
+
+function Zone.clientWidth(zone)
+   if zone.border then
+      return zone:width() - 2
+   else
+      return zone:width()
+   end
+end
+
+
+
+
+
+
+
+function Zone.borderThickness(zone)
+   return zone.border and 1 or 0
+end
+
+
+
+
+
+
+
+
 
 function Zone.overlaps(zone, other_zone)
    -- The other zone may be uninitialized--treat this as nonoverlapping
@@ -308,10 +341,15 @@ end
 
 
 
+
+local function _nl(zone)
+   return a.jump.col(zone.tc + zone:borderThickness()) .. a.jump.down(1)
+end
+
 local lines = import("core/string", "lines")
 
 local function _writeLines(write, zone, str)
-   local nl = a.jump.col(zone.tc) .. a.jump.down(1)
+   local nl = _nl(zone)
    local pr_row = zone.tr
    for line in lines(str) do
        write(line)
@@ -337,8 +375,8 @@ local function _renderRainbuf(write, zone)
       return nil
    end
    assert(instanceof(zone.contents, Rainbuf))
-   local nl = a.jump.col(zone.tc) .. a.jump.down(1)
-   for line in zone.contents:lineGen(zone:height(), zone:width()) do
+   local nl = _nl(zone)
+   for line in zone.contents:lineGen(zone:clientHeight(), zone:clientWidth()) do
       write(line)
       write(nl)
    end
@@ -368,6 +406,51 @@ local function _renderTxtbuf(modeS, zone, write)
    _writeLines(write, zone, concat(tokens))
 end
 
+
+
+
+
+
+
+
+local box = require "anterm/box"
+function Zone.paintBorder(zone, write)
+   if zone.border then
+      write(box.single(zone.tr, zone.tc, zone.br, zone.bc))
+   end
+end
+
+
+
+
+
+function Zone.erase(zone, write)
+   write(a.erase.box(zone.tc, zone.tr, zone.bc, zone.br))
+end
+
+
+
+
+
+function Zone.paint(zone, write)
+   if not (zone.visible and zone.touched) then
+      return
+   end
+   zone:erase(write)
+   write(a.jump(zone.tr, zone.tc))
+   zone:paintBorder(write)
+   write(a.jump(zone.tr + zone:borderThickness(),
+                zone.tc + zone:borderThickness()))
+   -- actually render ze contents
+   if type(zone.contents) == "string" then
+      _writeLines(write, zone, zone.contents)
+   elseif instanceof(zone.contents, Txtbuf) then
+      _renderTxtbuf(modeS, zone, write)
+   else
+      _renderRainbuf(write, zone)
+   end
+   zone.touched = false
+end
 
 
 
@@ -486,23 +569,7 @@ function Zoneherd.paint(zoneherd, modeS)
    local write = zoneherd.write
    write(a.cursor.hide(), a.clear())
    for i, zone in ipairs(zoneherd) do
-      if zone.visible and zone.touched then
-         -- erase
-         write(a.erase.box( zone.tc,
-                            zone.tr,
-                            zone.bc,
-                            zone.br ),
-               a.colrow(zone.tc, zone.tr))
-         -- actually render ze contents
-         if type(zone.contents) == "string" then
-            _writeLines(write, zone, zone.contents)
-         elseif instanceof(zone.contents, Txtbuf) then
-            _renderTxtbuf(modeS, zone, write)
-         else
-            _renderRainbuf(write, zone)
-         end
-      end
-      zone.touched = false
+      zone:paint(write)
    end
    modeS:placeCursor()
    write(a.cursor.show())
@@ -530,6 +597,7 @@ local function new(modeS, writer)
    zoneherd:newZone("suggest", 1, "%")
    zoneherd:newZone("popup", 2, "^")
    zoneherd.popup.visible = false
+   zoneherd.popup.border = true
    zoneherd:reflow(modeS)
 
    return zoneherd
