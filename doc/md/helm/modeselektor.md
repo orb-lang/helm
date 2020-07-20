@@ -238,7 +238,7 @@ Places the cursor where it belongs within the `command` zone\.
 function ModeS.placeCursor(modeS)
    local col = modeS.zones.command.tc + modeS.txtbuf.cursor.col - 1
    local row = modeS.zones.command.tr + modeS.txtbuf.cursor.row - 1
-   modeS.write(a.colrow(col, row))
+   modeS.write(a.jump(row, col))
    return modeS
 end
 ```

@@ -311,7 +311,7 @@ end
 local lines = import("core/string", "lines")
 
 local function _writeLines(write, zone, str)
-   local nl = a.col(zone.tc) .. a.jump.down(1)
+   local nl = a.jump.col(zone.tc) .. a.jump.down(1)
    local pr_row = zone.tr
    for line in lines(str) do
        write(line)
@@ -337,7 +337,7 @@ local function _renderRainbuf(write, zone)
       return nil
    end
    assert(instanceof(zone.contents, Rainbuf))
-   local nl = a.col(zone.tc) .. a.jump.down(1)
+   local nl = a.jump.col(zone.tc) .. a.jump.down(1)
    for line in zone.contents:lineGen(zone:height(), zone:width()) do
       write(line)
       write(nl)
