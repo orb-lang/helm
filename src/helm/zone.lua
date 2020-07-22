@@ -416,7 +416,7 @@ end
 local box = require "anterm/box"
 function Zone.paintBorder(zone, write)
    if zone.border then
-      write(box.single(zone.tr, zone.tc, zone.br, zone.bc))
+      write(box.double(zone.tr, zone.tc, zone.br, zone.bc))
    end
 end
 
