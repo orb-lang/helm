@@ -115,12 +115,13 @@ CREATE TABLE IF NOT EXISTS session (
 CREATE TABLE IF NOT EXISTS premise (
    session INTEGER NOT NULL,
    line INTEGER NOT NULL,
-   -- order is 1-indexed for Lua compatibility
-   order INTEGER NOT NULL CHECK (order > 0),
+   -- ordinal is 1-indexed for Lua compatibility
+   -- "ordinal" not "order" because SQL
+   ordinal INTEGER NOT NULL CHECK (ordinal > 0),
    title TEXT,
    status STRING NOT NULL CHECK (
       status = 'accept' or status = 'reject' or status = 'ignore' ),
-   PRIMARY KEY (session, order) ON CONFLICT REPLACE
+   PRIMARY KEY (session, ordinal) ON CONFLICT REPLACE
    FOREIGN KEY (session)
       REFERENCES session (session_id)
       ON DELETE CASCADE
@@ -261,6 +262,21 @@ throw an error and \(eventually\) provide a diff\.
 We'll want to add additional affordances for easy testing, which will be
 documented elsewhere\.
 
+```lua
+local migration_4 = {}
+```
+
+```sql
+DROP TABLE session;
+```
+
+```lua
+insert(migration_4, create_session_table_4)
+insert(migration_4, create_premise_table)
+
+insert(migrations, migration_4)
+```
+
 
 ##### Version 5? Profiles
 
@@ -290,9 +306,10 @@ I dunno\. I've been waffling on this for months\. Ah well\.
 
 ### boot\(conn\)
 
-`boot` takes an open `historian.conn` and brings it up to speed\.
+`boot` takes an open `historian.conn`, or a file path, and brings it up to
+speed\.
 
-This function has no return value\.
+Returns the conn, or errors and exits the program\.
 
 ```lua
 local assertfmt = import("core:core/string", "assertfmt")

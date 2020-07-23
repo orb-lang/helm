@@ -115,12 +115,13 @@ local create_premise_table = [[
 CREATE TABLE IF NOT EXISTS premise (
    session INTEGER NOT NULL,
    line INTEGER NOT NULL,
-   -- order is 1-indexed for Lua compatibility
-   order INTEGER NOT NULL CHECK (order > 0),
+   -- ordinal is 1-indexed for Lua compatibility
+   -- "ordinal" not "order" because SQL
+   ordinal INTEGER NOT NULL CHECK (ordinal > 0),
    title TEXT,
    status STRING NOT NULL CHECK (
       status = 'accept' or status = 'reject' or status = 'ignore' ),
-   PRIMARY KEY (session, order) ON CONFLICT REPLACE
+   PRIMARY KEY (session, ordinal) ON CONFLICT REPLACE
    FOREIGN KEY (session)
       REFERENCES session (session_id)
       ON DELETE CASCADE
@@ -258,6 +259,22 @@ insert(migrations, migration_3)
 
 
 
+
+
+
+
+local migration_4 = {}
+
+
+migration_4[1] = [[
+DROP TABLE session;
+]]
+
+
+insert(migration_4, create_session_table_4)
+insert(migration_4, create_premise_table)
+
+insert(migrations, migration_4)
 
 
 
