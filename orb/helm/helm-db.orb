@@ -120,7 +120,7 @@ CREATE TABLE IF NOT EXISTS premise (
    title TEXT,
    status STRING NOT NULL CHECK (
       status = 'accept' or status = 'reject' or status = 'ignore' ),
-   PRIMARY KEY (session, order) ON CONFLICT IGNORE
+   PRIMARY KEY (session, order) ON CONFLICT REPLACE
    FOREIGN KEY (session)
       REFERENCES session (session_id)
       ON DELETE CASCADE
@@ -161,14 +161,12 @@ helm_db.migrations = migrations
 #!lua
 local insert = assert(table.insert)
 
-
-local function migration_2(conn)
-   conn:exec(create_project_table)
-   conn:exec(create_result_table)
-   conn:exec(create_repl_table)
-   conn:exec(create_session_table)
-   return true
-end
+local migration_2 = {
+   create_project_table,
+   create_result_table,
+   create_repl_table,
+   create_session_table
+}
 
 insert(migrations, migration_2)
 #/lua
