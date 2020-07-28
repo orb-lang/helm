@@ -504,7 +504,7 @@ function ModeS.__eval(modeS, chunk, headless)
       modeS.suggest:cancel(modeS)
    end
    local success, results = evaluate(chunk)
-   if not success then
+   if not success and results == 'advance' then
       return modeS, results
    end
 
