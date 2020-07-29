@@ -193,17 +193,13 @@ end
 
 
 
-
-
-
-
-
-
-
-
-
-
-
+function Historian.beginMacroSession(historian, session_title)
+   -- this is incremented for each stored line
+   historian.premise_ordinal = 1
+   -- insert session into DB
+   -- retrieve session id
+   -- historian.session_it = result
+end
 
 
 

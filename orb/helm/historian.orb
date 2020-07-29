@@ -185,31 +185,27 @@ end
 #/lua
 
 
-*** Historian:restore_session(modeS, session)
+*** Historian:beginMacroSession(session_title)
 
-If there is an open session, we want to replay it.
+In "macro mode", =historian= records every line as a premise, with not title,
+into a session with the given title.
 
-To do this, we need to borrow the modeselektor.
+All results are classed as 'accept'.
 
 #!lua
-
+function Historian.beginMacroSession(historian, session_title)
+   -- this is incremented for each stored line
+   historian.premise_ordinal = 1
+   -- insert session into DB
+   -- retrieve session id
+   -- historian.session_it = result
+end
 #/lua
 
 
 *** Historian:persist(txtbuf, results)
 
 Persists a line and results to store.
-
-The hooks are in place to persist the results. I'm starting with a string
-representation; the goal is to provide the sense of persistence across
-sessions, and supplement that over time with better and better approximations.
-
-To really nail it down will require semantic analysis and hence thorough
-parsing.  General-purpose persistence tools belong in =sqlayer=, which will
-merge with our increasingly-modified =sqlite= bindings.
-
-Medium-term goal is to hash any Lua object in a way that will resolve to a
-common value for any identical semantics.
 
 
 **** dump_token(token, phrase)

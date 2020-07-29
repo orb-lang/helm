@@ -485,7 +485,7 @@ end
 
 
 #!lua
-local evaluate = assert(valiant.eval)
+local evaluate = assert(valiant(_G, __G))
 #/lua
 
 #!lua
@@ -656,6 +656,13 @@ local function new(max_col, max_row, writer, db)
   modeS.max_col = max_col
   modeS.max_row = max_row
   modeS.write = writer
+  -- retrieve data from _Bridge
+  if _Bridge.args.helm then
+     if _Bridge.args.macro then
+        modeS.macro_mode = true
+        modeS.session_name = _Bridge.args.macro
+     end
+  end
   -- this will be replaced with Zones
   modeS.l_margin = 4
   modeS.r_margin = 80
