@@ -46,10 +46,10 @@ Returns a function which will return =false= until complete, when it returns
 #!lua
 local concat = assert(table.concat)
 
-local function tab_callback(results_tablulate, results_tostring)
+local function tab_callback(results_tabulates, results_tostring)
    local i = 1
    return function()
-      if i > #results_tabulate then
+      if i > #results_tabulates then
          return true, results_tostring
       end
       local start_token_count = results_tostring[i].n

@@ -23,6 +23,7 @@ local Txtbuf  = require "helm/txtbuf"
 local Rainbuf = require "helm/rainbuf"
 local C       = require "singletons/color"
 local repr    = require "helm/repr"
+local persist_tabulate = require "helm:helm/repr/persist-tabulate"
 local helm_db = require "helm:helm/helm-db"
 
 local concat, insert = assert(table.concat), assert(table.insert)
@@ -276,37 +277,12 @@ function Historian.persist(historian, txtbuf, results)
       results_tabulates[i] = tabulate(results[i], dummy_window, C.no_color)
       results_tostring[i] = { n = 0 }
    end
-   local i = 1
+   local persist_cb = persist_tabulate(results_tabulates, results_tostring)
    local persist_idler = uv.new_idle()
    historian.idlers:insert(persist_idler)
    persist_idler:start(function()
-      if i <= results.n then
-         local start_token_count = results_tostring[i].n
-         if start_token_count > 15000 then
-            -- bail early
-            results_tostring[i] = concat(results_tostring[i], "", 1, results_tostring[i].n)
-            i  = i + 1
-            return nil
-         end
-         while results_tostring[i].n - start_token_count < 100 do
-            local success, token = pcall(results_tabulates[i])
-            if success then
-               if token then
-                  dump_token(token, results_tostring[i])
-               else
-                  results_tostring[i] = concat(results_tostring[i], "", 1, results_tostring[i].n)
-                  i = i + 1
-                  -- Stop this execution of the idler now, even if we
-                  -- haven't gotten 100 tokens--easier than keeping track
-                  -- across result boundaries
-                  return nil
-               end
-            else
-               error(token)
-            end
-         end
-         return nil
-      end
+      local done, results_tostring = persist_cb()
+      if not done then return nil end
       -- now persist
       for i = 1, results.n do
          historian.insert_result:bindkv { line_id = line_id,
