@@ -203,10 +203,10 @@ end
 function Suggest.accept(suggest, modeS)
    local suggestion = suggest.active_suggestions[1]:selectedItem()
    local context = _cursorContext(modeS)
-   -- #todo do this in one call, probably by making :deleteBackward()
+   -- #todo do this in one call, probably by making :killBackward()
    -- accept a parameter of how many characters to delete
    for i = 1, context.cursor_offset do
-      modeS.txtbuf:deleteBackward()
+      modeS.txtbuf:killBackward()
    end
    modeS.txtbuf:paste(suggestion)
 end

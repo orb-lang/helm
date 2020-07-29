@@ -157,7 +157,17 @@ a = require "anterm:anterm"
 
 -- Get window size and set up an idler to keep it refreshed
 
-local max_col, max_row = uv.tty_get_winsize(stdin)
+local MOUSE_MAX = 223
+
+local function bind_pane(col, row)
+   local bound_col = col > MOUSE_MAX and MOUSE_MAX or col
+   local bound_row = row > MOUSE_MAX and MOUSE_MAX or row
+   return bound_col, bound_row
+end
+
+local max_col, max_row = bind_pane(uv.tty_get_winsize(stdin))
+
+
 
 modeS = require "helm/modeselektor" (max_col, max_row, write)
 local insert = assert(table.insert)
@@ -166,13 +176,13 @@ local function s_out(msg)
 end
 
 -- make a new 'status' instance
-local s = require "singletons/status" (s_out)
+local s = require "status:status" (s_out)
 
 local timer = uv.new_timer()
 uv.timer_start(timer, 500, 500, function()
    max_col, max_row = uv.tty_get_winsize(stdin)
    if max_col ~= modeS.max_col or max_row ~= modeS.max_row then
-      modeS.max_col, modeS.max_row = max_col, max_row
+      modeS.max_col, modeS.max_row = bind_pane(max_col, max_row)
       -- Mark all zones as touched since we don't know the state of the screen
       -- (some terminals, iTerm for sure, will attempt to reflow the screen
       -- themselves and fail miserably)
@@ -237,20 +247,6 @@ local function onseq(err,seq)
       modeS:paint()
       uv.read_stop(stdin)
       uv.timer_stop(timer)
-      -- Shut down the database conn:
-      local conn = modeS.hist.conn
-      pcall(conn.pragma.wal_checkpoint, "0") -- 0 == SQLITE_CHECKPOINT_PASSIVE
-      -- set up an idler to close the conn, so that e.g. busy
-      -- exceptions don't blow up the hook
-      local close_idler = uv.new_idle()
-      close_idler:start(function()
-        local success = pcall(conn.close, conn)
-        if not success then
-          return nil
-        else
-          close_idler:stop()
-        end
-      end)
       return 0
    end
    -- Escape sequences
@@ -316,6 +312,23 @@ modeS:paint()
 
 -- main loop
 local retcode =  uv.run('default')
+
+-- Shut down the database conn:
+local conn = modeS.hist.conn
+pcall(conn.pragma.wal_checkpoint, "0") -- 0 == SQLITE_CHECKPOINT_PASSIVE
+-- set up an idler to close the conn, so that e.g. busy
+-- exceptions don't blow up the hook
+local close_idler = uv.new_idle()
+close_idler:start(function()
+  local success = pcall(conn.close, conn)
+  if not success then
+    return nil
+  else
+    close_idler:stop()
+  end
+end)
+
+retcode = uv.run 'default'
 
 -- Teardown: Mouse tracking off, restore main screen and cursor
 write(a.mouse.track(false),

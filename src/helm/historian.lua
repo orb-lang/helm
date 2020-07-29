@@ -216,22 +216,30 @@ end
 
 
 
+local function ninsert(tab, val)
+   tab.n = tab.n + 1
+   tab[tab.n] = val
+end
+
+local SOH, STX = "\x01", "\x02"
+
 local function dump_token(token, stream)
-   insert(stream, "\x01")
+   ninsert(stream, SOH)
    if token.event then
-      insert(stream, "event=")
-      insert(stream, token.event)
+      ninsert(stream, "event=")
+      ninsert(stream, token.event)
    end
    if token.wrappable then
-      if token.event then insert(stream, " ") end
-      insert(stream, "wrappable")
+      if token.event then ninsert(stream, " ") end
+      ninsert(stream, "wrappable")
    end
-   insert(stream, "\x02")
-   insert(stream, tostring(token))
+   ninsert(stream, STX)
+   ninsert(stream, tostring(token))
    return stream
 end
 
 local tabulate = require "helm/repr/tabulate"
+
 function Historian.persist(historian, txtbuf, results)
    local lb = tostring(txtbuf)
    local have_results = results
@@ -243,7 +251,7 @@ function Historian.persist(historian, txtbuf, results)
    end
    historian.conn:exec("SAVEPOINT save_persist")
    historian.insert_line:bindkv { project = historian.project_id,
-                                       line    = lb }
+                                       line    = sql.blob(lb) }
    local err = historian.insert_line:step()
    if not err then
       historian.insert_line:clearbind():reset()
@@ -253,44 +261,61 @@ function Historian.persist(historian, txtbuf, results)
    local line_id = sql.lastRowId(historian.conn)
    insert(historian.line_ids, line_id)
 
-   local persist_idler = uv.new_idle()
+   -- If there's nothing to persist, release our savepoint
+   -- and don't bother starting the idler
+   if not have_results then
+      historian.conn:exec("RELEASE save_persist")
+      return true
+   end
+
    local results_tostring, results_tabulates = {}, {}
    -- Make a dummy table to stand in for Composer:window(),
    -- since we won't be making a Composer at all.
    local dummy_window = { width = 80, remains = 80, color = C.no_color }
-   if have_results then
-      for i = 1, results.n do
-         results_tabulates[i] = tabulate(results[i], dummy_window, C.no_color)
-         results_tostring[i] = {}
-      end
+   for i = 1, results.n do
+      results_tabulates[i] = tabulate(results[i], dummy_window, C.no_color)
+      results_tostring[i] = { n = 0 }
    end
    local i = 1
+   local persist_idler = uv.new_idle()
    historian.idlers:insert(persist_idler)
    persist_idler:start(function()
-      while have_results and i <= results.n do
-         local success, token = pcall(results_tabulates[i])
-         if success and token then
-            dump_token(token, results_tostring[i])
-         else
-            results_tostring[i] = concat(results_tostring[i], "")
-            i = i + 1
-            if not success then
+      if i <= results.n then
+         local start_token_count = results_tostring[i].n
+         if start_token_count > 15000 then
+            -- bail early
+            results_tostring[i] = concat(results_tostring[i], "", 1, results_tostring[i].n)
+            i  = i + 1
+            return nil
+         end
+         while results_tostring[i].n - start_token_count < 100 do
+            local success, token = pcall(results_tabulates[i])
+            if success then
+               if token then
+                  dump_token(token, results_tostring[i])
+               else
+                  results_tostring[i] = concat(results_tostring[i], "", 1, results_tostring[i].n)
+                  i = i + 1
+                  -- Stop this execution of the idler now, even if we
+                  -- haven't gotten 100 tokens--easier than keeping track
+                  -- across result boundaries
+                  return nil
+               end
+            else
                error(token)
             end
          end
          return nil
       end
       -- now persist
-      if have_results then
-         for i = 1, results.n do
-            historian.insert_result:bindkv { line_id = line_id,
-                                             repr = results_tostring[i] }
-            err = historian.insert_result:step()
-            if not err then
-               historian.insert_result:clearbind():reset()
-            else
-               error(err)
-            end
+      for i = 1, results.n do
+         historian.insert_result:bindkv { line_id = line_id,
+                                          repr = results_tostring[i] }
+         err = historian.insert_result:step()
+         if not err then
+            historian.insert_result:clearbind():reset()
+         else
+            error(err)
          end
       end
       historian.conn:exec("RELEASE save_persist")
@@ -383,7 +408,6 @@ local find, match, sub = assert(string.find),
                          assert(string.match),
                          assert(string.sub)
 local Token = require "helm/repr/token"
-local SOH, STX = "\x01", "\x02"
 local function _db_result__repr(result)
    if sub(result[1], 1, 1) == SOH then
       -- New format--tokens delimited by SOH/STX

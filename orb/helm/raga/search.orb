@@ -7,6 +7,7 @@ A light wrapper over =nerf=.
 local clone = import("core/table", "clone")
 local EditBase = require "helm/raga/edit"
 local Rainbuf = require "helm/rainbuf"
+local Txtbuf = require "helm/txtbuf"
 
 local Search = clone(EditBase, 2)
 
@@ -63,8 +64,8 @@ end
   - [ ]  Add Search.NAV.SHIFT_ALT_(UP|DOWN), to move a page at a time.
          Hook them to PgUp and PgDown while we're at it.
 
-  - [ ]  Add Search.NAV.HYPER_UP and Search.NAV.HYPER_DOWN to snap to the
-         top and bottom.  These are synonymous with Home and End.
+  - [ ]  Add Search.NAV.HOME and Search.NAV.END to snap to the
+         top and bottom.
 
 #!lua
 Search.NAV.UP = Search.NAV.SHIFT_UP
