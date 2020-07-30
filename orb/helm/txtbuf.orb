@@ -160,7 +160,7 @@ function Txtbuf.makeCursor(txtbuf, rowOrTable, col, basedOn)
    txtbuf:openRow(row)
    assert(inbounds(col, 1, nil))
    col = bound(col, nil, #txtbuf.lines[row] + 1)
-   return Point(col, row)
+   return Point(row, col)
 end
 
 function Txtbuf.setCursor(txtbuf, rowOrTable, col)
