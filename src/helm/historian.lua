@@ -240,6 +240,7 @@ local function dump_token(token, stream)
 end
 
 local tabulate = require "helm/repr/tabulate"
+local tab_callback = assert(persist_tabulate.tab_callback)
 
 function Historian.persist(historian, txtbuf, results)
    local lb = tostring(txtbuf)
@@ -277,7 +278,7 @@ function Historian.persist(historian, txtbuf, results)
       results_tabulates[i] = tabulate(results[i], dummy_window, C.no_color)
       results_tostring[i] = { n = 0 }
    end
-   local persist_cb = persist_tabulate(results_tabulates, results_tostring)
+   local persist_cb = tab_callback(results_tabulates, results_tostring)
    local persist_idler = uv.new_idle()
    historian.idlers:insert(persist_idler)
    persist_idler:start(function()

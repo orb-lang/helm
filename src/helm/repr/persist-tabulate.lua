@@ -5,6 +5,16 @@
 
 
 
+local C = require "singletons/color"
+
+local tabulate = require "helm/repr/tabulate"
+
+
+
+local persist_tabulate = {}
+
+
+
 local function ninsert(tab, val)
    tab.n = tab.n + 1
    tab[tab.n] = val
@@ -27,7 +37,6 @@ local function dump_token(token, stream)
    return stream
 end
 
-local tabulate = require "helm/repr/tabulate"
 
 
 
@@ -77,6 +86,32 @@ local function tab_callback(results_tabulates, results_tostring)
    end
 end
 
+persist_tabulate.tab_callback = tab_callback
 
 
-return tab_callback
+
+
+
+
+
+
+function persist_tabulate.tabulate(results)
+   local results_tostring, results_tabulates = {}, {}
+   -- Make a dummy table to stand in for Composer:window(),
+   -- since we won't be making a Composer at all.
+   local dummy_window = { width = 80, remains = 80, color = C.no_color }
+   for i = 1, results.n do
+      results_tabulates[i] = tabulate(results[i], dummy_window, C.no_color)
+      results_tostring[i] = { n = 0 }
+   end
+   local persist_cb = tab_callback(results_tabulates, results_tostring)
+   local done = false
+   repeat
+      done = persist_cb()
+   until done
+   return results_tostring
+end
+
+
+
+return persist_tabulate
