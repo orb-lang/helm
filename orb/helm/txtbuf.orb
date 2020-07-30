@@ -21,7 +21,7 @@ A closed line is just a string.
 -  lines :  An array of strings (closed lines), or arrays containing codepoints
            (string fragments) (open lines).
 
--  cursor :  A table representing the cursor position:
+-  cursor :  A <Point> representing the cursor position:
    - row : Row containing the cursor. Valid values are 1 to #lines.
    - col : Number of fragments to skip before an insertion.
            Valid values are 1 to #lines[row] + 1.
@@ -124,7 +124,7 @@ third.
 
 #!lua
 function Txtbuf.currentPosition(txtbuf)
-   local row, col = txtbuf.cursor.row, txtbuf.cursor.col
+   local row, col = txtbuf.cursor:rowcol()
    return txtbuf.lines[row], col, row
 end
 #/lua
@@ -145,6 +145,7 @@ Also opens the row to which the cursor is being moved.
 
 local core_math = require "core/math"
 local bound, inbounds = assert(core_math.bound), assert(core_math.inbounds)
+local Point = require "anterm/point"
 
 function Txtbuf.makeCursor(txtbuf, rowOrTable, col, basedOn)
    local row
@@ -159,7 +160,7 @@ function Txtbuf.makeCursor(txtbuf, rowOrTable, col, basedOn)
    txtbuf:openRow(row)
    assert(inbounds(col, 1, nil))
    col = bound(col, nil, #txtbuf.lines[row] + 1)
-   return {row = row, col = col}
+   return Point(col, row)
 end
 
 function Txtbuf.setCursor(txtbuf, rowOrTable, col)

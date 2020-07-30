@@ -81,49 +81,29 @@ local Zoneherd = meta {}
 
 ** Zone methods
 
-
-*** Zone:height(), Zone:width()
+*** Zone:height(), :width()
 
 #!lua
 function Zone.height(zone)
-   return zone.br - zone.tr + 1
+   return zone.bounds:height()
 end
-
 function Zone.width(zone)
-   return zone.bc - zone.tc + 1
+   return zone.bounds:width()
 end
 #/lua
 
-*** Zone:clientHeight(), Zone:clientWidth()
+*** Zone:clientBounds()
 
-As =:height()= and =:width()=, but takes into account the space occupied by
-a border, if we have one.
-
-#!lua
-function Zone.clientHeight(zone)
-   if zone.border then
-      return zone:height() - 2
-   else
-      return zone:height()
-   end
-end
-
-function Zone.clientWidth(zone)
-   if zone.border then
-      return zone:width() - 2
-   else
-      return zone:width()
-   end
-end
-#/lua
-
-*** Zone:borderThickness()
-
-Answers the thickness of the zone border--right now just 0 or 1.
+The available bounds in which to render the Zone's content,
+taking into account the space occupied by a border, if we have one.
 
 #!lua
-function Zone.borderThickness(zone)
-   return zone.border and 1 or 0
+function Zone.clientBounds(zone)
+   if zone.border then
+      return zone.bounds:offsetBy(-1)
+   else
+      return zone.bounds
+   end
 end
 #/lua
 
@@ -136,14 +116,7 @@ the same cells on screen.
 #!lua
 function Zone.overlaps(zone, other_zone)
    -- The other zone may be uninitialized--treat this as nonoverlapping
-   if not (other_zone.tc and other_zone.tr and
-           other_zone.bc and other_zone.br) then
-      return false
-   end
-   return zone.tc <= other_zone.bc and
-          zone.bc >= other_zone.tc and
-          zone.tr <= other_zone.br and
-          zone.br >= other_zone.tr
+   return other_zone.bounds and zone.bounds:intersects(other_zone.bounds)
 end
 #/lua
 
@@ -178,7 +151,6 @@ Depends on the zone contents being a Rainbuf
 
 #!lua
 local bound = import("core/math", "bound")
-local instanceof = import("core/meta", "instanceof")
 function Zone.scrollTo(zone, offset, allow_overscroll)
    if not instanceof(zone.contents, Rainbuf) then
       return false
@@ -260,30 +232,25 @@ function Zone.scrollToBottom(zone, allow_overscroll)
 end
 #/lua
 
-*** Zone:setBounds(tc, tr, bc, br)
+*** Zone:setBounds(rect)
 
 Updates the bounds of the zone, marking it as touched if they actually change.
+Accepts either a Rectangle, or left/top/right/bottom values.
 
 #!lua
-function Zone.setBounds(zone, tc, tr, bc, br)
-   assert(tc <= bc, "tc: " .. tc .. ", bc: " .. bc)
-   assert(tr <= br, "tr: " .. tr .. ", br: " .. br)
-   if not(zone.tr == tr and
-          zone.tc == tc and
-          zone.br == br and
-          zone.bc == bc) then
-      -- If zone width is changing, clear caches of the contained Rainbuf
-      -- Note that :setBounds() is called to set zone.(tc,bc,tr,br) for the first time,
-      -- so we only check for a change if there are previous values
-      if zone.bc and zone.tc
-         and (bc - tc) ~= (zone.bc - zone.tc)
+local Rectangle  = require "anterm/rectangle"
+function Zone.setBounds(zone, rect, ...)
+   if not instanceof(rect, Rectangle) then
+      rect = Rectangle(rect, ...)
+   end
+   rect:assertNotEmpty("Zone must have non-zero area")
+   if zone.bounds ~= rect then
+      if zone.bounds
+         and zone.bounds:width() ~= rect:width()
          and instanceof(zone.contents, Rainbuf) then
          zone.contents:clearCaches()
       end
-      zone.tr = tr
-      zone.tc = tc
-      zone.br = br
-      zone.bc = bc
+      zone.bounds = rect
       -- #todo technically this is incomplete as we need to care about
       -- cells we may previously have owned and no longer do, and what zones
       -- *are* now responsible for them. Doing that properly requires a real
@@ -343,19 +310,19 @@ end
 #!lua
 
 local function _nl(zone)
-   return a.jump.col(zone.tc + zone:borderThickness()) .. a.jump.down(1)
+   return a.jump.col(zone:clientBounds().left) .. a.jump.down(1)
 end
 
 local lines = import("core/string", "lines")
 
 local function _writeLines(write, zone, str)
    local nl = _nl(zone)
-   local pr_row = zone.tr
+   local pr_row = zone.bounds.top
    for line in lines(str) do
        write(line)
        write(nl)
        pr_row = pr_row + 1
-       if pr_row > zone.br then
+       if pr_row > zone.bounds.bottom then
           break
        end
    end
@@ -368,15 +335,13 @@ end
 Render the zone contents as a Rainbuf, wrapping them *in* a Rainbuf if needed.
 
 #!lua
-local instanceof = import("core/meta", "instanceof")
-
 local function _renderRainbuf(write, zone)
    if not zone.contents then
       return nil
    end
    assert(instanceof(zone.contents, Rainbuf))
    local nl = _nl(zone)
-   for line in zone.contents:lineGen(zone:clientHeight(), zone:clientWidth()) do
+   for line in zone.contents:lineGen(zone:clientBounds():extent():rowcol()) do
       write(line)
       write(nl)
    end
@@ -416,7 +381,7 @@ if zone.border is true.
 local box = require "anterm/box"
 function Zone.paintBorder(zone, write)
    if zone.border then
-      write(box[zone.border](zone.tr, zone.tc, zone.br, zone.bc))
+      write(box[zone.border](zone.bounds))
    end
 end
 #/lua
@@ -425,7 +390,7 @@ end
 
 #!lua
 function Zone.erase(zone, write)
-   write(a.erase.box(zone.tc, zone.tr, zone.bc, zone.br))
+   write(a.erase.box(zone.bounds))
 end
 #/lua
 
@@ -437,10 +402,8 @@ function Zone.paint(zone, write)
       return
    end
    zone:erase(write)
-   write(a.jump(zone.tr, zone.tc))
    zone:paintBorder(write)
-   write(a.jump(zone.tr + zone:borderThickness(),
-                zone.tc + zone:borderThickness()))
+   write(a.jump(zone:clientBounds():origin()))
    -- actually render ze contents
    if type(zone.contents) == "string" then
       _writeLines(write, zone, zone.contents)
