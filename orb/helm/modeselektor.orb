@@ -660,7 +660,8 @@ local function new(max_col, max_row, writer, db)
   if _Bridge.args.helm then
      if _Bridge.args.macro then
         modeS.macro_mode = true
-        modeS.session_name = _Bridge.args.macro
+        modeS.session_title = _Bridge.args.macro
+        modeS.hist:beginMacroSession(modeS.session_title)
      end
   end
   -- this will be replaced with Zones

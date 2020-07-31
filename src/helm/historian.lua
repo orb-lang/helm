@@ -67,6 +67,10 @@ local insert_project = [[
 INSERT INTO project (directory) VALUES (?);
 ]]
 
+local insert_session = [[
+INSERT INTO session (title, project) VALUES (?, ?);
+]]
+
 
 
 
@@ -198,8 +202,12 @@ function Historian.beginMacroSession(historian, session_title)
    -- this is incremented for each stored line
    historian.premise_ordinal = 1
    -- insert session into DB
+   historian.conn
+      : prepare(insert_session)
+      : bind(session_title, historian.project_id)
+      : step()
    -- retrieve session id
-   -- historian.session_it = result
+   historian.session_id = sql.lastRowId(historian.conn)
 end
 
 
