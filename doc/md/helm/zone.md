@@ -492,30 +492,30 @@ local ceil, floor = assert(math.ceil), assert(math.floor)
 function Zoneherd.reflow(zoneherd, modeS)
    local right_col = modeS.max_col - _zoneOffset(modeS)
    local txt_off = modeS:continuationLines()
-   zoneherd.status:setBounds(  1, 1, right_col, 1)
-   zoneherd.stat_col:setBounds(right_col + 1, 1,
-                               modeS.max_col, 1 )
-   zoneherd.prompt:setBounds(  1,
-                               modeS.repl_top,
-                               modeS.l_margin - 1,
-                               modeS.repl_top + txt_off )
-   zoneherd.command:setBounds( modeS.l_margin,
-                               modeS.repl_top,
-                               right_col,
-                               modeS.repl_top + txt_off )
-   zoneherd.results:setBounds( 1,
-                               modeS.repl_top + txt_off + 1,
-                               right_col,
-                               modeS.max_row )
-   zoneherd.suggest:setBounds( right_col + 1,
-                               modeS.repl_top + 1,
-                               modeS.max_col,
-                               modeS.max_row )
+   zoneherd.status:setBounds(  1, 1, 1, right_col)
+   zoneherd.stat_col:setBounds(1, right_col + 1,
+                               1, modeS.max_col )
+   zoneherd.prompt:setBounds(  modeS.repl_top,
+                               1,
+                               modeS.repl_top + txt_off,
+                               modeS.l_margin - 1 )
+   zoneherd.command:setBounds( modeS.repl_top,
+                               modeS.l_margin,
+                               modeS.repl_top + txt_off,
+                               right_col )
+   zoneherd.results:setBounds( modeS.repl_top + txt_off + 1,
+                               1,
+                               modeS.max_row,
+                               right_col )
+   zoneherd.suggest:setBounds( modeS.repl_top + 1,
+                               right_col + 1,
+                               modeS.max_row,
+                               modeS.max_col )
    -- Popup is centered and 2/3 of max width, i.e. from 1/6 to 5/6
-   zoneherd.popup:setBounds(   floor(modeS.max_col / 6),
-                               modeS.repl_top + txt_off + 1,
-                               ceil(modeS.max_col * 5 / 6),
-                               modeS.max_row)
+   zoneherd.popup:setBounds(   modeS.repl_top + txt_off + 1,
+                               floor(modeS.max_col / 6),
+                               modeS.max_row,
+                               ceil(modeS.max_col * 5 / 6) )
    return zoneherd
 end
 ```
