@@ -71,6 +71,13 @@ local insert_session = [[
 INSERT INTO session (title, project) VALUES (?, ?);
 ]]
 
+local insert_premise = [[
+INSERT INTO
+   premise (session, line, ordinal, title, status)
+VALUES
+   (?, ?, ?, ?, ?);
+]]
+
 
 
 
@@ -198,16 +205,16 @@ end
 
 
 
-function Historian.beginMacroSession(historian, session_title)
+function Historian.beginMacroSession(historian, session)
    -- this is incremented for each stored line
-   historian.premise_ordinal = 1
+   session.premise_ordinal = 1
    -- insert session into DB
    historian.conn
       : prepare(insert_session)
-      : bind(session_title, historian.project_id)
+      : bind(session.session_title, historian.project_id)
       : step()
    -- retrieve session id
-   historian.session_id = sql.lastRowId(historian.conn)
+   session.session_id = sql.lastRowId(historian.conn)
 end
 
 
@@ -250,7 +257,7 @@ end
 local tabulate = require "helm/repr/tabulate"
 local tab_callback = assert(persist_tabulate.tab_callback)
 
-function Historian.persist(historian, txtbuf, results)
+function Historian.persist(historian, txtbuf, results, session)
    local lb = tostring(txtbuf)
    local have_results = results
                         and type(results) == "table"
@@ -270,7 +277,17 @@ function Historian.persist(historian, txtbuf, results)
    end
    local line_id = sql.lastRowId(historian.conn)
    insert(historian.line_ids, line_id)
-
+   -- if it's a macro session, add the premise now
+   if session and session.macro_mode then
+      historian.conn:prepare(insert_premise)
+         : bind(session.session_id,
+                line_id,
+                session.premise_ordinal,
+                '',
+                'accept')
+         : step()
+      session.premise_ordinal = session.premise_ordinal + 1
+   end
    -- If there's nothing to persist, release our savepoint
    -- and don't bother starting the idler
    if not have_results then
@@ -524,7 +541,7 @@ end
 
 
 
-function Historian.append(historian, txtbuf, results, success)
+function Historian.append(historian, txtbuf, results, success, session)
    if tostring(historian[historian.n]) == tostring(txtbuf)
       or tostring(txtbuf) == "" then
       -- don't bother
@@ -533,9 +550,9 @@ function Historian.append(historian, txtbuf, results, success)
    historian[historian.n + 1] = txtbuf
    historian.n = historian.n + 1
    if success then
-      historian:persist(txtbuf, results)
+      historian:persist(txtbuf, results, session)
    else
-      historian:persist(txtbuf)
+      historian:persist(txtbuf, nil, session)
    end
    return true
 end
