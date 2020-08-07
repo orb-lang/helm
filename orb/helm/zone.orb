@@ -81,16 +81,29 @@ local Zoneherd = meta {}
 
 ** Zone methods
 
-
-*** Zone:height(), Zone:width()
+*** Zone:height(), :width()
 
 #!lua
 function Zone.height(zone)
-   return zone.br - zone.tr + 1
+   return zone.bounds:height()
 end
-
 function Zone.width(zone)
-   return zone.bc - zone.tc + 1
+   return zone.bounds:width()
+end
+#/lua
+
+*** Zone:clientBounds()
+
+The available bounds in which to render the Zone's content,
+taking into account the space occupied by a border, if we have one.
+
+#!lua
+function Zone.clientBounds(zone)
+   if zone.border then
+      return zone.bounds:insetBy(1)
+   else
+      return zone.bounds
+   end
 end
 #/lua
 
@@ -103,14 +116,7 @@ the same cells on screen.
 #!lua
 function Zone.overlaps(zone, other_zone)
    -- The other zone may be uninitialized--treat this as nonoverlapping
-   if not (other_zone.tc and other_zone.tr and
-           other_zone.bc and other_zone.br) then
-      return false
-   end
-   return zone.tc <= other_zone.bc and
-          zone.bc >= other_zone.tc and
-          zone.tr <= other_zone.br and
-          zone.br >= other_zone.tr
+   return other_zone.bounds and zone.bounds:intersects(other_zone.bounds)
 end
 #/lua
 
@@ -145,7 +151,6 @@ Depends on the zone contents being a Rainbuf
 
 #!lua
 local bound = import("core/math", "bound")
-local instanceof = import("core/meta", "instanceof")
 function Zone.scrollTo(zone, offset, allow_overscroll)
    if not instanceof(zone.contents, Rainbuf) then
       return false
@@ -227,30 +232,25 @@ function Zone.scrollToBottom(zone, allow_overscroll)
 end
 #/lua
 
-*** Zone:setBounds(tc, tr, bc, br)
+*** Zone:setBounds(rect)
 
 Updates the bounds of the zone, marking it as touched if they actually change.
+Accepts either a Rectangle, or left/top/right/bottom values.
 
 #!lua
-function Zone.setBounds(zone, tc, tr, bc, br)
-   assert(tc <= bc, "tc: " .. tc .. ", bc: " .. bc)
-   assert(tr <= br, "tr: " .. tr .. ", br: " .. br)
-   if not(zone.tr == tr and
-          zone.tc == tc and
-          zone.br == br and
-          zone.bc == bc) then
-      -- If zone width is changing, clear caches of the contained Rainbuf
-      -- Note that :setBounds() is called to set zone.(tc,bc,tr,br) for the first time,
-      -- so we only check for a change if there are previous values
-      if zone.bc and zone.tc
-         and (bc - tc) ~= (zone.bc - zone.tc)
+local Rectangle  = require "anterm/rectangle"
+function Zone.setBounds(zone, rect, ...)
+   if not instanceof(rect, Rectangle) then
+      rect = Rectangle(rect, ...)
+   end
+   rect:assertNotEmpty("Zone must have non-zero area")
+   if zone.bounds ~= rect then
+      if zone.bounds
+         and zone.bounds:width() ~= rect:width()
          and instanceof(zone.contents, Rainbuf) then
          zone.contents:clearCaches()
       end
-      zone.tr = tr
-      zone.tc = tc
-      zone.br = br
-      zone.bc = bc
+      zone.bounds = rect
       -- #todo technically this is incomplete as we need to care about
       -- cells we may previously have owned and no longer do, and what zones
       -- *are* now responsible for them. Doing that properly requires a real
@@ -308,16 +308,21 @@ end
 *** _writeLines(write, zone, str)
 
 #!lua
+
+local function _nl(zone)
+   return a.jump.col(zone:clientBounds().left) .. a.jump.down(1)
+end
+
 local lines = import("core/string", "lines")
 
 local function _writeLines(write, zone, str)
-   local nl = a.col(zone.tc) .. a.jump.down(1)
-   local pr_row = zone.tr
+   local nl = _nl(zone)
+   local pr_row = zone.bounds.top
    for line in lines(str) do
        write(line)
        write(nl)
        pr_row = pr_row + 1
-       if pr_row > zone.br then
+       if pr_row > zone.bounds.bottom then
           break
        end
    end
@@ -330,15 +335,13 @@ end
 Render the zone contents as a Rainbuf, wrapping them *in* a Rainbuf if needed.
 
 #!lua
-local instanceof = import("core/meta", "instanceof")
-
 local function _renderRainbuf(write, zone)
    if not zone.contents then
       return nil
    end
    assert(instanceof(zone.contents, Rainbuf))
-   local nl = a.col(zone.tc) .. a.jump.down(1)
-   for line in zone.contents:lineGen(zone:height(), zone:width()) do
+   local nl = _nl(zone)
+   for line in zone.contents:lineGen(zone:clientBounds():extent():rowcol()) do
       write(line)
       write(nl)
    end
@@ -369,6 +372,49 @@ local function _renderTxtbuf(modeS, zone, write)
 end
 #/lua
 
+*** Zone:paintBorder(write)
+
+Paints a border around the Zone using anterm box-drawing primitives
+if zone.border is true.
+
+#!lua
+local box = require "anterm/box"
+function Zone.paintBorder(zone, write)
+   if zone.border then
+      write(box[zone.border](zone.bounds))
+   end
+end
+#/lua
+
+*** Zone:erase(write)
+
+#!lua
+function Zone.erase(zone, write)
+   write(a.erase.box(zone.bounds))
+end
+#/lua
+
+*** Zone:paint(write)
+
+#!lua
+function Zone.paint(zone, write)
+   if not (zone.visible and zone.touched) then
+      return
+   end
+   zone:erase(write)
+   zone:paintBorder(write)
+   write(a.jump(zone:clientBounds():origin()))
+   -- actually render ze contents
+   if type(zone.contents) == "string" then
+      _writeLines(write, zone, zone.contents)
+   elseif instanceof(zone.contents, Txtbuf) then
+      _renderTxtbuf(modeS, zone, write)
+   else
+      _renderRainbuf(write, zone)
+   end
+   zone.touched = false
+end
+#/lua
 
 ** Zoneherd methods
 
@@ -446,30 +492,30 @@ local ceil, floor = assert(math.ceil), assert(math.floor)
 function Zoneherd.reflow(zoneherd, modeS)
    local right_col = modeS.max_col - _zoneOffset(modeS)
    local txt_off = modeS:continuationLines()
-   zoneherd.status:setBounds(  1, 1, right_col, 1)
-   zoneherd.stat_col:setBounds(right_col + 1, 1,
-                               modeS.max_col, 1 )
-   zoneherd.prompt:setBounds(  1,
-                               modeS.repl_top,
-                               modeS.l_margin - 1,
-                               modeS.repl_top + txt_off )
-   zoneherd.command:setBounds( modeS.l_margin,
-                               modeS.repl_top,
-                               right_col,
-                               modeS.repl_top + txt_off )
-   zoneherd.results:setBounds( 1,
-                               modeS.repl_top + txt_off + 1,
-                               right_col,
-                               modeS.max_row )
-   zoneherd.suggest:setBounds( right_col + 1,
-                               modeS.repl_top + 1,
-                               modeS.max_col,
-                               modeS.max_row )
+   zoneherd.status:setBounds(  1, 1, 1, right_col)
+   zoneherd.stat_col:setBounds(1, right_col + 1,
+                               1, modeS.max_col )
+   zoneherd.prompt:setBounds(  modeS.repl_top,
+                               1,
+                               modeS.repl_top + txt_off,
+                               modeS.l_margin - 1 )
+   zoneherd.command:setBounds( modeS.repl_top,
+                               modeS.l_margin,
+                               modeS.repl_top + txt_off,
+                               right_col )
+   zoneherd.results:setBounds( modeS.repl_top + txt_off + 1,
+                               1,
+                               modeS.max_row,
+                               right_col )
+   zoneherd.suggest:setBounds( modeS.repl_top + 1,
+                               right_col + 1,
+                               modeS.max_row,
+                               modeS.max_col )
    -- Popup is centered and 2/3 of max width, i.e. from 1/6 to 5/6
-   zoneherd.popup:setBounds(   floor(modeS.max_col / 6),
-                               modeS.repl_top + txt_off + 1,
-                               ceil(modeS.max_col * 5 / 6),
-                               modeS.max_row)
+   zoneherd.popup:setBounds(   modeS.repl_top + txt_off + 1,
+                               floor(modeS.max_col / 6),
+                               modeS.max_row,
+                               ceil(modeS.max_col * 5 / 6) )
    return zoneherd
 end
 #/lua
@@ -486,23 +532,7 @@ function Zoneherd.paint(zoneherd, modeS)
    local write = zoneherd.write
    write(a.cursor.hide(), a.clear())
    for i, zone in ipairs(zoneherd) do
-      if zone.visible and zone.touched then
-         -- erase
-         write(a.erase.box( zone.tc,
-                            zone.tr,
-                            zone.bc,
-                            zone.br ),
-               a.colrow(zone.tc, zone.tr))
-         -- actually render ze contents
-         if type(zone.contents) == "string" then
-            _writeLines(write, zone, zone.contents)
-         elseif instanceof(zone.contents, Txtbuf) then
-            _renderTxtbuf(modeS, zone, write)
-         else
-            _renderRainbuf(write, zone)
-         end
-      end
-      zone.touched = false
+      zone:paint(write)
    end
    modeS:placeCursor()
    write(a.cursor.show())
@@ -530,6 +560,7 @@ local function new(modeS, writer)
    zoneherd:newZone("suggest", 1, "%")
    zoneherd:newZone("popup", 2, "^")
    zoneherd.popup.visible = false
+   zoneherd.popup.border = "light"
    zoneherd:reflow(modeS)
 
    return zoneherd
