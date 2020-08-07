@@ -100,7 +100,7 @@ end
 
 function Zone.clientBounds(zone)
    if zone.border then
-      return zone.bounds:offsetBy(-1)
+      return zone.bounds:insetBy(1)
    else
       return zone.bounds
    end
