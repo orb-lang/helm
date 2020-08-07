@@ -236,9 +236,8 @@ Places the cursor where it belongs within the `command` zone\.
 
 ```lua
 function ModeS.placeCursor(modeS)
-   local col = modeS.zones.command.tc + modeS.txtbuf.cursor.col - 1
-   local row = modeS.zones.command.tr + modeS.txtbuf.cursor.row - 1
-   modeS.write(a.colrow(col, row))
+   local point = modeS.zones.command.bounds:origin() + modeS.txtbuf.cursor - 1
+   modeS.write(a.jump(point))
    return modeS
 end
 ```
@@ -727,7 +726,7 @@ end
 
 #### modeS\.status
 
-A way to jack into `singletons/status`\.
+A way to jack into `status`\.
 
 ```lua
 local function _status__repr(status_table)
