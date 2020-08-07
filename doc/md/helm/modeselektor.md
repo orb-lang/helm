@@ -100,6 +100,7 @@ The easiest way to go mad in concurrent environments is to share memory\.
 ```lua
 local c = import("singletons/color", "color")
 local Set = require "set:set"
+local valiant = require "valiant:valiant"
 
 local Txtbuf     = require "helm/txtbuf"
 local Resbuf     = require "helm/resbuf" -- Not currently used...
@@ -365,6 +366,7 @@ function ModeS.shiftMode(modeS, raga_name)
 end
 ```
 
+
 ## act
 
 `act` dispatches a single seq \(which has already been parsed into \(category, value\)
@@ -378,6 +380,7 @@ and preserve information for our fall\-through method\.
 
 `act` always succeeds, meaning we need some metatable action to absorb and
 log anything unexpected\.
+
 
 ### actOnce
 
@@ -437,6 +440,7 @@ function ModeS.__call(modeS, category, value)
 end
 ```
 
+
 ### ModeS:setResults\(results\)
 
 Sets the contents of the results area to `results`, wrapping it in a Rainbuf
@@ -461,6 +465,7 @@ function ModeS.setResults(modeS, results)
 end
 ```
 
+
 ### ModeS:setTxtbuf\(txtbuf\)
 
 Replaces the current Txtbuf with `txtbuf`\. This effectively involves
@@ -475,78 +480,12 @@ function ModeS.setTxtbuf(modeS, txtbuf)
 end
 ```
 
+
 ### ModeS:eval\(\)
 
 
-#### eval Environment
-
-Create an environment to `eval` the txtbuf in\.
-
-This copies new globals into `_G`, and puts their names into the repr `anti_G`
-namespace\.
-
-It also does lookups against `_G` first, falling back on `__G`\.
-
-All of this assumes that user code doesn't tamper with the environment\. Though
-if it happens to, this code should do the right thing, which is nothing\.
-
 ```lua
-local eval_ENV = {}
-local eval_M = {}
-setmetatable(eval_ENV, eval_M)
-
-local function indexer(Env, key)
-   return Env[key]
-end
-
-function eval_M.__index(eval_ENV, key)
-   local ok, value = pcall(indexer, _G, key)
-   if ok and value ~= nil then
-      return value
-   end
-   ok, value = pcall(indexer, __G, key)
-   if ok and value ~= nil then
-      return value
-   end
-   return nil
-end
-
-local function newindexer(Env, key, value)
-   Env[key] = value
-end
-
-local loadNames = import("helm/repr/names", "loadNames")
-
-function eval_M.__newindex(eval_ENV, key, value)
-   local ok = pcall(newindexer, _G, key, value)
-   if not ok then
-      rawset(_G, key, value)
-   end
-   -- Use loadNames() to get the key added to all_symbols
-   -- Should really divide up responsibility better between
-   -- loadNames() and addName()
-   loadNames{ [key] = value }
-end
-```
-
-```lua
-local function gatherResults(success, ...)
-  return success, pack(...)
-end
-```
-
-```lua
-local result_repr_M = meta {}
-
-function result_repr_M.__repr(result)
-  local i = 1
-  return function()
-     if i <= #result then
-       i = i + 1
-       return result[i - 1]
-     end
-  end
-end
+local evaluate = assert(valiant.eval)
 ```
 
 ```lua
@@ -564,51 +503,11 @@ function ModeS.__eval(modeS, chunk, headless)
       -- Getting ready to eval, cancel any active autocompletion
       modeS.suggest:cancel(modeS)
    end
-   -- check for leading =, old-school style
-   local head = sub(chunk, 1, 1)
-   if head == "=" then -- take pity on old-school Lua hackers
-       chunk = "return " .. sub(chunk,2)
+   local success, results = evaluate(chunk)
+   if not success and results == 'advance' then
+      return modeS, results
    end
-   -- add "return" and see if it parses
-   local return_chunk = "return " .. chunk
-   local parsed_chunk = lua_parser(return_chunk)
-   if not parsed_chunk:select "Error" () then
-      chunk = return_chunk
-   else
-      -- re-parse the chunk
-      parsed_chunk = lua_parser(chunk)
-   end
-   -- #Todo tinker with the chunk, finding $1-type vars
-   if parsed_chunk:select "Error" () then
-      -- our parser isn't perfect, let's see what lua thinks
-      local is_expr = loadstring(return_chunk)
-      if is_expr then
-         -- we have an expression which needs a return, and didn't
-         -- detect it:
-         chunk = return_chunk
-         -- otherwise, we'll try our luck with the chunk, as-is
-      end
-   end
-   local success, results
-   local f, err = loadstring(chunk, 'REPL')
-   if f then
-      setfenv(f, eval_ENV)
-      success, results = gatherResults(xpcall(f, debug.traceback))
-      if not success then
-         -- error
-         results.frozen = true
-      end
-   else
-      if err:match "'<eof>'$" then
-         -- Lua expects some more input
-         return modeS, 'advance'
-      else
-         -- make the error into the result
-         results = { err,
-                     n = 1,
-                     frozen = true }
-      end
-   end
+
    if not headless then
       modeS.hist:append(modeS.txtbuf, results, success)
       modeS.hist.cursor = modeS.hist.n + 1
