@@ -439,16 +439,18 @@ local function _is_paired(a, b)
    return a and b and _openers[a] == b
 end
 
-function Txtbuf.killBackward(txtbuf)
+function Txtbuf.killBackward(txtbuf, disp)
+   disp = disp or 1
    local line, cur_col, cur_row = txtbuf:currentPosition()
+   -- Only need to check the character immediately to the left of the cursor
+   -- since if we encounter paired braces later, we will delete the
+   -- closing brace first anyway
    if _is_paired(line[cur_col - 1], line[cur_col]) then
       txtbuf:right()
-      txtbuf:beginSelection()
-      txtbuf:left(2)
-   else
-      txtbuf:beginSelection()
-      txtbuf:left()
+      disp = disp + 1
    end
+   txtbuf:beginSelection()
+   txtbuf:left(disp)
    txtbuf:killSelection()
 end
 
