@@ -425,7 +425,7 @@ local function _db_result__repr(result)
          local metadata = sub(result[1], header_position + 1, text_position - 1)
          local cfg = {}
          if find(metadata, "wrappable") then cfg.wrappable = true end
-         cfg.event = match(metadata, "event=(%w+)")
+         cfg.event = match(metadata, "event=([%w_]+)")
          header_position = find(result[1], SOH, text_position + 1)
          if not header_position then
             header_position = #result[1] + 1
