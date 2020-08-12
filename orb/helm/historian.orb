@@ -22,7 +22,7 @@ local sql     = assert(sql, "sql must be in bridge _G")
 local Txtbuf  = require "helm/txtbuf"
 local Rainbuf = require "helm/rainbuf"
 local C       = require "singletons/color"
-local repr    = require "helm/repr"
+local repr    = require "repr:repr"
 local helm_db = require "helm:helm/helm-db"
 
 local concat, insert = assert(table.concat), assert(table.insert)
@@ -242,7 +242,7 @@ local function dump_token(token, stream)
    return stream
 end
 
-local tabulate = require "helm/repr/tabulate"
+local tabulate = require "repr:repr/tabulate"
 
 function Historian.persist(historian, txtbuf, results)
    local lb = tostring(txtbuf)
@@ -411,7 +411,7 @@ local lines = import("core/string", "lines")
 local find, match, sub = assert(string.find),
                          assert(string.match),
                          assert(string.sub)
-local Token = require "helm/repr/token"
+local Token = require "repr:repr/token"
 local function _db_result__repr(result)
    if sub(result[1], 1, 1) == SOH then
       -- New format--tokens delimited by SOH/STX
