@@ -484,7 +484,7 @@ end
 
 
 #!lua
-local evaluate = assert(valiant.eval)
+local evaluate = assert(valiant(_G, __G))
 #/lua
 
 #!lua
@@ -498,6 +498,7 @@ function ModeS.__eval(modeS, chunk, headless)
       -- us hot-reload anything "require"d at the repl.
       modeS.original_packages = Set(keys(package.loaded))
    end
+
    if not headless then
       -- Getting ready to eval, cancel any active autocompletion
       modeS.suggest:cancel(modeS)
