@@ -23,6 +23,7 @@ local Txtbuf  = require "helm/txtbuf"
 local Rainbuf = require "helm/rainbuf"
 local C       = require "singletons/color"
 local repr    = require "repr:repr"
+local persist_tabulate = require "helm:helm/repr/persist-tabulate"
 local helm_db = require "helm:helm/helm-db"
 
 local concat, insert = assert(table.concat), assert(table.insert)
@@ -64,6 +65,17 @@ INSERT INTO result (line_id, repr) VALUES (:line_id, :repr);
 
 ```sql
 INSERT INTO project (directory) VALUES (?);
+```
+
+```sql
+INSERT INTO session (title, project) VALUES (?, ?);
+```
+
+```sql
+INSERT INTO
+   premise (session, line, ordinal, title, status)
+VALUES
+   (?, ?, ?, ?, ?);
 ```
 
 
@@ -185,31 +197,31 @@ end
 ```
 
 
-### Historian:restore\_session\(modeS, session\)
+### Historian:beginMacroSession\(session\_title\)
 
-If there is an open session, we want to replay it\.
+In "macro mode", `historian` records every line as a premise, with not title,
+into a session with the given title\.
 
-To do this, we need to borrow the modeselektor\.
+All results are classed as 'accept'\.
 
 ```lua
-
+function Historian.beginMacroSession(historian, session)
+   -- this is incremented for each stored line
+   session.premise_ordinal = 1
+   -- insert session into DB
+   historian.conn
+      : prepare(insert_session)
+      : bind(session.session_title, historian.project_id)
+      : step()
+   -- retrieve session id
+   session.session_id = sql.lastRowId(historian.conn)
+end
 ```
 
 
-### Historian:persist\(txtbuf, results\)
+### Historian:persist\(txtbuf, results, session\)
 
 Persists a line and results to store\.
-
-The hooks are in place to persist the results\. I'm starting with a string
-representation; the goal is to provide the sense of persistence across
-sessions, and supplement that over time with better and better approximations\.
-
-To really nail it down will require semantic analysis and hence thorough
-parsing\.  General\-purpose persistence tools belong in `sqlayer`, which will
-merge with our increasingly\-modified `sqlite` bindings\.
-
-Medium\-term goal is to hash any Lua object in a way that will resolve to a
-common value for any identical semantics\.
 
 
 #### dump\_token\(token, phrase\)
@@ -243,8 +255,9 @@ local function dump_token(token, stream)
 end
 
 local tabulate = require "repr:repr/tabulate"
+local tab_callback = assert(persist_tabulate.tab_callback)
 
-function Historian.persist(historian, txtbuf, results)
+function Historian.persist(historian, txtbuf, results, session)
    local lb = tostring(txtbuf)
    local have_results = results
                         and type(results) == "table"
@@ -264,7 +277,17 @@ function Historian.persist(historian, txtbuf, results)
    end
    local line_id = sql.lastRowId(historian.conn)
    insert(historian.line_ids, line_id)
-
+   -- if it's a macro session, add the premise now
+   if session and session.macro_mode then
+      historian.conn:prepare(insert_premise)
+         : bind(session.session_id,
+                line_id,
+                session.premise_ordinal,
+                '',
+                'accept')
+         : step()
+      session.premise_ordinal = session.premise_ordinal + 1
+   end
    -- If there's nothing to persist, release our savepoint
    -- and don't bother starting the idler
    if not have_results then
@@ -280,37 +303,12 @@ function Historian.persist(historian, txtbuf, results)
       results_tabulates[i] = tabulate(results[i], dummy_window, C.no_color)
       results_tostring[i] = { n = 0 }
    end
-   local i = 1
+   local persist_cb = tab_callback(results_tabulates, results_tostring)
    local persist_idler = uv.new_idle()
    historian.idlers:insert(persist_idler)
    persist_idler:start(function()
-      if i <= results.n then
-         local start_token_count = results_tostring[i].n
-         if start_token_count > 15000 then
-            -- bail early
-            results_tostring[i] = concat(results_tostring[i], "", 1, results_tostring[i].n)
-            i  = i + 1
-            return nil
-         end
-         while results_tostring[i].n - start_token_count < 100 do
-            local success, token = pcall(results_tabulates[i])
-            if success then
-               if token then
-                  dump_token(token, results_tostring[i])
-               else
-                  results_tostring[i] = concat(results_tostring[i], "", 1, results_tostring[i].n)
-                  i = i + 1
-                  -- Stop this execution of the idler now, even if we
-                  -- haven't gotten 100 tokens--easier than keeping track
-                  -- across result boundaries
-                  return nil
-               end
-            else
-               error(token)
-            end
-         end
-         return nil
-      end
+      local done, results_tostring = persist_cb()
+      if not done then return nil end
       -- now persist
       for i = 1, results.n do
          historian.insert_result:bindkv { line_id = line_id,
@@ -543,7 +541,7 @@ Appends a txtbuf to history and persists it\.
 Doesn't adjust the cursor\.
 
 ```lua
-function Historian.append(historian, txtbuf, results, success)
+function Historian.append(historian, txtbuf, results, success, session)
    if tostring(historian[historian.n]) == tostring(txtbuf)
       or tostring(txtbuf) == "" then
       -- don't bother
@@ -552,9 +550,9 @@ function Historian.append(historian, txtbuf, results, success)
    historian[historian.n + 1] = txtbuf
    historian.n = historian.n + 1
    if success then
-      historian:persist(txtbuf, results)
+      historian:persist(txtbuf, results, session)
    else
-      historian:persist(txtbuf)
+      historian:persist(txtbuf, nil, session)
    end
    return true
 end

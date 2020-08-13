@@ -5,15 +5,6 @@
 database.
 
 
-**** imports
-
-The functions brought in from =esquilite= will probably end up in =sql.orb=.
-
-#!lua
-local esquilite = require "esquilite:esquilite"
-#/lua
-
-
 ** helm_db
 
 #!lua
@@ -314,7 +305,7 @@ Returns the conn, or errors and exits the program.
 #!lua
 local assertfmt = import("core:core/string", "assertfmt")
 local format = assert(string.format)
-local boot = assert(esquilite.boot)
+local boot = assert(sql.boot)
 
 
 function helm_db.boot(conn)

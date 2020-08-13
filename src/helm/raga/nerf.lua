@@ -82,7 +82,7 @@ local function _prev(modeS)
    end
    local prev_txtbuf, prev_result = modeS.hist:prev()
    if linestash then
-      modeS.hist:append(linestash)
+      modeS.hist:append(linestash, modeS.session)
    end
    modeS:setTxtbuf(prev_txtbuf)
    modeS:setResults(prev_result)
@@ -100,7 +100,7 @@ end
 local function _advance(modeS)
    local new_txtbuf, next_result = modeS.hist:next()
    if not new_txtbuf then
-      local added = modeS.hist:append(modeS.txtbuf)
+      local added = modeS.hist:append(modeS.txtbuf, modeS.session)
       if added then
          modeS.hist.cursor = modeS.hist.n + 1
       end
