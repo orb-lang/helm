@@ -23,7 +23,7 @@ local Txtbuf  = require "helm/txtbuf"
 local Rainbuf = require "helm/rainbuf"
 local C       = require "singletons/color"
 local repr    = require "repr:repr"
-local persist_tabulate = require "helm:helm/repr/persist-tabulate"
+local persist_tabulate = require "repr:repr/persist-tabulate"
 local helm_db = require "helm:helm/helm-db"
 
 local concat, insert = assert(table.concat), assert(table.insert)
@@ -399,57 +399,8 @@ function Historian.search(historian, frag)
 end
 ```
 
-
-#### \_resultsFrom\(historian, line\_id\)
-
-Retrieve a set of results reprs from the database, given a line\_id\.
-
 ```lua
-local lines = import("core/string", "lines")
-local find, match, sub = assert(string.find),
-                         assert(string.match),
-                         assert(string.sub)
-local Token = require "repr:repr/token"
-local function _db_result__repr(result)
-   if sub(result[1], 1, 1) == SOH then
-      -- New format--tokens delimited by SOH/STX
-      local header_position = 1
-      local text_position = 0
-      return function()
-         text_position = find(result[1], STX, header_position + 1)
-         if not text_position then
-            return nil
-         end
-         local metadata = sub(result[1], header_position + 1, text_position - 1)
-         local cfg = {}
-         if find(metadata, "wrappable") then cfg.wrappable = true end
-         cfg.event = match(metadata, "event=([%w_]+)")
-         header_position = find(result[1], SOH, text_position + 1)
-         if not header_position then
-            header_position = #result[1] + 1
-         end
-         local text = sub(result[1], text_position + 1, header_position - 1)
-         return Token(text, C.color.greyscale, cfg)
-      end
-   else
-      -- Old format--just a string, which we'll break up into lines
-      local line_iter = lines(result[1])
-      return function()
-         local line = line_iter()
-         if line then
-            -- Might as well return a Token in order to attach the color properly,
-            -- rather than just including the color escapes in the string
-            return Token(line, C.color.greyscale, { event = "repr_line" })
-         else
-            return nil
-         end
-      end
-   end
-end
-
-local _db_result_M = meta {}
-_db_result_M.__repr = _db_result__repr
-
+local db_result_M = assert(persist_tabulate.db_result_M)
 
 local function _resultsFrom(historian, cursor)
    if historian.result_buffer[cursor] then
@@ -465,7 +416,7 @@ local function _resultsFrom(historian, cursor)
       for i = 1, results.n do
          -- stick the result in a table to enable repr-ing
          results[i] = {results[i]}
-         setmetatable(results[i], _db_result_M)
+         setmetatable(results[i], db_result_M)
       end
    end
    historian.get_results:reset()
