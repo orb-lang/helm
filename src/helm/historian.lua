@@ -13,9 +13,6 @@
 
 
 
-
-
-
 local uv      = require "luv"
 local sql     = assert(sql, "sql must be in bridge _G")
 
@@ -37,13 +34,13 @@ local Set = require "set:set"
 
 
 
-
-
-
 local Historian = meta {}
 Historian.HISTORY_LIMIT = 2000
-Historian.helm_db_home = _Bridge.bridge_home .. "/helm/helm.sqlite"
+local helm_home = os.getenv 'HELM_HOME'
+Historian.helm_db_home = helm_home
+                         or _Bridge.bridge_home .. "/helm/helm.sqlite"
 Historian.project = uv.cwd()
+
 
 
 
@@ -430,7 +427,6 @@ end
 
 
 
-
 function Historian.prev(historian)
    historian.cursor = bound(historian.cursor - 1, 1)
    local txtbuf = historian[historian.cursor]
@@ -492,6 +488,7 @@ end
 
 
 
+
 function Historian.append(historian, txtbuf, results, success, session)
    if tostring(historian[historian.n]) == tostring(txtbuf)
       or tostring(txtbuf) == "" then
@@ -507,6 +504,12 @@ function Historian.append(historian, txtbuf, results, success, session)
    end
    return true
 end
+
+
+
+
+
+
 
 
 
@@ -530,6 +533,7 @@ local function new(helm_db)
    historian.idlers = Set()
    return historian
 end
+
 Historian.idEst = new
 
 

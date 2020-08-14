@@ -3,14 +3,11 @@
 
 This module is responsible for REPL history.
 
-Eventually this will include persisting and restoring from a SQLite database,
-fuzzy searching, and variable cacheing.
+Historian loads old records of lines and results from a SQLite database, as
+well as persisting new ones to the same store.
 
-Currently does the basic job of retaining history and not letting subsequent
-edits munge it.
-
-Next step: now that we clone a new txtbuf each time, we have an immutable
-record.  We should store the line as a string, to facilitate fuzzy matching.
+It is also responsible for fuzzy searching across the last =HISTORY_LIMIT= of
+records.
 
 
 **** imports
@@ -36,21 +33,21 @@ local Set = require "set:set"
 
 *** Historian metatable
 
-#todo add some logic to look for an environment variable =$HELM_HOME= before
-choosing the default location.
-
 #!lua
 local Historian = meta {}
 Historian.HISTORY_LIMIT = 2000
-Historian.helm_db_home = _Bridge.bridge_home .. "/helm/helm.sqlite"
+local helm_home = os.getenv 'HELM_HOME'
+Historian.helm_db_home = helm_home
+                         or _Bridge.bridge_home .. "/helm/helm.sqlite"
 Historian.project = uv.cwd()
 #/lua
 
 
 ** SQL statements
 
-  I might move these to [[helm-db][@:helm/helm-db]], although there's no
-compelling reason to do so at this time.
+  The logic of the database itself lives in [[helm-db][@:helm/helm-db]], and
+we may end up moving these statements there as well, although there is as yet
+no compelling reason to.
 
 
 *** Insertions
@@ -227,7 +224,7 @@ Persists a line and results to store.
 **** dump_token(token, phrase)
 
 Dumps a Token in a form that can be reconstituted later.
-=stream= is an accumulator table that will eventually be `concat`ed.
+=stream= is an accumulator table that will eventually be =concat= ed.
 Uses \x01 (SOH, Start of Header) and \x02 (STX, Start of Text) as delimiters.
 Metadata is stored in a compact, hard-coded format.
 
@@ -430,7 +427,6 @@ end
 ** Historian:prev()
 
 #!lua
-
 function Historian.prev(historian)
    historian.cursor = bound(historian.cursor - 1, 1)
    local txtbuf = historian[historian.cursor]
@@ -471,8 +467,8 @@ end
 
 *** Historian:index(cursor)
 
-Loads the history to an exact index. The index must be one that actually exists,
-i.e. 1 <= index <= historian.n--historian.n + 1 is not allowed.
+  Loads the history to an exact index. The index must be one that actually
+exists, i.e. 1 <= index <= historian.n--historian.n + 1 is not allowed.
 
 #!lua
 function Historian.index(historian, cursor)
@@ -484,6 +480,7 @@ function Historian.index(historian, cursor)
    return txtbuf, result
 end
 #/lua
+
 
 *** Historian:append(txtbuf, results, success)
 
@@ -509,8 +506,14 @@ function Historian.append(historian, txtbuf, results, success, session)
 end
 #/lua
 
-#!lua
 
+*** Historian(helm_db)
+
+Creates a new =historian=.
+
+=helm_db= is an optional string parameter to load a non-standard helm database.
+
+#!lua
 local __result_buffer_M = meta {}
 function __result_buffer_M.__repr(buf, window, c)
    return c.alert "cowardly refusing to print result_buffer to avoid infinite appending"
@@ -530,6 +533,7 @@ local function new(helm_db)
    historian.idlers = Set()
    return historian
 end
+
 Historian.idEst = new
 #/lua
 
