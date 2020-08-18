@@ -40,7 +40,7 @@ foundation already laid.
 
 - #Tasks [/]:
 
-  - [ ]  Prepare a migration in the SQLite layer which backs =helm=.
+  - [X]  Prepare a migration in the SQLite layer which backs =helm=.
 
          I've started work on this; it might take some tries to get right, the
          migration framework itself is already in place.
@@ -48,7 +48,7 @@ foundation already laid.
          This is the kind of system where you get the data structures right
          and everything else follows from there.
 
-  - [ ]  Add a "macro mode" where a session is recorded and every line is
+  - [X]  Add a "macro mode" where a session is recorded and every line is
          marked as accepted.  This is inflexible and somewhat painstaking to
          use, but it is the minimum viable system, and already useful as-is.
 
