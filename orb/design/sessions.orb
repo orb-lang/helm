@@ -26,7 +26,7 @@ the repl are turned into unit tests.
 
 Our sessions system will do exactly that, repaying the investment immediately
 by allowing bridge developers to experiment at the =helm= (as we are already
-doing) and transformingn the acceptable results into unit and regression
+doing) and transforming the acceptable results into unit and regression
 tests.
 
 
