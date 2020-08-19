@@ -58,7 +58,7 @@
 
 
 
-local lineGen = import("helm/repr", "lineGen")
+local lineGen = import("repr:repr", "lineGen")
 
 
 

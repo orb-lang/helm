@@ -109,7 +109,7 @@ local Historian  = require "helm/historian"
 local Lex        = require "helm/lex"
 local Zoneherd   = require "helm/zone"
 local Suggest    = require "helm/suggest"
-local repr       = require "helm/repr"
+local repr       = require "repr:repr"
 local lua_parser = require "helm/lua-parser"
 
 local concat               = assert(table.concat)

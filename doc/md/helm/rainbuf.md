@@ -58,7 +58,7 @@ continues past the edge of the zone and otherwise falsy\.
 #### includes
 
 ```lua
-local lineGen = import("helm/repr", "lineGen")
+local lineGen = import("repr:repr", "lineGen")
 ```
 
 
