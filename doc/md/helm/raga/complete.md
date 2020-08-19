@@ -61,14 +61,14 @@ Complete.UTF8 = _insert
 local NAV = Complete.NAV
 
 function NAV.TAB(modeS, category, value)
-   modeS.suggest.active_suggestions[1]:selectNext()
+   modeS.suggest.active_suggestions[1]:selectNextWrap()
    modeS.zones.suggest:beTouched()
 end
 NAV.DOWN = NAV.TAB
 NAV.SHIFT_DOWN = NAV.TAB
 
 function NAV.SHIFT_TAB(modeS, category, value)
-   modeS.suggest.active_suggestions[1]:selectPrevious()
+   modeS.suggest.active_suggestions[1]:selectPreviousWrap()
    modeS.zones.suggest:beTouched()
 end
 NAV.UP = NAV.SHIFT_TAB

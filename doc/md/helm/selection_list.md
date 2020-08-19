@@ -49,6 +49,25 @@ function SelectionList.selectPrevious(list)
 end
 ```
 
+### SelectionList:selectNextWrap\(\), :selectPreviousWrap\(\)
+
+As :selectNext\(\) and :selectPrevious\(\), but wraps around instead of failing
+if we are at the end/beginning of the list\.
+
+```lua
+function SelectionList.selectNextWrap(list)
+   list.selected_index = list.selected_index < #list
+      and list.selected_index + 1
+      or 1
+end
+
+function SelectionList.selectPreviousWrap(list)
+   list.selected_index = list.selected_index > 1
+      and list.selected_index - 1
+      or #list
+end
+```
+
 ### SelectionList:selectedItem\(\)
 
 Answers the actual selected item from the list \(as opposed to its index\)\.
