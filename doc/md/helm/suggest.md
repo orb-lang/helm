@@ -188,6 +188,14 @@ end
 
 ```
 
+### selectedSuggestion\(\)
+
+```lua
+function Suggest.selectedSuggestion(suggest)
+   return suggest.active_suggestions and suggest.active_suggestions[1]:selectedItem()
+end
+```
+
 ### cancel\(\)
 
 ```lua
@@ -201,7 +209,7 @@ end
 
 ```lua
 function Suggest.accept(suggest, modeS)
-   local suggestion = suggest.active_suggestions[1]:selectedItem()
+   local suggestion = suggest:selectedSuggestion()
    local context = _cursorContext(modeS)
    modeS.txtbuf:right(context.total_disp - context.cursor_offset)
    modeS.txtbuf:killBackward(context.total_disp)

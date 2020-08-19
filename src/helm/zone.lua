@@ -362,9 +362,11 @@ local function _renderTxtbuf(modeS, zone, write)
       -- display it in grey instead of what the user has typed so far
       -- Note this only applies once Tab has been pressed, as until then
       -- :selectedItem() will be nil
-      if tok.cursor_offset and modeS.suggest.active_suggestions
-         and modeS.suggest.active_suggestions[1]:selectedItem() then
-         tok = Token(modeS.suggest.active_suggestions[1]:selectedItem(), c.base)
+      if tok.cursor_offset then
+        local suggestion = modeS.suggest:selectedSuggestion()
+        if suggestion then
+          tok = Token(suggestion, c.base)
+        end
       end
       tokens[i] = tok:toString(c)
    end
