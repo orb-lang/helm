@@ -17,12 +17,11 @@ local Codepoints = require "singletons/codepoints"
 
 local function fuzz_patt(frag)
    frag = type(frag) == "string" and Codepoints(frag) or frag
-   local patt =  (P(1) - P(frag[1]))^0
-   for i = 1 , #frag - 1 do
+   local patt = P(true)
+   for i = 1 , #frag do
       local v = frag[i]
-      patt = patt * (P(v) * (P(1) - P(frag[i + 1]))^0)
+      patt = patt * (P(1) - P(v))^0 * P(v)
    end
-   patt = patt * P(frag[#frag])
    return patt
 end
 
