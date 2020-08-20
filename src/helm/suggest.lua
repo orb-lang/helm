@@ -13,7 +13,7 @@ local names = require "repr:repr/names"
 local concat, insert, sort = assert(table.concat),
                              assert(table.insert),
                              assert(table.sort)
-local c = import("singletons/color", "color")
+local c, no_color = import("singletons/color", "color", "no_color")
 
 
 
@@ -37,7 +37,7 @@ local function _cursorContext(modeS)
    local lex_tokens = {}
    -- Ignore whitespace and comments
    for _, token in ipairs(modeS.lex(modeS.txtbuf)) do
-      if token.color ~= c.no_color and token.color ~= c.comment then
+      if token.color ~= no_color and token.color ~= c.comment then
          insert(lex_tokens, token)
       end
    end
