@@ -64,7 +64,7 @@ local function _cursorContext(modeS)
    while index > 0 do
       local path_token = lex_tokens[index]
       if expect_sym then
-         if path_token.color == c.field then
+         if path_token.color == c.field
             insert(path, 1, tostring(path_token))
          else
             -- After a function call or [] subscript, we can't safely retrieve
