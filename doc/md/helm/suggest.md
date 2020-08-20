@@ -67,28 +67,16 @@ local function _cursorContext(modeS)
          if path_token.color == c.field then
             insert(path, 1, tostring(path_token))
          else
-            -- After a function call or [] subscript, we can't safely retrieve
-            -- a table to complete against. A non-operator token is either a
-            -- function call with a single string arg (this also most likely
-            -- applies to a closing table brace), or an error.
-            -- In all such cases, we want to complete against the full list
-            -- of possible symbols.
-            if tostring(path_token) == ")"
-               or tostring(path_token) == "]"
-               or tostring(path_token) == "}"
-               or path_token.color ~= c.operator then
-               path = nil
-            end
+            -- If we expected a symbol and got something else, we're likely
+            -- in a situation like foo[bar].baz, having just examined the dot.
+            -- In this case we can't safely retrieve a table to complete against
+            path = nil
             break
          end
-      else
+      elseif not tostring(path_token):find("^[.:]$") then
          -- Expected a . or :, got absolutely anything else, we've finished
          -- this dotted path.
-         if path_token.color ~= c.operator
-            or (tostring(path_token) ~= "."
-            and tostring(path_token) ~= ":") then
-            break
-         end
+         break
       end
       expect_sym = not expect_sym
       index = index - 1
