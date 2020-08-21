@@ -9,7 +9,7 @@ This is our autocomplete module.
 local Lex = require "helm/lex"
 local SelectionList = require "helm/selection_list"
 local Rainbuf = require "helm/rainbuf"
-local names = require "helm/repr/names"
+local names = require "repr:repr/names"
 local concat, insert, sort = assert(table.concat),
                              assert(table.insert),
                              assert(table.sort)

@@ -8,15 +8,6 @@
 
 
 
-
-
-local esquilite = require "esquilite:esquilite"
-
-
-
-
-
-
 local helm_db = {}
 
 
@@ -314,7 +305,7 @@ insert(migrations, migration_4)
 
 local assertfmt = import("core:core/string", "assertfmt")
 local format = assert(string.format)
-local boot = assert(esquilite.boot)
+local boot = assert(sql.boot)
 
 
 function helm_db.boot(conn)

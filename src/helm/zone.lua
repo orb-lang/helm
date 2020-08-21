@@ -353,7 +353,7 @@ end
 
 local concat = assert(table.concat)
 local c = import("singletons/color", "color")
-local Token = require "helm/repr/token"
+local Token = require "repr:repr/token"
 
 local function _renderTxtbuf(modeS, zone, write)
    local tokens = modeS.lex(zone.contents)

@@ -13,16 +13,14 @@
 
 
 
-
-
-
 local uv      = require "luv"
 local sql     = assert(sql, "sql must be in bridge _G")
 
 local Txtbuf  = require "helm/txtbuf"
 local Rainbuf = require "helm/rainbuf"
 local C       = require "singletons/color"
-local repr    = require "helm/repr"
+local repr    = require "repr:repr"
+local persist_tabulate = require "repr:repr/persist-tabulate"
 local helm_db = require "helm:helm/helm-db"
 
 local concat, insert = assert(table.concat), assert(table.insert)
@@ -36,13 +34,13 @@ local Set = require "set:set"
 
 
 
-
-
-
 local Historian = meta {}
 Historian.HISTORY_LIMIT = 2000
-Historian.helm_db_home = _Bridge.bridge_home .. "/helm/helm.sqlite"
+local helm_home = os.getenv 'HELM_HOME'
+Historian.helm_db_home = helm_home
+                         or _Bridge.bridge_home .. "/helm/helm.sqlite"
 Historian.project = uv.cwd()
+
 
 
 
@@ -64,6 +62,17 @@ INSERT INTO result (line_id, repr) VALUES (:line_id, :repr);
 
 local insert_project = [[
 INSERT INTO project (directory) VALUES (?);
+]]
+
+local insert_session = [[
+INSERT INTO session (title, project) VALUES (?, ?);
+]]
+
+local insert_premise = [[
+INSERT INTO
+   premise (session, line, ordinal, title, status)
+VALUES
+   (?, ?, ?, ?, ?);
 ]]
 
 
@@ -193,17 +202,17 @@ end
 
 
 
-
-
-
-
-
-
-
-
-
-
-
+function Historian.beginMacroSession(historian, session)
+   -- this is incremented for each stored line
+   session.premise_ordinal = 1
+   -- insert session into DB
+   historian.conn
+      : prepare(insert_session)
+      : bind(session.session_title, historian.project_id)
+      : step()
+   -- retrieve session id
+   session.session_id = sql.lastRowId(historian.conn)
+end
 
 
 
@@ -242,9 +251,10 @@ local function dump_token(token, stream)
    return stream
 end
 
-local tabulate = require "helm/repr/tabulate"
+local tabulate = require "repr:repr/tabulate"
+local tab_callback = assert(persist_tabulate.tab_callback)
 
-function Historian.persist(historian, txtbuf, results)
+function Historian.persist(historian, txtbuf, results, session)
    local lb = tostring(txtbuf)
    local have_results = results
                         and type(results) == "table"
@@ -264,7 +274,17 @@ function Historian.persist(historian, txtbuf, results)
    end
    local line_id = sql.lastRowId(historian.conn)
    insert(historian.line_ids, line_id)
-
+   -- if it's a macro session, add the premise now
+   if session and session.macro_mode then
+      historian.conn:prepare(insert_premise)
+         : bind(session.session_id,
+                line_id,
+                session.premise_ordinal,
+                '',
+                'accept')
+         : step()
+      session.premise_ordinal = session.premise_ordinal + 1
+   end
    -- If there's nothing to persist, release our savepoint
    -- and don't bother starting the idler
    if not have_results then
@@ -280,37 +300,12 @@ function Historian.persist(historian, txtbuf, results)
       results_tabulates[i] = tabulate(results[i], dummy_window, C.no_color)
       results_tostring[i] = { n = 0 }
    end
-   local i = 1
+   local persist_cb = tab_callback(results_tabulates, results_tostring)
    local persist_idler = uv.new_idle()
    historian.idlers:insert(persist_idler)
    persist_idler:start(function()
-      if i <= results.n then
-         local start_token_count = results_tostring[i].n
-         if start_token_count > 15000 then
-            -- bail early
-            results_tostring[i] = concat(results_tostring[i], "", 1, results_tostring[i].n)
-            i  = i + 1
-            return nil
-         end
-         while results_tostring[i].n - start_token_count < 100 do
-            local success, token = pcall(results_tabulates[i])
-            if success then
-               if token then
-                  dump_token(token, results_tostring[i])
-               else
-                  results_tostring[i] = concat(results_tostring[i], "", 1, results_tostring[i].n)
-                  i = i + 1
-                  -- Stop this execution of the idler now, even if we
-                  -- haven't gotten 100 tokens--easier than keeping track
-                  -- across result boundaries
-                  return nil
-               end
-            else
-               error(token)
-            end
-         end
-         return nil
-      end
+      local done, results_tostring = persist_cb()
+      if not done then return nil end
       -- now persist
       for i = 1, results.n do
          historian.insert_result:bindkv { line_id = line_id,
@@ -402,56 +397,7 @@ end
 
 
 
-
-
-
-
-
-local lines = import("core/string", "lines")
-local find, match, sub = assert(string.find),
-                         assert(string.match),
-                         assert(string.sub)
-local Token = require "helm/repr/token"
-local function _db_result__repr(result)
-   if sub(result[1], 1, 1) == SOH then
-      -- New format--tokens delimited by SOH/STX
-      local header_position = 1
-      local text_position = 0
-      return function()
-         text_position = find(result[1], STX, header_position + 1)
-         if not text_position then
-            return nil
-         end
-         local metadata = sub(result[1], header_position + 1, text_position - 1)
-         local cfg = {}
-         if find(metadata, "wrappable") then cfg.wrappable = true end
-         cfg.event = match(metadata, "event=([%w_]+)")
-         header_position = find(result[1], SOH, text_position + 1)
-         if not header_position then
-            header_position = #result[1] + 1
-         end
-         local text = sub(result[1], text_position + 1, header_position - 1)
-         return Token(text, C.color.greyscale, cfg)
-      end
-   else
-      -- Old format--just a string, which we'll break up into lines
-      local line_iter = lines(result[1])
-      return function()
-         local line = line_iter()
-         if line then
-            -- Might as well return a Token in order to attach the color properly,
-            -- rather than just including the color escapes in the string
-            return Token(line, C.color.greyscale, { event = "repr_line" })
-         else
-            return nil
-         end
-      end
-   end
-end
-
-local _db_result_M = meta {}
-_db_result_M.__repr = _db_result__repr
-
+local db_result_M = assert(persist_tabulate.db_result_M)
 
 local function _resultsFrom(historian, cursor)
    if historian.result_buffer[cursor] then
@@ -467,7 +413,7 @@ local function _resultsFrom(historian, cursor)
       for i = 1, results.n do
          -- stick the result in a table to enable repr-ing
          results[i] = {results[i]}
-         setmetatable(results[i], _db_result_M)
+         setmetatable(results[i], db_result_M)
       end
    end
    historian.get_results:reset()
@@ -475,7 +421,6 @@ local function _resultsFrom(historian, cursor)
    historian.result_buffer[line_id] = results
    return results
 end
-
 
 
 
@@ -543,7 +488,8 @@ end
 
 
 
-function Historian.append(historian, txtbuf, results, success)
+
+function Historian.append(historian, txtbuf, results, success, session)
    if tostring(historian[historian.n]) == tostring(txtbuf)
       or tostring(txtbuf) == "" then
       -- don't bother
@@ -552,12 +498,18 @@ function Historian.append(historian, txtbuf, results, success)
    historian[historian.n + 1] = txtbuf
    historian.n = historian.n + 1
    if success then
-      historian:persist(txtbuf, results)
+      historian:persist(txtbuf, results, session)
    else
-      historian:persist(txtbuf)
+      historian:persist(txtbuf, nil, session)
    end
    return true
 end
+
+
+
+
+
+
 
 
 
@@ -581,6 +533,7 @@ local function new(helm_db)
    historian.idlers = Set()
    return historian
 end
+
 Historian.idEst = new
 
 

@@ -120,7 +120,7 @@ local function chomp_token(lb, start_pos)
    return nil
 end
 
-local Token = require "helm/repr/token"
+local Token = require "repr:repr/token"
 local inbounds = import("core/math", "inbounds")
 
 function Lex.lua_thor(txtbuf)

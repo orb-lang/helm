@@ -3,14 +3,11 @@
 
 This module is responsible for REPL history.
 
-Eventually this will include persisting and restoring from a SQLite database,
-fuzzy searching, and variable cacheing.
+Historian loads old records of lines and results from a SQLite database, as
+well as persisting new ones to the same store.
 
-Currently does the basic job of retaining history and not letting subsequent
-edits munge it.
-
-Next step: now that we clone a new txtbuf each time, we have an immutable
-record.  We should store the line as a string, to facilitate fuzzy matching.
+It is also responsible for fuzzy searching across the last =HISTORY_LIMIT= of
+records.
 
 
 **** imports
@@ -22,7 +19,8 @@ local sql     = assert(sql, "sql must be in bridge _G")
 local Txtbuf  = require "helm/txtbuf"
 local Rainbuf = require "helm/rainbuf"
 local C       = require "singletons/color"
-local repr    = require "helm/repr"
+local repr    = require "repr:repr"
+local persist_tabulate = require "repr:repr/persist-tabulate"
 local helm_db = require "helm:helm/helm-db"
 
 local concat, insert = assert(table.concat), assert(table.insert)
@@ -35,21 +33,21 @@ local Set = require "set:set"
 
 *** Historian metatable
 
-#todo add some logic to look for an environment variable =$HELM_HOME= before
-choosing the default location.
-
 #!lua
 local Historian = meta {}
 Historian.HISTORY_LIMIT = 2000
-Historian.helm_db_home = _Bridge.bridge_home .. "/helm/helm.sqlite"
+local helm_home = os.getenv 'HELM_HOME'
+Historian.helm_db_home = helm_home
+                         or _Bridge.bridge_home .. "/helm/helm.sqlite"
 Historian.project = uv.cwd()
 #/lua
 
 
 ** SQL statements
 
-  I might move these to [[helm-db][@:helm/helm-db]], although there's no
-compelling reason to do so at this time.
+  The logic of the database itself lives in [[helm-db][@:helm/helm-db]], and
+we may end up moving these statements there as well, although there is as yet
+no compelling reason to.
 
 
 *** Insertions
@@ -64,6 +62,17 @@ INSERT INTO result (line_id, repr) VALUES (:line_id, :repr);
 
 #!sql @insert_project #asLua
 INSERT INTO project (directory) VALUES (?);
+#/sql
+
+#!sql @insert_session #asLua
+INSERT INTO session (title, project) VALUES (?, ?);
+#/sql
+
+#!sql @insert_premise #asLua
+INSERT INTO
+   premise (session, line, ordinal, title, status)
+VALUES
+   (?, ?, ?, ?, ?);
 #/sql
 
 
@@ -185,37 +194,37 @@ end
 #/lua
 
 
-*** Historian:restore_session(modeS, session)
+*** Historian:beginMacroSession(session_title)
 
-If there is an open session, we want to replay it.
+In "macro mode", =historian= records every line as a premise, with not title,
+into a session with the given title.
 
-To do this, we need to borrow the modeselektor.
+All results are classed as 'accept'.
 
 #!lua
-
+function Historian.beginMacroSession(historian, session)
+   -- this is incremented for each stored line
+   session.premise_ordinal = 1
+   -- insert session into DB
+   historian.conn
+      : prepare(insert_session)
+      : bind(session.session_title, historian.project_id)
+      : step()
+   -- retrieve session id
+   session.session_id = sql.lastRowId(historian.conn)
+end
 #/lua
 
 
-*** Historian:persist(txtbuf, results)
+*** Historian:persist(txtbuf, results, session)
 
 Persists a line and results to store.
-
-The hooks are in place to persist the results. I'm starting with a string
-representation; the goal is to provide the sense of persistence across
-sessions, and supplement that over time with better and better approximations.
-
-To really nail it down will require semantic analysis and hence thorough
-parsing.  General-purpose persistence tools belong in =sqlayer=, which will
-merge with our increasingly-modified =sqlite= bindings.
-
-Medium-term goal is to hash any Lua object in a way that will resolve to a
-common value for any identical semantics.
 
 
 **** dump_token(token, phrase)
 
 Dumps a Token in a form that can be reconstituted later.
-=stream= is an accumulator table that will eventually be `concat`ed.
+=stream= is an accumulator table that will eventually be =concat= ed.
 Uses \x01 (SOH, Start of Header) and \x02 (STX, Start of Text) as delimiters.
 Metadata is stored in a compact, hard-coded format.
 
@@ -242,9 +251,10 @@ local function dump_token(token, stream)
    return stream
 end
 
-local tabulate = require "helm/repr/tabulate"
+local tabulate = require "repr:repr/tabulate"
+local tab_callback = assert(persist_tabulate.tab_callback)
 
-function Historian.persist(historian, txtbuf, results)
+function Historian.persist(historian, txtbuf, results, session)
    local lb = tostring(txtbuf)
    local have_results = results
                         and type(results) == "table"
@@ -264,7 +274,17 @@ function Historian.persist(historian, txtbuf, results)
    end
    local line_id = sql.lastRowId(historian.conn)
    insert(historian.line_ids, line_id)
-
+   -- if it's a macro session, add the premise now
+   if session and session.macro_mode then
+      historian.conn:prepare(insert_premise)
+         : bind(session.session_id,
+                line_id,
+                session.premise_ordinal,
+                '',
+                'accept')
+         : step()
+      session.premise_ordinal = session.premise_ordinal + 1
+   end
    -- If there's nothing to persist, release our savepoint
    -- and don't bother starting the idler
    if not have_results then
@@ -280,37 +300,12 @@ function Historian.persist(historian, txtbuf, results)
       results_tabulates[i] = tabulate(results[i], dummy_window, C.no_color)
       results_tostring[i] = { n = 0 }
    end
-   local i = 1
+   local persist_cb = tab_callback(results_tabulates, results_tostring)
    local persist_idler = uv.new_idle()
    historian.idlers:insert(persist_idler)
    persist_idler:start(function()
-      if i <= results.n then
-         local start_token_count = results_tostring[i].n
-         if start_token_count > 15000 then
-            -- bail early
-            results_tostring[i] = concat(results_tostring[i], "", 1, results_tostring[i].n)
-            i  = i + 1
-            return nil
-         end
-         while results_tostring[i].n - start_token_count < 100 do
-            local success, token = pcall(results_tabulates[i])
-            if success then
-               if token then
-                  dump_token(token, results_tostring[i])
-               else
-                  results_tostring[i] = concat(results_tostring[i], "", 1, results_tostring[i].n)
-                  i = i + 1
-                  -- Stop this execution of the idler now, even if we
-                  -- haven't gotten 100 tokens--easier than keeping track
-                  -- across result boundaries
-                  return nil
-               end
-            else
-               error(token)
-            end
-         end
-         return nil
-      end
+      local done, results_tostring = persist_cb()
+      if not done then return nil end
       -- now persist
       for i = 1, results.n do
          historian.insert_result:bindkv { line_id = line_id,
@@ -401,57 +396,8 @@ function Historian.search(historian, frag)
 end
 #/lua
 
-
-**** _resultsFrom(historian, line_id)
-
-Retrieve a set of results reprs from the database, given a line_id.
-
 #!lua
-local lines = import("core/string", "lines")
-local find, match, sub = assert(string.find),
-                         assert(string.match),
-                         assert(string.sub)
-local Token = require "helm/repr/token"
-local function _db_result__repr(result)
-   if sub(result[1], 1, 1) == SOH then
-      -- New format--tokens delimited by SOH/STX
-      local header_position = 1
-      local text_position = 0
-      return function()
-         text_position = find(result[1], STX, header_position + 1)
-         if not text_position then
-            return nil
-         end
-         local metadata = sub(result[1], header_position + 1, text_position - 1)
-         local cfg = {}
-         if find(metadata, "wrappable") then cfg.wrappable = true end
-         cfg.event = match(metadata, "event=([%w_]+)")
-         header_position = find(result[1], SOH, text_position + 1)
-         if not header_position then
-            header_position = #result[1] + 1
-         end
-         local text = sub(result[1], text_position + 1, header_position - 1)
-         return Token(text, C.color.greyscale, cfg)
-      end
-   else
-      -- Old format--just a string, which we'll break up into lines
-      local line_iter = lines(result[1])
-      return function()
-         local line = line_iter()
-         if line then
-            -- Might as well return a Token in order to attach the color properly,
-            -- rather than just including the color escapes in the string
-            return Token(line, C.color.greyscale, { event = "repr_line" })
-         else
-            return nil
-         end
-      end
-   end
-end
-
-local _db_result_M = meta {}
-_db_result_M.__repr = _db_result__repr
-
+local db_result_M = assert(persist_tabulate.db_result_M)
 
 local function _resultsFrom(historian, cursor)
    if historian.result_buffer[cursor] then
@@ -467,7 +413,7 @@ local function _resultsFrom(historian, cursor)
       for i = 1, results.n do
          -- stick the result in a table to enable repr-ing
          results[i] = {results[i]}
-         setmetatable(results[i], _db_result_M)
+         setmetatable(results[i], db_result_M)
       end
    end
    historian.get_results:reset()
@@ -481,7 +427,6 @@ end
 ** Historian:prev()
 
 #!lua
-
 function Historian.prev(historian)
    historian.cursor = bound(historian.cursor - 1, 1)
    local txtbuf = historian[historian.cursor]
@@ -522,8 +467,8 @@ end
 
 *** Historian:index(cursor)
 
-Loads the history to an exact index. The index must be one that actually exists,
-i.e. 1 <= index <= historian.n--historian.n + 1 is not allowed.
+  Loads the history to an exact index. The index must be one that actually
+exists, i.e. 1 <= index <= historian.n--historian.n + 1 is not allowed.
 
 #!lua
 function Historian.index(historian, cursor)
@@ -536,6 +481,7 @@ function Historian.index(historian, cursor)
 end
 #/lua
 
+
 *** Historian:append(txtbuf, results, success)
 
 Appends a txtbuf to history and persists it.
@@ -543,7 +489,7 @@ Appends a txtbuf to history and persists it.
 Doesn't adjust the cursor.
 
 #!lua
-function Historian.append(historian, txtbuf, results, success)
+function Historian.append(historian, txtbuf, results, success, session)
    if tostring(historian[historian.n]) == tostring(txtbuf)
       or tostring(txtbuf) == "" then
       -- don't bother
@@ -552,16 +498,22 @@ function Historian.append(historian, txtbuf, results, success)
    historian[historian.n + 1] = txtbuf
    historian.n = historian.n + 1
    if success then
-      historian:persist(txtbuf, results)
+      historian:persist(txtbuf, results, session)
    else
-      historian:persist(txtbuf)
+      historian:persist(txtbuf, nil, session)
    end
    return true
 end
 #/lua
 
-#!lua
 
+*** Historian(helm_db)
+
+Creates a new =historian=.
+
+=helm_db= is an optional string parameter to load a non-standard helm database.
+
+#!lua
 local __result_buffer_M = meta {}
 function __result_buffer_M.__repr(buf, window, c)
    return c.alert "cowardly refusing to print result_buffer to avoid infinite appending"
@@ -581,6 +533,7 @@ local function new(helm_db)
    historian.idlers = Set()
    return historian
 end
+
 Historian.idEst = new
 #/lua
 

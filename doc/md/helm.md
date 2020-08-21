@@ -283,7 +283,7 @@ end
 -- into the colorizer
 -- Treat package names as existing in the global namespace
 -- rather than having a "package.loaded." prefix
-local names = require "helm/repr/names"
+local names = require "repr:repr/names"
 names.loadNames(package.loaded)
 names.loadNames(_G)
 names.loadNames(__G)
