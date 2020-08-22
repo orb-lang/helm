@@ -90,7 +90,7 @@ where they appear.
 local Codepoints = require "singletons/codepoints"
 local concat = assert(table.concat)
 
-local function _highlight(line, frag, best, max_disp, c)
+function SelectionList.highlight(list, line, max_disp, c)
    local frag_index = 1
    -- Collapse multiple spaces into one for display
    line = line:gsub(" +"," ")
@@ -115,11 +115,11 @@ local function _highlight(line, frag, best, max_disp, c)
          break
       end
       disp = disp + char_disp
-      if frag_index <= #frag and char == frag:sub(frag_index, frag_index) then
+      if frag_index <= #list.frag and char == list.frag:sub(frag_index, frag_index) then
          local char_color
          -- highlight the last two differently if this is a
          -- 'second best' search
-         if not best and #frag - frag_index < 2 then
+         if not list.best and #list.frag - frag_index < 2 then
             char_color = c.alert
          else
             char_color = c.search_hl
@@ -142,7 +142,7 @@ function SelectionList.__repr(list, window, c)
       local line = list[i]
       local len
       if line == nil then return nil end
-      line, len = _highlight(line, list.frag, list.best, window.remains - 4, c)
+      line, len = list:highlight(line, window.remains - 4, c)
       if list.show_shortcuts then
          local alt_seq = "    "
          if i < 10 then
