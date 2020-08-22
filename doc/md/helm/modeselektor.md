@@ -236,8 +236,18 @@ end
 Places the cursor where it belongs within the `command` zone\.
 
 ```lua
+local Point = require "anterm/point"
 function ModeS.placeCursor(modeS)
    local point = modeS.zones.command.bounds:origin() + modeS.txtbuf.cursor - 1
+   local suggestion = modeS.suggest:selectedSuggestion()
+   if suggestion then
+      for _, tok in ipairs(modeS.lex(modeS.txtbuf)) do
+         if tok.cursor_offset then
+            point = point + Point(0, #suggestion - tok.cursor_offset)
+            break
+         end
+      end
+   end
    modeS.write(a.jump(point))
    return modeS
 end
