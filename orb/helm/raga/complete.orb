@@ -61,7 +61,7 @@ Complete.UTF8 = _insert
 local NAV = Complete.NAV
 
 local function _scrollAfter(modeS, func_name)
-   local suggestions = modeS.suggest.active_suggestions[1]
+   local suggestions = modeS.suggest.active_suggestions
    local zone = modeS.zones.suggest
    suggestions[func_name](suggestions)
    if suggestions.selected_index - zone.contents.offset > zone:height() then
