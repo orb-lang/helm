@@ -60,16 +60,26 @@ Complete.UTF8 = _insert
 
 local NAV = Complete.NAV
 
+local function _scrollAfter(modeS, func_name)
+   local suggestions = modeS.suggest.active_suggestions[1]
+   local zone = modeS.zones.suggest
+   suggestions[func_name](suggestions)
+   if suggestions.selected_index - zone.contents.offset > zone:height() then
+      zone:scrollTo(suggestions.selected_index - zone:height())
+   elseif suggestions.selected_index <= zone.contents.offset then
+      zone:scrollTo(suggestions.selected_index - 1)
+   end
+   zone:beTouched()
+end
+
 function NAV.TAB(modeS, category, value)
-   modeS.suggest.active_suggestions[1]:selectNextWrap()
-   modeS.zones.suggest:beTouched()
+   _scrollAfter(modeS, "selectNextWrap")
 end
 NAV.DOWN = NAV.TAB
 NAV.SHIFT_DOWN = NAV.TAB
 
 function NAV.SHIFT_TAB(modeS, category, value)
-   modeS.suggest.active_suggestions[1]:selectPreviousWrap()
-   modeS.zones.suggest:beTouched()
+   _scrollAfter(modeS, "selectPreviousWrap")
 end
 NAV.UP = NAV.SHIFT_TAB
 NAV.SHIFT_UP = NAV.SHIFT_TAB
