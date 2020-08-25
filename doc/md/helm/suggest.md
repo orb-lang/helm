@@ -59,11 +59,11 @@ local function _cursorContext(modeS)
    -- Work backwards from there to determine the dotted path, if any,
    -- that we are completing within
    local path = {}
-   local expect_sym = false
+   local expect_field = false
    index = index - 1
    while index > 0 do
       local path_token = lex_tokens[index]
-      if expect_sym then
+      if expect_field then
          if path_token.color == c.field then
             insert(path, 1, tostring(path_token))
          else
@@ -78,7 +78,7 @@ local function _cursorContext(modeS)
          -- this dotted path.
          break
       end
-      expect_sym = not expect_sym
+      expect_field = not expect_field
       index = index - 1
    end
    return context, path
@@ -103,8 +103,35 @@ end
 
 local isidentifier = import("core/string", "isidentifier")
 local hasmetamethod = import("core/meta", "hasmetamethod")
-local hasfield = import("core:core/table", "hasfield")
+local safeget = import("core:core/table", "safeget")
 local fuzz_patt = require "helm:helm/fuzz_patt"
+
+local function _suggestions_from(complete_against)
+   -- Either no path was provided, or some part of it doesn't
+   -- actually exist, fall back to completing against all symbols
+   if complete_against == nil then
+      return names.all_symbols
+   end
+   local count = 0
+   local candidate_symbols = {}
+   repeat
+      -- Do not invoke any __pairs metamethod the table may have
+      for k, _ in next, complete_against do
+         if isidentifier(k) then
+            count = count + 1
+            candidate_symbols[k] = true
+            if count > 500 then
+               return candidate_symbols
+            end
+         end
+      end
+      local index_table = hasmetamethod("__index", complete_against)
+      -- Ignore __index functions, no way to know what they might handle
+      complete_against = type(index_table) == "table" and index_table or nil
+   until complete_against == nil
+   return candidate_symbols
+end
+
 
 function Suggest.update(suggest, modeS)
    local context, path = _cursorContext(modeS)
@@ -115,34 +142,18 @@ function Suggest.update(suggest, modeS)
 
    -- First, build a list of candidate symbols--those that would be valid
    -- in the current position.
-   local candidate_symbols, complete_against
+   local complete_against
    if path then
       complete_against = __G
       for _, key in ipairs(path) do
-         complete_against = hasfield(complete_against, key)
+         complete_against = safeget(complete_against, key)
       end
       -- If what we end up with isn't a table, we can't complete against it
       if type(complete_against) ~= "table" then
          complete_against = nil
       end
    end
-   if complete_against ~= nil then
-      candidate_symbols = {}
-      repeat
-         for k, _ in pairs(complete_against) do
-            if isidentifier(k) then
-               candidate_symbols[k] = true
-            end
-         end
-         local index_table = hasmetamethod("__index", complete_against)
-         -- Ignore __index functions, no way to know what they might handle
-         complete_against = type(index_table) == "table" and index_table or nil
-      until complete_against == nil
-   -- Either no path was provided, or some part of it doesn't
-   -- actually exist, fall back to completing against all symbols
-   else
-      candidate_symbols = names.all_symbols
-   end
+   local candidate_symbols = _suggestions_from(complete_against)
 
    -- Now we can actually filter those candidates for whether they match or not
    local suggestions = SelectionList()
