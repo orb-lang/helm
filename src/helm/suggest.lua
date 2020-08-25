@@ -6,14 +6,14 @@
 
 
 
-local Lex = require "helm/lex"
-local SelectionList = require "helm/selection_list"
-local Rainbuf = require "helm/rainbuf"
-local names = require "repr:repr/names"
+local Lex = require "helm:lex"
+local SelectionList = require "helm:selection_list"
+local Rainbuf = require "helm:rainbuf"
+local names = require "repr:names"
 local concat, insert, sort = assert(table.concat),
                              assert(table.insert),
                              assert(table.sort)
-local c, no_color = import("singletons/color", "color", "no_color")
+local c, no_color = import("singletons:color", "color", "no_color")
 
 
 
@@ -67,9 +67,10 @@ local function _cursorContext(modeS)
          if path_token.color == c.field then
             insert(path, 1, tostring(path_token))
          else
-            -- If we expected a symbol and got something else, we're likely
-            -- in a situation like foo[bar].baz, having just examined the dot.
-            -- In this case we can't safely retrieve a table to complete against
+            -- If we expected an identifier/field and got something else,
+            -- we're likely in a situation like foo[bar].baz, having just
+            -- examined the dot. If the content of the braces is a literal,
+            -- we *could* deal with it anyway, but this is not yet implemented.
             path = nil
             break
          end
@@ -101,10 +102,11 @@ local function _suggest_sort(a, b)
    end
 end
 
-local isidentifier = import("core/string", "isidentifier")
-local hasmetamethod = import("core/meta", "hasmetamethod")
-local safeget = import("core:core/table", "safeget")
-local fuzz_patt = require "helm:helm/fuzz_patt"
+local isidentifier = import("core:string", "isidentifier")
+local hasmetamethod = import("core:meta", "hasmetamethod")
+local safeget = import("core:table", "safeget")
+local fuzz_patt = require "helm:fuzz_patt"
+local Set = require "set:set"
 
 local function _suggestions_from(complete_against)
    -- Either no path was provided, or some part of it doesn't
@@ -113,13 +115,13 @@ local function _suggestions_from(complete_against)
       return names.all_symbols
    end
    local count = 0
-   local candidate_symbols = {}
+   local candidate_symbols = Set()
    repeat
       -- Do not invoke any __pairs metamethod the table may have
       for k, _ in next, complete_against do
          if isidentifier(k) then
             count = count + 1
-            candidate_symbols[k] = true
+            candidate_symbols.insert(k)
             if count > 500 then
                return candidate_symbols
             end
