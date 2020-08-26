@@ -121,7 +121,7 @@ local function _suggestions_from(complete_against)
       for k, _ in next, complete_against do
          if isidentifier(k) then
             count = count + 1
-            candidate_symbols.insert(k)
+            candidate_symbols:insert(k)
             if count > 500 then
                return candidate_symbols
             end
