@@ -357,16 +357,17 @@ local Token = require "repr:repr/token"
 
 local function _renderTxtbuf(modeS, zone, write)
    local tokens = modeS.lex(zone.contents)
+   local suggestions = modeS.suggest.active_suggestions
    for i, tok in ipairs(tokens) do
       -- If suggestions are active and one is highlighted,
       -- display it in grey instead of what the user has typed so far
       -- Note this only applies once Tab has been pressed, as until then
       -- :selectedItem() will be nil
-      if tok.cursor_offset and modeS.suggest.active_suggestions
-         and modeS.suggest.active_suggestions[1]:selectedItem() then
-         tok = Token(modeS.suggest.active_suggestions[1]:selectedItem(), c.base)
+      if tok.cursor_offset and suggestions and suggestions:selectedItem() then
+         tokens[i] = suggestions:highlight(suggestions:selectedItem(), 80, c)
+      else
+         tokens[i] = tok:toString(c)
       end
-      tokens[i] = tok:toString(c)
    end
    _writeLines(write, zone, concat(tokens))
 end

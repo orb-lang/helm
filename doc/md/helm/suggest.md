@@ -6,14 +6,14 @@ This is our autocomplete module\.
 
 ```lua
 
-local Lex = require "helm/lex"
-local SelectionList = require "helm/selection_list"
-local Rainbuf = require "helm/rainbuf"
-local names = require "repr:repr/names"
+local Lex = require "helm:lex"
+local SelectionList = require "helm:selection_list"
+local Rainbuf = require "helm:rainbuf"
+local names = require "repr:names"
 local concat, insert, sort = assert(table.concat),
                              assert(table.insert),
                              assert(table.sort)
-local c = import("singletons/color", "color")
+local c, no_color = import("singletons:color", "color", "no_color")
 
 ```
 
@@ -37,7 +37,7 @@ local function _cursorContext(modeS)
    local lex_tokens = {}
    -- Ignore whitespace and comments
    for _, token in ipairs(modeS.lex(modeS.txtbuf)) do
-      if token.color ~= c.no_color and token.color ~= c.comment then
+      if token.color ~= no_color and token.color ~= c.comment then
          insert(lex_tokens, token)
       end
    end
@@ -59,38 +59,27 @@ local function _cursorContext(modeS)
    -- Work backwards from there to determine the dotted path, if any,
    -- that we are completing within
    local path = {}
-   local expect_sym = false
+   local expect_field = false
    index = index - 1
    while index > 0 do
       local path_token = lex_tokens[index]
-      if expect_sym then
+      if expect_field then
          if path_token.color == c.field then
             insert(path, 1, tostring(path_token))
          else
-            -- After a function call or [] subscript, we can't safely retrieve
-            -- a table to complete against. A non-operator token is either a
-            -- function call with a single string arg (this also most likely
-            -- applies to a closing table brace), or an error.
-            -- In all such cases, we want to complete against the full list
-            -- of possible symbols.
-            if tostring(path_token) == ")"
-               or tostring(path_token) == "]"
-               or tostring(path_token) == "}"
-               or path_token.color ~= c.operator then
-               path = nil
-            end
+            -- If we expected an identifier/field and got something else,
+            -- we're likely in a situation like foo[bar].baz, having just
+            -- examined the dot. If the content of the braces is a literal,
+            -- we *could* deal with it anyway, but this is not yet implemented.
+            path = nil
             break
          end
-      else
+      elseif not tostring(path_token):find("^[.:]$") then
          -- Expected a . or :, got absolutely anything else, we've finished
          -- this dotted path.
-         if path_token.color ~= c.operator
-            or (tostring(path_token) ~= "."
-            and tostring(path_token) ~= ":") then
-            break
-         end
+         break
       end
-      expect_sym = not expect_sym
+      expect_field = not expect_field
       index = index - 1
    end
    return context, path
@@ -113,10 +102,38 @@ local function _suggest_sort(a, b)
    end
 end
 
-local isidentifier = import("core/string", "isidentifier")
-local hasmetamethod = import("core/meta", "hasmetamethod")
-local hasfield = import("core:core/table", "hasfield")
-local fuzz_patt = require "helm:helm/fuzz_patt"
+local isidentifier = import("core:string", "isidentifier")
+local hasmetamethod = import("core:meta", "hasmetamethod")
+local safeget = import("core:table", "safeget")
+local fuzz_patt = require "helm:fuzz_patt"
+local Set = require "set:set"
+
+local function _suggestions_from(complete_against)
+   -- Either no path was provided, or some part of it doesn't
+   -- actually exist, fall back to completing against all symbols
+   if complete_against == nil then
+      return names.all_symbols
+   end
+   local count = 0
+   local candidate_symbols = Set()
+   repeat
+      -- Do not invoke any __pairs metamethod the table may have
+      for k, _ in next, complete_against do
+         if isidentifier(k) then
+            count = count + 1
+            candidate_symbols:insert(k)
+            if count > 500 then
+               return candidate_symbols
+            end
+         end
+      end
+      local index_table = hasmetamethod("__index", complete_against)
+      -- Ignore __index functions, no way to know what they might handle
+      complete_against = type(index_table) == "table" and index_table or nil
+   until complete_against == nil
+   return candidate_symbols
+end
+
 
 function Suggest.update(suggest, modeS)
    local context, path = _cursorContext(modeS)
@@ -127,34 +144,18 @@ function Suggest.update(suggest, modeS)
 
    -- First, build a list of candidate symbols--those that would be valid
    -- in the current position.
-   local candidate_symbols, complete_against
+   local complete_against
    if path then
       complete_against = __G
       for _, key in ipairs(path) do
-         complete_against = hasfield(complete_against, key)
+         complete_against = safeget(complete_against, key)
       end
       -- If what we end up with isn't a table, we can't complete against it
       if type(complete_against) ~= "table" then
          complete_against = nil
       end
    end
-   if complete_against ~= nil then
-      candidate_symbols = {}
-      repeat
-         for k, _ in pairs(complete_against) do
-            if isidentifier(k) then
-               candidate_symbols[k] = true
-            end
-         end
-         local index_table = hasmetamethod("__index", complete_against)
-         -- Ignore __index functions, no way to know what they might handle
-         complete_against = type(index_table) == "table" and index_table or nil
-      until complete_against == nil
-   -- Either no path was provided, or some part of it doesn't
-   -- actually exist, fall back to completing against all symbols
-   else
-      candidate_symbols = names.all_symbols
-   end
+   local candidate_symbols = _suggestions_from(complete_against)
 
    -- Now we can actually filter those candidates for whether they match or not
    local suggestions = SelectionList()
@@ -180,12 +181,21 @@ function Suggest.update(suggest, modeS)
    if modeS.raga.name == "complete" then
       suggestions.selected_index = 1
    end
-   suggestions = Rainbuf { [1] = suggestions, n = 1,
-                               live = true, made_in = "suggest.update" }
    suggest.active_suggestions = suggestions
-   modeS.zones.suggest:replace(suggestions)
+   modeS.zones.suggest:replace(Rainbuf { [1] = suggestions,
+                                         n = 1,
+                                         live = true,
+                                         made_in = "suggest.update" })
 end
 
+```
+
+### selectedSuggestion\(\)
+
+```lua
+function Suggest.selectedSuggestion(suggest)
+   return suggest.active_suggestions and suggest.active_suggestions:selectedItem()
+end
 ```
 
 ### cancel\(\)
@@ -201,7 +211,7 @@ end
 
 ```lua
 function Suggest.accept(suggest, modeS)
-   local suggestion = suggest.active_suggestions[1]:selectedItem()
+   local suggestion = suggest:selectedSuggestion()
    local context = _cursorContext(modeS)
    modeS.txtbuf:right(context.total_disp - context.cursor_offset)
    modeS.txtbuf:killBackward(context.total_disp)

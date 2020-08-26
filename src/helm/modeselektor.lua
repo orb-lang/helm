@@ -98,19 +98,19 @@ assert(meta, "must have meta in _G")
 
 
 
-local c = import("singletons/color", "color")
+local c = import("singletons:color", "color")
 local Set = require "set:set"
 local valiant = require "valiant:valiant"
 
-local Txtbuf     = require "helm/txtbuf"
-local Resbuf     = require "helm/resbuf" -- Not currently used...
-local Rainbuf    = require "helm/rainbuf"
-local Historian  = require "helm/historian"
-local Lex        = require "helm/lex"
-local Zoneherd   = require "helm/zone"
-local Suggest    = require "helm/suggest"
-local repr       = require "helm/repr"
-local lua_parser = require "helm/lua-parser"
+local Txtbuf     = require "helm:txtbuf"
+local Resbuf     = require "helm:resbuf" -- Not currently used...
+local Rainbuf    = require "helm:rainbuf"
+local Historian  = require "helm:historian"
+local Lex        = require "helm:lex"
+local Zoneherd   = require "helm:zone"
+local Suggest    = require "helm:suggest"
+local repr       = require "repr:repr"
+local lua_parser = require "helm:lua-parser"
 
 local concat               = assert(table.concat)
 local sub, gsub, rep, find = assert(string.sub),
@@ -236,8 +236,18 @@ end
 
 
 
+local Point = require "anterm:point"
 function ModeS.placeCursor(modeS)
    local point = modeS.zones.command.bounds:origin() + modeS.txtbuf.cursor - 1
+   local suggestion = modeS.suggest:selectedSuggestion()
+   if suggestion then
+      for _, tok in ipairs(modeS.lex(modeS.txtbuf)) do
+         if tok.cursor_offset then
+            point = point + Point(0, #suggestion - tok.cursor_offset)
+            break
+         end
+      end
+   end
    modeS.write(a.jump(point))
    return modeS
 end
@@ -333,10 +343,10 @@ end
 
 
 
-local Nerf      = require "helm/raga/nerf"
-local Search    = require "helm/raga/search"
-local Complete  = require "helm/raga/complete"
-local Page      = require "helm/raga/page"
+local Nerf      = require "helm:raga/nerf"
+local Search    = require "helm:raga/search"
+local Complete  = require "helm:raga/complete"
+local Page      = require "helm:raga/page"
 
 ModeS.closet = { nerf =     { raga = Nerf,
                               lex  = Lex.lua_thor },
@@ -446,7 +456,7 @@ end
 
 
 
-local instanceof = import("core/meta", "instanceof")
+local instanceof = import("core:meta", "instanceof")
 
 function ModeS.setResults(modeS, results)
    results = results or ""
