@@ -181,10 +181,11 @@ function Suggest.update(suggest, modeS)
    if modeS.raga.name == "complete" then
       suggestions.selected_index = 1
    end
-   suggestions = Rainbuf { [1] = suggestions, n = 1,
-                               live = true, made_in = "suggest.update" }
    suggest.active_suggestions = suggestions
-   modeS.zones.suggest:replace(suggestions)
+   modeS.zones.suggest:replace(Rainbuf { [1] = suggestions,
+                                         n = 1,
+                                         live = true,
+                                         made_in = "suggest.update" })
 end
 
 
@@ -193,7 +194,7 @@ end
 
 
 function Suggest.selectedSuggestion(suggest)
-   return suggest.active_suggestions and suggest.active_suggestions[1]:selectedItem()
+   return suggest.active_suggestions and suggest.active_suggestions:selectedItem()
 end
 
 

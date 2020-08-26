@@ -146,7 +146,7 @@ local function _activateCompletion(modeS)
    if modeS.suggest.active_suggestions then
       modeS.shift_to = "complete"
       -- #todo seems like this should be able to be handled more centrally
-      modeS.suggest.active_suggestions[1].selected_index = 1
+      modeS.suggest.active_suggestions.selected_index = 1
       modeS.zones.suggest:beTouched()
       return true
    else
