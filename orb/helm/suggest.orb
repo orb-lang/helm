@@ -6,14 +6,14 @@ This is our autocomplete module.
 
 #!lua
 
-local Lex = require "helm/lex"
-local SelectionList = require "helm/selection_list"
-local Rainbuf = require "helm/rainbuf"
+local Lex = require "helm:lex"
+local SelectionList = require "helm:selection_list"
+local Rainbuf = require "helm:rainbuf"
 local names = require "repr:repr/names"
 local concat, insert, sort = assert(table.concat),
                              assert(table.insert),
                              assert(table.sort)
-local c, no_color = import("singletons/color", "color", "no_color")
+local c, no_color = import("singletons:color", "color", "no_color")
 
 #/lua
 
@@ -101,10 +101,10 @@ local function _suggest_sort(a, b)
    end
 end
 
-local isidentifier = import("core/string", "isidentifier")
-local hasmetamethod = import("core/meta", "hasmetamethod")
-local hasfield = import("core:core/table", "hasfield")
-local fuzz_patt = require "helm:helm/fuzz_patt"
+local isidentifier = import("core:string", "isidentifier")
+local hasmetamethod = import("core:meta", "hasmetamethod")
+local hasfield = import("core:table", "hasfield")
+local fuzz_patt = require "helm:fuzz_patt"
 
 function Suggest.update(suggest, modeS)
    local context, path = _cursorContext(modeS)
@@ -169,8 +169,10 @@ function Suggest.update(suggest, modeS)
       suggestions.selected_index = 1
    end
    suggest.active_suggestions = suggestions
-   modeS.zones.suggest:replace(Rainbuf { [1] = suggestions, n = 1,
-                               live = true, made_in = "suggest.update" })
+   modeS.zones.suggest:replace(Rainbuf { [1] = suggestions,
+                                         n = 1,
+                                         live = true,
+                                         made_in = "suggest.update" })
 end
 
 #/lua
