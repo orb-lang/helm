@@ -65,7 +65,7 @@ INSERT INTO project (directory) VALUES (?);
 ]]
 
 local insert_session = [[
-INSERT INTO session (title, project) VALUES (?, ?);
+INSERT INTO session (title, project, accepted) VALUES (?, ?, ?);
 ]]
 
 local insert_premise = [[
@@ -208,7 +208,7 @@ function Historian.beginMacroSession(historian, session)
    -- insert session into DB
    historian.conn
       : prepare(insert_session)
-      : bind(session.session_title, historian.project_id)
+      : bind(session.session_title, historian.project_id, 1)
       : step()
    -- retrieve session id
    session.session_id = sql.lastRowId(historian.conn)
@@ -258,7 +258,7 @@ function Historian.persist(historian, txtbuf, results, session)
    local lb = tostring(txtbuf)
    local have_results = results
                         and type(results) == "table"
-                        and results.n
+                        and results.n > 0
    if lb == "" then
       -- A blank line can have no results and is uninteresting.
       return false
@@ -276,12 +276,13 @@ function Historian.persist(historian, txtbuf, results, session)
    insert(historian.line_ids, line_id)
    -- if it's a macro session, add the premise now
    if session and session.macro_mode then
+      local status = have_results and 'accept' or 'ignore'
       historian.conn:prepare(insert_premise)
          : bind(session.session_id,
                 line_id,
                 session.premise_ordinal,
                 '',
-                'accept')
+                status)
          : step()
       session.premise_ordinal = session.premise_ordinal + 1
    end
