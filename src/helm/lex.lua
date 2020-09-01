@@ -11,7 +11,6 @@ local P, R, S, match = L.P, L.R, L.S, L.match
 local Lex = meta {}
 local sub, gsub = assert(string.sub), assert(string.gsub)
 local concat, insert = assert(table.concat), assert(table.insert)
-local C = require "singletons/color"
 
 
 
@@ -86,14 +85,14 @@ local lua_toks = {comment, keyword, string_long, string_short, number, operator,
                   WS, NL, ERR}
 
 local color_map = {
-   [keyword] = C.color.keyword,
-   [operator] = C.color.operator,
-   [number] = C.color.number,
-   [symbol] = C.color.field,
-   [string_short] = C.color.string,
-   [string_long] = C.color.string,
-   [comment] = C.color.comment,
-   [ERR] = C.color.error,
+   [keyword] = "keyword",
+   [operator] = "operator",
+   [number] = "number",
+   [symbol] = "field",
+   [string_short] = "string",
+   [string_long] = "string",
+   [comment] = "comment",
+   [ERR] = "error",
 }
 
 
@@ -132,8 +131,7 @@ function Lex.lua_thor(txtbuf)
    while pos <= #lb do
       local bite, new_pos, tok_t = chomp_token(lb, pos)
       assert(bite and #bite > 0, "lua-thor has failed you")
-      local color = color_map[tok_t] or C.no_color
-      local cfg = { }
+      local cfg = { color = color_map[tok_t] or "no_color" }
       if inbounds(cursor_index, pos + 1, new_pos) then
          -- The cursor should not be considered to be "within" a punctuation
          -- or whitespace token, but rather should be part of the subsequent
@@ -146,19 +144,19 @@ function Lex.lua_thor(txtbuf)
          end
       elseif fixup_cursor then
          fixup_cursor = false
-         if color ~= C.color.field then
-            insert(toks, Token("", C.color.field, { cursor_offset = 0 }))
+         if cfg.color ~= "field" then
+            insert(toks, Token("", { color = "field", cursor_offset = 0 }))
          else
             cfg.cursor_offset = 0
          end
       end
       -- Would love to highlight escape sequences in strings,
       -- but this turns out to be rather difficult...
-      insert(toks, Token(bite, color, cfg))
+      insert(toks, Token(bite, cfg))
       pos = new_pos
    end
    if fixup_cursor then
-      insert(toks, Token("", C.color.field, { cursor_offset = 0 }))
+      insert(toks, Token("", { color = "field", cursor_offset = 0 }))
    end
    return toks
 end
@@ -170,7 +168,7 @@ end
 
 
 function Lex.null(txtbuf)
-   return { Token(tostring(txtbuf), C.no_color) }
+   return { Token(tostring(txtbuf), { color = "no_color" }) }
 end
 
 
