@@ -37,7 +37,7 @@ such that if =index < #seq=, we send the tuple off to =modeS= and keep parsing
 from =index= until the sequence is consumed.
 
 
-*** Conflating keystrokes with actions
+*** [ ] Conflating keystrokes with actions
 
   This is one of the places where we're rapidly painting ourselves into a
 corner.
@@ -70,7 +70,7 @@ It's also important for user extensibility: it gives all the functions of the
 ragas as direct actions, and allows us to provide the ability to hook events.
 
 
-*** Layered keymaps and ragas
+*** [ ] Layered keymaps and ragas
 
   Our current ragas are flat: we use cloning to borrow commands out of other
 ragas (at this moment, only the EditBase pseudo-raga), and lookup proceeds
@@ -106,7 +106,7 @@ of them as immutable, although it may not be worth the extra steps to actually
 make them so.
 
 
-***  Ragas, Zones, shifts
+*** [ ] Ragas, Zones, shifts
 
   Currently, we have one global raga for everything, and this is getting
 increasingly annoying.
