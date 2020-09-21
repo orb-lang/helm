@@ -60,6 +60,13 @@ end
 
 
 
+function Search.NAV.ESC(modeS, category, value)
+   modeS.shift_to = modeS.raga_default
+   modeS:setResults("")
+end
+
+
+
 
 
 
