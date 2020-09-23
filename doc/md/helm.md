@@ -244,7 +244,8 @@ local function onseq(err,seq)
    if head == 17 then
       _ditch = true
       modeS:setStatusLine("quit")
-      modeS:paint()
+      -- Still exit the REPL if paint throws an error...
+      pcall(modeS.paint, modeS)
       uv.read_stop(stdin)
       uv.timer_stop(timer)
       return 0
