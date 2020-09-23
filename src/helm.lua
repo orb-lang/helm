@@ -243,7 +243,7 @@ local function onseq(err,seq)
    -- ^Q hard coded as quit, for now
    if head == 17 then
       _ditch = true
-      modeS.zones.status:replace 'exiting repl, owo... 🐲'
+      modeS:setStatusLine("quit")
       modeS:paint()
       uv.read_stop(stdin)
       uv.timer_stop(timer)

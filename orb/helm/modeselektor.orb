@@ -474,6 +474,21 @@ function ModeS.setResults(modeS, results)
 end
 #/lua
 
+*** ModeS:setStatusLine(status_name)
+
+Sets the status line at the top of the screen,
+from a list of predefined statuses.
+
+#!lua
+ModeS.status_lines = { default = "an repl, plz reply uwu 👀",
+                       quit    = "exiting repl, owo... 🐲",
+                       restart = "restarting an repl ↩️" }
+function ModeS.setStatusLine(modeS, status_name)
+   modeS.zones.status:replace(modeS.status_lines[status_name])
+   return modeS
+end
+#/lua
+
 
 *** ModeS:setTxtbuf(txtbuf)
 
@@ -566,7 +581,7 @@ This resets =_G= and runs all commands in the current session.
 local deepclone = assert(core.deepclone)
 
 function ModeS.restart(modeS)
-   modeS.zones.status:replace "Restarting an repl ↩️"
+   modeS:setStatusLine("restart")
    -- we might want to do this again, so:
    local _G_backback = deepclone(_G_back)
    -- package has to be handled separately because it's in the registry
@@ -606,7 +621,7 @@ function ModeS.restart(modeS)
    modeS:paint()
    uv.timer_start(uv.new_timer(), 2000, 0,
                   function()
-                     modeS.zones.status:replace(modeS.prompt_lines.default)
+                     modeS:setStatusLine("default")
                      modeS:paint()
                   end)
    local restart_idle = uv.new_idle()
@@ -680,8 +695,7 @@ local function new(max_col, max_row, writer, db)
    modeS.r_margin = 80
    modeS.repl_top = ModeS.REPL_LINE
    modeS.zones = Zoneherd(modeS, writer)
-   modeS.prompt_lines = { default = "an repl, plz reply uwu 👀" }
-   modeS.zones.status:replace(modeS.prompt_lines.default)
+   modeS:setStatusLine("default")
    -- initial state
    modeS:shiftMode(modeS.raga_default)
    modeS.action_complete = true
