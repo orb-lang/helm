@@ -689,15 +689,14 @@ end
 
 
 ```lua
-local function new(max_col, max_row, writer, db)
+local function new(max_extent, writer, db)
    local modeS = meta(ModeS)
    modeS.txtbuf = Txtbuf()
    modeS.hist  = Historian(db)
    modeS.suggest = Suggest()
    modeS.status = setmetatable({}, _stat_M)
    rawset(__G, "stat", modeS.status)
-   modeS.max_col = max_col
-   modeS.max_row = max_row
+   modeS.max_extent = max_extent
    modeS.write = writer
    -- retrieve data from _Bridge
    if _Bridge.args.helm then

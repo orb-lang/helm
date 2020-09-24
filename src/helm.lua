@@ -147,6 +147,7 @@ local stdin = uv.new_tty(0, true)
 
 
 a = require "anterm:anterm"
+local Point = require "anterm:point"
 --watch = require "watcher"
 
 
@@ -159,17 +160,18 @@ a = require "anterm:anterm"
 
 local MOUSE_MAX = 223
 
-local function bind_pane(col, row)
-   local bound_col = col > MOUSE_MAX and MOUSE_MAX or col
-   local bound_row = row > MOUSE_MAX and MOUSE_MAX or row
-   return bound_col, bound_row
+local function bind_pane(dim1, dim2)
+   dim1 = dim1 > MOUSE_MAX and MOUSE_MAX or dim1
+   dim2 = dim2 > MOUSE_MAX and MOUSE_MAX or dim2
+   return dim1, dim2
 end
 
 local max_col, max_row = bind_pane(uv.tty_get_winsize(stdin))
+local max_extent = Point(max_row, max_col)
 
 
 
-modeS = require "helm/modeselektor" (max_col, max_row, write)
+modeS = require "helm/modeselektor" (max_extent, write)
 local insert = assert(table.insert)
 local function s_out(msg)
    insert(modeS.status, msg)
@@ -181,8 +183,8 @@ local s = require "status:status" (s_out)
 local timer = uv.new_timer()
 uv.timer_start(timer, 500, 500, function()
    max_col, max_row = uv.tty_get_winsize(stdin)
-   if max_col ~= modeS.max_col or max_row ~= modeS.max_row then
-      modeS.max_col, modeS.max_row = bind_pane(max_col, max_row)
+   if Point(max_row, max_col) ~= modeS.max_extent then
+      modeS.max_extent = Point(bind_pane(max_row, max_col))
       -- Mark all zones as touched since we don't know the state of the screen
       -- (some terminals, iTerm for sure, will attempt to reflow the screen
       -- themselves and fail miserably)

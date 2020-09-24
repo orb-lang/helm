@@ -473,11 +473,12 @@ end
 
 
 local function _zoneOffset(modeS)
-   if modeS.max_col <= 80 then
+   local width = modeS.max_extent.col
+   if width <= 80 then
       return 20
-   elseif modeS.max_col <= 100 then
+   elseif width <= 100 then
       return 30
-   elseif modeS.max_col <= 120 then
+   elseif width <= 120 then
       return 40
    else
       return 50
@@ -491,11 +492,11 @@ end
 local ceil, floor = assert(math.ceil), assert(math.floor)
 
 function Zoneherd.reflow(zoneherd, modeS)
-   local right_col = modeS.max_col - _zoneOffset(modeS)
+   local right_col = modeS.max_extent.col - _zoneOffset(modeS)
    local txt_off = modeS:continuationLines()
    zoneherd.status:setBounds(  1, 1, 1, right_col)
    zoneherd.stat_col:setBounds(1, right_col + 1,
-                               1, modeS.max_col )
+                               1, modeS.max_extent.col )
    zoneherd.prompt:setBounds(  modeS.repl_top,
                                1,
                                modeS.repl_top + txt_off,
@@ -506,17 +507,17 @@ function Zoneherd.reflow(zoneherd, modeS)
                                right_col )
    zoneherd.results:setBounds( modeS.repl_top + txt_off + 1,
                                1,
-                               modeS.max_row,
+                               modeS.max_extent.row,
                                right_col )
    zoneherd.suggest:setBounds( modeS.repl_top + 1,
                                right_col + 1,
-                               modeS.max_row,
-                               modeS.max_col )
+                               modeS.max_extent.row,
+                               modeS.max_extent.col )
    -- Popup is centered and 2/3 of max width, i.e. from 1/6 to 5/6
    zoneherd.popup:setBounds(   modeS.repl_top + txt_off + 1,
-                               floor(modeS.max_col / 6),
-                               modeS.max_row,
-                               ceil(modeS.max_col * 5 / 6) )
+                               floor(modeS.max_extent.col / 6),
+                               modeS.max_extent.row,
+                               ceil(modeS.max_extent.col * 5 / 6) )
    return zoneherd
 end
 
