@@ -240,32 +240,20 @@ local function onseq(err,seq)
    if err then error(err) end
 
    local head = byte(seq)
-   -- ^Q hard coded as quit, for now
-   if head == 17 then
-      _ditch = true
-      modeS:setStatusLine("quit")
-      -- Still exit the REPL if paint throws an error...
-      pcall(modeS.paint, modeS)
-      uv.read_stop(stdin)
-      uv.timer_stop(timer)
-      return 0
-   end
    -- Escape sequences
    if head == 27 then
-      return process_escapes(seq)
-   end
+      process_escapes(seq)
    -- Control sequences
-   if navigation[seq] then
-      return modeS("NAV", navigation[seq])
+   elseif navigation[seq] then
+      modeS("NAV", navigation[seq])
    elseif head <= 31 then
       local ctrl = "^" .. char(head + 64)
-      return modeS("CTRL", ctrl)
-   end
+      modeS("CTRL", ctrl)
    -- Printables--break into codepoints in case of multi-char input sequence
    -- But first, optimize common case of single ascii printable
    -- Note that bytes <= 31 and 127 (DEL) will have been taken care of earlier
-   if #seq == 1 and head < 128 then
-      return modeS("ASCII", seq)
+   elseif #seq == 1 and head < 128 then
+      modeS("ASCII", seq)
    else
       local points = Codepoints(seq)
       for i, pt in ipairs(points) do
@@ -273,6 +261,12 @@ local function onseq(err,seq)
          -- actual Unicode "replacement character"
          modeS(byte(pt) < 128 and "ASCII" or "UTF8", pt)
       end
+   end
+   -- Okay, if the action resulted in a quit, break out of the event loop
+   if modeS.has_quit then
+      _ditch = true
+      uv.read_stop(stdin)
+      uv.timer_stop(timer)
    end
 end
 ```
