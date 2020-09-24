@@ -209,12 +209,10 @@ local byte, sub, char = assert(string.byte),
                         assert(string.sub),
                         assert(string.char)
 local m_parse, is_mouse = a.mouse.parse_fast, a.mouse.ismousemove
-local navigation, is_nav = a.navigation, a.is_nav
+local navigation = a.navigation
 
 local function process_escapes(seq)
-   if is_nav(seq) then
-      return modeS("NAV", navigation[seq])
-   elseif is_mouse(seq) then
+   if is_mouse(seq) then
       return modeS("MOUSE", m_parse(seq))
    elseif #seq == 2 and byte(seq, 2) < 128 then
       -- Meta
@@ -240,12 +238,13 @@ local function onseq(err,seq)
    if err then error(err) end
 
    local head = byte(seq)
-   -- Escape sequences
-   if head == 27 then
+   -- Special "navigation" sequences--this includes some escape sequences
+   if navigation[seq] then
+      modeS("NAV", navigation[seq])
+   -- Other escape sequences
+   elseif head == 27 then
       process_escapes(seq)
    -- Control sequences
-   elseif navigation[seq] then
-      modeS("NAV", navigation[seq])
    elseif head <= 31 then
       local ctrl = "^" .. char(head + 64)
       modeS("CTRL", ctrl)
