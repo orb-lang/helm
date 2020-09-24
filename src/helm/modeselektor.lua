@@ -400,8 +400,7 @@ end
 function ModeS.actOnce(modeS, category, value)
    -- ^Q hard coded as quit, for now
    if category == 'CTRL' and value == '^Q' then
-      modeS:setStatusLine("quit")
-      modeS.has_quit = true
+      modeS:quit()
       return true
    end
    local handled = modeS.raga(modeS, category, value)
@@ -575,6 +574,19 @@ function ModeS.evalFromCursor(modeS)
       modeS.txtbuf = modeS.hist:index(i)
       modeS:eval()
    end
+end
+
+
+
+
+
+
+
+
+
+function ModeS.quit(modeS)
+   modeS:setStatusLine("quit")
+   modeS.has_quit = true
 end
 
 
