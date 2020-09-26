@@ -37,7 +37,7 @@ local function _cursorContext(modeS)
    local lex_tokens = {}
    -- Ignore whitespace and comments
    for _, token in ipairs(modeS.lex(modeS.txtbuf)) do
-      if token.color ~= no_color and token.color ~= c.comment then
+      if token.color ~= "no_color" and token.color ~= "comment" then
          insert(lex_tokens, token)
       end
    end
@@ -52,7 +52,7 @@ local function _cursorContext(modeS)
    end
    -- #todo once we're using =palette=, we'll be able to check the name
    -- of the color rather than needing the color table ourselves
-   if not context or context.color ~= c.field then
+   if not context or context.color ~= "field" then
       -- We're in a non-completable token
       return nil
    end
@@ -64,7 +64,7 @@ local function _cursorContext(modeS)
    while index > 0 do
       local path_token = lex_tokens[index]
       if expect_field then
-         if path_token.color == c.field then
+         if path_token.color == "field" then
             insert(path, 1, tostring(path_token))
          else
             -- If we expected an identifier/field and got something else,
