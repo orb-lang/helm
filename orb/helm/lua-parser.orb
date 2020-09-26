@@ -21,8 +21,7 @@ local Node = require "espalier:espalier/node"
 
 *** Extended Lua PEG grammar
 
-#!lua
-local lua_str = [=[
+#!peg @lua_str #asLua
 lua = shebang* _ chunk _ Error*
 shebang = "#" (!"\n" 1)* "\n"
 chunk = _ (statement _ ";"?)* (_ laststatement _ ";"?)?
@@ -97,8 +96,8 @@ parameters = "(" _ (symbollist (_ "," _ vararg)*)* ")"
 
 
 string = singlestring / doublestring / longstring
-`singlestring` = "'" ("\\" "'" / (!"'" 1))* "'"
-`doublestring` = '"' ('\\' '"' / (!'"' 1))* '"'
+`singlestring` = "'" ("\\" "'" / (!"'" !"\n" 1))* "'"
+`doublestring` = '"' ('\\' '"' / (!'"' !"\n" 1))* '"'
 `longstring`   = ls_open (!ls_close 1)* ls_close
 
 `ls_open` = "[" "="*@eq "["
@@ -128,8 +127,7 @@ keyword = ("and" / "break" / "do" / "else" / "elseif"
         / "return" / "then" / "true" / "until" / "while")
         t
 `t` = !([A-Z] / [a-z] / [0-9] / "_")
-]=]
-#/lua
+#/peg
 
 
 

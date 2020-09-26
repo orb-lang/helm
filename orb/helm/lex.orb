@@ -122,9 +122,13 @@ end
 
 local Token = require "repr:repr/token"
 local inbounds = import("core/math", "inbounds")
+local Txtbuf = require "helm:helm/txtbuf"
 
 function Lex.lua_thor(txtbuf)
    local toks = {}
+   if type(txtbuf) == 'string' then
+      txtbuf = Txtbuf(txtbuf)
+   end
    local lb = tostring(txtbuf)
    local cursor_index = txtbuf:cursorIndex()
    local fixup_cursor = false

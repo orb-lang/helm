@@ -116,8 +116,6 @@ local function _suggestions_from(complete_against)
    end
    local count = 0
    local candidate_symbols = Set()
-   -- hack until I fix the broken Set implementation
-   local s_insert = candidate_symbols.insert
    repeat
       -- Do not invoke any __pairs metamethod the table may have
       for k, _ in next, complete_against do

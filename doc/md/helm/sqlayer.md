@@ -6,7 +6,7 @@ Enhances the existing SQLite bindings, which in turn will be turned into a
 statically\-linked part of `pylon`\.
 
 SQLite being a core competency, we want to make this really nice; see
-\[\[stretch goals\]\[\#stretch\-goals\]\] for details\.
+[stretch goals](#stretch-goals) for details\.
 
 ```lua
 local sql = require "sqlite"
