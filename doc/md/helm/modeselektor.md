@@ -439,8 +439,15 @@ function ModeS.act(modeS, category, value)
    -- Replace zones
    modeS.zones.stat_col:replace(icon)
    modeS.zones.command:replace(modeS.txtbuf)
+   modeS:updatePrompt()
    -- Reflow in case command height has changed. Includes a paint.
-   modeS:updatePrompt():reflow()
+   -- Don't allow errors encountered here to break this entire
+   -- event-loop iteration, otherwise we become unable to quit if
+   -- there's a paint error.
+   xpcall(modeS.reflow, function(err)
+      io.stderr:write(err, "\n", debug.traceback(), "\n")
+      io.stderr:flush()
+   end, modeS)
    collectgarbage()
    return modeS
 end
