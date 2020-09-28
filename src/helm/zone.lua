@@ -98,10 +98,12 @@ end
 
 
 
+
+
 local Point = require "anterm:point"
 function Zone.clientBounds(zone)
    if zone.border then
-      return zone.bounds:insetBy(1)
+      return zone.bounds:insetBy(Point(1,2))
    else
       return zone.bounds
    end

@@ -96,12 +96,14 @@ end
 
 The available bounds in which to render the Zone's content,
 taking into account the space occupied by a border, if we have one\.
+Note that if we have a border, we also include a column of left/right padding,
+as this produces a more even\-looking gap between border and contents\.
 
 ```lua
 local Point = require "anterm:point"
 function Zone.clientBounds(zone)
    if zone.border then
-      return zone.bounds:insetBy(1)
+      return zone.bounds:insetBy(Point(1,2))
    else
       return zone.bounds
    end
