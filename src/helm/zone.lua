@@ -98,6 +98,7 @@ end
 
 
 
+local Point = require "anterm:point"
 function Zone.clientBounds(zone)
    if zone.border then
       return zone.bounds:insetBy(1)
@@ -518,6 +519,13 @@ function Zoneherd.reflow(zoneherd, modeS)
                                floor(modeS.max_extent.col / 6),
                                modeS.max_extent.row,
                                ceil(modeS.max_extent.col * 5 / 6) )
+   -- Modal is centered vertically and horizontally and has room for
+   -- two lines of text, a blank line, and a row of buttons/choices
+   -- Arbitrarily we make it 40 characters wide
+   local modal_extent = Point(6, 40)
+   local margins = ((modeS.max_extent - modal_extent) / 2):floor()
+   zoneherd.modal:setBounds(   margins.row, margins.col,
+                               (margins + modal_extent - 1):rowcol())
    return zoneherd
 end
 
@@ -563,6 +571,9 @@ local function new(modeS, writer)
    zoneherd:newZone("popup", 2, "^")
    zoneherd.popup.visible = false
    zoneherd.popup.border = "light"
+   zoneherd:newZone("modal", 2, "?")
+   zoneherd.modal.visible = false
+   zoneherd.modal.border = "light"
    zoneherd:reflow(modeS)
 
    return zoneherd
