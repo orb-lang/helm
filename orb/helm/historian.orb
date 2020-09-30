@@ -498,11 +498,7 @@ function Historian.append(historian, txtbuf, results, success, session)
    end
    historian[historian.n + 1] = txtbuf
    historian.n = historian.n + 1
-   if success then
-      historian:persist(txtbuf, results, session)
-   else
-      historian:persist(txtbuf, nil, session)
-   end
+   historian:persist(txtbuf, success and results or nil, session)
    return true
 end
 #/lua
