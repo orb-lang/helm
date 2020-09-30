@@ -59,6 +59,13 @@ function Search.NAV.SHIFT_UP(modeS, category, value)
 end
 ```
 
+```lua
+function Search.NAV.ESC(modeS, category, value)
+   modeS.shift_to = modeS.raga_default
+   modeS:setResults("")
+end
+```
+
 - [ ]  \#Todo
 
   - [ ]  Add Search\.NAV\.SHIFT\_ALT\_\(UP|DOWN\), to move a page at a time\.
