@@ -347,6 +347,7 @@ local Nerf      = require "helm:raga/nerf"
 local Search    = require "helm:raga/search"
 local Complete  = require "helm:raga/complete"
 local Page      = require "helm:raga/page"
+local Modal     = require "helm:raga/modal"
 
 ModeS.closet = { nerf =     { raga = Nerf,
                               lex  = Lex.lua_thor },
@@ -355,6 +356,8 @@ ModeS.closet = { nerf =     { raga = Nerf,
                  complete = { raga = Complete,
                               lex  = Lex.lua_thor },
                  page =     { raga = Page,
+                              lex  = Lex.null },
+                 modal =    { raga = Modal,
                               lex  = Lex.null } }
 
 function ModeS.shiftMode(modeS, raga_name)
@@ -673,6 +676,23 @@ function ModeS.openHelp(modeS)
 end
 #/lua
 
+*** ModeS:showModal(text, button_style)
+
+Shows a modal dialog with the given text and button style
+(see raga/modal.orb for valid button styles).
+
+When the modal closes, the button that was clicked can be retrieved
+from modeS.zones.modal.contents[1].value. No, this is not ideal, but
+it's not clear what the mechanism *should* look like.
+
+#!lua
+function ModeS.showModal(modeS, text, button_style)
+   local modal_info = Modal.newModel(text, button_style)
+   modeS.zones.modal:replace(Rainbuf{ modal_info, n = 1 })
+   modeS.shift_to = "modal"
+   return modeS
+end
+#/lua
 
 **** modeS.status
 
