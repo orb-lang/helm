@@ -16,15 +16,15 @@
 profile = require("jit.profile")
 profiled = {}
 profile.start("li1", function(th, samples, vmmode)
-  local d = profile.dumpstack(th, "pF", 1)
-  profiled[d] = (profiled[d] or 0) + samples
+   local d = profile.dumpstack(th, "pF", 1)
+   profiled[d] = (profiled[d] or 0) + samples
 end)
 --]]
 
 
 
 if rawget(_G, "_Bridge") then
-  _Bridge.helm = true
+   _Bridge.helm = true
 end
 
 
@@ -95,12 +95,12 @@ local usecolors
 stdout = ""
 
 if uv.guess_handle(1) == "tty" then
-  stdout = uv.new_tty(1, false)
-  usecolors = true
+   stdout = uv.new_tty(1, false)
+   usecolors = true
 else
-  stdout = uv.new_pipe(false)
-  uv.pipe_open(utils.stdout, 1)
-  usecolors = false
+   stdout = uv.new_pipe(false)
+   uv.pipe_open(utils.stdout, 1)
+   usecolors = false
 end
 
 if not usecolors then
@@ -121,12 +121,12 @@ end
 local concat = assert(table.concat)
 
 function print(...)
-  local n = select('#', ...)
-  local arguments = {...}
-  for i = 1, n do
-    arguments[i] = tostring(arguments[i])
-  end
-  uv.write(stdout, concat(arguments, "\t") .. "\n")
+   local n = select('#', ...)
+   local arguments = {...}
+   for i = 1, n do
+      arguments[i] = tostring(arguments[i])
+   end
+   uv.write(stdout, concat(arguments, "\t") .. "\n")
 end
 
 
@@ -136,8 +136,8 @@ end
 
 if uv.guess_handle(0) ~= "tty" or
    uv.guess_handle(1) ~= "tty" then
-  -- Entry point for other consumers!
-  error "stdio must be a tty"
+   -- Entry point for other consumers!
+   error "stdio must be a tty"
 end
 
 local stdin = uv.new_tty(0, true)
@@ -172,7 +172,7 @@ local max_col, max_row = bind_pane(uv.tty_get_winsize(stdin))
 modeS = require "helm/modeselektor" (max_col, max_row, write)
 local insert = assert(table.insert)
 local function s_out(msg)
-  insert(modeS.status, msg)
+   insert(modeS.status, msg)
 end
 
 -- make a new 'status' instance
@@ -320,12 +320,12 @@ pcall(conn.pragma.wal_checkpoint, "0") -- 0 == SQLITE_CHECKPOINT_PASSIVE
 -- exceptions don't blow up the hook
 local close_idler = uv.new_idle()
 close_idler:start(function()
-  local success = pcall(conn.close, conn)
-  if not success then
-    return nil
-  else
-    close_idler:stop()
-  end
+   local success = pcall(conn.close, conn)
+   if not success then
+      return nil
+   else
+      close_idler:stop()
+   end
 end)
 
 retcode = uv.run 'default'
