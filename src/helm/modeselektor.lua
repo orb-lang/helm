@@ -186,7 +186,7 @@ end
 local STAT_ICON = "◉ "
 
 local function tf(bool)
-  return bool and c["true"]("t") or c["false"]("f")
+   return bool and c["true"]("t") or c["false"]("f")
 end
 
 local function mouse_paint(m)
@@ -445,7 +445,7 @@ end
 
 
 function ModeS.__call(modeS, category, value)
-  return modeS:act(category, value)
+   return modeS:act(category, value)
 end
 
 
@@ -640,14 +640,14 @@ end
 
 
 local function _status__repr(status_table)
-  return concat(status_table)
+   return concat(status_table)
 end
 
 local _stat_M = meta {}
 _stat_M.__repr = _status__repr
 
 function _stat_M.clear(status_table)
-  return setmetatable({}, getmetatable(status_table))
+   return setmetatable({}, getmetatable(status_table))
 end
 
 
@@ -657,36 +657,36 @@ end
 
 
 local function new(max_col, max_row, writer, db)
-  local modeS = meta(ModeS)
-  modeS.txtbuf = Txtbuf()
-  modeS.hist  = Historian(db)
-  modeS.suggest = Suggest()
-  modeS.status = setmetatable({}, _stat_M)
-  rawset(__G, "stat", modeS.status)
-  modeS.max_col = max_col
-  modeS.max_row = max_row
-  modeS.write = writer
-  -- retrieve data from _Bridge
-  if _Bridge.args.helm then
-     if _Bridge.args.macro then
-        modeS.session = {}
-        modeS.session.macro_mode = true
-        modeS.session.session_title = _Bridge.args.macro
-        modeS.hist:beginMacroSession(modeS.session)
-     end
-  end
-  -- this will be replaced with Zones
-  modeS.l_margin = 4
-  modeS.r_margin = 80
-  modeS.repl_top = ModeS.REPL_LINE
-  modeS.zones = Zoneherd(modeS, writer)
-  modeS.prompt_lines = { default = "an repl, plz reply uwu 👀" }
-  modeS.zones.status:replace(modeS.prompt_lines.default)
-  -- initial state
-  modeS:shiftMode(modeS.raga_default)
-  modeS.action_complete = true
-  modeS.shift_to = nil
-  return modeS
+   local modeS = meta(ModeS)
+   modeS.txtbuf = Txtbuf()
+   modeS.hist  = Historian(db)
+   modeS.suggest = Suggest()
+   modeS.status = setmetatable({}, _stat_M)
+   rawset(__G, "stat", modeS.status)
+   modeS.max_col = max_col
+   modeS.max_row = max_row
+   modeS.write = writer
+   -- retrieve data from _Bridge
+   if _Bridge.args.helm then
+      if _Bridge.args.macro then
+         modeS.session = {}
+         modeS.session.macro_mode = true
+         modeS.session.session_title = _Bridge.args.macro
+         modeS.hist:beginMacroSession(modeS.session)
+      end
+   end
+   -- this will be replaced with Zones
+   modeS.l_margin = 4
+   modeS.r_margin = 80
+   modeS.repl_top = ModeS.REPL_LINE
+   modeS.zones = Zoneherd(modeS, writer)
+   modeS.prompt_lines = { default = "an repl, plz reply uwu 👀" }
+   modeS.zones.status:replace(modeS.prompt_lines.default)
+   -- initial state
+   modeS:shiftMode(modeS.raga_default)
+   modeS.action_complete = true
+   modeS.shift_to = nil
+   return modeS
 end
 
 ModeS.idEst = new
