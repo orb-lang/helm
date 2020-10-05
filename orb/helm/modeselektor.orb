@@ -682,8 +682,7 @@ Shows a modal dialog with the given text and button style
 (see raga/modal.orb for valid button styles).
 
 When the modal closes, the button that was clicked can be retrieved
-from modeS.zones.modal.contents[1].value. No, this is not ideal, but
-it's not clear what the mechanism *should* look like.
+with modeS:modalAnswer().
 
 #!lua
 function ModeS.showModal(modeS, text, button_style)
@@ -691,6 +690,18 @@ function ModeS.showModal(modeS, text, button_style)
    modeS.zones.modal:replace(Rainbuf{ modal_info, n = 1 })
    modeS.shift_to = "modal"
    return modeS
+end
+#/lua
+
+*** ModeS:modalAnswer()
+
+Convenience method to retrieve the value answered by the most recent
+modal dialog. Storing this in the contents of the modal zone is
+hardly ideal, but it's not clear what the mechanism *should* look like.
+
+#!lua
+function ModeS.modalAnswer(modeS)
+   return modeS.zones.modal.contents[1].value
 end
 #/lua
 

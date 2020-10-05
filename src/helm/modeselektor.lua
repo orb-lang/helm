@@ -685,12 +685,23 @@ end
 
 
 
-
 function ModeS.showModal(modeS, text, button_style)
    local modal_info = Modal.newModel(text, button_style)
    modeS.zones.modal:replace(Rainbuf{ modal_info, n = 1 })
    modeS.shift_to = "modal"
    return modeS
+end
+
+
+
+
+
+
+
+
+
+function ModeS.modalAnswer(modeS)
+   return modeS.zones.modal.contents[1].value
 end
 
 
