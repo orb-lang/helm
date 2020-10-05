@@ -126,7 +126,7 @@ We want as much history as practical, because we search in it, but most of
 the results never get used.
 
 #!lua
-local bound, inbounds = import("core:core/math", "bound", "inbounds")
+local clamp, inbounds = import("core:core/math", "clamp", "inbounds")
 local assertfmt = import("core:core/string", "assertfmt")
 local format = assert(string.format)
 local boot = assert(helm_db.boot)
@@ -165,7 +165,7 @@ function Historian.load(historian)
    if number_of_lines == 0 then
       return nil
    end
-   number_of_lines = bound(number_of_lines, nil, historian.HISTORY_LIMIT)
+   number_of_lines = clamp(number_of_lines, nil, historian.HISTORY_LIMIT)
    local pop_stmt = conn:prepare(get_recent)
                       : bindkv { project = project_id,
                                  num_lines = number_of_lines }
@@ -429,7 +429,7 @@ end
 
 #!lua
 function Historian.prev(historian)
-   historian.cursor = bound(historian.cursor - 1, 1)
+   historian.cursor = clamp(historian.cursor - 1, 1)
    local txtbuf = historian[historian.cursor]
    if txtbuf then
       txtbuf = txtbuf:clone()
@@ -452,7 +452,7 @@ Returns the next txtbuf in history, and a second flag to tell the
 
 #!lua
 function Historian.next(historian)
-   historian.cursor = bound(historian.cursor + 1, nil, historian.n + 1)
+   historian.cursor = clamp(historian.cursor + 1, nil, historian.n + 1)
    local txtbuf = historian[historian.cursor]
    if txtbuf then
       txtbuf = txtbuf:clone()
