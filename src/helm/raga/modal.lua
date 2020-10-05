@@ -36,7 +36,9 @@ local function _shortcutFrom(button)
 end
 
 local function _buttonTextFrom(button)
-   local button_text = '[ ' .. button.text:gsub('&([^&])', function(ch) return a.underline(ch) end, 1):gsub('&&', '&')  .. ' ]'
+   local button_text = button.text
+      :gsub('&([^&])', function(ch) return a.underline(ch) end, 1)
+      :gsub('&&', '&')  .. ' ]'
    if button.default then
       return a.bold(button_text)
    else
