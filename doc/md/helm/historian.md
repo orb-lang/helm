@@ -136,10 +136,12 @@ function Historian.load(historian)
    historian.conn = conn
    -- if necessary, create or migrate the database
    boot(conn)
+   local stmts = helm_db.historian(conn)
+   historian.stmts = stmts
    -- Retrieve project id
-   local proj_val, proj_row = sql.pexec(conn,
-                                  sql.format(get_project, historian.project),
-                                  "i")
+   local proj_val, proj_row = stmts.get_project
+                                      : bind(historian.project)
+                                      : resultset 'i'
    if not proj_val then
       local ins_proj_stmt = conn:prepare(insert_project)
       ins_proj_stmt : bind(historian.project)

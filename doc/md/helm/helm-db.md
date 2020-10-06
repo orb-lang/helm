@@ -327,7 +327,7 @@ execute operations, particularly transactions, which require the use of
 
 ```lua
 local function _prepareStatements(conn, stmts)
-   return function(key)
+   return function(_, key)
       if stmts[key] then
          return conn:prepare(stmts[key])
       else
@@ -336,7 +336,7 @@ local function _prepareStatements(conn, stmts)
    end
 end
 
-local function _readOnly(key, value)
+local function _readOnly(_, key, value)
    error ("can't assign to prepared statements table, key: " .. key
           .. " value: " .. value)
 end
@@ -352,6 +352,7 @@ end
 
 ```lua
 local historian_sql = {}
+helm_db.historian_sql = historian_sql
 ```
 
 
@@ -398,7 +399,7 @@ SELECT CAST (count(line) AS REAL) from repl
 
 ```sql
 SELECT project_id FROM project
-   WHERE directory = %s;
+   WHERE directory = ?;
 ```
 
 ```sql
