@@ -8,7 +8,8 @@
 
 
 
-local uv = require "luv"
+local uv  = require "luv"
+local sql = assert(sql, "sql must be in bridge _G")
 
 
 
@@ -463,6 +464,9 @@ ORDER BY result.result_id;
 
 
 
+local lastRowId = assert(sql.lastRowId)
+
+
 function helm_db.historian(conn_handle)
    if not conn_handle then
       conn_handle = helm_db_home
@@ -471,6 +475,7 @@ function helm_db.historian(conn_handle)
    if not conn then
       conn = helm_db.boot(conn_handle)
    end
+   assert(conn, "no conn! " .. conn_handle)
    local hist_proxy = _makeProxy(conn, historian_sql)
    rawset(hist_proxy, "savepoint_persist",
           function()
@@ -487,6 +492,10 @@ function helm_db.historian(conn_handle)
    rawset(hist_proxy, "release_restart_session",
           function()
              conn:exec "RELEASE restart_session"
+          end)
+   rawset(hist_proxy, "lastRowId",
+          function()
+            return lastRowId(conn)
           end)
    return hist_proxy
 end
@@ -544,6 +553,20 @@ function helm_db.close(conn_handle)
          close_idler:stop()
       end
    end)
+end
+
+
+
+
+
+
+
+
+
+
+function helm_db.conn(conn_handle)
+   conn_handle = conn_handle or helm_db_home
+   return _conns[conn_handle]
 end
 
 

@@ -8,7 +8,8 @@ database.
 **** imports
 
 #!lua
-local uv = require "luv"
+local uv  = require "luv"
+local sql = assert(sql, "sql must be in bridge _G")
 #/lua
 
 
@@ -463,6 +464,9 @@ ORDER BY result.result_id;
 helm_db.
 
 #!lua
+local lastRowId = assert(sql.lastRowId)
+
+
 function helm_db.historian(conn_handle)
    if not conn_handle then
       conn_handle = helm_db_home
@@ -471,6 +475,7 @@ function helm_db.historian(conn_handle)
    if not conn then
       conn = helm_db.boot(conn_handle)
    end
+   assert(conn, "no conn! " .. conn_handle)
    local hist_proxy = _makeProxy(conn, historian_sql)
    rawset(hist_proxy, "savepoint_persist",
           function()
@@ -488,12 +493,16 @@ function helm_db.historian(conn_handle)
           function()
              conn:exec "RELEASE restart_session"
           end)
+   rawset(hist_proxy, "lastRowId",
+          function()
+            return lastRowId(conn)
+          end)
    return hist_proxy
 end
 #/lua
 
 
-*** boot(conn)
+*** boot(conn_handle?)
 
 =boot= takes an open =historian.conn=, or a file path, and brings it up to
 speed.
@@ -518,7 +527,7 @@ end
 #/lua
 
 
-*** close(conn)
+*** close(conn_handle?)
 
 Closes the given conn or conn-string, defaulting to the helm_db_home conn.
 
@@ -544,6 +553,20 @@ function helm_db.close(conn_handle)
          close_idler:stop()
       end
    end)
+end
+#/lua
+
+
+*** conn(conn_handle?)
+
+Retrieve a conn, defaulting as usual to =helm_db_home=, if one already exists.
+
+Primarily for use at the REPL.
+
+#!lua
+function helm_db.conn(conn_handle)
+   conn_handle = conn_handle or helm_db_home
+   return _conns[conn_handle]
 end
 #/lua
 

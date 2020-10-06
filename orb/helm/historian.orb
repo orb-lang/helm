@@ -198,7 +198,7 @@ function Historian.persist(historian, txtbuf, results, session)
    else
       error(err)
    end
-   local line_id = sql.lastRowId(historian.conn)
+   local line_id = historian.stmts.lastRowId()
    insert(historian.line_ids, line_id)
    -- if it's a macro session, add the premise now
    if session and session.macro_mode then
