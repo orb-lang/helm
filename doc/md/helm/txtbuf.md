@@ -144,7 +144,7 @@ Also opens the row to which the cursor is being moved\.
 ```lua
 
 local core_math = require "core/math"
-local bound, inbounds = assert(core_math.bound), assert(core_math.inbounds)
+local clamp, inbounds = assert(core_math.clamp), assert(core_math.inbounds)
 local Point = require "anterm/point"
 
 function Txtbuf.makeCursor(txtbuf, rowOrTable, col, basedOn)
@@ -159,7 +159,7 @@ function Txtbuf.makeCursor(txtbuf, rowOrTable, col, basedOn)
    assert(inbounds(row, 1, #txtbuf.lines))
    txtbuf:openRow(row)
    assert(inbounds(col, 1, nil))
-   col = bound(col, nil, #txtbuf.lines[row] + 1)
+   col = clamp(col, nil, #txtbuf.lines[row] + 1)
    return Point(row, col)
 end
 

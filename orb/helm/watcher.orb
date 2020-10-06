@@ -22,30 +22,30 @@ To stop watching, call =watcher:stop()=.
 local uv = require "luv"
 
 local function watch(watcher, dir, recur)
-    watcher.dir = dir
-    -- default to a recursive watch
-    if recur == nil then
-        recur = true
-    end
-    local fse = uv.new_fs_event()
-    watcher.fse = fse
-    uv.fs_event_start(fse, dir,{recursive = recur},function (err,fname,status)
-        if(err) then
-            print("Error "..err)
-        else
-            local ev = nil
-            for k,v in pairs(status) do
-                ev = k
-            end
-            if ev == "change" then
-               watcher:onchange(fname)
-            elseif ev == "rename" then
-               watcher:onrename(fname)
-            else
-               print("Unrecognized event in watch(" .. dir .. "): " ..ev)
-            end
-        end
-    end)
+   watcher.dir = dir
+   -- default to a recursive watch
+   if recur == nil then
+      recur = true
+   end
+   local fse = uv.new_fs_event()
+   watcher.fse = fse
+   uv.fs_event_start(fse, dir,{recursive = recur},function (err,fname,status)
+      if(err) then
+         print("Error "..err)
+      else
+         local ev = nil
+         for k,v in pairs(status) do
+            ev = k
+         end
+         if ev == "change" then
+            watcher:onchange(fname)
+         elseif ev == "rename" then
+            watcher:onrename(fname)
+         else
+            print("Unrecognized event in watch(" .. dir .. "): " ..ev)
+         end
+      end
+   end)
 end
 #/lua
 
