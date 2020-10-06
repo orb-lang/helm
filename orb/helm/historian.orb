@@ -196,7 +196,7 @@ function Historian.persist(historian, txtbuf, results, session)
       -- A blank line can have no results and is uninteresting.
       return false
    end
-   historian.conn:exec("SAVEPOINT save_persist")
+   historian.stmts.savepoint_persist()
    historian.insert_line:bindkv { project = historian.project_id,
                                        line    = sql.blob(lb) }
    local err = historian.insert_line:step()
@@ -223,7 +223,7 @@ function Historian.persist(historian, txtbuf, results, session)
    -- If there's nothing to persist, release our savepoint
    -- and don't bother starting the idler
    if not have_results then
-      historian.conn:exec("RELEASE save_persist")
+      historian.stmts.release_persist()
       return true
    end
 
@@ -252,7 +252,7 @@ function Historian.persist(historian, txtbuf, results, session)
             error(err)
          end
       end
-      historian.conn:exec("RELEASE save_persist")
+      historian.stmts.release_persist()
       persist_idler:stop()
       assert(historian.idlers:remove(persist_idler) == true)
    end)

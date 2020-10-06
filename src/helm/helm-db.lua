@@ -419,7 +419,24 @@ ORDER BY result.result_id;
 
 function helm_db.historian(conn)
    -- todo add conn handling here.
-   return _makeProxy(conn, historian_sql)
+   local hist_proxy = _makeProxy(conn, historian_sql)
+   rawset(hist_proxy, "savepoint_persist",
+          function()
+            conn:exec "SAVEPOINT save_persist"
+          end)
+   rawset(hist_proxy, "release_persist",
+          function()
+             conn:exec "RELEASE save_persist"
+          end)
+   rawset(hist_proxy, "savepoint_restart_session",
+          function()
+             conn:exec "SAVEPOINT restart_session"
+          end)
+   rawset(hist_proxy, "release_restart_session",
+          function()
+             conn:exec "RELEASE restart_session"
+          end)
+   return hist_proxy
 end
 
 

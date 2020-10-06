@@ -53,6 +53,8 @@ between the regenerated txtbufs and their associated result history\.
 We want as much history as practical, because we search in it, but most of
 the results never get used\.
 
+As much of the work as possible is offloaded to a uv idler process\.
+
 ```lua
 local clamp, inbounds = import("core:core/math", "clamp", "inbounds")
 local assertfmt = import("core:core/string", "assertfmt")
@@ -194,7 +196,7 @@ function Historian.persist(historian, txtbuf, results, session)
       -- A blank line can have no results and is uninteresting.
       return false
    end
-   historian.conn:exec("SAVEPOINT save_persist")
+   historian.stmts.savepoint_persist()
    historian.insert_line:bindkv { project = historian.project_id,
                                        line    = sql.blob(lb) }
    local err = historian.insert_line:step()
@@ -221,7 +223,7 @@ function Historian.persist(historian, txtbuf, results, session)
    -- If there's nothing to persist, release our savepoint
    -- and don't bother starting the idler
    if not have_results then
-      historian.conn:exec("RELEASE save_persist")
+      historian.stmts.release_persist()
       return true
    end
 
@@ -250,7 +252,7 @@ function Historian.persist(historian, txtbuf, results, session)
             error(err)
          end
       end
-      historian.conn:exec("RELEASE save_persist")
+      historian.stmts.release_persist()
       persist_idler:stop()
       assert(historian.idlers:remove(persist_idler) == true)
    end)
@@ -445,6 +447,12 @@ end
 Creates a new `historian`\.
 
 `helm_db` is an optional string parameter to load a non\-standard helm database\.
+
+
+##### Metatable for result buffer
+
+We need this so that attempts to \_\_repr the result buffer don't produce an
+infinite loop\.
 
 ```lua
 local __result_buffer_M = meta {}
