@@ -463,8 +463,14 @@ ORDER BY result.result_id;
 helm\_db\.
 
 ```lua
-function helm_db.historian(conn)
-   -- todo add conn handling here.
+function helm_db.historian(conn_handle)
+   if not conn_handle then
+      conn_handle = helm_db_home
+   end
+   local conn = _resolveConn(conn_handle)
+   if not conn then
+      conn = helm_db.boot(conn_handle)
+   end
    local hist_proxy = _makeProxy(conn, historian_sql)
    rawset(hist_proxy, "savepoint_persist",
           function()
@@ -500,8 +506,14 @@ local format = assert(string.format)
 local boot = assert(sql.boot)
 
 
-function helm_db.boot(conn)
-   return boot(conn, migrations)
+function helm_db.boot(conn_handle)
+   local conn = _resolveConn(conn_handle)
+   if not conn then
+      conn_handle = helm_db_home
+      conn = boot(conn_handle, migrations)
+   end
+   _conns[conn_handle] = conn
+   return conn
 end
 ```
 

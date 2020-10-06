@@ -36,9 +36,7 @@ local Set = require "set:set"
 
 local Historian = meta {}
 Historian.HISTORY_LIMIT = 2000
-local helm_home = os.getenv 'HELM_HOME'
-Historian.helm_db_home = helm_home
-                         or _Bridge.bridge_home .. "/helm/helm.sqlite"
+Historian.helm_db_home = helm_db.helm_db_home
 Historian.project = uv.cwd()
 
 
@@ -59,14 +57,9 @@ Historian.project = uv.cwd()
 local clamp, inbounds = import("core:core/math", "clamp", "inbounds")
 local assertfmt = import("core:core/string", "assertfmt")
 local format = assert(string.format)
-local boot = assert(helm_db.boot)
 
 function Historian.load(historian)
-   local conn = sql.open(historian.helm_db_home, "rwc")
-   historian.conn = conn
-   -- if necessary, create or migrate the database
-   boot(conn)
-   local stmts = helm_db.historian(conn)
+   local stmts = helm_db.historian()
    historian.stmts = stmts
    -- Retrieve project id
    local proj_val, proj_row = stmts.get_project
