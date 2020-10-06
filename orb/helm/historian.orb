@@ -159,6 +159,7 @@ function Historian.load(historian)
    -- Create insert prepared statements
    historian.insert_line = stmts.insert_line
    historian.insert_result = stmts.insert_result
+   historian.insert_premise = stmts.insert_premise
    -- Create result retrieval prepared statement
    historian.get_results = stmts.get_results
    -- Retrieve history
@@ -279,13 +280,14 @@ function Historian.persist(historian, txtbuf, results, session)
    -- if it's a macro session, add the premise now
    if session and session.macro_mode then
       local status = have_results and 'accept' or 'ignore'
-      historian.conn:prepare(insert_premise)
+      historian.insert_premise
          : bind(session.session_id,
                 line_id,
                 session.premise_ordinal,
                 '',
                 status)
          : step()
+         : reset()
       session.premise_ordinal = session.premise_ordinal + 1
    end
    -- If there's nothing to persist, release our savepoint
