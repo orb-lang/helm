@@ -316,6 +316,113 @@ candidate for configuration data now\.
 I dunno\. I've been waffling on this for months\. Ah well\.
 
 
+## Statement proxy tables
+
+  We retain the conns within the `helm_db` singleton, returning a proxy table
+to consumers, which can be indexed to obtain fresh prepared statements\.
+
+These tables will also be equipped with functions which close over the conn to
+execute operations, particularly transactions, which require the use of
+`conn:exec`\.
+
+```lua
+local function _prepareStatements(conn, stmts)
+   return function(key)
+      if stmts[key] then
+         return conn:prepare(stmts[key])
+      else
+         error("Don't have a statement " .. key .. " to prepare.")
+      end
+   end
+end
+
+local function _readOnly(key, value)
+   error ("can't assign to prepared statements table, key: " .. key
+          .. " value: " .. value)
+end
+
+function _makeProxy(conn, stmts)
+   return setmetatable({}, { __index = _prepareStatements(conn, stmts),
+                             __newindex = _readOnly })
+end
+```
+
+#### Historian SQL statements
+
+
+```lua
+local historian_sql = {}
+```
+
+
+##### Insertions
+
+```sql
+INSERT INTO repl (project, line) VALUES (:project, :line);
+```
+
+```sql
+INSERT INTO result (line_id, repr) VALUES (:line_id, :repr);
+```
+
+```sql
+INSERT INTO project (directory) VALUES (?);
+```
+
+```sql
+INSERT INTO session (title, project, accepted) VALUES (?, ?, ?);
+```
+
+```sql
+INSERT INTO
+   premise (session, line, ordinal, title, status)
+VALUES
+   (?, ?, ?, ?, ?);
+```
+
+
+##### Selections
+
+```sql
+SELECT CAST (line_id AS REAL), line FROM repl
+   WHERE project = :project
+   ORDER BY line_id DESC
+   LIMIT :num_lines;
+```
+
+```sql
+SELECT CAST (count(line) AS REAL) from repl
+   WHERE project = ?
+;
+```
+
+```sql
+SELECT project_id FROM project
+   WHERE directory = %s;
+```
+
+```sql
+SELECT result.repr
+FROM result
+WHERE result.line_id = :line_id
+ORDER BY result.result_id;
+```
+
+
+### helm\_db\.historian\(conn?\)
+
+  Returns a table of the necessary prepared statements, and closures, for
+`historian` to conduct database operations\.  `conn` defaults to the system
+helm\_db\.
+
+```lua
+function helm_db.historian(conn)
+   -- todo add conn handling here.
+   return _makeProxy(conn, historian_sql)
+end
+```
+
+
 ### boot\(conn\)
 
 `boot` takes an open `historian.conn`, or a file path, and brings it up to

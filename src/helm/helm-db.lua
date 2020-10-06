@@ -324,6 +324,113 @@ insert(migrations, migration_4)
 
 
 
+
+
+local function _prepareStatements(conn, stmts)
+   return function(key)
+      if stmts[key] then
+         return conn:prepare(stmts[key])
+      else
+         error("Don't have a statement " .. key .. " to prepare.")
+      end
+   end
+end
+
+local function _readOnly(key, value)
+   error ("can't assign to prepared statements table, key: " .. key
+          .. " value: " .. value)
+end
+
+function _makeProxy(conn, stmts)
+   return setmetatable({}, { __index = _prepareStatements(conn, stmts),
+                             __newindex = _readOnly })
+end
+
+
+
+
+
+
+local historian_sql = {}
+
+
+
+
+
+historian_sql.insert_line = [[
+INSERT INTO repl (project, line) VALUES (:project, :line);
+]]
+
+historian_sql.insert_result = [[
+INSERT INTO result (line_id, repr) VALUES (:line_id, :repr);
+]]
+
+historian_sql.insert_project = [[
+INSERT INTO project (directory) VALUES (?);
+]]
+
+historian_sql.insert_session = [[
+INSERT INTO session (title, project, accepted) VALUES (?, ?, ?);
+]]
+
+historian_sql.insert_premise = [[
+INSERT INTO
+   premise (session, line, ordinal, title, status)
+VALUES
+   (?, ?, ?, ?, ?);
+]]
+
+
+
+
+historian_sql.get_recent = [[
+SELECT CAST (line_id AS REAL), line FROM repl
+   WHERE project = :project
+   ORDER BY line_id DESC
+   LIMIT :num_lines;
+]]
+
+historian_sql.get_number_of_lines = [[
+SELECT CAST (count(line) AS REAL) from repl
+   WHERE project = ?
+;
+]]
+
+historian_sql.get_project = [[
+SELECT project_id FROM project
+   WHERE directory = %s;
+]]
+
+historian_sql.get_results = [[
+SELECT result.repr
+FROM result
+WHERE result.line_id = :line_id
+ORDER BY result.result_id;
+]]
+
+
+
+
+
+
+
+
+
+function helm_db.historian(conn)
+   -- todo add conn handling here.
+   return _makeProxy(conn, historian_sql)
+end
+
+
+
+
+
+
+
+
+
+
+
 local assertfmt = import("core:core/string", "assertfmt")
 local format = assert(string.format)
 local boot = assert(sql.boot)
