@@ -303,6 +303,27 @@ insert(migrations, migration_4)
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local assertfmt = import("core:core/string", "assertfmt")
 local format = assert(string.format)
 local boot = assert(sql.boot)

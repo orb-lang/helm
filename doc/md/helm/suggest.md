@@ -84,7 +84,6 @@ local function _cursorContext(modeS)
    end
    return context, path
 end
-Suggest.cursorContext = _cursorContext
 ```
 
 ### update\(modeS, category, value\)

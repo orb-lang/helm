@@ -269,7 +269,25 @@ insert(migrations, migration_4)
 #/lua
 
 
-***** Version 5? Profiles
+***** Version 5 notes
+
+We need to add an =AUTOINCREMENT= to the session table to get a stable
+ordering while allowing deletions.
+
+I'll hold off on that for awhile, because it probably won't be the only
+migration relating to sessions work that we do.
+
+Another thing we should be adding is an index for dates on lines, like so:
+
+#!sql
+CREATE INDEX idx_repl_time ON repl (time);
+#/sql
+
+This is a good idea anyway, since lines are our most expensive DB call during
+startup, and with sessions, lines will be placed out of order.
+
+
+*** Future Migrations
 
 Right now, =helm= is omokase: you get some readline commands, and you get the
 colors we give you, and that's that.
@@ -291,6 +309,9 @@ being a simple orb file with Lua tables in it, which is easier to inspect and
 modify.  I want the user to be able to change colors inside =helm= and have
 those changes persist, but this isn't impossible or even that difficult to
 do with Lua files.
+
+I just wrote a TOML parser for use in the manifest files, so that's a good
+candidate for configuration data now.
 
 I dunno. I've been waffling on this for months. Ah well.
 
