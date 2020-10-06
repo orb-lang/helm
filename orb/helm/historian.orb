@@ -143,13 +143,13 @@ function Historian.load(historian)
                                       : bind(historian.project)
                                       : resultset 'i'
    if not proj_val then
-      local ins_proj_stmt = conn:prepare(insert_project)
-      ins_proj_stmt : bind(historian.project)
-      proj_val, proj_row = ins_proj_stmt:step()
+      proj_val, proj_row = stmts.insert_project
+                             : bind(historian.project)
+                             : step()
       -- retry
-      proj_val, proj_row = sql.pexec(conn,
-                              sql.format(get_project, historian.project),
-                              "i")
+      proj_val, proj_row = stmts.get_project
+                                      : bind(historian.project)
+                                      : resultset 'i'
       if not proj_val then
          error "Could not create project in .bridge"
       end
@@ -157,18 +157,18 @@ function Historian.load(historian)
    local project_id = proj_val[1][1]
    historian.project_id = project_id
    -- Create insert prepared statements
-   historian.insert_line = conn:prepare(insert_line)
-   historian.insert_result = conn:prepare(insert_result)
+   historian.insert_line = stmts.insert_line
+   historian.insert_result = stmts.insert_result
    -- Create result retrieval prepared statement
-   historian.get_results = conn:prepare(get_results)
+   historian.get_results = stmts.get_results
    -- Retrieve history
-   local number_of_lines = conn:prepare(get_number_of_lines)
+   local number_of_lines = stmts.get_number_of_lines
                              :bind(project_id):step()[1]
    if number_of_lines == 0 then
       return nil
    end
    number_of_lines = clamp(number_of_lines, nil, historian.HISTORY_LIMIT)
-   local pop_stmt = conn:prepare(get_recent)
+   local pop_stmt = stmts.get_recent
                       : bindkv { project = project_id,
                                  num_lines = number_of_lines }
    historian.cursor = number_of_lines + 1
