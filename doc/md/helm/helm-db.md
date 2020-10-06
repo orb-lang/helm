@@ -5,6 +5,13 @@
 database\.
 
 
+#### imports
+
+```lua
+local uv = require "luv"
+```
+
+
 ## helm\_db
 
 ```lua
@@ -12,7 +19,46 @@ local helm_db = {}
 ```
 
 
-#### Create tables
+#### helm\_db\_home
+
+```lua
+local helm_db_home =  os.getenv 'HELM_HOME'
+                      or _Bridge.bridge_home .. "/helm/helm.sqlite"
+helm_db.helm_db_home = helm_db_home
+```
+
+
+#### \_conns
+
+A weak table to hold conns, keyed by string path\.
+
+```lua
+local _conns = setmetatable({}, { __mode = 'v' })
+```
+
+
+#### \_resolveConn\(conn\)
+
+A helper function to retrieve a conn if we already have one\.
+
+Doesn't build a conn if it can't find one, and presumes that non\-string
+parameters are already conns\.
+
+```lua
+local function _resolveConn(conn)
+   if conn then
+      if type(conn) == 'string' then
+         return _conns[conn]
+      else
+         return conn
+      end
+   end
+   return nil
+end
+```
+
+
+### Create tables
 
 The schema with the highest version number is the one which is current for
 that table\.  The table will of course not have the `_n` suffix in the
@@ -456,6 +502,36 @@ local boot = assert(sql.boot)
 
 function helm_db.boot(conn)
    return boot(conn, migrations)
+end
+```
+
+
+### close\(conn\)
+
+Closes the given conn or conn\-string, defaulting to the helm\_db\_home conn\.
+
+```lua
+function helm_db.close(conn_handle)
+   local conn = _resolveConn(conn_handle)
+   if not conn then
+      conn = _conns[helm_db_home]
+      conn_handle = helm_db_home
+   end
+   if not conn then return end
+   pcall(conn.pragma.wal_checkpoint, "0") -- 0 == SQLITE_CHECKPOINT_PASSIVE
+   -- set up an idler to close the conn, so that e.g. busy
+   -- exceptions don't blow up the hook
+   local close_idler = uv.new_idle()
+   close_idler:start(function()
+      local success = pcall(conn.close, conn)
+      if not success then
+         return nil
+      else
+         -- we don't want to rely on GC to prevent closing a conn twice
+         _conns[conn_handle] = nil
+         close_idler:stop()
+      end
+   end)
 end
 ```
 
