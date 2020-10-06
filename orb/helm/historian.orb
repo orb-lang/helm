@@ -53,6 +53,8 @@ between the regenerated txtbufs and their associated result history.
 We want as much history as practical, because we search in it, but most of
 the results never get used.
 
+As much of the work as possible is offloaded to a uv idler process.
+
 #!lua
 local clamp, inbounds = import("core:core/math", "clamp", "inbounds")
 local assertfmt = import("core:core/string", "assertfmt")
@@ -445,6 +447,12 @@ end
 Creates a new =historian=.
 
 =helm_db= is an optional string parameter to load a non-standard helm database.
+
+
+***** Metatable for result buffer
+
+We need this so that attempts to __repr the result buffer don't produce an
+infinite loop.
 
 #!lua
 local __result_buffer_M = meta {}
