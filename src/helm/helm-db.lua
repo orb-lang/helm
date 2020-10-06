@@ -572,4 +572,15 @@ end
 
 
 
+
+
+
+
+setmetatable(helm_db, { __newindex = function()
+                                        error "cannnot assign to helm_db"
+                                     end })
+
+
+
+
 return helm_db

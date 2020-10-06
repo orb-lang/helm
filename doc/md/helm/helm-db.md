@@ -571,6 +571,17 @@ end
 ```
 
 
+#### protect helm\_db
+
+As a singleton, it should really be read only\.
+
+```lua
+setmetatable(helm_db, { __newindex = function()
+                                        error "cannnot assign to helm_db"
+                                     end })
+```
+
+
 ```lua
 return helm_db
 ```
