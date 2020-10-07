@@ -398,6 +398,12 @@ end
 
 
 
+
+
+
+
+
+
 local historian_sql = {}
 helm_db.historian_sql = historian_sql
 
@@ -498,6 +504,96 @@ function helm_db.historian(conn_handle)
             return lastRowId(conn)
           end)
    return hist_proxy
+end
+
+
+
+
+
+
+
+
+
+
+
+
+local session_sql = {}
+
+
+
+
+session_sql.get_session_by_id = [[
+SELECT
+   session.title AS session_title,
+   premise.ordinal,
+   premise.status,
+   premise.title,
+   repl.line,
+   repl.line_id
+FROM
+   session
+INNER JOIN premise ON premise.session = session.session_id
+INNER JOIN repl ON repl.line_id = premise.line
+WHERE session.session_id = ?
+ORDER BY premise.ordinal
+;
+]]
+
+
+
+
+session_sql.get_results = [[
+SELECT result.repr
+FROM result
+WHERE result.line_id = ?
+ORDER BY result.result_id;
+]]
+
+session_sql.get_project_by_dir = [[
+SELECT project_id FROM project WHERE directory = ?;
+]]
+
+session_sql.get_accepted_by_dir = [[
+SELECT title FROM session
+INNER JOIN
+   project ON session.project = project.project_id
+WHERE
+   project.directory = ?
+AND
+   session.accepted = 1
+ORDER BY
+   session.session_id
+;
+]]
+
+session_sql.get_project_info = [[
+SELECT project_id, directory from project;
+]]
+
+session_sql.get_sessions_from_project = [[
+SELECT
+   session_id,
+   CAST(accepted AS REAL) As accepted
+FROM
+   session
+WHERE
+   project = ?
+ORDER BY
+   session.session_id
+;
+]]
+
+
+function helm_db.session(conn_handle)
+   if not conn_handle then
+      conn_handle = helm_db_home
+   end
+   local conn = _resolveConn(conn_handle)
+   if not conn then
+      conn = helm_db.boot(conn_handle)
+   end
+   assert(conn, "no conn! " .. conn_handle)
+   return _makeProxy(conn, session_sql)
 end
 
 

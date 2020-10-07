@@ -394,6 +394,12 @@ function _makeProxy(conn, stmts)
 end
 ```
 
+
+### Historian
+
+  Generates prepared statements and contains closures for the necessary
+savepoints to operate [historian](@:helm/historian)\.
+
 #### Historian SQL statements
 
 
@@ -457,7 +463,7 @@ ORDER BY result.result_id;
 ```
 
 
-### helm\_db\.historian\(conn?\)
+#### helm\_db\.historian\(conn?\)
 
   Returns a table of the necessary prepared statements, and closures, for
 `historian` to conduct database operations\.  `conn` defaults to the system
@@ -498,6 +504,96 @@ function helm_db.historian(conn_handle)
             return lastRowId(conn)
           end)
    return hist_proxy
+end
+```
+
+
+### Session
+
+  The `helm_db` singleton is also used by [valiant](@valiant:session) to
+manage database operations, through the same sort of proxy table as above\.
+
+@Daniel
+which is currently in historian into the historian table, just for convenience\.
+
+```lua
+local session_sql = {}
+```
+
+#### SQL
+
+```sql
+SELECT
+   session.title AS session_title,
+   premise.ordinal,
+   premise.status,
+   premise.title,
+   repl.line,
+   repl.line_id
+FROM
+   session
+INNER JOIN premise ON premise.session = session.session_id
+INNER JOIN repl ON repl.line_id = premise.line
+WHERE session.session_id = ?
+ORDER BY premise.ordinal
+;
+```
+
+Because the results have a many\-to\-one relationship with the lines, we're
+better off retrieving them separately:
+
+```sql
+SELECT result.repr
+FROM result
+WHERE result.line_id = ?
+ORDER BY result.result_id;
+```
+
+```sql
+SELECT project_id FROM project WHERE directory = ?;
+```
+
+```sql
+SELECT title FROM session
+INNER JOIN
+   project ON session.project = project.project_id
+WHERE
+   project.directory = ?
+AND
+   session.accepted = 1
+ORDER BY
+   session.session_id
+;
+```
+
+```sql
+SELECT project_id, directory from project;
+```
+
+```sql
+SELECT
+   session_id,
+   CAST(accepted AS REAL) As accepted
+FROM
+   session
+WHERE
+   project = ?
+ORDER BY
+   session.session_id
+;
+```
+
+```lua
+function helm_db.session(conn_handle)
+   if not conn_handle then
+      conn_handle = helm_db_home
+   end
+   local conn = _resolveConn(conn_handle)
+   if not conn then
+      conn = helm_db.boot(conn_handle)
+   end
+   assert(conn, "no conn! " .. conn_handle)
+   return _makeProxy(conn, session_sql)
 end
 ```
 
@@ -573,7 +669,7 @@ end
 
 #### protect helm\_db
 
-As a singleton, it should really be read only\.
+As a singleton, it should be read only\.
 
 ```lua
 setmetatable(helm_db, { __newindex = function()
