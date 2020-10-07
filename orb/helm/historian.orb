@@ -136,7 +136,7 @@ function Historian.beginMacroSession(historian, session)
       : bind(session.session_title, historian.project_id, 1)
       : step()
    -- retrieve session id
-   session.session_id = sql.lastRowId(historian.conn)
+   session.session_id = historian.stmts.lastRowId()
 end
 #/lua
 

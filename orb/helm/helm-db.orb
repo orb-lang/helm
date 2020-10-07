@@ -408,9 +408,11 @@ local function _readOnly(_, key, value)
           .. " value: " .. value)
 end
 
+local lastRowId = assert(sql.lastRowId)
 function _makeProxy(conn, stmts)
-   return setmetatable({}, { __index = _prepareStatements(conn, stmts),
-                             __newindex = _readOnly })
+   return setmetatable({ lastRowId = function() return lastRowId(conn) end },
+                       { __index = _prepareStatements(conn, stmts),
+                         __newindex = _readOnly })
 end
 #/lua
 
@@ -490,9 +492,6 @@ ORDER BY result.result_id;
 helm_db.
 
 #!lua
-local lastRowId = assert(sql.lastRowId)
-
-
 function helm_db.historian(conn_handle)
    local conn = _openConn(conn_handle)
    local hist_proxy = _makeProxy(conn, historian_sql)
@@ -511,10 +510,6 @@ function helm_db.historian(conn_handle)
    rawset(hist_proxy, "release_restart_session",
           function()
              conn:exec "RELEASE restart_session"
-          end)
-   rawset(hist_proxy, "lastRowId",
-          function()
-            return lastRowId(conn)
           end)
    return hist_proxy
 end
