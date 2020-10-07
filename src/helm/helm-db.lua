@@ -65,6 +65,26 @@ end
 
 
 
+local function _openConn(conn_handle)
+   if not conn_handle then
+      conn_handle = helm_db_home
+   end
+   local conn = _resolveConn(conn_handle)
+   if not conn then
+      conn = helm_db.boot(conn_handle)
+   end
+   assert(conn, "no conn! " .. conn_handle)
+   return conn
+end
+
+
+
+
+
+
+
+
+
 
 
 
@@ -474,14 +494,7 @@ local lastRowId = assert(sql.lastRowId)
 
 
 function helm_db.historian(conn_handle)
-   if not conn_handle then
-      conn_handle = helm_db_home
-   end
-   local conn = _resolveConn(conn_handle)
-   if not conn then
-      conn = helm_db.boot(conn_handle)
-   end
-   assert(conn, "no conn! " .. conn_handle)
+   local conn = _openConn(conn_handle)
    local hist_proxy = _makeProxy(conn, historian_sql)
    rawset(hist_proxy, "savepoint_persist",
           function()
@@ -585,14 +598,7 @@ ORDER BY
 
 
 function helm_db.session(conn_handle)
-   if not conn_handle then
-      conn_handle = helm_db_home
-   end
-   local conn = _resolveConn(conn_handle)
-   if not conn then
-      conn = helm_db.boot(conn_handle)
-   end
-   assert(conn, "no conn! " .. conn_handle)
+   local conn = _openConn(conn_handle)
    return _makeProxy(conn, session_sql)
 end
 
@@ -606,7 +612,7 @@ end
 
 
 
-local assertfmt = import("core:core/string", "assertfmt")
+local assertfmt = require "core:core/string" . assertfmt
 local format = assert(string.format)
 local boot = assert(sql.boot)
 
@@ -616,8 +622,9 @@ function helm_db.boot(conn_handle)
    if not conn then
       conn_handle = helm_db_home
       conn = boot(conn_handle, migrations)
+      _conns[conn_handle] = conn
    end
-   _conns[conn_handle] = conn
+
    return conn
 end
 
