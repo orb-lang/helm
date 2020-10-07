@@ -579,7 +579,10 @@ ORDER BY
 ;
 #/sql
 
-#!sql @session_sql.get_project_info #asLua
+This one is a =conn:exec= so we use a closure, rather than a prepared
+statement.
+
+#!sql @session_get_project_info #asLua
 SELECT project_id, directory from project;
 #/sql
 
@@ -596,10 +599,22 @@ ORDER BY
 ;
 #/sql
 
+#!sql @session_sql.get_sessions_by_project #asLua
+SELECT session_id FROM session
+WHERE project = ?
+ORDER BY session_id
+;
+#/sql
+
 #!lua
 function helm_db.session(conn_handle)
    local conn = _openConn(conn_handle)
-   return _makeProxy(conn, session_sql)
+   local stmts =  _makeProxy(conn, session_sql)
+   rawset(stmts, "get_project_info",
+          function()
+             return conn:exec(session_get_project_info)
+          end)
+   return stmts
 end
 #/lua
 

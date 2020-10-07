@@ -579,6 +579,9 @@ ORDER BY
 ;
 ```
 
+This one is a `conn:exec` so we use a closure, rather than a prepared
+statement\.
+
 ```sql
 SELECT project_id, directory from project;
 ```
@@ -596,10 +599,22 @@ ORDER BY
 ;
 ```
 
+```sql
+SELECT session_id FROM session
+WHERE project = ?
+ORDER BY session_id
+;
+```
+
 ```lua
 function helm_db.session(conn_handle)
    local conn = _openConn(conn_handle)
-   return _makeProxy(conn, session_sql)
+   local stmts =  _makeProxy(conn, session_sql)
+   rawset(stmts, "get_project_info",
+          function()
+             return conn:exec(session_get_project_info)
+          end)
+   return stmts
 end
 ```
 

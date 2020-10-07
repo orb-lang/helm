@@ -579,7 +579,10 @@ ORDER BY
 ;
 ]]
 
-session_sql.get_project_info = [[
+
+
+
+local session_get_project_info = [[
 SELECT project_id, directory from project;
 ]]
 
@@ -596,10 +599,22 @@ ORDER BY
 ;
 ]]
 
+session_sql.get_sessions_by_project = [[
+SELECT session_id FROM session
+WHERE project = ?
+ORDER BY session_id
+;
+]]
+
 
 function helm_db.session(conn_handle)
    local conn = _openConn(conn_handle)
-   return _makeProxy(conn, session_sql)
+   local stmts =  _makeProxy(conn, session_sql)
+   rawset(stmts, "get_project_info",
+          function()
+             return conn:exec(session_get_project_info)
+          end)
+   return stmts
 end
 
 
