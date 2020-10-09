@@ -3,8 +3,16 @@
 
 
 
+
+
+
+
+
 local clone = import("core/table", "clone")
 local RagaBase = require "helm:helm/raga/base"
+
+
+
 
 
 
@@ -22,11 +30,24 @@ local alias = require "helm/raga/aliaser" (Page)
 
 
 
+
+
+
+
+
+
+
+
 local function toZone(fn)
    return function(modeS, category, value)
       return modeS.zones.popup[fn](modeS.zones.popup)
    end
 end
+
+
+
+
+
 
 
 
@@ -68,6 +89,9 @@ alias{ toZone "scrollToBottom",
 
 
 
+
+
+
 local function _quit(modeS)
    -- #todo should have a stack of ragas and switch back to the one
    -- we entered from, but this will do for now
@@ -75,6 +99,11 @@ local function _quit(modeS)
 end
 
 alias{_quit, NAV = {"ESC"}, ASCII = {"q"} }
+
+
+
+
+
 
 
 
@@ -97,6 +126,14 @@ end
 
 
 
+
+
+
+
+
+
+
+
 function Page.onShift(modeS)
    modeS.zones.popup:show()
 end
@@ -106,4 +143,8 @@ end
 
 
 
+
+
+
 return Page
+

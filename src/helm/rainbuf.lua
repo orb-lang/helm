@@ -58,7 +58,73 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local lineGen = import("repr:repr", "lineGen")
+
+
+
+
+
+
 
 
 
@@ -76,12 +142,29 @@ local Rainbuf = meta {}
 
 
 
+
+
+
+
+
+
+
+
+
+
 local clear = assert(table.clear)
 function Rainbuf.clearCaches(rainbuf)
    rainbuf.reprs = nil
    rainbuf.r_num = nil
    clear(rainbuf.lines)
 end
+
+
+
+
+
+
+
 
 
 
@@ -119,6 +202,15 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
 local insert = assert(table.insert)
 function Rainbuf.composeOneLine(rainbuf)
    while true do
@@ -144,6 +236,14 @@ end
 
 
 
+
+
+
+
+
+
+
+
 function Rainbuf.composeUpTo(rainbuf, line_number)
    while rainbuf.more and #rainbuf.lines < line_number do
       rainbuf:composeOneLine()
@@ -157,12 +257,30 @@ end
 
 
 
+
+
+
+
+
+
+
 function Rainbuf.composeAll(rainbuf)
    while rainbuf.more do
       rainbuf:composeOneLine()
    end
    return rainbuf
 end
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -204,6 +322,11 @@ end
 
 
 
+
+
+
+
+
 local function new(res)
    if type(res) == "table" and res.idEst == Rainbuf then
       return res
@@ -227,3 +350,4 @@ end
 Rainbuf.idEst = new
 
 return new
+

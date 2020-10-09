@@ -6,6 +6,13 @@
 
 
 
+
+
+
+
+
+
+
 local Lex = require "helm:lex"
 local SelectionList = require "helm:selection_list"
 local Rainbuf = require "helm:rainbuf"
@@ -19,8 +26,22 @@ local c, no_color = import("singletons:color", "color", "no_color")
 
 
 
+
+
+
 local Suggest = meta {}
 local new
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -84,6 +105,13 @@ local function _cursorContext(modeS)
    end
    return context, path
 end
+
+
+
+
+
+
+
 
 
 
@@ -193,9 +221,19 @@ end
 
 
 
+
+
+
+
+
 function Suggest.selectedSuggestion(suggest)
    return suggest.active_suggestions and suggest.active_suggestions:selectedItem()
 end
+
+
+
+
+
 
 
 
@@ -205,6 +243,11 @@ function Suggest.cancel(suggest, modeS)
    suggest.active_suggestions = nil
    modeS.zones.suggest:replace("")
 end
+
+
+
+
+
 
 
 
@@ -223,6 +266,11 @@ end
 
 
 
+
+
+
+
+
 new = function()
    local suggest = meta(Suggest)
    return suggest
@@ -231,5 +279,9 @@ end
 
 
 
+
+
+
 Suggest.idEst = new
 return new
+

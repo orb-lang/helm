@@ -4,6 +4,12 @@
 
 
 
+
+
+
+
+
+
 local clone = import("core/table", "clone")
 local EditBase = require "helm/raga/edit"
 local Rainbuf = require "helm/rainbuf"
@@ -21,10 +27,22 @@ Search.prompt_char = "⁉️"
 
 
 
+
+
+
+
+
+
+
 function Search.onTxtbufChanged(modeS)
    local searchResult = modeS.hist:search(tostring(modeS.txtbuf))
    modeS:setResults(searchResult)
 end
+
+
+
+
+
 
 
 
@@ -46,6 +64,9 @@ end
 
 
 
+
+
+
 function Search.NAV.SHIFT_UP(modeS, category, value)
    local search_buf = modeS.hist.last_collection
    if not search_buf then return end
@@ -60,10 +81,24 @@ end
 
 
 
+
+
+
 function Search.NAV.ESC(modeS, category, value)
    modeS.shift_to = modeS.raga_default
    modeS:setResults("")
 end
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -89,6 +124,11 @@ end
 
 Search.NAV.BACKSPACE = _modeShiftOnDeleteWhenEmpty
 Search.NAV.DELETE    = _modeShiftOnDeleteWhenEmpty
+
+
+
+
+
 
 
 
@@ -127,6 +167,11 @@ end
 
 
 
+
+
+
+
+
 function Search.MOUSE(modeS, category, value)
    if value.scrolling then
       if value.button == "MB0" then
@@ -139,4 +184,8 @@ end
 
 
 
+
+
+
 return Search
+

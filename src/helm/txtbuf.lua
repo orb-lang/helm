@@ -66,6 +66,74 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 assert(meta)
 local Codepoints = require "singletons/codepoints"
 local lines = import("core/string", "lines")
@@ -81,7 +149,18 @@ local concat, insert, remove = assert(table.concat),
 
 
 
+
+
+
+
+
+
 local Txtbuf = meta {}
+
+
+
+
+
 
 
 
@@ -105,6 +184,9 @@ end
 
 
 
+
+
+
 function Txtbuf.__tostring(txtbuf)
    local closed_lines = {}
    for k, v in ipairs(txtbuf.lines) do
@@ -123,10 +205,36 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 function Txtbuf.currentPosition(txtbuf)
    local row, col = txtbuf.cursor:rowcol()
    return txtbuf.lines[row], col, row
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -176,6 +284,14 @@ end
 
 
 
+
+
+
+
+
+
+
+
 function Txtbuf.cursorIndex(txtbuf)
    local index = txtbuf.cursor.col
    for row = txtbuf.cursor.row - 1, 1, -1 do
@@ -192,9 +308,25 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
 function Txtbuf.beginSelection(txtbuf)
    txtbuf.mark = clone(txtbuf.cursor)
 end
+
+
+
+
+
+
+
 
 
 
@@ -219,6 +351,17 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 function Txtbuf.hasSelection(txtbuf)
    if not txtbuf.mark then return false end
    if txtbuf.mark.row == txtbuf.cursor.row
@@ -229,6 +372,17 @@ function Txtbuf.hasSelection(txtbuf)
       return true
    end
 end
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -270,6 +424,14 @@ end
 
 
 
+
+
+
+
+
+
+
+
 function Txtbuf.openRow(txtbuf, row_num)
    if row_num < 1 or row_num > #txtbuf.lines then
       return nil
@@ -286,11 +448,25 @@ end
 
 
 
+
+
+
+
+
 function Txtbuf.advance(txtbuf)
    txtbuf.lines[#txtbuf.lines + 1] = {}
    txtbuf.contents_changed = true
    txtbuf:setCursor(#txtbuf.lines, 1)
 end
+
+
+
+
+
+
+
+
+
 
 
 
@@ -348,6 +524,15 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
 function Txtbuf.paste(txtbuf, frag)
    frag = frag:gsub("\t", "   ")
    local frag_lines = collect(lines, frag)
@@ -361,6 +546,14 @@ function Txtbuf.paste(txtbuf, frag)
    end
    txtbuf.contents_changed = true
 end
+
+
+
+
+
+
+
+
 
 
 
@@ -406,6 +599,15 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
 local function _delete_for_motion(motionName)
    return function(txtbuf, ...)
       txtbuf:beginSelection()
@@ -423,6 +625,15 @@ for delete_name, motion_name in pairs({
 }) do
    Txtbuf[delete_name] = _delete_for_motion(motion_name)
 end
+
+
+
+
+
+
+
+
+
 
 
 
@@ -463,6 +674,16 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
 function Txtbuf.transposeLetter(txtbuf)
    local line, cur_col, cur_row = txtbuf:currentPosition()
    if cur_col == 1 then return false end
@@ -478,6 +699,16 @@ function Txtbuf.transposeLetter(txtbuf)
    txtbuf.contents_changed = true
    return true
 end
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -510,6 +741,12 @@ end
 
 
 
+
+
+
+
+
+
 function Txtbuf.right(txtbuf, disp)
    disp = disp or 1
    local line, new_col, new_row = txtbuf:currentPosition()
@@ -525,6 +762,11 @@ function Txtbuf.right(txtbuf, disp)
    txtbuf:setCursor(new_row, new_col)
    return true
 end
+
+
+
+
+
 
 
 
@@ -547,6 +789,13 @@ end
 
 
 
+
+
+
+
+
+
+
 function Txtbuf.startOfText(txtbuf)
    txtbuf:setCursor(1, 1)
 end
@@ -554,6 +803,29 @@ end
 function Txtbuf.endOfText(txtbuf)
    txtbuf:setCursor(#txtbuf.lines, #txtbuf.lines[#txtbuf.lines] + 1)
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -619,6 +891,14 @@ end
 
 
 
+
+
+
+
+
+
+
+
 function Txtbuf.leftToBoundary(txtbuf, pattern, reps)
    local line, cur_col, cur_row = txtbuf:currentPosition()
    local moved, colΔ, rowΔ = txtbuf:scanFor(pattern, reps, false)
@@ -649,6 +929,15 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
 function Txtbuf.firstNonWhitespace(txtbuf)
    local line = txtbuf.lines[txtbuf.cursor.row]
    local new_col = 1
@@ -661,6 +950,11 @@ function Txtbuf.firstNonWhitespace(txtbuf)
    end
    return false
 end
+
+
+
+
+
 
 
 
@@ -702,6 +996,27 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function Txtbuf.up(txtbuf)
    if not txtbuf:openRow(txtbuf.cursor.row - 1) then
       txtbuf:setCursor(nil, 1)
@@ -713,6 +1028,9 @@ end
 
 
 
+
+
+
 function Txtbuf.down(txtbuf)
    if not txtbuf:openRow(txtbuf.cursor.row + 1) then
       txtbuf:setCursor(nil, #txtbuf.lines[txtbuf.cursor.row] + 1)
@@ -721,6 +1039,14 @@ function Txtbuf.down(txtbuf)
    txtbuf:setCursor(txtbuf.cursor.row + 1, nil)
    return true
 end
+
+
+
+
+
+
+
+
 
 
 
@@ -748,6 +1074,14 @@ end
 
 
 
+
+
+
+
+
+
+
+
 function Txtbuf.shouldEvaluate(txtbuf)
    -- Most txtbufs are one line, so we always evaluate from
    -- a one-liner, regardless of cursor location.
@@ -767,12 +1101,20 @@ end
 
 
 
+
+
+
+
+
 function Txtbuf.suspend(txtbuf)
    for i, v in ipairs(txtbuf.lines) do
       txtbuf.lines[i] = cat(v)
    end
    return txtbuf
 end
+
+
+
 
 
 
@@ -783,11 +1125,20 @@ end
 
 
 
+
+
+
 function Txtbuf.clone(txtbuf)
    -- Clone to depth of 3 to get tb, tb.lines, and each lines
    local tb = clone(txtbuf, 3)
    return tb:resume()
 end
+
+
+
+
+
+
 
 
 
@@ -812,4 +1163,8 @@ Txtbuf.idEst = new
 
 
 
+
+
+
 return new
+

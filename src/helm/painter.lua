@@ -15,12 +15,39 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 assert(meta)
 assert(type)
 
 
 
+
+
+
 local Paint = meta {}
+
+
+
+
+
+
+
 
 
 
@@ -108,6 +135,22 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function Paint.inBox(painter, rainbuf, box)
    local tc, tr, bc, br = box[1], box[2], box[3], box[4]
    if type(rainbuf) == "string" then
@@ -119,6 +162,9 @@ end
 
 
 
+
+
+
 local function new(_stdout)
    local painter = meta(Paint)
    painter.out  = _stdout
@@ -127,4 +173,8 @@ end
 
 
 
+
+
+
 return new
+

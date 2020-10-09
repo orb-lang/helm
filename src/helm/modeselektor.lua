@@ -87,7 +87,106 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 assert(meta, "must have meta in _G")
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -123,7 +222,36 @@ local ts = repr.ts_color
 
 
 
+
+
+
 local ModeS = meta()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -158,11 +286,38 @@ ModeS.REPL_LINE = 2
 
 
 
+
+
+
+
+
+
+
 function ModeS.errPrint(modeS, log_stmt)
    modeS.zones.suggest:replace(log_stmt)
    modeS:paint()
    return modeS
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -236,6 +391,13 @@ end
 
 
 
+
+
+
+
+
+
+
 local Point = require "anterm:point"
 function ModeS.placeCursor(modeS)
    local point = modeS.zones.command.bounds:origin() + modeS.txtbuf.cursor - 1
@@ -258,10 +420,23 @@ end
 
 
 
+
+
+
+
+
+
+
 function ModeS.paint(modeS)
    modeS.zones:paint(modeS)
    return modeS
 end
+
+
+
+
+
+
 
 
 
@@ -273,6 +448,17 @@ function ModeS.reflow(modeS)
    modeS:paint()
    return modeS
 end
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -308,9 +494,39 @@ ModeS.raga_default = "nerf"
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function ModeS.continuationLines(modeS)
    return modeS.txtbuf and #modeS.txtbuf.lines - 1 or 0
 end
+
+
+
+
+
+
+
 
 
 
@@ -323,6 +539,26 @@ function ModeS.updatePrompt(modeS)
    modeS.zones.prompt:replace(prompt)
    return modeS
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -397,6 +633,30 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function ModeS.actOnce(modeS, category, value)
    local handled = modeS.raga(modeS, category, value)
    if modeS.shift_to then
@@ -413,6 +673,9 @@ function ModeS.actOnce(modeS, category, value)
    end
    return handled
 end
+
+
+
 
 
 
@@ -444,9 +707,23 @@ end
 
 
 
+
+
+
+
+
 function ModeS.__call(modeS, category, value)
    return modeS:act(category, value)
 end
+
+
+
+
+
+
+
+
+
 
 
 
@@ -481,6 +758,15 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
 function ModeS.setTxtbuf(modeS, txtbuf)
    modeS.txtbuf = txtbuf
    modeS.txtbuf.cursor_changed = true
@@ -494,7 +780,17 @@ end
 
 
 
+
+
+
+
+
+
+
 local evaluate = assert(valiant(_G, __G))
+
+
+
 
 
 
@@ -547,6 +843,15 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
 function ModeS.evalFromCursor(modeS)
    local top = modeS.hist.n
    local cursor = modeS.hist.cursor
@@ -555,6 +860,14 @@ function ModeS.evalFromCursor(modeS)
       modeS:eval()
    end
 end
+
+
+
+
+
+
+
+
 
 
 
@@ -626,11 +939,26 @@ end
 
 
 
+
+
+
+
+
+
+
 function ModeS.openHelp(modeS)
    local rb = Rainbuf{ ("abcde "):rep(1000), n = 1 }
    modeS.zones.popup:replace(rb)
    modeS.shift_to = "page"
 end
+
+
+
+
+
+
+
+
 
 
 
@@ -649,6 +977,13 @@ _stat_M.__repr = _status__repr
 function _stat_M.clear(status_table)
    return setmetatable({}, getmetatable(status_table))
 end
+
+
+
+
+
+
+
 
 
 
@@ -693,4 +1028,8 @@ ModeS.idEst = new
 
 
 
+
+
+
 return new
+

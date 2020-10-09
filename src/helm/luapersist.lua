@@ -41,6 +41,49 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 --[[ luapersist3.lua  2004-Aug-31 e
 
   The author disclaims copyright to this source code.  In place of
@@ -102,3 +145,4 @@
 
 -- nb: accidentally corrupted this file (fuck) and am not using it so,
 -- removed all source code -Sam
+

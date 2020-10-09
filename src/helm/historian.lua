@@ -13,6 +13,21 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local uv      = require "luv"
 local sql     = assert(sql, "sql must be in bridge _G")
 
@@ -34,10 +49,32 @@ local Set = require "set:set"
 
 
 
+
+
+
+
+
+
 local Historian = meta {}
 Historian.HISTORY_LIMIT = 2000
 Historian.helm_db_home = helm_db.helm_db_home
 Historian.project = uv.cwd()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -128,6 +165,17 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 function Historian.beginMacroSession(historian, session)
    -- this is incremented for each stored line
    session.premise_ordinal = 1
@@ -138,6 +186,22 @@ function Historian.beginMacroSession(historian, session)
    -- retrieve session id
    session.session_id = historian.stmts.lastRowId()
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -280,6 +344,36 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local SelectionList = require "helm/selection_list"
 local fuzz_patt = require "helm:helm/fuzz_patt"
 
@@ -324,6 +418,9 @@ end
 
 
 
+
+
+
 local db_result_M = assert(persist_tabulate.db_result_M)
 
 local function _resultsFrom(historian, cursor)
@@ -354,6 +451,12 @@ end
 
 
 
+
+
+
+
+
+
 function Historian.prev(historian)
    historian.cursor = clamp(historian.cursor - 1, 1)
    local txtbuf = historian[historian.cursor]
@@ -367,6 +470,16 @@ function Historian.prev(historian)
       return Txtbuf(), nil
    end
 end
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -398,6 +511,15 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
 function Historian.index(historian, cursor)
    assert(inbounds(cursor, 1, historian.n))
    local txtbuf = historian[cursor]:clone()
@@ -406,6 +528,16 @@ function Historian.index(historian, cursor)
    historian.cursor = cursor
    return txtbuf, result
 end
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -447,6 +579,22 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local __result_buffer_M = meta {}
 function __result_buffer_M.__repr(buf, window, c)
    return c.alert "cowardly refusing to print result_buffer to avoid infinite appending"
@@ -471,4 +619,8 @@ Historian.idEst = new
 
 
 
+
+
+
 return new
+

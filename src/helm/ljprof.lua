@@ -3,6 +3,11 @@
 
 
 
+
+
+
+
+
 ----------------------------------------------------------------------------
 -- LuaJIT profiler.
 --
@@ -313,5 +318,6 @@ return {
   start = start, -- For -j command line option.
   stop = prof_finish
 }
+
 
 

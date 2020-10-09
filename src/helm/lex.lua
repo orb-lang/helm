@@ -6,11 +6,25 @@
 
 
 
+
+
+
+
+
+
+
+
 local L = require "lpeg"
 local P, R, S, match = L.P, L.R, L.S, L.match
 local Lex = meta {}
 local sub, gsub = assert(string.sub), assert(string.gsub)
 local concat, insert = assert(table.concat), assert(table.insert)
+
+
+
+
+
+
 
 
 
@@ -109,6 +123,20 @@ local color_map = {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local function chomp_token(lb, start_pos)
    for _,v in ipairs(lua_toks) do
       local end_pos = match(v, lb, start_pos)
@@ -171,10 +199,21 @@ end
 
 
 
+
+
+
+
+
+
+
 function Lex.null(txtbuf)
    return { Token(tostring(txtbuf), { color = "no_color" }) }
 end
 
 
 
+
+
+
 return Lex
+

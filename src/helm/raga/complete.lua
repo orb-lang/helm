@@ -3,6 +3,11 @@
 
 
 
+
+
+
+
+
 local clone = import("core/table", "clone")
 local EditBase = require "helm/raga/edit"
 
@@ -10,6 +15,11 @@ local Complete = clone(EditBase, 2)
 
 Complete.name = "complete"
 Complete.prompt_char = "👉"
+
+
+
+
+
 
 
 
@@ -39,6 +49,9 @@ end
 
 
 
+
+
+
 local find = assert(string.find)
 local function _insert(modeS, category, value)
    -- Non-symbol character accepts the completion
@@ -53,6 +66,11 @@ end
 
 Complete.ASCII = _insert
 Complete.UTF8 = _insert
+
+
+
+
+
 
 
 
@@ -100,6 +118,11 @@ end
 
 
 
+
+
+
+
+
 function Complete.onCursorChanged(modeS)
    modeS.suggest:update(modeS)
    EditBase.onCursorChanged(modeS)
@@ -107,4 +130,8 @@ end
 
 
 
+
+
+
 return Complete
+

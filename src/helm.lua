@@ -12,6 +12,20 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 --[[
 profile = require("jit.profile")
 profiled = {}
@@ -23,9 +37,25 @@ end)
 
 
 
+
+
+
+assert(true)
 if rawget(_G, "_Bridge") then
    _Bridge.helm = true
 end
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -48,7 +78,21 @@ __G = setmetatable({}, {__index = _G})
 
 
 
+
+
+
+
+
+
+
+
+
 local function _helm(_ENV)
+
+
+
+
+
 
 
 
@@ -80,8 +124,34 @@ sql = assert(sql, "sql must be in _G")
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local deepclone = assert(core.deepclone)
 _G_back = deepclone(_G)
+
+
+
+
+
+
+
+
 
 
 
@@ -112,9 +182,17 @@ end
 
 
 
+
+
+
+
+
 local function write(...)
    uv.write(stdout, {...})
 end
+
+
+
 
 
 
@@ -134,6 +212,12 @@ end
 
 
 
+
+
+
+
+
+
 if uv.guess_handle(0) ~= "tty" or
    uv.guess_handle(1) ~= "tty" then
    -- Entry point for other consumers!
@@ -146,8 +230,19 @@ local stdin = uv.new_tty(0, true)
 
 
 
+
+
+
+
+
 a = require "anterm:anterm"
 --watch = require "watcher"
+
+
+
+
+
+
 
 
 
@@ -192,6 +287,18 @@ uv.timer_start(timer, 500, 500, function()
       modeS:reflow()
    end
 end)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -279,6 +386,9 @@ end
 
 
 
+
+
+
 -- Get names for as many values as possible
 -- into the colorizer
 -- Treat package names as existing in the global namespace
@@ -346,4 +456,10 @@ end -- of _helm
 
 
 
+
+
+
+
+
 return _helm
+

@@ -16,7 +16,28 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 assert(meta, "must have meta in _G")
+
+
+
 
 
 
@@ -36,12 +57,23 @@ local sub, gsub, rep = assert(string.sub),
 
 
 
+
+
+
+
+
+
 local clone    = import("core/table", "clone")
 local EditBase = require "helm:helm/raga/edit"
 
 local Nerf = clone(EditBase, 2)
 Nerf.name = "nerf"
 Nerf.prompt_char = "👉"
+
+
+
+
+
 
 
 
@@ -65,6 +97,11 @@ end
 
 Nerf.ASCII = _insert
 Nerf.UTF8 = _insert
+
+
+
+
+
 
 
 
@@ -119,6 +156,9 @@ function NAV.DOWN(modeS, category, value)
 
    return modeS
 end
+
+
+
 
 
 
@@ -186,12 +226,28 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
 local CTRL = Nerf.CTRL
 
 CTRL ["^B"] = NAV.LEFT
 CTRL ["^F"] = NAV.RIGHT
 CTRL ["^N"] = NAV.DOWN
 CTRL ["^P"] = NAV.UP
+
+
+
+
+
+
 
 
 
@@ -213,7 +269,19 @@ end
 
 
 
+
+
+
+
+
+
 local ALT = Nerf.ALT
+
+
+
+
+
+
 
 
 
@@ -231,6 +299,14 @@ end
 
 
 
+
+
+
+
+
+
+
+
 function Nerf.onCursorChanged(modeS)
    modeS.suggest:update(modeS)
    EditBase.onCursorChanged(modeS)
@@ -238,4 +314,8 @@ end
 
 
 
+
+
+
 return Nerf
+

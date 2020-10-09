@@ -6,12 +6,27 @@
 
 
 
+
+
+
+
+
+
+
+
 local a         = require "anterm:anterm"
 
 local concat         = assert(table.concat)
 local sub, gsub, rep = assert(string.sub),
                        assert(string.gsub),
                        assert(string.rep)
+
+
+
+
+
+
+
 
 
 
@@ -26,6 +41,23 @@ for _, cat in ipairs{"NAV", "CTRL", "ALT", "ASCII",
                      "UTF8", "PASTE", "MOUSE", "NYI"} do
    RagaBase[cat] = {}
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -69,9 +101,27 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
 function RagaBase.onTxtbufChanged(modeS)
    return
 end
+
+
+
+
+
+
+
+
+
 
 
 
@@ -92,9 +142,24 @@ end
 
 
 
+
+
+
+
+
+
+
+
 function RagaBase.onShift(modeS)
    return
 end
+
+
+
+
+
+
+
 
 
 
@@ -108,4 +173,8 @@ end
 
 
 
+
+
+
 return RagaBase
+

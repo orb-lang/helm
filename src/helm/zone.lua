@@ -67,6 +67,75 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local Txtbuf = require "helm/txtbuf"
 local Rainbuf = require "helm/rainbuf"
 local a = require "anterm:anterm"
@@ -75,8 +144,18 @@ local instanceof = import("core/meta", "instanceof")
 
 
 
+
+
+
 local Zone = meta {}
 local Zoneherd = meta {}
+
+
+
+
+
+
+
 
 
 
@@ -90,6 +169,14 @@ end
 function Zone.width(zone)
    return zone.bounds:width()
 end
+
+
+
+
+
+
+
+
 
 
 
@@ -114,10 +201,26 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
 function Zone.overlaps(zone, other_zone)
    -- The other zone may be uninitialized--treat this as nonoverlapping
    return other_zone.bounds and zone.bounds:intersects(other_zone.bounds)
 end
+
+
+
+
+
+
+
 
 
 
@@ -130,6 +233,26 @@ function Zone.replace(zone, contents)
    zone:beTouched()
    return zone
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -174,6 +297,13 @@ end
 
 
 
+
+
+
+
+
+
+
 function Zone.scrollBy(zone, delta, allow_overscroll)
    -- Need to check this here even though :scrollTo already does
    -- because we talk to the Rainbuf to figure out the new offset
@@ -182,6 +312,13 @@ function Zone.scrollBy(zone, delta, allow_overscroll)
    end
    return zone:scrollTo(zone.contents.offset + delta, allow_overscroll)
 end
+
+
+
+
+
+
+
 
 
 
@@ -220,6 +357,16 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
 function Zone.scrollToTop(zone)
    return zone:scrollTo(0)
 end
@@ -230,6 +377,14 @@ function Zone.scrollToBottom(zone, allow_overscroll)
    -- which scrollTo will clamp appropriately
    return zone:scrollTo(#zone.contents.lines, allow_overscroll)
 end
+
+
+
+
+
+
+
+
 
 
 
@@ -266,6 +421,11 @@ end
 
 
 
+
+
+
+
+
 function Zone.setVisibility(zone, new_visibility)
    if new_visibility ~= zone.visible then
       zone.visible = new_visibility
@@ -292,6 +452,18 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 function Zone.beTouched(zone)
    if zone.touched then return end
    zone.touched = true
@@ -303,6 +475,11 @@ function Zone.beTouched(zone)
       end
    end
 end
+
+
+
+
+
 
 
 
@@ -335,6 +512,14 @@ end
 
 
 
+
+
+
+
+
+
+
+
 local function _renderRainbuf(write, zone)
    if not zone.contents then
       return nil
@@ -346,6 +531,11 @@ local function _renderRainbuf(write, zone)
       write(nl)
    end
 end
+
+
+
+
+
 
 
 
@@ -379,6 +569,14 @@ end
 
 
 
+
+
+
+
+
+
+
+
 local box = require "anterm/box"
 function Zone.paintBorder(zone, write)
    if zone.border then
@@ -390,9 +588,19 @@ end
 
 
 
+
+
+
+
+
 function Zone.erase(zone, write)
    write(a.erase.box(zone.bounds))
 end
+
+
+
+
+
 
 
 
@@ -415,6 +623,16 @@ function Zone.paint(zone, write)
    end
    zone.touched = false
 end
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -453,6 +671,15 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
 local function newZone(name, z, debug_mark)
    local zone = meta(Zone)
    zone.name = name
@@ -472,6 +699,11 @@ end
 
 
 
+
+
+
+
+
 local function _zoneOffset(modeS)
    if modeS.max_col <= 80 then
       return 20
@@ -483,6 +715,11 @@ local function _zoneOffset(modeS)
       return 50
    end
 end
+
+
+
+
+
 
 
 
@@ -529,6 +766,15 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
 function Zoneherd.paint(zoneherd, modeS)
    local write = zoneherd.write
    write(a.cursor.hide(), a.clear())
@@ -539,6 +785,15 @@ function Zoneherd.paint(zoneherd, modeS)
    write(a.cursor.show())
    return zoneherd
 end
+
+
+
+
+
+
+
+
+
 
 
 
@@ -569,4 +824,8 @@ end
 
 
 
+
+
+
 return new
+

@@ -44,6 +44,52 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local ffi = require "ffi"
 local bit = require "bit"
 local reflect = {}
@@ -386,3 +432,4 @@ function reflect.getmetatable(x) -- mt = reflect.getmetatable(ct)
 end
 
 return reflect
+

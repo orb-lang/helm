@@ -4,13 +4,31 @@
 
 
 
+
+
+
+
+
+
 local addall, clone = import("core/table", "addall", "clone")
 local RagaBase = require "helm:helm/raga/base"
 local Txtbuf = require "helm/txtbuf"
 
 
 
+
+
+
 local EditBase = clone(RagaBase, 2)
+
+
+
+
+
+
+
+
+
 
 
 
@@ -25,6 +43,11 @@ local function toTxtbuf(fn)
       return modeS.txtbuf[fn](modeS.txtbuf)
    end
 end
+
+
+
+
+
 
 
 
@@ -54,6 +77,12 @@ end
 
 
 
+
+
+
+
+
+
 local NAV = EditBase.NAV
 addall(NAV, {
    LEFT           = toTxtbuf "left",
@@ -67,6 +96,12 @@ addall(NAV, {
    ALT_BACKSPACE  = toTxtbuf "killToBeginningOfWord",
    ALT_DELETE     = toTxtbuf "killToEndOfWord",
 })
+
+
+
+
+
+
 
 
 
@@ -100,6 +135,12 @@ CTRL ["^T"] = toTxtbuf "transposeLetter"
 
 
 
+
+
+
+
+
+
 addall(EditBase.ALT, {
    ["M-w"] = NAV.ALT_RIGHT,
    ["M-b"] = NAV.ALT_LEFT,
@@ -108,4 +149,8 @@ addall(EditBase.ALT, {
 
 
 
+
+
+
 return EditBase
+

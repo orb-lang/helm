@@ -19,8 +19,38 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local SelectionList = meta {}
 local new
+
+
+
+
+
+
+
+
+
 
 
 
@@ -55,6 +85,14 @@ end
 
 
 
+
+
+
+
+
+
+
+
 function SelectionList.selectNextWrap(list)
    list.selected_index = list.selected_index < #list
       and list.selected_index + 1
@@ -73,9 +111,26 @@ end
 
 
 
+
+
+
+
+
+
+
 function SelectionList.selectedItem(list)
    return list[list.selected_index]
 end
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -164,6 +219,11 @@ end
 
 
 
+
+
+
+
+
 new = function()
    local list = meta(SelectionList)
    list.selected_index = 0
@@ -173,5 +233,9 @@ end
 
 
 
+
+
+
 SelectionList.idEst = new
 return new
+

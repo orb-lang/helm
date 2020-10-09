@@ -8,6 +8,16 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
 local uv  = require "luv"
 local sql = assert(sql, "sql must be in bridge _G")
 
@@ -16,7 +26,19 @@ local sql = assert(sql, "sql must be in bridge _G")
 
 
 
+
+
+
+
+
+
 local helm_db = {}
+
+
+
+
+
+
 
 
 
@@ -34,7 +56,26 @@ helm_db.helm_db_home = helm_db_home
 
 
 
+
+
+
+
+
+
+
+
 local _conns = setmetatable({}, { __mode = 'v' })
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -56,6 +97,15 @@ local function _resolveConn(conn)
    end
    return nil
 end
+
+
+
+
+
+
+
+
+
 
 
 
@@ -89,7 +139,21 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 local create_project_table = [[
+
 CREATE TABLE IF NOT EXISTS project (
    project_id INTEGER PRIMARY KEY AUTOINCREMENT,
    directory TEXT UNIQUE,
@@ -97,7 +161,10 @@ CREATE TABLE IF NOT EXISTS project (
 );
 ]]
 
+
+
 local create_project_table_3 = [[
+
 CREATE TABLE IF NOT EXISTS project_3 (
    project_id INTEGER PRIMARY KEY AUTOINCREMENT,
    directory TEXT UNIQUE,
@@ -105,7 +172,10 @@ CREATE TABLE IF NOT EXISTS project_3 (
 );
 ]]
 
+
+
 local create_repl_table = [[
+
 CREATE TABLE IF NOT EXISTS repl (
    line_id INTEGER PRIMARY KEY AUTOINCREMENT,
    project INTEGER,
@@ -117,7 +187,10 @@ CREATE TABLE IF NOT EXISTS repl (
 );
 ]]
 
+
+
 local create_repl_table_3 = [[
+
 CREATE TABLE IF NOT EXISTS repl_3 (
    line_id INTEGER PRIMARY KEY AUTOINCREMENT,
    project INTEGER,
@@ -129,7 +202,10 @@ CREATE TABLE IF NOT EXISTS repl_3 (
 );
 ]]
 
+
+
 local create_result_table = [[
+
 CREATE TABLE IF NOT EXISTS result (
    result_id INTEGER PRIMARY KEY AUTOINCREMENT,
    line_id INTEGER,
@@ -141,7 +217,10 @@ CREATE TABLE IF NOT EXISTS result (
 );
 ]]
 
+
+
 local create_session_table = [[
+
 CREATE TABLE IF NOT EXISTS session (
 session_id INTEGER PRIMARY KEY AUTOINCREMENT,
 name TEXT,
@@ -156,7 +235,10 @@ FOREIGN KEY (project)
    ON DELETE CASCADE );
 ]]
 
+
+
 local create_session_table_4 = [[
+
 CREATE TABLE IF NOT EXISTS session (
    session_id INTEGER PRIMARY KEY,
    title TEXT,
@@ -169,7 +251,10 @@ CREATE TABLE IF NOT EXISTS session (
 );
 ]]
 
+
+
 local create_premise_table = [[
+
 CREATE TABLE IF NOT EXISTS premise (
    session INTEGER NOT NULL,
    line INTEGER NOT NULL,
@@ -208,10 +293,37 @@ CREATE TABLE IF NOT EXISTS premise (
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 helm_db.HELM_DB_VERSION = 3
 
 local migrations = {function() return true end}
 helm_db.migrations = migrations
+
+
+
+
+
+
 
 
 
@@ -241,56 +353,102 @@ insert(migrations, migration_2)
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 local migration_3 = {}
 
 
+
+
 migration_3[1] = [[
+
 UPDATE project
 SET time = strftime('%Y-%m-%dT%H:%M:%f', time);
 ]]
 
 
+
+
+
 migration_3[2] = create_project_table_3
 
 
+
+
 migration_3[3] = [[
+
 INSERT INTO project_3 (project_id, directory, time)
 SELECT project_id, directory, time
 FROM project;
 ]]
 
+
+
 migration_3[4] = [[
+
 DROP TABLE project;
 ]]
 
+
+
 migration_3[5] = [[
+
 ALTER TABLE project_3
 RENAME TO project;
 ]]
 
+
+
 migration_3[6] = [[
+
 UPDATE repl
 SET time = strftime('%Y-%m-%dT%H:%M:%f', time);
 ]]
 
 
+
+
+
 migration_3[7] = create_repl_table_3
 
 
+
+
 migration_3[8] = [[
+
 INSERT INTO repl_3 (line_id, project, line, time)
 SELECT line_id, project, line, time
 FROM repl;
 ]]
 
+
+
 migration_3[8] = [[
+
 DROP TABLE repl;
 ]]
 
+
+
 migration_3[9] = [[
+
 ALTER TABLE repl_3
 RENAME to repl;
 ]]
+
+
+
 
 
 insert(migrations, migration_3)
@@ -321,18 +479,111 @@ insert(migrations, migration_3)
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local migration_4 = {}
 
 
+
+
 migration_4[1] = [[
+
 DROP TABLE session;
 ]]
+
+
+
 
 
 insert(migration_4, create_session_table_4)
 insert(migration_4, create_premise_table)
 
 insert(migrations, migration_4)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -426,6 +677,18 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 local historian_sql = {}
 helm_db.historian_sql = historian_sql
 
@@ -433,23 +696,41 @@ helm_db.historian_sql = historian_sql
 
 
 
+
+
+
+
+
 historian_sql.insert_line = [[
+
 INSERT INTO repl (project, line) VALUES (:project, :line);
 ]]
 
+
+
 historian_sql.insert_result = [[
+
 INSERT INTO result (line_id, repr) VALUES (:line_id, :repr);
 ]]
 
+
+
 historian_sql.insert_project = [[
+
 INSERT INTO project (directory) VALUES (?);
 ]]
 
+
+
 historian_sql.insert_session = [[
+
 INSERT INTO session (title, project, accepted) VALUES (?, ?, ?);
 ]]
 
+
+
 historian_sql.insert_premise = [[
+
 INSERT INTO
    premise (session, line, ordinal, title, status)
 VALUES
@@ -459,30 +740,55 @@ VALUES
 
 
 
+
+
+
+
+
 historian_sql.get_recent = [[
+
 SELECT CAST (line_id AS REAL), line FROM repl
    WHERE project = :project
    ORDER BY line_id DESC
    LIMIT :num_lines;
 ]]
 
+
+
 historian_sql.get_number_of_lines = [[
+
 SELECT CAST (count(line) AS REAL) from repl
    WHERE project = ?
 ;
 ]]
 
+
+
 historian_sql.get_project = [[
+
 SELECT project_id FROM project
    WHERE directory = ?;
 ]]
 
+
+
 historian_sql.get_results = [[
+
 SELECT result.repr
 FROM result
 WHERE result.line_id = :line_id
 ORDER BY result.result_id;
 ]]
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -525,12 +831,29 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 local session_sql = {}
 
 
 
 
+
+
+
+
 session_sql.get_session_by_id = [[
+
 SELECT
    session.title AS session_title,
    premise.ordinal,
@@ -550,18 +873,30 @@ ORDER BY premise.ordinal
 
 
 
+
+
+
+
+
 session_sql.get_results = [[
+
 SELECT result.repr
 FROM result
 WHERE result.line_id = ?
 ORDER BY result.result_id;
 ]]
 
+
+
 session_sql.get_project_by_dir = [[
+
 SELECT project_id FROM project WHERE directory = ?;
 ]]
 
+
+
 session_sql.get_accepted_by_dir = [[
+
 SELECT title FROM session
 INNER JOIN
    project ON session.project = project.project_id
@@ -577,11 +912,20 @@ ORDER BY
 
 
 
+
+
+
+
+
 local session_get_project_info = [[
+
 SELECT project_id, directory from project;
 ]]
 
+
+
 session_sql.get_sessions_from_project = [[
+
 SELECT
    session_id,
    CAST(accepted AS REAL) As accepted
@@ -594,12 +938,18 @@ ORDER BY
 ;
 ]]
 
+
+
 session_sql.get_sessions_by_project = [[
+
 SELECT session_id FROM session
 WHERE project = ?
 ORDER BY session_id
 ;
 ]]
+
+
+
 
 
 function helm_db.session(conn_handle)
@@ -611,6 +961,17 @@ function helm_db.session(conn_handle)
           end)
    return stmts
 end
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -637,6 +998,14 @@ function helm_db.boot(conn_handle)
 
    return conn
 end
+
+
+
+
+
+
+
+
 
 
 
@@ -677,10 +1046,28 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
 function helm_db.conn(conn_handle)
    conn_handle = conn_handle or helm_db_home
    return _conns[conn_handle]
 end
+
+
+
+
+
+
+
+
 
 
 
@@ -696,4 +1083,9 @@ setmetatable(helm_db, { __newindex = function()
 
 
 
+
+
+
+
 return helm_db
+

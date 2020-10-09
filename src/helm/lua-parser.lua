@@ -14,6 +14,22 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local Peg  = require "espalier:espalier/peg"
 local Node = require "espalier:espalier/node"
 
@@ -21,7 +37,13 @@ local Node = require "espalier:espalier/node"
 
 
 
+
+
+
+
+
 local lua_str = [[
+
 lua = shebang* _ chunk _ Error*
 shebang = "#" (!"\n" 1)* "\n"
 chunk = _ (statement _ ";"?)* (_ laststatement _ ";"?)?
@@ -135,6 +157,13 @@ keyword = ("and" / "break" / "do" / "else" / "elseif"
 
 
 
+
+
+
+
+
+
+
 local Lua = Node : inherit "lua"
 
 function Lua.__tostring(lua)
@@ -145,4 +174,8 @@ local lua_metas = { lua = Lua }
 
 
 
+
+
+
 return Peg(lua_str) : toGrammar(lua_metas)
+
