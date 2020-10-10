@@ -36,82 +36,10 @@ local Set = require "set:set"
 
 local Historian = meta {}
 Historian.HISTORY_LIMIT = 2000
-local helm_home = os.getenv 'HELM_HOME'
-Historian.helm_db_home = helm_home
-                         or _Bridge.bridge_home .. "/helm/helm.sqlite"
+Historian.helm_db_home = helm_db.helm_db_home
 Historian.project = uv.cwd()
 
 
-
-
-
-
-
-
-
-
-
-
-local insert_line = [[
-INSERT INTO repl (project, line) VALUES (:project, :line);
-]]
-
-local insert_result = [[
-INSERT INTO result (line_id, repr) VALUES (:line_id, :repr);
-]]
-
-local insert_project = [[
-INSERT INTO project (directory) VALUES (?);
-]]
-
-local insert_session = [[
-INSERT INTO session (title, project, accepted) VALUES (?, ?, ?);
-]]
-
-local insert_premise = [[
-INSERT INTO
-   premise (session, line, ordinal, title, status)
-VALUES
-   (?, ?, ?, ?, ?);
-]]
-
-
-
-
-local get_recent = [[
-SELECT CAST (line_id AS REAL), line FROM repl
-   WHERE project = :project
-   ORDER BY line_id DESC
-   LIMIT :num_lines;
-]]
-
-local get_number_of_lines = [[
-SELECT CAST (count(line) AS REAL) from repl
-   WHERE project = ?
-;
-]]
-
-local get_project = [[
-SELECT project_id FROM project
-   WHERE directory = %s;
-]]
-
-local get_results = [[
-SELECT result.repr
-FROM result
-WHERE result.line_id = :line_id
-ORDER BY result.result_id;
-]]
-
-
-local function has(table, name)
-   for _,v in ipairs(table) do
-      if name == v then
-         return true
-      end
-   end
-   return false
-end
 
 
 
@@ -129,25 +57,22 @@ end
 local clamp, inbounds = import("core:core/math", "clamp", "inbounds")
 local assertfmt = import("core:core/string", "assertfmt")
 local format = assert(string.format)
-local boot = assert(helm_db.boot)
 
 function Historian.load(historian)
-   local conn = sql.open(historian.helm_db_home, "rwc")
-   historian.conn = conn
-   -- if necessary, create or migrate the database
-   boot(conn)
+   local stmts = helm_db.historian()
+   historian.stmts = stmts
    -- Retrieve project id
-   local proj_val, proj_row = sql.pexec(conn,
-                                  sql.format(get_project, historian.project),
-                                  "i")
+   local proj_val, proj_row = stmts.get_project
+                                      : bind(historian.project)
+                                      : resultset 'i'
    if not proj_val then
-      local ins_proj_stmt = conn:prepare(insert_project)
-      ins_proj_stmt : bind(historian.project)
-      proj_val, proj_row = ins_proj_stmt:step()
+      proj_val, proj_row = stmts.insert_project
+                             : bind(historian.project)
+                             : step()
       -- retry
-      proj_val, proj_row = sql.pexec(conn,
-                              sql.format(get_project, historian.project),
-                              "i")
+      proj_val, proj_row = stmts.get_project
+                                      : bind(historian.project)
+                                      : resultset 'i'
       if not proj_val then
          error "Could not create project in .bridge"
       end
@@ -155,18 +80,19 @@ function Historian.load(historian)
    local project_id = proj_val[1][1]
    historian.project_id = project_id
    -- Create insert prepared statements
-   historian.insert_line = conn:prepare(insert_line)
-   historian.insert_result = conn:prepare(insert_result)
+   historian.insert_line = stmts.insert_line
+   historian.insert_result = stmts.insert_result
+   historian.insert_premise = stmts.insert_premise
    -- Create result retrieval prepared statement
-   historian.get_results = conn:prepare(get_results)
+   historian.get_results = stmts.get_results
    -- Retrieve history
-   local number_of_lines = conn:prepare(get_number_of_lines)
+   local number_of_lines = stmts.get_number_of_lines
                              :bind(project_id):step()[1]
    if number_of_lines == 0 then
       return nil
    end
    number_of_lines = clamp(number_of_lines, nil, historian.HISTORY_LIMIT)
-   local pop_stmt = conn:prepare(get_recent)
+   local pop_stmt = stmts.get_recent
                       : bindkv { project = project_id,
                                  num_lines = number_of_lines }
    historian.cursor = number_of_lines + 1
@@ -263,7 +189,7 @@ function Historian.persist(historian, txtbuf, results, session)
       -- A blank line can have no results and is uninteresting.
       return false
    end
-   historian.conn:exec("SAVEPOINT save_persist")
+   historian.stmts.savepoint_persist()
    historian.insert_line:bindkv { project = historian.project_id,
                                        line    = sql.blob(lb) }
    local err = historian.insert_line:step()
@@ -272,24 +198,25 @@ function Historian.persist(historian, txtbuf, results, session)
    else
       error(err)
    end
-   local line_id = sql.lastRowId(historian.conn)
+   local line_id = historian.stmts.lastRowId()
    insert(historian.line_ids, line_id)
    -- if it's a macro session, add the premise now
    if session and session.macro_mode then
       local status = have_results and 'accept' or 'ignore'
-      historian.conn:prepare(insert_premise)
+      historian.insert_premise
          : bind(session.session_id,
                 line_id,
                 session.premise_ordinal,
                 '',
                 status)
          : step()
+         : reset()
       session.premise_ordinal = session.premise_ordinal + 1
    end
    -- If there's nothing to persist, release our savepoint
    -- and don't bother starting the idler
    if not have_results then
-      historian.conn:exec("RELEASE save_persist")
+      historian.stmts.release_persist()
       return true
    end
 
@@ -318,7 +245,7 @@ function Historian.persist(historian, txtbuf, results, session)
             error(err)
          end
       end
-      historian.conn:exec("RELEASE save_persist")
+      historian.stmts.release_persist()
       persist_idler:stop()
       assert(historian.idlers:remove(persist_idler) == true)
    end)
@@ -505,6 +432,12 @@ function Historian.append(historian, txtbuf, results, success, session)
    end
    return true
 end
+
+
+
+
+
+
 
 
 

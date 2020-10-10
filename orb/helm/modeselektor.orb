@@ -592,7 +592,7 @@ function ModeS.restart(modeS)
    local session_count = hist.cursor - hist.cursor_start
    hist.cursor = hist.cursor_start
    hist.n  = hist.n - session_count
-   hist.conn:exec "SAVEPOINT restart_session;"
+   hist.stmts.savepoint_restart_session()
    for i = modeS.hist.cursor_start, top do
       local _, results = modeS:__eval(tostring(hist[i]), true)
       if results ~= 'advance' then
@@ -614,7 +614,7 @@ function ModeS.restart(modeS)
       if #hist.idlers > 0 then
          return nil
       end
-      hist.conn:exec "RELEASE restart_session;"
+      hist.stmts.release_restart_session()
       restart_idle:stop()
    end)
    return modeS
