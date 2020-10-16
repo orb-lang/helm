@@ -119,17 +119,21 @@ local function chomp_token(lb, start_pos)
    return nil
 end
 
-local Token = require "repr:repr/token"
-local inbounds = import("core/math", "inbounds")
-local Txtbuf = require "helm:helm/txtbuf"
+local Token = require "repr:token"
+local inbounds = assert(require "core:math" . inbounds)
+local instanceof = assert(require "core:meta" . instanceof)
+local Txtbuf = require "helm:txtbuf"
 
-function Lex.lua_thor(txtbuf)
+function Lex.lua_thor(code, cursor_index)
    local toks = {}
-   if type(txtbuf) == 'string' then
-      txtbuf = Txtbuf(txtbuf)
+   if not cursor_index then
+      if instanceof(code, Txtbuf) then
+         cursor_index = code:cursorIndex()
+      else
+         cursor_index = 0
+      end
    end
-   local lb = tostring(txtbuf)
-   local cursor_index = txtbuf:cursorIndex()
+   local lb = tostring(code)
    local fixup_cursor = false
    local pos = 1
    while pos <= #lb do
