@@ -351,7 +351,6 @@ end
 function Txtbuf.paste(txtbuf, frag)
    frag = frag:gsub("\t", "   ")
    local frag_lines = collect(lines, frag)
-   local num_lines_before = #txtbuf.lines
    for i, frag_line in ipairs(frag_lines) do
       if i > 1 then txtbuf:nl() end
       local codes = Codepoints(frag_line)
@@ -494,7 +493,7 @@ function Txtbuf.left(txtbuf, disp)
    local line, new_col, new_row = txtbuf:currentPosition()
    new_col = new_col - disp
    while new_col < 1 do
-      _, new_row = txtbuf:openRow(new_row - 1)
+      line, new_row = txtbuf:openRow(new_row - 1)
       if not new_row then
          txtbuf:setCursor(nil, 1)
          return false
@@ -520,7 +519,8 @@ function Txtbuf.right(txtbuf, disp)
          txtbuf:setCursor(nil, #line + 1)
          return false
       end
-      new_col = new_col - (#txtbuf.lines[new_row - 1] + 1)
+      new_col = new_col - #line - 1
+      line = txtbuf.lines[new_row]
    end
    txtbuf:setCursor(new_row, new_col)
    return true
