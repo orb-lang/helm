@@ -9,7 +9,7 @@ local EditBase = require "helm/raga/edit"
 local Complete = clone(EditBase, 2)
 
 Complete.name = "complete"
-Complete.prompt_char = "👉"
+Complete.prompt_char = "💬"
 ```
 
 ## Inserts
