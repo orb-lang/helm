@@ -273,6 +273,7 @@ harmless to suggest the alternative\.
 Returns a `collection`\. The array portion of a collection is any line
 which matches the search\. The other fields are:
 
+
 - \#fields
   -  best :  Whether this is a best\-fit collection, that is, one with all
       codepoints in order\.

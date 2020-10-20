@@ -18,8 +18,10 @@ A closed line is just a string\.
 
 ### Instance fields
 
+
 -  lines :  An array of strings \(closed lines\), or arrays containing codepoints
     \(string fragments\) \(open lines\)\.
+
 
 -  cursor :  A <Point> representing the cursor position:
    - row : Row containing the cursor\. Valid values are 1 to \#lines\.
@@ -29,6 +31,7 @@ A closed line is just a string\.
    These fields shouldn't be written to, use `txtbuf:setCursor()` which will
    check bounds\.  They may be retrieved, along with the line, with
    `txtbuf:currentPosition()`\.
+
 
 -  mark :  A structure like `cursor`, representing the fixed end of a region,
     with the `cursor` field being the mobile end\. Note that `cursor` may
@@ -40,8 +43,10 @@ A closed line is just a string\.
     combined into a "region" structure, of which there may eventually be
     multiple instances, during for instance search and replace\.
 
+
 -  cursor\_changed:   A flag indicating whether the cursor has changed since
     the flag was last reset\.
+
 -  contents\_changed: Similar flag for whether the actual contents of the
     buffer have changed\.
 
@@ -58,6 +63,7 @@ cleaner that transition can be\.
 
 
 #### Instance fields to be added
+
 
 - disp :  Array of numbers, representing the furthest\-right column which
     may be reached by printing the corresponding row\. Not equivalent
@@ -364,9 +370,9 @@ end
 
 ### Txtbuf:killSelection\(\)
 
-Deletes the selected text, if any\. Returns whether anything was deleted
-\(i\.e\. whether anything was initially selected\)\.
+Deletes the selected text, if any\. Returns whether anything was deletedi\.e\. whether anything was initially selected\)\.
 
+\(
 ```lua
 local deleterange = import("core/table", "deleterange")
 function Txtbuf.killSelection(txtbuf)
@@ -566,6 +572,7 @@ when moving left, "between" a non\-matching character
 and a matching one\.
 
 Returns move, the cursor delta, and the row delta\.
+
 
 - \#parameters
 
