@@ -21,7 +21,7 @@ local Rainbuf = require "helm/rainbuf"
 local C       = require "singletons/color"
 local repr    = require "repr:repr"
 local persist_tabulate = require "repr:repr/persist-tabulate"
-local helm_db = require "helm:helm/helm-db"
+local helm_db = require "helm:helm-db"
 
 local concat, insert = assert(table.concat), assert(table.insert)
 local reverse = require "core/table" . reverse
@@ -43,6 +43,21 @@ Historian.project = uv.cwd()
 
 
 
+function Historian.createPreparedStatements(historian, helm_db_home)
+   if helm_db_home then
+      historian.helm_db_home = helm_db_home
+   end
+   local stmts = helm_db.historian(historian.helm_db_home)
+   historian.stmts = stmts
+   historian.insert_line = stmts.insert_line
+   historian.insert_result = stmts.insert_result
+   historian.insert_premise = stmts.insert_premise
+   historian.get_results = stmts.get_results
+end
+
+
+
+
 
 
 
@@ -59,8 +74,7 @@ local assertfmt = import("core:core/string", "assertfmt")
 local format = assert(string.format)
 
 function Historian.load(historian)
-   local stmts = helm_db.historian()
-   historian.stmts = stmts
+   local stmts = historian.stmts
    -- Retrieve project id
    local proj_val, proj_row = stmts.get_project
                                       : bind(historian.project)
@@ -79,12 +93,6 @@ function Historian.load(historian)
    end
    local project_id = proj_val[1][1]
    historian.project_id = project_id
-   -- Create insert prepared statements
-   historian.insert_line = stmts.insert_line
-   historian.insert_result = stmts.insert_result
-   historian.insert_premise = stmts.insert_premise
-   -- Create result retrieval prepared statement
-   historian.get_results = stmts.get_results
    -- Retrieve history
    local number_of_lines = stmts.get_number_of_lines
                              :bind(project_id):step()[1]
@@ -132,12 +140,11 @@ function Historian.beginMacroSession(historian, session)
    -- this is incremented for each stored line
    session.premise_ordinal = 1
    -- insert session into DB
-   historian.conn
-      : prepare(insert_session)
+   historian.stmts.insert_session
       : bind(session.session_title, historian.project_id, 1)
       : step()
    -- retrieve session id
-   session.session_id = sql.lastRowId(historian.conn)
+   session.session_id = historian.stmts.lastRowId()
 end
 
 
@@ -451,9 +458,7 @@ end
 
 local function new(helm_db)
    local historian = meta(Historian)
-   if helm_db then
-      historian.helm_db_home = helm_db
-   end
+   historian:createPreparedStatements(helm_db)
    historian.line_ids = {}
    historian.cursor = 0
    historian.cursor_start = 0
