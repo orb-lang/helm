@@ -533,13 +533,6 @@ local insert = assert(table.insert)
 local keys = assert(core.keys)
 
 function ModeS.__eval(modeS, chunk, headless)
-   if not modeS.original_packages then
-      -- we cache the package.loaded packages here, to preserve
-      -- everything loaded by helm and modeselektor, while letting
-      -- us hot-reload anything "require"d at the repl.
-      modeS.original_packages = Set(keys(package.loaded))
-   end
-
    if not headless then
       -- Getting ready to eval, cancel any active autocompletion
       modeS.suggest:cancel(modeS)
@@ -606,11 +599,7 @@ end
 
 
 
-
-local deepclone = assert(core.deepclone)
-
-function ModeS.restart(modeS)
-   modeS:setStatusLine("restart")
+function ModeS.resetEnvironment(modeS)
    -- we might want to do this again, so:
    local _G_backback = deepclone(_G_back)
    -- package has to be handled separately because it's in the registry
@@ -629,6 +618,17 @@ function ModeS.restart(modeS)
    for pack in pairs(new_packages) do
       package.loaded[pack] = nil
    end
+end
+
+
+
+
+
+
+
+
+function ModeS.restart(modeS)
+   modeS:setStatusLine("restart")
    -- perform rerun
    -- Replace results:
    local hist = modeS.hist
@@ -728,8 +728,20 @@ end
 
 
 
+
+
+
+
+
+
+
+
+local deepclone = assert(core.deepclone)
 local function new(max_extent, writer, db)
    local modeS = meta(ModeS)
+   modeS._G_back = deepclone(_G)
+   modeS.original_packages = Set(keys(package.loaded))
+
    modeS.txtbuf = Txtbuf()
    modeS.hist  = Historian(db)
    modeS.suggest = Suggest()

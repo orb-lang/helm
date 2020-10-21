@@ -533,13 +533,6 @@ local insert = assert(table.insert)
 local keys = assert(core.keys)
 
 function ModeS.__eval(modeS, chunk, headless)
-   if not modeS.original_packages then
-      -- we cache the package.loaded packages here, to preserve
-      -- everything loaded by helm and modeselektor, while letting
-      -- us hot-reload anything "require"d at the repl.
-      modeS.original_packages = Set(keys(package.loaded))
-   end
-
    if not headless then
       -- Getting ready to eval, cancel any active autocompletion
       modeS.suggest:cancel(modeS)
@@ -601,16 +594,12 @@ function ModeS.quit(modeS)
 end
 #/lua
 
+*** ModeS:resetEnvironment()
 
-*** ModeS:restart()
-
-This resets =_G= and runs all commands in the current session.
+Resets the global environment to the state it was in when =helm= was started.
 
 #!lua
-local deepclone = assert(core.deepclone)
-
-function ModeS.restart(modeS)
-   modeS:setStatusLine("restart")
+function ModeS.resetEnvironment(modeS)
    -- we might want to do this again, so:
    local _G_backback = deepclone(_G_back)
    -- package has to be handled separately because it's in the registry
@@ -629,6 +618,17 @@ function ModeS.restart(modeS)
    for pack in pairs(new_packages) do
       package.loaded[pack] = nil
    end
+end
+#/lua
+
+*** ModeS:restart()
+
+This resets =_G= and runs all commands in the current session.
+
+#!lua
+
+function ModeS.restart(modeS)
+   modeS:setStatusLine("restart")
    -- perform rerun
    -- Replace results:
    local hist = modeS.hist
@@ -726,10 +726,22 @@ end
 
 ** new
 
+Start by making a snapshot of _G and package.loaded. We use this for reloading;
+since all userspace is stored in _G, this allows us to drop all data held
+in a session, while keeping our own state separate.
+
+#NB it turns out the runtime keeps a separate reference to =package.loaded=
+in the registry, and uses that for access within =require=, so we must
+separately keep track of what packages were loaded so we can nil out any
+"extras" when we restart.
 
 #!lua
+local deepclone = assert(core.deepclone)
 local function new(max_extent, writer, db)
    local modeS = meta(ModeS)
+   modeS._G_back = deepclone(_G)
+   modeS.original_packages = Set(keys(package.loaded))
+
    modeS.txtbuf = Txtbuf()
    modeS.hist  = Historian(db)
    modeS.suggest = Suggest()
