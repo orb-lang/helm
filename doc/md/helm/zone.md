@@ -503,9 +503,9 @@ function Zoneherd.reflow(zoneherd, modeS)
    zoneherd.prompt:setBounds(  modeS.repl_top,
                                1,
                                modeS.repl_top + txt_off,
-                               modeS.l_margin - 1 )
+                               modeS.PROMPT_WIDTH )
    zoneherd.command:setBounds( modeS.repl_top,
-                               modeS.l_margin,
+                               modeS.PROMPT_WIDTH + 1,
                                modeS.repl_top + txt_off,
                                right_col )
    zoneherd.results:setBounds( modeS.repl_top + txt_off + 1,

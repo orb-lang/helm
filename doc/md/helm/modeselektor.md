@@ -151,6 +151,7 @@ With some semi\-constants:
 
 ```lua
 ModeS.REPL_LINE = 2
+ModeS.PROMPT_WIDTH = 3
 ```
 
 ### ModeS:errPrint\(modeS, category, value\)
@@ -386,9 +387,9 @@ by `onseq`\)\. It may try the dispatch multiple times if the raga indicates
 that reprocessing is needed by setting `modeS.action_complete` to =false\.
 
 Note that our common interface is `method(modeS, category, value)`,
-we need to distinguish betwen the tuple `("INSERT", "SHIFT-LEFT")`
-\(which could arrive from copy\-paste\) and `("NAV", "SHIFT-LEFT")`
-and preserve information for our fall\-through method\.
+we need to distinguish betwen the tuple `("INSERT", "SHIFT-LEFT")`which could arrive from copy\-paste\) and `("NAV", "SHIFT-LEFT")`
+and
+\( preserve information for our fall\-through method\.
 
 `act` always succeeds, meaning we need some metatable action to absorb and
 log anything unexpected\.
@@ -745,9 +746,6 @@ local function new(max_extent, writer, db)
          modeS.hist:beginMacroSession(modeS.session)
       end
    end
-   -- this will be replaced with Zones
-   modeS.l_margin = 4
-   modeS.r_margin = 80
    modeS.repl_top = ModeS.REPL_LINE
    modeS.zones = Zoneherd(modeS, writer)
    modeS:setStatusLine("default")

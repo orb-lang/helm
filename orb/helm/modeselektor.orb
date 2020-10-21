@@ -151,6 +151,7 @@ With some semi-constants:
 
 #!lua
 ModeS.REPL_LINE = 2
+ModeS.PROMPT_WIDTH = 3
 #/lua
 
 *** ModeS:errPrint(modeS, category, value)
@@ -745,9 +746,6 @@ local function new(max_extent, writer, db)
          modeS.hist:beginMacroSession(modeS.session)
       end
    end
-   -- this will be replaced with Zones
-   modeS.l_margin = 4
-   modeS.r_margin = 80
    modeS.repl_top = ModeS.REPL_LINE
    modeS.zones = Zoneherd(modeS, writer)
    modeS:setStatusLine("default")
