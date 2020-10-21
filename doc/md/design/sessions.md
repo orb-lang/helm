@@ -37,6 +37,7 @@ before preparing `bridge` for general release\.
 It has a bunch of little pieces that play together, with most of the
 foundation already laid\.
 
+
 - \#Tasks \[/\]:
 
   - [X]  Prepare a migration in the SQLite layer which backs `helm`\.
