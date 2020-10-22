@@ -422,8 +422,8 @@ end
   Generates prepared statements and contains closures for the necessary
 savepoints to operate [historian](@:helm/historian)\.
 
-#### Historian SQL statements
 
+#### Historian SQL statements
 
 ```lua
 local historian_sql = {}
@@ -533,10 +533,12 @@ local session_sql = {}
 ```sql
 SELECT
    session.title AS session_title,
+   session.session_id,
    premise.ordinal,
    premise.status,
    premise.title,
    repl.line,
+   repl.time,
    repl.line_id
 FROM
    session

@@ -533,10 +533,12 @@ local session_sql = {}
 session_sql.get_session_by_id = [[
 SELECT
    session.title AS session_title,
+   session.session_id,
    premise.ordinal,
    premise.status,
    premise.title,
    repl.line,
+   repl.time,
    repl.line_id
 FROM
    session
