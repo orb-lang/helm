@@ -543,7 +543,7 @@ function ModeS.__eval(modeS, chunk, headless)
    end
 
    if not headless then
-      modeS.hist:append(modeS.txtbuf, results, success, modeS.session)
+      modeS.hist:append(modeS.txtbuf, results, success)
       modeS.hist.cursor = modeS.hist.n + 1
       if success then
          modeS.hist.result_buffer[modeS.hist.n] = results
@@ -642,7 +642,7 @@ function ModeS.restart(modeS)
       if results ~= 'advance' then
          hist.n = hist.n + 1
          hist.result_buffer[hist.n] = results
-         hist:persist(hist[i], results, modeS.session)
+         hist:persist(hist[i], results)
       end
    end
    hist.cursor = top + 1
@@ -749,15 +749,6 @@ local function new(max_extent, writer, db)
    rawset(__G, "stat", modeS.status)
    modeS.max_extent = max_extent
    modeS.write = writer
-   -- retrieve data from _Bridge
-   if _Bridge.args.helm then
-      if _Bridge.args.macro then
-         modeS.session = {}
-         modeS.session.macro_mode = true
-         modeS.session.session_title = _Bridge.args.macro
-         modeS.hist:beginMacroSession(modeS.session)
-      end
-   end
    modeS.repl_top = ModeS.REPL_LINE
    modeS.zones = Zoneherd(modeS, writer)
    modeS:setStatusLine("default")

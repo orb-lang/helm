@@ -136,20 +136,22 @@ into a session with the given title\.
 All results are classed as 'accept'\.
 
 ```lua
-function Historian.beginMacroSession(historian, session)
+function Historian.beginMacroSession(historian, session_title)
+   historian.session.session_title = session_title
+   historian.session.macro_mode = true
    -- this is incremented for each stored line
-   session.premise_ordinal = 1
+   historian.session.premise_ordinal = 1
    -- insert session into DB
    historian.stmts.insert_session
-      : bind(session.session_title, historian.project_id, 1)
+      : bind(historian.session.session_title, historian.project_id, 1)
       : step()
    -- retrieve session id
-   session.session_id = historian.stmts.lastRowId()
+   historian.session.session_id = historian.stmts.lastRowId()
 end
 ```
 
 
-### Historian:persist\(txtbuf, results, session\)
+### Historian:persist\(txtbuf, results\)
 
 Persists a line and results to store\.
 
@@ -187,11 +189,11 @@ end
 local tabulate = require "repr:repr/tabulate"
 local tab_callback = assert(persist_tabulate.tab_callback)
 
-function Historian.persist(historian, txtbuf, results, session)
+function Historian.persist(historian, txtbuf, results)
    local lb = tostring(txtbuf)
-   local have_results = results
-                        and type(results) == "table"
-                        and results.n > 0
+   if type(results) ~= "table" or results.n == 0 then
+      results = nil
+   end
    if lb == "" then
       -- A blank line can have no results and is uninteresting.
       return false
@@ -208,8 +210,9 @@ function Historian.persist(historian, txtbuf, results, session)
    local line_id = historian.stmts.lastRowId()
    insert(historian.line_ids, line_id)
    -- if it's a macro session, add the premise now
+   local session = historian.session
    if session and session.macro_mode then
-      local status = have_results and 'accept' or 'ignore'
+      local status = results and 'accept' or 'ignore'
       historian.insert_premise
          : bind(session.session_id,
                 line_id,
@@ -217,12 +220,12 @@ function Historian.persist(historian, txtbuf, results, session)
                 '',
                 status)
          : step()
-         : reset()
+      historian.insert_premise:reset()
       session.premise_ordinal = session.premise_ordinal + 1
    end
    -- If there's nothing to persist, release our savepoint
    -- and don't bother starting the idler
-   if not have_results then
+   if not results then
       historian.stmts.release_persist()
       return true
    end
@@ -352,7 +355,7 @@ local function _resultsFrom(historian, cursor)
          setmetatable(results[i], db_result_M)
       end
    end
-   historian.get_results:reset()
+   stmt:reset()
    -- may as well memoize the database call, while we're here
    historian.result_buffer[line_id] = results
    return results
@@ -425,7 +428,7 @@ Appends a txtbuf to history and persists it\.
 Doesn't adjust the cursor\.
 
 ```lua
-function Historian.append(historian, txtbuf, results, success, session)
+function Historian.append(historian, txtbuf, results, success)
    if tostring(historian[historian.n]) == tostring(txtbuf)
       or tostring(txtbuf) == "" then
       -- don't bother
@@ -433,7 +436,7 @@ function Historian.append(historian, txtbuf, results, success, session)
    end
    historian[historian.n + 1] = txtbuf
    historian.n = historian.n + 1
-   historian:persist(txtbuf, success and results or nil, session)
+   historian:persist(txtbuf, success and results or nil)
    return true
 end
 ```
@@ -459,12 +462,25 @@ end
 
 local function new(helm_db)
    local historian = meta(Historian)
-   historian:createPreparedStatements(helm_db)
    historian.line_ids = {}
    historian.cursor = 0
    historian.cursor_start = 0
    historian.n = 0
+   historian:createPreparedStatements(helm_db)
    historian:load()
+   historian.session = {}
+   -- retrieve data from _Bridge
+   if _Bridge.args.helm then
+      if _Bridge.args.macro then
+         historian:beginMacroSession(_Bridge.args.macro)
+      elseif _Bridge.args.new_session then
+         historian.session.session_title = _Bridge.args.new_session
+         -- #todo initiate record-then-review mode
+      elseif _Bridge.args.session then
+         historian.session.session_title = _Bridge.args.session
+         -- #todo load session from the database
+      end
+   end
    historian.result_buffer = setmetatable({}, __result_buffer_M)
    historian.idlers = Set()
    return historian
