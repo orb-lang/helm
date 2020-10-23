@@ -19,8 +19,7 @@ local sql     = assert(sql, "sql must be in bridge _G")
 local Txtbuf  = require "helm/txtbuf"
 local Rainbuf = require "helm/rainbuf"
 local C       = require "singletons/color"
-local repr    = require "repr:repr"
-local persist_tabulate = require "repr:repr/persist-tabulate"
+local persist_tabulate = require "repr:persist-tabulate"
 local helm_db = require "helm:helm-db"
 
 local concat, insert = assert(table.concat), assert(table.insert)
@@ -156,37 +155,7 @@ end
 
 
 
-
-
-
-
-
-
-
-
-local function ninsert(tab, val)
-   tab.n = tab.n + 1
-   tab[tab.n] = val
-end
-
-local SOH, STX = "\x01", "\x02"
-
-local function dump_token(token, stream)
-   ninsert(stream, SOH)
-   if token.event then
-      ninsert(stream, "event=")
-      ninsert(stream, token.event)
-   end
-   if token.wrappable then
-      if token.event then ninsert(stream, " ") end
-      ninsert(stream, "wrappable")
-   end
-   ninsert(stream, STX)
-   ninsert(stream, tostring(token))
-   return stream
-end
-
-local tabulate = require "repr:repr/tabulate"
+local tabulate = require "repr:tabulate"
 local tab_callback = assert(persist_tabulate.tab_callback)
 
 function Historian.persist(historian, txtbuf, results)
