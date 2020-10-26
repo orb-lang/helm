@@ -574,31 +574,18 @@ ORDER BY
 ;
 ```
 
-This one is a `conn:exec` so we use a closure, rather than a prepared
-statement\.
-
-```sql
-SELECT project_id, directory from project;
-```
-
-```sql
-SELECT
-   session_id,
-   CAST(accepted AS REAL) As accepted
-FROM
-   session
-WHERE
-   project = ?
-ORDER BY
-   session.session_id
-;
-```
-
 ```sql
 SELECT session_id FROM session
 WHERE project = ?
 ORDER BY session_id
 ;
+```
+
+This one is a `conn:exec` so we use a closure, rather than a prepared
+statement\.
+
+```sql
+SELECT project_id, directory from project;
 ```
 
 ```lua

@@ -574,31 +574,18 @@ ORDER BY
 ;
 ]]
 
-
-
-
-local session_get_project_info = [[
-SELECT project_id, directory from project;
-]]
-
-session_sql.get_sessions_from_project = [[
-SELECT
-   session_id,
-   CAST(accepted AS REAL) As accepted
-FROM
-   session
-WHERE
-   project = ?
-ORDER BY
-   session.session_id
-;
-]]
-
 session_sql.get_sessions_by_project = [[
 SELECT session_id FROM session
 WHERE project = ?
 ORDER BY session_id
 ;
+]]
+
+
+
+
+local session_get_project_info = [[
+SELECT project_id, directory from project;
 ]]
 
 

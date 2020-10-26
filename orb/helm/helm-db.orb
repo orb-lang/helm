@@ -574,31 +574,18 @@ ORDER BY
 ;
 #/sql
 
-This one is a =conn:exec= so we use a closure, rather than a prepared
-statement.
-
-#!sql @session_get_project_info #asLua
-SELECT project_id, directory from project;
-#/sql
-
-#!sql @session_sql.get_sessions_from_project #asLua
-SELECT
-   session_id,
-   CAST(accepted AS REAL) As accepted
-FROM
-   session
-WHERE
-   project = ?
-ORDER BY
-   session.session_id
-;
-#/sql
-
 #!sql @session_sql.get_sessions_by_project #asLua
 SELECT session_id FROM session
 WHERE project = ?
 ORDER BY session_id
 ;
+#/sql
+
+This one is a =conn:exec= so we use a closure, rather than a prepared
+statement.
+
+#!sql @session_get_project_info #asLua
+SELECT project_id, directory from project;
 #/sql
 
 #!lua
