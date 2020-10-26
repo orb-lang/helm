@@ -603,6 +603,26 @@ ORDER BY session_id
 ;
 ```
 
+```sql
+UPDATE premise
+SET line = :line
+WHERE
+   session = :session
+AND
+   ordinal = :ordinal
+;
+```
+
+
+##### Shared SQL
+
+We copy over a few statements from the historian proxy table\.
+
+```lua
+session_sql.insert_line = historian_sql.insert_line
+session_sql.insert_result = historian_sql.insert_result
+```
+
 ```lua
 function helm_db.session(conn_handle)
    local conn = _openConn(conn_handle)

@@ -603,6 +603,26 @@ ORDER BY session_id
 ;
 ]]
 
+session_sql.update_premise = [[
+UPDATE premise
+SET line = :line
+WHERE
+   session = :session
+AND
+   ordinal = :ordinal
+;
+]]
+
+
+
+
+
+
+
+session_sql.insert_line = historian_sql.insert_line
+session_sql.insert_result = historian_sql.insert_result
+
+
 
 function helm_db.session(conn_handle)
    local conn = _openConn(conn_handle)
