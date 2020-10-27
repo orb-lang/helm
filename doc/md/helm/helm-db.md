@@ -534,6 +534,7 @@ local session_sql = {}
 SELECT
    session.title AS session_title,
    session.session_id,
+   session.project,
    premise.ordinal,
    premise.status,
    premise.title,
@@ -613,13 +614,19 @@ AND
 ;
 ```
 
+```sql
+INSERT INTO
+   repl (project, line, time)
+VALUES (?, ?, ?)
+;
+```
+
 
 ##### Shared SQL
 
 We copy over a few statements from the historian proxy table\.
 
 ```lua
-session_sql.insert_line = historian_sql.insert_line
 session_sql.insert_result = historian_sql.insert_result
 ```
 
@@ -630,6 +637,14 @@ function helm_db.session(conn_handle)
    rawset(stmts, "get_project_info",
           function()
              return conn:exec(session_get_project_info)
+          end)
+   rawset(stmts, "beginTransaction",
+          function()
+             return conn:exec "BEGIN TRANSACTION;"
+          end)
+   rawset(stmts, "commit",
+          function()
+             return conn:exec "COMMIT;"
           end)
    return stmts
 end
