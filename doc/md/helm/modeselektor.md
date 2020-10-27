@@ -347,6 +347,7 @@ local Nerf      = require "helm:raga/nerf"
 local Search    = require "helm:raga/search"
 local Complete  = require "helm:raga/complete"
 local Page      = require "helm:raga/page"
+local Modal     = require "helm:raga/modal"
 
 ModeS.closet = { nerf =     { raga = Nerf,
                               lex  = Lex.lua_thor },
@@ -355,6 +356,8 @@ ModeS.closet = { nerf =     { raga = Nerf,
                  complete = { raga = Complete,
                               lex  = Lex.lua_thor },
                  page =     { raga = Page,
+                              lex  = Lex.null },
+                 modal =    { raga = Modal,
                               lex  = Lex.null } }
 
 function ModeS.shiftMode(modeS, raga_name)
@@ -398,6 +401,11 @@ process it \(if this never occurs, we display an NYI message in the status area\
 
 ```lua
 function ModeS.actOnce(modeS, category, value)
+   -- ^Q hard coded as quit, for now
+   if category == 'CTRL' and value == '^Q' then
+      modeS:quit()
+      return true
+   end
    local handled = modeS.raga(modeS, category, value)
    if modeS.shift_to then
       modeS:shiftMode(modeS.shift_to)
@@ -434,8 +442,15 @@ function ModeS.act(modeS, category, value)
    -- Replace zones
    modeS.zones.stat_col:replace(icon)
    modeS.zones.command:replace(modeS.txtbuf)
+   modeS:updatePrompt()
    -- Reflow in case command height has changed. Includes a paint.
-   modeS:updatePrompt():reflow()
+   -- Don't allow errors encountered here to break this entire
+   -- event-loop iteration, otherwise we become unable to quit if
+   -- there's a paint error.
+   xpcall(modeS.reflow, function(err)
+      io.stderr:write(err, "\n", debug.traceback(), "\n")
+      io.stderr:flush()
+   end, modeS)
    collectgarbage()
    return modeS
 end
@@ -470,6 +485,21 @@ function ModeS.setResults(modeS, results)
    local rb = Rainbuf(results)
    rb.scrollable = true
    modeS.zones.results:replace(rb)
+   return modeS
+end
+```
+
+### ModeS:setStatusLine\(status\_name\)
+
+Sets the status line at the top of the screen,
+from a list of predefined statuses\.
+
+```lua
+ModeS.status_lines = { default = "an repl, plz reply uwu 👀",
+                       quit    = "exiting repl, owo... 🐲",
+                       restart = "restarting an repl ↩️" }
+function ModeS.setStatusLine(modeS, status_name)
+   modeS.zones.status:replace(modeS.status_lines[status_name])
    return modeS
 end
 ```
@@ -558,6 +588,19 @@ end
 ```
 
 
+### ModeS:quit\(\)
+
+Marks the modeselektor as ready to quit \(the actual teardown will happen
+in the outer event\-loop code in helm\.orb\)
+
+```lua
+function ModeS.quit(modeS)
+   modeS:setStatusLine("quit")
+   modeS.has_quit = true
+end
+```
+
+
 ### ModeS:restart\(\)
 
 This resets `_G` and runs all commands in the current session\.
@@ -566,7 +609,7 @@ This resets `_G` and runs all commands in the current session\.
 local deepclone = assert(core.deepclone)
 
 function ModeS.restart(modeS)
-   modeS.zones.status:replace "Restarting an repl ↩️"
+   modeS:setStatusLine("restart")
    -- we might want to do this again, so:
    local _G_backback = deepclone(_G_back)
    -- package has to be handled separately because it's in the registry
@@ -606,7 +649,7 @@ function ModeS.restart(modeS)
    modeS:paint()
    uv.timer_start(uv.new_timer(), 2000, 0,
                   function()
-                     modeS.zones.status:replace(modeS.prompt_lines.default)
+                     modeS:setStatusLine("default")
                      modeS:paint()
                   end)
    local restart_idle = uv.new_idle()
@@ -633,6 +676,34 @@ function ModeS.openHelp(modeS)
 end
 ```
 
+### ModeS:showModal\(text, button\_style\)
+
+Shows a modal dialog with the given text and button style
+\(see raga/modal\.orb for valid button styles\)\.
+
+When the modal closes, the button that was clicked can be retrieved
+with modeS:modalAnswer\(\)\.
+
+```lua
+function ModeS.showModal(modeS, text, button_style)
+   local modal_info = Modal.newModel(text, button_style)
+   modeS.zones.modal:replace(Rainbuf{ modal_info, n = 1 })
+   modeS.shift_to = "modal"
+   return modeS
+end
+```
+
+### ModeS:modalAnswer\(\)
+
+Convenience method to retrieve the value answered by the most recent
+modal dialog\. Storing this in the contents of the modal zone is
+hardly ideal, but it's not clear what the mechanism **should** look like\.
+
+```lua
+function ModeS.modalAnswer(modeS)
+   return modeS.zones.modal.contents[1].value
+end
+```
 
 #### modeS\.status
 
@@ -656,15 +727,14 @@ end
 
 
 ```lua
-local function new(max_col, max_row, writer, db)
+local function new(max_extent, writer, db)
    local modeS = meta(ModeS)
    modeS.txtbuf = Txtbuf()
    modeS.hist  = Historian(db)
    modeS.suggest = Suggest()
    modeS.status = setmetatable({}, _stat_M)
    rawset(__G, "stat", modeS.status)
-   modeS.max_col = max_col
-   modeS.max_row = max_row
+   modeS.max_extent = max_extent
    modeS.write = writer
    -- retrieve data from _Bridge
    if _Bridge.args.helm then
@@ -680,8 +750,7 @@ local function new(max_col, max_row, writer, db)
    modeS.r_margin = 80
    modeS.repl_top = ModeS.REPL_LINE
    modeS.zones = Zoneherd(modeS, writer)
-   modeS.prompt_lines = { default = "an repl, plz reply uwu 👀" }
-   modeS.zones.status:replace(modeS.prompt_lines.default)
+   modeS:setStatusLine("default")
    -- initial state
    modeS:shiftMode(modeS.raga_default)
    modeS.action_complete = true
