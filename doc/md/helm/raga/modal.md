@@ -31,14 +31,15 @@ end
 
 ```lua
 local function _shortcutFrom(button)
-   local shortcut_decl = button.text:match('&([^&])')
+   local shortcut_decl = button.text and button.text:match('&([^&])')
    return shortcut_decl and shortcut_decl:lower()
 end
 
 local function _buttonTextFrom(button)
    local button_text = button.text
       :gsub('&([^&])', function(ch) return a.underline(ch) end, 1)
-      :gsub('&&', '&')  .. ' ]'
+      :gsub('&&', '&')
+   button_text = '[ ' .. button_text .. ' ]'
    if button.default then
       return a.bold(button_text)
    else
@@ -55,7 +56,7 @@ function Modal.ASCII(modeS, category, value)
    local model = _getModel(modeS)
    local key = value:lower()
    for _, button in ipairs(model.buttons) do
-      if _shortcutFrom(button.text) == key then
+      if _shortcutFrom(button) == key then
          return Modal.close(modeS, button.value)
       end
    end
