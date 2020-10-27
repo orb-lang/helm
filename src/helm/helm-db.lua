@@ -604,7 +604,7 @@ ORDER BY session_id
 ;
 ]]
 
-session_sql.update_premise = [[
+session_sql.update_premise_line = [[
 UPDATE premise
 SET line = :line
 WHERE

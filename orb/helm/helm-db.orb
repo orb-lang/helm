@@ -604,7 +604,7 @@ ORDER BY session_id
 ;
 #/sql
 
-#!sql @session_sql.update_premise #asLua
+#!sql @session_sql.update_premise_line #asLua
 UPDATE premise
 SET line = :line
 WHERE
