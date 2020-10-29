@@ -147,6 +147,7 @@ Primitives for terminal manipulation.
 
 #!lua
 a = require "anterm:anterm"
+local Point = require "anterm:point"
 --watch = require "watcher"
 #/lua
 
@@ -159,17 +160,18 @@ a = require "anterm:anterm"
 
 local MOUSE_MAX = 223
 
-local function bind_pane(col, row)
-   local bound_col = col > MOUSE_MAX and MOUSE_MAX or col
-   local bound_row = row > MOUSE_MAX and MOUSE_MAX or row
-   return bound_col, bound_row
+local function bind_pane(dim1, dim2)
+   dim1 = dim1 > MOUSE_MAX and MOUSE_MAX or dim1
+   dim2 = dim2 > MOUSE_MAX and MOUSE_MAX or dim2
+   return dim1, dim2
 end
 
 local max_col, max_row = bind_pane(uv.tty_get_winsize(stdin))
+local max_extent = Point(max_row, max_col)
 
 
 
-modeS = require "helm/modeselektor" (max_col, max_row, write)
+modeS = require "helm/modeselektor" (max_extent, write)
 local insert = assert(table.insert)
 local function s_out(msg)
    insert(modeS.status, msg)
@@ -181,8 +183,8 @@ local s = require "status:status" (s_out)
 local timer = uv.new_timer()
 uv.timer_start(timer, 500, 500, function()
    max_col, max_row = uv.tty_get_winsize(stdin)
-   if max_col ~= modeS.max_col or max_row ~= modeS.max_row then
-      modeS.max_col, modeS.max_row = bind_pane(max_col, max_row)
+   if Point(max_row, max_col) ~= modeS.max_extent then
+      modeS.max_extent = Point(bind_pane(max_row, max_col))
       -- Mark all zones as touched since we don't know the state of the screen
       -- (some terminals, iTerm for sure, will attempt to reflow the screen
       -- themselves and fail miserably)
@@ -209,12 +211,10 @@ local byte, sub, char = assert(string.byte),
                         assert(string.sub),
                         assert(string.char)
 local m_parse, is_mouse = a.mouse.parse_fast, a.mouse.ismousemove
-local navigation, is_nav = a.navigation, a.is_nav
+local navigation = a.navigation
 
 local function process_escapes(seq)
-   if is_nav(seq) then
-      return modeS("NAV", navigation[seq])
-   elseif is_mouse(seq) then
+   if is_mouse(seq) then
       return modeS("MOUSE", m_parse(seq))
    elseif #seq == 2 and byte(seq, 2) < 128 then
       -- Meta
@@ -240,31 +240,21 @@ local function onseq(err,seq)
    if err then error(err) end
 
    local head = byte(seq)
-   -- ^Q hard coded as quit, for now
-   if head == 17 then
-      _ditch = true
-      modeS.zones.status:replace 'exiting repl, owo... 🐲'
-      modeS:paint()
-      uv.read_stop(stdin)
-      uv.timer_stop(timer)
-      return 0
-   end
-   -- Escape sequences
-   if head == 27 then
-      return process_escapes(seq)
-   end
-   -- Control sequences
+   -- Special "navigation" sequences--this includes some escape sequences
    if navigation[seq] then
-      return modeS("NAV", navigation[seq])
+      modeS("NAV", navigation[seq])
+   -- Other escape sequences
+   elseif head == 27 then
+      process_escapes(seq)
+   -- Control sequences
    elseif head <= 31 then
       local ctrl = "^" .. char(head + 64)
-      return modeS("CTRL", ctrl)
-   end
+      modeS("CTRL", ctrl)
    -- Printables--break into codepoints in case of multi-char input sequence
    -- But first, optimize common case of single ascii printable
    -- Note that bytes <= 31 and 127 (DEL) will have been taken care of earlier
-   if #seq == 1 and head < 128 then
-      return modeS("ASCII", seq)
+   elseif #seq == 1 and head < 128 then
+      modeS("ASCII", seq)
    else
       local points = Codepoints(seq)
       for i, pt in ipairs(points) do
@@ -272,6 +262,12 @@ local function onseq(err,seq)
          -- actual Unicode "replacement character"
          modeS(byte(pt) < 128 and "ASCII" or "UTF8", pt)
       end
+   end
+   -- Okay, if the action resulted in a quit, break out of the event loop
+   if modeS.has_quit then
+      _ditch = true
+      uv.read_stop(stdin)
+      uv.timer_stop(timer)
    end
 end
 #/lua
