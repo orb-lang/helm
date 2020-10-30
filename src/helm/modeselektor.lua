@@ -103,8 +103,7 @@ local Set = require "set:set"
 local valiant = require "valiant:valiant"
 
 local Txtbuf     = require "helm:txtbuf"
-local Resbuf     = require "helm:resbuf" -- Not currently used...
-local Rainbuf    = require "helm:rainbuf"
+local Resbuf     = require "helm:resbuf"
 local Historian  = require "helm:historian"
 local Lex        = require "helm:lex"
 local Zoneherd   = require "helm:zone"
@@ -480,12 +479,12 @@ function ModeS.setResults(modeS, results)
       modeS.zones.results:replace(results)
       return modeS
    end
+   local cfg = { scrollable = true }
    if type(results) == "string" then
-      results = { results, n = 1, frozen = true }
+      cfg.frozen = true
+      results = { results, n = 1 }
    end
-   local rb = Rainbuf(results)
-   rb.scrollable = true
-   modeS.zones.results:replace(rb)
+   modeS.zones.results:replace(Resbuf(results, cfg))
    return modeS
 end
 
@@ -671,7 +670,8 @@ end
 
 
 function ModeS.openHelp(modeS)
-   local rb = Rainbuf{ ("abcde "):rep(1000), n = 1 }
+  -- #todo this should be a generic Rainbuf
+   local rb = Resbuf{ ("abcde "):rep(1000), n = 1 }
    modeS.zones.popup:replace(rb)
    modeS.shift_to = "page"
 end
@@ -688,7 +688,8 @@ end
 
 function ModeS.showModal(modeS, text, button_style)
    local modal_info = Modal.newModel(text, button_style)
-   modeS.zones.modal:replace(Rainbuf{ modal_info, n = 1 })
+   -- #todo make DialogModel a kind of Rainbuf? Or use a generic one?
+   modeS.zones.modal:replace(Resbuf{ modal_info, n = 1 })
    modeS.shift_to = "modal"
    return modeS
 end

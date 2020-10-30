@@ -16,9 +16,9 @@
 local uv      = require "luv"
 local sql     = assert(sql, "sql must be in bridge _G")
 
-local Txtbuf  = require "helm/txtbuf"
-local Rainbuf = require "helm/rainbuf"
-local C       = require "singletons/color"
+local Txtbuf  = require "helm:txtbuf"
+local Resbuf  = require "helm:resbuf"
+local C       = require "singletons:color"
 local persist_tabulate = require "repr:persist-tabulate"
 local helm_db = require "helm:helm-db"
 
@@ -297,7 +297,7 @@ function Historian.search(historian, frag)
       try_search()
    end
    result.selected_index = 1
-   historian.last_collection = Rainbuf {[1] = result, n = 1, live = true}
+   historian.last_collection = Resbuf({ result, n = 1 }, { live = true })
    historian.last_collection.made_in = "historian.search"
    return historian.last_collection
 end

@@ -155,7 +155,7 @@ Depends on the zone contents being a Rainbuf
 ```lua
 local clamp = import("core/math", "clamp")
 function Zone.scrollTo(zone, offset, allow_overscroll)
-   if not instanceof(zone.contents, Rainbuf) then
+   if not zone.contents.is_rainbuf then
       return false
    end
    -- Try to render the content that will be visible after the scroll
@@ -180,7 +180,7 @@ Relative scrolling operation\. Change the scroll position by `delta` line\(s\)\.
 function Zone.scrollBy(zone, delta, allow_overscroll)
    -- Need to check this here even though :scrollTo already does
    -- because we talk to the Rainbuf to figure out the new offset
-   if not instanceof(zone.contents, Rainbuf) then
+   if not zone.contents.is_rainbuf then
       return false
    end
    return zone:scrollTo(zone.contents.offset + delta, allow_overscroll)
@@ -250,7 +250,8 @@ function Zone.setBounds(zone, rect, ...)
    if zone.bounds ~= rect then
       if zone.bounds
          and zone.bounds:width() ~= rect:width()
-         and instanceof(zone.contents, Rainbuf) then
+         and zone.contents
+         and zone.contents.is_rainbuf then
          zone.contents:clearCaches()
       end
       zone.bounds = rect
@@ -342,7 +343,7 @@ local function _renderRainbuf(write, zone)
    if not zone.contents then
       return nil
    end
-   assert(instanceof(zone.contents, Rainbuf))
+   assert(zone.contents.is_rainbuf)
    local nl = _nl(zone)
    for line in zone.contents:lineGen(zone:clientBounds():extent():rowcol()) do
       write(line)

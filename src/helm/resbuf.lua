@@ -6,36 +6,101 @@
 
 
 
-
-assert (meta)
-assert (ipairs)
-local color = require "singletons/color"
+local lineGen = import("repr:repr", "lineGen")
+local cluster = require "core:cluster"
 
 
 
-local Resbuf = meta {}
 
-function Resbuf.ts(resbuf)
-   local res_map = {}
-   if resbuf.frozen then
-      for i, v in ipairs(resbuf) do
-         res_map[i] = v
-      end
-   else
-      for i, v in ipairs(resbuf) do
-         res_map[i] = color.ts(v)
-      end
-   end
 
-   return res_map
+
+local Rainbuf = require "helm:rainbuf"
+local Resbuf = Rainbuf:inherit()
+
+
+
+
+
+
+
+
+
+
+
+
+local clear = assert(table.clear)
+function Resbuf.clearCaches(resbuf)
+   resbuf:super"clearCaches"()
+   resbuf.reprs = nil
+   resbuf.r_num = nil
 end
 
-local function new(results, frozen)
-   local resbuf = meta(Resbuf)
-   if frozen then resbuf.frozen = true end
-   for k, v in pairs(results) do
-      resbuf[k] = v
+
+
+
+
+
+
+
+local lines = import("core/string", "lines")
+function Resbuf.initComposition(resbuf, cols)
+   resbuf:super"initComposition"(cols)
+   if not resbuf.reprs then
+      resbuf.reprs = {}
+      resbuf.r_num = 1
+      for i = 1, resbuf.n do
+         resbuf.reprs[i] = resbuf.frozen
+            and lines(resbuf[i])
+            or lineGen(resbuf[i], cols)
+      end
    end
-   return resbuf
 end
+
+
+
+
+
+
+
+
+
+
+local max = assert(math.max)
+function Resbuf.replace(rainbuf, res)
+   if not res then
+      res = { n = 0 }
+   end
+   assert(res.n, "must have n")
+   for i = 1, max(rainbuf.n, res.n) do
+      rainbuf[i] = res[i]
+   end
+   rainbuf.n = res.n
+end
+
+
+
+
+
+
+
+
+
+function Resbuf._composeOneLine(resbuf)
+   while resbuf.r_num <= resbuf.n do
+      local line = resbuf.reprs[resbuf.r_num]()
+      if line then
+         return line
+      end
+      resbuf.r_num = resbuf.r_num + 1
+   end
+   return nil
+end
+
+
+
+
+local Resbuf_class = setmetatable({}, Resbuf)
+Resbuf.idEst = Resbuf_class
+
+return Resbuf_class
 

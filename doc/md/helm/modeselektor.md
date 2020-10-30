@@ -103,8 +103,7 @@ local Set = require "set:set"
 local valiant = require "valiant:valiant"
 
 local Txtbuf     = require "helm:txtbuf"
-local Resbuf     = require "helm:resbuf" -- Not currently used...
-local Rainbuf    = require "helm:rainbuf"
+local Resbuf     = require "helm:resbuf"
 local Historian  = require "helm:historian"
 local Lex        = require "helm:lex"
 local Zoneherd   = require "helm:zone"
@@ -387,9 +386,9 @@ by `onseq`\)\. It may try the dispatch multiple times if the raga indicates
 that reprocessing is needed by setting `modeS.action_complete` to =false\.
 
 Note that our common interface is `method(modeS, category, value)`,
-we need to distinguish betwen the tuple `("INSERT", "SHIFT-LEFT")`which could arrive from copy\-paste\) and `("NAV", "SHIFT-LEFT")`
-and
-\( preserve information for our fall\-through method\.
+we need to distinguish betwen the tuple `("INSERT", "SHIFT-LEFT")`
+\(which could arrive from copy\-paste\) and `("NAV", "SHIFT-LEFT")`
+and preserve information for our fall\-through method\.
 
 `act` always succeeds, meaning we need some metatable action to absorb and
 log anything unexpected\.
@@ -468,7 +467,7 @@ end
 
 ### ModeS:setResults\(results\)
 
-Sets the contents of the results area to `results`, wrapping it in a Rainbuf
+Sets the contents of the results area to `results`, wrapping it in a Resbuf
 if necessary\. Strings are passed through unchanged\.
 
 ```lua
@@ -480,12 +479,12 @@ function ModeS.setResults(modeS, results)
       modeS.zones.results:replace(results)
       return modeS
    end
+   local cfg = { scrollable = true }
    if type(results) == "string" then
-      results = { results, n = 1, frozen = true }
+      cfg.frozen = true
+      results = { results, n = 1 }
    end
-   local rb = Rainbuf(results)
-   rb.scrollable = true
-   modeS.zones.results:replace(rb)
+   modeS.zones.results:replace(Resbuf(results, cfg))
    return modeS
 end
 ```
@@ -671,7 +670,8 @@ Opens a simple help screen\.
 
 ```lua
 function ModeS.openHelp(modeS)
-   local rb = Rainbuf{ ("abcde "):rep(1000), n = 1 }
+  -- #todo this should be a generic Rainbuf
+   local rb = Resbuf{ ("abcde "):rep(1000), n = 1 }
    modeS.zones.popup:replace(rb)
    modeS.shift_to = "page"
 end
@@ -679,16 +679,17 @@ end
 
 ### ModeS:showModal\(text, button\_style\)
 
-Shows a modal dialog with the given text and button stylesee raga/modal\.orb for valid button styles\)\.
+Shows a modal dialog with the given text and button style
+\(see raga/modal\.orb for valid button styles\)\.
 
-\(
 When the modal closes, the button that was clicked can be retrieved
 with modeS:modalAnswer\(\)\.
 
 ```lua
 function ModeS.showModal(modeS, text, button_style)
    local modal_info = Modal.newModel(text, button_style)
-   modeS.zones.modal:replace(Rainbuf{ modal_info, n = 1 })
+   -- #todo make DialogModel a kind of Rainbuf? Or use a generic one?
+   modeS.zones.modal:replace(Resbuf{ modal_info, n = 1 })
    modeS.shift_to = "modal"
    return modeS
 end
@@ -732,9 +733,9 @@ in a session, while keeping our own state separate\.
 
 \#NB
 in the registry, and uses that for access within `require`, so we must
-separately keep track of what packages were loaded so we can nil out any
-"extras" when we restart\.
+separately keep track of what packages were loaded so we can nil out anyextras" when we restart\.
 
+"
 ```lua
 local deepclone = assert(core.deepclone)
 local function new(max_extent, writer, db)

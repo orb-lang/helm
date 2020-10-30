@@ -8,7 +8,7 @@ This is our autocomplete module\.
 
 local Lex = require "helm:lex"
 local SelectionList = require "helm:selection_list"
-local Rainbuf = require "helm:rainbuf"
+local Resbuf = require "helm:resbuf"
 local names = require "repr:names"
 local concat, insert, sort = assert(table.concat),
                              assert(table.insert),
@@ -182,10 +182,11 @@ function Suggest.update(suggest, modeS)
       suggestions.selected_index = 1
    end
    suggest.active_suggestions = suggestions
-   modeS.zones.suggest:replace(Rainbuf { [1] = suggestions,
-                                         n = 1,
-                                         live = true,
-                                         made_in = "suggest.update" })
+   -- #todo Should this be a separate Rainbuf subclass,
+   -- or is the __repr approach fine?
+   modeS.zones.suggest:replace(Resbuf(
+      { suggestions, n = 1 },
+      { live = true, made_in = "suggest.update" }))
 end
 
 ```
