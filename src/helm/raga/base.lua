@@ -19,6 +19,7 @@ local sub, gsub, rep = assert(string.sub),
 
 
 
+
 local RagaBase_meta = {}
 local RagaBase = setmetatable({}, RagaBase_meta)
 
@@ -26,6 +27,7 @@ for _, cat in ipairs{"NAV", "CTRL", "ALT", "ASCII",
                      "UTF8", "PASTE", "MOUSE", "NYI"} do
    RagaBase[cat] = {}
 end
+
 
 
 
@@ -69,9 +71,25 @@ end
 
 
 
+
+function RagaBase.getCursorPosition(modeS)
+   return nil
+end
+
+
+
+
+
+
+
+
+
+
+
 function RagaBase.onTxtbufChanged(modeS)
    return
 end
+
 
 
 
@@ -92,6 +110,7 @@ end
 
 
 
+
 function RagaBase.onShift(modeS)
    return
 end
@@ -102,9 +121,11 @@ end
 
 
 
+
 function RagaBase.onUnshift(modeS)
    return
 end
+
 
 
 

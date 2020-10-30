@@ -107,5 +107,29 @@ end
 
 
 
+
+
+
+
+
+
+local Point = require "anterm:point"
+function Complete.getCursorPosition(modeS)
+   local point = EditBase.getCursorPosition(modeS)
+   local suggestion = modeS.suggest:selectedSuggestion()
+   if suggestion then
+      for _, tok in ipairs(modeS.lex(modeS.txtbuf)) do
+         if tok.cursor_offset then
+            point = point + Point(0, #suggestion - tok.cursor_offset)
+            break
+         end
+      end
+   end
+   return point
+end
+
+
+
+
 return Complete
 

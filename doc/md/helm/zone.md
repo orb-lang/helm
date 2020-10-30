@@ -547,8 +547,6 @@ function Zoneherd.paint(zoneherd, modeS)
    for i, zone in ipairs(zoneherd) do
       zone:paint(write)
    end
-   modeS:placeCursor()
-   write(a.cursor.show())
    return zoneherd
 end
 ```

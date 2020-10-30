@@ -233,33 +233,29 @@ end
 
 *** ModeS:placeCursor()
 
-Places the cursor where it belongs within the =command= zone.
+Places the cursor where it belongs on the screen.
+We delegate determining where this is to the Raga.
 
 #!lua
 local Point = require "anterm:point"
 function ModeS.placeCursor(modeS)
-   local point = modeS.zones.command.bounds:origin() + modeS.txtbuf.cursor - 1
-   local suggestion = modeS.suggest:selectedSuggestion()
-   if suggestion then
-      for _, tok in ipairs(modeS.lex(modeS.txtbuf)) do
-         if tok.cursor_offset then
-            point = point + Point(0, #suggestion - tok.cursor_offset)
-            break
-         end
-      end
+   local point = modeS.raga.getCursorPosition(modeS)
+   if point then
+      modeS.write(a.jump(point), a.cursor.show())
    end
-   modeS.write(a.jump(point))
    return modeS
 end
 #/lua
 
 *** ModeS:paint()
 
-This simply calls the same method on the zoneherd.
+Paint the screen. Primarily handled by the same method on the Zoneherd,
+but we must also place the cursor.
 
 #!lua
 function ModeS.paint(modeS)
    modeS.zones:paint(modeS)
+   modeS:placeCursor(modeS)
    return modeS
 end
 #/lua
