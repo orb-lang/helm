@@ -445,18 +445,6 @@ historian_sql.insert_project = [[
 INSERT INTO project (directory) VALUES (?);
 ]]
 
-historian_sql.insert_session = [[
-INSERT INTO session (title, project, accepted) VALUES (?, ?, ?);
-]]
-
-historian_sql.insert_premise = [[
-INSERT INTO
-   premise (session, line, ordinal, title, status)
-VALUES
-   (?, ?, ?, ?, ?);
-]]
-
-
 
 
 historian_sql.get_recent = [[
@@ -467,13 +455,13 @@ SELECT CAST (line_id AS REAL), line FROM repl
 ]]
 
 historian_sql.get_number_of_lines = [[
-SELECT CAST (count(line) AS REAL) from repl
+SELECT CAST (count(line) AS REAL) FROM repl
    WHERE project = ?
 ;
 ]]
 
 historian_sql.get_project = [[
-SELECT project_id FROM project
+SELECT CAST(project_id AS REAL) FROM project
    WHERE directory = ?;
 ]]
 
@@ -530,10 +518,41 @@ local session_sql = {}
 
 
 
+
+
+session_sql.insert_session = [[
+INSERT INTO
+  session (title, project, accepted)
+VALUES
+  (:session_title, :project_id, :accepted);
+]]
+
+session_sql.insert_premise = [[
+INSERT INTO
+   premise (session, ordinal, line, title, status)
+VALUES
+   (:session_id, :ordinal, :line_id, :title, :status);
+]]
+
+session_sql.truncate_session = [[
+DELETE FROM premise WHERE session = :session_id AND ordinal > :n;
+]]
+
+
+
+
+
+
+session_sql.update_session = [[
+UPDATE session SET title = :session_title, accepted = :accepted
+   WHERE session_id = :session_id;
+]]
+
+
+
 session_sql.get_session_by_id = [[
 SELECT
    session.title AS session_title,
-   premise.ordinal,
    premise.status,
    premise.title,
    repl.line,
@@ -558,7 +577,7 @@ ORDER BY result.result_id;
 ]]
 
 session_sql.get_project_by_dir = [[
-SELECT project_id FROM project WHERE directory = ?;
+SELECT CAST (project_id AS REAL) FROM project WHERE directory = ?;
 ]]
 
 session_sql.get_accepted_by_dir = [[
@@ -577,6 +596,13 @@ ORDER BY
 session_sql.get_sessions_by_project = [[
 SELECT session_id FROM session
 WHERE project = ?
+ORDER BY session_id
+;
+]]
+
+session_sql.get_session_by_project_and_title = [[
+SELECT CAST (session_id AS REAL) FROM session
+WHERE project = ? AND title = ?
 ORDER BY session_id
 ;
 ]]

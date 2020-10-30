@@ -18,6 +18,7 @@ local sql     = assert(sql, "sql must be in bridge _G")
 
 local Txtbuf  = require "helm:txtbuf"
 local Resbuf  = require "helm:resbuf"
+local Session = require "helm:session"
 local C       = require "singletons:color"
 local persist_tabulate = require "repr:persist-tabulate"
 local helm_db = require "helm:helm-db"
@@ -50,7 +51,6 @@ function Historian.createPreparedStatements(historian, helm_db_home)
    historian.stmts = stmts
    historian.insert_line = stmts.insert_line
    historian.insert_result = stmts.insert_result
-   historian.insert_premise = stmts.insert_premise
    historian.get_results = stmts.get_results
 end
 #/lua
@@ -127,29 +127,6 @@ end
 #/lua
 
 
-*** Historian:beginMacroSession(session_title)
-
-In "macro mode", =historian= records every line as a premise, with not title,
-into a session with the given title.
-
-All results are classed as 'accept'.
-
-#!lua
-function Historian.beginMacroSession(historian, session_title)
-   historian.session.session_title = session_title
-   historian.session.macro_mode = true
-   -- this is incremented for each stored line
-   historian.session.premise_ordinal = 1
-   -- insert session into DB
-   historian.stmts.insert_session
-      : bind(historian.session.session_title, historian.project_id, 1)
-      : step()
-   -- retrieve session id
-   historian.session.session_id = historian.stmts.lastRowId()
-end
-#/lua
-
-
 *** Historian:persist(txtbuf, results)
 
 Persists a line and results to store.
@@ -178,25 +155,11 @@ function Historian.persist(historian, txtbuf, results)
    end
    local line_id = historian.stmts.lastRowId()
    insert(historian.line_ids, line_id)
-   -- if it's a macro session, add the premise now
-   local session = historian.session
-   if session and session.macro_mode then
-      local status = results and 'accept' or 'ignore'
-      historian.insert_premise
-         : bind(session.session_id,
-                line_id,
-                session.premise_ordinal,
-                '',
-                status)
-         : step()
-      historian.insert_premise:reset()
-      session.premise_ordinal = session.premise_ordinal + 1
-   end
    -- If there's nothing to persist, release our savepoint
    -- and don't bother starting the idler
    if not results then
       historian.stmts.release_persist()
-      return true
+      return line_id
    end
 
    local results_tostring, results_tabulates = {}, {}
@@ -228,7 +191,7 @@ function Historian.persist(historian, txtbuf, results)
       persist_idler:stop()
       assert(historian.idlers:remove(persist_idler) == true)
    end)
-   return true
+   return line_id
 end
 #/lua
 
@@ -404,7 +367,9 @@ function Historian.append(historian, txtbuf, results, success)
    end
    historian[historian.n + 1] = txtbuf
    historian.n = historian.n + 1
-   historian:persist(txtbuf, success and results or nil)
+   if not success then results = nil end
+   local line_id = historian:persist(txtbuf, results)
+   historian.session:append(line_id, txtbuf, results)
    return true
 end
 #/lua
@@ -436,17 +401,18 @@ local function new(helm_db)
    historian.n = 0
    historian:createPreparedStatements(helm_db)
    historian:load()
-   historian.session = {}
+   historian.session = Session(helm_db, { project_id = historian.project_id })
    -- retrieve data from _Bridge
    if _Bridge.args.helm then
       if _Bridge.args.macro then
-         historian:beginMacroSession(_Bridge.args.macro)
+         historian.session.session_title = _Bridge.args.macro
+         historian.session.mode = "macro"
       elseif _Bridge.args.new_session then
          historian.session.session_title = _Bridge.args.new_session
          -- #todo initiate record-then-review mode
       elseif _Bridge.args.session then
          historian.session.session_title = _Bridge.args.session
-         -- #todo load session from the database
+         historian.session:load()
       end
    end
    historian.result_buffer = setmetatable({}, __result_buffer_M)

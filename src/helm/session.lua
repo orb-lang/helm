@@ -1,57 +1,57 @@
-* Session
 
 
-  =helm= is expected to have a *session mode*, where it runs a sequence of
-commands, and optionally validates some or all of the results.
 
-There will be a way to run these headlessly, which will also help in
-refactoring =modeselektor= to have no information about how display is
-happening.
 
-A session will have a Session object, called =sesh= by default, which will
-have some methods:
 
-=sesh:pin(to_pin)= will take a number or the string "all", and pin that
-step of the session.
 
-This means that it expects the same result, and will inform the user if it
-isn't.
 
-=sesh:unpin(to_unpin)= will do the opposite.
 
-Both return the session object, which has a =__repr= which is informative of
-these statuses and, for pinned objects, if they have passed on the last round.
 
-=sesh:add(string)= will execute a string, and add it to a session.
-==sesh:addLast(pin=(true|false))== and =sesh:addNext()= will add the last
-line, optionally pinning it, or flag the session to add the next line.
 
-=sesh:record()= and =sesh:stop()= will start and stop recording a session.
-=^R= or =sesh:reset()= will reload the session, and return the session object
-with changes to pinned lines noted.
 
-It's intended that any changes to files the session depends on, will also
-trigger a session reset.
 
-A session will load the session lines into the history buffer, but only once,
-no matter how many times the session is reset or run.
 
-#!lua
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local meta = assert(require "core:meta" . meta)
 local helm_db = require "helm:helm-db"
 local valiant = require "valiant:valiant"
 local names = require "repr:names"
 local Session = meta {}
 local new
-#/lua
 
-*** Session:premiseCount(), :passCount()
 
-The number of non-ignored (accepted or rejected) premises in the session.
-Note that during review we may have "skip"ped premises as well, so we
-cannot just check state ~= "ignore".
 
-#!lua
+
+
+
+
+
+
 function Session.premiseCount(session)
    local count = 0
    for _, premise in ipairs(session) do
@@ -61,13 +61,13 @@ function Session.premiseCount(session)
    end
    return count
 end
-#/lua
 
-*** Session:passCount()
 
-The number of "passing" premises (accepted premises with matching output)
 
-#!lua
+
+
+
+
 function Session.passCount(session)
    local count = 0
    for _, premise in ipairs(session) do
@@ -77,16 +77,16 @@ function Session.passCount(session)
    end
    return count
 end
-#/lua
 
-*** Session:evaluate(isolated, historian)
 
-(Re-)Evaluates the session and determines pass/fail state for all its premises.
-If =isolated= is set, avoids mutating _G by creating a temporary wrapper environment.
 
-If a Historian is provided, appends the results of the re-evaluation to it.
 
-#!lua
+
+
+
+
+
+
 local tabulate = assert(require "repr:persist-tabulate" . tabulate)
 function Session.evaluate(session, isolated, historian)
    local ENV, aG
@@ -124,14 +124,14 @@ function Session.evaluate(session, isolated, historian)
       end
    end
 end
-#/lua
 
-*** Session:load()
 
-Loads the session from the database, retrieving its lines and results.
-Does not re-run the lines.
 
-#!lua
+
+
+
+
+
 
 local function _appendPremise(session, premise)
    session.n = session.n + 1
@@ -181,14 +181,14 @@ function Session.load(session)
       _appendPremise(session, premise)
    end
 end
-#/lua
 
-*** Session:append(line_id)
 
-Appends the line with the given id as a new premise. The session mode
-determines whether it is marked as accepted or not.
 
-#!lua
+
+
+
+
+
 function Session.append(session, line_id, txtbuf, results)
    -- Require manual approval of all lines by default,
    -- i.e. start with 'skip' status
@@ -210,14 +210,14 @@ function Session.append(session, line_id, txtbuf, results)
    }
    _appendPremise(session, premise)
 end
-#/lua
 
-*** Session:save()
 
-Save the current state of the session to the database. For simplicity's sake,
-we always just save everything, without checking whether it has changed.
 
-#!lua
+
+
+
+
+
 local compact = assert(require "core:table" . compact)
 function Session.save(session)
    -- If the session itself hasn't been stored yet, do so and retrieve its id
@@ -244,9 +244,9 @@ function Session.save(session)
             :step()
    end
 end
-#/lua
 
-#!lua
+
+
 new = function(db, cfg)
    local session = meta(Session)
    session.stmts = helm_db.session(db)
@@ -256,9 +256,9 @@ new = function(db, cfg)
    end
    return session
 end
-#/lua
 
-#!lua
+
+
 Session.idEst = new
 return new
-#/lua
+

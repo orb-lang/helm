@@ -584,6 +584,10 @@ in the outer event\-loop code in helm\.orb\)
 
 ```lua
 function ModeS.quit(modeS)
+   -- #todo handle this better--as an event of sorts, maybe?
+   if modeS.hist.session.mode == "macro" then
+      modeS.hist.session:save()
+   end
    modeS:setStatusLine("quit")
    modeS.has_quit = true
 end
