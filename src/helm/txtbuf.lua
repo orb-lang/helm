@@ -123,6 +123,9 @@ end
 
 
 
+
+
+
 function Txtbuf.currentPosition(txtbuf)
    local row, col = txtbuf.cursor:rowcol()
    return txtbuf.lines[row], col, row
@@ -176,6 +179,7 @@ end
 
 
 
+
 function Txtbuf.cursorIndex(txtbuf)
    local index = txtbuf.cursor.col
    for row = txtbuf.cursor.row - 1, 1, -1 do
@@ -192,9 +196,11 @@ end
 
 
 
+
 function Txtbuf.beginSelection(txtbuf)
    txtbuf.mark = clone(txtbuf.cursor)
 end
+
 
 
 
@@ -219,6 +225,7 @@ end
 
 
 
+
 function Txtbuf.hasSelection(txtbuf)
    if not txtbuf.mark then return false end
    if txtbuf.mark.row == txtbuf.cursor.row
@@ -229,6 +236,7 @@ function Txtbuf.hasSelection(txtbuf)
       return true
    end
 end
+
 
 
 
@@ -270,6 +278,10 @@ end
 
 
 
+
+
+
+
 function Txtbuf.openRow(txtbuf, row_num)
    if row_num < 1 or row_num > #txtbuf.lines then
       return nil
@@ -286,11 +298,21 @@ end
 
 
 
-function Txtbuf.advance(txtbuf)
-   txtbuf.lines[#txtbuf.lines + 1] = {}
+
+
+
+function Txtbuf.nl(txtbuf)
+   line, cur_col, cur_row = txtbuf:currentPosition()
+   -- split the line
+   local first = slice(line, 1, cur_col - 1)
+   local second = slice(line, cur_col)
+   txtbuf.lines[cur_row] = first
+   insert(txtbuf.lines, cur_row + 1, second)
    txtbuf.contents_changed = true
-   txtbuf:setCursor(#txtbuf.lines, 1)
+   txtbuf:setCursor(cur_row + 1, 1)
+   return false
 end
+
 
 
 
@@ -348,6 +370,7 @@ end
 
 
 
+
 function Txtbuf.paste(txtbuf, frag)
    frag = frag:gsub("\t", "   ")
    local frag_lines = collect(lines, frag)
@@ -360,6 +383,14 @@ function Txtbuf.paste(txtbuf, frag)
    end
    txtbuf.contents_changed = true
 end
+
+
+
+
+
+
+
+
 
 
 
@@ -396,7 +427,6 @@ function Txtbuf.killSelection(txtbuf)
    -- No selection any more
    txtbuf:clearSelection()
 end
-
 
 
 
@@ -462,29 +492,6 @@ end
 
 
 
-function Txtbuf.transposeLetter(txtbuf)
-   local line, cur_col, cur_row = txtbuf:currentPosition()
-   if cur_col == 1 then return false end
-   if cur_col == 2 and #line == 1 then return false end
-   local left, right = cur_col - 1, cur_col
-   if cur_col == #line + 1 then
-      left, right = left - 1, right - 1
-   end
-   local stash = line[right]
-   line[right] = line[left]
-   line[left] = stash
-   txtbuf:setCursor(nil, right + 1)
-   txtbuf.contents_changed = true
-   return true
-end
-
-
-
-
-
-
-
-
 
 
 
@@ -503,11 +510,6 @@ function Txtbuf.left(txtbuf, disp)
    txtbuf:setCursor(new_row, new_col)
    return true
 end
-
-
-
-
-
 
 function Txtbuf.right(txtbuf, disp)
    disp = disp or 1
@@ -531,6 +533,35 @@ end
 
 
 
+
+
+
+
+
+
+function Txtbuf.up(txtbuf)
+   if not txtbuf:openRow(txtbuf.cursor.row - 1) then
+      txtbuf:setCursor(nil, 1)
+      return false
+   end
+   txtbuf:setCursor(txtbuf.cursor.row - 1, nil)
+   return true
+end
+
+function Txtbuf.down(txtbuf)
+   if not txtbuf:openRow(txtbuf.cursor.row + 1) then
+      txtbuf:setCursor(nil, #txtbuf.lines[txtbuf.cursor.row] + 1)
+      return false
+   end
+   txtbuf:setCursor(txtbuf.cursor.row + 1, nil)
+   return true
+end
+
+
+
+
+
+
 function Txtbuf.startOfLine(txtbuf)
    txtbuf:setCursor(nil, 1)
 end
@@ -538,7 +569,6 @@ end
 function Txtbuf.endOfLine(txtbuf)
    txtbuf:setCursor(nil, #txtbuf.lines[txtbuf.cursor.row] + 1)
 end
-
 
 
 
@@ -702,44 +732,24 @@ end
 
 
 
-function Txtbuf.up(txtbuf)
-   if not txtbuf:openRow(txtbuf.cursor.row - 1) then
-      txtbuf:setCursor(nil, 1)
-      return false
+
+
+function Txtbuf.transposeLetter(txtbuf)
+   local line, cur_col, cur_row = txtbuf:currentPosition()
+   if cur_col == 1 then return false end
+   if cur_col == 2 and #line == 1 then return false end
+   local left, right = cur_col - 1, cur_col
+   if cur_col == #line + 1 then
+      left, right = left - 1, right - 1
    end
-   txtbuf:setCursor(txtbuf.cursor.row - 1, nil)
-   return true
-end
-
-
-
-function Txtbuf.down(txtbuf)
-   if not txtbuf:openRow(txtbuf.cursor.row + 1) then
-      txtbuf:setCursor(nil, #txtbuf.lines[txtbuf.cursor.row] + 1)
-      return false
-   end
-   txtbuf:setCursor(txtbuf.cursor.row + 1, nil)
-   return true
-end
-
-
-
-
-
-
-
-
-function Txtbuf.nl(txtbuf)
-   line, cur_col, cur_row = txtbuf:currentPosition()
-   -- split the line
-   local first = slice(line, 1, cur_col - 1)
-   local second = slice(line, cur_col)
-   txtbuf.lines[cur_row] = first
-   insert(txtbuf.lines, cur_row + 1, second)
+   local stash = line[right]
+   line[right] = line[left]
+   line[left] = stash
+   txtbuf:setCursor(nil, right + 1)
    txtbuf.contents_changed = true
-   txtbuf:setCursor(cur_row + 1, 1)
-   return false
+   return true
 end
+
 
 
 
@@ -762,6 +772,7 @@ function Txtbuf.shouldEvaluate(txtbuf)
       return true
    end
 end
+
 
 
 

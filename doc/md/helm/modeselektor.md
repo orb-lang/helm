@@ -556,7 +556,8 @@ end
 function ModeS.eval(modeS)
    local _, advance = modeS:__eval(tostring(modeS.txtbuf))
    if advance == 'advance' then
-      modeS.txtbuf:advance()
+      modeS.txtbuf:endOfText()
+      modeS.txtbuf:nl()
    end
    return modeS
 end
@@ -682,9 +683,9 @@ end
 
 ### ModeS:showModal\(text, button\_style\)
 
-Shows a modal dialog with the given text and button style
-\(see raga/modal\.orb for valid button styles\)\.
+Shows a modal dialog with the given text and button stylesee raga/modal\.orb for valid button styles\)\.
 
+\(
 When the modal closes, the button that was clicked can be retrieved
 with modeS:modalAnswer\(\)\.
 

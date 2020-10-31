@@ -556,7 +556,8 @@ end
 function ModeS.eval(modeS)
    local _, advance = modeS:__eval(tostring(modeS.txtbuf))
    if advance == 'advance' then
-      modeS.txtbuf:advance()
+      modeS.txtbuf:endOfText()
+      modeS.txtbuf:nl()
    end
    return modeS
 end
