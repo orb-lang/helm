@@ -344,6 +344,7 @@ local Search    = require "helm:raga/search"
 local Complete  = require "helm:raga/complete"
 local Page      = require "helm:raga/page"
 local Modal     = require "helm:raga/modal"
+local Review    = require "helm:raga/review"
 
 ModeS.closet = { nerf =     { raga = Nerf,
                               lex  = Lex.lua_thor },
@@ -352,6 +353,8 @@ ModeS.closet = { nerf =     { raga = Nerf,
                  complete = { raga = Complete,
                               lex  = Lex.lua_thor },
                  page =     { raga = Page,
+                              lex  = Lex.null },
+                 review =   { raga = Review,
                               lex  = Lex.null },
                  modal =    { raga = Modal,
                               lex  = Lex.null } }
@@ -382,9 +385,9 @@ by `onseq`\)\. It may try the dispatch multiple times if the raga indicates
 that reprocessing is needed by setting `modeS.action_complete` to =false\.
 
 Note that our common interface is `method(modeS, category, value)`,
-we need to distinguish betwen the tuple `("INSERT", "SHIFT-LEFT")`
-\(which could arrive from copy\-paste\) and `("NAV", "SHIFT-LEFT")`
-and preserve information for our fall\-through method\.
+we need to distinguish betwen the tuple `("INSERT", "SHIFT-LEFT")`which could arrive from copy\-paste\) and `("NAV", "SHIFT-LEFT")`
+and
+\( preserve information for our fall\-through method\.
 
 `act` always succeeds, meaning we need some metatable action to absorb and
 log anything unexpected\.
@@ -753,6 +756,10 @@ local function new(max_extent, writer, db)
    modeS.repl_top = ModeS.REPL_LINE
    modeS.zones = Zoneherd(modeS, writer)
    modeS:setStatusLine("default")
+   -- If we are loading an existing session, start in review mode
+   if _Bridge.args.session then
+      modeS.raga_default = "review"
+   end
    -- initial state
    modeS:shiftMode(modeS.raga_default)
    modeS.action_complete = true

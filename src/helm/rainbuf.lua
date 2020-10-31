@@ -92,9 +92,9 @@ end
 
 local lines = import("core/string", "lines")
 function Rainbuf.initComposition(rainbuf, cols)
-   cols = cols or 80
+   rainbuf.cols = cols or 80
    if rainbuf.scrollable then
-      cols = cols - 3
+      rainbuf.cols = rainbuf.cols - 3
    end
    if rainbuf.live then
       -- this buffer needs a fresh render each time
