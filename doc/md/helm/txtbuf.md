@@ -879,7 +879,8 @@ end
 ```lua
 function Txtbuf._init(txtbuf)
    txtbuf:super"_init"()
-   -- Txtbuf needs to re-render if e.g. the suggestions have changed,
+   -- Txtbuf needs to re-render in most event-loop cycles, detecting
+   -- whether a re-render is actually needed is tricky,
    -- and it's reasonably cheap to just *always* re-render, so...
    txtbuf.live = true
    txtbuf.contents_changed = false
