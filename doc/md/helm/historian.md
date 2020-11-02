@@ -132,12 +132,11 @@ function Historian.beginMacroSession(historian, session)
    -- this is incremented for each stored line
    session.premise_ordinal = 1
    -- insert session into DB
-   historian.conn
-      : prepare(insert_session)
+   historian.stmts.insert_session
       : bind(session.session_title, historian.project_id, 1)
       : step()
    -- retrieve session id
-   session.session_id = sql.lastRowId(historian.conn)
+   session.session_id = historian.stmts.lastRowId()
 end
 ```
 
@@ -210,7 +209,7 @@ function Historian.persist(historian, txtbuf, results, session)
                 '',
                 status)
          : step()
-         : reset()
+      historian.insert_premise :reset()
       session.premise_ordinal = session.premise_ordinal + 1
    end
    -- If there's nothing to persist, release our savepoint
@@ -265,6 +264,7 @@ harmless to suggest the alternative\.
 
 Returns a `collection`\. The array portion of a collection is any line
 which matches the search\. The other fields are:
+
 
 - \#fields
   -  best :  Whether this is a best\-fit collection, that is, one with all

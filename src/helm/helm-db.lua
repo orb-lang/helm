@@ -89,13 +89,13 @@ end
 
 
 
-local create_project_table = [[
-CREATE TABLE IF NOT EXISTS project (
-   project_id INTEGER PRIMARY KEY AUTOINCREMENT,
-   directory TEXT UNIQUE,
-   time DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-]]
+
+
+
+
+
+
+
 
 local create_project_table_3 = [[
 CREATE TABLE IF NOT EXISTS project_3 (
@@ -105,17 +105,8 @@ CREATE TABLE IF NOT EXISTS project_3 (
 );
 ]]
 
-local create_repl_table = [[
-CREATE TABLE IF NOT EXISTS repl (
-   line_id INTEGER PRIMARY KEY AUTOINCREMENT,
-   project INTEGER,
-   line TEXT,
-   time DATETIME DEFAULT CURRENT_TIMESTAMP,
-   FOREIGN KEY (project)
-      REFERENCES project (project_id)
-      ON DELETE CASCADE
-);
-]]
+
+
 
 local create_repl_table_3 = [[
 CREATE TABLE IF NOT EXISTS repl_3 (
@@ -129,6 +120,9 @@ CREATE TABLE IF NOT EXISTS repl_3 (
 );
 ]]
 
+
+
+
 local create_result_table = [[
 CREATE TABLE IF NOT EXISTS result (
    result_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -141,20 +135,8 @@ CREATE TABLE IF NOT EXISTS result (
 );
 ]]
 
-local create_session_table = [[
-CREATE TABLE IF NOT EXISTS session (
-session_id INTEGER PRIMARY KEY AUTOINCREMENT,
-name TEXT,
-project INTEGER,
--- These two are line_ids
-start INTEGER NOT NULL,
-end INTEGER,
-test BOOLEAN,
-sha TEXT,
-FOREIGN KEY (project)
-   REFERENCES project (project_id)
-   ON DELETE CASCADE );
-]]
+
+
 
 local create_session_table_4 = [[
 CREATE TABLE IF NOT EXISTS session (
@@ -168,6 +150,9 @@ CREATE TABLE IF NOT EXISTS session (
       ON DELETE CASCADE
 );
 ]]
+
+
+
 
 local create_premise_table = [[
 CREATE TABLE IF NOT EXISTS premise (
@@ -185,6 +170,48 @@ CREATE TABLE IF NOT EXISTS premise (
       ON DELETE CASCADE
    FOREIGN KEY (line)
       REFERENCES repl (line_id)
+      ON DELETE CASCADE
+);
+]]
+
+
+
+
+
+
+
+local create_project_table = [[
+CREATE TABLE IF NOT EXISTS project (
+   project_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   directory TEXT UNIQUE,
+   time DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+]]
+
+
+local create_session_table = [[
+CREATE TABLE IF NOT EXISTS session (
+session_id INTEGER PRIMARY KEY AUTOINCREMENT,
+name TEXT,
+project INTEGER,
+-- These two are line_ids
+start INTEGER NOT NULL,
+end INTEGER,
+test BOOLEAN,
+sha TEXT,
+FOREIGN KEY (project)
+   REFERENCES project (project_id)
+   ON DELETE CASCADE );
+]]
+
+local create_repl_table = [[
+CREATE TABLE IF NOT EXISTS repl (
+   line_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   project INTEGER,
+   line TEXT,
+   time DATETIME DEFAULT CURRENT_TIMESTAMP,
+   FOREIGN KEY (project)
+      REFERENCES project (project_id)
       ON DELETE CASCADE
 );
 ]]
@@ -408,9 +435,11 @@ local function _readOnly(_, key, value)
           .. " value: " .. value)
 end
 
+local lastRowId = assert(sql.lastRowId)
 function _makeProxy(conn, stmts)
-   return setmetatable({}, { __index = _prepareStatements(conn, stmts),
-                             __newindex = _readOnly })
+   return setmetatable({ lastRowId = function() return lastRowId(conn) end },
+                       { __index = _prepareStatements(conn, stmts),
+                         __newindex = _readOnly })
 end
 
 
@@ -490,9 +519,6 @@ ORDER BY result.result_id;
 
 
 
-local lastRowId = assert(sql.lastRowId)
-
-
 function helm_db.historian(conn_handle)
    local conn = _openConn(conn_handle)
    local hist_proxy = _makeProxy(conn, historian_sql)
@@ -511,10 +537,6 @@ function helm_db.historian(conn_handle)
    rawset(hist_proxy, "release_restart_session",
           function()
              conn:exec "RELEASE restart_session"
-          end)
-   rawset(hist_proxy, "lastRowId",
-          function()
-            return lastRowId(conn)
           end)
    return hist_proxy
 end
@@ -538,10 +560,13 @@ local session_sql = {}
 session_sql.get_session_by_id = [[
 SELECT
    session.title AS session_title,
+   session.session_id,
+   session.project,
    premise.ordinal,
    premise.status,
    premise.title,
    repl.line,
+   repl.time,
    repl.line_id
 FROM
    session
@@ -606,6 +631,32 @@ ORDER BY session_id
 ;
 ]]
 
+session_sql.update_premise_line = [[
+UPDATE premise
+SET line = :line
+WHERE
+   session = :session
+AND
+   ordinal = :ordinal
+;
+]]
+
+session_sql.insert_line = [[
+INSERT INTO
+   repl (project, line, time)
+VALUES (?, ?, ?)
+;
+]]
+
+
+
+
+
+
+
+session_sql.insert_result = historian_sql.insert_result
+
+
 
 function helm_db.session(conn_handle)
    local conn = _openConn(conn_handle)
@@ -613,6 +664,14 @@ function helm_db.session(conn_handle)
    rawset(stmts, "get_project_info",
           function()
              return conn:exec(session_get_project_info)
+          end)
+   rawset(stmts, "beginTransaction",
+          function()
+             return conn:exec "BEGIN TRANSACTION;"
+          end)
+   rawset(stmts, "commit",
+          function()
+             return conn:exec "COMMIT;"
           end)
    return stmts
 end
@@ -702,3 +761,4 @@ setmetatable(helm_db, { __newindex = function()
 
 
 return helm_db
+
