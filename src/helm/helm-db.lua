@@ -89,13 +89,13 @@ end
 
 
 
-local create_project_table = [[
-CREATE TABLE IF NOT EXISTS project (
-   project_id INTEGER PRIMARY KEY AUTOINCREMENT,
-   directory TEXT UNIQUE,
-   time DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-]]
+
+
+
+
+
+
+
 
 local create_project_table_3 = [[
 CREATE TABLE IF NOT EXISTS project_3 (
@@ -105,17 +105,8 @@ CREATE TABLE IF NOT EXISTS project_3 (
 );
 ]]
 
-local create_repl_table = [[
-CREATE TABLE IF NOT EXISTS repl (
-   line_id INTEGER PRIMARY KEY AUTOINCREMENT,
-   project INTEGER,
-   line TEXT,
-   time DATETIME DEFAULT CURRENT_TIMESTAMP,
-   FOREIGN KEY (project)
-      REFERENCES project (project_id)
-      ON DELETE CASCADE
-);
-]]
+
+
 
 local create_repl_table_3 = [[
 CREATE TABLE IF NOT EXISTS repl_3 (
@@ -129,6 +120,9 @@ CREATE TABLE IF NOT EXISTS repl_3 (
 );
 ]]
 
+
+
+
 local create_result_table = [[
 CREATE TABLE IF NOT EXISTS result (
    result_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -141,20 +135,8 @@ CREATE TABLE IF NOT EXISTS result (
 );
 ]]
 
-local create_session_table = [[
-CREATE TABLE IF NOT EXISTS session (
-session_id INTEGER PRIMARY KEY AUTOINCREMENT,
-name TEXT,
-project INTEGER,
--- These two are line_ids
-start INTEGER NOT NULL,
-end INTEGER,
-test BOOLEAN,
-sha TEXT,
-FOREIGN KEY (project)
-   REFERENCES project (project_id)
-   ON DELETE CASCADE );
-]]
+
+
 
 local create_session_table_4 = [[
 CREATE TABLE IF NOT EXISTS session (
@@ -168,6 +150,9 @@ CREATE TABLE IF NOT EXISTS session (
       ON DELETE CASCADE
 );
 ]]
+
+
+
 
 local create_premise_table = [[
 CREATE TABLE IF NOT EXISTS premise (
@@ -185,6 +170,48 @@ CREATE TABLE IF NOT EXISTS premise (
       ON DELETE CASCADE
    FOREIGN KEY (line)
       REFERENCES repl (line_id)
+      ON DELETE CASCADE
+);
+]]
+
+
+
+
+
+
+
+local create_project_table = [[
+CREATE TABLE IF NOT EXISTS project (
+   project_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   directory TEXT UNIQUE,
+   time DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+]]
+
+
+local create_session_table = [[
+CREATE TABLE IF NOT EXISTS session (
+session_id INTEGER PRIMARY KEY AUTOINCREMENT,
+name TEXT,
+project INTEGER,
+-- These two are line_ids
+start INTEGER NOT NULL,
+end INTEGER,
+test BOOLEAN,
+sha TEXT,
+FOREIGN KEY (project)
+   REFERENCES project (project_id)
+   ON DELETE CASCADE );
+]]
+
+local create_repl_table = [[
+CREATE TABLE IF NOT EXISTS repl (
+   line_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   project INTEGER,
+   line TEXT,
+   time DATETIME DEFAULT CURRENT_TIMESTAMP,
+   FOREIGN KEY (project)
+      REFERENCES project (project_id)
       ON DELETE CASCADE
 );
 ]]

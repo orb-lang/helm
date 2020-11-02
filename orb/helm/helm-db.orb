@@ -89,13 +89,13 @@ Other than that, SQLite lets you add columns and rename tables.
 
 When this is done, it will be noted.
 
-#!sql @create_project_table #asLua
-CREATE TABLE IF NOT EXISTS project (
-   project_id INTEGER PRIMARY KEY AUTOINCREMENT,
-   directory TEXT UNIQUE,
-   time DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-#/sql
+
+**** Canonical
+
+These are the current forms of each table.
+
+
+***** Project
 
 #!sql @create_project_table_3 #asLua
 CREATE TABLE IF NOT EXISTS project_3 (
@@ -105,17 +105,8 @@ CREATE TABLE IF NOT EXISTS project_3 (
 );
 #/sql
 
-#!sql @create_repl_table #asLua
-CREATE TABLE IF NOT EXISTS repl (
-   line_id INTEGER PRIMARY KEY AUTOINCREMENT,
-   project INTEGER,
-   line TEXT,
-   time DATETIME DEFAULT CURRENT_TIMESTAMP,
-   FOREIGN KEY (project)
-      REFERENCES project (project_id)
-      ON DELETE CASCADE
-);
-#/sql
+
+***** Repl
 
 #!sql @create_repl_table_3 #asLua
 CREATE TABLE IF NOT EXISTS repl_3 (
@@ -129,6 +120,9 @@ CREATE TABLE IF NOT EXISTS repl_3 (
 );
 #/sql
 
+
+***** Result
+
 #!sql @create_result_table #asLua
 CREATE TABLE IF NOT EXISTS result (
    result_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -141,20 +135,8 @@ CREATE TABLE IF NOT EXISTS result (
 );
 #/sql
 
-#!sql @create_session_table #asLua
-CREATE TABLE IF NOT EXISTS session (
-session_id INTEGER PRIMARY KEY AUTOINCREMENT,
-name TEXT,
-project INTEGER,
--- These two are line_ids
-start INTEGER NOT NULL,
-end INTEGER,
-test BOOLEAN,
-sha TEXT,
-FOREIGN KEY (project)
-   REFERENCES project (project_id)
-   ON DELETE CASCADE );
-#/sql
+
+***** Session
 
 #!sql @create_session_table_4 #asLua
 CREATE TABLE IF NOT EXISTS session (
@@ -168,6 +150,9 @@ CREATE TABLE IF NOT EXISTS session (
       ON DELETE CASCADE
 );
 #/sql
+
+
+***** Premise
 
 #!sql @create_premise_table #asLua
 CREATE TABLE IF NOT EXISTS premise (
@@ -185,6 +170,48 @@ CREATE TABLE IF NOT EXISTS premise (
       ON DELETE CASCADE
    FOREIGN KEY (line)
       REFERENCES repl (line_id)
+      ON DELETE CASCADE
+);
+#/sql
+
+
+
+**** Obsolete
+
+These are old forms of tables, which we need in order to properly migrate.
+
+#!sql @create_project_table #asLua
+CREATE TABLE IF NOT EXISTS project (
+   project_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   directory TEXT UNIQUE,
+   time DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+#/sql
+
+
+#!sql @create_session_table #asLua
+CREATE TABLE IF NOT EXISTS session (
+session_id INTEGER PRIMARY KEY AUTOINCREMENT,
+name TEXT,
+project INTEGER,
+-- These two are line_ids
+start INTEGER NOT NULL,
+end INTEGER,
+test BOOLEAN,
+sha TEXT,
+FOREIGN KEY (project)
+   REFERENCES project (project_id)
+   ON DELETE CASCADE );
+#/sql
+
+#!sql @create_repl_table #asLua
+CREATE TABLE IF NOT EXISTS repl (
+   line_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   project INTEGER,
+   line TEXT,
+   time DATETIME DEFAULT CURRENT_TIMESTAMP,
+   FOREIGN KEY (project)
+      REFERENCES project (project_id)
       ON DELETE CASCADE
 );
 #/sql

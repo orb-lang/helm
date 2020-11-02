@@ -149,9 +149,9 @@ line of content is the **first** line on the screen\.
 
 Returns a boolean indicating whether any scrolling occurred\.
 
-Depends on the zone contents being a Rainbufwhich handles the actual scrolling\)\.
+Depends on the zone contents being a Rainbuf
+\(which handles the actual scrolling\)\.
 
-\(
 ```lua
 local clamp = import("core/math", "clamp")
 function Zone.scrollTo(zone, offset, allow_overscroll)

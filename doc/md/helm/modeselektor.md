@@ -386,9 +386,9 @@ by `onseq`\)\. It may try the dispatch multiple times if the raga indicates
 that reprocessing is needed by setting `modeS.action_complete` to =false\.
 
 Note that our common interface is `method(modeS, category, value)`,
-we need to distinguish betwen the tuple `("INSERT", "SHIFT-LEFT")`which could arrive from copy\-paste\) and `("NAV", "SHIFT-LEFT")`
-and
-\( preserve information for our fall\-through method\.
+we need to distinguish betwen the tuple `("INSERT", "SHIFT-LEFT")`
+\(which could arrive from copy\-paste\) and `("NAV", "SHIFT-LEFT")`
+and preserve information for our fall\-through method\.
 
 `act` always succeeds, meaning we need some metatable action to absorb and
 log anything unexpected\.
@@ -678,9 +678,9 @@ end
 
 ### ModeS:showModal\(text, button\_style\)
 
-Shows a modal dialog with the given text and button style
-\(see raga/modal\.orb for valid button styles\)\.
+Shows a modal dialog with the given text and button stylesee raga/modal\.orb for valid button styles\)\.
 
+\(
 When the modal closes, the button that was clicked can be retrieved
 with modeS:modalAnswer\(\)\.
 

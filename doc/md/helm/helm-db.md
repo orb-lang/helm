@@ -89,13 +89,13 @@ Other than that, SQLite lets you add columns and rename tables\.
 
 When this is done, it will be noted\.
 
-```sql
-CREATE TABLE IF NOT EXISTS project (
-   project_id INTEGER PRIMARY KEY AUTOINCREMENT,
-   directory TEXT UNIQUE,
-   time DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-```
+
+#### Canonical
+
+These are the current forms of each table\.
+
+
+##### Project
 
 ```sql
 CREATE TABLE IF NOT EXISTS project_3 (
@@ -105,17 +105,8 @@ CREATE TABLE IF NOT EXISTS project_3 (
 );
 ```
 
-```sql
-CREATE TABLE IF NOT EXISTS repl (
-   line_id INTEGER PRIMARY KEY AUTOINCREMENT,
-   project INTEGER,
-   line TEXT,
-   time DATETIME DEFAULT CURRENT_TIMESTAMP,
-   FOREIGN KEY (project)
-      REFERENCES project (project_id)
-      ON DELETE CASCADE
-);
-```
+
+##### Repl
 
 ```sql
 CREATE TABLE IF NOT EXISTS repl_3 (
@@ -129,6 +120,9 @@ CREATE TABLE IF NOT EXISTS repl_3 (
 );
 ```
 
+
+##### Result
+
 ```sql
 CREATE TABLE IF NOT EXISTS result (
    result_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -141,20 +135,8 @@ CREATE TABLE IF NOT EXISTS result (
 );
 ```
 
-```sql
-CREATE TABLE IF NOT EXISTS session (
-session_id INTEGER PRIMARY KEY AUTOINCREMENT,
-name TEXT,
-project INTEGER,
--- These two are line_ids
-start INTEGER NOT NULL,
-end INTEGER,
-test BOOLEAN,
-sha TEXT,
-FOREIGN KEY (project)
-   REFERENCES project (project_id)
-   ON DELETE CASCADE );
-```
+
+##### Session
 
 ```sql
 CREATE TABLE IF NOT EXISTS session (
@@ -168,6 +150,9 @@ CREATE TABLE IF NOT EXISTS session (
       ON DELETE CASCADE
 );
 ```
+
+
+##### Premise
 
 ```sql
 CREATE TABLE IF NOT EXISTS premise (
@@ -185,6 +170,48 @@ CREATE TABLE IF NOT EXISTS premise (
       ON DELETE CASCADE
    FOREIGN KEY (line)
       REFERENCES repl (line_id)
+      ON DELETE CASCADE
+);
+```
+
+
+
+#### Obsolete
+
+These are old forms of tables, which we need in order to properly migrate\.
+
+```sql
+CREATE TABLE IF NOT EXISTS project (
+   project_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   directory TEXT UNIQUE,
+   time DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+
+```sql
+CREATE TABLE IF NOT EXISTS session (
+session_id INTEGER PRIMARY KEY AUTOINCREMENT,
+name TEXT,
+project INTEGER,
+-- These two are line_ids
+start INTEGER NOT NULL,
+end INTEGER,
+test BOOLEAN,
+sha TEXT,
+FOREIGN KEY (project)
+   REFERENCES project (project_id)
+   ON DELETE CASCADE );
+```
+
+```sql
+CREATE TABLE IF NOT EXISTS repl (
+   line_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   project INTEGER,
+   line TEXT,
+   time DATETIME DEFAULT CURRENT_TIMESTAMP,
+   FOREIGN KEY (project)
+      REFERENCES project (project_id)
       ON DELETE CASCADE
 );
 ```
@@ -234,9 +261,9 @@ insert(migrations, migration_2)
 #### Version 3: Millisecond\-resolution timestamps\.
 
   We want to accomplish two things here: change the format of all existing
-timestamps, and change the default to have millisecond resolution and useT" instead of " " as the separator\.
+timestamps, and change the default to have millisecond resolution and use
+"T" instead of " " as the separator\.
 
-"
 SQLite being what it is, the latter requires us to copy everything to a new
 table\.  This must be done for the `project` and `repl` tables\.
 
