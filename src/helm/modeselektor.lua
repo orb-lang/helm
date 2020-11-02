@@ -633,7 +633,7 @@ function ModeS.restart(modeS)
          hist:persist(hist[i], results, modeS.session)
       end
    end
-   req.restarting = nil
+   req:reset()
    hist.cursor = top + 1
    hist.n = #hist
    modeS:paint()
