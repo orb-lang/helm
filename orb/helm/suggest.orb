@@ -6,13 +6,10 @@ This is our autocomplete module.
 
 #!lua
 
-local Lex = require "helm:lex"
 local SelectionList = require "helm:selection_list"
 local Resbuf = require "helm:resbuf"
 local names = require "repr:names"
-local concat, insert, sort = assert(table.concat),
-                             assert(table.insert),
-                             assert(table.sort)
+local insert, sort = assert(table.insert), assert(table.sort)
 local c, no_color = import("singletons:color", "color", "no_color")
 
 #/lua
@@ -36,7 +33,7 @@ path cannot be determined.
 local function _cursorContext(modeS)
    local lex_tokens = {}
    -- Ignore whitespace and comments
-   for _, token in ipairs(modeS.lex(modeS.txtbuf)) do
+   for _, token in ipairs(modeS.txtbuf:tokens()) do
       if token.color ~= "no_color" and token.color ~= "comment" then
          insert(lex_tokens, token)
       end
@@ -134,6 +131,12 @@ local function _suggestions_from(complete_against)
    return candidate_symbols
 end
 
+local function _set_suggestions(modeS, suggestions)
+   modeS.suggest.active_suggestions = suggestions
+   -- #todo Can't say I like assigning this twice like this
+   modeS.txtbuf.active_suggestions = suggestions
+end
+
 
 function Suggest.update(suggest, modeS)
    local context, path = _cursorContext(modeS)
@@ -181,7 +184,7 @@ function Suggest.update(suggest, modeS)
    if modeS.raga.name == "complete" then
       suggestions.selected_index = 1
    end
-   suggest.active_suggestions = suggestions
+   _set_suggestions(modeS, suggestions)
    -- #todo Should this be a separate Rainbuf subclass,
    -- or is the __repr approach fine?
    modeS.zones.suggest:replace(Resbuf(
@@ -203,7 +206,7 @@ end
 
 #!lua
 function Suggest.cancel(suggest, modeS)
-   suggest.active_suggestions = nil
+   _set_suggestions(modeS, nil)
    modeS.zones.suggest:replace("")
 end
 #/lua

@@ -305,7 +305,7 @@ for the command zone.
 
 #!lua
 function ModeS.continuationLines(modeS)
-   return modeS.txtbuf and #modeS.txtbuf.lines - 1 or 0
+   return modeS.txtbuf and #modeS.txtbuf - 1 or 0
 end
 #/lua
 
@@ -366,11 +366,11 @@ function ModeS.shiftMode(modeS, raga_name)
    -- Guard against nil raga or lexer during startup
    if modeS.raga then
       modeS.raga.onUnshift(modeS)
-      modeS.closet[modeS.raga.name].lex = modeS.lex
+      modeS.closet[modeS.raga.name].lex = modeS.txtbuf.lex
    end
    -- Switch in the new raga and associated lexer
    modeS.raga = modeS.closet[raga_name].raga
-   modeS.lex = modeS.closet[raga_name].lex
+   modeS.txtbuf.lex = modeS.closet[raga_name].lex
    modeS.raga.onShift(modeS)
    modeS:updatePrompt()
    return modeS
@@ -511,6 +511,11 @@ changes to the cursor and contents, so we set those flags.
 
 #!lua
 function ModeS.setTxtbuf(modeS, txtbuf)
+   -- Copy the lexer and suggestions over to the new Txtbuf
+   -- #todo keep the same Txtbuf around (updating it using :replace())
+   -- rather than swapping it out
+   txtbuf.lex = modeS.txtbuf.lex
+   txtbuf.active_suggestions = modeS.txtbuf.active_suggestions
    modeS.txtbuf = txtbuf
    modeS.txtbuf.cursor_changed = true
    modeS.txtbuf.contents_changed = true
@@ -574,7 +579,7 @@ function ModeS.evalFromCursor(modeS)
    local top = modeS.hist.n
    local cursor = modeS.hist.cursor
    for i = cursor, top do
-      modeS.txtbuf = modeS.hist:index(i)
+      modeS:setTxtbuf(modeS.hist:index(i))
       modeS:eval()
    end
 end

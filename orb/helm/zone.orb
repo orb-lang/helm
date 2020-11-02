@@ -309,73 +309,6 @@ function Zone.beTouched(zone)
 end
 #/lua
 
-*** _writeLines(write, zone, str)
-
-#!lua
-
-local function _nl(zone)
-   return a.jump.col(zone:clientBounds().left) .. a.jump.down(1)
-end
-
-local lines = import("core/string", "lines")
-
-local function _writeLines(write, zone, str)
-   local nl = _nl(zone)
-   local pr_row = zone.bounds.top
-   for line in lines(str) do
-       write(line)
-       write(nl)
-       pr_row = pr_row + 1
-       if pr_row > zone.bounds.bottom then
-          break
-       end
-   end
-end
-#/lua
-
-
-*** _renderRainbuf
-
-Render the zone contents as a Rainbuf, wrapping them *in* a Rainbuf if needed.
-
-#!lua
-local function _renderRainbuf(write, zone)
-   if not zone.contents then
-      return nil
-   end
-   assert(zone.contents.is_rainbuf)
-   local nl = _nl(zone)
-   for line in zone.contents:lineGen(zone:clientBounds():extent():rowcol()) do
-      write(line)
-      write(nl)
-   end
-end
-#/lua
-
-*** _renderTxtbuf(modeS, zone)
-
-#!lua
-local concat = assert(table.concat)
-local c = import("singletons/color", "color")
-local Token = require "repr:repr/token"
-
-local function _renderTxtbuf(modeS, zone, write)
-   local tokens = modeS.lex(zone.contents)
-   local suggestions = modeS.suggest.active_suggestions
-   for i, tok in ipairs(tokens) do
-      -- If suggestions are active and one is highlighted,
-      -- display it in grey instead of what the user has typed so far
-      -- Note this only applies once Tab has been pressed, as until then
-      -- :selectedItem() will be nil
-      if tok.cursor_offset and suggestions and suggestions:selectedItem() then
-         tokens[i] = suggestions:highlight(suggestions:selectedItem(), 80, c)
-      else
-         tokens[i] = tok:toString(c)
-      end
-   end
-   _writeLines(write, zone, concat(tokens))
-end
-#/lua
 
 *** Zone:paintBorder(write)
 
@@ -402,20 +335,49 @@ end
 *** Zone:paint(write)
 
 #!lua
+local function _nl(zone)
+   return a.jump.col(zone:clientBounds().left) .. a.jump.down(1)
+end
+
+local lines = import("core/string", "lines")
+
+local function _writeLines(write, zone)
+   local nl = _nl(zone)
+   local pr_row = zone.bounds.top
+   for line in lines(zone.contents) do
+       write(line, nl)
+       pr_row = pr_row + 1
+       if pr_row > zone.bounds.bottom then
+          break
+       end
+   end
+end
+
+local function _renderRainbuf(write, zone)
+   if not zone.contents then
+      return nil
+   end
+   assert(zone.contents.is_rainbuf)
+   local nl = _nl(zone)
+   for line in zone.contents:lineGen(zone:clientBounds():extent():rowcol()) do
+      write(line, nl)
+   end
+end
+
 function Zone.paint(zone, write)
    if not (zone.visible and zone.touched) then
       return
    end
    zone:erase(write)
    zone:paintBorder(write)
-   write(a.jump(zone:clientBounds():origin()))
-   -- actually render ze contents
-   if type(zone.contents) == "string" then
-      _writeLines(write, zone, zone.contents)
-   elseif instanceof(zone.contents, Txtbuf) then
-      _renderTxtbuf(modeS, zone, write)
-   else
-      _renderRainbuf(write, zone)
+   if zone.contents then
+      write(a.jump(zone:clientBounds():origin()))
+      -- actually render ze contents
+      if type(zone.contents) == "string" then
+         _writeLines(write, zone)
+      else
+         _renderRainbuf(write, zone)
+      end
    end
    zone.touched = false
 end

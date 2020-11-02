@@ -118,7 +118,7 @@ function Complete.getCursorPosition(modeS)
    local point = EditBase.getCursorPosition(modeS)
    local suggestion = modeS.suggest:selectedSuggestion()
    if suggestion then
-      for _, tok in ipairs(modeS.lex(modeS.txtbuf)) do
+      for _, tok in ipairs(modeS.txtbuf:tokens()) do
          if tok.cursor_offset then
             point = point + Point(0, #suggestion - tok.cursor_offset)
             break

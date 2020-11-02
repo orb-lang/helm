@@ -66,6 +66,14 @@
 
 
 
+
+
+
+
+
+
+
+
 assert(meta)
 local Codepoints = require "singletons/codepoints"
 local lines = import("core/string", "lines")
@@ -81,7 +89,8 @@ local concat, insert, remove = assert(table.concat),
 
 
 
-local Txtbuf = meta {}
+local Rainbuf = require "helm:rainbuf"
+local Txtbuf = Rainbuf:inherit()
 
 
 
@@ -89,17 +98,15 @@ local Txtbuf = meta {}
 
 
 local function cat(l)
-   if type(l) == "string" then
+   if l == nil then
+      return ""
+   elseif type(l) == "string" then
       return l
    elseif type(l) == "table" then
-      if l[1] ~= nil then
-         return concat(l)
-      else
-         return ""
-      end
+      return concat(l)
+   else
+      error("called private fn cat with type" .. type(l))
    end
-
-   error("called private fn cat with type" .. type(l))
 end
 
 
@@ -107,7 +114,7 @@ end
 
 function Txtbuf.__tostring(txtbuf)
    local closed_lines = {}
-   for k, v in ipairs(txtbuf.lines) do
+   for k, v in ipairs(txtbuf) do
       closed_lines[k] = cat(v)
    end
    return concat(closed_lines, "\n")
@@ -128,7 +135,7 @@ end
 
 function Txtbuf.currentPosition(txtbuf)
    local row, col = txtbuf.cursor:rowcol()
-   return txtbuf.lines[row], col, row
+   return txtbuf[row], col, row
 end
 
 
@@ -159,10 +166,10 @@ function Txtbuf.makeCursor(txtbuf, rowOrTable, col, basedOn)
    end
    row = row or basedOn.row
    col = col or basedOn.col
-   assert(inbounds(row, 1, #txtbuf.lines))
+   assert(inbounds(row, 1, #txtbuf))
    txtbuf:openRow(row)
    assert(inbounds(col, 1, nil))
-   col = clamp(col, nil, #txtbuf.lines[row] + 1)
+   col = clamp(col, nil, #txtbuf[row] + 1)
    return Point(row, col)
 end
 
@@ -183,7 +190,7 @@ end
 function Txtbuf.cursorIndex(txtbuf)
    local index = txtbuf.cursor.col
    for row = txtbuf.cursor.row - 1, 1, -1 do
-      index = index + #txtbuf.lines[row] + 1
+      index = index + #txtbuf[row] + 1
    end
    return index
 end
@@ -283,13 +290,13 @@ end
 
 
 function Txtbuf.openRow(txtbuf, row_num)
-   if row_num < 1 or row_num > #txtbuf.lines then
+   if row_num < 1 or row_num > #txtbuf then
       return nil
    end
-   if type(txtbuf.lines[row_num]) == "string" then
-      txtbuf.lines[row_num] = Codepoints(txtbuf.lines[row_num])
+   if type(txtbuf[row_num]) == "string" then
+      txtbuf[row_num] = Codepoints(txtbuf[row_num])
    end
-   return txtbuf.lines[row_num], row_num
+   return txtbuf[row_num], row_num
 end
 
 
@@ -306,8 +313,8 @@ function Txtbuf.nl(txtbuf)
    -- split the line
    local first = slice(line, 1, cur_col - 1)
    local second = slice(line, cur_col)
-   txtbuf.lines[cur_row] = first
-   insert(txtbuf.lines, cur_row + 1, second)
+   txtbuf[cur_row] = first
+   insert(txtbuf, cur_row + 1, second)
    txtbuf.contents_changed = true
    txtbuf:setCursor(cur_row + 1, 1)
    return false
@@ -350,7 +357,7 @@ local function _should_pair(line, cursor, frag)
 end
 
 function Txtbuf.insert(txtbuf, frag)
-   local line, cur_col = txtbuf.lines[txtbuf.cursor.row], txtbuf.cursor.col
+   local line, cur_col = txtbuf[txtbuf.cursor.row], txtbuf.cursor.col
    if _should_insert(line, cur_col, frag) then
       if _should_pair(line, cur_col, frag) then
          insert(line, cur_col, _openers[frag])
@@ -409,11 +416,11 @@ function Txtbuf.killSelection(txtbuf)
    local end_col, end_row = txtbuf:selectionEnd()
    if start_row == end_row then
       -- Deletion within a line, just remove some chars
-      deleterange(txtbuf.lines[start_row], start_col, end_col - 1)
+      deleterange(txtbuf[start_row], start_col, end_col - 1)
    else
       -- Grab both lines--we're about to remove the end line
-      local start_line, end_line = txtbuf.lines[start_row], txtbuf.lines[end_row]
-      deleterange(txtbuf.lines, start_row + 1, end_row)
+      local start_line, end_line = txtbuf[start_row], txtbuf[end_row]
+      deleterange(txtbuf, start_row + 1, end_row)
       -- Splice lines together
       for i = start_col, #start_line do
          start_line[i] = nil
@@ -522,7 +529,7 @@ function Txtbuf.right(txtbuf, disp)
          return false
       end
       new_col = new_col - #line - 1
-      line = txtbuf.lines[new_row]
+      line = txtbuf[new_row]
    end
    txtbuf:setCursor(new_row, new_col)
    return true
@@ -550,7 +557,7 @@ end
 
 function Txtbuf.down(txtbuf)
    if not txtbuf:openRow(txtbuf.cursor.row + 1) then
-      txtbuf:setCursor(nil, #txtbuf.lines[txtbuf.cursor.row] + 1)
+      txtbuf:setCursor(nil, #txtbuf[txtbuf.cursor.row] + 1)
       return false
    end
    txtbuf:setCursor(txtbuf.cursor.row + 1, nil)
@@ -567,7 +574,7 @@ function Txtbuf.startOfLine(txtbuf)
 end
 
 function Txtbuf.endOfLine(txtbuf)
-   txtbuf:setCursor(nil, #txtbuf.lines[txtbuf.cursor.row] + 1)
+   txtbuf:setCursor(nil, #txtbuf[txtbuf.cursor.row] + 1)
 end
 
 
@@ -582,7 +589,7 @@ function Txtbuf.startOfText(txtbuf)
 end
 
 function Txtbuf.endOfText(txtbuf)
-   txtbuf:setCursor(#txtbuf.lines, #txtbuf.lines[#txtbuf.lines] + 1)
+   txtbuf:setCursor(#txtbuf, #txtbuf[#txtbuf] + 1)
 end
 
 
@@ -630,7 +637,7 @@ function Txtbuf.scanFor(txtbuf, pattern, reps, forward)
       end
       if at_boundary then
          -- break out on txtbuf boundaries
-         if search_row == (forward and #txtbuf.lines or 1) then break end
+         if search_row == (forward and #txtbuf or 1) then break end
          line, search_row = txtbuf:openRow(search_row + change)
          search_pos = forward and 1 or #line + 1
       else
@@ -680,7 +687,7 @@ end
 
 
 function Txtbuf.firstNonWhitespace(txtbuf)
-   local line = txtbuf.lines[txtbuf.cursor.row]
+   local line = txtbuf[txtbuf.cursor.row]
    local new_col = 1
    while new_col <= #line do
       if match(line[new_col], '%S') then
@@ -761,14 +768,14 @@ end
 function Txtbuf.shouldEvaluate(txtbuf)
    -- Most txtbufs are one line, so we always evaluate from
    -- a one-liner, regardless of cursor location.
-   local linum = #txtbuf.lines
+   local linum = #txtbuf
    if linum == 1 then
       return true
    end
    local _, cur_col, cur_row = txtbuf:currentPosition()
    -- Evaluate if we are at the end of the first or last line (the default
    -- positions after scrolling up or down in the history)
-   if (cur_row == 1 or cur_row == linum) and cur_col > #txtbuf.lines[cur_row] then
+   if (cur_row == 1 or cur_row == linum) and cur_col > #txtbuf[cur_row] then
       return true
    end
 end
@@ -778,9 +785,64 @@ end
 
 
 
+
+
+
+function Txtbuf.initComposition(txtbuf, cols)
+   txtbuf:super"initComposition"(cols)
+   txtbuf.render_row = 1
+end
+
+
+
+
+
+
+local c = assert(require "singletons:color" . color)
+function Txtbuf._composeOneLine(txtbuf)
+   if txtbuf.render_row > #txtbuf then return nil end
+   local tokens = txtbuf:tokens(txtbuf.render_row)
+   local suggestion = txtbuf.active_suggestions
+      and txtbuf.active_suggestions:selectedItem()
+   for i, tok in ipairs(tokens) do
+      -- If suggestions are active and one is highlighted,
+      -- display it in grey instead of what the user has typed so far
+      -- Note this only applies once Tab has been pressed, as until then
+      -- :selectedItem() will be nil
+      if suggestion and tok.cursor_offset then
+         tokens[i] = txtbuf.active_suggestions:highlight(suggestion, 80, c)
+      else
+         tokens[i] = tok:toString(c)
+      end
+   end
+   txtbuf.render_row = txtbuf.render_row + 1
+   return concat(tokens)
+end
+
+
+
+
+
+
+
+
+function Txtbuf.tokens(txtbuf, row)
+   if row then
+      local cursor_col = txtbuf.cursor.row == row
+         and txtbuf.cursor.col or 0
+      return txtbuf.lex(cat(txtbuf[row]), cursor_col)
+   else
+      return txtbuf.lex(tostring(txtbuf), txtbuf:cursorIndex())
+   end
+end
+
+
+
+
+
 function Txtbuf.suspend(txtbuf)
-   for i, v in ipairs(txtbuf.lines) do
-      txtbuf.lines[i] = cat(v)
+   for i, v in ipairs(txtbuf) do
+      txtbuf[i] = cat(v)
    end
    return txtbuf
 end
@@ -795,8 +857,8 @@ end
 
 
 function Txtbuf.clone(txtbuf)
-   -- Clone to depth of 3 to get tb, tb.lines, and each lines
-   local tb = clone(txtbuf, 3)
+   -- Clone the lines as well as the Txtbuf itself
+   local tb = clone(txtbuf, 2)
    return tb:resume()
 end
 
@@ -805,23 +867,37 @@ end
 
 
 
-local function new(str)
-   str = str or ""
-   local txtbuf = meta(Txtbuf)
-   local lines = collect(lines, str)
-   if #lines == 0 then
-      lines[1] = {}
-   end
-   txtbuf.lines = lines
-   txtbuf:endOfText()
+function Txtbuf._init(txtbuf)
+   txtbuf:super"_init"()
+   -- Txtbuf needs to re-render if e.g. the suggestions have changed,
+   -- and it's reasonably cheap to just *always* re-render, so...
+   txtbuf.live = true
    txtbuf.contents_changed = false
    txtbuf.cursor_changed = false
+end
+
+function Txtbuf.replace(txtbuf, str)
+   str = str or ""
+   -- We always have at least one line--will be overwritten
+   -- if there's actual content provided in str
+   txtbuf[1] = ""
+   local i = 1
+   for line in lines(str) do
+      txtbuf[i] = line
+      i = i + 1
+   end
+   for j = i, #txtbuf do
+      txtbuf[j] = nil
+   end
+   txtbuf.contents_changed = true
+   txtbuf:endOfText()
    return txtbuf
 end
 
-Txtbuf.idEst = new
 
 
+local Txtbuf_class = setmetatable({}, Txtbuf)
+Txtbuf.idEst = Txtbuf_class
 
-return new
+return Txtbuf_class
 
