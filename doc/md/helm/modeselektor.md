@@ -524,7 +524,7 @@ end
 
 
 ```lua
-local evaluate = assert(valiant(_G, __G))
+local evaluate, req = assert(valiant(_G, __G))
 ```
 
 ```lua
@@ -532,13 +532,6 @@ local insert = assert(table.insert)
 local keys = assert(core.keys)
 
 function ModeS.__eval(modeS, chunk, headless)
-   if not modeS.original_packages then
-      -- we cache the package.loaded packages here, to preserve
-      -- everything loaded by helm and modeselektor, while letting
-      -- us hot-reload anything "require"d at the repl.
-      modeS.original_packages = Set(keys(package.loaded))
-   end
-
    if not headless then
       -- Getting ready to eval, cancel any active autocompletion
       modeS.suggest:cancel(modeS)
@@ -622,12 +615,6 @@ function ModeS.restart(modeS)
    -- and the one-and-only package.loaded
    _G.package.loaded = _loaded
    _G_back = _G_backback
-   -- we also need to clear the registry of package.loaded
-   local current_packages = Set(keys(package.loaded))
-   local new_packages = current_packages - modeS.original_packages
-   for pack in pairs(new_packages) do
-      package.loaded[pack] = nil
-   end
    -- perform rerun
    -- Replace results:
    local hist = modeS.hist
@@ -635,6 +622,8 @@ function ModeS.restart(modeS)
    local session_count = hist.cursor - hist.cursor_start
    hist.cursor = hist.cursor_start
    hist.n  = hist.n - session_count
+   -- put instrumented require in restart mode
+   req.restarting = true
    hist.stmts.savepoint_restart_session()
    for i = modeS.hist.cursor_start, top do
       local _, results = modeS:__eval(tostring(hist[i]), true)
@@ -644,6 +633,7 @@ function ModeS.restart(modeS)
          hist:persist(hist[i], results, modeS.session)
       end
    end
+   req.restarting = nil
    hist.cursor = top + 1
    hist.n = #hist
    modeS:paint()
