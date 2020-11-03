@@ -70,26 +70,6 @@ sql = assert(sql, "sql must be in _G")
 
 
 
-
-
-
-
-
-
-
-
-
-
-local deepclone = assert(core.deepclone)
-_G_back = deepclone(_G)
-
-
-
-
-
-
-
-
 uv = require "luv"
 local usecolors
 stdout = ""
