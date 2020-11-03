@@ -607,6 +607,8 @@ function ModeS.restart(modeS)
    local _G_backback = deepclone(_G_back)
    -- package has to be handled separately because it's in the registry
    local _loaded = package.loaded
+   -- so does _Bridge, for... reasons
+   local _Bridge = _Bridge
    _G = _G_back
    -- we need the existing __G, not the empty clone, in _G:
    _G.__G = __G
@@ -614,7 +616,9 @@ function ModeS.restart(modeS)
    getmetatable(__G).__index = _G
    -- and the one-and-only package.loaded
    _G.package.loaded = _loaded
+   _G._Bridge = _Bridge
    _G_back = _G_backback
+
    -- perform rerun
    -- Replace results:
    local hist = modeS.hist
