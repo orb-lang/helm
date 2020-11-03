@@ -602,13 +602,14 @@ This resets `_G` and runs all commands in the current session\.
 local deepclone = assert(core.deepclone)
 
 function ModeS.restart(modeS)
-   modeS:setStatusLine("restart")
+   modeS :setStatusLine 'restart'
+   -- remove existing result
+   modeS :setResults "" :paint()
    -- perform rerun
    -- Replace results:
    local hist = modeS.hist
-   local top = hist.n + 1
-   local session_count = hist.cursor - hist.cursor_start
-   hist.cursor = hist.cursor_start
+   local top = hist.n
+   local session_count = hist.n - hist.cursor_start + 1
    hist.n  = hist.n - session_count
    -- put instrumented require in restart mode
    req.restarting = true
@@ -622,13 +623,13 @@ function ModeS.restart(modeS)
       end
    end
    req:reset()
-   hist.cursor = top
    hist.n = #hist
-   modeS:paint()
-   uv.timer_start(uv.new_timer(), 2000, 0,
+   --hist.cursor = hist.n + 1
+   --modeS :setTxtbuf(Txtbuf()) :paint()
+   modeS :setResults(hist.result_buffer[hist.cursor]) :paint()
+   uv.timer_start(uv.new_timer(), 1500, 0,
                   function()
-                     modeS:setStatusLine("default")
-                     modeS:paint()
+                     modeS :setStatusLine 'default' :paint()
                   end)
    local restart_idle = uv.new_idle()
    restart_idle:start(function()
@@ -656,9 +657,9 @@ end
 
 ### ModeS:showModal\(text, button\_style\)
 
-Shows a modal dialog with the given text and button stylesee raga/modal\.orb for valid button styles\)\.
+Shows a modal dialog with the given text and button style
+\(see raga/modal\.orb for valid button styles\)\.
 
-\(
 When the modal closes, the button that was clicked can be retrieved
 with modeS:modalAnswer\(\)\.
 
