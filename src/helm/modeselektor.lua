@@ -606,7 +606,7 @@ function ModeS.restart(modeS)
    -- perform rerun
    -- Replace results:
    local hist = modeS.hist
-   local top = hist.cursor - 1
+   local top = hist.n + 1
    local session_count = hist.cursor - hist.cursor_start
    hist.cursor = hist.cursor_start
    hist.n  = hist.n - session_count
@@ -622,7 +622,7 @@ function ModeS.restart(modeS)
       end
    end
    req:reset()
-   hist.cursor = top + 1
+   hist.cursor = top
    hist.n = #hist
    modeS:paint()
    uv.timer_start(uv.new_timer(), 2000, 0,
