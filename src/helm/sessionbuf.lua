@@ -41,6 +41,81 @@ Sessionbuf.ROWS_PER_RESULT = 7
 
 
 
+function Sessionbuf.selectNext(buf)
+   if buf.selected_index < #buf.session then
+      buf.selected_index = buf.selected_index + 1
+      return true
+   end
+   return false
+end
+function Sessionbuf.selectPrevious(buf)
+   if buf.selected_index > 1 then
+      buf.selected_index = buf.selected_index - 1
+      return true
+   end
+   return false
+end
+
+
+
+
+
+
+
+
+local clamp = assert(require "core:math" . clamp)
+function Sessionbuf.scrollResultsDown(buf)
+   local offset = buf.resbuf.offset + 1
+   buf.resbuf:composeUpTo(offset + buf.ROWS_PER_RESULT)
+   offset = clamp(offset, 0, #buf.resbuf.lines - 1)
+   if offset ~= buf.resbuf.offset then
+      buf.resbuf.offset = offset
+      return true
+   end
+   return false
+end
+
+function Sessionbuf.scrollResultsUp(buf)
+   if buf.resbuf.offset > 1 then
+      buf.resbuf.offset = buf.resbuf.offset - 1
+      return true
+   end
+   return false
+end
+
+
+
+
+
+
+
+
+
+
+
+
+local status_cycle_map = {
+   accept = "reject",
+   reject = "ignore",
+   ignore = "skip",
+   skip   = "accept"
+}
+function Sessionbuf.toggleSelectedState(buf)
+   local premise = buf.session[buf.selected_index]
+   premise.status = status_cycle_map[premise.status]
+   return true
+end
+
+
+
+
+
+
+
+
+
+
+
 
 function Sessionbuf.clearCaches(buf)
    buf:super"clearCaches"()

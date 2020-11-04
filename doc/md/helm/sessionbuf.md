@@ -37,6 +37,81 @@ Sessionbuf.ROWS_PER_RESULT = 7
 ## Methods
 
 
+### Selection, scrolling, etc
+
+
+#### Sessionbuf:selectNext\(\), :selectPrevious\(\)
+
+Select the next/previous line in the session for possible editing\.
+
+```lua
+function Sessionbuf.selectNext(buf)
+   if buf.selected_index < #buf.session then
+      buf.selected_index = buf.selected_index + 1
+      return true
+   end
+   return false
+end
+function Sessionbuf.selectPrevious(buf)
+   if buf.selected_index > 1 then
+      buf.selected_index = buf.selected_index - 1
+      return true
+   end
+   return false
+end
+```
+
+
+#### Sessionbuf:scrollResultsDown\(\), :scrollResultsUp\(\)
+
+Scroll within the results area for the currently\-selected line\.
+
+```lua
+local clamp = assert(require "core:math" . clamp)
+function Sessionbuf.scrollResultsDown(buf)
+   local offset = buf.resbuf.offset + 1
+   buf.resbuf:composeUpTo(offset + buf.ROWS_PER_RESULT)
+   offset = clamp(offset, 0, #buf.resbuf.lines - 1)
+   if offset ~= buf.resbuf.offset then
+      buf.resbuf.offset = offset
+      return true
+   end
+   return false
+end
+
+function Sessionbuf.scrollResultsUp(buf)
+   if buf.resbuf.offset > 1 then
+      buf.resbuf.offset = buf.resbuf.offset - 1
+      return true
+   end
+   return false
+end
+```
+
+
+### Editing
+
+
+#### Sessionbuf:toggleSelectedState\(buf\)
+
+Toggles the state of the selected line, cycling through "accept", "reject",ignore", "skip"\.
+
+"
+```lua
+local status_cycle_map = {
+   accept = "reject",
+   reject = "ignore",
+   ignore = "skip",
+   skip   = "accept"
+}
+function Sessionbuf.toggleSelectedState(buf)
+   local premise = buf.session[buf.selected_index]
+   premise.status = status_cycle_map[premise.status]
+   return true
+end
+```
+
+
 ### Rendering
 
 

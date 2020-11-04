@@ -19,6 +19,54 @@ Review.prompt_char = "💬"
 
 
 
+local function _toSessionbuf(fn)
+   return function(modeS, category, value)
+      local buf = modeS.zones.results.contents
+      modeS.zones.results:beTouched()
+      return buf[fn](buf)
+   end
+end
+
+
+
+
+
+
+local NAV = Review.NAV
+
+NAV.UP   = _toSessionbuf "selectPrevious"
+NAV.DOWN = _toSessionbuf "selectNext"
+
+NAV.SHIFT_UP   = _toSessionbuf "scrollResultsUp"
+NAV.SHIFT_DOWN = _toSessionbuf "scrollResultsDown"
+
+NAV.TAB = _toSessionbuf "toggleSelectedState"
+
+
+
+
+
+
+
+
+
+
+function Review.MOUSE(modeS, category, value)
+   if value.scrolling then
+      if value.button == "MB0" then
+         NAV.SHIFT_UP(modeS, category, value)
+      elseif value.button == "MB1" then
+         NAV.SHIFT_DOWN(modeS, category, value)
+      end
+   end
+end
+
+
+
+
+
+
+
 
 
 function Review.onShift(modeS)

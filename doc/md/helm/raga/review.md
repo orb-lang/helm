@@ -15,6 +15,54 @@ Review.name = "review"
 Review.prompt_char = "💬"
 ```
 
+
+### \_toSessionbuf\(fn\)
+
+```lua
+local function _toSessionbuf(fn)
+   return function(modeS, category, value)
+      local buf = modeS.zones.results.contents
+      modeS.zones.results:beTouched()
+      return buf[fn](buf)
+   end
+end
+```
+
+
+### NAV
+
+```lua
+local NAV = Review.NAV
+
+NAV.UP   = _toSessionbuf "selectPrevious"
+NAV.DOWN = _toSessionbuf "selectNext"
+
+NAV.SHIFT_UP   = _toSessionbuf "scrollResultsUp"
+NAV.SHIFT_DOWN = _toSessionbuf "scrollResultsDown"
+
+NAV.TAB = _toSessionbuf "toggleSelectedState"
+```
+
+
+### MOUSE
+
+We use the mouse wheel to scroll the results area\. Ideally it would be nice
+to choose between the results area and the entire session display based on
+cursor position, but that'll have to wait for more general focus\-tracking\.
+
+```lua
+function Review.MOUSE(modeS, category, value)
+   if value.scrolling then
+      if value.button == "MB0" then
+         NAV.SHIFT_UP(modeS, category, value)
+      elseif value.button == "MB1" then
+         NAV.SHIFT_DOWN(modeS, category, value)
+      end
+   end
+end
+```
+
+
 ### Review\.onShift\(modeS\)
 
 We use the results area for displaying the lines and results
