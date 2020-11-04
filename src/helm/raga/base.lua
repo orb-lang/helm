@@ -43,6 +43,18 @@ end
 
 
 
+RagaBase.CTRL["^Q"] = function(modeS, category, value)
+   modeS:quit()
+end
+
+
+
+
+
+
+
+
+
 
 
 

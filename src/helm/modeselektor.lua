@@ -400,11 +400,6 @@ end
 
 
 function ModeS.actOnce(modeS, category, value)
-   -- ^Q hard coded as quit, for now
-   if category == 'CTRL' and value == '^Q' then
-      modeS:quit()
-      return true
-   end
    local handled = modeS.raga(modeS, category, value)
    if modeS.shift_to then
       modeS:shiftMode(modeS.shift_to)

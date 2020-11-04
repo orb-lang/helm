@@ -400,11 +400,6 @@ process it \(if this never occurs, we display an NYI message in the status area\
 
 ```lua
 function ModeS.actOnce(modeS, category, value)
-   -- ^Q hard coded as quit, for now
-   if category == 'CTRL' and value == '^Q' then
-      modeS:quit()
-      return true
-   end
    local handled = modeS.raga(modeS, category, value)
    if modeS.shift_to then
       modeS:shiftMode(modeS.shift_to)
@@ -688,9 +683,9 @@ end
 
 ### ModeS:showModal\(text, button\_style\)
 
-Shows a modal dialog with the given text and button style
-\(see raga/modal\.orb for valid button styles\)\.
+Shows a modal dialog with the given text and button stylesee raga/modal\.orb for valid button styles\)\.
 
+\(
 When the modal closes, the button that was clicked can be retrieved
 with modeS:modalAnswer\(\)\.
 

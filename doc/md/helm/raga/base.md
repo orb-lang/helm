@@ -37,6 +37,18 @@ RagaBase.prompt_char = "$"
 ```
 
 
+### CTRL\[^Q\]
+
+We default to having ^Q perform an immediate quit\-\-some ragas may wish to
+prompt to save changes or the like first\.
+
+```lua
+RagaBase.CTRL["^Q"] = function(modeS, category, value)
+   modeS:quit()
+end
+```
+
+
 ## \_\_call \(main input handling/dispatch\)
 
 Looks up and executes a handler for a seq\. Note that we must perform the
