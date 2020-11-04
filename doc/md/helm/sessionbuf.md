@@ -8,6 +8,8 @@ This is a type of `Rainbuf` specialized to display and edit a `Session`\.
 
 -  session:        The Session object we are displaying and editing\.
 
+-  txtbufs:        Array of `Txtbuf`s for each line of the session\.
+
 -  resbuf:         `Resbuf` for displaying the results of the selected line\.
 
 -  selected\_index: The index of the line that is selected for editing
@@ -15,6 +17,7 @@ This is a type of `Rainbuf` specialized to display and edit a `Session`\.
 ```lua
 local Rainbuf = require "helm:rainbuf"
 local Resbuf  = require "helm:resbuf"
+local Txtbuf  = require "helm:txtbuf"
 
 local Sessionbuf = Rainbuf:inherit()
 ```
@@ -23,14 +26,21 @@ local Sessionbuf = Rainbuf:inherit()
 ## Constants
 
 ```lua
-Sessionbuf.LINES_PER_RESULT = 7
+-- The (maximum) number of rows we will use for the "line" (command)
+-- (in case it is many lines long)
+Sessionbuf.ROWS_PER_LINE = 4
+-- The (maximum) number of rows we will use for the result of the selected line
+Sessionbuf.ROWS_PER_RESULT = 7
 ```
 
 
 ## Methods
 
 
-### Sessionbuf:clearCaches\(\)
+### Rendering
+
+
+#### Sessionbuf:clearCaches\(\)
 
 We have a `Resbuf` for each of our lines, pass the message along\.
 Also reset our notion of which line we're working on\.
@@ -39,12 +49,15 @@ Also reset our notion of which line we're working on\.
 function Sessionbuf.clearCaches(buf)
    buf:super"clearCaches"()
    buf.resbuf:clearCaches()
+   for _, txtbuf in ipairs(buf.txtbufs) do
+      txtbuf:clearCaches()
+   end
    buf._composeOneLine = nil
 end
 ```
 
 
-### Sessionbuf:initComposition\(cols\)
+#### Sessionbuf:initComposition\(cols\)
 
 ```lua
 local wrap = assert(coroutine.wrap)
@@ -55,7 +68,7 @@ end
 ```
 
 
-### Sessionbuf:\_composeAll\(cols\)
+#### Sessionbuf:\_composeAll\(cols\)
 
 Given the amount of state involved in our render process, it's easier
 to just do it all as a coroutine\. This method is the body of that coroutine,
@@ -78,38 +91,45 @@ function Sessionbuf._composeAll(buf)
       yield(i == 1
          and box_light:topLine(inner_cols)
          or box_light:spanningLine(inner_cols))
-      -- #todo use a Txtbuf to render the line, in order to have
-      -- syntax highlighting, and also auto-truncation/wrapping
-      -- once we implement that
-      local line = box_light:contentLine(inner_cols) ..
+      -- Render the line (which could actually be multiple physical lines)
+      -- Leave 4 columns on the left for the status icon,
+      -- and one on the right for padding
+      local line_prefix = box_light:contentLine(inner_cols) ..
          status_icons[premise.status] .. ' '
-      -- Selected premise gets a highlight and displays results
+      for line in buf.txtbufs[i]:lineGen(buf.ROWS_PER_LINE, inner_cols - 5) do
+         -- Selected premise gets a highlight
+         if i == buf.selected_index then
+            line = c.highlight(line)
+         end
+         yield(line_prefix .. line)
+         line_prefix = box_light:contentLine(inner_cols) .. '   '
+      end
+      -- Selected premise also displays results
       if i == buf.selected_index then
-         yield(line .. c.highlight(premise.line))
          yield(box_light:spanningLine(inner_cols))
          -- No need for left padding inside the box, the Rainbuf has a
          -- 3-column gutter anyway. Do want to leave 1 column of right padding
-         for line in buf.resbuf:lineGen(buf.LINES_PER_RESULT, inner_cols - 1) do
+         for line in buf.resbuf:lineGen(buf.ROWS_PER_RESULT, inner_cols - 1) do
             yield(box_light:contentLine(inner_cols) .. line)
          end
-      -- Others just get the line itself
-      else
-         yield (line .. premise.line)
       end
    end
    yield(box_light:bottomLine(inner_cols))
+   buf._composeOneLine = nil
 end
 ```
 
 
 ### Sessionbuf:\_init\(\)
 
-We have an array of sub\-Resbufs to initialize\.
+We have a Resbuf and an array of Txtbufs to initialize\.
 
 ```lua
 function Sessionbuf._init(buf)
    buf:super"_init"()
-   buf.resbuf = {}
+   buf.live = true
+   buf.resbuf = Resbuf({ n = 0 }, { scrollable = true })
+   buf.txtbufs = {}
 end
 ```
 
@@ -117,12 +137,23 @@ end
 ### Sessionbuf:replace\(session\)
 
 ```lua
+local lua_thor = assert(require "helm:lex" . lua_thor)
 function Sessionbuf.replace(buf, session)
    buf.session = session
+   for i, premise in ipairs(session) do
+      if buf.txtbufs[i] then
+         buf.txtbufs[i]:replace(premise.line)
+      else
+         buf.txtbufs[i] = Txtbuf(premise.line, { lex = lua_thor })
+      end
+   end
+   for i = #session + 1, #buf.txtbufs do
+      buf.txtbufs[i] = nil
+   end
    buf.selected_index = 1
    -- #todo evaluate the session and display the new result,
    -- along with whether there is a change
-   buf.resbuf = Resbuf(session[1].old_result or { n = 0 }, { scrollable = true })
+   buf.resbuf:replace(session[1].old_result)
 end
 ```
 
