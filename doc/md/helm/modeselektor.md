@@ -624,8 +624,6 @@ function ModeS.restart(modeS)
    end
    req:reset()
    hist.n = #hist
-   --hist.cursor = hist.n + 1
-   --modeS :setTxtbuf(Txtbuf()) :paint()
    modeS :setResults(hist.result_buffer[hist.cursor]) :paint()
    uv.timer_start(uv.new_timer(), 1500, 0,
                   function()
