@@ -198,15 +198,19 @@ processes it into tokens, which stream to the `modeselektor`\.
 local restart_watch, lume = nil, nil
 
 if _Bridge.args.listen then
-   local orb = require "orb:orb"
-   lume = orb.lume(uv.cwd())
-   lume :run() :serve(true)
-   restart_watch = uv.new_timer()
-   uv.timer_start(restart_watch, 500, 500, function()
-      if lume.has_file_change then
-         modeS:restart()
-         lume.has_file_change = nil
-      end
+   local orb_launch = uv.new_idle()
+   orb_launch:start(function()
+      orb_launch:stop()
+      local orb = require "orb:orb"
+      lume = orb.lume(uv.cwd())
+      lume :run() :serve(true)
+      restart_watch = uv.new_timer()
+      uv.timer_start(restart_watch, 500, 500, function()
+         if lume.has_file_change then
+            modeS:restart()
+            lume.has_file_change = nil
+         end
+      end)
    end)
 end
 ```
