@@ -55,7 +55,6 @@ No sense wasting a level of indent on a wrapper imho
 
 #!lua
 setfenv(1, __G)
-
 import = assert(require "core/module" . import)
 meta = import("core/meta", "meta")
 core = require "core:core"

@@ -495,9 +495,11 @@ end
 
 
 
+
 ModeS.status_lines = { default = "an repl, plz reply uwu 👀",
                        quit    = "exiting repl, owo... 🐲",
                        restart = "restarting an repl ↩️" }
+
 function ModeS.setStatusLine(modeS, status_name)
    modeS.zones.status:replace(modeS.status_lines[status_name])
    return modeS
@@ -612,7 +614,7 @@ function ModeS.restart(modeS)
    local session_count = hist.n - hist.cursor_start + 1
    hist.n  = hist.n - session_count
    -- put instrumented require in restart mode
-   req.restarting = true
+   req:restart()
    hist.stmts.savepoint_restart_session()
    for i = modeS.hist.cursor_start, top do
       local _, results = modeS:__eval(tostring(hist[i]), true)
