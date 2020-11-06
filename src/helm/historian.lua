@@ -96,7 +96,7 @@ function Historian.load(historian)
                       : bindkv { project = project_id,
                                  num_lines = number_of_lines }
    historian.cursor = number_of_lines + 1
-   historian.cursor_start = number_of_lines
+   historian.cursor_start = number_of_lines + 1
    historian.n = number_of_lines
    local counter = number_of_lines
    local idler
@@ -422,8 +422,9 @@ function Historian.append(historian, txtbuf, results, success, session)
       -- don't bother
       return false
    end
-   historian[historian.n + 1] = txtbuf
    historian.n = historian.n + 1
+   historian[historian.n] = txtbuf
+   historian.result_buffer[historian.n] = success and results
    historian:persist(txtbuf, success and results or nil, session)
    return true
 end

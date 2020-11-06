@@ -533,34 +533,19 @@ local evaluate, req = assert(valiant(_G, __G))
 local insert = assert(table.insert)
 local keys = assert(core.keys)
 
-function ModeS.__eval(modeS, chunk, headless)
-   if not headless then
-      -- Getting ready to eval, cancel any active autocompletion
-      modeS.suggest:cancel(modeS)
-   end
-   local success, results = evaluate(chunk)
+function ModeS.eval(modeS)
+   -- Getting ready to eval, cancel any active autocompletion
+   modeS.suggest:cancel(modeS)
+   local success, results = evaluate(tostring(modeS.txtbuf))
    if not success and results == 'advance' then
-      return modeS, results
-   end
-
-   if not headless then
+      modeS.txtbuf:advance()
+   else
       modeS.hist:append(modeS.txtbuf, results, success, modeS.session)
       modeS.hist.cursor = modeS.hist.n + 1
-      if success then
-         modeS.hist.result_buffer[modeS.hist.n] = results
-      end
       modeS:setResults(results)
       modeS:setTxtbuf(Txtbuf())
    end
 
-   return modeS, results
-end
-
-function ModeS.eval(modeS)
-   local _, advance = modeS:__eval(tostring(modeS.txtbuf))
-   if advance == 'advance' then
-      modeS.txtbuf:advance()
-   end
    return modeS
 end
 
@@ -576,7 +561,7 @@ function ModeS.evalFromCursor(modeS)
    local top = modeS.hist.n
    local cursor = modeS.hist.cursor
    for i = cursor, top do
-      modeS.txtbuf = modeS.hist:index(i)
+      modeS:setTxtbuf(modeS.hist:index(i))
       modeS:eval()
    end
 end
@@ -601,8 +586,6 @@ end
 
 
 
-local deepclone = assert(core.deepclone)
-
 function ModeS.restart(modeS)
    modeS :setStatusLine 'restart'
    -- remove existing result
@@ -611,23 +594,18 @@ function ModeS.restart(modeS)
    -- Replace results:
    local hist = modeS.hist
    local top = hist.n
-   local session_count = hist.n - hist.cursor_start + 1
-   hist.n  = hist.n - session_count
+   hist.n = hist.cursor_start - 1
    -- put instrumented require in restart mode
    req:restart()
    hist.stmts.savepoint_restart_session()
-   for i = modeS.hist.cursor_start, top do
-      local _, results = modeS:__eval(tostring(hist[i]), true)
-      if results ~= 'advance' then
-         hist.n = hist.n + 1
-         hist.result_buffer[hist.n] = results
-         hist:persist(hist[i], results, modeS.session)
-      end
+   for i = hist.cursor_start, top do
+      local success, results = evaluate(tostring(hist[i]))
+      assert(results ~= "advance", "Incomplete line when restarting session")
+      hist:append(hist[i], results, success, modeS.session)
    end
    req:reset()
-   hist.n = #hist
-   --hist.cursor = hist.n + 1
-   --modeS :setTxtbuf(Txtbuf()) :paint()
+   assert(hist.n == #hist, "History length mismatch after restart: n = "
+         .. tostring(hist.n) .. ", # = " , tostring(#hist))
    modeS :setResults(hist.result_buffer[hist.cursor]) :paint()
    uv.timer_start(uv.new_timer(), 1500, 0,
                   function()
