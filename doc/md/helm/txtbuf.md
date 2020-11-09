@@ -131,6 +131,20 @@ end
 ```
 
 
+### Txtbuf:contentsChanged\(\)
+
+Notification that the contents of the Txtbuf have changed\.
+Clear our render cache, and set a flag for the Modeselektor to check
+and notify others\.
+
+```lua
+function Txtbuf.contentsChanged(txtbuf)
+   txtbuf.contents_changed = true
+   txtbuf:clearCaches()
+end
+```
+
+
 ### Cursor and selection handling
 
 
@@ -324,7 +338,7 @@ function Txtbuf.nl(txtbuf)
    local second = slice(line, cur_col)
    txtbuf[cur_row] = first
    insert(txtbuf, cur_row + 1, second)
-   txtbuf.contents_changed = true
+   txtbuf:contentsChanged()
    txtbuf:setCursor(cur_row + 1, 1)
    return false
 end
@@ -372,7 +386,7 @@ function Txtbuf.insert(txtbuf, frag)
          insert(line, cur_col, _openers[frag])
       end
       insert(line, cur_col, frag)
-      txtbuf.contents_changed = true
+      txtbuf:contentsChanged()
    end
    txtbuf:setCursor(nil, cur_col + 1)
    return true
@@ -397,7 +411,7 @@ function Txtbuf.paste(txtbuf, frag)
       splice(line, cur_col, codes)
       txtbuf:setCursor(nil, cur_col + #codes)
    end
-   txtbuf.contents_changed = true
+   txtbuf:contentsChanged()
 end
 ```
 
@@ -420,7 +434,7 @@ function Txtbuf.killSelection(txtbuf)
    if not txtbuf:hasSelection() then
       return false
    end
-   txtbuf.contents_changed = true
+   txtbuf:contentsChanged()
    local start_col, start_row = txtbuf:selectionStart()
    local end_col, end_row = txtbuf:selectionEnd()
    if start_row == end_row then
@@ -734,7 +748,7 @@ end
 ### Other editing commands
 
 
-#### Txtbuf:replace\(frag\)
+#### Txtbuf:replaceChar\(frag\)
 
 Replaces the character to the right of the cursor with the given codepoint\.
 
@@ -763,7 +777,7 @@ function Txtbuf.transposeLetter(txtbuf)
    line[right] = line[left]
    line[left] = stash
    txtbuf:setCursor(nil, right + 1)
-   txtbuf.contents_changed = true
+   txtbuf:contentsChanged()
    return true
 end
 ```
@@ -888,6 +902,7 @@ function Txtbuf._init(txtbuf)
 end
 
 function Txtbuf.replace(txtbuf, str)
+   txtbuf:super"replace"(str)
    str = str or ""
    -- We always have at least one line--will be overwritten
    -- if there's actual content provided in str
@@ -900,7 +915,7 @@ function Txtbuf.replace(txtbuf, str)
    for j = i, #txtbuf do
       txtbuf[j] = nil
    end
-   txtbuf.contents_changed = true
+   txtbuf:contentsChanged()
    txtbuf:endOfText()
    return txtbuf
 end

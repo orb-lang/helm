@@ -210,6 +210,7 @@ end
 
 local lua_thor = assert(require "helm:lex" . lua_thor)
 function Sessionbuf.replace(buf, session)
+   buf:super"replace"(session)
    buf.session = session
    for i, premise in ipairs(session) do
       if buf.txtbufs[i] then

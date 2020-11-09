@@ -201,8 +201,16 @@ end
 
 *** Rainbuf:replace([res])
 
-Abstract method. Replace the contents of the Rainbuf with those from res,
-emptying it if res is nil.
+Replace the contents of the Rainbuf with those from res, emptying it
+if res is nil. Most of the implementation here is delegated to subclasses,
+but we know in general that we will want to clear any caches when the contents
+completely change.
+
+#!lua
+function Rainbuf.replace(rainbuf)
+   rainbuf:clearCaches()
+end
+#/lua
 
 
 *** Rainbuf:_init()

@@ -207,6 +207,14 @@ end
 
 
 
+function Rainbuf.replace(rainbuf)
+   rainbuf:clearCaches()
+end
+
+
+
+
+
 
 
 
