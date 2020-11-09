@@ -167,6 +167,9 @@ function Session.load(session)
       if not session.title then
          session.title = result.session_title
       end
+      if session.accepted == nil then
+         session.accepted = result.session_accepted
+      end
       local premise = {
          title = result.title,
          status = result.status,

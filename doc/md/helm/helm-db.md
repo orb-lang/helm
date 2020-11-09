@@ -580,6 +580,7 @@ UPDATE session SET title = :session_title, accepted = :accepted
 ```sql
 SELECT
    session.title AS session_title,
+   session.accepted AS session_accepted,
    session.session_id,
    session.project,
    premise.status,
