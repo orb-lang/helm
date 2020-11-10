@@ -117,16 +117,13 @@ end
 
 #### Sessionbuf:clearCaches\(\)
 
-We have a `Resbuf` for each of our lines, pass the message along\.
-Also reset our notion of which line we're working on\.
+Although we have sub\-buffers, their caches will usually remain valid
+even when ours does not, so leave them alone\.
+Discard any render coroutine we may be holding on to\.
 
 ```lua
 function Sessionbuf.clearCaches(buf)
    buf:super"clearCaches"()
-   buf.resbuf:clearCaches()
-   for _, txtbuf in ipairs(buf.txtbufs) do
-      txtbuf:clearCaches()
-   end
    buf._composeOneLine = nil
 end
 ```

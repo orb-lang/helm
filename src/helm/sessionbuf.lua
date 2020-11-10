@@ -117,12 +117,9 @@ end
 
 
 
+
 function Sessionbuf.clearCaches(buf)
    buf:super"clearCaches"()
-   buf.resbuf:clearCaches()
-   for _, txtbuf in ipairs(buf.txtbufs) do
-      txtbuf:clearCaches()
-   end
    buf._composeOneLine = nil
 end
 
