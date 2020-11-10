@@ -55,6 +55,19 @@ end
 ```
 
 
+### Quit handler
+
+We intercept ^Q to prompt the user whether to save the session before quitting\.
+
+```lua
+Review.CTRL["^Q"] = function(modeS, category, value)
+   modeS:showModal('Save changes to the session "'
+      .. modeS.hist.session.session_title .. '"?',
+      "yes_no_cancel")
+end
+```
+
+
 ### MOUSE
 
 We use the mouse wheel to scroll the results area\. Ideally it would be nice
@@ -77,12 +90,30 @@ end
 ### Review\.onShift\(modeS\)
 
 We use the results area for displaying the lines and results
-of the session in a Sessionbuf\.
+of the session in a Sessionbuf\-\-if one is not already there,
+set it up\.
+We use a modal to prompt the user to save on quit, so if a modal
+answer is set, this is what it is about\. This is rather ugly, but
+requires a whole bunch of refactoring of Ragas and Zones to improve\.
 
 ```lua
 function Review.onShift(modeS)
-   modeS.zones.results:replace(
-      Sessionbuf(modeS.hist.session, { scrollable = true }))
+   local modal_answer = modeS:modalAnswer()
+   if modal_answer then
+      if modal_answer == "yes" then
+         modeS.hist.session:save()
+         modeS:quit()
+      elseif modal_answer == "no" then
+         modeS:quit()
+      end -- Do nothing on cancel
+      return
+   end
+   local contents = modeS.zones.results.contents
+   if not contents or contents.idEst ~= Sessionbuf then
+      local buf = Sessionbuf(modeS.hist.session, { scrollable = true })
+      modeS.zones.results:replace(buf)
+      modeS.txtbuf:replace(buf:selectedPremise().title)
+   end
 end
 ```
 

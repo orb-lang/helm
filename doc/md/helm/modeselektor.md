@@ -711,7 +711,8 @@ hardly ideal, but it's not clear what the mechanism **should** look like\.
 
 ```lua
 function ModeS.modalAnswer(modeS)
-   return modeS.zones.modal.contents[1].value
+   local contents = modeS.zones.modal.contents
+   return (contents and contents.is_rainbuf) and contents[1].value or nil
 end
 ```
 
@@ -741,9 +742,9 @@ in a session, while keeping our own state separate\.
 
 \#NB
 in the registry, and uses that for access within `require`, so we must
-separately keep track of what packages were loaded so we can nil out anyextras" when we restart\.
+separately keep track of what packages were loaded so we can nil out any
+"extras" when we restart\.
 
-"
 ```lua
 local deepclone = assert(core.deepclone)
 local function new(max_extent, writer, db)

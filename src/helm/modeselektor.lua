@@ -711,7 +711,8 @@ end
 
 
 function ModeS.modalAnswer(modeS)
-   return modeS.zones.modal.contents[1].value
+   local contents = modeS.zones.modal.contents
+   return (contents and contents.is_rainbuf) and contents[1].value or nil
 end
 
 

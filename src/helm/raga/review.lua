@@ -60,6 +60,19 @@ end
 
 
 
+Review.CTRL["^Q"] = function(modeS, category, value)
+   modeS:showModal('Save changes to the session "'
+      .. modeS.hist.session.session_title .. '"?',
+      "yes_no_cancel")
+end
+
+
+
+
+
+
+
+
 
 
 function Review.MOUSE(modeS, category, value)
@@ -80,9 +93,27 @@ end
 
 
 
+
+
+
+
 function Review.onShift(modeS)
-   modeS.zones.results:replace(
-      Sessionbuf(modeS.hist.session, { scrollable = true }))
+   local modal_answer = modeS:modalAnswer()
+   if modal_answer then
+      if modal_answer == "yes" then
+         modeS.hist.session:save()
+         modeS:quit()
+      elseif modal_answer == "no" then
+         modeS:quit()
+      end -- Do nothing on cancel
+      return
+   end
+   local contents = modeS.zones.results.contents
+   if not contents or contents.idEst ~= Sessionbuf then
+      local buf = Sessionbuf(modeS.hist.session, { scrollable = true })
+      modeS.zones.results:replace(buf)
+      modeS.txtbuf:replace(buf:selectedPremise().title)
+   end
 end
 
 
