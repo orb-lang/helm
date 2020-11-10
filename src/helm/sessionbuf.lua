@@ -88,6 +88,15 @@ end
 
 
 
+function Sessionbuf.selectedPremise(buf)
+   return buf.session[buf.selected_index]
+end
+
+
+
+
+
+
 
 
 

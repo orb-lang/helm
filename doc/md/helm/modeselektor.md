@@ -345,19 +345,22 @@ local Complete  = require "helm:raga/complete"
 local Page      = require "helm:raga/page"
 local Modal     = require "helm:raga/modal"
 local Review    = require "helm:raga/review"
+local EditTitle = require "helm:raga/edit-title"
 
-ModeS.closet = { nerf =     { raga = Nerf,
-                              lex  = Lex.lua_thor },
-                 search =   { raga = Search,
-                              lex  = Lex.null },
-                 complete = { raga = Complete,
-                              lex  = Lex.lua_thor },
-                 page =     { raga = Page,
-                              lex  = Lex.null },
-                 review =   { raga = Review,
-                              lex  = Lex.null },
-                 modal =    { raga = Modal,
-                              lex  = Lex.null } }
+ModeS.closet = { nerf =       { raga = Nerf,
+                                lex  = Lex.lua_thor },
+                 search =     { raga = Search,
+                                lex  = Lex.null },
+                 complete =   { raga = Complete,
+                                lex  = Lex.lua_thor },
+                 page =       { raga = Page,
+                                lex  = Lex.null },
+                 review =     { raga = Review,
+                                lex  = Lex.null },
+                 edit_title = { raga = EditTitle,
+                                lex = Lex.null },
+                 modal =      { raga = Modal,
+                                lex  = Lex.null } }
 
 function ModeS.shiftMode(modeS, raga_name)
    -- Stash the current lexer associated with the current raga
@@ -385,9 +388,9 @@ by `onseq`\)\. It may try the dispatch multiple times if the raga indicates
 that reprocessing is needed by setting `modeS.action_complete` to =false\.
 
 Note that our common interface is `method(modeS, category, value)`,
-we need to distinguish betwen the tuple `("INSERT", "SHIFT-LEFT")`which could arrive from copy\-paste\) and `("NAV", "SHIFT-LEFT")`
-and
-\( preserve information for our fall\-through method\.
+we need to distinguish betwen the tuple `("INSERT", "SHIFT-LEFT")`
+\(which could arrive from copy\-paste\) and `("NAV", "SHIFT-LEFT")`
+and preserve information for our fall\-through method\.
 
 `act` always succeeds, meaning we need some metatable action to absorb and
 log anything unexpected\.

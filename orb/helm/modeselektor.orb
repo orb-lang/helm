@@ -345,19 +345,22 @@ local Complete  = require "helm:raga/complete"
 local Page      = require "helm:raga/page"
 local Modal     = require "helm:raga/modal"
 local Review    = require "helm:raga/review"
+local EditTitle = require "helm:raga/edit-title"
 
-ModeS.closet = { nerf =     { raga = Nerf,
-                              lex  = Lex.lua_thor },
-                 search =   { raga = Search,
-                              lex  = Lex.null },
-                 complete = { raga = Complete,
-                              lex  = Lex.lua_thor },
-                 page =     { raga = Page,
-                              lex  = Lex.null },
-                 review =   { raga = Review,
-                              lex  = Lex.null },
-                 modal =    { raga = Modal,
-                              lex  = Lex.null } }
+ModeS.closet = { nerf =       { raga = Nerf,
+                                lex  = Lex.lua_thor },
+                 search =     { raga = Search,
+                                lex  = Lex.null },
+                 complete =   { raga = Complete,
+                                lex  = Lex.lua_thor },
+                 page =       { raga = Page,
+                                lex  = Lex.null },
+                 review =     { raga = Review,
+                                lex  = Lex.null },
+                 edit_title = { raga = EditTitle,
+                                lex = Lex.null },
+                 modal =      { raga = Modal,
+                                lex  = Lex.null } }
 
 function ModeS.shiftMode(modeS, raga_name)
    -- Stash the current lexer associated with the current raga

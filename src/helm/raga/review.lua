@@ -19,6 +19,9 @@ Review.prompt_char = "💬"
 
 
 
+
+
+
 local function _toSessionbuf(fn)
    return function(modeS, category, value)
       local buf = modeS.zones.results.contents
@@ -27,20 +30,28 @@ local function _toSessionbuf(fn)
    end
 end
 
-
-
-
-
+local function _selectUsing(fn)
+   return function(modeS, category, value)
+      local buf = modeS.zones.results.contents
+      buf[fn](buf)
+      modeS.txtbuf:replace(buf:selectedPremise().title)
+      modeS.zones.results:beTouched()
+   end
+end
 
 local NAV = Review.NAV
 
-NAV.UP   = _toSessionbuf "selectPrevious"
-NAV.DOWN = _toSessionbuf "selectNext"
+NAV.UP   = _selectUsing "selectPrevious"
+NAV.DOWN = _selectUsing "selectNext"
 
 NAV.SHIFT_UP   = _toSessionbuf "scrollResultsUp"
 NAV.SHIFT_DOWN = _toSessionbuf "scrollResultsDown"
 
 NAV.TAB = _toSessionbuf "toggleSelectedState"
+
+function NAV.RETURN(modeS, category, value)
+   modeS.shift_to = "edit_title"
+end
 
 
 

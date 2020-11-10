@@ -89,14 +89,23 @@ end
 ```
 
 
+#### Sessionbuf:selectedPremise\(\)
+
+```lua
+function Sessionbuf.selectedPremise(buf)
+   return buf.session[buf.selected_index]
+end
+```
+
+
 ### Editing
 
 
 #### Sessionbuf:toggleSelectedState\(buf\)
 
-Toggles the state of the selected line, cycling through "accept", "reject",ignore", "skip"\.
+Toggles the state of the selected line, cycling through "accept", "reject",
+"ignore", "skip"\.
 
-"
 ```lua
 local status_cycle_map = {
    accept = "reject",
