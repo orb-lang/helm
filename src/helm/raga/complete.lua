@@ -70,6 +70,8 @@ local function _scrollAfter(modeS, func_name)
       zone:scrollTo(suggestions.selected_index - 1)
    end
    zone:beTouched()
+   -- Command zone needs re-render too
+   modeS.zones.command:beTouched()
 end
 
 function NAV.TAB(modeS, category, value)
@@ -95,6 +97,7 @@ function NAV.LEFT(modeS, category, value)
    _accept(modeS, category, value)
    modeS.action_complete = false
 end
+
 
 
 
@@ -126,6 +129,17 @@ function Complete.getCursorPosition(modeS)
       end
    end
    return point
+end
+
+
+
+
+
+
+
+
+function Complete.onShift(modeS)
+   _scrollAfter(modeS, "selectFirst")
 end
 
 

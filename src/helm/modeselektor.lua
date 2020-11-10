@@ -406,12 +406,13 @@ function ModeS.actOnce(modeS, category, value)
       modeS.shift_to = nil
    end
    if modeS.txtbuf.contents_changed then
-     modeS.raga.onTxtbufChanged(modeS)
-     modeS.txtbuf.contents_changed = false
+      modeS.zones.command:beTouched()
+      modeS.raga.onTxtbufChanged(modeS)
+      modeS.txtbuf.contents_changed = false
    end
    if modeS.txtbuf.cursor_changed then
-     modeS.raga.onCursorChanged(modeS)
-     modeS.txtbuf.cursor_changed = false
+      modeS.raga.onCursorChanged(modeS)
+      modeS.txtbuf.cursor_changed = false
    end
    return handled
 end
@@ -435,7 +436,6 @@ function ModeS.act(modeS, category, value)
 
    -- Replace zones
    modeS.zones.stat_col:replace(icon)
-   modeS.zones.command:replace(modeS.txtbuf)
    modeS:updatePrompt()
    -- Reflow in case command height has changed. Includes a paint.
    -- Don't allow errors encountered here to break this entire
@@ -514,6 +514,7 @@ function ModeS.setTxtbuf(modeS, txtbuf)
    modeS.txtbuf = txtbuf
    modeS.txtbuf.cursor_changed = true
    modeS.txtbuf.contents_changed = true
+   modeS.zones.command:replace(modeS.txtbuf)
    return modeS
 end
 
@@ -757,6 +758,7 @@ local function new(max_extent, writer, db)
    modeS.repl_top = ModeS.REPL_LINE
    modeS.zones = Zoneherd(modeS, writer)
    modeS:setStatusLine("default")
+   modeS.zones.command:replace(modeS.txtbuf)
    -- If we are loading an existing session, start in review mode
    if _Bridge.args.session then
       modeS.raga_default = "review"

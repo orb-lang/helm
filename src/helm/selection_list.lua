@@ -30,6 +30,10 @@ local new
 
 
 
+function SelectionList.selectFirst(list)
+   list.selected_index = 1
+end
+
 function SelectionList.selectNext(list)
    if list.selected_index < #list then
       list.selected_index = list.selected_index + 1

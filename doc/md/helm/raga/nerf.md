@@ -146,9 +146,6 @@ NAV.ALT_RETURN = NAV.SHIFT_RETURN
 local function _activateCompletion(modeS)
    if modeS.suggest.active_suggestions then
       modeS.shift_to = "complete"
-      -- #todo seems like this should be able to be handled more centrally
-      modeS.suggest.active_suggestions.selected_index = 1
-      modeS.zones.suggest:beTouched()
       return true
    else
       return false
