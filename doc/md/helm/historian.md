@@ -209,7 +209,7 @@ function Historian.persist(historian, txtbuf, results, session)
                 '',
                 status)
          : step()
-         : reset()
+      historian.insert_premise :reset()
       session.premise_ordinal = session.premise_ordinal + 1
    end
    -- If there's nothing to persist, release our savepoint
