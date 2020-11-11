@@ -115,14 +115,14 @@ NAV.DELETE    = _modeShiftOnDeleteWhenEmpty
 
 local function _acceptAtIndex(modeS, selected_index)
    local search_result = modeS.hist.last_collection[1]
-   local txtbuf, result
+   local line, result
    if #search_result > 0 then
       selected_index = selected_index or search_result.selected_index
       if selected_index == 0 then selected_index = 1 end
-      txtbuf, result = modeS.hist:index(search_result.cursors[selected_index])
+      line, result = modeS.hist:index(search_result.cursors[selected_index])
    end
    modeS.shift_to = modeS.raga_default
-   modeS:setTxtbuf(txtbuf or Txtbuf(), result)
+   modeS:setTxtbuf(Txtbuf(line), result)
    modeS:setResults(result)
 end
 
