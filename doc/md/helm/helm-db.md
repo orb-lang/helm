@@ -261,9 +261,9 @@ insert(migrations, migration_2)
 #### Version 3: Millisecond\-resolution timestamps\.
 
   We want to accomplish two things here: change the format of all existing
-timestamps, and change the default to have millisecond resolution and useT" instead of " " as the separator\.
+timestamps, and change the default to have millisecond resolution and use
+"T" instead of " " as the separator\.
 
-"
 SQLite being what it is, the latter requires us to copy everything to a new
 table\.  This must be done for the `project` and `repl` tables\.
 
@@ -363,13 +363,19 @@ insert(migrations, migration_4)
 ```
 
 
-##### Version 5 notes
+#### Version 5 notes
+
+This migration will have a number of components, which we will probably need
+to deploy in several stages, and wrap them up into a single migration\.
+
+
+##### Simple Migrations
+
+  "Simple" in the sense that they require little\-to\-no changes to the
+applications\.
 
 We need to add an `AUTOINCREMENT` to the session table to get a stable
 ordering while allowing deletions\.
-
-I'll hold off on that for awhile, because it probably won't be the only
-migration relating to sessions work that we do\.
 
 Another thing we should be adding is an index for dates on lines, like so:
 
@@ -379,6 +385,84 @@ CREATE INDEX idx_repl_time ON repl (time);
 
 This is a good idea anyway, since lines are our most expensive DB call during
 startup, and with sessions, lines will be placed out of order\.
+
+
+##### hashing and de\-duplication of results \(w\. truncation\)
+
+We want to start storing results as the hash of the repr string, and use that
+as the foreign key into `result`\.
+
+There are a number of circumstances where we will only need the hash, and by
+making the hash column of `result` a `UNIQUE`, we can get deduplication
+without needing to handle it in\-memory\.
+
+This does mean we have to pull every result, hash it, update the result
+foreign key to point to the result, and commit to a new table\.
+
+While we're at this, it might pay off to truncate our absurdly long results\.
+
+I'm probably the only database which *has* a large result collection, so maybe
+not worth the extra complexity? But I have a GB or so of data in my helm DB,
+and it's not *that* much extra work\.
+
+One minor optimization: we don't actually have to hash results which are
+smaller than 64 bytes, the length of our hash\.  We can simply treat the repr
+as the hash, and commit it twice to the database, and this will save some tiny
+amount of space\.  There are circumstances when we pull the repr \(and hence the
+hash\) without pulling the result right away, and if the result is less than 63
+bytes, we know we don't have to bother with the second database call\.
+
+I'm not convinced this is worth doing, but, I'm not convinced it isn't\.  The
+important part is that we can completely ignore this logic if we want to, and
+get the same result, as long as we bake the conditional hashing into a
+function and use that function everywhere we hash: and we're truncating
+anyway, relative to stock sha3\-512\.
+
+
+##### run table
+
+It has become clear that we need a concept of a 'run', distinct from sessions\.
+
+A run is simply everything which happens from starting helm to closing it\.
+
+At present, it's unclear to me precisely how to model this\. The model for the
+`repr` table is straightforward, although we're doing deduplication if a line
+is executed multiple times in a row, in a way we actually shouldn't: but
+conceptually, `repr` is a simple linear collection of lines executed from the
+helm\.
+
+Runs, at a base level, are a collection of lines, but there is also metadata
+we want to preserve\.  In particular, the point at which a restart is triggered,
+but I would be surprised if that is the full extent of what we want to
+preserve\.
+
+What is clear enough is that we have two tables, `run` and `run_action`\.  We
+have one entry in `run` per execution of `helm`, and the contents are stored
+in `run_action`\.  Since most of these are lines, we want a `repr` foreign key,
+which can be null, to represent the most common case, and we can probably get
+by with one more column \(perhaps `run_action.action`?\) which is a string which
+represents the type of action\.  I've been using short, human\-readable strings
+for this sort of data, but it's probably better to use a single byte of ASCII
+and rehydrate the data in\-memory\.  SQLite doesn't reserve disk space it isn't
+using, and there's an appreciable difference between storing `'line'` and
+`'restart'` versus merely `'l'` and `'r'`\.
+
+Like premises, our best bet is to make the foreign key for `run` a tuple of
+`(repr, ordinal)`, since we'll be recording every meaningful action in order\.
+
+I don't know if there's a way to enforce "every ordinal for a given repr must
+be monotonic and increasing, starting with 1" from within SQLite, but it seems
+like a common enough pattern and would be nice to have, so I'll look into it\.
+
+Our constraint for `.action` should be a string of length 1, that gives us
+plenty of flexibility while still failing on most accidental data we might
+provide to the column\.
+
+What fields we include in the `run` table itself is also an open question, and
+I'm tempted to create a `run_eav` table which just holds arbitrary key/values
+for a given run, as a species of future\-proofing\.  A little lazy, but not
+exceptionally so, and we don't have the prerequisites in place to store and
+retrieve JSON, which is a pity\.
 
 
 ### Future Migrations
