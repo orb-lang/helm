@@ -504,6 +504,14 @@ insert(migrations, migration_4)
 
 
 
+
+
+
+
+
+
+
+
 local function _prepareStatements(conn, stmts)
    return function(_, key)
       if stmts[key] then

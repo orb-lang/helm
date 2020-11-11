@@ -377,10 +377,18 @@ applications\.
 We need to add an `AUTOINCREMENT` to the session table to get a stable
 ordering while allowing deletions\.
 
+The name `repl` for our collection of lines was never great, and `line` is a
+reserved word in SQL, so we're already pushing our luck by having a `.line`
+column\.  So we'll rename to `input`, which is simple:
+
+```sql
+ALTER TABLE repl RENAME TO input;
+```
+
 Another thing we should be adding is an index for dates on lines, like so:
 
 ```sql
-CREATE INDEX idx_repl_time ON repl (time);
+CREATE INDEX idx_input_time ON input (time);
 ```
 
 This is a good idea anyway, since lines are our most expensive DB call during
@@ -426,9 +434,9 @@ It has become clear that we need a concept of a 'run', distinct from sessions\.
 A run is simply everything which happens from starting helm to closing it\.
 
 At present, it's unclear to me precisely how to model this\. The model for the
-`repl` table is straightforward, although we're doing deduplication if a line
+`input` table is straightforward, although we're doing deduplication if a line
 is executed multiple times in a row, in a way we actually shouldn't: but
-conceptually, `repl` is a simple linear collection of lines executed from the
+conceptually, `input` is a simple linear collection of lines executed from the
 helm\.
 
 Runs, at a base level, are a collection of lines, but there is also metadata
@@ -438,7 +446,7 @@ preserve\.
 
 What is clear enough is that we have two tables, `run` and `run_action`\.  We
 have one entry in `run` per execution of `helm`, and the contents are stored
-in `run_action`\.  Since most of these are lines, we want a `repl` foreign key,
+in `run_action`\.  Since most of these are lines, we want a `input` foreign key,
 which can be null, to represent the most common case, and we can probably get
 by with one more column \(perhaps `run_action.action`?\) which is a string which
 represents the type of action\.  I've been using short, human\-readable strings
@@ -448,7 +456,7 @@ using, and there's an appreciable difference between storing `'line'` and
 `'restart'` versus merely `'l'` and `'r'`\.
 
 Like premises, our best bet is to make the foreign key for `run` a tuple of
-`(repl, ordinal)`, since we'll be recording every meaningful action in order\.
+`(input, ordinal)`, since we'll be recording every meaningful action in order\.
 
 I don't know if there's a way to enforce "every ordinal for a given repr must
 be monotonic and increasing, starting with 1" from within SQLite, but it seems
