@@ -132,12 +132,11 @@ function Historian.beginMacroSession(historian, session)
    -- this is incremented for each stored line
    session.premise_ordinal = 1
    -- insert session into DB
-   historian.conn
-      : prepare(insert_session)
+   historian.stmts.insert_session
       : bind(session.session_title, historian.project_id, 1)
       : step()
    -- retrieve session id
-   session.session_id = sql.lastRowId(historian.conn)
+   session.session_id = historian.stmts.lastRowId()
 end
 
 
@@ -469,3 +468,4 @@ Historian.idEst = new
 
 
 return new
+

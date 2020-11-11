@@ -38,3 +38,4 @@ local function new(results, frozen)
    end
    return resbuf
 end
+

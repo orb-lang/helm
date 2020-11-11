@@ -23,6 +23,7 @@ end)
 
 
 
+assert(true)
 if rawget(_G, "_Bridge") then
    _Bridge.helm = true
 end
@@ -343,3 +344,4 @@ end -- of _helm
 
 
 return _helm
+
