@@ -56,33 +56,12 @@ local function _helm(_ENV)
 
 
 setfenv(1, __G)
-
 import = assert(require "core/module" . import)
 meta = import("core/meta", "meta")
 core = require "core:core"
 jit.vmdef = require "helm:helm/vmdef"
 jit.p = require "helm:helm/ljprof"
 sql = assert(sql, "sql must be in _G")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-local deepclone = assert(core.deepclone)
-_G_back = deepclone(_G)
 
 
 

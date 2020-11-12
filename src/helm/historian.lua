@@ -422,8 +422,9 @@ function Historian.append(historian, txtbuf, results, success, session)
       -- don't bother
       return false
    end
-   historian[historian.n + 1] = txtbuf
    historian.n = historian.n + 1
+   historian[historian.n] = txtbuf
+   historian.result_buffer[historian.n] = success and results
    historian:persist(txtbuf, success and results or nil, session)
    return true
 end
