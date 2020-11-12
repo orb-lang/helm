@@ -74,18 +74,22 @@ uv = require "luv"
 local usecolors
 stdout = ""
 
-if uv.guess_handle(1) == "tty" then
+
+
+
+
+
+
+
+
+
+if uv.guess_handle(1) == 'tty' then
    stdout = uv.new_tty(1, false)
    usecolors = true
 else
    stdout = uv.new_pipe(false)
    uv.pipe_open(utils.stdout, 1)
    usecolors = false
-end
-
-if not usecolors then
-   ts = tostring
-   -- #todo make this properly black and white ts
 end
 
 
@@ -114,9 +118,9 @@ end
 
 
 
-if uv.guess_handle(0) ~= "tty" or
-   uv.guess_handle(1) ~= "tty" then
-   -- Entry point for other consumers!
+if uv.guess_handle(0) ~= 'tty' or
+   uv.guess_handle(1) ~= 'tty' then
+   -- Bail if we're in a pipe
    error "stdio must be a tty"
 end
 
@@ -160,8 +164,8 @@ end
 -- make a new 'status' instance
 local s = require "status:status" (s_out)
 
-local timer = uv.new_timer()
-uv.timer_start(timer, 500, 500, function()
+local bounds_watch = uv.new_timer()
+uv.timer_start(bounds_watch, 500, 500, function()
    max_col, max_row = uv.tty_get_winsize(stdin)
    if Point(max_row, max_col) ~= modeS.max_extent then
       modeS.max_extent = Point(bind_pane(max_row, max_col))
@@ -174,6 +178,35 @@ uv.timer_start(timer, 500, 500, function()
       modeS:reflow()
    end
 end)
+
+
+
+
+
+
+
+
+
+
+
+
+
+local restart_watch, lume = nil, nil
+
+if _Bridge.args.listen then
+   uv.new_timer():start(0, 0, function()
+      local orb = require "orb:orb"
+      lume = orb.lume(uv.cwd())
+      lume :run() :serve(true)
+      restart_watch = uv.new_timer()
+      uv.timer_start(restart_watch, 500, 500, function()
+         if lume.has_file_change then
+            modeS:restart()
+            lume.has_file_change = nil
+         end
+      end)
+   end)
+end
 
 
 
@@ -247,7 +280,11 @@ local function onseq(err,seq)
    if modeS.has_quit then
       _ditch = true
       uv.read_stop(stdin)
-      uv.timer_stop(timer)
+      uv.timer_stop(bounds_watch)
+      if restart_watch then
+         uv.timer_stop(restart_watch)
+         lume.server:stop()
+      end
    end
 end
 
