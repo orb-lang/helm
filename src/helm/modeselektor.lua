@@ -492,9 +492,11 @@ end
 
 
 
+
 ModeS.status_lines = { default = "an repl, plz reply uwu 👀",
                        quit    = "exiting repl, owo... 🐲",
                        restart = "restarting an repl ↩️" }
+
 function ModeS.setStatusLine(modeS, status_name)
    modeS.zones.status:replace(modeS.status_lines[status_name])
    return modeS
@@ -527,42 +529,27 @@ end
 
 
 
-local evaluate = assert(valiant(_G, __G))
+local evaluate, req = assert(valiant(_G, __G))
 
 
 
 local insert = assert(table.insert)
 local keys = assert(core.keys)
 
-function ModeS.__eval(modeS, chunk, headless)
-   if not headless then
-      -- Getting ready to eval, cancel any active autocompletion
-      modeS.suggest:cancel(modeS)
-   end
-   local success, results = evaluate(chunk)
+function ModeS.eval(modeS)
+   -- Getting ready to eval, cancel any active autocompletion
+   modeS.suggest:cancel(modeS)
+   local success, results = evaluate(tostring(modeS.txtbuf))
    if not success and results == 'advance' then
-      return modeS, results
-   end
-
-   if not headless then
+      modeS.txtbuf:endOfText()
+      modeS.txtbuf:nl()
+   else
       modeS.hist:append(modeS.txtbuf, results, success)
       modeS.hist.cursor = modeS.hist.n + 1
-      if success then
-         modeS.hist.result_buffer[modeS.hist.n] = results
-      end
       modeS:setResults(results)
       modeS:setTxtbuf(Txtbuf())
    end
 
-   return modeS, results
-end
-
-function ModeS.eval(modeS)
-   local _, advance = modeS:__eval(tostring(modeS.txtbuf))
-   if advance == 'advance' then
-      modeS.txtbuf:endOfText()
-      modeS.txtbuf:nl()
-   end
    return modeS
 end
 
@@ -606,59 +593,31 @@ end
 
 
 
-function ModeS.resetEnvironment(modeS)
-   -- we might want to do this again, so:
-   local _G_backback = deepclone(_G_back)
-   -- package has to be handled separately because it's in the registry
-   local _loaded = package.loaded
-   _G = _G_back
-   -- we need the existing __G, not the empty clone, in _G:
-   _G.__G = __G
-   -- and we need the new _G, not the old one, as the index for __G:
-   getmetatable(__G).__index = _G
-   -- and the one-and-only package.loaded
-   _G.package.loaded = _loaded
-   _G_back = _G_backback
-   -- we also need to clear the registry of package.loaded
-   local current_packages = Set(keys(package.loaded))
-   local new_packages = current_packages - modeS.original_packages
-   for pack in pairs(new_packages) do
-      package.loaded[pack] = nil
-   end
-end
-
-
-
-
-
-
-
 
 function ModeS.restart(modeS)
-   modeS:setStatusLine("restart")
+   modeS :setStatusLine 'restart'
+   -- remove existing result
+   modeS :setResults "" :paint()
    -- perform rerun
    -- Replace results:
    local hist = modeS.hist
-   local top = hist.cursor - 1
-   local session_count = hist.cursor - hist.cursor_start
-   hist.cursor = hist.cursor_start
-   hist.n  = hist.n - session_count
+   local top = hist.n
+   hist.n = hist.cursor_start - 1
+   -- put instrumented require in restart mode
+   req:restart()
    hist.stmts.savepoint_restart_session()
-   for i = modeS.hist.cursor_start, top do
-      local _, results = modeS:__eval(tostring(hist[i]), true)
-      if results ~= 'advance' then
-         hist.n = hist.n + 1
-         hist.result_buffer[hist.n] = results
-         hist:persist(hist[i], results)
-      end
+   for i = hist.cursor_start, top do
+      local success, results = evaluate(tostring(hist[i]))
+      assert(results ~= "advance", "Incomplete line when restarting session")
+      hist:append(hist[i], results, success, modeS.session)
    end
-   hist.cursor = top + 1
-   hist.n = #hist
-   modeS:paint()
-   uv.timer_start(uv.new_timer(), 2000, 0,
+   req:reset()
+   assert(hist.n == #hist, "History length mismatch after restart: n = "
+         .. tostring(hist.n) .. ", # = " , tostring(#hist))
+   modeS :setResults(hist.result_buffer[hist.cursor]) :paint()
+   uv.timer_start(uv.new_timer(), 1500, 0,
                   function()
-                     modeS:setStatusLine("default")
-                     modeS:paint()
+                     modeS :setStatusLine 'default' :paint()
                   end)
    local restart_idle = uv.new_idle()
    restart_idle:start(function()

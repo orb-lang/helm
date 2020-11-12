@@ -357,7 +357,7 @@ end
 
 Appends a txtbuf to history and persists it\.
 
-Doesn't adjust the cursor\.
+Doesn't adjust the cursor, but does store the results in the result\_buffer\.
 
 ```lua
 function Historian.append(historian, txtbuf, results, success)
@@ -366,9 +366,10 @@ function Historian.append(historian, txtbuf, results, success)
       -- don't bother
       return false
    end
-   historian[historian.n + 1] = txtbuf
    historian.n = historian.n + 1
+   historian[historian.n] = txtbuf
    if not success then results = nil end
+   historian.result_buffer[historian.n] = results
    local line_id = historian:persist(txtbuf, results)
    historian.session:append(line_id, txtbuf, results)
    return true

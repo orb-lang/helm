@@ -365,9 +365,10 @@ function Historian.append(historian, txtbuf, results, success)
       -- don't bother
       return false
    end
-   historian[historian.n + 1] = txtbuf
    historian.n = historian.n + 1
+   historian[historian.n] = txtbuf
    if not success then results = nil end
+   historian.result_buffer[historian.n] = results
    local line_id = historian:persist(txtbuf, results)
    historian.session:append(line_id, txtbuf, results)
    return true
