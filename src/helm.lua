@@ -190,17 +190,10 @@ end)
 
 
 
-
-
-
-
-
 local restart_watch, lume = nil, nil
 
 if _Bridge.args.listen then
-   local orb_launch = uv.new_idle()
-   orb_launch:start(function()
-      orb_launch:stop()
+   uv.new_timer():start(0, 0, function()
       local orb = require "orb:orb"
       lume = orb.lume(uv.cwd())
       lume :run() :serve(true)
@@ -213,6 +206,12 @@ if _Bridge.args.listen then
       end)
    end)
 end
+
+
+
+
+
+
 
 
 

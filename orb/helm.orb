@@ -189,18 +189,11 @@ We then add a timer to check the lume for a flag indicating it has processed a
 file, and restart the modeselektor if it has.
 
 
-** Reader
-
-The reader takes a stream of data from =stdin=, asynchronously, and
-processes it into tokens, which stream to the =modeselektor=.
-
 #!lua
 local restart_watch, lume = nil, nil
 
 if _Bridge.args.listen then
-   local orb_launch = uv.new_idle()
-   orb_launch:start(function()
-      orb_launch:stop()
+   uv.new_timer():start(0, 0, function()
       local orb = require "orb:orb"
       lume = orb.lume(uv.cwd())
       lume :run() :serve(true)
@@ -214,6 +207,12 @@ if _Bridge.args.listen then
    end)
 end
 #/lua
+
+
+** Reader
+
+The reader takes a stream of data from =stdin=, asynchronously, and
+processes it into tokens, which stream to the =modeselektor=.
 
 
 *** process_escapes(seq)
