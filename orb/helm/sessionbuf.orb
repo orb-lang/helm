@@ -67,7 +67,7 @@ local clamp = assert(require "core:math" . clamp)
 function Sessionbuf.scrollResultsDown(buf)
    local offset = buf.resbuf.offset + 1
    buf.resbuf:composeUpTo(offset + buf.ROWS_PER_RESULT)
-   offset = clamp(offset, 0, #buf.resbuf.lines - 1)
+   offset = clamp(offset, 0, #buf.resbuf.lines - buf.ROWS_PER_RESULT)
    if offset ~= buf.resbuf.offset then
       buf.resbuf.offset = offset
       return true
@@ -76,7 +76,7 @@ function Sessionbuf.scrollResultsDown(buf)
 end
 
 function Sessionbuf.scrollResultsUp(buf)
-   if buf.resbuf.offset > 1 then
+   if buf.resbuf.offset > 0 then
       buf.resbuf.offset = buf.resbuf.offset - 1
       return true
    end
