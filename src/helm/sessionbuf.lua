@@ -41,19 +41,23 @@ Sessionbuf.ROWS_PER_RESULT = 7
 
 
 
-function Sessionbuf.selectNext(buf)
-   if buf.selected_index < #buf.session then
-      buf.selected_index = buf.selected_index + 1
+local clamp = assert(require "core:math" . clamp)
+function Sessionbuf.selectIndex(buf, index)
+   index = clamp(index, 1, #buf.session)
+   if index ~= buf.selected_index then
+      buf.selected_index = index
+      -- #todo evaluate the session and display the new result,
+      -- along with whether there is a change
+      buf.resbuf:replace(buf:selectedPremise().old_result)
       return true
    end
    return false
+end
+function Sessionbuf.selectNext(buf)
+   return buf:selectIndex(buf.selected_index + 1)
 end
 function Sessionbuf.selectPrevious(buf)
-   if buf.selected_index > 1 then
-      buf.selected_index = buf.selected_index - 1
-      return true
-   end
-   return false
+   return buf:selectIndex(buf.selected_index - 1)
 end
 
 
@@ -63,7 +67,6 @@ end
 
 
 
-local clamp = assert(require "core:math" . clamp)
 function Sessionbuf.scrollResultsDown(buf)
    local offset = buf.resbuf.offset + 1
    buf.resbuf:composeUpTo(offset + buf.ROWS_PER_RESULT)
@@ -228,10 +231,7 @@ function Sessionbuf.replace(buf, session)
    for i = #session + 1, #buf.txtbufs do
       buf.txtbufs[i] = nil
    end
-   buf.selected_index = 1
-   -- #todo evaluate the session and display the new result,
-   -- along with whether there is a change
-   buf.resbuf:replace(session[1].old_result)
+   buf:selectIndex(1)
 end
 
 
