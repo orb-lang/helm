@@ -136,14 +136,15 @@ returning nil if the available content is exhausted.
 *** Rainbuf:composeUpTo(line_number)
 
 Attempts to compose at least =line_number= lines to the cached =lines= array.
-Returns false if we ran out of content before that point, true otherwise.
+In order to correctly set =rainbuf.more=, we attempt to render
+one additional line.
 
 #!lua
 function Rainbuf.composeUpTo(rainbuf, line_number)
-   while rainbuf.more and #rainbuf.lines < line_number do
+   while rainbuf.more and #rainbuf.lines <= line_number do
       rainbuf:composeOneLine()
    end
-   return rainbuf.more
+   return rainbuf
 end
 #/lua
 

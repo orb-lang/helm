@@ -139,11 +139,12 @@ end
 
 
 
+
 function Rainbuf.composeUpTo(rainbuf, line_number)
-   while rainbuf.more and #rainbuf.lines < line_number do
+   while rainbuf.more and #rainbuf.lines <= line_number do
       rainbuf:composeOneLine()
    end
-   return rainbuf.more
+   return rainbuf
 end
 
 
