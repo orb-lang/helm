@@ -408,6 +408,7 @@ local function new(helm_db)
    if _Bridge.args.helm then
       if _Bridge.args.macro then
          historian.session.session_title = _Bridge.args.macro
+         historian.session.accepted = true
          historian.session.mode = "macro"
       elseif _Bridge.args.new_session then
          historian.session.session_title = _Bridge.args.new_session
