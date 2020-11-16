@@ -369,6 +369,7 @@ insert(migrations, migration_4)
 
 
 
+local migration_5 = {}
 
 
 
@@ -381,9 +382,15 @@ insert(migrations, migration_4)
 
 
 
+migration_5[1] = [[
+ALTER TABLE repl RENAME TO input;
+]]
 
 
 
+migration_5[2] = [[
+CREATE INDEX idx_input_time ON input (time);
+]]
 
 
 
@@ -391,16 +398,40 @@ insert(migrations, migration_4)
 
 
 
+local create_session_table_5 = [[
+CREATE TABLE IF NOT EXISTS session_5 (
+   session_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   title TEXT,
+   project INTEGER,
+   accepted INTEGER NOT NULL DEFAULT 0 CHECK (accepted = 0 or accepted = 1),
+   vc_hash TEXT,
+   FOREIGN KEY (project)
+      REFERENCES project (project_id)
+      ON DELETE CASCADE
+);
+]]
 
 
 
 
 
 
+migration_5[3] = create_session_table_5
 
 
+migration_5[4] = [[
+INSERT INTO session_5(title, project, accepted, vc_hash)
+SELECT title, project, accepted, vc_hash FROM session
+;
+]]
 
+migration_5[5] = [[
+DROP TABLE session;
+]]
 
+migration_5[6] = [[
+ALTER TABLE session_5 RENAME TO session;
+]]
 
 
 
@@ -450,15 +481,36 @@ insert(migrations, migration_4)
 
 
 
+local create_result_table_5 = [[
+CREATE TABLE IF NOT EXISTS result_5 (
+   result_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   line_id INTEGER,
+   hash text NOT NULL,
+   FOREIGN KEY (line_id)
+      REFERENCES input (line_id)
+      ON DELETE CASCADE
+   FOREIGN KEY (hash)
+      REFERENCES repr (hash)
+);
+]]
 
 
 
 
 
 
+local create_repr_table = [[
+CREATE TABLE IF NOT EXISTS repr (
+   hash TEXT PRIMARY KEY UNIQUE ON CONFLICT IGNORE,
+   repr blob
+);
+]]
 
 
 
+local create_repr_hash_idx = [[
+CREATE INDEX repr_hash_idx ON repr (hash);
+]]
 
 
 
@@ -467,9 +519,130 @@ insert(migrations, migration_4)
 
 
 
+local get_old_result_5 = [[
+SELECT result_id, line_id, repr
+FROM result
+ORDER BY result_id
+;
+]]
 
 
 
+
+
+local insert_new_result_5 = [[
+INSERT INTO result_5 (result_id, line_id, hash) VALUES (?, ?, ?);
+]]
+
+
+
+local insert_repr_5 = [[
+INSERT INTO repr (hash, repr) VALUES (?, ?);
+]]
+
+
+
+
+
+local drop_result_5 = [[
+DROP TABLE result;
+]]
+
+local rename_result_5 = [[
+ALTER TABLE result_5 RENAME TO result;
+]]
+
+
+
+
+
+
+local function migrate_result_5(conn)
+   local sha = require "util:sha" . shorthash
+   local insert_result = conn:prepare(insert_new_result_5)
+   local insert_repr = conn:prepare()
+   for result_id, line_id, repr in conn:prepare(get_old_result_5):cols() do
+      local hash = sha(repr)
+      insert_result :bind(result_id, line_id, hash)
+                    :step() :clearbind() :reset()
+      insert_repr :bind(hash, repr) :step() :clearbind() :reset()
+   end
+   conn:exec(drop_result_5)
+   conn:exec(rename_result_5)
+   return true
+end
+
+-- migration_5[7] = migrate_result_5
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local sql_vacuum = [[
+VACUUM;
+]]
+
+
+
+
+
+
+
+
+migration_5[#migration_5 + 1] = sql_vacuum
 
 
 

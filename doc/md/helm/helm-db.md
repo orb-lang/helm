@@ -363,19 +363,20 @@ insert(migrations, migration_4)
 ```
 
 
-#### Version 5 notes
+#### Version 5
 
 This migration will have a number of components, which we will probably need
-to deploy in several stages, and wrap them up into a single migration\.
+to test in several stages, and wrap them up into a single migration\.
+
+```lua
+local migration_5 = {}
+```
 
 
 ##### Simple Migrations
 
   "Simple" in the sense that they require little\-to\-no changes to the
 applications\.
-
-We need to add an `AUTOINCREMENT` to the session table to get a stable
-ordering while allowing deletions\.
 
 The name `repl` for our collection of lines was never great, and `line` is a
 reserved word in SQL, so we're already pushing our luck by having a `.line`
@@ -394,14 +395,52 @@ CREATE INDEX idx_input_time ON input (time);
 This is a good idea anyway, since lines are our most expensive DB call during
 startup, and with sessions, lines will be placed out of order\.
 
+We need to add an `AUTOINCREMENT` to the session table to get a stable
+ordering while allowing deletions, and adding constraints means a full copy:
+
+```sql
+CREATE TABLE IF NOT EXISTS session_5 (
+   session_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   title TEXT,
+   project INTEGER,
+   accepted INTEGER NOT NULL DEFAULT 0 CHECK (accepted = 0 or accepted = 1),
+   vc_hash TEXT,
+   FOREIGN KEY (project)
+      REFERENCES project (project_id)
+      ON DELETE CASCADE
+);
+```
+
+We'll move this to the top once this migration is complete; it's more
+important to have an at\-a\-glance view into the schema, and we don't have
+transclusions yet\.
+
+```lua
+migration_5[3] = create_session_table_5
+```
+
+```sql
+INSERT INTO session_5(title, project, accepted, vc_hash)
+SELECT title, project, accepted, vc_hash FROM session
+;
+```
+
+```sql
+DROP TABLE session;
+```
+
+```sql
+ALTER TABLE session_5 RENAME TO session;
+```
+
 
 ##### hashing and de\-duplication of results \(w\. truncation\)
 
 We want to start storing results as the hash of the repr string, and use that
-as the foreign key into `result`\.
+as the foreign key into a new table, `repr`\.
 
 There are a number of circumstances where we will only need the hash, and by
-making the hash column of `result` a `UNIQUE`, we can get deduplication
+making the hash column of `repr` a `UNIQUE`, we can get deduplication
 without needing to handle it in\-memory\.
 
 This does mean we have to pull every result, hash it, update the result
@@ -409,9 +448,9 @@ foreign key to point to the result, and commit to a new table\.
 
 While we're at this, it might pay off to truncate our absurdly long results\.
 
-I'm probably the only database which *has* a large result collection, so maybe
-not worth the extra complexity? But I have a GB or so of data in my helm DB,
-and it's not *that* much extra work\.
+It's likely I have the only database which *has* a large result collection, so
+maybe not worth the extra complexity? But I have a GB or so of data in my helm
+DB, and it's not *that* much extra work\.
 
 One minor optimization: we don't actually have to hash results which are
 smaller than 64 bytes, the length of our hash\.  We can simply treat the repr
@@ -425,6 +464,121 @@ important part is that we can completely ignore this logic if we want to, and
 get the same result, as long as we bake the conditional hashing into a
 function and use that function everywhere we hash: and we're truncating
 anyway, relative to stock sha3\-512\.
+
+For reference, here's the current schema of `result`:
+
+```sql
+CREATE TABLE IF NOT EXISTS result (
+   result_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   line_id INTEGER,
+   repr text NOT NULL,
+   value blob,
+   FOREIGN KEY (line_id)
+      REFERENCES repl (line_id)
+      ON DELETE CASCADE
+);
+```
+
+Our new version looks like this:
+
+```sql
+CREATE TABLE IF NOT EXISTS result_5 (
+   result_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   line_id INTEGER,
+   hash text NOT NULL,
+   FOREIGN KEY (line_id)
+      REFERENCES input (line_id)
+      ON DELETE CASCADE
+   FOREIGN KEY (hash)
+      REFERENCES repr (hash)
+);
+```
+
+Although it might be worth it to create a whole new `input` table, rather than
+using `ALTER TABLE`, simply to change the foreign key to `input_id`\.
+
+And we need our `repr` table as well:
+
+```sql
+CREATE TABLE IF NOT EXISTS repr (
+   hash TEXT PRIMARY KEY UNIQUE ON CONFLICT IGNORE,
+   repr blob
+);
+```
+
+Which should have an index on hash:
+
+```sql
+CREATE INDEX repr_hash_idx ON repr (hash);
+```
+
+Now for the fun part: we need a function which will create the new table,
+select every line, hash the `repr` field, write the new hash and repr to
+`repr`, and write the rest of the contents to `result_5`, then drop `result`
+and rename\.
+
+We want the results in order of entry:
+
+```sql
+SELECT result_id, line_id, repr
+FROM result
+ORDER BY result_id
+;
+```
+
+We never used `value` for anything, so we can safely leave it behind\.
+
+To put it back:
+
+```sql
+INSERT INTO result_5 (result_id, line_id, hash) VALUES (?, ?, ?);
+```
+
+To write the hash:
+
+```sql
+INSERT INTO repr (hash, repr) VALUES (?, ?);
+```
+
+Letting our UNIQUE constraint perform deduplication\.
+
+Then drop and rename:
+
+```sql
+DROP TABLE result;
+```
+
+```sql
+ALTER TABLE result_5 RENAME TO result;
+```
+
+Now we tie it all together in a function\.  `sha` is required locally, because
+migrations are run seldom; by the nature of `valiant` and `helm`, we'll need
+the function elsewhere, but this is good practice\.
+
+```lua
+local function migrate_result_5(conn)
+   local sha = require "util:sha" . shorthash
+   local insert_result = conn:prepare(insert_new_result_5)
+   local insert_repr = conn:prepare()
+   for result_id, line_id, repr in conn:prepare(get_old_result_5):cols() do
+      local hash = sha(repr)
+      insert_result :bind(result_id, line_id, hash)
+                    :step() :clearbind() :reset()
+      insert_repr :bind(hash, repr) :step() :clearbind() :reset()
+   end
+   conn:exec(drop_result_5)
+   conn:exec(rename_result_5)
+   return true
+end
+
+-- migration_5[7] = migrate_result_5
+```
+
+It will be interesting to see if this actually makes my database smaller\.  It
+seems likely, but it triples the size of small, unique values, and only
+shrinks the storage requirement for larger prints\.  But I must have a few
+hundred copies of `uv` alone in there\.  We'll see\.
 
 
 ##### run table
@@ -471,6 +625,25 @@ I'm tempted to create a `run_eav` table which just holds arbitrary key/values
 for a given run, as a species of future\-proofing\.  A little lazy, but not
 exceptionally so, and we don't have the prerequisites in place to store and
 retrieve JSON, which is a pity\.
+
+
+##### VACUUM
+
+We're leaving behind a great deal of empty space, which we should clean up\.
+
+```sql
+VACUUM;
+```
+
+This step should probably be added to the end of the migrate command itself,
+it's hard to see a downside in doing it\.
+
+Since I'm not done with the migration, I don't know the correct number, so
+we'll insert this manually\.
+
+```lua
+migration_5[#migration_5 + 1] = sql_vacuum
+```
 
 
 ### Future Migrations
