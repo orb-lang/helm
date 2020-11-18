@@ -624,6 +624,19 @@ ORDER BY
 ;
 ]]
 
+session_sql.get_sessions_from_project = [[
+SELECT
+   session_id,
+   CAST(accepted AS REAL) As accepted
+FROM
+   session
+WHERE
+   project = ?
+ORDER BY
+   session.session_id
+;
+]]
+
 session_sql.get_sessions_by_project = [[
 SELECT session_id FROM session
 WHERE project = ?

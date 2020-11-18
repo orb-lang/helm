@@ -625,6 +625,19 @@ ORDER BY
 ```
 
 ```sql
+SELECT
+   session_id,
+   CAST(accepted AS REAL) As accepted
+FROM
+   session
+WHERE
+   project = ?
+ORDER BY
+   session.session_id
+;
+```
+
+```sql
 SELECT session_id FROM session
 WHERE project = ?
 ORDER BY session_id
