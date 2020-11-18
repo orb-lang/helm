@@ -482,13 +482,13 @@ SELECT CAST (line_id AS REAL), line FROM repl
 ]]
 
 historian_sql.get_number_of_lines = [[
-SELECT CAST (count(line) AS REAL) FROM repl
+SELECT CAST (count(line) AS REAL) from repl
    WHERE project = ?
 ;
 ]]
 
 historian_sql.get_project = [[
-SELECT CAST(project_id AS REAL) FROM project
+SELECT project_id FROM project
    WHERE directory = ?;
 ]]
 
@@ -608,7 +608,7 @@ ORDER BY result.result_id;
 ]]
 
 session_sql.get_project_by_dir = [[
-SELECT CAST (project_id AS REAL) FROM project WHERE directory = ?;
+SELECT project_id FROM project WHERE directory = ?;
 ]]
 
 session_sql.get_accepted_by_dir = [[

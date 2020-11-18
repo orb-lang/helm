@@ -482,13 +482,13 @@ SELECT CAST (line_id AS REAL), line FROM repl
 #/sql
 
 #!sql @historian_sql.get_number_of_lines #asLua
-SELECT CAST (count(line) AS REAL) FROM repl
+SELECT CAST (count(line) AS REAL) from repl
    WHERE project = ?
 ;
 #/sql
 
 #!sql @historian_sql.get_project #asLua
-SELECT CAST(project_id AS REAL) FROM project
+SELECT project_id FROM project
    WHERE directory = ?;
 #/sql
 
@@ -608,7 +608,7 @@ ORDER BY result.result_id;
 #/sql
 
 #!sql @session_sql.get_project_by_dir #asLua
-SELECT CAST (project_id AS REAL) FROM project WHERE directory = ?;
+SELECT project_id FROM project WHERE directory = ?;
 #/sql
 
 #!sql @session_sql.get_accepted_by_dir #asLua

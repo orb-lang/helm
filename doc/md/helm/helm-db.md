@@ -482,13 +482,13 @@ SELECT CAST (line_id AS REAL), line FROM repl
 ```
 
 ```sql
-SELECT CAST (count(line) AS REAL) FROM repl
+SELECT CAST (count(line) AS REAL) from repl
    WHERE project = ?
 ;
 ```
 
 ```sql
-SELECT CAST(project_id AS REAL) FROM project
+SELECT project_id FROM project
    WHERE directory = ?;
 ```
 
@@ -608,7 +608,7 @@ ORDER BY result.result_id;
 ```
 
 ```sql
-SELECT CAST (project_id AS REAL) FROM project WHERE directory = ?;
+SELECT project_id FROM project WHERE directory = ?;
 ```
 
 ```sql
