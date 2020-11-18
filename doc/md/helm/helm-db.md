@@ -370,6 +370,7 @@ to test in several stages, and wrap them up into a single migration\.
 
 ```lua
 local migration_5 = {}
+insert(migrations, migration_5)
 ```
 
 
@@ -501,8 +502,8 @@ And we need our `repr` table as well:
 
 ```sql
 CREATE TABLE IF NOT EXISTS repr (
-   hash TEXT PRIMARY KEY UNIQUE ON CONFLICT IGNORE,
-   repr blob
+   hash TEXT PRIMARY KEY ON CONFLICT IGNORE,
+   repr BLOB
 );
 ```
 
@@ -540,7 +541,7 @@ To write the hash:
 INSERT INTO repr (hash, repr) VALUES (?, ?);
 ```
 
-Letting our UNIQUE constraint perform deduplication\.
+Letting our ON CONFLICT IGNORE perform deduplication\.
 
 Then drop and rename:
 
@@ -627,25 +628,6 @@ exceptionally so, and we don't have the prerequisites in place to store and
 retrieve JSON, which is a pity\.
 
 
-##### VACUUM
-
-We're leaving behind a great deal of empty space, which we should clean up\.
-
-```sql
-VACUUM;
-```
-
-This step should probably be added to the end of the migrate command itself,
-it's hard to see a downside in doing it\.
-
-Since I'm not done with the migration, I don't know the correct number, so
-we'll insert this manually\.
-
-```lua
-migration_5[#migration_5 + 1] = sql_vacuum
-```
-
-
 ### Future Migrations
 
 Right now, `helm` is omokase: you get some readline commands, and you get the
@@ -726,7 +708,7 @@ helm_db.historian_sql = historian_sql
 ##### Insertions
 
 ```sql
-INSERT INTO repl (project, line) VALUES (:project, :line);
+INSERT INTO input (project, line) VALUES (:project, :line);
 ```
 
 ```sql
@@ -752,14 +734,14 @@ VALUES
 ##### Selections
 
 ```sql
-SELECT CAST (line_id AS REAL), line FROM repl
+SELECT CAST (line_id AS REAL), line FROM input
    WHERE project = :project
    ORDER BY line_id DESC
    LIMIT :num_lines;
 ```
 
 ```sql
-SELECT CAST (count(line) AS REAL) from repl
+SELECT CAST (count(line) AS REAL) from input
    WHERE project = ?
 ;
 ```
@@ -830,13 +812,13 @@ SELECT
    premise.ordinal,
    premise.status,
    premise.title,
-   repl.line,
-   repl.time,
-   repl.line_id
+   input.line,
+   input.time,
+   input.line_id
 FROM
    session
 INNER JOIN premise ON premise.session = session.session_id
-INNER JOIN repl ON repl.line_id = premise.line
+INNER JOIN input ON input.line_id = premise.line
 WHERE session.session_id = ?
 ORDER BY premise.ordinal
 ;
@@ -908,7 +890,7 @@ AND
 
 ```sql
 INSERT INTO
-   repl (project, line, time)
+   input (project, line, time)
 VALUES (?, ?, ?)
 ;
 ```

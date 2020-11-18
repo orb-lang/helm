@@ -370,6 +370,7 @@ insert(migrations, migration_4)
 
 
 local migration_5 = {}
+insert(migrations, migration_5)
 
 
 
@@ -501,8 +502,8 @@ CREATE TABLE IF NOT EXISTS result_5 (
 
 local create_repr_table = [[
 CREATE TABLE IF NOT EXISTS repr (
-   hash TEXT PRIMARY KEY UNIQUE ON CONFLICT IGNORE,
-   repr blob
+   hash TEXT PRIMARY KEY ON CONFLICT IGNORE,
+   repr BLOB
 );
 ]]
 
@@ -631,25 +632,6 @@ end
 
 
 
-local sql_vacuum = [[
-VACUUM;
-]]
-
-
-
-
-
-
-
-
-migration_5[#migration_5 + 1] = sql_vacuum
-
-
-
-
-
-
-
 
 
 
@@ -726,7 +708,7 @@ helm_db.historian_sql = historian_sql
 
 
 historian_sql.insert_line = [[
-INSERT INTO repl (project, line) VALUES (:project, :line);
+INSERT INTO input (project, line) VALUES (:project, :line);
 ]]
 
 historian_sql.insert_result = [[
@@ -752,14 +734,14 @@ VALUES
 
 
 historian_sql.get_recent = [[
-SELECT CAST (line_id AS REAL), line FROM repl
+SELECT CAST (line_id AS REAL), line FROM input
    WHERE project = :project
    ORDER BY line_id DESC
    LIMIT :num_lines;
 ]]
 
 historian_sql.get_number_of_lines = [[
-SELECT CAST (count(line) AS REAL) from repl
+SELECT CAST (count(line) AS REAL) from input
    WHERE project = ?
 ;
 ]]
@@ -830,13 +812,13 @@ SELECT
    premise.ordinal,
    premise.status,
    premise.title,
-   repl.line,
-   repl.time,
-   repl.line_id
+   input.line,
+   input.time,
+   input.line_id
 FROM
    session
 INNER JOIN premise ON premise.session = session.session_id
-INNER JOIN repl ON repl.line_id = premise.line
+INNER JOIN input ON input.line_id = premise.line
 WHERE session.session_id = ?
 ORDER BY premise.ordinal
 ;
@@ -908,7 +890,7 @@ AND
 
 session_sql.insert_line = [[
 INSERT INTO
-   repl (project, line, time)
+   input (project, line, time)
 VALUES (?, ?, ?)
 ;
 ]]
