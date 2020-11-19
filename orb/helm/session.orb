@@ -157,9 +157,18 @@ end
 
 function Session.load(session)
    if not session.session_id then
-      session.session_id = session.stmts.get_session_by_project_and_title
-                              :bind(session.project_id, session.session_title)
-                              :step()[1]
+      local result = session.stmts.get_session_by_project_and_title
+                        :bind(session.project_id, session.session_title)
+                        :step()
+      if not result then
+         -- #todo This should probably raise an error that helm.orb handles,
+         -- but Pylon would then need to understand the idea of a dirty exit,
+         -- so for now, we can just exit directly.
+         io.stderr:write('No session named "', session.session_title,
+            '" found. Use br helm -n to create a new session.\n')
+         os.exit(1)
+      end
+      session.session_id = result[1]
    end
    local stmt = session.stmts.get_session_by_id
                   :bind(session.session_id)
