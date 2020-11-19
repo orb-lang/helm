@@ -55,7 +55,7 @@ local new
 function Session.premiseCount(session)
    local count = 0
    for _, premise in ipairs(session) do
-      if premise.state == "accept" or premise.state == "reject" then
+      if premise.status == "accept" or premise.status == "reject" then
          count = count + 1
       end
    end
@@ -71,7 +71,7 @@ end
 function Session.passCount(session)
    local count = 0
    for _, premise in ipairs(session) do
-      if premise.state == "accept" and premise.same then
+      if premise.status == "accept" and premise.same then
          count = count + 1
       end
    end
@@ -227,13 +227,13 @@ function Session.save(session)
    if not session.session_id then
       session.stmts.insert_session:bindkv(session):step()
       session.session_id = session.stmts.lastRowId()
-   -- Otherwise possibly update its title and accepted state
+   -- Otherwise possibly update its title and accepted status
    else
       session.stmts.update_session:bindkv(session):step()
    end
    -- First, remove any "skip"ped premises from the session
    for i, premise in ipairs(session) do
-      if premise.state == "skip" then session[i] = nil end
+      if premise.status == "skip" then session[i] = nil end
    end
    compact(session)
    -- And now from the DB (the query picks up session.n directly)
