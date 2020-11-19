@@ -708,8 +708,6 @@ separately keep track of what packages were loaded so we can nil out any
 local deepclone = assert(core.deepclone)
 local function new(max_extent, writer, db)
    local modeS = meta(ModeS)
-   modeS._G_back = deepclone(_G)
-   modeS.original_packages = Set(keys(package.loaded))
 
    modeS.txtbuf = Txtbuf()
    modeS.hist  = Historian(db)
