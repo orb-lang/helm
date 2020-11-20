@@ -108,5 +108,17 @@ addall(EditBase.ALT, {
 
 
 
+
+
+
+
+
+function EditBase.getCursorPosition(modeS)
+   return modeS.zones.command.bounds:origin() + modeS.txtbuf.cursor - 1
+end
+
+
+
+
 return EditBase
 

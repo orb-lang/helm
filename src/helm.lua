@@ -69,7 +69,6 @@ sql = assert(sql, "sql must be in _G")
 
 
 
-
 uv = require "luv"
 local usecolors
 stdout = ""
@@ -350,8 +349,6 @@ uv.stop()
 
 io.stdout:flush()
 
--- nil out our extra copy of _G
-_G_back = nil
 
 end -- of _helm
 

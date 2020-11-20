@@ -19,6 +19,7 @@ local sub, gsub, rep = assert(string.sub),
 
 
 
+
 local RagaBase_meta = {}
 local RagaBase = setmetatable({}, RagaBase_meta)
 
@@ -32,6 +33,19 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+RagaBase.CTRL["^Q"] = function(modeS, category, value)
+   modeS:quit()
+end
 
 
 
@@ -69,9 +83,25 @@ end
 
 
 
+
+function RagaBase.getCursorPosition(modeS)
+   return nil
+end
+
+
+
+
+
+
+
+
+
+
+
 function RagaBase.onTxtbufChanged(modeS)
    return
 end
+
 
 
 
@@ -92,6 +122,7 @@ end
 
 
 
+
 function RagaBase.onShift(modeS)
    return
 end
@@ -102,9 +133,11 @@ end
 
 
 
+
 function RagaBase.onUnshift(modeS)
    return
 end
+
 
 
 
