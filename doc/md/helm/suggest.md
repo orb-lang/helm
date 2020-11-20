@@ -10,7 +10,6 @@ local SelectionList = require "helm:selection_list"
 local Resbuf = require "helm:resbuf"
 local names = require "repr:names"
 local insert, sort = assert(table.insert), assert(table.sort)
-local c, no_color = import("singletons:color", "color", "no_color")
 
 ```
 
