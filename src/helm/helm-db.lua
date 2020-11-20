@@ -719,18 +719,6 @@ historian_sql.insert_project = [[
 INSERT INTO project (directory) VALUES (?);
 ]]
 
-historian_sql.insert_session = [[
-INSERT INTO session (title, project, accepted) VALUES (?, ?, ?);
-]]
-
-historian_sql.insert_premise = [[
-INSERT INTO
-   premise (session, line, ordinal, title, status)
-VALUES
-   (?, ?, ?, ?, ?);
-]]
-
-
 
 
 historian_sql.get_recent = [[
@@ -804,12 +792,44 @@ local session_sql = {}
 
 
 
+
+
+session_sql.insert_session = [[
+INSERT INTO
+  session (title, project, accepted)
+VALUES
+  (:session_title, :project_id, :accepted);
+]]
+
+session_sql.insert_premise = [[
+INSERT INTO
+   premise (session, ordinal, line, title, status)
+VALUES
+   (:session_id, :ordinal, :line_id, :title, :status);
+]]
+
+session_sql.truncate_session = [[
+DELETE FROM premise WHERE session = :session_id AND ordinal > :n;
+]]
+
+
+
+
+
+
+session_sql.update_session = [[
+UPDATE session SET title = :session_title, accepted = :accepted
+   WHERE session_id = :session_id;
+]]
+
+
+
 session_sql.get_session_by_id = [[
 SELECT
    session.title AS session_title,
+   session.accepted AS session_accepted,
    session.session_id,
    session.project,
-   premise.ordinal,
    premise.status,
    premise.title,
    input.line,
@@ -851,13 +871,6 @@ ORDER BY
 ;
 ]]
 
-
-
-
-local session_get_project_info = [[
-SELECT project_id, directory from project;
-]]
-
 session_sql.get_sessions_from_project = [[
 SELECT
    session_id,
@@ -876,6 +889,20 @@ SELECT session_id FROM session
 WHERE project = ?
 ORDER BY session_id
 ;
+]]
+
+session_sql.get_session_by_project_and_title = [[
+SELECT CAST (session_id AS REAL) FROM session
+WHERE project = ? AND title = ?
+ORDER BY session_id
+;
+]]
+
+
+
+
+local session_get_project_info = [[
+SELECT project_id, directory from project;
 ]]
 
 session_sql.update_premise_line = [[

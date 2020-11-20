@@ -1,6 +1,5 @@
 # Rainbuf
 
-
 This class encapsulates data to be written to the screen\.
 
 As it stands, we have two special cases, the `txtbuf` and `results`\.
@@ -55,6 +54,7 @@ event doesn't hit a `target` then the default handler is engaged\.
 We also have `offset`, a number, and `more`, which is `true` if the buffer
 continues past the edge of the zone and otherwise falsy\.
 
+
 #### includes
 
 ```lua
@@ -68,7 +68,9 @@ local lineGen = import("repr:repr", "lineGen")
 local Rainbuf = meta {}
 ```
 
+
 ## Methods
+
 
 ### Rainbuf:clearCaches\(\)
 
@@ -78,11 +80,10 @@ the next time lineGen is called\.
 ```lua
 local clear = assert(table.clear)
 function Rainbuf.clearCaches(rainbuf)
-   rainbuf.reprs = nil
-   rainbuf.r_num = nil
    clear(rainbuf.lines)
 end
 ```
+
 
 ### Rainbuf:initComposition\(cols\)
 
@@ -91,66 +92,62 @@ Sets up the composition process with a line width of `cols`\.
 ```lua
 local lines = import("core/string", "lines")
 function Rainbuf.initComposition(rainbuf, cols)
-   cols = cols or 80
+   rainbuf.cols = cols or 80
    if rainbuf.scrollable then
-      cols = cols - 3
+      rainbuf.cols = rainbuf.cols - 3
    end
    if rainbuf.live then
       -- this buffer needs a fresh render each time
       rainbuf:clearCaches()
    end
-   if not rainbuf.reprs then
-      rainbuf.reprs = {}
-      rainbuf.r_num = 1
-      rainbuf.more = true
-      for i = 1, rainbuf.n do
-         rainbuf.reprs[i] = rainbuf.frozen
-            and lines(rainbuf[i])
-            or lineGen(rainbuf[i], cols)
-      end
-   end
+   rainbuf.more = true
 end
 ```
 
+
 ### Rainbuf:composeOneLine\(\)
 
-Renders the next line from our `reprs` to the cached `lines` array\.
+Composes one line and saves it to the cached `lines` array\.
+Actual composition is delegated to an abstract method \_composeOneLine\.
 Sets `more` to false and returns false if we are at the end of the content,
 otherwise returns true\.
 
 ```lua
 local insert = assert(table.insert)
 function Rainbuf.composeOneLine(rainbuf)
-   while true do
-      local repr = rainbuf.reprs[rainbuf.r_num]
-      if not repr then
-         rainbuf.more = false
-         return false
-      end
-      local line = repr()
-      if line then
-         insert(rainbuf.lines, line)
-         return true
-      else
-         rainbuf.r_num = rainbuf.r_num + 1
-      end
+   local line = rainbuf:_composeOneLine()
+   if line then
+      insert(rainbuf.lines, line)
+      return true
+   else
+      rainbuf.more = false
+      return false
    end
 end
 ```
+
+
+### Rainbuf:\_composeOneLine\(\)
+
+Abstract method\. Generate the next line of content \(without caching it\),
+returning nil if the available content is exhausted\.
+
 
 ### Rainbuf:composeUpTo\(line\_number\)
 
 Attempts to compose at least `line_number` lines to the cached `lines` array\.
-Returns false if we ran out of content before that point, true otherwise\.
+In order to correctly set `rainbuf.more`, we attempt to render
+one additional line\.
 
 ```lua
 function Rainbuf.composeUpTo(rainbuf, line_number)
-   while rainbuf.more and #rainbuf.lines < line_number do
+   while rainbuf.more and #rainbuf.lines <= line_number do
       rainbuf:composeOneLine()
    end
-   return rainbuf.more
+   return rainbuf
 end
 ```
+
 
 ### Rainbuf:composeAll\(\)
 
@@ -164,6 +161,7 @@ function Rainbuf.composeAll(rainbuf)
    return rainbuf
 end
 ```
+
 
 ### Rainbuf:lineGen\(rows, cols\)
 
@@ -201,30 +199,114 @@ function Rainbuf.lineGen(rainbuf, rows, cols)
 end
 ```
 
-### new\(res?\)
+
+### Rainbuf:replace\(\[res\]\)
+
+Replace the contents of the Rainbuf with those from res, emptying it
+if res is nil\. Most of the implementation here is delegated to subclasses,
+but we know in general that we will want to clear any caches when the contents
+completely change\.
 
 ```lua
-local function new(res)
-   if type(res) == "table" and res.idEst == Rainbuf then
-      return res
-   end
-   local rainbuf = meta(Rainbuf)
-   assert(res.n, "must have n")
-   if res then
-      for i = 1, res.n do
-         rainbuf[i] = res[i]
-      end
-      rainbuf.n = res.n
-      rainbuf.frozen = res.frozen
-      rainbuf.live = res.live
-      rainbuf.scrollable = res.scrollable
-   end
+function Rainbuf.replace(rainbuf)
+   rainbuf:clearCaches()
+end
+```
+
+
+### Rainbuf:\_init\(\)
+
+Initialize the rainbuf immediately after creation\. Extracted from \_\_call
+for easy extension\.
+
+```lua
+function Rainbuf._init(rainbuf)
+   rainbuf.n = 0
    rainbuf.offset = 0
    rainbuf.lines = {}
+end
+```
+
+
+### Rainbuf\(\[res\]\[, cfg\]\)
+
+```lua
+function Rainbuf.__call(buf_class, res, cfg)
+   if type(res) == "table" then
+      if res.idEst == buf_class then
+         return res
+      elseif res.is_rainbuf then
+         error("Trying to make a Rainbuf from another type of Rainbuf")
+      end
+   end
+   local buf_M = getmetatable(buf_class)
+   local rainbuf = setmetatable({}, buf_M)
+   rainbuf:_init()
+   if cfg then
+      for k, v in pairs(cfg) do
+         rainbuf[k] = v
+      end
+   end
+   rainbuf:replace(res)
    return rainbuf
 end
+```
 
-Rainbuf.idEst = new
 
-return new
+### Rainbuf:inherit\(\[cfg\]\)
+
+Create a metatable for a "subclass" of Rainbuf\. Cribbed from Phrase:inherit\(\)\.
+
+N\.B\. This will function against either an instance \(`Rainbuf():inherit()`\)
+or the class itself \(`Rainbuf:inherit()`\), but in either case this is not true
+prototype inheritance, only behavior on the Rainbuf metatable is inherited\.
+
+```lua
+local sub = assert(string.sub)
+function Rainbuf.inherit(buf_class, cfg)
+   local parent_M = getmetatable(buf_class)
+   local child_M = setmetatable({}, parent_M)
+   -- Copy metamethods because mmethod lookup does not respect =__index=es
+   for k,v in pairs(parent_M) do
+      if sub(k, 1, 2) == "__" then
+         child_M[k] = v
+      end
+   end
+   -- But, the new MT should have itself as __index, not the parent
+   child_M.__index = child_M
+   if cfg then
+      -- this can override the above metamethod assignment
+      for k,v in pairs(cfg) do
+         child_M[k] = v
+      end
+   end
+   return child_M
+end
+```
+
+
+### Rainbuf:super\(method\_name\)
+
+We mixin core:cluster\.super\.
+
+```lua
+Rainbuf.super = assert(require "core:cluster" . super)
+```
+
+
+### Rainbuf\.is\_rainbuf
+
+We need a way to answer whether we are a Rainbuf **or any subclass**,
+attach a property at this level similar to espalier:node\.
+
+```lua
+Rainbuf.is_rainbuf = true
+```
+
+
+```lua
+local Rainbuf_class = setmetatable({}, Rainbuf)
+Rainbuf.idEst = Rainbuf_class
+
+return Rainbuf_class
 ```

@@ -1,7 +1,7 @@
 # Raga base
 
-
 Some common functionality for ragas\.
+
 
 ## Dependencies
 
@@ -13,6 +13,7 @@ local sub, gsub, rep = assert(string.sub),
                        assert(string.gsub),
                        assert(string.rep)
 ```
+
 
 ## Categories
 
@@ -34,6 +35,19 @@ When creating a new raga, remember to set:
 RagaBase.name = "raga_base"
 RagaBase.prompt_char = "$"
 ```
+
+
+### CTRL\[^Q\]
+
+We default to having ^Q perform an immediate quit\-\-some ragas may wish to
+prompt to save changes or the like first\.
+
+```lua
+RagaBase.CTRL["^Q"] = function(modeS, category, value)
+   modeS:quit()
+end
+```
+
 
 ## \_\_call \(main input handling/dispatch\)
 
@@ -62,7 +76,22 @@ end
 
 ```
 
+
+## <Raga>\.getCursorPosition\(modeS\)
+
+Computes and returns the position for the terminal cursor,
+or nil if it should be hidden\. This is a reasonable default
+as not all ragas need the cursor shown\.
+
+```lua
+function RagaBase.getCursorPosition(modeS)
+   return nil
+end
+```
+
+
 ## Events
+
 
 ### <Raga>\.onTxtbufChanged\(modeS\)
 
@@ -73,6 +102,7 @@ function RagaBase.onTxtbufChanged(modeS)
    return
 end
 ```
+
 
 ### <Raga>\.onCursorChanged\(modeS\)
 
@@ -86,6 +116,7 @@ function RagaBase.onCursorChanged(modeS)
 end
 ```
 
+
 ### <Raga>\.onShift\(modeS\)
 
 Called when first switching to the raga\. Provides an opportunity to
@@ -97,6 +128,7 @@ function RagaBase.onShift(modeS)
 end
 ```
 
+
 ### <Raga>\.onUnshift\(modeS\)
 
 Opposite of onShift\-\-called when switching away to another raga\.
@@ -106,6 +138,7 @@ function RagaBase.onUnshift(modeS)
    return
 end
 ```
+
 
 ```lua
 return RagaBase

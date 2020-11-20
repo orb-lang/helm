@@ -107,6 +107,18 @@ addall(EditBase.ALT, {
 })
 ```
 
+
+## EditBase\.getCursorPosition\(modeS\)
+
+Offset into the `command` zone, based on the Txtbuf's `cursor` property\.
+
+```lua
+function EditBase.getCursorPosition(modeS)
+   return modeS.zones.command.bounds:origin() + modeS.txtbuf.cursor - 1
+end
+```
+
+
 ```lua
 return EditBase
 ```

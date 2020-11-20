@@ -719,18 +719,6 @@ INSERT INTO result (line_id, repr) VALUES (:line_id, :repr);
 INSERT INTO project (directory) VALUES (?);
 ```
 
-```sql
-INSERT INTO session (title, project, accepted) VALUES (?, ?, ?);
-```
-
-```sql
-INSERT INTO
-   premise (session, line, ordinal, title, status)
-VALUES
-   (?, ?, ?, ?, ?);
-```
-
-
 ##### Selections
 
 ```sql
@@ -804,12 +792,44 @@ local session_sql = {}
 
 #### SQL
 
+##### Insertions
+
+```sql
+INSERT INTO
+  session (title, project, accepted)
+VALUES
+  (:session_title, :project_id, :accepted);
+```
+
+```sql
+INSERT INTO
+   premise (session, ordinal, line, title, status)
+VALUES
+   (:session_id, :ordinal, :line_id, :title, :status);
+```
+
+```sql
+DELETE FROM premise WHERE session = :session_id AND ordinal > :n;
+```
+
+##### Updates
+
+Note that insert\_premise can also serve as an update, since the table is
+declared with ON CONFLICT REPLACE and we always supply all fields
+
+```sql
+UPDATE session SET title = :session_title, accepted = :accepted
+   WHERE session_id = :session_id;
+```
+
+##### Selections
+
 ```sql
 SELECT
    session.title AS session_title,
+   session.accepted AS session_accepted,
    session.session_id,
    session.project,
-   premise.ordinal,
    premise.status,
    premise.title,
    input.line,
@@ -851,13 +871,6 @@ ORDER BY
 ;
 ```
 
-This one is a `conn:exec` so we use a closure, rather than a prepared
-statement\.
-
-```sql
-SELECT project_id, directory from project;
-```
-
 ```sql
 SELECT
    session_id,
@@ -876,6 +889,20 @@ SELECT session_id FROM session
 WHERE project = ?
 ORDER BY session_id
 ;
+```
+
+```sql
+SELECT CAST (session_id AS REAL) FROM session
+WHERE project = ? AND title = ?
+ORDER BY session_id
+;
+```
+
+This one is a `conn:exec` so we use a closure, rather than a prepared
+statement\.
+
+```sql
+SELECT project_id, directory from project;
 ```
 
 ```sql

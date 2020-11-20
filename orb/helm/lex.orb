@@ -126,18 +126,11 @@ local Txtbuf = require "helm:txtbuf"
 
 function Lex.lua_thor(code, cursor_index)
    local toks = {}
-   if not cursor_index then
-      if instanceof(code, Txtbuf) then
-         cursor_index = code:cursorIndex()
-      else
-         cursor_index = 0
-      end
-   end
-   local lb = tostring(code)
+   cursor_index = cursor_index or 0
    local fixup_cursor = false
    local pos = 1
-   while pos <= #lb do
-      local bite, new_pos, tok_t = chomp_token(lb, pos)
+   while pos <= #code do
+      local bite, new_pos, tok_t = chomp_token(code, pos)
       assert(bite and #bite > 0, "lua-thor has failed you")
       local cfg = { color = color_map[tok_t] or "no_color" }
       if inbounds(cursor_index, pos + 1, new_pos) then

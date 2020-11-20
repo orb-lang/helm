@@ -9,7 +9,7 @@ local EditBase = require "helm/raga/edit"
 local Complete = clone(EditBase, 2)
 
 Complete.name = "complete"
-Complete.prompt_char = "👉"
+Complete.prompt_char = "💬"
 
 
 
@@ -70,6 +70,8 @@ local function _scrollAfter(modeS, func_name)
       zone:scrollTo(suggestions.selected_index - 1)
    end
    zone:beTouched()
+   -- Command zone needs re-render too
+   modeS.zones.command:beTouched()
 end
 
 function NAV.TAB(modeS, category, value)
@@ -100,10 +102,46 @@ end
 
 
 
+
 function Complete.onCursorChanged(modeS)
    modeS.suggest:update(modeS)
    EditBase.onCursorChanged(modeS)
 end
+
+
+
+
+
+
+
+
+
+local Point = require "anterm:point"
+function Complete.getCursorPosition(modeS)
+   local point = EditBase.getCursorPosition(modeS)
+   local suggestion = modeS.suggest:selectedSuggestion()
+   if suggestion then
+      for _, tok in ipairs(modeS.txtbuf:tokens()) do
+         if tok.cursor_offset then
+            point = point + Point(0, #suggestion - tok.cursor_offset)
+            break
+         end
+      end
+   end
+   return point
+end
+
+
+
+
+
+
+
+
+function Complete.onShift(modeS)
+   _scrollAfter(modeS, "selectFirst")
+end
+
 
 
 

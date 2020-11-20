@@ -29,13 +29,17 @@ local SelectionList = meta {}
 local new
 ```
 
-### SelectionList:selectNext\(\), SelectionList:selectPrevious\(\)
+### SelectionList:selectFirst\(\), :selectNext\(\), :selectPrevious\(\)
 
-Moves the highlight to the next or previous item in the list\.
+Moves the highlight to the first, next or previous item in the list\.
 Answers whether the highlight was able to be moved \(false if we're
 already at the end/beginning of the list\)
 
 ```lua
+function SelectionList.selectFirst(list)
+   list.selected_index = 1
+end
+
 function SelectionList.selectNext(list)
    if list.selected_index < #list then
       list.selected_index = list.selected_index + 1

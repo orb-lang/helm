@@ -103,8 +103,7 @@ local Set = require "set:set"
 local valiant = require "valiant:valiant"
 
 local Txtbuf     = require "helm:txtbuf"
-local Resbuf     = require "helm:resbuf" -- Not currently used...
-local Rainbuf    = require "helm:rainbuf"
+local Resbuf     = require "helm:resbuf"
 local Historian  = require "helm:historian"
 local Lex        = require "helm:lex"
 local Zoneherd   = require "helm:zone"
@@ -151,6 +150,7 @@ local ModeS = meta()
 
 
 ModeS.REPL_LINE = 2
+ModeS.PROMPT_WIDTH = 3
 
 
 
@@ -236,19 +236,13 @@ end
 
 
 
+
 local Point = require "anterm:point"
 function ModeS.placeCursor(modeS)
-   local point = modeS.zones.command.bounds:origin() + modeS.txtbuf.cursor - 1
-   local suggestion = modeS.suggest:selectedSuggestion()
-   if suggestion then
-      for _, tok in ipairs(modeS.lex(modeS.txtbuf)) do
-         if tok.cursor_offset then
-            point = point + Point(0, #suggestion - tok.cursor_offset)
-            break
-         end
-      end
+   local point = modeS.raga.getCursorPosition(modeS)
+   if point then
+      modeS.write(a.jump(point), a.cursor.show())
    end
-   modeS.write(a.jump(point))
    return modeS
 end
 
@@ -258,8 +252,10 @@ end
 
 
 
+
 function ModeS.paint(modeS)
    modeS.zones:paint(modeS)
+   modeS:placeCursor(modeS)
    return modeS
 end
 
@@ -309,7 +305,7 @@ ModeS.raga_default = "nerf"
 
 
 function ModeS.continuationLines(modeS)
-   return modeS.txtbuf and #modeS.txtbuf.lines - 1 or 0
+   return modeS.txtbuf and #modeS.txtbuf - 1 or 0
 end
 
 
@@ -348,17 +344,23 @@ local Search    = require "helm:raga/search"
 local Complete  = require "helm:raga/complete"
 local Page      = require "helm:raga/page"
 local Modal     = require "helm:raga/modal"
+local Review    = require "helm:raga/review"
+local EditTitle = require "helm:raga/edit-title"
 
-ModeS.closet = { nerf =     { raga = Nerf,
-                              lex  = Lex.lua_thor },
-                 search =   { raga = Search,
-                              lex  = Lex.null },
-                 complete = { raga = Complete,
-                              lex  = Lex.lua_thor },
-                 page =     { raga = Page,
-                              lex  = Lex.null },
-                 modal =    { raga = Modal,
-                              lex  = Lex.null } }
+ModeS.closet = { nerf =       { raga = Nerf,
+                                lex  = Lex.lua_thor },
+                 search =     { raga = Search,
+                                lex  = Lex.null },
+                 complete =   { raga = Complete,
+                                lex  = Lex.lua_thor },
+                 page =       { raga = Page,
+                                lex  = Lex.null },
+                 review =     { raga = Review,
+                                lex  = Lex.null },
+                 edit_title = { raga = EditTitle,
+                                lex = Lex.null },
+                 modal =      { raga = Modal,
+                                lex  = Lex.null } }
 
 function ModeS.shiftMode(modeS, raga_name)
    -- Stash the current lexer associated with the current raga
@@ -367,11 +369,11 @@ function ModeS.shiftMode(modeS, raga_name)
    -- Guard against nil raga or lexer during startup
    if modeS.raga then
       modeS.raga.onUnshift(modeS)
-      modeS.closet[modeS.raga.name].lex = modeS.lex
+      modeS.closet[modeS.raga.name].lex = modeS.txtbuf.lex
    end
    -- Switch in the new raga and associated lexer
    modeS.raga = modeS.closet[raga_name].raga
-   modeS.lex = modeS.closet[raga_name].lex
+   modeS.txtbuf.lex = modeS.closet[raga_name].lex
    modeS.raga.onShift(modeS)
    modeS:updatePrompt()
    return modeS
@@ -401,23 +403,19 @@ end
 
 
 function ModeS.actOnce(modeS, category, value)
-   -- ^Q hard coded as quit, for now
-   if category == 'CTRL' and value == '^Q' then
-      modeS:quit()
-      return true
-   end
    local handled = modeS.raga(modeS, category, value)
    if modeS.shift_to then
       modeS:shiftMode(modeS.shift_to)
       modeS.shift_to = nil
    end
    if modeS.txtbuf.contents_changed then
-     modeS.raga.onTxtbufChanged(modeS)
-     modeS.txtbuf.contents_changed = false
+      modeS.zones.command:beTouched()
+      modeS.raga.onTxtbufChanged(modeS)
+      modeS.txtbuf.contents_changed = false
    end
    if modeS.txtbuf.cursor_changed then
-     modeS.raga.onCursorChanged(modeS)
-     modeS.txtbuf.cursor_changed = false
+      modeS.raga.onCursorChanged(modeS)
+      modeS.txtbuf.cursor_changed = false
    end
    return handled
 end
@@ -441,7 +439,6 @@ function ModeS.act(modeS, category, value)
 
    -- Replace zones
    modeS.zones.stat_col:replace(icon)
-   modeS.zones.command:replace(modeS.txtbuf)
    modeS:updatePrompt()
    -- Reflow in case command height has changed. Includes a paint.
    -- Don't allow errors encountered here to break this entire
@@ -479,14 +476,15 @@ function ModeS.setResults(modeS, results)
       modeS.zones.results:replace(results)
       return modeS
    end
+   local cfg = { scrollable = true }
    if type(results) == "string" then
-      results = { results, n = 1, frozen = true }
+      cfg.frozen = true
+      results = { results, n = 1 }
    end
-   local rb = Rainbuf(results)
-   rb.scrollable = true
-   modeS.zones.results:replace(rb)
+   modeS.zones.results:replace(Resbuf(results, cfg))
    return modeS
 end
+
 
 
 
@@ -498,6 +496,7 @@ end
 ModeS.status_lines = { default = "an repl, plz reply uwu 👀",
                        quit    = "exiting repl, owo... 🐲",
                        restart = "restarting an repl ↩️" }
+
 function ModeS.setStatusLine(modeS, status_name)
    modeS.zones.status:replace(modeS.status_lines[status_name])
    return modeS
@@ -512,9 +511,15 @@ end
 
 
 function ModeS.setTxtbuf(modeS, txtbuf)
+   -- Copy the lexer and suggestions over to the new Txtbuf
+   -- #todo keep the same Txtbuf around (updating it using :replace())
+   -- rather than swapping it out
+   txtbuf.lex = modeS.txtbuf.lex
+   txtbuf.active_suggestions = modeS.txtbuf.active_suggestions
    modeS.txtbuf = txtbuf
    modeS.txtbuf.cursor_changed = true
    modeS.txtbuf.contents_changed = true
+   modeS.zones.command:replace(modeS.txtbuf)
    return modeS
 end
 
@@ -524,48 +529,27 @@ end
 
 
 
-local evaluate = assert(valiant(_G, __G))
+local evaluate, req = assert(valiant(_G, __G))
 
 
 
 local insert = assert(table.insert)
 local keys = assert(core.keys)
 
-function ModeS.__eval(modeS, chunk, headless)
-   if not modeS.original_packages then
-      -- we cache the package.loaded packages here, to preserve
-      -- everything loaded by helm and modeselektor, while letting
-      -- us hot-reload anything "require"d at the repl.
-      modeS.original_packages = Set(keys(package.loaded))
-   end
-
-   if not headless then
-      -- Getting ready to eval, cancel any active autocompletion
-      modeS.suggest:cancel(modeS)
-   end
-   local success, results = evaluate(chunk)
+function ModeS.eval(modeS)
+   -- Getting ready to eval, cancel any active autocompletion
+   modeS.suggest:cancel(modeS)
+   local success, results = evaluate(tostring(modeS.txtbuf))
    if not success and results == 'advance' then
-      return modeS, results
-   end
-
-   if not headless then
-      modeS.hist:append(modeS.txtbuf, results, success, modeS.session)
+      modeS.txtbuf:endOfText()
+      modeS.txtbuf:nl()
+   else
+      modeS.hist:append(modeS.txtbuf, results, success)
       modeS.hist.cursor = modeS.hist.n + 1
-      if success then
-         modeS.hist.result_buffer[modeS.hist.n] = results
-      end
       modeS:setResults(results)
       modeS:setTxtbuf(Txtbuf())
    end
 
-   return modeS, results
-end
-
-function ModeS.eval(modeS)
-   local _, advance = modeS:__eval(tostring(modeS.txtbuf))
-   if advance == 'advance' then
-      modeS.txtbuf:advance()
-   end
    return modeS
 end
 
@@ -581,7 +565,7 @@ function ModeS.evalFromCursor(modeS)
    local top = modeS.hist.n
    local cursor = modeS.hist.cursor
    for i = cursor, top do
-      modeS.txtbuf = modeS.hist:index(i)
+      modeS:setTxtbuf(modeS.hist:index(i))
       modeS:eval()
    end
 end
@@ -595,6 +579,10 @@ end
 
 
 function ModeS.quit(modeS)
+   -- #todo handle this better--as an event of sorts, maybe?
+   if modeS.hist.session.mode == "macro" then
+      modeS.hist.session:save()
+   end
    modeS:setStatusLine("quit")
    modeS.has_quit = true
 end
@@ -606,51 +594,30 @@ end
 
 
 
-local deepclone = assert(core.deepclone)
-
 function ModeS.restart(modeS)
-   modeS:setStatusLine("restart")
-   -- we might want to do this again, so:
-   local _G_backback = deepclone(_G_back)
-   -- package has to be handled separately because it's in the registry
-   local _loaded = package.loaded
-   _G = _G_back
-   -- we need the existing __G, not the empty clone, in _G:
-   _G.__G = __G
-   -- and we need the new _G, not the old one, as the index for __G:
-   getmetatable(__G).__index = _G
-   -- and the one-and-only package.loaded
-   _G.package.loaded = _loaded
-   _G_back = _G_backback
-   -- we also need to clear the registry of package.loaded
-   local current_packages = Set(keys(package.loaded))
-   local new_packages = current_packages - modeS.original_packages
-   for pack in pairs(new_packages) do
-      package.loaded[pack] = nil
-   end
+   modeS :setStatusLine 'restart'
+   -- remove existing result
+   modeS :setResults "" :paint()
    -- perform rerun
    -- Replace results:
    local hist = modeS.hist
-   local top = hist.cursor - 1
-   local session_count = hist.cursor - hist.cursor_start
-   hist.cursor = hist.cursor_start
-   hist.n  = hist.n - session_count
+   local top = hist.n
+   hist.n = hist.cursor_start - 1
+   -- put instrumented require in restart mode
+   req:restart()
    hist.stmts.savepoint_restart_session()
-   for i = modeS.hist.cursor_start, top do
-      local _, results = modeS:__eval(tostring(hist[i]), true)
-      if results ~= 'advance' then
-         hist.n = hist.n + 1
-         hist.result_buffer[hist.n] = results
-         hist:persist(hist[i], results, modeS.session)
-      end
+   for i = hist.cursor_start, top do
+      local success, results = evaluate(tostring(hist[i]))
+      assert(results ~= "advance", "Incomplete line when restarting session")
+      hist:append(hist[i], results, success, modeS.session)
    end
-   hist.cursor = top + 1
-   hist.n = #hist
-   modeS:paint()
-   uv.timer_start(uv.new_timer(), 2000, 0,
+   req:reset()
+   assert(hist.n == #hist, "History length mismatch after restart: n = "
+         .. tostring(hist.n) .. ", # = " , tostring(#hist))
+   modeS :setResults(hist.result_buffer[hist.cursor]) :paint()
+   uv.timer_start(uv.new_timer(), 1500, 0,
                   function()
-                     modeS:setStatusLine("default")
-                     modeS:paint()
+                     modeS :setStatusLine 'default' :paint()
                   end)
    local restart_idle = uv.new_idle()
    restart_idle:start(function()
@@ -670,7 +637,8 @@ end
 
 
 function ModeS.openHelp(modeS)
-   local rb = Rainbuf{ ("abcde "):rep(1000), n = 1 }
+  -- #todo this should be a generic Rainbuf
+   local rb = Resbuf{ ("abcde "):rep(1000), n = 1 }
    modeS.zones.popup:replace(rb)
    modeS.shift_to = "page"
 end
@@ -687,7 +655,8 @@ end
 
 function ModeS.showModal(modeS, text, button_style)
    local modal_info = Modal.newModel(text, button_style)
-   modeS.zones.modal:replace(Rainbuf{ modal_info, n = 1 })
+   -- #todo make DialogModel a kind of Rainbuf? Or use a generic one?
+   modeS.zones.modal:replace(Resbuf{ modal_info, n = 1 })
    modeS.shift_to = "modal"
    return modeS
 end
@@ -701,7 +670,8 @@ end
 
 
 function ModeS.modalAnswer(modeS)
-   return modeS.zones.modal.contents[1].value
+   local contents = modeS.zones.modal.contents
+   return (contents and contents.is_rainbuf) and contents[1].value or nil
 end
 
 
@@ -727,8 +697,18 @@ end
 
 
 
+
+
+
+
+
+
+
+
+local deepclone = assert(core.deepclone)
 local function new(max_extent, writer, db)
    local modeS = meta(ModeS)
+
    modeS.txtbuf = Txtbuf()
    modeS.hist  = Historian(db)
    modeS.suggest = Suggest()
@@ -736,21 +716,14 @@ local function new(max_extent, writer, db)
    rawset(__G, "stat", modeS.status)
    modeS.max_extent = max_extent
    modeS.write = writer
-   -- retrieve data from _Bridge
-   if _Bridge.args.helm then
-      if _Bridge.args.macro then
-         modeS.session = {}
-         modeS.session.macro_mode = true
-         modeS.session.session_title = _Bridge.args.macro
-         modeS.hist:beginMacroSession(modeS.session)
-      end
-   end
-   -- this will be replaced with Zones
-   modeS.l_margin = 4
-   modeS.r_margin = 80
    modeS.repl_top = ModeS.REPL_LINE
    modeS.zones = Zoneherd(modeS, writer)
    modeS:setStatusLine("default")
+   modeS.zones.command:replace(modeS.txtbuf)
+   -- If we are loading an existing session, start in review mode
+   if _Bridge.args.session then
+      modeS.raga_default = "review"
+   end
    -- initial state
    modeS:shiftMode(modeS.raga_default)
    modeS.action_complete = true
