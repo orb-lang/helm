@@ -527,7 +527,6 @@ end
 
 *** ModeS:eval()
 
-
 #!lua
 local evaluate, req = assert(valiant(_G, __G))
 #/lua

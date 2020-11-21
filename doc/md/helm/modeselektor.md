@@ -527,7 +527,6 @@ end
 
 ### ModeS:eval\(\)
 
-
 ```lua
 local evaluate, req = assert(valiant(_G, __G))
 ```
@@ -646,9 +645,9 @@ end
 
 ### ModeS:showModal\(text, button\_style\)
 
-Shows a modal dialog with the given text and button stylesee raga/modal\.orb for valid button styles\)\.
+Shows a modal dialog with the given text and button style
+\(see raga/modal\.orb for valid button styles\)\.
 
-\(
 When the modal closes, the button that was clicked can be retrieved
 with modeS:modalAnswer\(\)\.
 

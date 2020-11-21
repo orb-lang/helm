@@ -517,6 +517,15 @@ CREATE INDEX repr_hash_idx ON repr (hash);
 
 
 
+migration_5[6] = create_result_table_5
+migration_5[7] = create_repr_table
+migration_5[8] = create_repr_hash_idx
+
+
+
+
+
+
 
 
 
@@ -558,22 +567,25 @@ ALTER TABLE result_5 RENAME TO result;
 
 
 
-local function migrate_result_5(conn)
+migration_5[9] = function (conn, s)
    local sha = require "util:sha" . shorthash
    local insert_result = conn:prepare(insert_new_result_5)
-   local insert_repr = conn:prepare()
+   local insert_repr = conn:prepare(insert_repr_5)
+   s:verb "Hashing results, this may take awhile..."
    for result_id, line_id, repr in conn:prepare(get_old_result_5):cols() do
       local hash = sha(repr)
       insert_result :bind(result_id, line_id, hash)
-                    :step() :clearbind() :reset()
-      insert_repr :bind(hash, repr) :step() :clearbind() :reset()
+                    :step()
+      insert_result :clearbind() :reset()
+      insert_repr :bind(hash, repr) :step()
+      insert_repr :clearbind() :reset()
    end
+   s:verb(drop_result_5)
+   s:verb(rename_result_5)
    conn:exec(drop_result_5)
    conn:exec(rename_result_5)
    return true
 end
-
--- migration_5[7] = migrate_result_5
 
 
 
