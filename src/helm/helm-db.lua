@@ -517,9 +517,9 @@ CREATE INDEX repr_hash_idx ON repr (hash);
 
 
 
-migration_5[6] = create_result_table_5
-migration_5[7] = create_repr_table
-migration_5[8] = create_repr_hash_idx
+migration_5[7] = create_result_table_5
+migration_5[8] = create_repr_table
+migration_5[9] = create_repr_hash_idx
 
 
 
@@ -567,12 +567,29 @@ ALTER TABLE result_5 RENAME TO result;
 
 
 
-migration_5[9] = function (conn, s)
+local function _truncate_repr(repr)
+   local idx = 100000
+   if repr:sub(1, 1) == "\x01" then
+      while true do
+         if repr:sub(idx, idx) == "\x02" then
+            break
+         else
+            idx = idx + 1
+         end
+      end
+   end
+   return repr:sub(1, idx)
+end
+
+migration_5[10] = function (conn, s)
    local sha = require "util:sha" . shorthash
    local insert_result = conn:prepare(insert_new_result_5)
    local insert_repr = conn:prepare(insert_repr_5)
    s:verb "Hashing results, this may take awhile..."
    for result_id, line_id, repr in conn:prepare(get_old_result_5):cols() do
+      if #repr > 100000 then
+         repr = _truncate_repr(repr)
+      end
       local hash = sha(repr)
       insert_result :bind(result_id, line_id, hash)
                     :step()
