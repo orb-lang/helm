@@ -44,25 +44,29 @@ Sessionbuf.ROWS_PER_RESULT = 7
 
 Select the line at `index` in the session for possible editing\.
 
+We share enough selection protocol with `SelectionList` that we can
+borrow its convenience methods\.
+
 ```lua
 local clamp = assert(require "core:math" . clamp)
 function Sessionbuf.selectIndex(buf, index)
    index = clamp(index, 1, #buf.session)
    if index ~= buf.selected_index then
       buf.selected_index = index
-      -- #todo evaluate the session and display the new result,
-      -- along with whether there is a change
-      buf.resbuf:replace(buf:selectedPremise().old_result)
+      local premise = buf:selectedPremise()
+      -- #todo re-evaluate sessions on -s startup, and display an
+      -- indication of whether there are changes (and eventually a diff)
+      -- rather than just the newest available result
+      buf.resbuf:replace(premise.new_result or premise.old_result)
       return true
    end
    return false
 end
-function Sessionbuf.selectNext(buf)
-   return buf:selectIndex(buf.selected_index + 1)
-end
-function Sessionbuf.selectPrevious(buf)
-   return buf:selectIndex(buf.selected_index - 1)
-end
+
+local SelectionList = require "helm:selection_list"
+Sessionbuf.selectNext = SelectionList.selectNext
+Sessionbuf.selectPrevious = SelectionList.selectPrevious
+Sessionbuf.selectFirst = SelectionList.selectFirst
 ```
 
 
@@ -235,7 +239,7 @@ function Sessionbuf.replace(buf, session)
    for i = #session + 1, #buf.txtbufs do
       buf.txtbufs[i] = nil
    end
-   buf:selectIndex(1)
+   buf:selectFirst()
 end
 ```
 
