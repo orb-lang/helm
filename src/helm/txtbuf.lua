@@ -824,7 +824,7 @@ function Txtbuf._composeOneLine(txtbuf)
       -- Note this only applies once Tab has been pressed, as until then
       -- :selectedItem() will be nil
       if suggestion and tok.cursor_offset then
-         tokens[i] = txtbuf.active_suggestions:highlight(suggestion, 80, c)
+         tokens[i] = txtbuf.active_suggestions:highlight(suggestion, txtbuf.cols, c)
       else
          tokens[i] = tok:toString(c)
       end
