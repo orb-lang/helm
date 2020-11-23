@@ -175,6 +175,8 @@ function Historian.persist(historian, line, results)
    persist_idler:start(function()
       local done, results_tostring = persist_cb()
       if not done then return nil end
+      -- inform the Session that persisted results are available
+      historian.session:resultsAvailable(line_id, results_tostring)
       -- now persist
       for i = 1, results.n do
          local hash = sha(results_tostring[i])
