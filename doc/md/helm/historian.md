@@ -202,6 +202,29 @@ end
 ```
 
 
+### Historian:append\(line, results, success\)
+
+As :persist\(\), but also appends to the history and the current session\.
+
+Doesn't adjust the cursor, but does store the results in the result\_buffer\.
+
+```lua
+function Historian.append(historian, line, results, success)
+   if line == "" or line == historian[historian.n] then
+      -- don't bother
+      return false
+   end
+   historian.n = historian.n + 1
+   historian[historian.n] = line
+   if not success then results = nil end
+   historian.result_buffer[historian.n] = results
+   local line_id = historian:persist(line, results)
+   historian.session:append(line_id, line, results)
+   return true
+end
+```
+
+
 ## Historian:search\(frag\)
 
 This is a 'fuzzy search', that attempts to find a string containing the
@@ -338,29 +361,6 @@ function Historian.index(historian, cursor)
    local line = historian[cursor]
    local result = _resultsFrom(historian, cursor)
    return line, result
-end
-```
-
-
-### Historian:append\(line, results, success\)
-
-Appends a line to history and persists it\.
-
-Doesn't adjust the cursor, but does store the results in the result\_buffer\.
-
-```lua
-function Historian.append(historian, line, results, success)
-   if line == "" or line == historian[historian.n] then
-      -- don't bother
-      return false
-   end
-   historian.n = historian.n + 1
-   historian[historian.n] = line
-   if not success then results = nil end
-   historian.result_buffer[historian.n] = results
-   local line_id = historian:persist(line, results)
-   historian.session:append(line_id, line, results)
-   return true
 end
 ```
 
