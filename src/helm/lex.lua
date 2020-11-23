@@ -168,8 +168,8 @@ end
 
 
 
-function Lex.null(txtbuf)
-   return { Token(tostring(txtbuf), { color = "no_color" }) }
+function Lex.null(code, cursor_index)
+   return { Token(code, { color = "no_color", cursor_offset = cursor_index - 1 }) }
 end
 
 
