@@ -567,8 +567,9 @@ migrations are run seldom; by the nature of =valiant= and =helm=, we'll need
 the function elsewhere, but this is good practice.
 
 #!lua
+local TRUNCATE_AT = 1048576 * 4 -- 4 MiB is long enough for one repr...
 local function _truncate_repr(repr)
-   local idx = 100000
+   local idx = TRUNCATE_AT
    if repr:sub(1, 1) == "\x01" then
       while true do
          if repr:sub(idx, idx) == "\x02" then
@@ -585,11 +586,16 @@ migration_5[10] = function (conn, s)
    local sha = require "util:sha" . shorthash
    local insert_result = conn:prepare(insert_new_result_5)
    local insert_repr = conn:prepare(insert_repr_5)
-   s:verb "Hashing results, this may take awhile..."
+   s:chat "Hashing results, this may take awhile..."
+   local truncated = 0
    for result_id, line_id, repr in conn:prepare(get_old_result_5):cols() do
-      if #repr > 100000 then
+      ---[[
+      if #repr > TRUNCATE_AT then
+         s:verb("Found a %.2f MiB result!", #repr / 1048576)
+         truncated = truncated + 1
          repr = _truncate_repr(repr)
       end
+      --]]
       local hash = sha(repr)
       insert_result :bind(result_id, line_id, hash)
                     :step()
@@ -597,6 +603,7 @@ migration_5[10] = function (conn, s)
       insert_repr :bind(hash, repr) :step()
       insert_repr :clearbind() :reset()
    end
+   s:chat("Truncated %d results", truncated)
    s:verb(drop_result_5)
    s:verb(rename_result_5)
    conn:exec(drop_result_5)
