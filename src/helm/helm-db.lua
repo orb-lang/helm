@@ -179,7 +179,6 @@ CREATE TABLE IF NOT EXISTS premise (
 
 
 
-
 local create_project_table = [[
 CREATE TABLE IF NOT EXISTS project (
    project_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -187,7 +186,6 @@ CREATE TABLE IF NOT EXISTS project (
    time DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 ]]
-
 
 local create_session_table = [[
 CREATE TABLE IF NOT EXISTS session (
@@ -747,8 +745,12 @@ historian_sql.insert_line = [[
 INSERT INTO input (project, line) VALUES (:project, :line);
 ]]
 
-historian_sql.insert_result = [[
-INSERT INTO result (line_id, repr) VALUES (:line_id, :repr);
+historian_sql.insert_result_hash = [[
+INSERT INTO result (line_id, hash) VALUES (:line_id, :hash);
+]]
+
+historian_sql.insert_repr = [[
+INSERT INTO repr (hash, repr) VALUES (:hash, :repr);
 ]]
 
 historian_sql.insert_project = [[
@@ -776,8 +778,9 @@ SELECT project_id FROM project
 ]]
 
 historian_sql.get_results = [[
-SELECT result.repr
+SELECT repr
 FROM result
+INNER JOIN repr ON repr.hash == result.hash
 WHERE result.line_id = :line_id
 ORDER BY result.result_id;
 ]]

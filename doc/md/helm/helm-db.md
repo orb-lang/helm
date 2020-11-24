@@ -175,7 +175,6 @@ CREATE TABLE IF NOT EXISTS premise (
 ```
 
 
-
 #### Obsolete
 
 These are old forms of tables, which we need in order to properly migrate\.
@@ -187,7 +186,6 @@ CREATE TABLE IF NOT EXISTS project (
    time DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 ```
-
 
 ```sql
 CREATE TABLE IF NOT EXISTS session (
@@ -748,7 +746,11 @@ INSERT INTO input (project, line) VALUES (:project, :line);
 ```
 
 ```sql
-INSERT INTO result (line_id, repr) VALUES (:line_id, :repr);
+INSERT INTO result (line_id, hash) VALUES (:line_id, :hash);
+```
+
+```sql
+INSERT INTO repr (hash, repr) VALUES (:hash, :repr);
 ```
 
 ```sql
@@ -776,8 +778,9 @@ SELECT project_id FROM project
 ```
 
 ```sql
-SELECT result.repr
+SELECT repr
 FROM result
+INNER JOIN repr ON repr.hash == result.hash
 WHERE result.line_id = :line_id
 ORDER BY result.result_id;
 ```

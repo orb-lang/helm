@@ -175,7 +175,6 @@ CREATE TABLE IF NOT EXISTS premise (
 #/sql
 
 
-
 **** Obsolete
 
 These are old forms of tables, which we need in order to properly migrate.
@@ -187,7 +186,6 @@ CREATE TABLE IF NOT EXISTS project (
    time DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 #/sql
-
 
 #!sql @create_session_table #asLua
 CREATE TABLE IF NOT EXISTS session (
@@ -747,8 +745,12 @@ helm_db.historian_sql = historian_sql
 INSERT INTO input (project, line) VALUES (:project, :line);
 #/sql
 
-#!sql @historian_sql.insert_result #asLua
-INSERT INTO result (line_id, repr) VALUES (:line_id, :repr);
+#!sql @historian_sql.insert_result_hash #asLua
+INSERT INTO result (line_id, hash) VALUES (:line_id, :hash);
+#/sql
+
+#!sql @historian_sql.insert_repr #asLua
+INSERT INTO repr (hash, repr) VALUES (:hash, :repr);
 #/sql
 
 #!sql @historian_sql.insert_project #asLua
@@ -776,8 +778,9 @@ SELECT project_id FROM project
 #/sql
 
 #!sql @historian_sql.get_results #asLua
-SELECT result.repr
+SELECT repr
 FROM result
+INNER JOIN repr ON repr.hash == result.hash
 WHERE result.line_id = :line_id
 ORDER BY result.result_id;
 #/sql
@@ -818,9 +821,6 @@ end
 
   The =helm_db= singleton is also used by [[valiant][@valiant:session]] to
 manage database operations, through the same sort of proxy table as above.
-
-@Daniel I'd expect you'll reuse this as well. I put the premise statement
-which is currently in historian into the historian table, just for convenience.
 
 #!lua
 local session_sql = {}
