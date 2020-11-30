@@ -571,12 +571,13 @@ local TRUNCATE_AT = 1048576 * 4 -- 4 MiB is long enough for one repr...
 local function _truncate_repr(repr)
    local idx = TRUNCATE_AT
    if repr:sub(1, 1) == "\x01" then
-      while true do
-         if repr:sub(idx, idx) == "\x02" then
-            break
-         else
-            idx = idx + 1
-         end
+      -- If this is a tokenized-format repr, look for the start of
+      -- the next token after the 4MB mark, and stop just before it.
+      -- Theoretically there might not be any such, if the repr is just
+      -- barely over 4MB, in which case we keep the whole thing.
+      idx = repr:find("\x01", idx, true)
+      if idx then
+         idx = idx - 1
       end
    end
    return repr:sub(1, idx)
