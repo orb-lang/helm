@@ -652,8 +652,13 @@ and rehydrate the data in-memory.  SQLite doesn't reserve disk space it isn't
 using, and there's an appreciable difference between storing ='line'= and
 ='restart'= versus merely ='l'= and ='r'=.
 
-Like premises, our best bet is to make the foreign key for =run= a tuple of
-=(input, ordinal)=, since we'll be recording every meaningful action in order.
+I'll apply a check constraint here, but limit it to 3 characters instead of
+one.  This assures that we put a string in that column, and gives some
+headroom for expansion.
+
+Like premises, our best bet is to make the foreign key for =run_action= a
+tuple of =(input, ordinal)=, since we'll be recording every meaningful action
+in order.
 
 I don't know if there's a way to enforce "every ordinal for a given repr must
 be monotonic and increasing, starting with 1" from within SQLite, but it seems
@@ -663,12 +668,42 @@ Our constraint for =.action= should be a string of length 1, that gives us
 plenty of flexibility while still failing on most accidental data we might
 provide to the column.
 
-What fields we include in the =run= table itself is also an open question, and
-I'm tempted to create a =run_eav= table which just holds arbitrary key/values
-for a given run, as a species of future-proofing.  A little lazy, but not
-exceptionally so, and we don't have the prerequisites in place to store and
-retrieve JSON, which is a pity.
+The run itself is a date and a project, and a foreign key to hang the actions
+upon.  We'll also include a third table, =run_map=, with =(run, key, value)=,
+to store metadata in an open-ended fashion.  We can move some of these as
+columns onto =run=, if we end up using them consistently, and/or add a JSON
+field to =run= itself and fold the map table in, once we have the
+prerequisites for working with JSON inside bridge.
 
+
+***** run tables
+
+#!sql @create_run_table #asLua
+CREATE TABLE IF NOT EXISTS run (
+   run_id INTEGER PRIMARY KEY,
+   project INTEGER NOT NULL,
+   time DATETIME DEFAULT (strftime('%Y-%m-%dT%H:%M:%f', 'now')),
+   FOREIGN KEY (project)
+      REFERENCES project (project_id)
+      ON DELETE CASCADE
+);
+#/sql
+
+#!sql @create_run_action_table #asLua
+CREATE TABLE IF NOT EXISTS run_action (
+   ordinal INTEGER,
+   class TEXT CHECK (length(action) <= 3),
+   value TEXT,
+   input INTEGER,
+   run INTEGER,
+   PRIMARY KEY (run, ordinal) -- ON CONFLICT ABORT?
+   FOREIGN KEY (run)
+      REFERENCES run (run_id)
+      ON DELETE CASCADE
+   FOREIGN KEY (input)
+      REFERENCES input (line_id)
+)
+#/sql
 
 *** Future Migrations
 

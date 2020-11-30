@@ -678,6 +678,41 @@ end
 
 
 
+local create_run_table = [[
+CREATE TABLE IF NOT EXISTS run (
+   run_id INTEGER PRIMARY KEY,
+   project INTEGER NOT NULL,
+   time DATETIME DEFAULT (strftime('%Y-%m-%dT%H:%M:%f', 'now')),
+   FOREIGN KEY (project)
+      REFERENCES project (project_id)
+      ON DELETE CASCADE
+);
+]]
+
+local create_run_action_table = [[
+CREATE TABLE IF NOT EXISTS run_action (
+   ordinal INTEGER,
+   class TEXT CHECK (length(action) <= 3),
+   value TEXT,
+   input INTEGER,
+   run INTEGER,
+   PRIMARY KEY (run, ordinal) -- ON CONFLICT ABORT?
+   FOREIGN KEY (run)
+      REFERENCES run (run_id)
+      ON DELETE CASCADE
+   FOREIGN KEY (input)
+      REFERENCES input (line_id)
+)
+]]
+
+
+
+
+
+
+
+
+
 
 
 
