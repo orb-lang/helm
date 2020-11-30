@@ -494,12 +494,17 @@ end
 
 
 
+
 ModeS.status_lines = { default = "an repl, plz reply uwu 👀",
                        quit    = "exiting repl, owo... 🐲",
-                       restart = "restarting an repl ↩️" }
+                       restart = "restarting an repl ↩️",
+                       review  = 'reviewing session "%s"' }
+ModeS.status_lines.macro = ModeS.status_lines.default .. ' (macro-recording "%s")'
+ModeS.status_lines.new_session = ModeS.status_lines.default .. ' (recording "%s")'
 
-function ModeS.setStatusLine(modeS, status_name)
-   modeS.zones.status:replace(modeS.status_lines[status_name])
+function ModeS.setStatusLine(modeS, status_name, ...)
+   local status_line = modeS.status_lines[status_name]:format(...)
+   modeS.zones.status:replace(status_line)
    return modeS
 end
 
@@ -719,11 +724,17 @@ local function new(max_extent, writer, db)
    modeS.write = writer
    modeS.repl_top = ModeS.REPL_LINE
    modeS.zones = Zoneherd(modeS, writer)
-   modeS:setStatusLine("default")
    modeS.zones.command:replace(modeS.txtbuf)
    -- If we are loading an existing session, start in review mode
    if _Bridge.args.session then
       modeS.raga_default = "review"
+      modeS:setStatusLine("review", _Bridge.args.session)
+   elseif _Bridge.args.new_session then
+      modeS:setStatusLine("new_session", _Bridge.args.new_session)
+   elseif _Bridge.args.macro then
+      modeS:setStatusLine("macro", _Bridge.args.macro)
+   else
+      modeS:setStatusLine("default")
    end
    -- initial state
    modeS:shiftMode(modeS.raga_default)
