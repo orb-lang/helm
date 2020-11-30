@@ -366,7 +366,6 @@ insert(migrations, migration_4)
 
 
 
-
 local migration_5 = {}
 insert(migrations, migration_5)
 
@@ -498,6 +497,10 @@ CREATE TABLE IF NOT EXISTS result_5 (
 
 
 
+
+
+
+
 local create_repr_table = [[
 CREATE TABLE IF NOT EXISTS repr (
    hash TEXT PRIMARY KEY ON CONFLICT IGNORE,
@@ -536,8 +539,6 @@ ORDER BY result_id
 
 
 
-
-
 local insert_new_result_5 = [[
 INSERT INTO result_5 (result_id, line_id, hash) VALUES (?, ?, ?);
 ]]
@@ -566,6 +567,7 @@ ALTER TABLE result_5 RENAME TO result;
 
 
 local TRUNCATE_AT = 1048576 * 4 -- 4 MiB is long enough for one repr...
+
 local function _truncate_repr(repr)
    local idx = TRUNCATE_AT
    if repr:sub(1, 1) == "\x01" then
@@ -608,6 +610,12 @@ migration_5[10] = function (conn, s)
    conn:exec(rename_result_5)
    return true
 end
+
+
+
+
+
+
 
 
 
@@ -814,9 +822,6 @@ function helm_db.historian(conn_handle)
           end)
    return hist_proxy
 end
-
-
-
 
 
 

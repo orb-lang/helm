@@ -363,8 +363,7 @@ insert(migrations, migration_4)
 
 **** Version 5
 
-This migration will have a number of components, which we will probably need
-to test in several stages, and wrap them up into a single migration.
+The primary change in this migration is to store results uniquely by hash.
 
 #!lua
 local migration_5 = {}
@@ -458,11 +457,11 @@ amount of space.  There are circumstances when we pull the repr (and hence the
 hash) without pulling the result right away, and if the result is less than 63
 bytes, we know we don't have to bother with the second database call.
 
-I'm not convinced this is worth doing, but, I'm not convinced it isn't.  The
-important part is that we can completely ignore this logic if we want to, and
-get the same result, as long as we bake the conditional hashing into a
-function and use that function everywhere we hash: and we're truncating
-anyway, relative to stock sha3-512.
+I'm not convinced this is worth doing, but it doesn't have any obvious
+downsides.  The important part is that we can completely ignore this logic if
+we want to, and get the same result, as long as we bake the conditional
+hashing into a function, and use that function everywhere we hash: and we're
+truncating anyway, relative to stock sha3-512.
 
 For reference, here's the current schema of =result=:
 
@@ -493,8 +492,12 @@ CREATE TABLE IF NOT EXISTS result_5 (
 );
 #/sql
 
-Although it might be worth it to create a whole new =input= table, rather than
-using =ALTER TABLE=, simply to change the foreign key to =input_id=.
+We never used the value blob for anything, so we can just ignore it.
+
+This does leave us with an exception to our schema rules, namely, we keep
+calling the primary key on what is now =input= the =line_id=, instead of
+=input_id= on the master table and =input= elsewhere.  A wart, but an
+acceptable one.
 
 And we need our =repr= table as well:
 
@@ -534,8 +537,6 @@ ORDER BY result_id
 ;
 #/sql
 
-We never used =value= for anything, so we can safely leave it behind.
-
 To put it back:
 
 #!sql @insert_new_result_5 #asLua
@@ -566,6 +567,7 @@ the function elsewhere, but this is good practice.
 
 #!lua
 local TRUNCATE_AT = 1048576 * 4 -- 4 MiB is long enough for one repr...
+
 local function _truncate_repr(repr)
    local idx = TRUNCATE_AT
    if repr:sub(1, 1) == "\x01" then
@@ -610,13 +612,19 @@ migration_5[10] = function (conn, s)
 end
 #/lua
 
-It will be interesting to see if this actually makes my database smaller.  It
-seems likely, but it triples the size of small, unique values, and only
-shrinks the storage requirement for larger prints.  But I must have a few
-hundred copies of =uv= alone in there.  We'll see.
+This reduces the size of my database from 1.6GB to 70MB.  It's unclear whether
+this will actually reduce the size of databases in general, since mine was
+dominated by excessively large prints of the environment from the uncompressed
+interregnum of results storage.  It seems likely, but it triples the size of
+small, unique values, and only shrinks the storage requirement for larger
+prints which happen more than once.
+
+But I must have a few hundred copies of =uv= alone in there, and this halved
+the number of results in my database.  We'll see.  The motive here is less
+optimization, and more good architecture.
 
 
-***** run table
+**** Version 6: run table
 
 It has become clear that we need a concept of a 'run', distinct from sessions.
 
