@@ -179,7 +179,6 @@ CREATE TABLE IF NOT EXISTS premise (
 
 
 
-
 local create_project_table = [[
 CREATE TABLE IF NOT EXISTS project (
    project_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -187,7 +186,6 @@ CREATE TABLE IF NOT EXISTS project (
    time DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 ]]
-
 
 local create_session_table = [[
 CREATE TABLE IF NOT EXISTS session (
@@ -368,6 +366,298 @@ insert(migrations, migration_4)
 
 
 
+local migration_5 = {}
+insert(migrations, migration_5)
+
+
+
+
+
+
+
+
+
+
+
+
+migration_5[1] = [[
+ALTER TABLE repl RENAME TO input;
+]]
+
+
+
+migration_5[2] = [[
+CREATE INDEX idx_input_time ON input (time);
+]]
+
+
+
+
+
+
+
+local create_session_table_5 = [[
+CREATE TABLE IF NOT EXISTS session_5 (
+   session_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   title TEXT,
+   project INTEGER,
+   accepted INTEGER NOT NULL DEFAULT 0 CHECK (accepted = 0 or accepted = 1),
+   vc_hash TEXT,
+   FOREIGN KEY (project)
+      REFERENCES project (project_id)
+      ON DELETE CASCADE
+);
+]]
+
+
+
+
+
+
+migration_5[3] = create_session_table_5
+
+
+migration_5[4] = [[
+INSERT INTO session_5(title, project, accepted, vc_hash)
+SELECT title, project, accepted, vc_hash FROM session
+;
+]]
+
+migration_5[5] = [[
+DROP TABLE session;
+]]
+
+migration_5[6] = [[
+ALTER TABLE session_5 RENAME TO session;
+]]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local create_result_table_5 = [[
+CREATE TABLE IF NOT EXISTS result_5 (
+   result_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   line_id INTEGER,
+   hash text NOT NULL,
+   FOREIGN KEY (line_id)
+      REFERENCES input (line_id)
+      ON DELETE CASCADE
+   FOREIGN KEY (hash)
+      REFERENCES repr (hash)
+);
+]]
+
+
+
+
+
+
+
+
+
+
+local create_repr_table = [[
+CREATE TABLE IF NOT EXISTS repr (
+   hash TEXT PRIMARY KEY ON CONFLICT IGNORE,
+   repr BLOB
+);
+]]
+
+
+
+local create_repr_hash_idx = [[
+CREATE INDEX repr_hash_idx ON repr (hash);
+]]
+
+
+
+
+
+migration_5[7] = create_result_table_5
+migration_5[8] = create_repr_table
+migration_5[9] = create_repr_hash_idx
+
+
+
+
+
+
+
+
+
+local get_old_result_5 = [[
+SELECT result_id, line_id, repr
+FROM result
+ORDER BY result_id
+;
+]]
+
+
+
+local insert_new_result_5 = [[
+INSERT INTO result_5 (result_id, line_id, hash) VALUES (?, ?, ?);
+]]
+
+
+
+local insert_repr_5 = [[
+INSERT INTO repr (hash, repr) VALUES (?, ?);
+]]
+
+
+
+
+
+local drop_result_5 = [[
+DROP TABLE result;
+]]
+
+local rename_result_5 = [[
+ALTER TABLE result_5 RENAME TO result;
+]]
+
+
+
+
+
+
+local TRUNCATE_AT = 1048576 * 4 -- 4 MiB is long enough for one repr...
+
+local function _truncate_repr(repr)
+   local idx = TRUNCATE_AT
+   if repr:sub(1, 1) == "\x01" then
+      -- If this is a tokenized-format repr, look for the start of
+      -- the next token after the 4MB mark, and stop just before it.
+      -- Theoretically there might not be any such, if the repr is just
+      -- barely over 4MB, in which case we keep the whole thing.
+      idx = repr:find("\x01", idx, true)
+      if idx then
+         idx = idx - 1
+      end
+   end
+   return repr:sub(1, idx)
+end
+
+migration_5[10] = function (conn, s)
+   local sha = require "util:sha" . shorthash
+   local insert_result = conn:prepare(insert_new_result_5)
+   local insert_repr = conn:prepare(insert_repr_5)
+   s:chat "Hashing results, this may take awhile..."
+   local truncated = 0
+   for result_id, line_id, repr in conn:prepare(get_old_result_5):cols() do
+      ---[[
+      if #repr > TRUNCATE_AT then
+         s:verb("Found a %.2f MiB result!", #repr / 1048576)
+         truncated = truncated + 1
+         repr = _truncate_repr(repr)
+      end
+      --]]
+      local hash = sha(repr)
+      insert_result :bind(result_id, line_id, hash)
+                    :step()
+      insert_result :clearbind() :reset()
+      insert_repr :bind(hash, repr) :step()
+      insert_repr :clearbind() :reset()
+   end
+   s:chat("Truncated %d results", truncated)
+   s:verb(drop_result_5)
+   s:verb(rename_result_5)
+   conn:exec(drop_result_5)
+   conn:exec(rename_result_5)
+   return true
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -461,11 +751,15 @@ helm_db.historian_sql = historian_sql
 
 
 historian_sql.insert_line = [[
-INSERT INTO repl (project, line) VALUES (:project, :line);
+INSERT INTO input (project, line) VALUES (:project, :line);
 ]]
 
-historian_sql.insert_result = [[
-INSERT INTO result (line_id, repr) VALUES (:line_id, :repr);
+historian_sql.insert_result_hash = [[
+INSERT INTO result (line_id, hash) VALUES (:line_id, :hash);
+]]
+
+historian_sql.insert_repr = [[
+INSERT INTO repr (hash, repr) VALUES (:hash, :repr);
 ]]
 
 historian_sql.insert_project = [[
@@ -475,14 +769,14 @@ INSERT INTO project (directory) VALUES (?);
 
 
 historian_sql.get_recent = [[
-SELECT CAST (line_id AS REAL), line FROM repl
+SELECT CAST (line_id AS REAL), line FROM input
    WHERE project = :project
    ORDER BY line_id DESC
    LIMIT :num_lines;
 ]]
 
 historian_sql.get_number_of_lines = [[
-SELECT CAST (count(line) AS REAL) from repl
+SELECT CAST (count(line) AS REAL) from input
    WHERE project = ?
 ;
 ]]
@@ -493,8 +787,9 @@ SELECT project_id FROM project
 ]]
 
 historian_sql.get_results = [[
-SELECT result.repr
+SELECT repr
 FROM result
+INNER JOIN repr ON repr.hash == result.hash
 WHERE result.line_id = :line_id
 ORDER BY result.result_id;
 ]]
@@ -528,9 +823,6 @@ function helm_db.historian(conn_handle)
           end)
    return hist_proxy
 end
-
-
-
 
 
 
@@ -585,13 +877,13 @@ SELECT
    session.project,
    premise.status,
    premise.title,
-   repl.line,
-   repl.time,
-   repl.line_id
+   input.line,
+   input.time,
+   input.line_id
 FROM
    session
 INNER JOIN premise ON premise.session = session.session_id
-INNER JOIN repl ON repl.line_id = premise.line
+INNER JOIN input ON input.line_id = premise.line
 WHERE session.session_id = ?
 ORDER BY premise.ordinal
 ;
@@ -670,7 +962,7 @@ AND
 
 session_sql.insert_line = [[
 INSERT INTO
-   repl (project, line, time)
+   input (project, line, time)
 VALUES (?, ?, ?)
 ;
 ]]

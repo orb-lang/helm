@@ -175,7 +175,6 @@ CREATE TABLE IF NOT EXISTS premise (
 #/sql
 
 
-
 **** Obsolete
 
 These are old forms of tables, which we need in order to properly migrate.
@@ -187,7 +186,6 @@ CREATE TABLE IF NOT EXISTS project (
    time DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 #/sql
-
 
 #!sql @create_session_table #asLua
 CREATE TABLE IF NOT EXISTS session (
@@ -363,22 +361,314 @@ insert(migrations, migration_4)
 #/lua
 
 
-***** Version 5 notes
+**** Version 5
 
-We need to add an =AUTOINCREMENT= to the session table to get a stable
-ordering while allowing deletions.
+The primary change in this migration is to store results uniquely by hash.
 
-I'll hold off on that for awhile, because it probably won't be the only
-migration relating to sessions work that we do.
+#!lua
+local migration_5 = {}
+insert(migrations, migration_5)
+#/lua
+
+
+***** Simple Migrations
+
+  "Simple" in the sense that they require little-to-no changes to the
+applications.
+
+The name =repl= for our collection of lines was never great, and =line= is a
+reserved word in SQL, so we're already pushing our luck by having a =.line=
+column.  So we'll rename to =input=, which is simple:
+
+#!sql @migration_5[1] #asLua
+ALTER TABLE repl RENAME TO input;
+#/sql
 
 Another thing we should be adding is an index for dates on lines, like so:
 
-#!sql
-CREATE INDEX idx_repl_time ON repl (time);
+#!sql @migration_5[2] #asLua
+CREATE INDEX idx_input_time ON input (time);
 #/sql
 
 This is a good idea anyway, since lines are our most expensive DB call during
 startup, and with sessions, lines will be placed out of order.
+
+We need to add an =AUTOINCREMENT= to the session table to get a stable
+ordering while allowing deletions, and adding constraints means a full copy:
+
+#!sql @create_session_table_5 #asLua
+CREATE TABLE IF NOT EXISTS session_5 (
+   session_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   title TEXT,
+   project INTEGER,
+   accepted INTEGER NOT NULL DEFAULT 0 CHECK (accepted = 0 or accepted = 1),
+   vc_hash TEXT,
+   FOREIGN KEY (project)
+      REFERENCES project (project_id)
+      ON DELETE CASCADE
+);
+#/sql
+
+We'll move this to the top once this migration is complete; it's more
+important to have an at-a-glance view into the schema, and we don't have
+transclusions yet.
+
+#!lua
+migration_5[3] = create_session_table_5
+#/lua
+
+#!sql @migration_5[4] #asLua
+INSERT INTO session_5(title, project, accepted, vc_hash)
+SELECT title, project, accepted, vc_hash FROM session
+;
+#/sql
+
+#!sql @migration_5[5] #asLua
+DROP TABLE session;
+#/sql
+
+#!sql @migration_5[6] #asLua
+ALTER TABLE session_5 RENAME TO session;
+#/sql
+
+
+***** hashing and de-duplication of results (w. truncation)
+
+We want to start storing results as the hash of the repr string, and use that
+as the foreign key into a new table, =repr=.
+
+There are a number of circumstances where we will only need the hash, and by
+making the hash column of =repr= a =UNIQUE=, we can get deduplication
+without needing to handle it in-memory.
+
+This does mean we have to pull every result, hash it, update the result
+foreign key to point to the result, and commit to a new table.
+
+While we're at this, it might pay off to truncate our absurdly long results.
+
+It's likely I have the only database which /has/ a large result collection, so
+maybe not worth the extra complexity? But I have a GB or so of data in my helm
+DB, and it's not /that/ much extra work.
+
+One minor optimization: we don't actually have to hash results which are
+smaller than 64 bytes, the length of our hash.  We can simply treat the repr
+as the hash, and commit it twice to the database, and this will save some tiny
+amount of space.  There are circumstances when we pull the repr (and hence the
+hash) without pulling the result right away, and if the result is less than 63
+bytes, we know we don't have to bother with the second database call.
+
+I'm not convinced this is worth doing, but it doesn't have any obvious
+downsides.  The important part is that we can completely ignore this logic if
+we want to, and get the same result, as long as we bake the conditional
+hashing into a function, and use that function everywhere we hash: and we're
+truncating anyway, relative to stock sha3-512.
+
+For reference, here's the current schema of =result=:
+
+#!sql
+CREATE TABLE IF NOT EXISTS result (
+   result_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   line_id INTEGER,
+   repr text NOT NULL,
+   value blob,
+   FOREIGN KEY (line_id)
+      REFERENCES repl (line_id)
+      ON DELETE CASCADE
+);
+#/sql
+
+Our new version looks like this:
+
+#!sql @create_result_table_5 #asLua
+CREATE TABLE IF NOT EXISTS result_5 (
+   result_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   line_id INTEGER,
+   hash text NOT NULL,
+   FOREIGN KEY (line_id)
+      REFERENCES input (line_id)
+      ON DELETE CASCADE
+   FOREIGN KEY (hash)
+      REFERENCES repr (hash)
+);
+#/sql
+
+We never used the value blob for anything, so we can just ignore it.
+
+This does leave us with an exception to our schema rules, namely, we keep
+calling the primary key on what is now =input= the =line_id=, instead of
+=input_id= on the master table and =input= elsewhere.  A wart, but an
+acceptable one.
+
+And we need our =repr= table as well:
+
+#!sql @create_repr_table #asLua
+CREATE TABLE IF NOT EXISTS repr (
+   hash TEXT PRIMARY KEY ON CONFLICT IGNORE,
+   repr BLOB
+);
+#/sql
+
+Which should have an index on hash:
+
+#!sql @create_repr_hash_idx #asLua
+CREATE INDEX repr_hash_idx ON repr (hash);
+#/sql
+
+Which we'll add to the migration in a Lua block, so we can move these
+schema-defining operations to the top of the file.
+
+#!lua
+migration_5[7] = create_result_table_5
+migration_5[8] = create_repr_table
+migration_5[9] = create_repr_hash_idx
+#/lua
+
+Now for the fun part: we need a function which will create the new table,
+select every line, hash the =repr= field, write the new hash and repr to
+=repr=, and write the rest of the contents to =result_5=, then drop =result=
+and rename.
+
+We want the results in order of entry:
+
+#!sql @get_old_result_5 #asLua
+SELECT result_id, line_id, repr
+FROM result
+ORDER BY result_id
+;
+#/sql
+
+To put it back:
+
+#!sql @insert_new_result_5 #asLua
+INSERT INTO result_5 (result_id, line_id, hash) VALUES (?, ?, ?);
+#/sql
+
+To write the hash:
+
+#!sql @insert_repr_5 #asLua
+INSERT INTO repr (hash, repr) VALUES (?, ?);
+#/sql
+
+Letting our ON CONFLICT IGNORE perform deduplication.
+
+Then drop and rename:
+
+#!sql @drop_result_5 #asLua
+DROP TABLE result;
+#/sql
+
+#!sql @rename_result_5 #asLua
+ALTER TABLE result_5 RENAME TO result;
+#/sql
+
+Now we tie it all together in a function.  =sha= is required locally, because
+migrations are run seldom; by the nature of =valiant= and =helm=, we'll need
+the function elsewhere, but this is good practice.
+
+#!lua
+local TRUNCATE_AT = 1048576 * 4 -- 4 MiB is long enough for one repr...
+
+local function _truncate_repr(repr)
+   local idx = TRUNCATE_AT
+   if repr:sub(1, 1) == "\x01" then
+      -- If this is a tokenized-format repr, look for the start of
+      -- the next token after the 4MB mark, and stop just before it.
+      -- Theoretically there might not be any such, if the repr is just
+      -- barely over 4MB, in which case we keep the whole thing.
+      idx = repr:find("\x01", idx, true)
+      if idx then
+         idx = idx - 1
+      end
+   end
+   return repr:sub(1, idx)
+end
+
+migration_5[10] = function (conn, s)
+   local sha = require "util:sha" . shorthash
+   local insert_result = conn:prepare(insert_new_result_5)
+   local insert_repr = conn:prepare(insert_repr_5)
+   s:chat "Hashing results, this may take awhile..."
+   local truncated = 0
+   for result_id, line_id, repr in conn:prepare(get_old_result_5):cols() do
+      ---[[
+      if #repr > TRUNCATE_AT then
+         s:verb("Found a %.2f MiB result!", #repr / 1048576)
+         truncated = truncated + 1
+         repr = _truncate_repr(repr)
+      end
+      --]]
+      local hash = sha(repr)
+      insert_result :bind(result_id, line_id, hash)
+                    :step()
+      insert_result :clearbind() :reset()
+      insert_repr :bind(hash, repr) :step()
+      insert_repr :clearbind() :reset()
+   end
+   s:chat("Truncated %d results", truncated)
+   s:verb(drop_result_5)
+   s:verb(rename_result_5)
+   conn:exec(drop_result_5)
+   conn:exec(rename_result_5)
+   return true
+end
+#/lua
+
+This reduces the size of my database from 1.6GB to 70MB.  It's unclear whether
+this will actually reduce the size of databases in general, since mine was
+dominated by excessively large prints of the environment from the uncompressed
+interregnum of results storage.  It seems likely, but it triples the size of
+small, unique values, and only shrinks the storage requirement for larger
+prints which happen more than once.
+
+But I must have a few hundred copies of =uv= alone in there, and this halved
+the number of results in my database.  We'll see.  The motive here is less
+optimization, and more good architecture.
+
+
+**** Version 6: run table
+
+It has become clear that we need a concept of a 'run', distinct from sessions.
+
+A run is simply everything which happens from starting helm to closing it.
+
+At present, it's unclear to me precisely how to model this. The model for the
+=input= table is straightforward, although we're doing deduplication if a line
+is executed multiple times in a row, in a way we actually shouldn't: but
+conceptually, =input= is a simple linear collection of lines executed from the
+helm.
+
+Runs, at a base level, are a collection of lines, but there is also metadata
+we want to preserve.  In particular, the point at which a restart is triggered,
+but I would be surprised if that is the full extent of what we want to
+preserve.
+
+What is clear enough is that we have two tables, =run= and =run_action=.  We
+have one entry in =run= per execution of =helm=, and the contents are stored
+in =run_action=.  Since most of these are lines, we want a =input= foreign key,
+which can be null, to represent the most common case, and we can probably get
+by with one more column (perhaps =run_action.action=?) which is a string which
+represents the type of action.  I've been using short, human-readable strings
+for this sort of data, but it's probably better to use a single byte of ASCII
+and rehydrate the data in-memory.  SQLite doesn't reserve disk space it isn't
+using, and there's an appreciable difference between storing ='line'= and
+='restart'= versus merely ='l'= and ='r'=.
+
+Like premises, our best bet is to make the foreign key for =run= a tuple of
+=(input, ordinal)=, since we'll be recording every meaningful action in order.
+
+I don't know if there's a way to enforce "every ordinal for a given repr must
+be monotonic and increasing, starting with 1" from within SQLite, but it seems
+like a common enough pattern and would be nice to have, so I'll look into it.
+
+Our constraint for =.action= should be a string of length 1, that gives us
+plenty of flexibility while still failing on most accidental data we might
+provide to the column.
+
+What fields we include in the =run= table itself is also an open question, and
+I'm tempted to create a =run_eav= table which just holds arbitrary key/values
+for a given run, as a species of future-proofing.  A little lazy, but not
+exceptionally so, and we don't have the prerequisites in place to store and
+retrieve JSON, which is a pity.
 
 
 *** Future Migrations
@@ -461,11 +751,15 @@ helm_db.historian_sql = historian_sql
 ***** Insertions
 
 #!sql @historian_sql.insert_line #asLua
-INSERT INTO repl (project, line) VALUES (:project, :line);
+INSERT INTO input (project, line) VALUES (:project, :line);
 #/sql
 
-#!sql @historian_sql.insert_result #asLua
-INSERT INTO result (line_id, repr) VALUES (:line_id, :repr);
+#!sql @historian_sql.insert_result_hash #asLua
+INSERT INTO result (line_id, hash) VALUES (:line_id, :hash);
+#/sql
+
+#!sql @historian_sql.insert_repr #asLua
+INSERT INTO repr (hash, repr) VALUES (:hash, :repr);
 #/sql
 
 #!sql @historian_sql.insert_project #asLua
@@ -475,14 +769,14 @@ INSERT INTO project (directory) VALUES (?);
 ***** Selections
 
 #!sql @historian_sql.get_recent #asLua
-SELECT CAST (line_id AS REAL), line FROM repl
+SELECT CAST (line_id AS REAL), line FROM input
    WHERE project = :project
    ORDER BY line_id DESC
    LIMIT :num_lines;
 #/sql
 
 #!sql @historian_sql.get_number_of_lines #asLua
-SELECT CAST (count(line) AS REAL) from repl
+SELECT CAST (count(line) AS REAL) from input
    WHERE project = ?
 ;
 #/sql
@@ -493,8 +787,9 @@ SELECT project_id FROM project
 #/sql
 
 #!sql @historian_sql.get_results #asLua
-SELECT result.repr
+SELECT repr
 FROM result
+INNER JOIN repr ON repr.hash == result.hash
 WHERE result.line_id = :line_id
 ORDER BY result.result_id;
 #/sql
@@ -535,9 +830,6 @@ end
 
   The =helm_db= singleton is also used by [[valiant][@valiant:session]] to
 manage database operations, through the same sort of proxy table as above.
-
-@Daniel I'd expect you'll reuse this as well. I put the premise statement
-which is currently in historian into the historian table, just for convenience.
 
 #!lua
 local session_sql = {}
@@ -585,13 +877,13 @@ SELECT
    session.project,
    premise.status,
    premise.title,
-   repl.line,
-   repl.time,
-   repl.line_id
+   input.line,
+   input.time,
+   input.line_id
 FROM
    session
 INNER JOIN premise ON premise.session = session.session_id
-INNER JOIN repl ON repl.line_id = premise.line
+INNER JOIN input ON input.line_id = premise.line
 WHERE session.session_id = ?
 ORDER BY premise.ordinal
 ;
@@ -670,7 +962,7 @@ AND
 
 #!sql @session_sql.insert_line #asLua
 INSERT INTO
-   repl (project, line, time)
+   input (project, line, time)
 VALUES (?, ?, ?)
 ;
 #/sql

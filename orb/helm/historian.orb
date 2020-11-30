@@ -25,6 +25,7 @@ local helm_db = require "helm:helm-db"
 local concat, insert = assert(table.concat), assert(table.insert)
 local reverse = require "core/table" . reverse
 local meta = require "core/meta" . meta
+local sha = assert(require "util:sha" . shorthash)
 
 local Set = require "set:set"
 #/lua
@@ -49,7 +50,8 @@ function Historian.createPreparedStatements(historian, helm_db_home)
    local stmts = helm_db.historian(historian.helm_db_home)
    historian.stmts = stmts
    historian.insert_line = stmts.insert_line
-   historian.insert_result = stmts.insert_result
+   historian.insert_repr = stmts.insert_repr
+   historian.insert_result_hash = stmts.insert_result_hash
    historian.get_results = stmts.get_results
 end
 #/lua
@@ -177,11 +179,18 @@ function Historian.persist(historian, txtbuf, results)
       if not done then return nil end
       -- now persist
       for i = 1, results.n do
-         historian.insert_result:bindkv { line_id = line_id,
-                                          repr = results_tostring[i] }
-         err = historian.insert_result:step()
+         local hash = sha(results_tostring[i])
+         historian.insert_result_hash:bind(line_id, hash)
+         err = historian.insert_result_hash:step()
          if not err then
-            historian.insert_result:clearbind():reset()
+            historian.insert_result_hash :clearbind() :reset()
+         else
+            error(err)
+         end
+         historian.insert_repr:bind(hash, results_tostring[i])
+         err = historian.insert_repr:step()
+         if not err then
+            historian.insert_repr :clearbind() :reset()
          else
             error(err)
          end
