@@ -63,7 +63,8 @@ function Sessionbuf.selectIndex(buf, index)
    return false
 end
 
-local SelectionList = require "helm:selection_list"
+-- #todo ugh, need the metatable, have the constructor
+local SelectionList = getmetatable(require "helm:selection_list" ())
 Sessionbuf.selectNext = SelectionList.selectNext
 Sessionbuf.selectPrevious = SelectionList.selectPrevious
 Sessionbuf.selectFirst = SelectionList.selectFirst
@@ -110,9 +111,9 @@ end
 
 #### Sessionbuf:toggleSelectedState\(buf\)
 
-Toggles the state of the selected line, cycling through "accept", "reject",ignore", "skip"\.
+Toggles the state of the selected line, cycling through "accept", "reject",
+"ignore", "skip"\.
 
-"
 ```lua
 local status_cycle_map = {
    accept = "reject",

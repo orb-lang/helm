@@ -59,7 +59,8 @@ function Sessionbuf.selectIndex(buf, index)
    return false
 end
 
-local SelectionList = require "helm:selection_list"
+-- #todo ugh, need the metatable, have the constructor
+local SelectionList = getmetatable(require "helm:selection_list" ())
 Sessionbuf.selectNext = SelectionList.selectNext
 Sessionbuf.selectPrevious = SelectionList.selectPrevious
 Sessionbuf.selectFirst = SelectionList.selectFirst
