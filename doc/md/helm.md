@@ -55,6 +55,7 @@ local function _helm(_ENV)
 No sense wasting a level of indent on a wrapper imho
 
 ```lua
+setfenv(0, __G)
 setfenv(1, __G)
 import = assert(require "core/module" . import)
 meta = import("core/meta", "meta")
@@ -349,7 +350,8 @@ uv.stop()
 
 io.stdout:flush()
 
-
+-- Restore the global environment
+setfenv(0, _G)
 end -- of _helm
 ```
 
