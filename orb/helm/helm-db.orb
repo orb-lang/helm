@@ -887,6 +887,13 @@ UPDATE session SET title = :session_title, accepted = :accepted
    WHERE session_id = :session_id;
 #/sql
 
+
+**** Deletions
+
+#!sql @session_sql.delete_session_by_id #asLua
+DELETE FROM session WHERE session_id = :session_id;
+#/sql
+
 ***** Selections
 
 #!sql @session_sql.get_session_by_id #asLua

@@ -889,6 +889,13 @@ UPDATE session SET title = :session_title, accepted = :accepted
 
 
 
+
+session_sql.delete_session_by_id = [[
+DELETE FROM session WHERE session_id = :session_id;
+]]
+
+
+
 session_sql.get_session_by_id = [[
 SELECT
    session.title AS session_title,
