@@ -34,12 +34,14 @@ end
 
 We don't want to put `helm` into the environment of the codebase under
 examination, so we replace the global environment with a table which falls
-back to `_G`\.
+back to `_G`\. We make it available as a global anywhere in \`helm\`, without
+exposing it to others who are still using the normal \_G global environment\.
 
 Man\.  I really like having first\-class environments\.
 
 ```lua
-__G = setmetatable({}, {__index = _G})
+local __G = setmetatable({}, {__index = _G})
+__G.__G = __G
 ```
 
 

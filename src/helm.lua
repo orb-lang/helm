@@ -39,7 +39,9 @@ end
 
 
 
-__G = setmetatable({}, {__index = _G})
+
+local __G = setmetatable({}, {__index = _G})
+__G.__G = __G
 
 
 
