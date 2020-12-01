@@ -124,23 +124,38 @@ CREATE TABLE IF NOT EXISTS repl_3 (
 ##### Result
 
 ```sql
-CREATE TABLE IF NOT EXISTS result (
+CREATE TABLE IF NOT EXISTS result_5 (
    result_id INTEGER PRIMARY KEY AUTOINCREMENT,
    line_id INTEGER,
-   repr text NOT NULL,
-   value blob,
+   hash text NOT NULL,
    FOREIGN KEY (line_id)
-      REFERENCES repl (line_id)
+      REFERENCES input (line_id)
       ON DELETE CASCADE
+   FOREIGN KEY (hash)
+      REFERENCES repr (hash)
 );
+```
+
+
+##### Repr
+
+```sql
+CREATE TABLE IF NOT EXISTS repr (
+   hash TEXT PRIMARY KEY ON CONFLICT IGNORE,
+   repr BLOB
+);
+```
+
+```sql
+CREATE INDEX repr_hash_idx ON repr (hash);
 ```
 
 
 ##### Session
 
 ```sql
-CREATE TABLE IF NOT EXISTS session (
-   session_id INTEGER PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS session_5 (
+   session_id INTEGER PRIMARY KEY AUTOINCREMENT,
    title TEXT,
    project INTEGER,
    accepted INTEGER NOT NULL DEFAULT 0 CHECK (accepted = 0 or accepted = 1),
@@ -200,6 +215,31 @@ sha TEXT,
 FOREIGN KEY (project)
    REFERENCES project (project_id)
    ON DELETE CASCADE );
+```
+
+```sql
+CREATE TABLE IF NOT EXISTS session (
+   session_id INTEGER PRIMARY KEY,
+   title TEXT,
+   project INTEGER,
+   accepted INTEGER NOT NULL DEFAULT 0 CHECK (accepted = 0 or accepted = 1),
+   vc_hash TEXT,
+   FOREIGN KEY (project)
+      REFERENCES project (project_id)
+      ON DELETE CASCADE
+);
+```
+
+```sql
+CREATE TABLE IF NOT EXISTS result (
+   result_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   line_id INTEGER,
+   repr text NOT NULL,
+   value blob,
+   FOREIGN KEY (line_id)
+      REFERENCES repl (line_id)
+      ON DELETE CASCADE
+);
 ```
 
 ```sql
@@ -394,24 +434,8 @@ This is a good idea anyway, since lines are our most expensive DB call during
 startup, and with sessions, lines will be placed out of order\.
 
 We need to add an `AUTOINCREMENT` to the session table to get a stable
-ordering while allowing deletions, and adding constraints means a full copy:
+ordering while allowing deletions, and adding constraints means a full copy\.
 
-```sql
-CREATE TABLE IF NOT EXISTS session_5 (
-   session_id INTEGER PRIMARY KEY AUTOINCREMENT,
-   title TEXT,
-   project INTEGER,
-   accepted INTEGER NOT NULL DEFAULT 0 CHECK (accepted = 0 or accepted = 1),
-   vc_hash TEXT,
-   FOREIGN KEY (project)
-      REFERENCES project (project_id)
-      ON DELETE CASCADE
-);
-```
-
-We'll move this to the top once this migration is complete; it's more
-important to have an at\-a\-glance view into the schema, and we don't have
-transclusions yet\.
 
 ```lua
 migration_5[3] = create_session_table_5
@@ -463,35 +487,6 @@ we want to, and get the same result, as long as we bake the conditional
 hashing into a function, and use that function everywhere we hash: and we're
 truncating anyway, relative to stock sha3\-512\.
 
-For reference, here's the current schema of `result`:
-
-```sql
-CREATE TABLE IF NOT EXISTS result (
-   result_id INTEGER PRIMARY KEY AUTOINCREMENT,
-   line_id INTEGER,
-   repr text NOT NULL,
-   value blob,
-   FOREIGN KEY (line_id)
-      REFERENCES repl (line_id)
-      ON DELETE CASCADE
-);
-```
-
-Our new version looks like this:
-
-```sql
-CREATE TABLE IF NOT EXISTS result_5 (
-   result_id INTEGER PRIMARY KEY AUTOINCREMENT,
-   line_id INTEGER,
-   hash text NOT NULL,
-   FOREIGN KEY (line_id)
-      REFERENCES input (line_id)
-      ON DELETE CASCADE
-   FOREIGN KEY (hash)
-      REFERENCES repr (hash)
-);
-```
-
 We never used the value blob for anything, so we can just ignore it\.
 
 This does leave us with an exception to our schema rules, namely, we keep
@@ -499,23 +494,9 @@ calling the primary key on what is now `input` the `line_id`, instead of
 `input_id` on the master table and `input` elsewhere\.  A wart, but an
 acceptable one\.
 
-And we need our `repr` table as well:
+And we need our `repr` table as well, and an index on hash\.
 
-```sql
-CREATE TABLE IF NOT EXISTS repr (
-   hash TEXT PRIMARY KEY ON CONFLICT IGNORE,
-   repr BLOB
-);
-```
-
-Which should have an index on hash:
-
-```sql
-CREATE INDEX repr_hash_idx ON repr (hash);
-```
-
-Which we'll add to the migration in a Lua block, so we can move these
-schema\-defining operations to the top of the file\.
+These are all defined in the table create section [up top](@helm-db#create-tables), we add them here, where we need them\.
 
 ```lua
 migration_5[7] = create_result_table_5
