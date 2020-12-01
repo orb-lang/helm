@@ -613,11 +613,14 @@ It has become clear that we need a concept of a 'run', distinct from sessions.
 
 A run is simply everything which happens from starting helm to closing it.
 
-At present, it's unclear to me precisely how to model this. The model for the
-=input= table is straightforward, although we're doing deduplication if a line
-is executed multiple times in a row, in a way we actually shouldn't: but
-conceptually, =input= is a simple linear collection of lines executed from the
-helm.
+The model for the =input= table is straightforward, although we're doing
+deduplication if a line is executed multiple times in a row, we actually
+shouldn't: conceptually, =input= is a simple linear collection of lines
+executed from the helm.
+
+We /could/ do what we do with reprs, and have a unique =line_text= table for
+each unique typed at the repl, but I don't think it's worth the extra level of
+indirection.
 
 Runs, at a base level, are a collection of lines, but there is also metadata
 we want to preserve.  In particular, the point at which a restart is triggered,
@@ -660,6 +663,9 @@ prerequisites for working with JSON inside bridge.
 
 
 ***** run tables
+
+#NB I haven't even created the migration yet, just putting these up to start
+a draft as a point for further discussion.
 
 #!sql @create_run_table #asLua
 CREATE TABLE IF NOT EXISTS run (
