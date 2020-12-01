@@ -915,6 +915,17 @@ ORDER BY
 ;
 ]]
 
+session_sql.get_session_list_by_dir = [[
+SELECT title, accepted FROM session
+INNER JOIN
+   project ON session.project = project.project_id
+WHERE
+   project.directory = ?
+ORDER BY
+   session.session_id
+;
+]]
+
 session_sql.get_sessions_from_project = [[
 SELECT
    session_id,

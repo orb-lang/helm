@@ -916,6 +916,17 @@ ORDER BY
 ```
 
 ```sql
+SELECT title, accepted FROM session
+INNER JOIN
+   project ON session.project = project.project_id
+WHERE
+   project.directory = ?
+ORDER BY
+   session.session_id
+;
+```
+
+```sql
 SELECT
    session_id,
    CAST(accepted AS REAL) As accepted
