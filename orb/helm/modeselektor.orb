@@ -98,7 +98,6 @@ The easiest way to go mad in concurrent environments is to share memory.
 =modeselektor= will own txtbuf, historian, and the entire screen.
 
 #!lua
-local c = import("singletons:color", "color")
 local Set = require "set:set"
 local valiant = require "valiant:valiant"
 
@@ -183,6 +182,8 @@ Which is painstaking and annoying, but we'll get there...
 This will continue to exist for awhile.
 
 #!lua
+local c = import("singletons:color", "color")
+
 local STAT_ICON = "◉ "
 
 local function tf(bool)

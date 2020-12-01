@@ -98,7 +98,6 @@ The easiest way to go mad in concurrent environments is to share memory\.
 `modeselektor` will own txtbuf, historian, and the entire screen\.
 
 ```lua
-local c = import("singletons:color", "color")
 local Set = require "set:set"
 local valiant = require "valiant:valiant"
 
@@ -183,6 +182,8 @@ Which is painstaking and annoying, but we'll get there\.\.\.
 This will continue to exist for awhile\.
 
 ```lua
+local c = import("singletons:color", "color")
+
 local STAT_ICON = "◉ "
 
 local function tf(bool)
@@ -388,9 +389,9 @@ by `onseq`\)\. It may try the dispatch multiple times if the raga indicates
 that reprocessing is needed by setting `modeS.action_complete` to =false\.
 
 Note that our common interface is `method(modeS, category, value)`,
-we need to distinguish betwen the tuple `("INSERT", "SHIFT-LEFT")`
-\(which could arrive from copy\-paste\) and `("NAV", "SHIFT-LEFT")`
-and preserve information for our fall\-through method\.
+we need to distinguish betwen the tuple `("INSERT", "SHIFT-LEFT")`which could arrive from copy\-paste\) and `("NAV", "SHIFT-LEFT")`
+and
+\( preserve information for our fall\-through method\.
 
 `act` always succeeds, meaning we need some metatable action to absorb and
 log anything unexpected\.

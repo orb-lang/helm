@@ -98,7 +98,6 @@ assert(meta, "must have meta in _G")
 
 
 
-local c = import("singletons:color", "color")
 local Set = require "set:set"
 local valiant = require "valiant:valiant"
 
@@ -182,6 +181,8 @@ end
 
 
 
+
+local c = import("singletons:color", "color")
 
 local STAT_ICON = "◉ "
 
