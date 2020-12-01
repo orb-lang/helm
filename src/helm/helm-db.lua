@@ -839,6 +839,8 @@ local session_sql = {}
 
 
 
+
+
 session_sql.insert_session = [[
 INSERT INTO
   session (title, project, accepted)
@@ -985,7 +987,8 @@ VALUES (?, ?, ?)
 
 
 
-session_sql.insert_result = historian_sql.insert_result
+session_sql.insert_result_hash = historian_sql.insert_result_hash
+session_sql.insert_repr        = historian_sql.insert_repr
 
 
 
