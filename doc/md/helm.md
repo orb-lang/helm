@@ -340,17 +340,14 @@ write(a.mouse.track(false),
       a.alternate_screen(false),
       a.cursor.pop())
 
-
-
--- remove any spurious mouse inputs or other stdin stuff
-io.stdin:read "*a"
-
--- Back to normal mode
+-- Back to normal mode and finish tearing down uv
 uv.tty_reset_mode()
-
 uv.stop()
 
+-- Make sure the terminal processes all of the above,
+-- then remove any spurious mouse inputs or other stdin stuff
 io.stdout:flush()
+io.stdin:read "*a"
 
 -- Restore the global environment
 setfenv(0, _G)
