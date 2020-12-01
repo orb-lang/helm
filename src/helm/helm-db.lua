@@ -893,8 +893,9 @@ ORDER BY premise.ordinal
 
 
 session_sql.get_results = [[
-SELECT result.repr
+SELECT repr.repr
 FROM result
+INNER JOIN repr ON result.hash = repr.hash
 WHERE result.line_id = ?
 ORDER BY result.result_id;
 ]]

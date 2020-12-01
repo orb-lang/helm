@@ -893,8 +893,9 @@ Because the results have a many\-to\-one relationship with the lines, we're
 better off retrieving them separately:
 
 ```sql
-SELECT result.repr
+SELECT repr.repr
 FROM result
+INNER JOIN repr ON result.hash = repr.hash
 WHERE result.line_id = ?
 ORDER BY result.result_id;
 ```
