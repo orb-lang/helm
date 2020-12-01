@@ -180,17 +180,17 @@ function Historian.persist(historian, txtbuf, results)
       -- now persist
       for i = 1, results.n do
          local hash = sha(results_tostring[i])
-         historian.insert_result_hash:bind(line_id, hash)
-         err = historian.insert_result_hash:step()
-         if not err then
-            historian.insert_result_hash :clearbind() :reset()
-         else
-            error(err)
-         end
          historian.insert_repr:bind(hash, results_tostring[i])
          err = historian.insert_repr:step()
          if not err then
             historian.insert_repr :clearbind() :reset()
+         else
+            error(err)
+         end
+         historian.insert_result_hash:bind(line_id, hash)
+         err = historian.insert_result_hash:step()
+         if not err then
+            historian.insert_result_hash :clearbind() :reset()
          else
             error(err)
          end
