@@ -839,6 +839,8 @@ local session_sql = {}
 
 
 
+
+
 session_sql.insert_session = [[
 INSERT INTO
   session (title, project, accepted)
@@ -893,8 +895,9 @@ ORDER BY premise.ordinal
 
 
 session_sql.get_results = [[
-SELECT result.repr
+SELECT repr.repr
 FROM result
+INNER JOIN repr ON result.hash = repr.hash
 WHERE result.line_id = ?
 ORDER BY result.result_id;
 ]]
@@ -984,7 +987,8 @@ VALUES (?, ?, ?)
 
 
 
-session_sql.insert_result = historian_sql.insert_result
+session_sql.insert_result_hash = historian_sql.insert_result_hash
+session_sql.insert_repr        = historian_sql.insert_repr
 
 
 

@@ -835,7 +835,9 @@ manage database operations, through the same sort of proxy table as above.
 local session_sql = {}
 #/lua
 
+
 **** SQL
+
 
 ***** Insertions
 
@@ -893,8 +895,9 @@ Because the results have a many-to-one relationship with the lines, we're
 better off retrieving them separately:
 
 #!sql @session_sql.get_results #asLua
-SELECT result.repr
+SELECT repr.repr
 FROM result
+INNER JOIN repr ON result.hash = repr.hash
 WHERE result.line_id = ?
 ORDER BY result.result_id;
 #/sql
@@ -984,7 +987,8 @@ VALUES (?, ?, ?)
 We copy over a few statements from the historian proxy table.
 
 #!lua
-session_sql.insert_result = historian_sql.insert_result
+session_sql.insert_result_hash = historian_sql.insert_result_hash
+session_sql.insert_repr        = historian_sql.insert_repr
 #/lua
 
 #!lua
