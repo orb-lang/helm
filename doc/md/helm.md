@@ -58,7 +58,7 @@ No sense wasting a level of indent on a wrapper imho
 
 ```lua
 setfenv(0, __G)
-setfenv(1, __G)
+
 import = assert(require "core/module" . import)
 meta = import("core/meta", "meta")
 core = require "core:core"
@@ -357,5 +357,5 @@ end -- of _helm
 #### Call helm
 
 ```lua
-return _helm
+return setfenv(_helm, __G)
 ```

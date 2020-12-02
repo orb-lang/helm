@@ -58,7 +58,7 @@ local function _helm(_ENV)
 
 
 setfenv(0, __G)
-setfenv(1, __G)
+
 import = assert(require "core/module" . import)
 meta = import("core/meta", "meta")
 core = require "core:core"
@@ -357,5 +357,5 @@ end -- of _helm
 
 
 
-return _helm
+return setfenv(_helm, __G)
 
