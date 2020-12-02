@@ -869,6 +869,12 @@ UPDATE session SET title = :session_title, accepted = :accepted
    WHERE session_id = :session_id;
 ]]
 
+session_sql.update_accepted_session = [[
+UPDATE session SET accepted = :accepted WHERE session_id = :session_id;
+]]
+
+
+
 
 
 session_sql.get_session_by_id = [[
