@@ -539,12 +539,13 @@ local keys = assert(core.keys)
 function ModeS.eval(modeS)
    -- Getting ready to eval, cancel any active autocompletion
    modeS.suggest:cancel(modeS)
-   local success, results = evaluate(tostring(modeS.txtbuf))
+   local line = tostring(modeS.txtbuf)
+   local success, results = evaluate(line)
    if not success and results == 'advance' then
       modeS.txtbuf:endOfText()
       modeS.txtbuf:nl()
    else
-      modeS.hist:append(modeS.txtbuf, results, success)
+      modeS.hist:append(line, results, success)
       modeS.hist.cursor = modeS.hist.n + 1
       modeS:setResults(results)
       modeS:setTxtbuf(Txtbuf())
@@ -565,7 +566,7 @@ function ModeS.evalFromCursor(modeS)
    local top = modeS.hist.n
    local cursor = modeS.hist.cursor
    for i = cursor, top do
-      modeS:setTxtbuf(modeS.hist:index(i))
+      modeS:setTxtbuf(Txtbuf(modeS.hist:index(i)))
       modeS:eval()
    end
 end

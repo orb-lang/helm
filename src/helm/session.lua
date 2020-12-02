@@ -201,7 +201,7 @@ end
 
 
 
-function Session.append(session, line_id, txtbuf, results)
+function Session.append(session, line_id, line, results)
    -- Require manual approval of all lines by default,
    -- i.e. start with 'skip' status
    local status = 'skip'
@@ -213,7 +213,7 @@ function Session.append(session, line_id, txtbuf, results)
    local premise = {
       title = "",
       status = status,
-      line = tostring(txtbuf),
+      line = line,
       old_line_id = nil,
       line_id = line_id,
       live_result = results,
