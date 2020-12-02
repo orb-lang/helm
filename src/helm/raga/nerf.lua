@@ -75,16 +75,18 @@ Nerf.UTF8 = _insert
 local NAV = Nerf.NAV
 
 local function _prev(modeS)
-   local linestash
-   if tostring(modeS.txtbuf) ~= ""
-      and modeS.hist.cursor > modeS.hist.n then
-      linestash = modeS.txtbuf
+   -- Save what the user is currently typing...
+   local linestash = tostring(modeS.txtbuf)
+   -- ...but only if they're at the end of the history,
+   -- and obviously only if there's anything there
+   if linestash == "" or modeS.hist.cursor <= modeS.hist.n then
+      linestash = nil
    end
-   local prev_txtbuf, prev_result = modeS.hist:prev()
+   local prev_line, prev_result = modeS.hist:prev()
    if linestash then
-      modeS.hist:append(linestash, modeS.session)
+      modeS.hist:append(linestash)
    end
-   modeS:setTxtbuf(prev_txtbuf)
+   modeS:setTxtbuf(Txtbuf(prev_line))
    modeS:setResults(prev_result)
    return modeS
 end
@@ -98,15 +100,14 @@ function NAV.UP(modeS, category, value)
 end
 
 local function _advance(modeS)
-   local new_txtbuf, next_result = modeS.hist:next()
-   if not new_txtbuf then
-      local added = modeS.hist:append(modeS.txtbuf, modeS.session)
+   local new_line, next_result = modeS.hist:next()
+   if not new_line then
+      local added = modeS.hist:append(tostring(modeS.txtbuf))
       if added then
          modeS.hist.cursor = modeS.hist.n + 1
       end
-      new_txtbuf = Txtbuf()
    end
-   modeS:setTxtbuf(new_txtbuf)
+   modeS:setTxtbuf(Txtbuf(new_line))
    modeS:setResults(next_result)
    return modeS
 end
