@@ -141,15 +141,19 @@ end
 -- #todo we should ideally ask the Historian for these results,
 -- in case it already has them
 local db_result_M = assert(require "repr:persist-tabulate" . db_result_M)
+local function _wrapResults(results)
+   local wrapped = { n = #results }
+   for i = 1, wrapped.n do
+      wrapped[i] = setmetatable({results[i]}, db_result_M)
+   end
+   return wrapped
+end
+
 local function _loadResults(session, premise)
    local stmt = session.stmts.get_results
    local results = stmt:bind(premise.old_line_id):resultset()
    if results then
-      results = results.repr
-      results.n = #results
-      for i = 1, results.n do
-         results[i] = setmetatable({results[i]}, db_result_M)
-      end
+      results = _wrapResults(results.repr)
    end
    premise.old_result = results
    stmt:reset()
@@ -195,6 +199,7 @@ function Session.load(session)
 end
 ```
 
+
 ### Session:append\(line\_id\)
 
 Appends the line with the given id as a new premise\. The session mode
@@ -223,6 +228,25 @@ function Session.append(session, line_id, line, results)
    _appendPremise(session, premise)
 end
 ```
+
+
+### Session:resultsAvailable\(line\_id, results\)
+
+Notification from the Historian that an idler has finished stringifying results
+for a particular line\_id\. If that line\_id is part of this session, attach
+the results to the appropriate premise\.
+
+```lua
+function Session.resultsAvailable(session, line_id, results)
+   for _, premise in ipairs(session) do
+      if premise.line_id == line_id then
+         premise.new_result = _wrapResults(results)
+         break
+      end
+   end
+end
+```
+
 
 ### Session:save\(\)
 
