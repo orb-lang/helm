@@ -39,7 +39,9 @@ end
 
 
 
-__G = setmetatable({}, {__index = _G})
+
+local __G = setmetatable({}, {__index = _G})
+__G.__G = __G
 
 
 
@@ -55,7 +57,8 @@ local function _helm(_ENV)
 
 
 
-setfenv(1, __G)
+setfenv(0, __G)
+
 import = assert(require "core/module" . import)
 meta = import("core/meta", "meta")
 core = require "core:core"
@@ -337,24 +340,22 @@ write(a.mouse.track(false),
       a.alternate_screen(false),
       a.cursor.pop())
 
-
-
--- remove any spurious mouse inputs or other stdin stuff
-io.stdin:read "*a"
-
--- Back to normal mode
+-- Back to normal mode and finish tearing down uv
 uv.tty_reset_mode()
-
 uv.stop()
 
+-- Make sure the terminal processes all of the above,
+-- then remove any spurious mouse inputs or other stdin stuff
 io.stdout:flush()
+io.stdin:read "*a"
 
-
+-- Restore the global environment
+setfenv(0, _G)
 end -- of _helm
 
 
 
 
 
-return _helm
+return setfenv(_helm, __G)
 

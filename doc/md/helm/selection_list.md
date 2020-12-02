@@ -36,26 +36,27 @@ Answers whether the highlight was able to be moved \(false if we're
 already at the end/beginning of the list\)
 
 ```lua
+local clamp = assert(require "core:math" . clamp)
+function SelectionList.selectIndex(list, index)
+   index = clamp(index, 1, #list)
+   if index ~= list.selected_index then
+      list.selected_index = index
+      return true
+   else
+      return false
+   end
+end
+
 function SelectionList.selectFirst(list)
-   list.selected_index = 1
+   list:selectIndex(1)
 end
 
 function SelectionList.selectNext(list)
-   if list.selected_index < #list then
-      list.selected_index = list.selected_index + 1
-      return true
-   else
-      return false
-   end
+   list:selectIndex(list.selected_index + 1)
 end
 
 function SelectionList.selectPrevious(list)
-   if list.selected_index > 1 then
-      list.selected_index = list.selected_index - 1
-      return true
-   else
-      return false
-   end
+   list:selectIndex(list.selected_index - 1)
 end
 ```
 

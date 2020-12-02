@@ -16,7 +16,6 @@
 local uv      = require "luv"
 local sql     = assert(sql, "sql must be in bridge _G")
 
-local Txtbuf  = require "helm:txtbuf"
 local Resbuf  = require "helm:resbuf"
 local Session = require "helm:session"
 local persist_tabulate = require "repr:persist-tabulate"
@@ -114,7 +113,7 @@ function Historian.load(historian)
          if idler then idler:stop() end
          return nil
       end
-      historian[counter] = Txtbuf(res[2])
+      historian[counter] = res[2]
       historian.line_ids[counter] = res[1]
       -- Results are loaded backwards because that's how they're accessed
       counter = counter - 1
@@ -136,18 +135,17 @@ end
 local tabulate = require "repr:tabulate"
 local tab_callback = assert(persist_tabulate.tab_callback)
 local no_color = assert(require "singletons:color" . no_color)
-function Historian.persist(historian, txtbuf, results)
-   local lb = tostring(txtbuf)
+function Historian.persist(historian, line, results)
    if type(results) ~= "table" or results.n == 0 then
       results = nil
    end
-   if lb == "" then
+   if line == "" then
       -- A blank line can have no results and is uninteresting.
       return false
    end
    historian.stmts.savepoint_persist()
    historian.insert_line:bindkv { project = historian.project_id,
-                                       line    = sql.blob(lb) }
+                                       line    = sql.blob(line) }
    local err = historian.insert_line:step()
    if not err then
       historian.insert_line:clearbind():reset()
@@ -177,6 +175,8 @@ function Historian.persist(historian, txtbuf, results)
    persist_idler:start(function()
       local done, results_tostring = persist_cb()
       if not done then return nil end
+      -- inform the Session that persisted results are available
+      historian.session:resultsAvailable(line_id, results_tostring)
       -- now persist
       for i = 1, results.n do
          local hash = sha(results_tostring[i])
@@ -200,6 +200,29 @@ function Historian.persist(historian, txtbuf, results)
       assert(historian.idlers:remove(persist_idler) == true)
    end)
    return line_id
+end
+
+
+
+
+
+
+
+
+
+
+function Historian.append(historian, line, results, success)
+   if line == "" or line == historian[historian.n] then
+      -- don't bother
+      return false
+   end
+   historian.n = historian.n + 1
+   historian[historian.n] = line
+   if not success then results = nil end
+   historian.result_buffer[historian.n] = results
+   local line_id = historian:persist(line, results)
+   historian.session:append(line_id, line, results)
+   return true
 end
 
 
@@ -304,40 +327,25 @@ end
 
 
 
-function Historian.prev(historian)
-   historian.cursor = clamp(historian.cursor - 1, 1)
-   local txtbuf = historian[historian.cursor]
-   if txtbuf then
-      txtbuf = txtbuf:clone()
-      txtbuf:startOfText()
-      txtbuf:endOfLine()
+
+
+
+function Historian.delta(historian, delta)
+   historian.cursor = clamp(historian.cursor + delta, 1, historian.n + 1)
+   local line = historian[historian.cursor]
+   if line then
       local result = _resultsFrom(historian, historian.cursor)
-      return txtbuf, result
-   else
-      return Txtbuf(), nil
-   end
-end
-
-
-
-
-
-
-
-
-
-
-function Historian.next(historian)
-   historian.cursor = clamp(historian.cursor + 1, nil, historian.n + 1)
-   local txtbuf = historian[historian.cursor]
-   if txtbuf then
-      txtbuf = txtbuf:clone()
-      txtbuf:endOfText()
-      local result = _resultsFrom(historian, historian.cursor)
-      return txtbuf, result
+      return line, result
    else
       return nil, nil
    end
+end
+
+function Historian.prev(historian)
+   return historian:delta(-1)
+end
+function Historian.next(historian)
+   return historian:delta(1)
 end
 
 
@@ -350,35 +358,10 @@ end
 
 function Historian.index(historian, cursor)
    assert(inbounds(cursor, 1, historian.n))
-   local txtbuf = historian[cursor]:clone()
-   txtbuf:endOfText()
-   local result = _resultsFrom(historian, cursor)
    historian.cursor = cursor
-   return txtbuf, result
-end
-
-
-
-
-
-
-
-
-
-
-function Historian.append(historian, txtbuf, results, success)
-   if tostring(historian[historian.n]) == tostring(txtbuf)
-      or tostring(txtbuf) == "" then
-      -- don't bother
-      return false
-   end
-   historian.n = historian.n + 1
-   historian[historian.n] = txtbuf
-   if not success then results = nil end
-   historian.result_buffer[historian.n] = results
-   local line_id = historian:persist(txtbuf, results)
-   historian.session:append(line_id, txtbuf, results)
-   return true
+   local line = historian[cursor]
+   local result = _resultsFrom(historian, cursor)
+   return line, result
 end
 
 
