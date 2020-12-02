@@ -256,6 +256,7 @@ we always just save everything, without checking whether it has changed\.
 ```lua
 local compact = assert(require "core:table" . compact)
 function Session.save(session)
+   session.stmts.beginTransaction()
    -- If the session itself hasn't been stored yet, do so and retrieve its id
    if not session.session_id then
       session.stmts.insert_session:bindkv(session):step()
@@ -279,6 +280,7 @@ function Session.save(session)
             :bindkv(premise)
             :step()
    end
+   session.stmts.commit()
 end
 ```
 
