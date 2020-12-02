@@ -34,12 +34,14 @@ end
 
 We don't want to put =helm= into the environment of the codebase under
 examination, so we replace the global environment with a table which falls
-back to =_G=.
+back to =_G=. We make it available as a global anywhere in `helm`, without
+exposing it to others who are still using the normal _G global environment.
 
 Man.  I really like having first-class environments.
 
 #!lua
-__G = setmetatable({}, {__index = _G})
+local __G = setmetatable({}, {__index = _G})
+__G.__G = __G
 #/lua
 
 
@@ -55,6 +57,7 @@ local function _helm(_ENV)
 No sense wasting a level of indent on a wrapper imho
 
 #!lua
+setfenv(0, __G)
 setfenv(1, __G)
 import = assert(require "core/module" . import)
 meta = import("core/meta", "meta")
@@ -337,19 +340,17 @@ write(a.mouse.track(false),
       a.alternate_screen(false),
       a.cursor.pop())
 
-
-
--- remove any spurious mouse inputs or other stdin stuff
-io.stdin:read "*a"
-
--- Back to normal mode
+-- Back to normal mode and finish tearing down uv
 uv.tty_reset_mode()
-
 uv.stop()
 
+-- Make sure the terminal processes all of the above,
+-- then remove any spurious mouse inputs or other stdin stuff
 io.stdout:flush()
+io.stdin:read "*a"
 
-
+-- Restore the global environment
+setfenv(0, _G)
 end -- of _helm
 #/lua
 
