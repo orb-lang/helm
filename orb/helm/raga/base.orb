@@ -61,6 +61,7 @@ RagaBase.CTRL["^Q"] = function(modeS, category, value)
       -- would *definitely* fix this
       modeS.raga_default = "review"
       modeS.shift_to = "review"
+      modeS:setStatusLine("review", modeS.hist.session.session_title)
    else
       modeS:quit()
    end
