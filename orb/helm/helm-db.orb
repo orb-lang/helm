@@ -589,7 +589,7 @@ migration_5[10] = function (conn, s)
    local insert_repr = conn:prepare(insert_repr_5)
    s:chat "Hashing results, this may take awhile..."
    local truncated = 0
-   for result_id, line_id, repr in conn:prepare(get_old_result_5):cols() do
+   for _, result_id, line_id, repr in conn:prepare(get_old_result_5):cols() do
       ---[[
       if #repr > TRUNCATE_AT then
          s:verb("Found a %.2f MiB result!", #repr / 1048576)
