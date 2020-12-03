@@ -859,6 +859,10 @@ VALUES
 DELETE FROM premise WHERE session = :session_id AND ordinal > :n;
 ```
 
+```sql
+DELETE FROM session WHERE session_id = :session_id;
+```
+
 ##### Updates
 
 Note that insert\_premise can also serve as an update, since the table is
@@ -890,8 +894,8 @@ SELECT
    input.line_id
 FROM
    session
-INNER JOIN premise ON premise.session = session.session_id
-INNER JOIN input ON input.line_id = premise.line
+LEFT JOIN premise ON premise.session = session.session_id
+LEFT JOIN input ON input.line_id = premise.line
 WHERE session.session_id = ?
 ORDER BY premise.ordinal
 ;
@@ -926,13 +930,20 @@ ORDER BY
 ```
 
 ```sql
-SELECT title, accepted FROM session
+SELECT title, accepted, session_id FROM session
 INNER JOIN
    project ON session.project = project.project_id
 WHERE
    project.directory = ?
 ORDER BY
    session.session_id
+;
+```
+
+```sql
+SELECT CAST (count(premise.ordinal) AS REAL)
+FROM premise
+WHERE session = :session_id
 ;
 ```
 

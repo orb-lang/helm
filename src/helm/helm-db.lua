@@ -859,6 +859,10 @@ session_sql.truncate_session = [[
 DELETE FROM premise WHERE session = :session_id AND ordinal > :n;
 ]]
 
+session_sql.delete_session_by_id = [[
+DELETE FROM session WHERE session_id = :session_id;
+]]
+
 
 
 
@@ -890,8 +894,8 @@ SELECT
    input.line_id
 FROM
    session
-INNER JOIN premise ON premise.session = session.session_id
-INNER JOIN input ON input.line_id = premise.line
+LEFT JOIN premise ON premise.session = session.session_id
+LEFT JOIN input ON input.line_id = premise.line
 WHERE session.session_id = ?
 ORDER BY premise.ordinal
 ;
@@ -926,13 +930,20 @@ ORDER BY
 ]]
 
 session_sql.get_session_list_by_dir = [[
-SELECT title, accepted FROM session
+SELECT title, accepted, session_id FROM session
 INNER JOIN
    project ON session.project = project.project_id
 WHERE
    project.directory = ?
 ORDER BY
    session.session_id
+;
+]]
+
+session_sql.count_premises = [[
+SELECT CAST (count(premise.ordinal) AS REAL)
+FROM premise
+WHERE session = :session_id
 ;
 ]]
 
