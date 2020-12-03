@@ -570,7 +570,7 @@ migration_5[10] = function (conn, s)
    local insert_repr = conn:prepare(insert_repr_5)
    s:chat "Hashing results, this may take awhile..."
    local truncated = 0
-   for result_id, line_id, repr in conn:prepare(get_old_result_5):cols() do
+   for _, result_id, line_id, repr in conn:prepare(get_old_result_5):cols() do
       ---[[
       if #repr > TRUNCATE_AT then
          s:verb("Found a %.2f MiB result!", #repr / 1048576)
@@ -882,6 +882,10 @@ VALUES
 DELETE FROM premise WHERE session = :session_id AND ordinal > :n;
 ```
 
+```sql
+DELETE FROM session WHERE session_id = :session_id;
+```
+
 ##### Updates
 
 Note that insert\_premise can also serve as an update, since the table is
@@ -899,6 +903,11 @@ UPDATE session SET title = :session_title, accepted = :accepted
 DELETE FROM session WHERE session_id = :session_id;
 ```
 
+```sql
+UPDATE session SET accepted = :accepted WHERE session_id = :session_id;
+```
+
+
 ##### Selections
 
 ```sql
@@ -914,8 +923,8 @@ SELECT
    input.line_id
 FROM
    session
-INNER JOIN premise ON premise.session = session.session_id
-INNER JOIN input ON input.line_id = premise.line
+LEFT JOIN premise ON premise.session = session.session_id
+LEFT JOIN input ON input.line_id = premise.line
 WHERE session.session_id = ?
 ORDER BY premise.ordinal
 ;
@@ -950,13 +959,20 @@ ORDER BY
 ```
 
 ```sql
-SELECT title, accepted FROM session
+SELECT title, accepted, session_id FROM session
 INNER JOIN
    project ON session.project = project.project_id
 WHERE
    project.directory = ?
 ORDER BY
    session.session_id
+;
+```
+
+```sql
+SELECT CAST (count(premise.ordinal) AS REAL)
+FROM premise
+WHERE session = :session_id
 ;
 ```
 
