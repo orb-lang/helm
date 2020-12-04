@@ -586,8 +586,9 @@ end
 
 function ModeS.quit(modeS)
    -- #todo handle this better--as an event of sorts, maybe?
-   if modeS.hist.session.mode == "macro" then
-      modeS.hist.session:save()
+   local session = modeS.hist.session
+   if session.mode == "macro" and #session > 0 then
+      session:save()
    end
    modeS:setStatusLine("quit")
    modeS.has_quit = true
