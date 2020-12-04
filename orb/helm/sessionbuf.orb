@@ -50,10 +50,16 @@ function Sessionbuf.selectIndex(buf, index)
    if index ~= buf.selected_index then
       buf.selected_index = index
       local premise = buf:selectedPremise()
-      -- #todo re-evaluate sessions on -s startup, and display an
-      -- indication of whether there are changes (and eventually a diff)
-      -- rather than just the newest available result
-      buf.resbuf:replace(premise.new_result or premise.old_result)
+      local result
+      if premise then
+         -- #todo re-evaluate sessions on -s startup, and display an
+         -- indication of whether there are changes (and eventually a diff)
+         -- rather than just the newest available result
+         result = premise.new_result or premise.old_result
+      else
+         result = { n = 0 }
+      end
+      buf.resbuf:replace(result)
       return true
    end
    return false
@@ -198,6 +204,10 @@ function Sessionbuf._composeAll(buf)
             yield(box_light:contentLine(inner_cols) .. line)
          end
       end
+   end
+   if #buf.session == 0 then
+      yield(box_light:topLine(inner_cols))
+      yield(box_light:contentLine(inner_cols) .. "No premises to display")
    end
    yield(box_light:bottomLine(inner_cols))
    buf._composeOneLine = nil

@@ -183,18 +183,22 @@ function Session.load(session)
       if session.accepted == nil then
          session.accepted = result.session_accepted
       end
-      local premise = {
-         title = result.title,
-         status = result.status,
-         line = result.line,
-         old_line_id = result.line_id,
-         line_id = result.line_id, -- These will be filled if/when we re-run
-         live_result = nil,
-         old_result = nil, -- Need a separate query to load this
-         new_result = nil
-      }
-      _loadResults(session, premise)
-      _appendPremise(session, premise)
+      -- Left join may produce (exactly one) row with no status value,
+      -- indicating that we have no premises
+      if result.status then
+         local premise = {
+            title = result.title,
+            status = result.status,
+            line = result.line,
+            old_line_id = result.line_id,
+            line_id = result.line_id, -- These will be filled if/when we re-run
+            live_result = nil,
+            old_result = nil, -- Need a separate query to load this
+            new_result = nil
+         }
+         _loadResults(session, premise)
+         _appendPremise(session, premise)
+      end
    end
 end
 
