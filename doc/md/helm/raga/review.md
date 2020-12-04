@@ -50,7 +50,9 @@ NAV.SHIFT_DOWN = _toSessionbuf "scrollResultsDown"
 NAV.TAB = _toSessionbuf "toggleSelectedState"
 
 function NAV.RETURN(modeS, category, value)
-   modeS.shift_to = "edit_title"
+   if modeS.zones.results.contents.selected_index ~= 0 then
+      modeS.shift_to = "edit_title"
+   end
 end
 ```
 
@@ -112,7 +114,8 @@ function Review.onShift(modeS)
    if not contents or contents.idEst ~= Sessionbuf then
       local buf = Sessionbuf(modeS.hist.session, { scrollable = true })
       modeS.zones.results:replace(buf)
-      modeS.txtbuf:replace(buf:selectedPremise().title)
+      local premise = buf:selectedPremise()
+      modeS.txtbuf:replace(premise and premise.title or "")
    end
 end
 ```
