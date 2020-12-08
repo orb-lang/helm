@@ -892,6 +892,7 @@ DELETE FROM session WHERE session_id = :session_id;
 
 
 
+
 session_sql.update_session = [[
 UPDATE session SET title = :session_title, accepted = :accepted
    WHERE session_id = :session_id;
@@ -908,6 +909,9 @@ session_sql.update_accepted_session = [[
 UPDATE session SET accepted = :accepted WHERE session_id = :session_id;
 ]]
 
+session_sql.update_title_session = [[
+UPDATE session SET title = :title WHERE session_id = :session_id;
+]]
 
 
 

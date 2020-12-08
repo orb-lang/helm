@@ -52,7 +52,8 @@ RagaBase.CTRL["^Q"] = function(modeS, category, value)
    -- rather than an explicitly-invoked command, and Ctrl-Q would just pop
    -- the current raga. Though, a Ctrl-Q from e.g. Search would still want
    -- to actually quit, so it's not quite that simple...
-   if _Bridge.args.new_session then
+   -- Anyway. Also, don't bother saving the session if it has no premises...
+   if _Bridge.args.new_session and #modeS.hist.session > 0 then
       -- #todo Add the ability to change accepted status of
       -- the whole session to the review interface
       modeS.hist.session.accepted = true

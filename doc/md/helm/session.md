@@ -183,18 +183,22 @@ function Session.load(session)
       if session.accepted == nil then
          session.accepted = result.session_accepted
       end
-      local premise = {
-         title = result.title,
-         status = result.status,
-         line = result.line,
-         old_line_id = result.line_id,
-         line_id = result.line_id, -- These will be filled if/when we re-run
-         live_result = nil,
-         old_result = nil, -- Need a separate query to load this
-         new_result = nil
-      }
-      _loadResults(session, premise)
-      _appendPremise(session, premise)
+      -- Left join may produce (exactly one) row with no status value,
+      -- indicating that we have no premises
+      if result.status then
+         local premise = {
+            title = result.title,
+            status = result.status,
+            line = result.line,
+            old_line_id = result.line_id,
+            line_id = result.line_id, -- These will be filled if/when we re-run
+            live_result = nil,
+            old_result = nil, -- Need a separate query to load this
+            new_result = nil
+         }
+         _loadResults(session, premise)
+         _appendPremise(session, premise)
+      end
    end
 end
 ```
@@ -208,12 +212,11 @@ determines whether it is marked as accepted or not\.
 ```lua
 function Session.append(session, line_id, line, results)
    -- Require manual approval of all lines by default,
-   -- i.e. start with 'skip' status
-   local status = 'skip'
-   -- In macro mode we instead accept all lines by default
-   -- (or ignore if they have no results)
-   if session.mode == "macro" then
-      status = results and 'accept' or 'ignore'
+   -- but do include them in the session, i.e. start with 'ignore' status
+   local status = 'ignore'
+   -- In macro mode we instead accept all lines with results by default
+   if session.mode == "macro" and results then
+      status = 'accept'
    end
    local premise = {
       title = "",

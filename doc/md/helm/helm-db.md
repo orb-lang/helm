@@ -886,6 +886,7 @@ DELETE FROM premise WHERE session = :session_id AND ordinal > :n;
 DELETE FROM session WHERE session_id = :session_id;
 ```
 
+
 ##### Updates
 
 Note that insert\_premise can also serve as an update, since the table is
@@ -907,6 +908,9 @@ DELETE FROM session WHERE session_id = :session_id;
 UPDATE session SET accepted = :accepted WHERE session_id = :session_id;
 ```
 
+```sql
+UPDATE session SET title = :title WHERE session_id = :session_id;
+```
 
 ##### Selections
 
