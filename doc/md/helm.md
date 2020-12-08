@@ -338,7 +338,8 @@ retcode = uv.run 'default'
 write(a.mouse.track(false),
       a.paste_bracketing(false),
       a.alternate_screen(false),
-      a.cursor.pop())
+      a.cursor.pop(),
+      a.cursor.show())
 
 -- Back to normal mode and finish tearing down uv
 uv.tty_reset_mode()
