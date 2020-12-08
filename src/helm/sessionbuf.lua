@@ -118,10 +118,10 @@ end
 
 
 local status_cycle_map = {
+   ignore = "accept",
    accept = "reject",
-   reject = "ignore",
-   ignore = "skip",
-   skip   = "accept"
+   reject = "skip",
+   skip   = "ignore"
 }
 function Sessionbuf.toggleSelectedState(buf)
    local premise = buf.session[buf.selected_index]
@@ -167,10 +167,10 @@ end
 
 
 local status_icons = {
+   ignore = "🟡",
    accept = "✅",
    reject = "❌",
-   ignore = "🟡",
-   skip   = "🚫"
+   skip   = "🗑"
 }
 
 local box_light = assert(require "anterm:box" . light)

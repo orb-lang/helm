@@ -122,10 +122,10 @@ Toggles the state of the selected line, cycling through "accept", "reject",
 
 ```lua
 local status_cycle_map = {
+   ignore = "accept",
    accept = "reject",
-   reject = "ignore",
-   ignore = "skip",
-   skip   = "accept"
+   reject = "skip",
+   skip   = "ignore"
 }
 function Sessionbuf.toggleSelectedState(buf)
    local premise = buf.session[buf.selected_index]
@@ -171,10 +171,10 @@ and we assign the wrapped result dynamically to `_composeOneLine`
 
 ```lua
 local status_icons = {
+   ignore = "🟡",
    accept = "✅",
    reject = "❌",
-   ignore = "🟡",
-   skip   = "🚫"
+   skip   = "🗑"
 }
 
 local box_light = assert(require "anterm:box" . light)
