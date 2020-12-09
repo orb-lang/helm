@@ -161,15 +161,7 @@ function Historian.persist(historian, line, results)
       return line_id
    end
 
-   local results_tostring, results_tabulates = {}, {}
-   -- Make a dummy table to stand in for Composer:window(),
-   -- since we won't be making a Composer at all.
-   local dummy_window = { width = 80, remains = 80, color = no_color }
-   for i = 1, results.n do
-      results_tabulates[i] = tabulate(results[i], dummy_window, no_color)
-      results_tostring[i] = { n = 0 }
-   end
-   local persist_cb = tab_callback(results_tabulates, results_tostring)
+   local persist_cb = tab_callback(results)
    local persist_idler = uv.new_idle()
    historian.idlers:insert(persist_idler)
    persist_idler:start(function()
