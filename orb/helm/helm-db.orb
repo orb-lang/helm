@@ -106,7 +106,9 @@ CREATE TABLE IF NOT EXISTS project_3 (
 #/sql
 
 
-***** Repl
+***** Input
+
+Created as =repl_3= for historical reasons and renamed =input=.
 
 #!sql @create_repl_table_3 #asLua
 CREATE TABLE IF NOT EXISTS repl_3 (
@@ -944,6 +946,15 @@ FROM result
 INNER JOIN repr ON result.hash = repr.hash
 WHERE result.line_id = ?
 ORDER BY result.result_id;
+#/sql
+
+Sometimes we just want the session data:
+
+#!sql @session_sql.get_sessions_for_project #asLua
+SELECT title, accepted, project, vc_hash, session_id
+FROM session
+WHERE session.project = :project_id
+;
 #/sql
 
 #!sql @session_sql.get_project_by_dir #asLua

@@ -108,6 +108,8 @@ CREATE TABLE IF NOT EXISTS project_3 (
 
 
 
+
+
 local create_repl_table_3 = [[
 CREATE TABLE IF NOT EXISTS repl_3 (
    line_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -944,6 +946,15 @@ FROM result
 INNER JOIN repr ON result.hash = repr.hash
 WHERE result.line_id = ?
 ORDER BY result.result_id;
+]]
+
+
+
+session_sql.get_sessions_for_project = [[
+SELECT title, accepted, project, vc_hash, session_id
+FROM session
+WHERE session.project = :project_id
+;
 ]]
 
 session_sql.get_project_by_dir = [[

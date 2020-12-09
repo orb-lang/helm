@@ -106,7 +106,9 @@ CREATE TABLE IF NOT EXISTS project_3 (
 ```
 
 
-##### Repl
+##### Input
+
+Created as `repl_3` for historical reasons and renamed `input`\.
 
 ```sql
 CREATE TABLE IF NOT EXISTS repl_3 (
@@ -943,6 +945,15 @@ FROM result
 INNER JOIN repr ON result.hash = repr.hash
 WHERE result.line_id = ?
 ORDER BY result.result_id;
+```
+
+Sometimes we just want the session data:
+
+```sql
+SELECT title, accepted, project, vc_hash, session_id
+FROM session
+WHERE session.project = :project_id
+;
 ```
 
 ```sql
