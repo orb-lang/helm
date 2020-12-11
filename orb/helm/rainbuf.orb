@@ -242,12 +242,12 @@ function Rainbuf.__call(buf_class, res, cfg)
    local buf_M = getmetatable(buf_class)
    local rainbuf = setmetatable({}, buf_M)
    rainbuf:_init()
+   rainbuf:replace(res)
    if cfg then
       for k, v in pairs(cfg) do
          rainbuf[k] = v
       end
    end
-   rainbuf:replace(res)
    return rainbuf
 end
 #/lua
