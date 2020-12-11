@@ -133,7 +133,7 @@ end
 
 
 local tabulate = require "repr:tabulate"
-local tab_callback = assert(persist_tabulate.tab_callback)
+local tabulate_some = assert(persist_tabulate.tabulate_some)
 local no_color = assert(require "singletons:color" . no_color)
 function Historian.persist(historian, line, results)
    if type(results) ~= "table" or results.n == 0 then
@@ -161,7 +161,7 @@ function Historian.persist(historian, line, results)
       return line_id
    end
 
-   local persist_cb = tab_callback(results)
+   local persist_cb = tabulate_some(results)
    local persist_idler = uv.new_idle()
    historian.idlers:insert(persist_idler)
    persist_idler:start(function()
