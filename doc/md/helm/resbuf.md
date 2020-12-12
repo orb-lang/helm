@@ -75,6 +75,9 @@ function Resbuf.replace(resbuf, res)
    for i = 1, max(resbuf.n, res.n) do
       resbuf[i] = res[i]
    end
+   -- Treat an error result from valiant as just a string,
+   -- not something to repr
+   resbuf.frozen = res.error
    resbuf.n = res.n
 end
 ```
