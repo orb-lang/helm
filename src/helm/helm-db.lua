@@ -34,6 +34,9 @@ helm_db.helm_db_home = helm_db_home
 
 
 
+
+
+
 local _conns = setmetatable({}, { __mode = 'v' })
 
 
@@ -255,6 +258,9 @@ CREATE TABLE IF NOT EXISTS repl (
       ON DELETE CASCADE
 );
 ]]
+
+
+
 
 
 
@@ -612,6 +618,12 @@ end
 
 
 
+migration_6 = {}
+
+insert(migrations, migration_6)
+
+
+
 
 
 
@@ -683,7 +695,7 @@ CREATE TABLE IF NOT EXISTS run (
 local create_run_action_table = [[
 CREATE TABLE IF NOT EXISTS run_action (
    ordinal INTEGER,
-   class TEXT CHECK (length(action) <= 3),
+   class TEXT CHECK (length(class) <= 3),
    value TEXT,
    input INTEGER,
    run INTEGER,
@@ -695,6 +707,37 @@ CREATE TABLE IF NOT EXISTS run_action (
       REFERENCES input (line_id)
 )
 ]]
+
+
+
+
+
+
+
+
+
+
+local create_error_string_table = [[
+CREATE TABLE IF NOT EXISTS error_string (
+   error_id INTEGER PRIMARY KEY,
+   string TEXT UNIQUE ON CONFLICT IGNORE
+);
+]]
+
+
+
+local create_error_string_idx = [[
+CREATE INDEX idx_error_string ON error_string (string);
+]]
+
+
+
+
+migration_6[1] = create_run_table
+migration_6[2] = create_run_action_table
+migration_6[3] = create_error_string_table
+migration_6[4] = create_error_string_idx
+
 
 
 

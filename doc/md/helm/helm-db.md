@@ -33,6 +33,9 @@ helm_db.helm_db_home = helm_db_home
 
 A weak table to hold conns, keyed by string path\.
 
+This does mean we can only have one in\-memory database `""` at a time, which
+should be okay\.
+
 ```lua
 local _conns = setmetatable({}, { __mode = 'v' })
 ```
@@ -265,6 +268,9 @@ pragma by 1 for each alteration of the schema\.
 We write a single function, which receives the database conn, for each change,
 such that we should be able to take a database at any schema and bring it up
 to the standard needed for this version of `helm`\.
+
+Or, in the pattern which is more usual, we provide an array of either SQL
+statements, or functions which receive the conn\.
 
 We store these migrations in an array, such that `migration[i]` creates
 `user_version` `i`\.
@@ -610,6 +616,12 @@ optimization, and more good architecture\.
 
 #### Version 6: run table
 
+```lua
+migration_6 = {}
+
+insert(migrations, migration_6)
+```
+
 It has become clear that we need a concept of a 'run', distinct from sessions\.
 
 A run is simply everything which happens from starting helm to closing it\.
@@ -682,7 +694,7 @@ CREATE TABLE IF NOT EXISTS run (
 ```sql
 CREATE TABLE IF NOT EXISTS run_action (
    ordinal INTEGER,
-   class TEXT CHECK (length(action) <= 3),
+   class TEXT CHECK (length(class) <= 3),
    value TEXT,
    input INTEGER,
    run INTEGER,
@@ -693,6 +705,37 @@ CREATE TABLE IF NOT EXISTS run_action (
    FOREIGN KEY (input)
       REFERENCES input (line_id)
 )
+```
+
+
+##### error table
+
+  We're going to start storing everything before "stack traceback:" in an
+error, for use in sessions\.
+
+That won't live in `results`, but rather in its own error table, such that
+`run_action.value` has an `error_string_id`\.
+
+```sql
+CREATE TABLE IF NOT EXISTS error_string (
+   error_id INTEGER PRIMARY KEY,
+   string TEXT UNIQUE ON CONFLICT IGNORE
+);
+```
+
+Which we'll want to index:
+
+```sql
+CREATE INDEX idx_error_string ON error_string (string);
+```
+
+This one is all creates, we aren't altering anything we have already\.
+
+```lua
+migration_6[1] = create_run_table
+migration_6[2] = create_run_action_table
+migration_6[3] = create_error_string_table
+migration_6[4] = create_error_string_idx
 ```
 
 
