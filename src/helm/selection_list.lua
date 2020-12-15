@@ -42,16 +42,17 @@ function SelectionList.selectIndex(list, index)
 end
 
 function SelectionList.selectFirst(list)
-   list:selectIndex(1)
+   return list:selectIndex(1)
 end
 
 function SelectionList.selectNext(list)
-   list:selectIndex(list.selected_index + 1)
+   return list:selectIndex(list.selected_index + 1)
 end
 
 function SelectionList.selectPrevious(list)
-   list:selectIndex(list.selected_index - 1)
+   return list:selectIndex(list.selected_index - 1)
 end
+
 
 
 
@@ -61,15 +62,17 @@ end
 
 
 function SelectionList.selectNextWrap(list)
-   list.selected_index = list.selected_index < #list
+   local new_idx = list.selected_index < #list
       and list.selected_index + 1
       or 1
+   return list:selectIndex(new_idx)
 end
 
 function SelectionList.selectPreviousWrap(list)
-   list.selected_index = list.selected_index > 1
+   local new_idx = list.selected_index > 1
       and list.selected_index - 1
       or #list
+   return list:selectIndex(new_idx)
 end
 
 
