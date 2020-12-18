@@ -111,8 +111,6 @@ CREATE TABLE IF NOT EXISTS project_3 (
 
 
 
-
-
 local create_repl_table_3 = [[
 CREATE TABLE IF NOT EXISTS repl_3 (
    line_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -128,39 +126,24 @@ CREATE TABLE IF NOT EXISTS repl_3 (
 
 
 
-local create_result_table_5 = [[
-CREATE TABLE IF NOT EXISTS result_5 (
+local create_result_table = [[
+CREATE TABLE IF NOT EXISTS result (
    result_id INTEGER PRIMARY KEY AUTOINCREMENT,
    line_id INTEGER,
-   hash text NOT NULL,
+   repr text NOT NULL,
+   value blob,
    FOREIGN KEY (line_id)
-      REFERENCES input (line_id)
+      REFERENCES repl (line_id)
       ON DELETE CASCADE
-   FOREIGN KEY (hash)
-      REFERENCES repr (hash)
 );
 ]]
 
 
 
 
-local create_repr_table = [[
-CREATE TABLE IF NOT EXISTS repr (
-   hash TEXT PRIMARY KEY ON CONFLICT IGNORE,
-   repr BLOB
-);
-]]
-
-local create_repr_hash_idx = [[
-CREATE INDEX repr_hash_idx ON repr (hash);
-]]
-
-
-
-
-local create_session_table_5 = [[
-CREATE TABLE IF NOT EXISTS session_5 (
-   session_id INTEGER PRIMARY KEY AUTOINCREMENT,
+local create_session_table_4 = [[
+CREATE TABLE IF NOT EXISTS session (
+   session_id INTEGER PRIMARY KEY,
    title TEXT,
    project INTEGER,
    accepted INTEGER NOT NULL DEFAULT 0 CHECK (accepted = 0 or accepted = 1),
@@ -222,31 +205,6 @@ FOREIGN KEY (project)
    ON DELETE CASCADE );
 ]]
 
-local create_session_table_4 = [[
-CREATE TABLE IF NOT EXISTS session (
-   session_id INTEGER PRIMARY KEY,
-   title TEXT,
-   project INTEGER,
-   accepted INTEGER NOT NULL DEFAULT 0 CHECK (accepted = 0 or accepted = 1),
-   vc_hash TEXT,
-   FOREIGN KEY (project)
-      REFERENCES project (project_id)
-      ON DELETE CASCADE
-);
-]]
-
-local create_result_table = [[
-CREATE TABLE IF NOT EXISTS result (
-   result_id INTEGER PRIMARY KEY AUTOINCREMENT,
-   line_id INTEGER,
-   repr text NOT NULL,
-   value blob,
-   FOREIGN KEY (line_id)
-      REFERENCES repl (line_id)
-      ON DELETE CASCADE
-);
-]]
-
 local create_repl_table = [[
 CREATE TABLE IF NOT EXISTS repl (
    line_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -258,9 +216,6 @@ CREATE TABLE IF NOT EXISTS repl (
       ON DELETE CASCADE
 );
 ]]
-
-
-
 
 
 
@@ -444,6 +399,22 @@ CREATE INDEX idx_input_time ON input (time);
 
 
 
+local create_session_table_5 = [[
+CREATE TABLE IF NOT EXISTS session_5 (
+   session_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   title TEXT,
+   project INTEGER,
+   accepted INTEGER NOT NULL DEFAULT 0 CHECK (accepted = 0 or accepted = 1),
+   vc_hash TEXT,
+   FOREIGN KEY (project)
+      REFERENCES project (project_id)
+      ON DELETE CASCADE
+);
+]]
+
+
+
+
 
 
 migration_5[3] = create_session_table_5
@@ -503,6 +474,48 @@ ALTER TABLE session_5 RENAME TO session;
 
 
 
+
+
+
+
+
+
+
+
+local create_result_table_5 = [[
+CREATE TABLE IF NOT EXISTS result_5 (
+   result_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   line_id INTEGER,
+   hash text NOT NULL,
+   FOREIGN KEY (line_id)
+      REFERENCES input (line_id)
+      ON DELETE CASCADE
+   FOREIGN KEY (hash)
+      REFERENCES repr (hash)
+);
+]]
+
+
+
+
+
+
+
+
+
+
+local create_repr_table = [[
+CREATE TABLE IF NOT EXISTS repr (
+   hash TEXT PRIMARY KEY ON CONFLICT IGNORE,
+   repr BLOB
+);
+]]
+
+
+
+local create_repr_hash_idx = [[
+CREATE INDEX repr_hash_idx ON repr (hash);
+]]
 
 
 
