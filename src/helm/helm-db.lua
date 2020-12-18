@@ -783,7 +783,6 @@ CREATE TABLE IF NOT EXISTS action_attr (
 
 
 
-
 local create_error_string_table = [[
 CREATE TABLE IF NOT EXISTS error_string (
    error_id INTEGER PRIMARY KEY,
@@ -800,10 +799,12 @@ CREATE INDEX idx_error_string ON error_string (string);
 
 
 
-migration_6[1] = create_run_table
-migration_6[2] = create_run_action_table
-migration_6[3] = create_error_string_table
-migration_6[4] = create_error_string_idx
+insert(migration_6, create_run_table)
+insert(migration_6, create_run_attr_table)
+insert(migration_6, create_run_action_table)
+insert(migration_6, create_action_attr_table)
+insert(migration_6, create_error_string_table)
+insert(migration_6, create_error_string_idx)
 
 
 

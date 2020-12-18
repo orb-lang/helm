@@ -16,9 +16,7 @@ CREATE TABLE IF NOT EXISTS "project" (
    directory TEXT UNIQUE,
    time DATETIME DEFAULT (strftime('%Y-%m-%dT%H:%M:%f', 'now'))
 );
-
 CREATE TABLE sqlite_sequence(name,seq);
-
 CREATE TABLE IF NOT EXISTS "input" (
    line_id INTEGER PRIMARY KEY AUTOINCREMENT,
    project INTEGER,
@@ -28,7 +26,6 @@ CREATE TABLE IF NOT EXISTS "input" (
       REFERENCES project (project_id)
       ON DELETE CASCADE
 );
-
 CREATE TABLE premise (
    session INTEGER NOT NULL,
    line INTEGER NOT NULL,
@@ -46,7 +43,6 @@ CREATE TABLE premise (
       REFERENCES "input" (line_id)
       ON DELETE CASCADE
 );
-
 CREATE TABLE IF NOT EXISTS "session" (
    session_id INTEGER PRIMARY KEY AUTOINCREMENT,
    title TEXT,
@@ -57,7 +53,6 @@ CREATE TABLE IF NOT EXISTS "session" (
       REFERENCES project (project_id)
       ON DELETE CASCADE
 );
-
 CREATE TABLE IF NOT EXISTS "result" (
    result_id INTEGER PRIMARY KEY AUTOINCREMENT,
    line_id INTEGER,
@@ -68,25 +63,31 @@ CREATE TABLE IF NOT EXISTS "result" (
    FOREIGN KEY (hash)
       REFERENCES repr (hash)
 );
-
 CREATE TABLE repr (
    hash TEXT PRIMARY KEY ON CONFLICT IGNORE,
    repr BLOB
 );
-
 CREATE TABLE run (
    run_id INTEGER PRIMARY KEY,
    project INTEGER NOT NULL,
-   time DATETIME DEFAULT (strftime('%Y-%m-%dT%H:%M:%f', 'now')),
+   start_time DATETIME DEFAULT (strftime('%Y-%m-%dT%H:%M:%f', 'now')),
+   finish_time DATETIME,
    FOREIGN KEY (project)
       REFERENCES project (project_id)
       ON DELETE CASCADE
 );
-
+CREATE TABLE run_attr (
+   run_attr_id INTEGER PRIMARY KEY,
+   run INTEGER,
+   key TEXT,
+   value BLOB,
+   FOREIGN KEY (run)
+      REFERENCES run (run_id)
+      ON DELETE CASCADE
+);
 CREATE TABLE run_action (
    ordinal INTEGER,
    class TEXT CHECK (length(class) <= 3),
-   value TEXT,
    input INTEGER,
    run INTEGER,
    PRIMARY KEY (run, ordinal) -- ON CONFLICT ABORT?
@@ -96,12 +97,19 @@ CREATE TABLE run_action (
    FOREIGN KEY (input)
       REFERENCES input (line_id)
 );
-
+CREATE TABLE action_attr (
+   action_attr_id PRIMARY KEY,
+   run_action INTEGER,
+   key TEXT,
+   value BLOB,
+   FOREIGN KEY (run_action)
+      REFERENCES run_action (run_action_id)
+      ON DELETE CASCADE
+);
 CREATE TABLE error_string (
    error_id INTEGER PRIMARY KEY,
    string TEXT UNIQUE ON CONFLICT IGNORE
 );
-
 CREATE INDEX idx_input_time ON input (time);
 CREATE INDEX repr_hash_idx ON repr (hash);
 CREATE INDEX idx_error_string ON error_string (string);

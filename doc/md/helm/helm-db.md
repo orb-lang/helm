@@ -781,8 +781,7 @@ CREATE TABLE IF NOT EXISTS action_attr (
   We're going to start storing everything before "stack traceback:" in an
 error, for use in sessions\.
 
-That won't live in `results`, but rather in its own error table, such that
-`run_action.value` has an `error_string_id`\.
+That won't live in `results`, but rather in its own error table\.
 
 ```sql
 CREATE TABLE IF NOT EXISTS error_string (
@@ -800,10 +799,12 @@ CREATE INDEX idx_error_string ON error_string (string);
 This one is all creates, we aren't altering anything we have already\.
 
 ```lua
-migration_6[1] = create_run_table
-migration_6[2] = create_run_action_table
-migration_6[3] = create_error_string_table
-migration_6[4] = create_error_string_idx
+insert(migration_6, create_run_table)
+insert(migration_6, create_run_attr_table)
+insert(migration_6, create_run_action_table)
+insert(migration_6, create_action_attr_table)
+insert(migration_6, create_error_string_table)
+insert(migration_6, create_error_string_idx)
 ```
 
 
