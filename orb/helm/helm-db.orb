@@ -691,25 +691,67 @@ prerequisites for working with JSON inside bridge.
 
 ***** run tables
 
-#NB I haven't even created the migration yet, just putting these up to start
-a draft as a point for further discussion.
+  The =run= table itself holds data pertaining to the run, and serves as a
+foreign key for =run_action=.
+
+We'll also create a =run_attr= table, which is a classic EAV.
+
+In this case, we're doing it for flexibility in expanding what information we
+store about a run, without needing to migrate every time we make changes.
+
+The expectation is that we'll migrate information which we keep for every run
+over to the run table itself, and may eventually drop the =run_attr= table
+completely.
 
 #!sql @create_run_table #asLua
 CREATE TABLE IF NOT EXISTS run (
    run_id INTEGER PRIMARY KEY,
    project INTEGER NOT NULL,
-   time DATETIME DEFAULT (strftime('%Y-%m-%dT%H:%M:%f', 'now')),
+   start_time DATETIME DEFAULT (strftime('%Y-%m-%dT%H:%M:%f', 'now')),
+   finish_time DATETIME,
    FOREIGN KEY (project)
       REFERENCES project (project_id)
       ON DELETE CASCADE
 );
 #/sql
 
+#!sql @create_run_attr_table #asLua
+CREATE TABLE IF NOT EXISTS run_attr (
+   run_attr_id INTEGER PRIMARY KEY,
+   run INTEGER,
+   key TEXT,
+   value BLOB,
+   FOREIGN KEY (run)
+      REFERENCES run (run_id)
+      ON DELETE CASCADE
+);
+#/sql
+
+
+***** run_action tables
+
+  A run action is a single action taken at the repl, such as a line of input,
+a restart, entering or exiting session review mode, and so on.
+
+We also create an EAV table here, =action_attr=.  This is a more principled
+use of the EAV pattern: run actions are a grab-bag of different things, which
+do belong in one table, because actions are a definite thing which happens in
+a linear order.
+
+However, each of these actions has some amount of associated data, ranging
+from none to several key/value pairs.  Input is the most common type of action,
+and the paradigm case, so as an optimization, if the action is an input, we
+put the foreign key on the run_action itself.
+
+But joining across a table for each type of action would be fiddly, require
+frequent migrations and query maintenance, and probably doesn't do us much of
+a favor efficiency wise, although the SQLite query planner is a thing of
+beauty and I wouldn't second-guess it.
+
 #!sql @create_run_action_table #asLua
 CREATE TABLE IF NOT EXISTS run_action (
    ordinal INTEGER,
    class TEXT CHECK (length(class) <= 3),
-   value TEXT,
    input INTEGER,
    run INTEGER,
    PRIMARY KEY (run, ordinal) -- ON CONFLICT ABORT?
@@ -718,7 +760,19 @@ CREATE TABLE IF NOT EXISTS run_action (
       ON DELETE CASCADE
    FOREIGN KEY (input)
       REFERENCES input (line_id)
-)
+);
+#/sql
+
+#!sql @create_action_attr_table #asLua
+CREATE TABLE IF NOT EXISTS action_attr (
+   action_attr_id PRIMARY KEY,
+   run_action INTEGER,
+   key TEXT,
+   value BLOB,
+   FOREIGN KEY (run_action)
+      REFERENCES run_action (run_action_id)
+      ON DELETE CASCADE
+);
 #/sql
 
 

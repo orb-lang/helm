@@ -694,22 +694,64 @@ insert(migrations, migration_6)
 
 
 
+
+
+
+
+
+
+
+
+
 local create_run_table = [[
 CREATE TABLE IF NOT EXISTS run (
    run_id INTEGER PRIMARY KEY,
    project INTEGER NOT NULL,
-   time DATETIME DEFAULT (strftime('%Y-%m-%dT%H:%M:%f', 'now')),
+   start_time DATETIME DEFAULT (strftime('%Y-%m-%dT%H:%M:%f', 'now')),
+   finish_time DATETIME,
    FOREIGN KEY (project)
       REFERENCES project (project_id)
       ON DELETE CASCADE
 );
 ]]
 
+local create_run_attr_table = [[
+CREATE TABLE IF NOT EXISTS run_attr (
+   run_attr_id INTEGER PRIMARY KEY,
+   run INTEGER,
+   key TEXT,
+   value BLOB,
+   FOREIGN KEY (run)
+      REFERENCES run (run_id)
+      ON DELETE CASCADE
+);
+]]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local create_run_action_table = [[
 CREATE TABLE IF NOT EXISTS run_action (
    ordinal INTEGER,
    class TEXT CHECK (length(class) <= 3),
-   value TEXT,
    input INTEGER,
    run INTEGER,
    PRIMARY KEY (run, ordinal) -- ON CONFLICT ABORT?
@@ -718,7 +760,19 @@ CREATE TABLE IF NOT EXISTS run_action (
       ON DELETE CASCADE
    FOREIGN KEY (input)
       REFERENCES input (line_id)
-)
+);
+]]
+
+local create_action_attr_table = [[
+CREATE TABLE IF NOT EXISTS action_attr (
+   action_attr_id PRIMARY KEY,
+   run_action INTEGER,
+   key TEXT,
+   value BLOB,
+   FOREIGN KEY (run_action)
+      REFERENCES run_action (run_action_id)
+      ON DELETE CASCADE
+);
 ]]
 
 
