@@ -130,9 +130,12 @@ end
 
 
 function Sessionbuf.scrollResultsDown(buf)
+   -- #todo this should all be handled internally by Rainbuf--
+   -- we should just be calling buf.resbuf:scrollDown()
    local offset = buf.resbuf.offset + 1
    buf.resbuf:composeUpTo(offset + buf.ROWS_PER_RESULT)
-   offset = clamp(offset, 0, #buf.resbuf.lines - buf.ROWS_PER_RESULT)
+   local max_offset = clamp(#buf.resbuf.lines - buf.ROWS_PER_RESULT, 0)
+   offset = clamp(offset, 0, max_offset)
    if offset ~= buf.resbuf.offset then
       buf.resbuf.offset = offset
       return true
