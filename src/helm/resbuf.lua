@@ -90,6 +90,8 @@ end
 
 
 function Resbuf._composeOneLine(resbuf)
+   assert(resbuf.r_num,
+      "r_num has been niled (missing an :initComposition after :clearCaches?)")
    while resbuf.r_num <= resbuf.n do
       local line = resbuf.reprs[resbuf.r_num]()
       if line then
