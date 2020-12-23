@@ -62,6 +62,7 @@ function Sessionbuf.selectIndex(buf, index)
          result = premise.new_result or premise.old_result
       end
       buf.resbuf:replace(result)
+      buf.resbuf.offset = 0
       return true
    end
    return false
