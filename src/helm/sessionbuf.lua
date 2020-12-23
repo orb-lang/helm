@@ -56,8 +56,6 @@ function Sessionbuf.selectIndex(buf, index)
          -- indication of whether there are changes (and eventually a diff)
          -- rather than just the newest available result
          result = premise.new_result or premise.old_result
-      else
-         result = { n = 0 }
       end
       buf.resbuf:replace(result)
       return true
@@ -81,6 +79,46 @@ function Sessionbuf.selectPreviousWrap(buf)
       and buf.selected_index - 1
       or #buf.session
    return buf:selectIndex(new_idx)
+end
+
+
+
+
+
+
+
+
+
+
+function Sessionbuf.rowsForSelectedResult(buf)
+   buf.resbuf:initComposition(buf.cols - 3)
+   buf.resbuf:composeUpTo(buf.ROWS_PER_RESULT)
+   return clamp(#buf.resbuf.lines, 0, buf.ROWS_PER_RESULT)
+end
+
+
+
+
+
+
+
+
+local gsub = assert(string.gsub)
+function Sessionbuf.positionOf(buf, index)
+   local position = 1
+   for i = 1, index - 1 do
+      local num_lines = select(2, gsub(buf.session[i].line, '\n', '\n')) + 1
+      num_lines = clamp(num_lines, 1, buf.ROWS_PER_LINE)
+      position = position + num_lines + 1
+      if i == buf.selected_index then
+         position = position + buf:rowsForSelectedResult() + 1
+      end
+   end
+   return position
+end
+
+function Sessionbuf.positionOfSelected(buf)
+   return buf:positionOf(buf.selected_index)
 end
 
 
