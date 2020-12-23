@@ -41,8 +41,8 @@ end
 
 local NAV = Review.NAV
 
-NAV.UP   = _selectUsing "selectPrevious"
-NAV.DOWN = _selectUsing "selectNext"
+NAV.UP   = _selectUsing "selectPreviousWrap"
+NAV.DOWN = _selectUsing "selectNextWrap"
 
 NAV.SHIFT_UP   = _toSessionbuf "scrollResultsUp"
 NAV.SHIFT_DOWN = _toSessionbuf "scrollResultsDown"

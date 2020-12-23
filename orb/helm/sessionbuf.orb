@@ -70,6 +70,18 @@ local SelectionList = getmetatable(require "helm:selection_list" ())
 Sessionbuf.selectNext = SelectionList.selectNext
 Sessionbuf.selectPrevious = SelectionList.selectPrevious
 Sessionbuf.selectFirst = SelectionList.selectFirst
+function Sessionbuf.selectNextWrap(buf)
+   local new_idx = buf.selected_index < #buf.session
+      and buf.selected_index + 1
+      or 1
+   return buf:selectIndex(new_idx)
+end
+function Sessionbuf.selectPreviousWrap(buf)
+   local new_idx = buf.selected_index > 1
+      and buf.selected_index - 1
+      or #buf.session
+   return buf:selectIndex(new_idx)
+end
 #/lua
 
 

@@ -47,9 +47,12 @@ end
 
 
 function EditTitle.NAV.RETURN(modeS, category, value)
-   _getSelectedPremise(modeS).title = tostring(modeS.txtbuf)
+   local sessionbuf = modeS.zones.results.contents
+   sessionbuf:selectedPremise().title = tostring(modeS.txtbuf)
+   sessionbuf:selectNextWrap()
    modeS.shift_to = "review"
 end
+EditTitle.NAV.TAB = EditTitle.NAV.RETURN
 
 function EditTitle.NAV.ESC(modeS, category, value)
    modeS.txtbuf:replace(_getSelectedPremise(modeS).title)
