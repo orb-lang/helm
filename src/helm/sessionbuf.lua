@@ -64,11 +64,14 @@ function Sessionbuf.selectIndex(buf, index)
    return false
 end
 
--- #todo ugh, need the metatable, have the constructor
-local SelectionList = getmetatable(require "helm:selection_list" ())
-Sessionbuf.selectNext = SelectionList.selectNext
-Sessionbuf.selectPrevious = SelectionList.selectPrevious
-Sessionbuf.selectFirst = SelectionList.selectFirst
+
+
+
+
+
+
+
+
 function Sessionbuf.selectNextWrap(buf)
    local new_idx = buf.selected_index < #buf.session
       and buf.selected_index + 1
@@ -300,7 +303,7 @@ function Sessionbuf.replace(buf, session)
    for i = #session + 1, #buf.txtbufs do
       buf.txtbufs[i] = nil
    end
-   buf:selectFirst()
+   buf:selectIndex(1)
 end
 
 

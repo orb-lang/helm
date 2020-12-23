@@ -40,7 +40,7 @@ Sessionbuf.ROWS_PER_RESULT = 7
 ### Selection, scrolling, etc
 
 
-#### Sessionbuf:selectIndex\(index\), :selectNext\(\), :selectPrevious\(\)
+#### Sessionbuf:selectIndex\(index\)
 
 Select the line at `index` in the session for possible editing\.
 
@@ -67,12 +67,15 @@ function Sessionbuf.selectIndex(buf, index)
    end
    return false
 end
+```
 
--- #todo ugh, need the metatable, have the constructor
-local SelectionList = getmetatable(require "helm:selection_list" ())
-Sessionbuf.selectNext = SelectionList.selectNext
-Sessionbuf.selectPrevious = SelectionList.selectPrevious
-Sessionbuf.selectFirst = SelectionList.selectFirst
+
+#### Sessionbuf:selectNextWrap\(\), :selectPreviousWrap\(\)
+
+Selects the next/previous premise, wrapping around to the beginning/end
+if we're at the end/beginning, respectively\.
+
+```lua
 function Sessionbuf.selectNextWrap(buf)
    local new_idx = buf.selected_index < #buf.session
       and buf.selected_index + 1
@@ -171,9 +174,9 @@ end
 
 #### Sessionbuf:toggleSelectedState\(buf\)
 
-Toggles the state of the selected line, cycling through "accept", "reject",
-"ignore", "skip"\.
+Toggles the state of the selected line, cycling through "accept", "reject",ignore", "skip"\.
 
+"
 ```lua
 local status_cycle_map = {
    ignore = "accept",
@@ -304,7 +307,7 @@ function Sessionbuf.replace(buf, session)
    for i = #session + 1, #buf.txtbufs do
       buf.txtbufs[i] = nil
    end
-   buf:selectFirst()
+   buf:selectIndex(1)
 end
 ```
 
