@@ -36,7 +36,7 @@ Sessionbuf.ROWS_PER_RESULT = 7
 *** Selection, scrolling, etc
 
 
-**** Sessionbuf:selectIndex(index), :selectNext(), :selectPrevious()
+**** Sessionbuf:selectIndex(index)
 
 Select the line at =index= in the session for possible editing.
 
@@ -56,20 +56,74 @@ function Sessionbuf.selectIndex(buf, index)
          -- indication of whether there are changes (and eventually a diff)
          -- rather than just the newest available result
          result = premise.new_result or premise.old_result
-      else
-         result = { n = 0 }
       end
       buf.resbuf:replace(result)
+      buf.resbuf.offset = 0
       return true
    end
    return false
 end
+#/lua
 
--- #todo ugh, need the metatable, have the constructor
-local SelectionList = getmetatable(require "helm:selection_list" ())
-Sessionbuf.selectNext = SelectionList.selectNext
-Sessionbuf.selectPrevious = SelectionList.selectPrevious
-Sessionbuf.selectFirst = SelectionList.selectFirst
+
+**** Sessionbuf:selectNextWrap(), :selectPreviousWrap()
+
+Selects the next/previous premise, wrapping around to the beginning/end
+if we're at the end/beginning, respectively.
+
+#!lua
+function Sessionbuf.selectNextWrap(buf)
+   local new_idx = buf.selected_index < #buf.session
+      and buf.selected_index + 1
+      or 1
+   return buf:selectIndex(new_idx)
+end
+function Sessionbuf.selectPreviousWrap(buf)
+   local new_idx = buf.selected_index > 1
+      and buf.selected_index - 1
+      or #buf.session
+   return buf:selectIndex(new_idx)
+end
+#/lua
+
+
+**** Sessionbuf:rowsForSelectedResult()
+
+Returns the number of lines needed to display the result of the
+selected premise. This will never be greater than ROWS_PER_RESULT.
+The Sessionbuf must have had :initComposition() already called.
+
+#!lua
+function Sessionbuf.rowsForSelectedResult(buf)
+   buf.resbuf:initComposition(buf.cols - 3)
+   buf.resbuf:composeUpTo(buf.ROWS_PER_RESULT)
+   return clamp(#buf.resbuf.lines, 0, buf.ROWS_PER_RESULT)
+end
+#/lua
+
+
+**** Sessionbuf:positionOf(index)
+
+Returns the line number at which display of the =index=th premise begins.
+
+#!lua
+local gsub = assert(string.gsub)
+function Sessionbuf.positionOf(buf, index)
+   local position = 1
+   for i = 1, index - 1 do
+      local num_lines = select(2, gsub(buf.session[i].line, '\n', '\n')) + 1
+      num_lines = clamp(num_lines, 1, buf.ROWS_PER_LINE)
+      position = position + num_lines + 1
+      if i == buf.selected_index then
+         position = position + buf:rowsForSelectedResult() + 1
+      end
+   end
+   return position
+end
+
+function Sessionbuf.positionOfSelected(buf)
+   return buf:positionOf(buf.selected_index)
+end
 #/lua
 
 
@@ -79,9 +133,12 @@ Scroll within the results area for the currently-selected line.
 
 #!lua
 function Sessionbuf.scrollResultsDown(buf)
+   -- #todo this should all be handled internally by Rainbuf--
+   -- we should just be calling buf.resbuf:scrollDown()
    local offset = buf.resbuf.offset + 1
    buf.resbuf:composeUpTo(offset + buf.ROWS_PER_RESULT)
-   offset = clamp(offset, 0, #buf.resbuf.lines - buf.ROWS_PER_RESULT)
+   local max_offset = clamp(#buf.resbuf.lines - buf.ROWS_PER_RESULT, 0)
+   offset = clamp(offset, 0, max_offset)
    if offset ~= buf.resbuf.offset then
       buf.resbuf.offset = offset
       return true
@@ -246,7 +303,7 @@ function Sessionbuf.replace(buf, session)
    for i = #session + 1, #buf.txtbufs do
       buf.txtbufs[i] = nil
    end
-   buf:selectFirst()
+   buf:selectIndex(1)
 end
 #/lua
 

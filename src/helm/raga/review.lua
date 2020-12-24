@@ -25,24 +25,40 @@ Review.prompt_char = "💬"
 local function _toSessionbuf(fn)
    return function(modeS, category, value)
       local buf = modeS.zones.results.contents
+      local answer = buf[fn](buf)
       modeS.zones.results:beTouched()
-      return buf[fn](buf)
+      return answer
    end
+end
+
+local function _onSelectionChanged(modeS)
+   local zone = modeS.zones.results
+   local buf = zone.contents
+   modeS.txtbuf:replace(buf:selectedPremise().title)
+   local start_index = buf:positionOfSelected()
+   local end_index = start_index + buf:rowsForSelectedResult() + 3
+   modeS.zones.results:ensureVisible(start_index, end_index)
+   modeS.zones.results:beTouched()
 end
 
 local function _selectUsing(fn)
    return function(modeS, category, value)
       local buf = modeS.zones.results.contents
-      buf[fn](buf)
-      modeS.txtbuf:replace(buf:selectedPremise().title)
-      modeS.zones.results:beTouched()
+      local answer = buf[fn](buf)
+      _onSelectionChanged(modeS)
+      return answer
    end
 end
 
+
+
+
+
+
 local NAV = Review.NAV
 
-NAV.UP   = _selectUsing "selectPrevious"
-NAV.DOWN = _selectUsing "selectNext"
+NAV.UP   = _selectUsing "selectPreviousWrap"
+NAV.DOWN = _selectUsing "selectNextWrap"
 
 NAV.SHIFT_UP   = _toSessionbuf "scrollResultsUp"
 NAV.SHIFT_DOWN = _toSessionbuf "scrollResultsDown"
@@ -99,6 +115,7 @@ end
 
 
 
+
 function Review.onShift(modeS)
    local modal_answer = modeS:modalAnswer()
    if modal_answer then
@@ -110,12 +127,15 @@ function Review.onShift(modeS)
       end -- Do nothing on cancel
       return
    end
+
    local contents = modeS.zones.results.contents
    if not contents or contents.idEst ~= Sessionbuf then
       local buf = Sessionbuf(modeS.hist.session, { scrollable = true })
       modeS.zones.results:replace(buf)
       local premise = buf:selectedPremise()
       modeS.txtbuf:replace(premise and premise.title or "")
+   else
+      _onSelectionChanged(modeS)
    end
 end
 

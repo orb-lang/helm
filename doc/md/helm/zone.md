@@ -155,15 +155,19 @@ Depends on the zone contents being a Rainbuf
 ```lua
 local clamp = import("core/math", "clamp")
 function Zone.scrollTo(zone, offset, allow_overscroll)
-   if not zone.contents.is_rainbuf then
+   local buf = zone.contents
+   if not buf.is_rainbuf then
       return false
    end
    -- Try to render the content that will be visible after the scroll
-   zone.contents:composeUpTo(offset + zone:height())
-   local required_lines_visible = allow_overscroll and 1 or zone:height()
-   offset = clamp(offset, 0, #zone.contents.lines - required_lines_visible)
-   if offset ~= zone.contents.offset then
-      zone.contents.offset = offset
+   local client_height = zone:clientBounds():height()
+   buf:initComposition(zone:clientBounds():width())
+   buf:composeUpTo(offset + client_height)
+   local required_lines_visible = allow_overscroll and 1 or client_height
+   local max_offset = clamp(#buf.lines - required_lines_visible, 0)
+   offset = clamp(offset, 0, max_offset)
+   if offset ~= buf.offset then
+      buf.offset = offset
       zone:beTouched()
       return true
    else
@@ -232,6 +236,23 @@ function Zone.scrollToBottom(zone, allow_overscroll)
    -- Choose a definitely out-of-range value,
    -- which scrollTo will clamp appropriately
    return zone:scrollTo(#zone.contents.lines, allow_overscroll)
+end
+```
+
+
+#### Zone:ensureVisible\(start\_index\[, end\_index\]\)
+
+Scrolls such that the line at `start_index` is visible\. If `end_index` is also
+provided, attempts to fit the entire range `start_index..end_index` on screen,
+falling back to scrolling such that `start_index` is at the top of the screen
+if this is not possible \(because the number of lines requested is too great\)\.
+
+```lua
+function Zone.ensureVisible(zone, start_index, end_index)
+   end_index = end_index or start_index
+   local min_offset = clamp(end_index - zone:clientBounds():height(), 0)
+   local max_offset = clamp(start_index - 1, 0)
+   zone:scrollTo(clamp(zone.contents.offset, min_offset, max_offset))
 end
 ```
 

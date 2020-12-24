@@ -64,11 +64,7 @@ local function _scrollAfter(modeS, func_name)
    local suggestions = modeS.suggest.active_suggestions
    local zone = modeS.zones.suggest
    suggestions[func_name](suggestions)
-   if suggestions.selected_index - zone.contents.offset > zone:height() then
-      zone:scrollTo(suggestions.selected_index - zone:height())
-   elseif suggestions.selected_index <= zone.contents.offset then
-      zone:scrollTo(suggestions.selected_index - 1)
-   end
+   zone:ensureVisible(suggestions.selected_index)
    zone:beTouched()
    -- Command zone needs re-render too
    modeS.zones.command:beTouched()
