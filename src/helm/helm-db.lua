@@ -631,13 +631,9 @@ end
 
 
 
-migration_6 = {}
+local migration_6 = {}
 
 insert(migrations, migration_6)
-
-
-
-
 
 
 

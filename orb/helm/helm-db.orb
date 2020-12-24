@@ -631,7 +631,7 @@ optimization, and more good architecture.
 **** Version 6: run table
 
 #!lua
-migration_6 = {}
+local migration_6 = {}
 
 insert(migrations, migration_6)
 #/lua
@@ -670,19 +670,15 @@ one.  This assures that we put a string in that column, and gives some
 headroom for expansion.
 
 Like premises, our best bet is to make the foreign key for =run_action= a
-tuple of =(input, ordinal)=, since we'll be recording every meaningful action
+tuple of =(run, ordinal)=, since we'll be recording every meaningful action
 in order.
 
 I don't know if there's a way to enforce "every ordinal for a given repr must
 be monotonic and increasing, starting with 1" from within SQLite, but it seems
 like a common enough pattern and would be nice to have, so I'll look into it.
 
-Our constraint for =.action= should be a string of length 1, that gives us
-plenty of flexibility while still failing on most accidental data we might
-provide to the column.
-
 The run itself is a date and a project, and a foreign key to hang the actions
-upon.  We'll also include a third table, =run_map=, with =(run, key, value)=,
+upon.  We'll also include a third table, =run_attr=, with =(run, key, value)=,
 to store metadata in an open-ended fashion.  We can move some of these as
 columns onto =run=, if we end up using them consistently, and/or add a JSON
 field to =run= itself and fold the map table in, once we have the
