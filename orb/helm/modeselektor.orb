@@ -445,10 +445,11 @@ function ModeS.act(modeS, category, value)
    -- Don't allow errors encountered here to break this entire
    -- event-loop iteration, otherwise we become unable to quit if
    -- there's a paint error.
-   xpcall(modeS.reflow, function(err)
-      io.stderr:write(err, "\n", debug.traceback(), "\n")
+   local success, err = xpcall(modeS.reflow, debug.traceback, modeS)
+   if not success then
+      io.stderr:write(err, "\n")
       io.stderr:flush()
-   end, modeS)
+   end
    collectgarbage()
    return modeS
 end
