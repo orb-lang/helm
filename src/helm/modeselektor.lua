@@ -572,7 +572,10 @@ function ModeS.evalFromCursor(modeS)
    local top = modeS.hist.n
    local cursor = modeS.hist.cursor
    for i = cursor, top do
-      modeS:setTxtbuf(Txtbuf(modeS.hist:index(i)))
+      -- Discard the second return value from :index
+      -- or it will confuse the Txtbuf constructor rather badly
+      local line = modeS.hist:index(i)
+      modeS:setTxtbuf(Txtbuf(line))
       modeS:eval()
    end
 end
