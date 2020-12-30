@@ -99,7 +99,7 @@ The easiest way to go mad in concurrent environments is to share memory.
 
 #!lua
 local Set = require "set:set"
-local valiant = require "valiant:valiant"
+local Valiant = require "valiant:valiant"
 
 local Txtbuf     = require "helm:txtbuf"
 local Resbuf     = require "helm:resbuf"
@@ -535,7 +535,7 @@ end
 *** ModeS:eval()
 
 #!lua
-local evaluate, req = assert(valiant(_G, __G))
+local eval = Valiant(_G, __G)
 #/lua
 
 #!lua
@@ -546,7 +546,7 @@ function ModeS.eval(modeS)
    -- Getting ready to eval, cancel any active autocompletion
    modeS.suggest:cancel(modeS)
    local line = tostring(modeS.txtbuf)
-   local success, results = evaluate(line)
+   local success, results = eval(line)
    if not success and results == 'advance' then
       modeS.txtbuf:endOfText()
       modeS.txtbuf:nl()
@@ -615,14 +615,14 @@ function ModeS.restart(modeS)
    local top = hist.n
    hist.n = hist.cursor_start - 1
    -- put instrumented require in restart mode
-   req:restart()
+   eval:restart()
    hist.stmts.savepoint_restart_session()
    for i = hist.cursor_start, top do
-      local success, results = evaluate(tostring(hist[i]))
+      local success, results = eval(tostring(hist[i]))
       assert(results ~= "advance", "Incomplete line when restarting session")
       hist:append(hist[i], results, success, modeS.session)
    end
-   req:reset()
+   eval:reset()
    assert(hist.n == #hist, "History length mismatch after restart: n = "
          .. tostring(hist.n) .. ", # = " , tostring(#hist))
    modeS :setResults(hist.result_buffer[hist.cursor]) :paint()
