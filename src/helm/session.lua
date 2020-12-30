@@ -39,8 +39,6 @@
 
 local meta = assert(require "core:meta" . meta)
 local helm_db = require "helm:helm-db"
-local valiant = require "valiant:valiant"
-local names = require "repr:names"
 local Session = meta {}
 local new
 
@@ -88,18 +86,9 @@ end
 
 
 local tabulate = assert(require "repr:persist-tabulate" . tabulate)
-function Session.evaluate(session, isolated, historian)
-   local ENV, aG
-   if isolated then
-      ENV = setmetatable({ core = core }, {__index = _G})
-      aG = setmetatable({}, {__index = assert(names.anti_G)})
-   else
-      ENV = _G
-      aG = assert(names.anti_G)
-   end
-   local eval = valiant(ENV, nil, aG)
+function Session.evaluate(session, valiant, historian)
    for _, premise in ipairs(session) do
-      local ok, result = eval(premise.line)
+      local ok, result = valiant(premise.line)
       -- #todo handle errors here
 
       -- Avoid empty results
