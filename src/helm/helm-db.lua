@@ -34,6 +34,9 @@ helm_db.helm_db_home = helm_db_home
 
 
 
+
+
+
 local _conns = setmetatable({}, { __mode = 'v' })
 
 
@@ -628,6 +631,9 @@ end
 
 
 
+local migration_6 = {}
+
+insert(migrations, migration_6)
 
 
 
@@ -668,6 +674,133 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local create_run_table = [[
+CREATE TABLE IF NOT EXISTS run (
+   run_id INTEGER PRIMARY KEY,
+   project INTEGER NOT NULL,
+   start_time DATETIME DEFAULT (strftime('%Y-%m-%dT%H:%M:%f', 'now')),
+   finish_time DATETIME,
+   FOREIGN KEY (project)
+      REFERENCES project (project_id)
+      ON DELETE CASCADE
+);
+]]
+
+local create_run_attr_table = [[
+CREATE TABLE IF NOT EXISTS run_attr (
+   run_attr_id INTEGER PRIMARY KEY,
+   run INTEGER,
+   key TEXT,
+   value BLOB,
+   FOREIGN KEY (run)
+      REFERENCES run (run_id)
+      ON DELETE CASCADE
+);
+]]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local create_run_action_table = [[
+CREATE TABLE IF NOT EXISTS run_action (
+   ordinal INTEGER,
+   class TEXT CHECK (length(class) <= 3),
+   input INTEGER,
+   run INTEGER,
+   PRIMARY KEY (run, ordinal) -- ON CONFLICT ABORT?
+   FOREIGN KEY (run)
+      REFERENCES run (run_id)
+      ON DELETE CASCADE
+   FOREIGN KEY (input)
+      REFERENCES input (line_id)
+);
+]]
+
+local create_action_attr_table = [[
+CREATE TABLE IF NOT EXISTS action_attr (
+   action_attr_id PRIMARY KEY,
+   run_action INTEGER,
+   key TEXT,
+   value BLOB,
+   FOREIGN KEY (run_action)
+      REFERENCES run_action (run_action_id)
+      ON DELETE CASCADE
+);
+]]
+
+
+
+
+
+
+
+
+
+local create_error_string_table = [[
+CREATE TABLE IF NOT EXISTS error_string (
+   error_id INTEGER PRIMARY KEY,
+   string TEXT UNIQUE ON CONFLICT IGNORE
+);
+]]
+
+
+
+local create_error_string_idx = [[
+CREATE INDEX idx_error_string ON error_string (string);
+]]
+
+
+
+
+insert(migration_6, create_run_table)
+insert(migration_6, create_run_attr_table)
+insert(migration_6, create_run_action_table)
+insert(migration_6, create_action_attr_table)
+insert(migration_6, create_error_string_table)
+insert(migration_6, create_error_string_idx)
 
 
 
@@ -874,6 +1007,13 @@ UPDATE session SET title = :session_title, accepted = :accepted
    WHERE session_id = :session_id;
 ]]
 
+
+
+
+session_sql.delete_session_by_id = [[
+DELETE FROM session WHERE session_id = :session_id;
+]]
+
 session_sql.update_accepted_session = [[
 UPDATE session SET accepted = :accepted WHERE session_id = :session_id;
 ]]
@@ -881,7 +1021,6 @@ UPDATE session SET accepted = :accepted WHERE session_id = :session_id;
 session_sql.update_title_session = [[
 UPDATE session SET title = :title WHERE session_id = :session_id;
 ]]
-
 
 
 
@@ -914,6 +1053,15 @@ FROM result
 INNER JOIN repr ON result.hash = repr.hash
 WHERE result.line_id = ?
 ORDER BY result.result_id;
+]]
+
+
+
+session_sql.get_sessions_for_project = [[
+SELECT title, accepted, project, vc_hash, session_id
+FROM session
+WHERE session.project = :project_id
+;
 ]]
 
 session_sql.get_project_by_dir = [[

@@ -33,6 +33,9 @@ helm_db.helm_db_home = helm_db_home
 
 A weak table to hold conns, keyed by string path\.
 
+This does mean we can only have one in\-memory database `""` at a time, which
+should be okay\.
+
 ```lua
 local _conns = setmetatable({}, { __mode = 'v' })
 ```
@@ -259,9 +262,9 @@ insert(migrations, migration_2)
 #### Version 3: Millisecond\-resolution timestamps\.
 
   We want to accomplish two things here: change the format of all existing
-timestamps, and change the default to have millisecond resolution and use
-"T" instead of " " as the separator\.
+timestamps, and change the default to have millisecond resolution and useT" instead of " " as the separator\.
 
+"
 SQLite being what it is, the latter requires us to copy everything to a new
 table\.  This must be done for the `project` and `repl` tables\.
 
@@ -627,15 +630,24 @@ optimization, and more good architecture\.
 
 #### Version 6: run table
 
+```lua
+local migration_6 = {}
+
+insert(migrations, migration_6)
+```
+
 It has become clear that we need a concept of a 'run', distinct from sessions\.
 
 A run is simply everything which happens from starting helm to closing it\.
 
-At present, it's unclear to me precisely how to model this\. The model for the
-`input` table is straightforward, although we're doing deduplication if a line
-is executed multiple times in a row, in a way we actually shouldn't: but
-conceptually, `input` is a simple linear collection of lines executed from the
-helm\.
+The model for the `input` table is straightforward, although we're doing
+deduplication if a line is executed multiple times in a row, we actually
+shouldn't: conceptually, `input` is a simple linear collection of lines
+executed from the helm\.
+
+We *could* do what we do with reprs, and have a unique `line_text` table for
+each unique typed at the repl, but I don't think it's worth the extra level of
+indirection\.
 
 Runs, at a base level, are a collection of lines, but there is also metadata
 we want to preserve\.  In particular, the point at which a restart is triggered,
@@ -653,22 +665,143 @@ and rehydrate the data in\-memory\.  SQLite doesn't reserve disk space it isn't
 using, and there's an appreciable difference between storing `'line'` and
 `'restart'` versus merely `'l'` and `'r'`\.
 
-Like premises, our best bet is to make the foreign key for `run` a tuple of
-`(input, ordinal)`, since we'll be recording every meaningful action in order\.
+I'll apply a check constraint here, but limit it to 3 characters instead of
+one\.  This assures that we put a string in that column, and gives some
+headroom for expansion\.
+
+Like premises, our best bet is to make the foreign key for `run_action` a
+tuple of `(run, ordinal)`, since we'll be recording every meaningful action
+in order\.
 
 I don't know if there's a way to enforce "every ordinal for a given repr must
 be monotonic and increasing, starting with 1" from within SQLite, but it seems
 like a common enough pattern and would be nice to have, so I'll look into it\.
 
-Our constraint for `.action` should be a string of length 1, that gives us
-plenty of flexibility while still failing on most accidental data we might
-provide to the column\.
+The run itself is a date and a project, and a foreign key to hang the actions
+upon\.  We'll also include a third table, `run_attr`, with `(run, key, value)`,
+to store metadata in an open\-ended fashion\.  We can move some of these as
+columns onto `run`, if we end up using them consistently, and/or add a JSON
+field to `run` itself and fold the map table in, once we have the
+prerequisites for working with JSON inside bridge\.
 
-What fields we include in the `run` table itself is also an open question, and
-I'm tempted to create a `run_eav` table which just holds arbitrary key/values
-for a given run, as a species of future\-proofing\.  A little lazy, but not
-exceptionally so, and we don't have the prerequisites in place to store and
-retrieve JSON, which is a pity\.
+
+##### run tables
+
+  The `run` table itself holds data pertaining to the run, and serves as a
+foreign key for `run_action`\.
+
+We'll also create a `run_attr` table, which is a classic EAV\.
+
+In this case, we're doing it for flexibility in expanding what information we
+store about a run, without needing to migrate every time we make changes\.
+
+The expectation is that we'll migrate information which we keep for every run
+over to the run table itself, and may eventually drop the `run_attr` table
+completely\.
+
+```sql
+CREATE TABLE IF NOT EXISTS run (
+   run_id INTEGER PRIMARY KEY,
+   project INTEGER NOT NULL,
+   start_time DATETIME DEFAULT (strftime('%Y-%m-%dT%H:%M:%f', 'now')),
+   finish_time DATETIME,
+   FOREIGN KEY (project)
+      REFERENCES project (project_id)
+      ON DELETE CASCADE
+);
+```
+
+```sql
+CREATE TABLE IF NOT EXISTS run_attr (
+   run_attr_id INTEGER PRIMARY KEY,
+   run INTEGER,
+   key TEXT,
+   value BLOB,
+   FOREIGN KEY (run)
+      REFERENCES run (run_id)
+      ON DELETE CASCADE
+);
+```
+
+
+##### run\_action tables
+
+  A run action is a single action taken at the repl, such as a line of input,
+a restart, entering or exiting session review mode, and so on\.
+
+We also create an EAV table here, `action_attr`\.  This is a more principled
+use of the EAV pattern: run actions are a grab\-bag of different things, which
+do belong in one table, because actions are a definite thing which happens in
+a linear order\.
+
+However, each of these actions has some amount of associated data, ranging
+from none to several key/value pairs\.  Input is the most common type of action,
+and the paradigm case, so as an optimization, if the action is an input, we
+put the foreign key on the run\_action itself\.
+
+But joining across a table for each type of action would be fiddly, require
+frequent migrations and query maintenance, and probably doesn't do us much of
+a favor efficiency wise, although the SQLite query planner is a thing of
+beauty and I wouldn't second\-guess it\.
+
+```sql
+CREATE TABLE IF NOT EXISTS run_action (
+   ordinal INTEGER,
+   class TEXT CHECK (length(class) <= 3),
+   input INTEGER,
+   run INTEGER,
+   PRIMARY KEY (run, ordinal) -- ON CONFLICT ABORT?
+   FOREIGN KEY (run)
+      REFERENCES run (run_id)
+      ON DELETE CASCADE
+   FOREIGN KEY (input)
+      REFERENCES input (line_id)
+);
+```
+
+```sql
+CREATE TABLE IF NOT EXISTS action_attr (
+   action_attr_id PRIMARY KEY,
+   run_action INTEGER,
+   key TEXT,
+   value BLOB,
+   FOREIGN KEY (run_action)
+      REFERENCES run_action (run_action_id)
+      ON DELETE CASCADE
+);
+```
+
+
+##### error table
+
+  We're going to start storing everything before "stack traceback:" in an
+error, for use in sessions\.
+
+That won't live in `results`, but rather in its own error table\.
+
+```sql
+CREATE TABLE IF NOT EXISTS error_string (
+   error_id INTEGER PRIMARY KEY,
+   string TEXT UNIQUE ON CONFLICT IGNORE
+);
+```
+
+Which we'll want to index:
+
+```sql
+CREATE INDEX idx_error_string ON error_string (string);
+```
+
+This one is all creates, we aren't altering anything we have already\.
+
+```lua
+insert(migration_6, create_run_table)
+insert(migration_6, create_run_attr_table)
+insert(migration_6, create_run_action_table)
+insert(migration_6, create_action_attr_table)
+insert(migration_6, create_error_string_table)
+insert(migration_6, create_error_string_idx)
+```
 
 
 ### Future Migrations
@@ -874,6 +1007,13 @@ UPDATE session SET title = :session_title, accepted = :accepted
    WHERE session_id = :session_id;
 ```
 
+
+#### Deletions
+
+```sql
+DELETE FROM session WHERE session_id = :session_id;
+```
+
 ```sql
 UPDATE session SET accepted = :accepted WHERE session_id = :session_id;
 ```
@@ -881,7 +1021,6 @@ UPDATE session SET accepted = :accepted WHERE session_id = :session_id;
 ```sql
 UPDATE session SET title = :title WHERE session_id = :session_id;
 ```
-
 
 ##### Selections
 
@@ -914,6 +1053,15 @@ FROM result
 INNER JOIN repr ON result.hash = repr.hash
 WHERE result.line_id = ?
 ORDER BY result.result_id;
+```
+
+Sometimes we just want the session data:
+
+```sql
+SELECT title, accepted, project, vc_hash, session_id
+FROM session
+WHERE session.project = :project_id
+;
 ```
 
 ```sql
