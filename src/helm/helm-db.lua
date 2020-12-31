@@ -1058,7 +1058,7 @@ ORDER BY result.result_id;
 
 
 session_sql.get_sessions_for_project = [[
-SELECT title, accepted, project, vc_hash, session_id
+SELECT title as session_title, accepted, project, vc_hash, session_id
 FROM session
 WHERE session.project = :project_id
 ;

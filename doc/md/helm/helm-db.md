@@ -1058,7 +1058,7 @@ ORDER BY result.result_id;
 Sometimes we just want the session data:
 
 ```sql
-SELECT title, accepted, project, vc_hash, session_id
+SELECT title as session_title, accepted, project, vc_hash, session_id
 FROM session
 WHERE session.project = :project_id
 ;
