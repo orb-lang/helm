@@ -393,10 +393,9 @@ local function new(helm_db)
          historian.session.mode = "macro"
       elseif _Bridge.args.new_session then
          historian.session.session_title = _Bridge.args.new_session
-         -- #todo initiate record-then-review mode
       elseif _Bridge.args.session then
-         historian.session.session_title = _Bridge.args.session
-         historian.session:load()
+         historian.session:loadID(_Bridge.args.session)
+         historian.session:loadPremises()
       end
    end
    historian.result_buffer = setmetatable({}, __result_buffer_M)

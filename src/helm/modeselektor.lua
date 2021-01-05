@@ -731,13 +731,14 @@ local function new(max_extent, writer, db)
    modeS.zones = Zoneherd(modeS, writer)
    modeS.zones.command:replace(modeS.txtbuf)
    -- If we are loading an existing session, start in review mode
-   if _Bridge.args.session then
+   local session = modeS.hist.session
+   if session.session_id then
       modeS.raga_default = "review"
-      modeS:setStatusLine("review", _Bridge.args.session)
-   elseif _Bridge.args.new_session then
-      modeS:setStatusLine("new_session", _Bridge.args.new_session)
-   elseif _Bridge.args.macro then
-      modeS:setStatusLine("macro", _Bridge.args.macro)
+      modeS:setStatusLine("review", session.session_title)
+   elseif session.session_title then
+      modeS:setStatusLine(
+         session.mode == "macro" and "macro" or "new_session",
+         session.session_title)
    else
       modeS:setStatusLine("default")
    end
