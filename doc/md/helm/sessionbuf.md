@@ -50,7 +50,9 @@ borrow its convenience methods\.
 ```lua
 local clamp = assert(require "core:math" . clamp)
 function Sessionbuf.selectIndex(buf, index)
-   index = clamp(index, 1, #buf.session)
+   index = #buf.session == 0
+      and 0
+      or clamp(index, 1, #buf.session)
    if index ~= buf.selected_index then
       buf.selected_index = index
       local premise = buf:selectedPremise()
