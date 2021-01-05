@@ -115,7 +115,51 @@ function Session.evaluate(session, valiant, historian)
 end
 #/lua
 
-*** Session:load()
+*** Session:loadID(name_or_index)
+
+Determines the session ID based on either a name, or the index within the list
+of sessions for the project. Also retrieves the accepted state and, if needed,
+the session title.
+
+#!lua
+local floor = assert(math.floor)
+local collect = assert(require 'core:table' . collect)
+local format = assert(string.format)
+function Session.loadID(session, name_or_index)
+   local index = tonumber(name_or_index)
+   if index and floor(index) == index then
+      local stmt = session.stmts.get_sessions_for_project
+      stmt:bind(session.project_id)
+      local results = collect(stmt.rows, stmt)
+      if #results < index then
+         io.stderr:write(format('Cannot load session #%d, only %d available.\n', index, #results))
+         os.exit(1)
+      end
+      local result = results[index]
+      stmt:clearbind():reset()
+      session.session_id = result.session_id
+      session.session_title = result.title
+      session.accepted = result.accepted ~= 0
+   else
+      session.session_title = name_or_index
+      local result = session.stmts.get_session_by_project_and_title
+                        :bind(session.project_id, session.session_title)
+                        :stepkv()
+      if not result then
+         -- #todo This should probably raise an error that helm.orb handles,
+         -- but Pylon would then need to understand the idea of a dirty exit,
+         -- so for now, we can just exit directly.
+         io.stderr:write('No session named "', session.session_title,
+            '" found. Use br helm -n to create a new session.\n')
+         os.exit(1)
+      end
+      session.session_id = result.session_id
+      session.accepted = result.accepted ~= 0
+   end
+end
+#/lua
+
+*** Session:loadPremises()
 
 Loads the session from the database, retrieving its lines and results.
 Does not re-run the lines.
@@ -148,30 +192,10 @@ local function _loadResults(session, premise)
    stmt:reset()
 end
 
-function Session.load(session)
-   if not session.session_id then
-      local result = session.stmts.get_session_by_project_and_title
-                        :bind(session.project_id, session.session_title)
-                        :step()
-      if not result then
-         -- #todo This should probably raise an error that helm.orb handles,
-         -- but Pylon would then need to understand the idea of a dirty exit,
-         -- so for now, we can just exit directly.
-         io.stderr:write('No session named "', session.session_title,
-            '" found. Use br helm -n to create a new session.\n')
-         os.exit(1)
-      end
-      session.session_id = result[1]
-   end
+function Session.loadPremises(session)
    local stmt = session.stmts.get_session_by_id
                   :bind(session.session_id)
    for result in stmt:rows() do
-      if not session.title then
-         session.title = result.session_title
-      end
-      if session.accepted == nil then
-         session.accepted = result.session_accepted
-      end
       -- Left join may produce (exactly one) row with no status value,
       -- indicating that we have no premises
       if result.status then

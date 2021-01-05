@@ -1061,7 +1061,7 @@ session_sql.get_sessions_for_project = [[
 SELECT title as session_title, accepted, project, vc_hash, session_id
 FROM session
 WHERE session.project = :project_id
-;
+ORDER BY session.session_id;
 ]]
 
 session_sql.get_project_by_dir = [[
@@ -1120,7 +1120,10 @@ ORDER BY session_id
 ]]
 
 session_sql.get_session_by_project_and_title = [[
-SELECT CAST (session_id AS REAL) FROM session
+SELECT
+   CAST (session_id AS REAL) AS session_id,
+   CAST (accepted AS REAL) AS accepted
+FROM session
 WHERE project = ? AND title = ?
 ORDER BY session_id
 ;
