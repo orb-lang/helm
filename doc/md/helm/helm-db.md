@@ -1182,13 +1182,6 @@ AND
 ;
 ```
 
-```sql
-INSERT INTO
-   input (project, line, time)
-VALUES (?, ?, ?)
-;
-```
-
 ```lua
 function helm_db.session(conn_handle)
    local conn = _openConn(conn_handle)

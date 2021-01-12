@@ -1182,13 +1182,6 @@ AND
 ;
 #/sql
 
-#!sql @session_sql.insert_line #asLua
-INSERT INTO
-   input (project, line, time)
-VALUES (?, ?, ?)
-;
-#/sql
-
 #!lua
 function helm_db.session(conn_handle)
    local conn = _openConn(conn_handle)

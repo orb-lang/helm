@@ -1182,13 +1182,6 @@ AND
 ;
 ]]
 
-session_sql.insert_line = [[
-INSERT INTO
-   input (project, line, time)
-VALUES (?, ?, ?)
-;
-]]
-
 
 function helm_db.session(conn_handle)
    local conn = _openConn(conn_handle)
