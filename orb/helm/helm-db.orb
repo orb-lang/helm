@@ -976,16 +976,18 @@ local session_sql = {}
 
 #!sql @session_sql.insert_session #asLua
 INSERT INTO
-  session (title, project, accepted)
+   session (title, project, accepted)
 VALUES
-  (:session_title, :project_id, :accepted);
+   (:session_title, :project_id, :accepted)
+;
 #/sql
 
 #!sql @session_sql.insert_premise #asLua
 INSERT INTO
    premise (session, ordinal, line, title, status)
 VALUES
-   (:session_id, :ordinal, :line_id, :title, :status);
+   (:session_id, :ordinal, :line_id, :title, :status)
+;
 #/sql
 
 #!sql @session_sql.truncate_session #asLua
@@ -995,6 +997,19 @@ DELETE FROM premise WHERE session = :session_id AND ordinal > :n;
 #!sql @session_sql.delete_session_by_id #asLua
 DELETE FROM session WHERE session_id = :session_id;
 #/sql
+
+We need to add lines, including a timestamp, for imports:
+
+#!sql @session_sql.insert_line #asLua
+INSERT INTO input (project, line, time) VALUES (:project, :line, :time);
+#/sql
+
+We copy over a few statements from the historian proxy table:
+
+#!lua
+session_sql.insert_result_hash = historian_sql.insert_result_hash
+session_sql.insert_repr        = historian_sql.insert_repr
+#/lua
 
 
 ***** Updates
@@ -1129,6 +1144,27 @@ ORDER BY session_id
 ;
 #/sql
 
+#!sql @session_sql.get_premises_for_export #asLua
+SELECT
+   CAST (ordinal AS REAL) AS ordinal,
+   premise.title as title,
+   premise.status as status,
+   input.line as line,
+   input.time as time,
+   input.line_id as line_id
+FROM
+   premise
+LEFT JOIN
+   input
+ON
+   input.line_id = premise.line
+WHERE
+   premise.session = :session_id
+ORDER BY
+   premise.ordinal
+;
+#/sql
+
 This one is a =conn:exec= so we use a closure, rather than a prepared
 statement.
 
@@ -1145,23 +1181,6 @@ AND
    ordinal = :ordinal
 ;
 #/sql
-
-#!sql @session_sql.insert_line #asLua
-INSERT INTO
-   input (project, line, time)
-VALUES (?, ?, ?)
-;
-#/sql
-
-
-***** Shared SQL
-
-We copy over a few statements from the historian proxy table.
-
-#!lua
-session_sql.insert_result_hash = historian_sql.insert_result_hash
-session_sql.insert_repr        = historian_sql.insert_repr
-#/lua
 
 #!lua
 function helm_db.session(conn_handle)

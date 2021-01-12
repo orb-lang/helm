@@ -976,16 +976,18 @@ local session_sql = {}
 
 session_sql.insert_session = [[
 INSERT INTO
-  session (title, project, accepted)
+   session (title, project, accepted)
 VALUES
-  (:session_title, :project_id, :accepted);
+   (:session_title, :project_id, :accepted)
+;
 ]]
 
 session_sql.insert_premise = [[
 INSERT INTO
    premise (session, ordinal, line, title, status)
 VALUES
-   (:session_id, :ordinal, :line_id, :title, :status);
+   (:session_id, :ordinal, :line_id, :title, :status)
+;
 ]]
 
 session_sql.truncate_session = [[
@@ -995,6 +997,19 @@ DELETE FROM premise WHERE session = :session_id AND ordinal > :n;
 session_sql.delete_session_by_id = [[
 DELETE FROM session WHERE session_id = :session_id;
 ]]
+
+
+
+session_sql.insert_line = [[
+INSERT INTO input (project, line, time) VALUES (:project, :line, :time);
+]]
+
+
+
+
+session_sql.insert_result_hash = historian_sql.insert_result_hash
+session_sql.insert_repr        = historian_sql.insert_repr
+
 
 
 
@@ -1129,6 +1144,27 @@ ORDER BY session_id
 ;
 ]]
 
+session_sql.get_premises_for_export = [[
+SELECT
+   CAST (ordinal AS REAL) AS ordinal,
+   premise.title as title,
+   premise.status as status,
+   input.line as line,
+   input.time as time,
+   input.line_id as line_id
+FROM
+   premise
+LEFT JOIN
+   input
+ON
+   input.line_id = premise.line
+WHERE
+   premise.session = :session_id
+ORDER BY
+   premise.ordinal
+;
+]]
+
 
 
 
@@ -1145,23 +1181,6 @@ AND
    ordinal = :ordinal
 ;
 ]]
-
-session_sql.insert_line = [[
-INSERT INTO
-   input (project, line, time)
-VALUES (?, ?, ?)
-;
-]]
-
-
-
-
-
-
-
-session_sql.insert_result_hash = historian_sql.insert_result_hash
-session_sql.insert_repr        = historian_sql.insert_repr
-
 
 
 function helm_db.session(conn_handle)
