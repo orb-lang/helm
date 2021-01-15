@@ -138,7 +138,7 @@ function Session.loadID(session, name_or_index)
       local result = results[index]
       stmt:clearbind():reset()
       session.session_id = result.session_id
-      session.session_title = result.title
+      session.session_title = result.session_title
       session.accepted = result.accepted ~= 0
    else
       session.session_title = name_or_index
