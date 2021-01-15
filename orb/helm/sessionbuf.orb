@@ -229,7 +229,7 @@ local status_icons = {
    ignore = "🟡",
    accept = "✅",
    reject = "❌",
-   skip   = "🗑"
+   skip   = "🗑 "
 }
 
 local box_light = assert(require "anterm:box" . light)
