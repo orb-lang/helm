@@ -50,6 +50,36 @@ __G.__G = __G
 
 
 
+local function _restore()
+   local a = require "anterm"
+   local uv = require "luv"
+   -- Teardown: Mouse tracking off, restore main screen and cursor
+   io.stdout:write(a.mouse.track(false),
+         a.paste_bracketing(false),
+         a.alternate_screen(false),
+         a.cursor.pop(),
+         a.cursor.show())
+
+   -- Back to normal mode and finish tearing down uv
+   uv.tty_reset_mode()
+   uv.stop()
+
+   -- Make sure the terminal processes all of the above,
+   -- then remove any spurious mouse inputs or other stdin stuff
+   io.stdout:flush()
+   io.stdin:read "*a"
+
+   -- Restore the global environment
+   setfenv(0, _G)
+end
+
+
+
+
+
+
+
+
 
 local function _helm(_ENV)
 
@@ -333,25 +363,8 @@ local helm_db = require "helm:helm/helm-db"
 helm_db.close()
 
 retcode = uv.run 'default'
+_restore()
 
--- Teardown: Mouse tracking off, restore main screen and cursor
-write(a.mouse.track(false),
-      a.paste_bracketing(false),
-      a.alternate_screen(false),
-      a.cursor.pop(),
-      a.cursor.show())
-
--- Back to normal mode and finish tearing down uv
-uv.tty_reset_mode()
-uv.stop()
-
--- Make sure the terminal processes all of the above,
--- then remove any spurious mouse inputs or other stdin stuff
-io.stdout:flush()
-io.stdin:read "*a"
-
--- Restore the global environment
-setfenv(0, _G)
 end -- of _helm
 
 

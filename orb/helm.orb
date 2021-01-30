@@ -45,6 +45,36 @@ __G.__G = __G
 #/lua
 
 
+**** _restore()
+
+Does everything necessary to return the terminal to its original condition.
+
+#!lua
+local function _restore()
+   local a = require "anterm"
+   local uv = require "luv"
+   -- Teardown: Mouse tracking off, restore main screen and cursor
+   io.stdout:write(a.mouse.track(false),
+         a.paste_bracketing(false),
+         a.alternate_screen(false),
+         a.cursor.pop(),
+         a.cursor.show())
+
+   -- Back to normal mode and finish tearing down uv
+   uv.tty_reset_mode()
+   uv.stop()
+
+   -- Make sure the terminal processes all of the above,
+   -- then remove any spurious mouse inputs or other stdin stuff
+   io.stdout:flush()
+   io.stdin:read "*a"
+
+   -- Restore the global environment
+   setfenv(0, _G)
+end
+#/lua
+
+
 *** _helm
 
 The entire module is setup as a function, to allow our new fenv
@@ -333,25 +363,8 @@ local helm_db = require "helm:helm/helm-db"
 helm_db.close()
 
 retcode = uv.run 'default'
+_restore()
 
--- Teardown: Mouse tracking off, restore main screen and cursor
-write(a.mouse.track(false),
-      a.paste_bracketing(false),
-      a.alternate_screen(false),
-      a.cursor.pop(),
-      a.cursor.show())
-
--- Back to normal mode and finish tearing down uv
-uv.tty_reset_mode()
-uv.stop()
-
--- Make sure the terminal processes all of the above,
--- then remove any spurious mouse inputs or other stdin stuff
-io.stdout:flush()
-io.stdin:read "*a"
-
--- Restore the global environment
-setfenv(0, _G)
 end -- of _helm
 #/lua
 
