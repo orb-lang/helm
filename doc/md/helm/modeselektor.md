@@ -545,7 +545,6 @@ local keys = assert(core.keys)
 function ModeS.eval(modeS)
    -- Getting ready to eval, cancel any active autocompletion
    modeS.suggest:cancel(modeS)
-   assert(false, "erroneous!")
    local line = tostring(modeS.txtbuf)
    local success, results = eval(line)
    if not success and results == 'advance' then
@@ -658,9 +657,9 @@ end
 
 ### ModeS:showModal\(text, button\_style\)
 
-Shows a modal dialog with the given text and button style
-\(see raga/modal\.orb for valid button styles\)\.
+Shows a modal dialog with the given text and button stylesee raga/modal\.orb for valid button styles\)\.
 
+\(
 When the modal closes, the button that was clicked can be retrieved
 with modeS:modalAnswer\(\)\.
 

@@ -72,6 +72,19 @@ end
 ```
 
 
+#### \_cleanup\(err\)
+
+When we catch errors, we handle need an error handler:
+
+```lua
+local function _cleanup(err)
+   _restore()
+   io.stderr:write(debug.traceback(err, 2))
+   os.exit(1)
+end
+```
+
+
 ### \_helm
 
 The entire module is setup as a function, to allow our new fenv
@@ -81,14 +94,13 @@ to be passed in\.
 local function _helm(_ENV)
 ```
 
-The entire function is one big `xpcall`:
+Set our environment:
 
 ```lua
 setfenv(0, __G)
-local ok, err = xpcall(function()
 ```
 
-Which we won't bother indenting, any more than we indent `_helm` itself\.
+Add some stuff to it:
 
 ```lua
 import = assert(require "core/module" . import)
@@ -98,6 +110,7 @@ jit.vmdef = require "helm:helm/vmdef"
 jit.p = require "helm:helm/ljprof"
 sql = assert(sql, "sql must be in _G")
 ```
+
 
 ## Boot sequence
 
@@ -273,53 +286,67 @@ local function process_escapes(seq)
       return modeS("NYI", seq)
    end
 end
+```
 
+
+### onseq\(err, seq\)
+
+Listens for sequences from `stdin`\.
+
+Wrapped in an `xpcall`, because it's the entry point for most of the logit
+inside Modeselektor, and we want to clean up the terminal when helm throws an
+error\.
+
+
+```lua
 -- uv, being an event loop, will sometimes keep reading after
 -- we expect it to stop.
--- this prevents modeS from being reloaded in such circumstances.
+--
+-- _ditch prevents modeS from being reloaded in such circumstances.
 --
 -- maybe.
-
 local _ditch = false
 
-local function onseq(err,seq)
+local function onseq(err, seq)
    if _ditch then return nil end
-   if err then error(err) end
+   xpcall(function()
+      if err then error(err) end
 
-   local head = byte(seq)
-   -- Special "navigation" sequences--this includes some escape sequences
-   if navigation[seq] then
-      modeS("NAV", navigation[seq])
-   -- Other escape sequences
-   elseif head == 27 then
-      process_escapes(seq)
-   -- Control sequences
-   elseif head <= 31 then
-      local ctrl = "^" .. char(head + 64)
-      modeS("CTRL", ctrl)
-   -- Printables--break into codepoints in case of multi-char input sequence
-   -- But first, optimize common case of single ascii printable
-   -- Note that bytes <= 31 and 127 (DEL) will have been taken care of earlier
-   elseif #seq == 1 and head < 128 then
-      modeS("ASCII", seq)
-   else
-      local points = Codepoints(seq)
-      for i, pt in ipairs(points) do
-         -- #todo handle decode errors here--right now we'll just insert an
-         -- actual Unicode "replacement character"
-         modeS(byte(pt) < 128 and "ASCII" or "UTF8", pt)
+      local head = byte(seq)
+      -- Special "navigation" sequences--this includes some escape sequences
+      if navigation[seq] then
+         modeS("NAV", navigation[seq])
+      -- Other escape sequences
+      elseif head == 27 then
+         process_escapes(seq)
+      -- Control sequences
+      elseif head <= 31 then
+         local ctrl = "^" .. char(head + 64)
+         modeS("CTRL", ctrl)
+      -- Printables--break into codepoints in case of multi-char input sequence
+      -- But first, optimize common case of single ascii printable
+      -- Note that bytes <= 31 and 127 (DEL) will have been taken care of earlier
+      elseif #seq == 1 and head < 128 then
+         modeS("ASCII", seq)
+      else
+         local points = Codepoints(seq)
+         for i, pt in ipairs(points) do
+            -- #todo handle decode errors here--right now we'll just insert an
+            -- actual Unicode "replacement character"
+            modeS(byte(pt) < 128 and "ASCII" or "UTF8", pt)
+         end
       end
-   end
-   -- Okay, if the action resulted in a quit, break out of the event loop
-   if modeS.has_quit then
-      _ditch = true
-      uv.read_stop(stdin)
-      uv.timer_stop(bounds_watch)
-      if restart_watch then
-         uv.timer_stop(restart_watch)
-         lume.server:stop()
+      -- Okay, if the action resulted in a quit, break out of the event loop
+      if modeS.has_quit then
+         _ditch = true
+         uv.read_stop(stdin)
+         uv.timer_stop(bounds_watch)
+         if restart_watch then
+            uv.timer_stop(restart_watch)
+            lume.server:stop()
+         end
       end
-   end
+   end, _cleanup)
 end
 ```
 
@@ -352,6 +379,8 @@ write(a.cursor.stash(),
       a.paste_bracketing(true),
       a.mouse.track(true)
 )
+
+-- set onseq to listen to stdin
 uv.read_start(stdin, onseq)
 
 -- paint screen
@@ -365,34 +394,13 @@ local helm_db = require "helm:helm/helm-db"
 helm_db.close()
 
 retcode = uv.run 'default'
+
+-- restore the terminal settings
 _restore()
 
 -- remove any spurious mouse inputs or other stdin stuff
 io.stdin:read "*a"
 uv.stop()
-```
-
-Thus ends the inner `xpcall`
-
-```lua
-end,
-```
-
-With errors handled thus:
-
-```lua
-function(err)
-   return debug.traceback(err, 2)
-end)
-```
-
-And a print handler for any errors\.
-
-```lua
-if not ok then
-   _restore()
-   io.stderr:write(err)
-end
 ```
 
 Thus ends `_helm`\.
