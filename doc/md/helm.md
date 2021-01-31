@@ -84,7 +84,13 @@ to be passed in\.
 local function _helm(_ENV)
 ```
 
-No sense wasting a level of indent on a wrapper imho
+The entire function is one big `xpcall`:
+
+```lua
+local ok, err = xpcall(function()
+```
+
+Which we won't bother indenting, any more than we indent `_helm` itself\.
 
 ```lua
 setfenv(0, __G)
@@ -364,8 +370,35 @@ helm_db.close()
 
 retcode = uv.run 'default'
 _restore()
+```
 
-end -- of _helm
+Thus ends the inner `xpcall`
+
+```lua
+end,
+```
+
+With errors handled thus:
+
+```lua
+function(err)
+   _restore()
+   return debug.traceback(err, 2)
+end)
+```
+
+And a print handler for any errors\.
+
+```lua
+if not ok then
+   io.stderr:write(err)
+end
+```
+
+Thus ends `_helm`\.
+
+```lua
+end
 ```
 
 #### Call helm

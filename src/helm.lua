@@ -87,6 +87,12 @@ local function _helm(_ENV)
 
 
 
+local ok, err = xpcall(function()
+
+
+
+
+
 setfenv(0, __G)
 
 import = assert(require "core/module" . import)
@@ -365,7 +371,34 @@ helm_db.close()
 retcode = uv.run 'default'
 _restore()
 
-end -- of _helm
+
+
+
+
+end,
+
+
+
+
+
+function(err)
+   _restore()
+   return debug.traceback(err, 2)
+end)
+
+
+
+
+
+if not ok then
+   io.stderr:write(err)
+end
+
+
+
+
+
+end
 
 
 
