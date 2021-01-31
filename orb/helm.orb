@@ -65,6 +65,12 @@ local function _restore()
 
    -- Make sure the terminal processes all of the above
    io.stdout:flush()
+   -- stop the loop
+   uv.stop()
+   -- Shut down the database conn:
+   local helm_db = require "helm:helm/helm-db"
+   helm_db.close()
+   local retcode = uv.run 'default'
 
    -- Restore the global environment
    setfenv(0, _G)
@@ -389,18 +395,11 @@ modeS:paint()
 -- main loop
 local retcode =  uv.run('default')
 
--- Shut down the database conn:
-local helm_db = require "helm:helm/helm-db"
-helm_db.close()
-
-retcode = uv.run 'default'
-
 -- restore the terminal settings
 _restore()
 
 -- remove any spurious mouse inputs or other stdin stuff
 io.stdin:read "*a"
-uv.stop()
 #/lua
 
 Thus ends =_helm=.
