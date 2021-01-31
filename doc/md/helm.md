@@ -62,12 +62,9 @@ local function _restore()
 
    -- Back to normal mode and finish tearing down uv
    uv.tty_reset_mode()
-   uv.stop()
 
-   -- Make sure the terminal processes all of the above,
-   -- then remove any spurious mouse inputs or other stdin stuff
+   -- Make sure the terminal processes all of the above
    io.stdout:flush()
-   io.stdin:read "*a"
 
    -- Restore the global environment
    setfenv(0, _G)
@@ -87,14 +84,13 @@ local function _helm(_ENV)
 The entire function is one big `xpcall`:
 
 ```lua
+setfenv(0, __G)
 local ok, err = xpcall(function()
 ```
 
 Which we won't bother indenting, any more than we indent `_helm` itself\.
 
 ```lua
-setfenv(0, __G)
-
 import = assert(require "core/module" . import)
 meta = import("core/meta", "meta")
 core = require "core:core"
@@ -370,6 +366,10 @@ helm_db.close()
 
 retcode = uv.run 'default'
 _restore()
+
+-- remove any spurious mouse inputs or other stdin stuff
+io.stdin:read "*a"
+uv.stop()
 ```
 
 Thus ends the inner `xpcall`
@@ -382,7 +382,6 @@ With errors handled thus:
 
 ```lua
 function(err)
-   _restore()
    return debug.traceback(err, 2)
 end)
 ```
@@ -391,6 +390,7 @@ And a print handler for any errors\.
 
 ```lua
 if not ok then
+   _restore()
    io.stderr:write(err)
 end
 ```

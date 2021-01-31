@@ -545,7 +545,7 @@ local keys = assert(core.keys)
 function ModeS.eval(modeS)
    -- Getting ready to eval, cancel any active autocompletion
    modeS.suggest:cancel(modeS)
-   error "I forbid you to evaluate!"
+   assert(false, "erroneous!")
    local line = tostring(modeS.txtbuf)
    local success, results = eval(line)
    if not success and results == 'advance' then
