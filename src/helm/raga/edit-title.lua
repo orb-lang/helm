@@ -46,13 +46,15 @@ end
 
 
 
-function EditTitle.NAV.RETURN(modeS, category, value)
+local function _accept(modeS)
    local sessionbuf = modeS.zones.results.contents
    sessionbuf:selectedPremise().title = tostring(modeS.txtbuf)
    sessionbuf:selectNextWrap()
    modeS.shift_to = "review"
 end
-EditTitle.NAV.TAB = EditTitle.NAV.RETURN
+
+EditTitle.NAV.RETURN = _accept
+EditTitle.NAV.TAB = _accept
 
 function EditTitle.NAV.ESC(modeS, category, value)
    modeS.txtbuf:replace(_getSelectedPremise(modeS).title)
@@ -60,6 +62,17 @@ function EditTitle.NAV.ESC(modeS, category, value)
 end
 
 
+
+
+
+
+
+
+
+EditTitle.CTRL["^Q"] = function(modeS, category, value)
+   _accept(modeS)
+   modeS.action_complete = false
+end
 
 
 
