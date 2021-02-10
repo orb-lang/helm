@@ -25,7 +25,7 @@ floor\.
 So this is one, reasonably self\-contained task:
 
 
-#### \[ \] Write a better terminal sequence parser
+#### \[x\] Write a better terminal sequence parser
 
 I think we should be using `lpeg` for this, but using it directly: The output
 is a sequence of \(category, value\) tuples, not an abstract syntax tree, so the
@@ -35,6 +35,13 @@ In any case, this needs to break the assumption that exactly one sequence is
 arriving at a time, so it should produce a pair of \(\(category, value\), index\),
 such that if `index < #seq`, we send the tuple off to `modeS` and keep parsing
 from `index` until the sequence is consumed\.
+
+##### \[ \] Optional: distinguish numeric keypad from number row
+
+There is a thing called "application keypad mode" that causes the numeric
+keypad to send escape sequences of the form `SS3 [j-yX]`, i\.e\. `ESC O [j-y]`\.
+\(This is distinguishable from an alt sequence because Alt\-Shift\-o is encoded
+using `CSI u` as `CSI 79;3u`\.\)\.
 
 
 ### \[ \] Conflating keystrokes with actions
