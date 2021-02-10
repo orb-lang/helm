@@ -118,8 +118,10 @@ the same cells on screen.
 
 #!lua
 function Zone.overlaps(zone, other_zone)
-   -- The other zone may be uninitialized--treat this as nonoverlapping
-   return other_zone.bounds and zone.bounds:intersects(other_zone.bounds)
+   -- One or both zones may be uninitialized--treat this as nonoverlapping
+   return zone.bounds
+      and other_zone.bounds
+      and zone.bounds:intersects(other_zone.bounds)
 end
 #/lua
 
@@ -505,13 +507,16 @@ function Zoneherd.reflow(zoneherd, modeS)
                                floor(modeS.max_extent.col / 6),
                                modeS.max_extent.row,
                                ceil(modeS.max_extent.col * 5 / 6) )
-   -- Modal is centered vertically and horizontally and has room for
-   -- two lines of text, a blank line, and a row of buttons/choices
-   -- Arbitrarily we make it 40 characters wide
-   local modal_extent = Point(6, 40)
-   local margins = ((modeS.max_extent - modal_extent) / 2):floor()
-   zoneherd.modal:setBounds(   margins.row, margins.col,
+   -- Modal is centered vertically and horizontally, with the extent
+   -- determined by the contents. Modal only tells us the client area
+   -- required, we must account for the borders--seems like a good
+   -- division of responsibility.
+   if zoneherd.modal.visible then
+      local modal_extent = zoneherd.modal.contents[1]:requiredExtent() + Point(2, 4)
+      local margins = ((modeS.max_extent - modal_extent) / 2):floor()
+      zoneherd.modal:setBounds(margins.row, margins.col,
                                (margins + modal_extent - 1):rowcol())
+   end
    return zoneherd
 end
 #/lua

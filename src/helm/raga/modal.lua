@@ -85,6 +85,7 @@ end
 
 
 
+
 function Modal.onShift(modeS)
    modeS.zones.modal:show()
 end
@@ -104,12 +105,10 @@ local DialogModel = meta {}
 
 local concat, insert = assert(table.concat), assert(table.insert)
 local ceil = assert(math.ceil)
-function DialogModel.__repr(model, window, c)
-   local phrase = {}
-   insert(phrase, model.text)
-   insert(phrase, "\n\n\n")
-   local buttons_width = 0
-   local spaces_count = 0
+local breakascii = assert(require "core:string/print" . breakascii)
+
+local function _buttonAndSpaceInfo(model)
+   local buttons_width, spaces_count = 0, 0
    -- First, figure out how much space we need to fill
    for i, button in ipairs(model.buttons) do
       if button.text then
@@ -122,6 +121,15 @@ function DialogModel.__repr(model, window, c)
          spaces_count = spaces_count + 1
       end
    end
+   return buttons_width, spaces_count
+end
+
+function DialogModel.__repr(model, window, c)
+   local phrase = {}
+   local wrapped_text = breakascii(model.text, 40)
+   insert(phrase, wrapped_text)
+   insert(phrase, "\n\n")
+   local buttons_width, spaces_count = _buttonAndSpaceInfo(model)
    local space_remaining = window.width - buttons_width
    for i, button in ipairs(model.buttons) do
       if button.text then
@@ -136,6 +144,32 @@ function DialogModel.__repr(model, window, c)
    end
    return concat(phrase)
 end
+
+
+
+
+
+
+
+
+local max = assert(math.max)
+local Point = require "anterm:point"
+
+function DialogModel.requiredExtent(model)
+   local _, text_height, text_width = breakascii(model.text, 40)
+   local buttons_width, spaces_count = _buttonAndSpaceInfo(model)
+   -- Ensure that any flexible-space element is at least one space wide
+   local button_row_width = buttons_width + spaces_count
+   -- Add two lines for a blank line and the button row
+   return Point(text_height + 2, max(text_width, button_row_width))
+end
+
+
+
+
+
+
+
 
 local button_styles = {
    yes_no_cancel = {
