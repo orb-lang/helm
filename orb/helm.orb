@@ -62,6 +62,7 @@ setfenv(0, __G)
 import = assert(require "core/module" . import)
 meta = import("core/meta", "meta")
 core = require "core:core"
+kit = require "valiant:replkit"
 jit.vmdef = require "helm:helm/vmdef"
 jit.p = require "helm:helm/ljprof"
 sql = assert(sql, "sql must be in _G")
