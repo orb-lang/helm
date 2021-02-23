@@ -174,7 +174,7 @@ end
 ### Editing
 
 
-#### Sessionbuf:toggleSelectedState\(buf\)
+#### Sessionbuf:\[reverse\]toggleSelectedState\(buf\)
 
 Toggles the state of the selected line, cycling through "accept", "reject",ignore", "skip"\.
 
@@ -186,9 +186,19 @@ local status_cycle_map = {
    reject = "skip",
    skip   = "ignore"
 }
+
 function Sessionbuf.toggleSelectedState(buf)
    local premise = buf.session[buf.selected_index]
    premise.status = status_cycle_map[premise.status]
+   return true
+end
+
+local inverse = assert(require "core:table" . inverse)
+local status_reverse_map = inverse(status_cycle_map)
+
+function Sessionbuf.reverseToggleSelectedState(buf)
+   local premise = buf.session[buf.selected_index]
+   premise.status = status_reverse_map[premise.status]
    return true
 end
 ```

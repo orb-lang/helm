@@ -64,6 +64,7 @@ NAV.SHIFT_UP   = _toSessionbuf "scrollResultsUp"
 NAV.SHIFT_DOWN = _toSessionbuf "scrollResultsDown"
 
 NAV.TAB = _toSessionbuf "toggleSelectedState"
+NAV.SHIFT_TAB = _toSessionbuf "toggleSelectedState"
 
 function NAV.RETURN(modeS, category, value)
    if modeS.zones.results.contents.selected_index ~= 0 then
