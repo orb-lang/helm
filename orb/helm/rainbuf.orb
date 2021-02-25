@@ -92,14 +92,16 @@ Sets up the composition process with a line width of =cols=.
 #!lua
 local lines = import("core/string", "lines")
 function Rainbuf.initComposition(rainbuf, cols)
-   rainbuf.cols = cols or 80
+   cols = cols or 80
    if rainbuf.scrollable then
-      rainbuf.cols = rainbuf.cols - 3
+      cols = cols - 3
    end
-   if rainbuf.live then
-      -- this buffer needs a fresh render each time
+   -- If width is changing, we need a re-render
+   -- "live" means re-render every time
+   if cols ~= rainbuf.cols or rainbuf.live then
       rainbuf:clearCaches()
    end
+   rainbuf.cols = cols
    rainbuf.more = true
 end
 #/lua

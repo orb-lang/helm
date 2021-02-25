@@ -267,9 +267,8 @@ function Sessionbuf._composeAll(buf)
       -- Selected premise also displays results
       if i == buf.selected_index then
          yield(box_light:spanningLine(inner_cols))
-         -- No need for left padding inside the box, the Rainbuf has a
-         -- 3-column gutter anyway. Do want to leave 1 column of right padding
-         for line in buf.resbuf:lineGen(buf.ROWS_PER_RESULT, inner_cols - 1) do
+         -- Account for left and right padding inside the box
+         for line in buf.resbuf:lineGen(buf.ROWS_PER_RESULT, inner_cols - 2) do
             yield(box_light:contentLine(inner_cols) .. line)
          end
       end
