@@ -51,7 +51,7 @@ function Resbuf.initComposition(resbuf, cols)
       for i = 1, resbuf.n do
          resbuf.reprs[i] = resbuf.frozen
             and lines(resbuf[i])
-            or lineGen(resbuf[i], cols)
+            or lineGen(resbuf[i], resbuf.cols)
       end
    end
 end
