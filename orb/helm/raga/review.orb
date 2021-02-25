@@ -118,6 +118,13 @@ requires a whole bunch of refactoring of Ragas and Zones to improve.
 
 #!lua
 function Review.onShift(modeS)
+   -- Hide the suggestion column so the review interface can occupy
+   -- the full width of the terminal.
+   -- #todo once we are able to switch between REPLing and review
+   -- on the fly, we'll need to put this back as appropriate, but I
+   -- think that'll come naturally once we have a raga stack.
+   modeS.zones.suggest:hide()
+
    local modal_answer = modeS:modalAnswer()
    if modal_answer then
       if modal_answer == "yes" then

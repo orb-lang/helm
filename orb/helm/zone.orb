@@ -494,14 +494,20 @@ function Zoneherd.reflow(zoneherd, modeS)
                                modeS.PROMPT_WIDTH + 1,
                                modeS.repl_top + txt_off,
                                right_col )
+   local results_right
+   if zoneherd.suggest.visible then
+      results_right = right_col
+      zoneherd.suggest:setBounds( modeS.repl_top + 1,
+                                  right_col + 1,
+                                  modeS.max_extent.row,
+                                  modeS.max_extent.col )
+   else
+      results_right = modeS.max_extent.col
+   end
    zoneherd.results:setBounds( modeS.repl_top + txt_off + 1,
                                1,
                                modeS.max_extent.row,
-                               right_col )
-   zoneherd.suggest:setBounds( modeS.repl_top + 1,
-                               right_col + 1,
-                               modeS.max_extent.row,
-                               modeS.max_extent.col )
+                               results_right )
    -- Popup is centered and 2/3 of max width, i.e. from 1/6 to 5/6
    zoneherd.popup:setBounds(   modeS.repl_top + txt_off + 1,
                                floor(modeS.max_extent.col / 6),
@@ -563,7 +569,6 @@ local function new(modeS, writer)
    zoneherd:newZone("modal", 2, "?")
    zoneherd.modal.visible = false
    zoneherd.modal.border = "light"
-   zoneherd:reflow(modeS)
 
    return zoneherd
 end
