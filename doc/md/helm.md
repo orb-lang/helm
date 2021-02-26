@@ -66,7 +66,6 @@ kit = require "valiant:replkit"
 jit.vmdef = require "helm:helm/vmdef"
 jit.p = require "helm:helm/ljprof"
 sql = assert(sql, "sql must be in _G")
-assert(true)
 ```
 
 ## Boot sequence
@@ -324,8 +323,8 @@ write(a.cursor.stash(),
 )
 uv.read_start(stdin, onseq)
 
--- paint screen
-modeS:paint()
+-- initial layout and paint screen
+modeS:reflow()
 
 -- main loop
 local retcode =  uv.run('default')
