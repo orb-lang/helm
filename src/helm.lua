@@ -66,7 +66,6 @@ kit = require "valiant:replkit"
 jit.vmdef = require "helm:helm/vmdef"
 jit.p = require "helm:helm/ljprof"
 sql = assert(sql, "sql must be in _G")
-assert(true)
 
 
 
