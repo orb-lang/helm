@@ -100,10 +100,10 @@ But we do want it to behave that way: lookup on a keymap should simply be
 effect.
 
 So we need keymap and raga *resolvers* which look through these layers and
-come up with appropriate messages.
+come up with appropriate messages. Tentative name for this/these: "maestro".
 
 At least the keymap resolvers, and possibly the raga resolvers as well, need
-to be able to hold state.  We'll have a keymap resolved for the vril noraml
+to be able to hold state.  We'll have a keymap resolved for the vril-normal
 raga, as one example: it needs to be able to take the sequence =d, 3, w= and
 store it until it can send the message ={'delete-word', 3}= or something of
 that nature.
@@ -111,6 +111,62 @@ that nature.
 The keymaps and ragas themselves must be completely stateless; we should think
 of them as immutable, although it may not be worth the extra steps to actually
 make them so.
+
+A raga is mostly a collection of keymaps (definitely more than one to aid
+composition). May also be where the functions referred to by those keymaps
+live?
+
+
+**** Problems we need to solve
+
+
+***** Composition of functionality
+
+Right now we have Nerf, which is really made up of lots of distinct bits of
+functionality:
+-  Basic text editing
+-  Syntax highlighting and brace matching
+-  Suggestions
+-  History navigation
+-  Evaluation
+-  Results display, scrolling etc. (and eventually all sorts of fun stuff like
+   mouse interactivity)
+
+When considering a suggestion (having pressed tab), or in search mode, we need:
+-  Scrolling through the list of suggestions/search results
+-  Ghost display of the suggestion/search result
+But note that the list lives in different zones in these two cases.
+
+We also need what amounts to a modal editor/prompter, a way to edit a piece of
+text and then accept/save and return to what we were previously doing. The
+only case right now is editing the title of a session premise, but in any such
+case, we'll need:
+-  A concept of _what_ we're editing, so we can store the result back there
+   when we quit
+-  Change detection and prompt to save changes if we try to go do something
+   else when there are changes.
+
+So clearly we need a way to break out some of these bits of functionality, both
+from each other and from being tied to a specific Zone, so we can recompose them
+to use for other purposes. Allowing a raga to activate multiple keymaps is a
+part of this, but I think there are unanswered questions about where the
+*implementation* of the functions should live, and how the whole focus thing
+works.
+
+
+***** Complex commands and input buffering
+
+=emacs= has shortcuts like =C-x C-c=, Ctrl-X followed by Ctrl-C. =vim= (and
+thus =vril=) has commands like =d3w= as mentioned above. The =C-x C-c= case we
+can handle the way emacs does: have the value for =C-x= be itself a keymap,
+rather than a function name, and have the resolver switch to such a keymap when
+it encounters it. There are some decisions to make about when to switch back to
+the "normal" keymap for the current raga stack--should probably look at how
+=emacs= handles that.
+
+=vril='s case is more complicated, though, because =d3w= and =d5b= and =2dd= are
+all pretty much the same command (delete), with arguments (motion and count).
+How does =emacs= =evil-mode= handle this?
 
 
 *** [ ] Ragas, Zones, shifts
@@ -126,6 +182,11 @@ is expecting to handle messages.  It also needs an ability to dispatch to
 other keymaps, relevant for MOUSE events in particular, as well as some
 concept of which raga stack to switch to, and under what circumstances.
 
+This is *probably* the true primary responsibility of the "maestro", and the
+mechanics of keymap/raga resolution may be part of it, or may be delegated to
+a simple subcomponent, these are implementation details. In any case, the
+maestro may replace modeselektor as the first argument to handler functions.
+
 This is really the hard part, because to get it right also requires solving
 some inadequacies in how we handle the concepts of Zones, Rainbufs, and so on.
 
@@ -136,8 +197,3 @@ which other projects can then reuse.
 
 Other obvious ones: we can move Zones to multiple terminal processes, render
 them in a browser or other GUI, and so on and so forth.
-
-Daniel, you've been working with the code much more closely than I have, and I
-know you have some opinions about how this stage could proceed.
-
-I'd appreciate a writeup!
