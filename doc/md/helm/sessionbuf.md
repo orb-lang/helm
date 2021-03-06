@@ -242,7 +242,7 @@ and we assign the wrapped result dynamically to `_composeOneLine`
 local status_icons = {
    ignore = "🟡",
    accept = "✅",
-   reject = "❌",
+   reject = "🚫",
    skip   = "🗑 "
 }
 

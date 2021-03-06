@@ -238,7 +238,7 @@ end
 local status_icons = {
    ignore = "🟡",
    accept = "✅",
-   reject = "❌",
+   reject = "🚫",
    skip   = "🗑 "
 }
 
