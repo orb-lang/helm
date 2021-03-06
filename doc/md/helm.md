@@ -323,8 +323,8 @@ write(a.cursor.stash(),
 )
 uv.read_start(stdin, onseq)
 
--- paint screen
-modeS:paint()
+-- initial layout and paint screen
+modeS:reflow()
 
 -- main loop
 local retcode =  uv.run('default')
