@@ -115,49 +115,6 @@ function Session.evaluate(session, valiant, historian)
 end
 #/lua
 
-*** Session:loadID(name_or_index)
-
-Determines the session ID based on either a name, or the index within the list
-of sessions for the project. Also retrieves the accepted state and, if needed,
-the session title.
-
-#!lua
-local floor = assert(math.floor)
-local collect = assert(require 'core:table' . collect)
-local format = assert(string.format)
-function Session.loadID(session, name_or_index)
-   local index = tonumber(name_or_index)
-   if index and floor(index) == index then
-      local stmt = session.stmts.get_sessions_for_project
-      stmt:bind(session.project_id)
-      local results = collect(stmt.rows, stmt)
-      if #results < index then
-         io.stderr:write(format('Cannot load session #%d, only %d available.\n', index, #results))
-         os.exit(1)
-      end
-      local result = results[index]
-      stmt:clearbind():reset()
-      session.session_id = result.session_id
-      session.session_title = result.session_title
-      session.accepted = result.accepted ~= 0
-   else
-      session.session_title = name_or_index
-      local result = session.stmts.get_session_by_project_and_title
-                        :bind(session.project_id, session.session_title)
-                        :stepkv()
-      if not result then
-         -- #todo This should probably raise an error that helm.orb handles,
-         -- but Pylon would then need to understand the idea of a dirty exit,
-         -- so for now, we can just exit directly.
-         io.stderr:write('No session named "', session.session_title,
-            '" found. Use br helm -n to create a new session.\n')
-         os.exit(1)
-      end
-      session.session_id = result.session_id
-      session.accepted = result.accepted ~= 0
-   end
-end
-#/lua
 
 *** Session:loadPremises()
 
@@ -300,11 +257,48 @@ function Session.save(session)
 end
 #/lua
 
+
+*** Session(db, project_id, title_or_index, cfg)
+
+Searches the database for a session with the given title (if a string) or
+index within the list of sessions for the project (if a number) and retrieves
+its core information (ID, title, accepted). If one is not found, creates a
+new, empty session with the given title, which MUST be a non-integer string in
+this case. (Note that this is assured by the command-line argument parser.)
+
 #!lua
-new = function(db, cfg)
+local collect = assert(require 'core:table' . collect)
+
+new = function(db, project_id, title_or_index, cfg)
    local session = meta(Session)
    session.stmts = helm_db.session(db)
+   session.project_id = project_id
    session.n = 0
+   if type(title_or_index) == "number" then
+      local stmt = session.stmts.get_sessions_for_project
+      stmt:bind(session.project_id)
+      local results = collect(stmt.rows, stmt)
+      stmt:clearbind():reset()
+      -- An index can only be used when intending to load
+      -- so out-of-bounds is an immediate error
+      if #results < title_or_index then
+         error(('Cannot load session #%d, only %d available.')
+                  :format(title_or_index, #results))
+      end
+      local result = results[title_or_index]
+      session.session_id = result.session_id
+      session.session_title = result.session_title
+      session.accepted = result.accepted ~= 0
+   else
+      session.session_title = title_or_index
+      local result = session.stmts.get_session_by_project_and_title
+                        :bind(session.project_id, session.session_title)
+                        :stepkv()
+      if result then
+         session.session_id = result.session_id
+         session.accepted = result.accepted ~= 0
+      end
+   end
    for k, v in pairs(cfg) do
       session[k] = v
    end
