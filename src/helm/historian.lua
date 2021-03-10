@@ -384,20 +384,33 @@ local function new(helm_db)
    historian.n = 0
    historian:createPreparedStatements(helm_db)
    historian:load()
-   historian.session = Session(helm_db, { project_id = historian.project_id })
-   -- retrieve data from _Bridge
-   if _Bridge.args.helm then
-      if _Bridge.args.macro then
-         historian.session.session_title = _Bridge.args.macro
-         historian.session.accepted = true
-         historian.session.mode = "macro"
-      elseif _Bridge.args.new_session then
-         historian.session.session_title = _Bridge.args.new_session
-      elseif _Bridge.args.session then
-         historian.session:loadID(_Bridge.args.session)
-         historian.session:loadPremises()
+   local session_cfg = {}
+   local session_title = _Bridge.args.macro or
+                         _Bridge.args.new_session or
+                         _Bridge.args.session
+   if _Bridge.args.macro then
+      session_cfg.accepted = true
+      session_cfg.mode = "macro"
+   end
+   local sesh = Session(helm_db,
+                        historian.project_id,
+                        session_title,
+                        session_cfg)
+   -- Asked to create a session that already exists
+   if (_Bridge.args.new_session or _Bridge.args.macro) and sesh.session_id then
+      error('A session named "' .. session_title ..
+            '" already exists. You can review it with br helm -s.')
+   end
+   if _Bridge.args.session then
+      if sesh.session_id then
+         sesh:loadPremises()
+      else
+         -- Asked to review a session that doesn't exist
+         error('No session named "' .. session_title ..
+               '" found. Use br helm -n to create a new session.')
       end
    end
+   historian.session = sesh
    historian.result_buffer = setmetatable({}, __result_buffer_M)
    historian.idlers = Set()
    return historian
