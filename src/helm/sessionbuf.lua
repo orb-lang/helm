@@ -184,7 +184,7 @@ local status_cycle_map = {
 }
 
 function Sessionbuf.toggleSelectedState(buf)
-   local premise = buf.session[buf.selected_index]
+   local premise = buf:selectedPremise()
    premise.status = status_cycle_map[premise.status]
    return true
 end
@@ -193,8 +193,51 @@ local inverse = assert(require "core:table" . inverse)
 local status_reverse_map = inverse(status_cycle_map)
 
 function Sessionbuf.reverseToggleSelectedState(buf)
-   local premise = buf.session[buf.selected_index]
+   local premise = buf:selectedPremise()
    premise.status = status_reverse_map[premise.status]
+   return true
+end
+
+
+
+
+
+
+
+
+
+
+
+
+local function _swapPremises(buf, index_a, index_b)
+   local premise_a = buf.session[index_a]
+   local premise_b = buf.session[index_b]
+   buf.session[index_a] = premise_b
+   buf.txtbufs[index_a]:replace(premise_b.line)
+   premise_b.ordinal = index_a
+   buf.session[index_b] = premise_a
+   buf.txtbufs[index_b]:replace(premise_a.line)
+   premise_a.ordinal = index_b
+   buf:clearCaches()
+end
+
+function Sessionbuf.movePremiseUp(buf)
+   if buf.selected_index == 1 then
+      return false
+   end
+   _swapPremises(buf, buf.selected_index, buf.selected_index - 1)
+   -- Maintain selection of the same premise after the move
+   -- Will never wrap because we disallowed moving the first premise up
+   buf:selectPreviousWrap()
+   return true
+end
+
+function Sessionbuf.movePremiseDown(buf)
+   if buf.selected_index == #buf.session then
+      return false
+   end
+   _swapPremises(buf, buf.selected_index, buf.selected_index + 1)
+   buf:selectNextWrap()
    return true
 end
 

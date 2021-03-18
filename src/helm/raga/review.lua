@@ -72,6 +72,9 @@ function NAV.RETURN(modeS, category, value)
    end
 end
 
+NAV.CTRL_UP = _toSessionbuf "movePremiseUp"
+NAV.CTRL_DOWN = _toSessionbuf "movePremiseDown"
+
 
 
 

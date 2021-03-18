@@ -71,6 +71,9 @@ function NAV.RETURN(modeS, category, value)
       modeS.shift_to = "edit_title"
    end
 end
+
+NAV.CTRL_UP = _toSessionbuf "movePremiseUp"
+NAV.CTRL_DOWN = _toSessionbuf "movePremiseDown"
 ```
 
 
