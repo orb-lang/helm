@@ -234,6 +234,11 @@ function Nerf.onCursorChanged(modeS)
    EditBase.onCursorChanged(modeS)
 end
 
+function Nerf.onTxtbufChanged(modeS)
+   modeS.suggest:update(modeS)
+   EditBase.onTxtbufChanged(modeS)
+end
+
 
 
 return Nerf

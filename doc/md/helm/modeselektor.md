@@ -412,11 +412,17 @@ function ModeS.actOnce(modeS, category, value)
    if modeS.txtbuf.contents_changed then
       modeS.zones.command:beTouched()
       modeS.raga.onTxtbufChanged(modeS)
-      modeS.txtbuf.contents_changed = false
-   end
-   if modeS.txtbuf.cursor_changed then
+    -- Treat contents_changed as implying cursor_changed
+    -- only ever fire one of the two events
+   elseif modeS.txtbuf.cursor_changed then
       modeS.raga.onCursorChanged(modeS)
-      modeS.txtbuf.cursor_changed = false
+   end
+    modeS.txtbuf.contents_changed = false
+    modeS.txtbuf.cursor_changed = false
+   -- Check shift_to again in case one of the cursor handlers set it
+   if modeS.shift_to then
+      modeS:shiftMode(modeS.shift_to)
+      modeS.shift_to = nil
    end
    return handled
 end

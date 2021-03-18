@@ -83,12 +83,8 @@ NAV.UP = NAV.SHIFT_TAB
 NAV.SHIFT_UP = NAV.SHIFT_TAB
 
 NAV.ESC = _quit
-function NAV.RIGHT(modeS, category, value)
-   _quit(modeS, category, value)
-   modeS.action_complete = false
-end
-
 NAV.RETURN = _accept
+
 function NAV.LEFT(modeS, category, value)
    _accept(modeS, category, value)
    modeS.action_complete = false
@@ -99,8 +95,26 @@ end
 
 
 
-function Complete.onCursorChanged(modeS)
+
+
+
+
+function Complete.onTxtbufChanged(modeS)
    modeS.suggest:update(modeS)
+   EditBase.onCursorChanged(modeS)
+end
+
+
+
+
+
+
+
+
+
+
+function Complete.onCursorChanged(modeS)
+   _quit(modeS)
    EditBase.onCursorChanged(modeS)
 end
 

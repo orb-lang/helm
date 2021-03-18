@@ -223,15 +223,20 @@ ALT ["M-e"] = function(modeS, category, value)
 end
 #/lua
 
-*** Nerf.onCursorChanged(modeS)
+*** Nerf.onCursorChanged(modeS), Nerf.onTxtbufChanged(modeS)
 
-Whenever the cursor moves (which is likely because the txtbuf contents changed,
-but we don't really care), need to update the suggestions.
+Whenever the cursor moves or the Txtbuf contents change, need to
+update the suggestions.
 
 #!lua
 function Nerf.onCursorChanged(modeS)
    modeS.suggest:update(modeS)
    EditBase.onCursorChanged(modeS)
+end
+
+function Nerf.onTxtbufChanged(modeS)
+   modeS.suggest:update(modeS)
+   EditBase.onTxtbufChanged(modeS)
 end
 #/lua
 
