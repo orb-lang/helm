@@ -83,12 +83,8 @@ NAV.UP = NAV.SHIFT_TAB
 NAV.SHIFT_UP = NAV.SHIFT_TAB
 
 NAV.ESC = _quit
-function NAV.RIGHT(modeS, category, value)
-   _quit(modeS, category, value)
-   modeS.action_complete = false
-end
-
 NAV.RETURN = _accept
+
 function NAV.LEFT(modeS, category, value)
    _accept(modeS, category, value)
    modeS.action_complete = false
@@ -96,11 +92,29 @@ end
 ```
 
 
+### Complete\.onTxtbufChanged\(modeS\)
+
+Update the suggestion list when the user types something\. Note that this won't
+be hit after a paste, or if the character inserted caused an accept, because
+we will have already shifted ragas\.
+
+```lua
+function Complete.onTxtbufChanged(modeS)
+   modeS.suggest:update(modeS)
+   EditBase.onCursorChanged(modeS)
+end
+```
+
+
 ### Complete\.onCursorChanged\(modeS\)
+
+Any cursor movement drops us out of Complete mode\. Note that
+onCursorChanged and onTxtbufChanged are mutually exclusive\-\-this does not
+fire on a simple insert\.
 
 ```lua
 function Complete.onCursorChanged(modeS)
-   modeS.suggest:update(modeS)
+   _quit(modeS)
    EditBase.onCursorChanged(modeS)
 end
 ```
