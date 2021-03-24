@@ -143,6 +143,22 @@ functionality:
         Like Nerf doesn't really do any text editing, certainly no syntax
         highlighting, it just tells the Txtbuf and Searchbuf(?) what to do.
 
+        Right now, we have precomposed actions like this:
+
+#!lua-
+CTRL ["^K"] = toTxtbuf "killToEndOfLine"
+#/lua-
+
+- Sam:  Side note, I'm very close to being able to make a =#noKnit= tag
+        without adding more special cases to Orb, so fake codeblocks won't be
+        necessary in the near future.
+
+        Continuing.  The composed keymap (raga) needs to just tell us
+        ="kill-to-end-of-line"= (no idea what casing style keymap messages
+        will actually want to take, just doing them lisp-style for now), and
+        the Maestro hands this to a dispatch object, which knows which edit
+        object receives it, and listens to a response.
+
 When considering a suggestion (having pressed tab), or in search mode, we need:
 -  Scrolling through the list of suggestions/search results
 -  Ghost display of the suggestion/search result
@@ -176,6 +192,64 @@ works.
         =Esc= to the keymap, get back an =exit-modal=, and perform tasks such
         as swapping in the relevant keymap and replacing the dispatch object
         with something new.
+
+        I picture most of this being handled by edit objects returning
+        messages which allow the dispatch object (not yet named, and I don't
+        want to start calling it a controller because we can do better) to
+        send more messages.  So a Txtbuf doesn't need to know that it's in
+        search mode or what have you, the lexer takes care of printing it, but
+        it should tell the dispatcher things like ="cursor-moved"= and
+        ="inserted"= and ="deleted"=.  The dispatcher can tell the search
+        results to refresh.
+
+        There are some non-obvious areas of responsibility, but we should
+        short circuit as little as possible. Even something like =exit-modal=,
+        which is handled by the Maestro setting up new dispatchers, keymaps,
+        and so on, should just get sent to the dispatcher, because it might
+        do something first.
+
+        Basically the dispatch object holds references to anything which might
+        conceivably need to take a message, and all of those objects are wired
+        up to return a message if they need to.
+
+        It's likely that we want to make every dispatch hookable, so it
+        shouldn't be =dispatch.txtbuf[message](txtbuf, ...)= but rather
+        =dispatch:sendTo[maestro.txtbuf](message, ...)=.  Those signature are
+        by no means written in stone!  Just exploring the space here.
+
+        =:sendTo= might even match on =.idEst= first, then use that generic
+        hookable to to pass everything on to the instance.  All of which we
+        can elaborate as we go, I'm painting a picture of the amount of
+        indirection we're going to need to really get this right.
+
+        Remember that the main point of having dynamics is that modifying one
+        copy, by adding/removing hooks or changing the main function, will
+        modify every copy.  So we can have an object, well away from the
+        action, which just holds anything we might want to hook, so we don't
+        have to rummage around inside various tables to find them.
+
+        Open question: should the composed keymap (I think we've decided that
+        this is the raga now) live on the Maestro, or on the dispatch object?
+        I'm favoringr the Maestro, because ideally we don't need different code
+        paths for a dispatch object being driven in =nerf= vs =vril= mode.
+
+        One of the rules of the dispatch objects is that they don't know
+        anything about keys, one of the rules of the Maestro is that it
+        doesn't know how to talk to anything but the dispatcher and the
+        Modeselektor.
+
+        As we flesh this out, I'm thinking that focus turns out to not be a
+        very coherent concept!  We will have =:onStart= and =:onExit= messages
+        for setting up and tearing down dispatchers, and =:onExit= will tell
+        the Maestro what object to set up next.  =:onStart= could return the
+        =:onExit= closure, so that a popup modal knows what to go back to when
+        dismissed, for example.
+
+        This embeds the state graph in actions, rather than data representing
+        instructions.  Which is maximally flexible, and I think it would be
+        adequately easy to reason about, but: harder to introspect.  There are
+        ways to solve that if we need to, however.
+
 
 ***** Complex commands and input buffering
 
