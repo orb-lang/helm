@@ -180,6 +180,55 @@ the "normal" keymap for the current raga stack\-\-should probably look at how
 all pretty much the same command \(delete\), with arguments \(motion and count\)\.
 How does `emacs` `evil-mode` handle this?
 
+Also, apparently sufficiently long pastes do in fact result in multiple calls
+to `onseq`, so we may need to hold on to the beginning of one and wait for the
+rest\.
+
+
+##### Real\-time interaction with the terminal vs\. buffered input
+
+If we want to e\.g\. read the current cursor position, we do this by writing to
+the terminal, then immediately reading from stdin\. This is fine if stdin never
+has a backlog of input, but if it does, we may read something other than the
+response to our query\. We should be able to hand off this information such
+that it doesn't get lost while we search for the info we actually wanted\.
+
+
+##### Overlays and fallback to "default" behavior
+
+Some ragas \(Search and Complete come to mind\) are really more like overlays on
+top of e\.g\. Nerf, and in many cases they want to check a condition, do
+something special in one case, and fall back to whatever Nerf would have done
+otherwise\. Or, do something special and then 
+also
+ do whatever Nerf would
+have done\. Right now this is handled differently depending on whether we're
+shifting modes or not\-\-if the "overlay" is going away, we can set
+`modeS.action_complete = false`, but if it's sticking around, we have to
+explicitly call \`Nerf\(modeS, category, value\)\`\. Seems like it 
+might
+ be good
+for these to work the same way? It helps a bit if the overlay\-ing is happening
+at the keymap level, rather than directly implementing a new function of the
+same name/in the same slot—"disregard the keymap that you found me in and
+re\-dispatch" could be a reasonable operation for the resolver to have\.
+
+Additionally or alternatively, I know you \[Sam\] have mentioned pre\- and
+post\-hooks\. I know vaguely what those words mean but not how you intend to
+apply them here, but I could see a mechanism like that doing some or all of
+what we want here\.
+
+Ah, also\. Sometimes we want to replace \(or hook\) a particular 
+behavior
+
+rather than a particular 
+keybinding
+\. Like, `Complete` effectively hooks what
+in `emacs` or `readline` would be called `self-insert` to accept when a
+non\-identifier character is typed\. `emacs` lets you remap a command name to
+another command name \(only one level deep though, you can't remap a \-> b and b
+\-> c and expect that to remap a \-> c\), should we support that?
+
 
 ### \[ \] Ragas, Zones, shifts
 
@@ -209,3 +258,23 @@ which other projects can then reuse\.
 
 Other obvious ones: we can move Zones to multiple terminal processes, render
 them in a browser or other GUI, and so on and so forth\.
+
+
+#### Zone/raga hierarchy? MV\*, or what do we do instead?
+
+There's an important question about the relationship between ragas and
+zones\-\-basically which of \(one/many\)\-to\-\(one/many\) it is\. Right now a single
+raga can influence the content of multiple zones \(obviously\-\-command and
+results\)\. Some ragas also influence which zones are visible, and it might be
+nice to delegate some of the reflow/layout logic to them too\-\-or anyway to
+have it be changeable\. But we clearly want to move towards a more flexible
+paradigm where ragas \(or something like them\) are composable, and more than
+one of them can influence what's on screen at once \(e\.g\. with Complete\)\. So
+then\.\.\.how does this work?
+
+The obvious\-to\-me\-because\-I'm\-used\-to\-it answer is an MV\* paradigm, but what
+we have now is pretty sharply opposed to that, in that it's clear that there
+is one raga for the whole screen\. We could certainly change that, but the
+easiest change would be to add something like `emacs`' minor modes\-\-a proper
+hierarchy would be a bigger step\. Can/should we make do without it, and how?
+Or should we move in that \(hierarchy/MV\*\) direction, and how?
