@@ -107,8 +107,10 @@ local Historian  = require "helm:historian"
 local Lex        = require "helm:lex"
 local Zoneherd   = require "helm:zone"
 local Suggest    = require "helm:suggest"
+local Maestro    = require "helm:maestro"
 local repr       = require "repr:repr"
 local lua_parser = require "helm:lua-parser"
+local input_event = require "anterm:input-event"
 
 local concat               = assert(table.concat)
 local sub, gsub, rep, find = assert(string.sub),
@@ -229,6 +231,57 @@ local icon_map = { MOUSE = mouse_paint,
 
 local function _make_icon(category, value)
    return icon_map[category](value)
+end
+
+
+
+
+
+
+local function _make_new_icon(event, command, args)
+   local event_str = STAT_ICON .. input_event.serialize(event)
+   if event.type == "mouse" then
+      local subtype
+      if event.pressed then
+         if event.moving then
+            subtype = "drag"
+         else
+            subtype = "press"
+         end
+      else
+         if event.moving then
+            subtype = "move"
+         else
+            subtype = "release"
+         end
+      end
+      event_str = c.userdata(event_str) .. (' (%s: %s,%s)'):format(
+         subtype,
+         a.cyan(event.col),
+         a.cyan(event.row))
+      if command then
+         event_str = event_str .. ' : ' .. command
+      end
+      return event_str
+   elseif event.type == "paste" then
+      return paste_paint(event.text)
+   else --event.type == "keypress"
+      local color = a.green
+      if command == "NYI" then
+         color = a.red
+      -- #todo this is a mostly-accurate but terrible way to distinguish named keys
+      -- We will have problems with UTF-8 if nothing else, and...just no
+      elseif #event.key > 1 then
+         color = a.magenta
+      elseif event.modifiers ~= 0 then
+         color = a.blue
+      end
+      event_str = color(event_str)
+      if command then
+         event_str = event_str .. ' : ' .. command
+      end
+      return event_str
+   end
 end
 
 
@@ -403,8 +456,20 @@ end
 
 
 
-function ModeS.actOnce(modeS, category, value)
-   local handled = modeS.raga(modeS, category, value)
+function ModeS.actOnce(modeS, event, old_cat_val)
+   -- Try to dispatch the new-style event via keymap
+   local command, args = modeS.maestro:translate(event)
+   local icon
+   if command then
+      modeS.maestro:dispatch(event, command, args)
+      icon = _make_new_icon(event, command, args)
+   elseif old_cat_val then
+      -- Okay, didn't find anything there, fall back to the old way
+      local handled = modeS.raga(modeS, unpack(old_cat_val))
+      if handled then
+         icon = _make_icon(unpack(old_cat_val))
+      end
+   end
    if modeS.shift_to then
       modeS:shiftMode(modeS.shift_to)
       modeS.shift_to = nil
@@ -424,24 +489,22 @@ function ModeS.actOnce(modeS, category, value)
       modeS:shiftMode(modeS.shift_to)
       modeS.shift_to = nil
    end
-   return handled
+   return icon
 end
 
 
 
-function ModeS.act(modeS, category, value)
-   local icon = _make_icon(category, value)
-   local handled = false
+function ModeS.act(modeS, event, old_cat_val)
+   local icon
    repeat
       modeS.action_complete = true
       -- The raga may set action_complete to false to cause the command
       -- to be re-processed, most likely after a mode-switch
-      local handledThisTime = modeS:actOnce(category, value)
-      handled = handled or handledThisTime
+      local iconThisTime = modeS:actOnce(event, old_cat_val)
+      icon = icon or iconThisTime
    until modeS.action_complete == true
-   if not handled then
-      local val_rep = string.format("%q",value):sub(2,-2)
-      icon = _make_icon("NYI", category .. ": " .. val_rep)
+   if not icon then
+      icon = _make_new_icon(event, "NYI", {})
    end
 
    -- Replace zones
@@ -729,6 +792,7 @@ local function new(max_extent, writer, db)
    modeS.txtbuf = Txtbuf()
    modeS.hist  = Historian(db)
    modeS.suggest = Suggest()
+   modeS.maestro = Maestro(modeS)
    modeS.status = setmetatable({}, _stat_M)
    rawset(__G, "stat", modeS.status)
    modeS.max_extent = max_extent

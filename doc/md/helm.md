@@ -231,15 +231,15 @@ local navigation = a.navigation
 
 local function process_escapes(seq)
    if is_mouse(seq) then
-      return modeS("MOUSE", m_parse(seq))
+      return {"MOUSE", m_parse(seq)}
    elseif #seq == 2 and byte(seq, 2) < 128 then
       -- Meta
       local key = "M-" .. sub(seq,2,2)
-      return modeS("ALT", key)
+      return {"ALT", key}
    elseif a.is_paste(seq) then
-      return modeS("PASTE", a.parse_paste(seq))
+      return {"PASTE", a.parse_paste(seq)}
    else
-      return modeS("NYI", seq)
+      return {"NYI", seq}
    end
 end
 
@@ -250,34 +250,40 @@ end
 -- maybe.
 
 local _ditch = false
+local parse_input = require "anterm:input-parser"
 
 local function onseq(err,seq)
    if _ditch then return nil end
    if err then error(err) end
 
+   local old_events = {}
+   local new_events = parse_input(seq)
    local head = byte(seq)
    -- Special "navigation" sequences--this includes some escape sequences
    if navigation[seq] then
-      modeS("NAV", navigation[seq])
+      old_events[1] = {"NAV", navigation[seq]}
    -- Other escape sequences
    elseif head == 27 then
-      process_escapes(seq)
+      old_events[1] = process_escapes(seq)
    -- Control sequences
    elseif head <= 31 then
       local ctrl = "^" .. char(head + 64)
-      modeS("CTRL", ctrl)
+      old_events[1] = {"CTRL", ctrl}
    -- Printables--break into codepoints in case of multi-char input sequence
    -- But first, optimize common case of single ascii printable
    -- Note that bytes <= 31 and 127 (DEL) will have been taken care of earlier
    elseif #seq == 1 and head < 128 then
-      modeS("ASCII", seq)
+      old_events[1] = {"ASCII", seq}
    else
       local points = Codepoints(seq)
       for i, pt in ipairs(points) do
          -- #todo handle decode errors here--right now we'll just insert an
          -- actual Unicode "replacement character"
-         modeS(byte(pt) < 128 and "ASCII" or "UTF8", pt)
+         old_events[i] = {byte(pt) < 128 and "ASCII" or "UTF8", pt}
       end
+   end
+   for i = 1, #new_events do
+      modeS(new_events[i], old_events[i])
    end
    -- Okay, if the action resulted in a quit, break out of the event loop
    if modeS.has_quit then
