@@ -20,11 +20,50 @@ local EditBase = clone(RagaBase, 2)
 
 
 
-local function toTxtbuf(fn)
-   return function(modeS, category, value)
-      return modeS.txtbuf[fn](modeS.txtbuf)
+
+
+
+local map = {
+   LEFT            = "left",
+   RIGHT           = "right",
+   ["M-LEFT"]      = "leftWordAlpha",
+   ["M-b"]         = "leftWordAlpha",
+   ["M-RIGHT"]     = "rightWordAlpha",
+   ["M-w"]         = "rightWordAlpha",
+   HOME            = "startOfLine",
+   ["C-a"]         = "startOfLine",
+   END             = "endOfLine",
+   ["C-e"]         = "endOfLine",
+   BACKSPACE       = "killBackward",
+   DELETE          = "killForward",
+   ["M-BACKSPACE"] = "killToBeginningOfWord",
+   ["M-DELETE"]    = "killToEndOfWord",
+   ["M-d"]         = "killToEndOfWord",
+   ["C-k"]         = "killToEndOfLine",
+   ["C-u"]         = "killToBeginningOfLine",
+   ["C-t"]         = "transposeLetter"
+}
+
+for key, command in pairs(map) do
+   EditBase[command] = function(maestro, event)
+      return maestro.modeS.txtbuf[command](modeS.txtbuf)
    end
 end
+
+function EditBase.clearTxtbuf(maestro, event)
+   maestro.modeS:setTxtbuf(Txtbuf())
+   maestro.modeS:setResults("")
+   maestro.modeS.hist.cursor = maestro.modeS.hist.n + 1
+end
+map["C-l"] = "clearTxtbuf"
+
+function EditBase.restartSession(maestro, event)
+   maestro.modeS:restart()
+end
+map["C-r"] = "restartSession"
+
+EditBase.default_keymaps = { map }
+
 
 
 
@@ -48,63 +87,6 @@ function EditBase.PASTE(modeS, category, value)
    modeS.txtbuf:paste(value)
 end
 
-
-
-
-
-
-
-local NAV = EditBase.NAV
-addall(NAV, {
-   LEFT           = toTxtbuf "left",
-   RIGHT          = toTxtbuf "right",
-   ALT_LEFT       = toTxtbuf "leftWordAlpha",
-   ALT_RIGHT      = toTxtbuf "rightWordAlpha",
-   HOME           = toTxtbuf "startOfLine",
-   END            = toTxtbuf "endOfLine",
-   BACKSPACE      = toTxtbuf "killBackward",
-   DELETE         = toTxtbuf "killForward",
-   ALT_BACKSPACE  = toTxtbuf "killToBeginningOfWord",
-   ALT_DELETE     = toTxtbuf "killToEndOfWord",
-})
-
-
-
-
-
-
-
-local CTRL = EditBase.CTRL
-
-CTRL ["^A"] = NAV.HOME
-CTRL ["^E"] = NAV.END
-
-local function clear_txtbuf(modeS, category, value)
-   modeS:setTxtbuf(Txtbuf())
-   modeS:setResults("")
-   modeS.hist.cursor = modeS.hist.n + 1
-end
-
-CTRL ["^L"] = clear_txtbuf
-
-CTRL ["^R"] = function(modeS, category, value)
-                 modeS:restart()
-              end
-
-CTRL ["^K"] = toTxtbuf "killToEndOfLine"
-CTRL ["^U"] = toTxtbuf "killToBeginningOfLine"
-CTRL ["^T"] = toTxtbuf "transposeLetter"
-
-
-
-
-
-
-addall(EditBase.ALT, {
-   ["M-w"] = NAV.ALT_RIGHT,
-   ["M-b"] = NAV.ALT_LEFT,
-   ["M-d"] = NAV.ALT_DELETE
-})
 
 
 
