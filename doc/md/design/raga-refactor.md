@@ -139,12 +139,12 @@ functionality:
 -  Results display, scrolling etc\. \(and eventually all sorts of fun stuff like
     mouse interactivity\)
 
-==
+===
 
 
 - Sam:  Ok, but most of this simply sends messages to appropriate objects, and
     we'll need to continue that trend\.  Conflating the resolution of
-    keystrokes with the closures which actually send messages to say the
+    keystrokes with the closures which actually send messages to, say, the
     Txtbuf, that's what we're looking to fix here\.
 
     Like Nerf doesn't really do any text editing, certainly no syntax
@@ -157,15 +157,15 @@ CTRL ["^K"] = toTxtbuf "killToEndOfLine"
 ```
 
 
-- Sam:  Side note, I'm very close to being able to make a `#noKnit` tag
+- Sam:  \(Side note, I'm very close to being able to make a `#noKnit` tag
     without adding more special cases to Orb, so fake codeblocks won't be
-    necessary in the near future\.
+    necessary in the near future\.\)
 
-    Continuing\.  The composed keymap \(raga\) needs to just tell us
-    `"kill-to-end-of-line"` \(no idea what casing style keymap messages
-    will actually want to take, just doing them lisp\-style for now\), and
-    the Maestro hands this to a dispatch object, which knows which edit
-    object receives it, and listens to a response\.
+    Continuing:  The composed keymap \(raga\) needs to just tell us
+    `"kill-to-end-of-line"` \(no idea what case style keymap messages will
+    actually want to take, just doing them lisp\-style for now\), and the
+    Maestro hands this to a dispatch object, which knows which edit object
+    receives it, and listens to a response\.
 
 When considering a suggestion \(having pressed tab\), or in search mode, we need:
 
@@ -195,12 +195,13 @@ part of this, but I think there are unanswered questions about where the
 works\.
 
 
-- Sam:  Right, so this is the hard problem right now\.
+- Sam:  Right, this is the hard problem right now\.
 
-    The Maestro sends an `a` to the keymap resolver, and gets back, let's
-    say, `self-insert-key`\.  It needs to know that, when editing a normal
-    repl line, it sends this to the Txtbuf, but when editing a search line,
-    it also has to trigger an update of the search results\.
+    The Maestro sends an `a` to the keymap resolver \(raga\), and gets back,
+    let's say, `self-insert-key`\.  Something needs to know that, when
+    editing a normal repl line, it sends this to the Txtbuf, but when
+    editing a search line, it also has to trigger an update of the search
+    results\.
 
     We can't just bake that logic into the Maestro, it has to live in
     relatively self\-contained objects, so that the Maestro can send an
@@ -209,27 +210,32 @@ works\.
     with something new\.
 
     I picture most of this being handled by edit objects returning
-    messages which allow the dispatch object \(not yet named, and I don't
+    messages, which allow the dispatch object \(not yet named, and I don't
     want to start calling it a controller because we can do better\) to
     send more messages\.  So a Txtbuf doesn't need to know that it's in
     search mode or what have you, the lexer takes care of printing it, but
     it should tell the dispatcher things like `"cursor-moved"` and
-    `"inserted"` and `"deleted"`\.  The dispatcher can tell the search
-    results to refresh\.
+    `"inserted"` and `"deleted"`\.  `"more-lines"` if needed, that sort of
+    thing\.  The dispatcher can then tell the search results to refresh,
+    and anything else which has to happen before painting the screen\.
 
     There are some non\-obvious areas of responsibility, but we should
-    short circuit as little as possible\. Even something like `exit-modal`,
+    short circuit as little as possible\.  Even something like `exit-modal`,
     which is handled by the Maestro setting up new dispatchers, keymaps,
     and so on, should just get sent to the dispatcher, because it might
-    do something first\.
+    do something first\.  Plausibly, the dispatcher would be the one to
+    tell the modal to hide or destroy its Zone, for instance\.
 
     Basically the dispatch object holds references to anything which might
     conceivably need to take a message, and all of those objects are wired
     up to return a message if they need to\.
 
+    The Maestro itself would pass messages to the modeSelektor, to trigger
+    various responses to the changes\.
+
     It's likely that we want to make every dispatch hookable, so it
     shouldn't be `dispatch.txtbuf[message](txtbuf, ...)` but rather
-    `dispatch:sendTo[maestro.txtbuf](message, ...)`\.  Those signature are
+    `dispatch:sendTo[maestro.txtbuf](message, ...)`\.  Those signatures are
     by no means written in stone\!  Just exploring the space here\.
 
     `:sendTo` might even match on `.idEst` first, then use that generic
@@ -237,21 +243,54 @@ works\.
     can elaborate as we go, I'm painting a picture of the amount of
     indirection we're going to need to really get this right\.
 
-    Remember that the main point of having dynamics is that modifying one
-    copy, by adding/removing hooks or changing the main function, will
-    modify every copy\.  So we can have an object, well away from the
-    action, which just holds anything we might want to hook, so we don't
-    have to rummage around inside various tables to find them\.
+    The main point of having dynamics is that modifying one copy, by
+    adding/removing hooks or changing the main function, will modify every
+    copy\.  So we can have a table, well away from the action, which just
+    holds anything we might want to hook, so we don't have to rummage
+    around inside various tables to find them\.
 
-    Open question: should the composed keymap \(I think we've decided that
-    this is the raga now\) live on the Maestro, or on the dispatch object?
-    I'm favoringr the Maestro, because ideally we don't need different code
-    paths for a dispatch object being driven in `nerf` vs `vril` mode\.
+    I'm thinking that we want an instance which corresponds to "the
+    Txtbuf", not the current *edit object*, although they would often be
+    the same thing: but not the Zone which is displaying the current
+    Txtbuf, and not the current Txtbuf itself: a consistent target, which
+    doesn't change when we switch lines\.  Right now this could just be the
+    Zone, but they seem like distinct concepts\.
+
+    Consider: it could be very useful to be able to "pop out" a repl line
+    into a modal edit window, which acts as an ordinary text editor, the
+    user can only leave it with one command, and you can even give it a
+    name, make it into a file, and so on\.  That would be one Txtbuf, and
+    it would go back and forth from a modal to the command Zone\.
+
+    This can be done by just passing that Txtbuf between Zones, and having
+    the dispatch object set up the modal or command zone as the edit
+    target\.  It feels like conflating two things though, like the Zone
+    will handle painting the Txtbuf, including line breaks which we've
+    been ignoring\.  I think an object which knows how to pass messages to
+    and from a buffer, but doesn't know how big it is or where to paint it,
+    will be a useful abstraction\.
+
+    Open question: should the raga live on the Maestro, or on the dispatch
+    object? I'm favoring the Maestro, because ideally we don't need
+    different code paths for a dispatch object being driven in `nerf` vs
+    `vril` mode\.
 
     One of the rules of the dispatch objects is that they don't know
     anything about keys, one of the rules of the Maestro is that it
     doesn't know how to talk to anything but the dispatcher and the
     Modeselektor\.
+
+    I'm thinking the dispatcher should be unable to talk to some objects,
+    at least directly\.  In particular the Historian and Valiant\.  Unless
+    we just decide that, hey presto\!  The Maestro is the Modeselektor\!
+    Which I don't think is going to serve us well, but I did want to bring
+    it up\.
+
+    This would be a good example of why having e\.g\. a Txtbuf container
+    would pull weight: an up arrow should ask the Historian for a prior
+    Txtbuf, and having the dispatch object ask the Historian for it
+    directly and swap the Txtbuf out seems like a distraction from its
+    central purpose\.
 
     As we flesh this out, I'm thinking that focus turns out to not be a
     very coherent concept\!  We will have `:onStart` and `:onExit` messages
@@ -285,6 +324,12 @@ the "normal" keymap for the current raga stack\-\-should probably look at how
     another keymap, a message, or `nil`, and the latter two mean switching
     back to the default\.
 
+    I don't think we end up with a raga stack, I know we've played around
+    with that idea but I think we're better off with an action graph as
+    described above\.  The raga itself is a list, not really a stack in the
+    sense that it is manipulated with push and pop, but in the sense that
+    keymaps are layered one "on top" of another, sure\.
+
 `vril`'s case is more complicated, though, because `d3w` and `d5b` and `2dd` are
 all pretty much the same command \(delete\), with arguments \(motion and count\)\.
 How does `emacs` `evil-mode` handle this?
@@ -304,6 +349,12 @@ How does `emacs` `evil-mode` handle this?
     The general answer is that we can figure out how to expand our code to
     handle this once it's doing something for what we have now which isn't
     completely ad hoc\.
+
+    For now, the Maestro will call a keymap resolver, which holds a raga:
+    a precomposed list of keymaps, checked for messages in a deterministic
+    order\.  We might be able to get away with having one keymap resolver
+    for every mode, or switching to `vril` might be a whole different one
+    which has the same API but completely different internals\.
 
 
 ### \[ \] Ragas, Zones, shifts
