@@ -36,6 +36,7 @@ arriving at a time, so it should produce a pair of ((category, value), index),
 such that if =index < #seq=, we send the tuple off to =modeS= and keep parsing
 from =index= until the sequence is consumed.
 
+
 ***** [ ] Optional: distinguish numeric keypad from number row
 
 There is a thing called "application keypad mode" that causes the numeric
@@ -132,6 +133,16 @@ functionality:
 -  Results display, scrolling etc. (and eventually all sorts of fun stuff like
    mouse interactivity)
 
+==
+
+- Sam:  Ok, but most of this simply sends messages to appropriate objects, and
+        we'll need to continue that trend.  Conflating the resolution of
+        keystrokes with the closures which actually send messages to say the
+        Txtbuf, that's what we're looking to fix here.
+
+        Like Nerf doesn't really do any text editing, certainly no syntax
+        highlighting, it just tells the Txtbuf and Searchbuf(?) what to do.
+
 When considering a suggestion (having pressed tab), or in search mode, we need:
 -  Scrolling through the list of suggestions/search results
 -  Ghost display of the suggestion/search result
@@ -153,6 +164,18 @@ part of this, but I think there are unanswered questions about where the
 *implementation* of the functions should live, and how the whole focus thing
 works.
 
+- Sam:  Right, so this is the hard problem right now.
+
+        The Maestro sends an =a= to the keymap resolver, and gets back, let's
+        say, =self-insert-key=.  It needs to know that, when editing a normal
+        repl line, it sends this to the Txtbuf, but when editing a search line,
+        it also has to trigger an update of the search results.
+
+        We can't just bake that logic into the Maestro, it has to live in
+        relatively self-contained objects, so that the Maestro can send an
+        =Esc= to the keymap, get back an =exit-modal=, and perform tasks such
+        as swapping in the relevant keymap and replacing the dispatch object
+        with something new.
 
 ***** Complex commands and input buffering
 
@@ -164,9 +187,32 @@ it encounters it. There are some decisions to make about when to switch back to
 the "normal" keymap for the current raga stack--should probably look at how
 =emacs= handles that.
 
+- Sam:  The effect we're looking for here is to switch back to the default
+        keymap whenever we miss.  So if =C-x C-u= isn't defined, we just drop
+        that one and switch back to the default.
+
+        Or really, to be more general, a keymap to =C-x= returns either
+        another keymap, a message, or =nil=, and the latter two mean switching
+        back to the default.
+
 =vril='s case is more complicated, though, because =d3w= and =d5b= and =2dd= are
 all pretty much the same command (delete), with arguments (motion and count).
 How does =emacs= =evil-mode= handle this?
+
+- Sam:  No idea, and it would likely be good for you to to do some reading on
+        that one.  What we can do, is pre- and post- hook... something which
+        calls the messages, so that we always pass in =1=, but a number pre
+        hooks that, replaces it with e.g. =4=, then uses the posthook to
+        unhook everything.
+
+        Or the normal mode might just have to be an explicit state machine,
+        unclear at this point.  We'll need to give the Maestro a chance to
+        handle an input with a sparse keymap before trying whatever composed
+        collection is assigned, so it can change focus or raga.
+
+        The general answer is that we can figure out how to expand our code to
+        handle this once it's doing something for what we have now which isn't
+        completely ad hoc.
 
 
 *** [ ] Ragas, Zones, shifts
