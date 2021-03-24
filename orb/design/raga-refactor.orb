@@ -318,11 +318,11 @@ the "normal" keymap for the current raga stack--should probably look at how
 all pretty much the same command (delete), with arguments (motion and count).
 How does =emacs= =evil-mode= handle this?
 
-- Sam:  No idea, and it would likely be good for you to to do some reading on
-        that one.  What we can do, is pre- and post- hook... something which
-        calls the messages, so that we always pass in =1=, but a number pre
-        hooks that, replaces it with e.g. =4=, then uses the posthook to
-        unhook everything.
+- Sam:  No idea how =emacs= does it, and it would likely be good for you to to
+        do some reading on that one.  What we can do, is pre- and post-
+        hook... something which calls the messages, so that we always pass in
+         =1=, but a number pre hooks that, replaces it with e.g. =4=, then
+        uses the posthook to unhook everything.
 
         Or the normal mode might just have to be an explicit state machine,
         unclear at this point.  We'll need to give the Maestro a chance to
