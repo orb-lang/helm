@@ -34,6 +34,12 @@ A closed line is just a string\.
    `txtbuf:currentPosition()`\.
 
 
+- desired\_col : The column where the cursor "should" be, even if this is
+    out\-of\-bounds in the current row\-\-used to retain a "memory"
+    of where we were when moving from a long line, to a shorter
+    one, back to a longer one\.
+
+
 -  mark :  A structure like `cursor`, representing the fixed end of a region,
     with the `cursor` field being the mobile end\. Note that `cursor` may
     be earlier than `mark`, respresenting the case where selection
@@ -167,40 +173,41 @@ end
 
 Set the `cursor`, ensuring that the value is not shared with the caller\.
 Accepts either a cursor\-like table, or two arguments representing `row` and `col`\.
-Either `row` or `col` may be nil, in which case the current value is retained\.
-
-Performs bounds\-checking of the proposed new values\. Row out\-of\-bounds or
-col < 1 is an error, but col > row length is constrained to be in bounds\.
-
+Either `row` or `col` may be `nil`, in which case the current value is retained\.
 Also opens the row to which the cursor is being moved\.
 
-```lua
+Explicit new values must be in\-bounds\. If `col` is `nil`, we constrain the
+value saved in the cursor to be within the length of the new row, but save the
+unconstrained value in `txtbuf.desired_col` so we can "remember" the
+horizontal position when moving between lines of differing lengths\.
 
+```lua
 local core_math = require "core/math"
 local clamp, inbounds = assert(core_math.clamp), assert(core_math.inbounds)
 local Point = require "anterm/point"
 
-function Txtbuf.makeCursor(txtbuf, rowOrTable, col, basedOn)
+function Txtbuf.setCursor(txtbuf, rowOrTable, col)
    local row
    if type(rowOrTable) == "table" then
       row, col = rowOrTable.row, rowOrTable.col
    else
       row = rowOrTable
    end
-   row = row or basedOn.row
-   col = col or basedOn.col
+   row = row or txtbuf.cursor.row
    assert(inbounds(row, 1, #txtbuf))
    txtbuf:openRow(row)
-   assert(inbounds(col, 1, nil))
-   col = clamp(col, nil, #txtbuf[row] + 1)
-   return Point(row, col)
-end
-
-function Txtbuf.setCursor(txtbuf, rowOrTable, col)
-   txtbuf.cursor = txtbuf:makeCursor(rowOrTable, col, txtbuf.cursor)
+   if col then
+      assert(inbounds(col, 1, #txtbuf[row] + 1))
+      -- Explicit horizontal motion, forget any remembered horizontal position
+      txtbuf.desired_col = nil
+   else
+      -- Remember where we were horizontally before clamping
+      txtbuf.desired_col = txtbuf.desired_col or txtbuf.cursor.col
+      col = clamp(txtbuf.desired_col, nil, #txtbuf[row] + 1)
+   end
+   txtbuf.cursor = Point(row, col)
    txtbuf.cursor_changed = true
 end
-
 ```
 
 

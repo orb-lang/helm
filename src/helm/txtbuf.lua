@@ -74,6 +74,11 @@
 
 
 
+
+
+
+
+
 assert(meta)
 local Codepoints = require "singletons/codepoints"
 local lines = import("core/string", "lines")
@@ -171,27 +176,28 @@ local core_math = require "core/math"
 local clamp, inbounds = assert(core_math.clamp), assert(core_math.inbounds)
 local Point = require "anterm/point"
 
-function Txtbuf.makeCursor(txtbuf, rowOrTable, col, basedOn)
+function Txtbuf.setCursor(txtbuf, rowOrTable, col)
    local row
    if type(rowOrTable) == "table" then
       row, col = rowOrTable.row, rowOrTable.col
    else
       row = rowOrTable
    end
-   row = row or basedOn.row
-   col = col or basedOn.col
+   row = row or txtbuf.cursor.row
    assert(inbounds(row, 1, #txtbuf))
    txtbuf:openRow(row)
-   assert(inbounds(col, 1, nil))
-   col = clamp(col, nil, #txtbuf[row] + 1)
-   return Point(row, col)
-end
-
-function Txtbuf.setCursor(txtbuf, rowOrTable, col)
-   txtbuf.cursor = txtbuf:makeCursor(rowOrTable, col, txtbuf.cursor)
+   if col then
+      assert(inbounds(col, 1, #txtbuf[row] + 1))
+      -- Explicit horizontal motion, forget any remembered horizontal position
+      txtbuf.desired_col = nil
+   else
+      -- Remember where we were horizontally before clamping
+      txtbuf.desired_col = txtbuf.desired_col or txtbuf.cursor.col
+      col = clamp(txtbuf.desired_col, nil, #txtbuf[row] + 1)
+   end
+   txtbuf.cursor = Point(row, col)
    txtbuf.cursor_changed = true
 end
-
 
 
 
