@@ -349,16 +349,13 @@ end
 
 
 
+local inverse = assert(require "core:table" . inverse)
 local _openers = { ["("] = ")",
                    ['"'] = '"',
                    ["'"] = "'",
                    ["{"] = "}",
                    ["["] = "]"}
-
-local _closers = {}
-for o, c in pairs(_openers) do
-   _closers[c] = o
-end
+local _closers = inverse(_openers)
 
 local function _should_insert(line, cursor, frag)
    return not (frag == line[cursor] and _closers[frag])
@@ -377,7 +374,7 @@ local function _should_pair(line, cursor, frag)
 end
 
 function Txtbuf.insert(txtbuf, frag)
-   local line, cur_col = txtbuf[txtbuf.cursor.row], txtbuf.cursor.col
+   local line, cur_col = txtbuf:currentPosition()
    if _should_insert(line, cur_col, frag) then
       if _should_pair(line, cur_col, frag) then
          insert(line, cur_col, _openers[frag])
