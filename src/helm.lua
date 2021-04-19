@@ -243,11 +243,61 @@ local function process_escapes(seq)
    end
 end
 
--- uv, being an event loop, will sometimes keep reading after
--- we expect it to stop.
--- this prevents modeS from being reloaded in such circumstances.
---
--- maybe.
+
+
+
+
+
+
+
+local function old_parse_input(seq)
+   local events = {}
+   local head = byte(seq)
+   -- Special "navigation" sequences--this includes some escape sequences
+   if navigation[seq] then
+      events[1] = {"NAV", navigation[seq]}
+   -- Other escape sequences
+   elseif head == 27 then
+      events[1] = process_escapes(seq)
+   -- Control sequences
+   elseif head <= 31 then
+      local ctrl = "^" .. char(head + 64)
+      events[1] = {"CTRL", ctrl}
+   -- Printables--break into codepoints in case of multi-char input sequence
+   -- But first, optimize common case of single ascii printable
+   -- Note that bytes <= 31 and 127 (DEL) will have been taken care of earlier
+   elseif #seq == 1 and head < 128 then
+      events[1] = {"ASCII", seq}
+   else
+      local points = Codepoints(seq)
+      for i, pt in ipairs(points) do
+         -- #todo handle decode errors here--right now we'll just insert an
+         -- actual Unicode "replacement character"
+         events[i] = {byte(pt) < 128 and "ASCII" or "UTF8", pt}
+      end
+   end
+   return events
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 local _ditch = false
 local parse_input = require "anterm:input-parser"
@@ -259,7 +309,7 @@ local function onseq(err,seq)
    if err then error(err) end
 
    local combined_input = input_buffer .. seq
-   local old_events = {}
+   local old_events = old_parse_input(combined_input)
    local new_events, pos = parse_input(combined_input)
    -- If we already had stuff buffered and still failed to parse any of it,
    -- figure we might have something actually invalid.
@@ -271,31 +321,7 @@ local function onseq(err,seq)
       -- #todo perform some kind of useful error recovery here
       error("Unparseable input encountered:\n" .. combined_input)
    else
-]      input_buffer = combined_input:sub(pos)
-   end
-   local head = byte(combined_input)
-   -- Special "navigation" sequences--this includes some escape sequences
-   if navigation[combined_input] then
-      old_events[1] = {"NAV", navigation[combined_input]}
-   -- Other escape sequences
-   elseif head == 27 then
-      old_events[1] = process_escapes(combined_input)
-   -- Control sequences
-   elseif head <= 31 then
-      local ctrl = "^" .. char(head + 64)
-      old_events[1] = {"CTRL", ctrl}
-   -- Printables--break into codepoints in case of multi-char input sequence
-   -- But first, optimize common case of single ascii printable
-   -- Note that bytes <= 31 and 127 (DEL) will have been taken care of earlier
-   elseif #combined_input == 1 and head < 128 then
-      old_events[1] = {"ASCII", combined_input}
-   else
-      local points = Codepoints(combined_input)
-      for i, pt in ipairs(points) do
-         -- #todo handle decode errors here--right now we'll just insert an
-         -- actual Unicode "replacement character"
-         old_events[i] = {byte(pt) < 128 and "ASCII" or "UTF8", pt}
-      end
+      input_buffer = combined_input:sub(pos)
    end
    for i = 1, #new_events do
       modeS(new_events[i], old_events[i])
