@@ -299,43 +299,69 @@ end
 
 
 
+
+
 local _ditch = false
 local parse_input = require "anterm:input-parser"
 
+local should_dispatch_all = false
+local input_timer = uv.new_timer()
+local input_check = uv.new_check()
 local input_buffer = ""
+
+local function dispatch_input(seq, dispatch_all)
+   -- Clear the flag and timer indicating whether we should clear down the
+   -- input buffer this cycle. Note that we must explicitly stop the timer
+   -- because we need to give it a repeat value to kick the event loop along
+   should_dispatch_all = false
+   input_timer:stop()
+   -- Try parsing, letting the parser know whether it should definitely consume
+   -- everything it can or hold off on possible incomplete escape sequences
+   local new_events, pos = parse_input(seq, dispatch_all)
+   local old_events = old_parse_input(seq)
+   input_buffer = seq:sub(pos)
+   if #input_buffer > 0 then
+      if dispatch_all then
+         -- If it's been a little while and we still have stuff we can't parse,
+         -- figure we might have something actually invalid.
+         -- #todo perform some kind of useful error recovery here
+         error("Unparseable input encountered:\n" .. input_buffer)
+      else
+         -- Use a timer to wait until the beginning of the *next* loop to
+         -- set the flag that will cause our check handler to clear the
+         -- input buffer. We use a repeat value on the timer so it remains
+         -- active and prevents the loop from actually blocking for input
+         input_timer:start(0, 1, function() should_dispatch_all = true end)
+      end
+   end
+   for i = 1, #new_events do
+      modeS(new_events[i], old_events[i])
+      -- Okay, if the action resulted in a quit, break out of the event loop
+      if modeS.has_quit then
+         _ditch = true
+         uv.read_stop(stdin)
+         bounds_watch:stop()
+         input_timer:stop()
+         input_check:stop()
+         if restart_watch then
+            restart_watch:stop()
+            lume.server:stop()
+         end
+         break
+      end
+   end
+end
+
+input_check:start(function()
+   if should_dispatch_all and #input_buffer > 0 then
+      dispatch_input(input_buffer, true)
+   end
+end)
 
 local function onseq(err,seq)
    if _ditch then return nil end
    if err then error(err) end
-
-   local combined_input = input_buffer .. seq
-   local old_events = old_parse_input(combined_input)
-   local new_events, pos = parse_input(combined_input)
-   -- If we already had stuff buffered and still failed to parse any of it,
-   -- figure we might have something actually invalid.
-   -- #todo this is wrong for *really* large pastes, we should really be
-   -- basing all this on whether another seq is on its way (does stdin have
-   -- more to read), and possibly also being more lenient about incomplete
-   -- pastes than other kinds of parse failures
-   if #input_buffer > 0 and pos == 1 then
-      -- #todo perform some kind of useful error recovery here
-      error("Unparseable input encountered:\n" .. combined_input)
-   else
-      input_buffer = combined_input:sub(pos)
-   end
-   for i = 1, #new_events do
-      modeS(new_events[i], old_events[i])
-   end
-   -- Okay, if the action resulted in a quit, break out of the event loop
-   if modeS.has_quit then
-      _ditch = true
-      uv.read_stop(stdin)
-      uv.timer_stop(bounds_watch)
-      if restart_watch then
-         uv.timer_stop(restart_watch)
-         lume.server:stop()
-      end
-   end
+   dispatch_input(input_buffer .. seq, false)
 end
 
 
