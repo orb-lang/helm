@@ -305,7 +305,7 @@ local _ditch = false
 local parse_input = require "anterm:input-parser"
 
 local should_dispatch_all = false
-local input_timer = uv.new_timer()
+local input_idle = uv.new_idle()
 local input_check = uv.new_check()
 local input_buffer = ""
 
@@ -314,7 +314,7 @@ local function dispatch_input(seq, dispatch_all)
    -- input buffer this cycle. Note that we must explicitly stop the timer
    -- because we need to give it a repeat value to kick the event loop along
    should_dispatch_all = false
-   input_timer:stop()
+   input_idle:stop()
    -- Try parsing, letting the parser know whether it should definitely consume
    -- everything it can or hold off on possible incomplete escape sequences
    local new_events, pos = parse_input(seq, dispatch_all)
@@ -327,11 +327,12 @@ local function dispatch_input(seq, dispatch_all)
          -- #todo perform some kind of useful error recovery here
          error("Unparseable input encountered:\n" .. input_buffer)
       else
-         -- Use a timer to wait until the beginning of the *next* loop to
+         -- Use an idler to wait until the beginning of the *next* loop to
          -- set the flag that will cause our check handler to clear the
-         -- input buffer. We use a repeat value on the timer so it remains
-         -- active and prevents the loop from actually blocking for input
-         input_timer:start(0, 1, function() should_dispatch_all = true end)
+         -- input buffer. An idler is the type of handle that (a) runs before
+         -- blocking for input, and (b) causes the loop *not* to actually
+         -- block for input. It will only ever run once (see above).
+         input_idle:start(function() should_dispatch_all = true end)
       end
    end
    for i = 1, #new_events do
@@ -341,7 +342,7 @@ local function dispatch_input(seq, dispatch_all)
          _ditch = true
          uv.read_stop(stdin)
          bounds_watch:stop()
-         input_timer:stop()
+         input_idle:stop()
          input_check:stop()
          if restart_watch then
             restart_watch:stop()
