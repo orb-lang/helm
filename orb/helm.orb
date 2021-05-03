@@ -231,64 +231,138 @@ local navigation = a.navigation
 
 local function process_escapes(seq)
    if is_mouse(seq) then
-      return modeS("MOUSE", m_parse(seq))
+      return {"MOUSE", m_parse(seq)}
    elseif #seq == 2 and byte(seq, 2) < 128 then
       -- Meta
       local key = "M-" .. sub(seq,2,2)
-      return modeS("ALT", key)
+      return {"ALT", key}
    elseif a.is_paste(seq) then
-      return modeS("PASTE", a.parse_paste(seq))
+      return {"PASTE", a.parse_paste(seq)}
    else
-      return modeS("NYI", seq)
+      return {"NYI", seq}
    end
 end
+#/lua
 
--- uv, being an event loop, will sometimes keep reading after
--- we expect it to stop.
--- this prevents modeS from being reloaded in such circumstances.
---
--- maybe.
 
-local _ditch = false
+*** old_parse_input
 
-local function onseq(err,seq)
-   if _ditch then return nil end
-   if err then error(err) end
+Extract this logic to a function to keep =onseq= itself clean.
 
+#!lua
+local function old_parse_input(seq)
+   local events = {}
    local head = byte(seq)
    -- Special "navigation" sequences--this includes some escape sequences
    if navigation[seq] then
-      modeS("NAV", navigation[seq])
+      events[1] = {"NAV", navigation[seq]}
    -- Other escape sequences
    elseif head == 27 then
-      process_escapes(seq)
+      events[1] = process_escapes(seq)
    -- Control sequences
    elseif head <= 31 then
       local ctrl = "^" .. char(head + 64)
-      modeS("CTRL", ctrl)
+      events[1] = {"CTRL", ctrl}
    -- Printables--break into codepoints in case of multi-char input sequence
    -- But first, optimize common case of single ascii printable
    -- Note that bytes <= 31 and 127 (DEL) will have been taken care of earlier
    elseif #seq == 1 and head < 128 then
-      modeS("ASCII", seq)
+      events[1] = {"ASCII", seq}
    else
       local points = Codepoints(seq)
       for i, pt in ipairs(points) do
          -- #todo handle decode errors here--right now we'll just insert an
          -- actual Unicode "replacement character"
-         modeS(byte(pt) < 128 and "ASCII" or "UTF8", pt)
+         events[i] = {byte(pt) < 128 and "ASCII" or "UTF8", pt}
       end
    end
-   -- Okay, if the action resulted in a quit, break out of the event loop
-   if modeS.has_quit then
-      _ditch = true
-      uv.read_stop(stdin)
-      uv.timer_stop(bounds_watch)
-      if restart_watch then
-         uv.timer_stop(restart_watch)
-         lume.server:stop()
+   return events
+end
+#/lua
+
+
+*** onseq
+
+Our =uv= read handler. Parses an input sequence into events and dispatches
+them to the =Modeselektor=.
+
+There seems to be a maximum size of sequence that we will be given at once, so
+when input arrives extremely rapidly (the most common case being a large
+paste), it may be chopped off at an arbitrary point. By default, the input
+parser rejects any input that may represent an incomplete escape sequence. In
+this case, we store the remaining input and try again in the next event-loop
+cycle. If we did not receive any new input in that cycle, we inform the parser
+that no more input is expected and it should parse ESC and CSI immediately
+rather than holding on to them in case they begin an escape sequence.
+
+=uv=, being an event loop, seems to sometimes keep reading after we expect it
+to stop. We use a =_ditch= flag to prevents modeS from being reloaded in such
+circumstances. Maybe.
+
+#!lua
+
+local _ditch = false
+local parse_input = require "anterm:input-parser"
+
+local should_dispatch_all = false
+local input_idle = uv.new_idle()
+local input_check = uv.new_check()
+local input_buffer = ""
+
+local function dispatch_input(seq, dispatch_all)
+   -- Clear the flag and timer indicating whether we should clear down the
+   -- input buffer this cycle. Note that we must explicitly stop the timer
+   -- because we need to give it a repeat value to kick the event loop along
+   should_dispatch_all = false
+   input_idle:stop()
+   -- Try parsing, letting the parser know whether it should definitely consume
+   -- everything it can or hold off on possible incomplete escape sequences
+   local new_events, pos = parse_input(seq, dispatch_all)
+   local old_events = old_parse_input(seq)
+   input_buffer = seq:sub(pos)
+   if #input_buffer > 0 then
+      if dispatch_all then
+         -- If it's been a little while and we still have stuff we can't parse,
+         -- figure we might have something actually invalid.
+         -- #todo perform some kind of useful error recovery here
+         error("Unparseable input encountered:\n" .. input_buffer)
+      else
+         -- Use an idler to wait until the beginning of the *next* loop to
+         -- set the flag that will cause our check handler to clear the
+         -- input buffer. An idler is the type of handle that (a) runs before
+         -- blocking for input, and (b) causes the loop *not* to actually
+         -- block for input. It will only ever run once (see above).
+         input_idle:start(function() should_dispatch_all = true end)
       end
    end
+   for i = 1, #new_events do
+      modeS(new_events[i], old_events[i])
+      -- Okay, if the action resulted in a quit, break out of the event loop
+      if modeS.has_quit then
+         _ditch = true
+         uv.read_stop(stdin)
+         bounds_watch:stop()
+         input_idle:stop()
+         input_check:stop()
+         if restart_watch then
+            restart_watch:stop()
+            lume.server:stop()
+         end
+         break
+      end
+   end
+end
+
+input_check:start(function()
+   if should_dispatch_all and #input_buffer > 0 then
+      dispatch_input(input_buffer, true)
+   end
+end)
+
+local function onseq(err,seq)
+   if _ditch then return nil end
+   if err then error(err) end
+   dispatch_input(input_buffer .. seq, false)
 end
 #/lua
 
