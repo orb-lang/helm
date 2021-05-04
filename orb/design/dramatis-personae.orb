@@ -125,3 +125,55 @@ stale.  I'll do what I can to keep it in tune with what actually happens.
 
 
 ** Dramatis Personae
+
+Helm has more actors than any other program, by a large margin.
+
+In Orb, the Lume is certainly an actor.  Skeins are probably actors as well,
+in fact, let's go with that: despite being many, each has a personality,
+defined ultimately by the File which provides the meat of each.  They
+certainly do things!
+
+Doc is not, though. Doc is a grammar, there's no instance (except of Grammar),
+and like any grammar it returns Nodes.
+
+But we're here to talk about helm!  Without further ado, I introduce to you
+the star of the show.
+
+
+*** Modeselektor
+
+The [[Modeselektor][@:helm/modeselektor]], =modeS= by name, is our star DJ.
+
+All of =helm.orb= is one big function, with an environment, which sets up a
+=uv= event loop, builds the modeselektor, and launches an event loop to run
+it.
+
+Modeselektor holds the references to all other actors.  We enter modeselector
+in responsed to /events/, which are currently all created by input.  This is
+handed to =modeS=, which does things with them.
+
+The Modeselektor has somewhat outgrown his name, but I think we're going to
+stick with it.  It comes from how we call him: we enter =modeS= when we get a
+sequence of input, and =modeS= responds to that sequence by /selecting/ the
+response on the basis of the /mode/ which helm is in at that exact instant.
+
+It turns out that to do that, =modeS= has to know all, see all, and do a lot.
+The role is one of coordination, and personally performing the big events.
+
+=modeS:act()= is the primary modeselektor method.  In the =helm= loop, we call
+=modeS(category, value)= and =ModeS.__call= is exactly this function:
+
+#!lua #noKnit this should be a transclude...
+function ModeS.__call(modeS, category, value)
+   return modeS:act(category, value)
+end
+#/lua
+
+Which is deliberate.  This lets us hook =:act=, replace it, and do anything
+else we would care to.  Though we haven't.
+
+Modeselektor owns references to three other actors, and we're adding a fourth.
+They are the Historian, the Zoneherd, and Valiant, our evaluator.
+
+We are in the process of introducing another big player, the Maestro.  Let us
+begin with what we have!
