@@ -23,7 +23,9 @@ We eshew the use of "object" in discussing bridge code.  It has its place, but
 is seldom the correct word to use to describe something.
 
 This is a table: ={}=.  It is a map of anything, including itself, excluding
-only =nil=, to anything else except =nil=.
+only =nil=, to anything else except =nil=.  Or if you prefer, it's a map of
+absolutely everything except =nil=, to =nil=, except where otherwise
+specified.
 
 A table with a metatable, =setmetatable({}, Metatable)= is: a table with a
 metatable.  Metatables, and metamethods, are the [[Meta Object Protocol]†] of
@@ -37,7 +39,7 @@ the Lua language, and they are magnificent.
 A common pattern for a module is to define a metatable, with associated
 metamethods and such machinery.  Such a module ends (usually) with a function
 called =new=.  =new= is assigned to a slot on the metatable,
-==Metatable.idEst = new=, and the function is returned.
+==Metatable.idEst = new==, and the function is returned.
 
 This sort of module, when imported, is invariably done as follows:
 
@@ -66,14 +68,14 @@ assert(thingum.idEst == Widget, "this property normally holds")
 As an aside, this isn't flexible enough, and soon, before the year is out even,
 we'll have to bite the bullet and rewrite it so that the call is
 =thingum:idEst(Widget)=, where the simple case has =widget.orb= containing
-==Widget.__type = new== after the constructor is defined
+==Widget.__type = new== after the constructor is defined.
 
 
 **** All the Bridge is a Stage
 
 Is =thingum= then an actor?  Sometimes, but not often.
 
-What is an isn't an actor is necessarily somewhat objective.  It may be that
+What is an isn't an actor is necessarily somewhat subjective.  It may be that
 we can spell out hard criteria which an actor must fulfill to meet the
 standard, but it isn't necessary, and will never be sufficient.
 
@@ -115,6 +117,10 @@ local proj = require "project"
 local proj = require "project:project"
 #/lua
 
+Projects which can be invoked from the command line with =br project= are
+called *verbs*.  Some are core to bridge, and we provide a mechanism to create
+and install new ones, which are only slightly second-class.
+
 I think this is enough of an introduction.  Let's get to the meat of the
 document: an introduction to the actors in bridge, and where we're going with
 the design.
@@ -135,6 +141,9 @@ certainly do things!
 
 Doc is not, though. Doc is a grammar, there's no instance (except of Grammar),
 and like any grammar it returns Nodes.
+
+...actually Doc is a Node, but calling it invokes a Grammar.  This actually
+makes sense, bit confusing to just type it out though.
 
 But we're here to talk about helm!  Without further ado, I introduce to you
 the star of the show.
@@ -175,6 +184,22 @@ else we would care to.  Though we haven't.
 Modeselektor owns references to three other actors, and we're adding a fourth.
 They are the Historian, the Zoneherd, and Valiant, our evaluator.
 
+This is a distinct relationship.  =modeS.hist= is, aspirationally, the *only*
+reference to the Historian.  Anything which owns such a reference can command
+anything of the actor, and can delete it: and after that, the actor is
+garbage.
+
+When an actor owns the only reference to another actor, we say that the owning
+actor is the /Boss/ of that actor.  We can be as whimsical as we want in
+describing the relationship in the other order.
+
+This is in fact one of the criteria for actors: no one can serve two masters
+(oops, looks like I'm cancelled) and an actor should have *only* one reference
+to it, owned by its boss. If an Actor doesn't have a boss, well, then it's
+the boss.  =modeS= is an upvalue in =helm.orb='s local namespace, when helm
+returns, it goes out of scope, and show's over folks!  Don't forget to tip
+your waitress.
+
 We are in the process of introducing another big player, the Maestro.  Let us
 begin with what we have!
 
@@ -214,3 +239,17 @@ any bridge program as possible.
 
 The most important data in the Historian, a robust cache of the last few
 thousand lines, is stored in the array portion.
+
+Modeselektor holds what should be the only reference to the historian, at
+=modeS.hist=, and invokes him frequently.
+
+
+*** Valiant
+
+Valiant is our old friend =eval=.  He lives in his own project, because we
+need him to run sessions from the command line as well.
+
+Valiant is invoked by =modeS:eval()=, usually in response to the user hitting
+the return key.  Valiant evaluates the current text buffer, and returns any
+results of the calculation, which Modeselektor dutifully hands to the
+Historian for bookkeeping.
