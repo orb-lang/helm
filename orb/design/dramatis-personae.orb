@@ -177,3 +177,40 @@ They are the Historian, the Zoneherd, and Valiant, our evaluator.
 
 We are in the process of introducing another big player, the Maestro.  Let us
 begin with what we have!
+
+
+*** Historian
+
+The [[Historian][@:historian.orb]] is in charge of the history of helm, across
+all runs, sessions, and projects.
+
+Helm never forgets.  Anything you enter into your helm is duly recorded and
+kept forever.  We don't even offer a mechanism to prune it, and we probably
+won't.  It's a SQLite database, if you want to do housekeeping you certainly
+can.
+
+The Historian loads up a bunch of information from this database using
+=helm-db=, a instance containing a proxy table.  You pass it messages, it
+returns prepared statements, and it has a few other tricks under its sleve.
+
+While a proxy table is definitely not an actor, it is an instance, but not one
+which follows the usual objectesque pattern.  Kind of its own thing.
+
+If we're running a Session, this also lives on Historian. That's an actor as
+well.
+
+As we proceed, there will also be the Run, which makes a record of everything
+from when helm is invoked to when it crashes or quits.  You'll be able to tell
+the difference: a run which quit will say "I quit" at the end, and if it
+didn't, either it crashed (we'll try to make a note but, you know) or it's
+still running somewhere.
+
+The Historian has even very recent history, such as the last line evaluated,
+and it makes an effort to persist everything it knows just as soon as it can.
+Currently, this isn't true of the Session, but it really should be.
+
+Crashing should have as little impact as possible on the smooth functioning of
+any bridge program as possible.
+
+The most important data in the Historian, a robust cache of the last few
+thousand lines, is stored in the array portion.
