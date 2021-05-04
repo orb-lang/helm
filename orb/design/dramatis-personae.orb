@@ -36,7 +36,7 @@ the Lua language, and they are magnificent.
 
 A common pattern for a module is to define a metatable, with associated
 metamethods and such machinery.  Such a module ends (usually) with a function
-called =new=; =new= is assigned to a slot on the metatable,
+called =new=.  =new= is assigned to a slot on the metatable,
 ==Metatable.idEst = new=, and the function is returned.
 
 This sort of module, when imported, is invariably done as follows:
@@ -45,11 +45,11 @@ This sort of module, when imported, is invariably done as follows:
 local Widget = require "widget:widget"
 #/lua
 
-That is, what was called =new= in the module =orb/widget/widget.orb=, is
+That is, what was called =new= in the module =./orb/widget/widget.orb=, is
 called =Widget= at the consumer side.  =new= will take some number of
 parameters, greater than or equal to zero, and return an /instance/ of Widget.
 We avoid calling Widget a class! It's already a module, and a metatable, and
-and a constructor of instances: that's a lot of things for one word to be, and
+a constructor of instances: that's a lot of things for one word to be, and
 there's no /one thing/ which has the Widget-nature already, so why keep adding
 nouns?
 
@@ -72,3 +72,56 @@ we'll have to bite the bullet and rewrite it so that the call is
 **** All the Bridge is a Stage
 
 Is =thingum= then an actor?  Sometimes, but not often.
+
+What is an isn't an actor is necessarily somewhat objective.  It may be that
+we can spell out hard criteria which an actor must fulfill to meet the
+standard, but it isn't necessary, and will never be sufficient.
+
+We haven't talked much about actors, so this is all new information.  It is my
+hope that becoming explicit about this will help us write better software.
+
+The first thing is that an actor is /sui generis/, and almost always unique.
+We might construct a mock actor for tests, but as a general rule there is
+going to be on instance of each actor module.
+
+I can imagine this admitting of exceptions, but in =helm=, there are not.
+
+Second is that an actor *acts*, that is, it does things.  It doesn't exist to
+be acted upon, but to take action; and it doesn't exist primarily to make
+other objects (see, not a useless word!), although many of them do generate
+considerable objects and other data.
+
+So, to speak of [[espalier][@br:espalier]], neither the Grammar nor the Node
+modules are actors. Both exist to create instances: Grammar makes grammars and
+grammars parse strings into nodes.  Are they factories?
+
+...I guess! <throws up hands, makes face>
+
+A given grammar is also not an actor. Not really. They are /sui generis/, but
+they don't do, they are done with.
+
+Nor is =br=, the artifact produced by [[pylon][@br:pylon]], an actor.  It's a
+program!  You can tell because it has a makefile.  It has no metatable and is
+created with no instance: it's just bridge.
+
+Orb, and helm, are clearly programs as well, apps even.  In bridge parlance we
+call them projects.  A project has its own codex, and can be invoked with
+
+#!lua #noKnit
+local proj = require "project"
+
+-- or
+
+local proj = require "project:project"
+#/lua
+
+I think this is enough of an introduction.  Let's get to the meat of the
+document: an introduction to the actors in bridge, and where we're going with
+the design.
+
+As a reminder, this is a living design document: as it is written, it's going
+beyond what we have, and by the time it's written, it will have grown somewhat
+stale.  I'll do what I can to keep it in tune with what actually happens.
+
+
+** Dramatis Personae
