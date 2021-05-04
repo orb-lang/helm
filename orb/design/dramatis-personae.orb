@@ -1,0 +1,74 @@
+* Dramatis Personae
+
+
+  This is a guide to the actors which make up helm.
+
+It is written in the present tense, with an eye toward the future.
+
+
+** Background
+
+  What follows is an attempt to make legible some of the most important
+conventions of the bridge project.
+
+A perusal of the [[style guide][httk://]] for Lua would be a good prerequisite
+to reading this document generally, and this section in particular.
+
+
+*** Actors in Bridge
+
+What does it mean to say an artifact of code is an actor?
+
+We eshew the use of "object" in discussing bridge code.  It has its place, but
+is seldom the correct word to use to describe something.
+
+This is a table: ={}=.  It is a map of anything, including itself, excluding
+only =nil=, to anything else except =nil=.
+
+A table with a metatable, =setmetatable({}, Metatable)= is: a table with a
+metatable.  Metatables, and metamethods, are the [[Meta Object Protocol]†] of
+the Lua language, and they are magnificent.
+
+[†]: https://en.wikipedia.org/wiki/The_Art_of_the_Metaobject_Protocol
+
+
+**** Of Modules and Instances
+
+A common pattern for a module is to define a metatable, with associated
+metamethods and such machinery.  Such a module ends (usually) with a function
+called =new=; =new= is assigned to a slot on the metatable,
+==Metatable.idEst = new=, and the function is returned.
+
+This sort of module, when imported, is invariably done as follows:
+
+#!lua #noKnit
+local Widget = require "widget:widget"
+#/lua
+
+That is, what was called =new= in the module =orb/widget/widget.orb=, is
+called =Widget= at the consumer side.  =new= will take some number of
+parameters, greater than or equal to zero, and return an /instance/ of Widget.
+We avoid calling Widget a class! It's already a module, and a metatable, and
+and a constructor of instances: that's a lot of things for one word to be, and
+there's no /one thing/ which has the Widget-nature already, so why keep adding
+nouns?
+
+What this gets us is that the following generally holds true:
+
+#!lua #noKnit
+local Widget = require "widget:widget"
+
+local thingum = Widget()
+
+assert(thingum.idEst == Widget, "this property normally holds")
+#/lua
+
+As an aside, this isn't flexible enough, and soon, before the year is out even,
+we'll have to bite the bullet and rewrite it so that the call is
+=thingum:idEst(Widget)=, where the simple case has =widget.orb= containing
+==Widget.__type = new== after the constructor is defined
+
+
+**** All the Bridge is a Stage
+
+Is =thingum= then an actor?  Sometimes, but not often.
