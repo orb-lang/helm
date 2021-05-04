@@ -134,13 +134,21 @@ Helm has more actors than any other program, by a large margin\.
 In Orb, the Lume is certainly an actor\.  Skeins are probably actors as well,
 in fact, let's go with that: despite being many, each has a personality,
 defined ultimately by the File which provides the meat of each\.  They
-certainly do things\!
+certainly do things\!  So a given run of Orb can have more actors than helm,
+usually\.  It's just most of them are Skeins\.
 
 Doc is not, though\. Doc is a grammar, there's no instance \(except of Grammar\),
 and like any grammar it returns Nodes\.
 
 \.\.\.actually Doc is a Node, but calling it invokes a Grammar\.  This actually
-makes sense, bit confusing to just type it out though\.
+makes sense, bit confusing to just type it out though\.  It's just a convenient
+way to do it, because the Doc format is a PEG grammar \(several in fact\) and
+since PEG is a parsing format, parsing it returns a Node; PEG is defined the
+"old fashioned" way, as a Lua function, because implementing the full
+metacircular version is a bit of a hassle \(I did start the job though\)\.
+
+So we attach a `__call` method to the start rule of PEG, and that calls a
+generated Grammar which recognizes the universe of the defined grammar\.
 
 But we're here to talk about helm\!  Without further ado, I introduce to you
 the star of the show\.
@@ -190,9 +198,9 @@ When an actor owns the only reference to another actor, we say that the owning
 actor is the *Boss* of that actor\.  We can be as whimsical as we want in
 describing the relationship in the other order\.
 
-This is in fact one of the criteria for actors: no one can serve two mastersoops, looks like I'm cancelled\) and an actor should have **only** one reference
-to
-\( it, owned by its boss\. If an Actor doesn't have a boss, well, then it's
+This is in fact one of the criteria for actors: no one can serve two masters
+\(oops, looks like I'm cancelled\) and an actor should have **only** one reference
+to it, owned by its boss\. If an Actor doesn't have a boss, well, then it's
 the boss\.  `modeS` is an upvalue in `helm.orb`'s local namespace, when helm
 returns, it goes out of scope, and show's over folks\!  Don't forget to tip
 your waitress\.
@@ -203,7 +211,7 @@ begin with what we have\!
 
 ### Historian
 
-The [Historian](@:historian.orb) is in charge of the history of helm, across
+The [Historian](@:helm/historian.orb) is in charge of the history of helm, across
 all runs, sessions, and projects\.
 
 Helm never forgets\.  Anything you enter into your helm is duly recorded and
@@ -219,7 +227,9 @@ While a proxy table is definitely not an actor, it is an instance, but not one
 which follows the usual objectesque pattern\.  Kind of its own thing\.
 
 If we're running a Session, this also lives on Historian\. That's an actor as
-well\.
+well\.\.\. I think\.  It's kind of more a gets "done to" than a "doer", and I'm
+making up the criteria as I go along\.  But let's say it is one for the sake of
+argument\.
 
 As we proceed, there will also be the Run, which makes a record of everything
 from when helm is invoked to when it crashes or quits\.  You'll be able to tell
@@ -243,10 +253,19 @@ Modeselektor holds what should be the only reference to the historian, at
 
 ### Valiant
 
-Valiant is our old friend `eval`\.  He lives in his own project, because we
-need him to run sessions from the command line as well\.
+  [Valiant](@br:session/valiant) is our old friend `eval`\.  He lives in his
+own project, because we need him to run sessions from the command line as
+well\.
 
 Valiant is invoked by `modeS:eval()`, usually in response to the user hitting
 the return key\.  Valiant evaluates the current text buffer, and returns any
 results of the calculation, which Modeselektor dutifully hands to the
 Historian for bookkeeping\.
+
+This isn't a place to define everything an actor does, we have the modules for
+that; this suffices as an introduction\.
+
+
+
+
+
