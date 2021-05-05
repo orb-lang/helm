@@ -331,3 +331,51 @@ But I think we'll get a much better and more robust architecture out of the
 deal.
 
 So let us continue, and explore the rest of helm's actors.
+
+
+*** Yeomen
+
+  There is no hard distinction between these actors and the ones we've just
+sketched out.
+
+If anything, the distinction is that their role and implementation are
+murkier. The Historian, Valiant, and the Zoneherd all live on Modeselektor,
+which holds the only reference to them, and is the only actor which should be
+invoking them directly.
+
+Since this category is pretty much polyphyletic, there isn't much for me to
+say about them as a group: let's just take a look at what we have.
+
+
+**** Suggest
+
+Suggest is our autocomplete module.
+
+It examines the context surrounding the cursor, and provides suggested
+completions for a given variable or field.  It needs to be narrowed a bit,
+because right now it will continue to suggest completions from the global
+context which it knows won't resolve to valid slots in a table.  But it does
+the job.
+
+It lives on the Modeselektor, and mostly acts by being passed the Modeselektor
+and doing things to it: examining the Txtbuf, updating the suggest Zone,
+telling the command zone it's been touched, etc.
+
+The fields aren't documented and really should be, but the state it holds is
+essentially all possible suggestions, and the subset of suggestions which can
+still apply given fuzzy narrowing.  It also constructs highlighted completion
+strings for the Txtbuf when the user is tabbing through possible completions.
+
+This is an expedient implementation, and there's nothing wrong with it given
+where the codebase is at in general.  But it isn't ideal.  Just passing the
+Modeselektor in means that it takes a close reading to know which parts of the
+whole state Suggest needs to know about: the answer appears to be that it
+reads and writes the Txtbuf, reads the raga name, and updates a couple of the
+Zones.
+
+An easy win here is to pass in only the objects needed to perform these tasks
+as parameters.
+
+I don't think actors like Suggest should be talking to Zones directly, since
+the Zone is a hard-coded presentation layer and we want to abstract that.  But
+we're still working on what that looks like.
