@@ -19,8 +19,9 @@ to reading this document generally, and this section in particular\.
 
 What does it mean to say an artifact of code is an actor?
 
-We eshew the use of "object" in discussing bridge code\.  It has its place, but
-is seldom the correct word to use to describe something\.
+We avoid the use of "object" in discussing bridge code\.  It has its place, but
+is seldom the correct word to use to describe something\.  If a more precise
+term applies, we use that instead\.
 
 This is a table: `{}`\.  It is a map of anything, including itself, excluding
 only `nil`, to anything else except `nil`\.  Or if you prefer, it's a map of
@@ -30,6 +31,21 @@ specified\.
 A table with a metatable, `setmetatable({}, Metatable)` is: a table with a
 metatable\.  Metatables, and metamethods, are the [Meta Object Protocol](https://en.wikipedia.org/wiki/The_Art_of_the_Metaobject_Protocol) of
 the Lua language, and they are magnificent\.
+
+To expand a bit on the object thing a bit: strings are very clearly objects\.
+`(" "):rep(5) == "     "` makes this perfectly clear\.  Functions, being
+first\-class closures, are also objects, we can introspect them and change
+their state; coroutines as well\.
+
+I see no reason to declare the other types to be "primitives", because Lua
+semantics don't require it\.  The fact that we can't say
+`(2):times(print, "hello")` is a matter of syntax\.  I'll grant you, it would
+be pretty cool if we could\!
+
+So sometimes it's quite sensible to refer to a table as an "object", when
+we're considering it as a concrete artifact in the Lua runtime\.  But usually
+we can be more specific\.
+
 
 #### Of Modules and Instances
 
@@ -151,10 +167,17 @@ So we attach a `__call` method to the start rule of PEG, and that calls a
 generated Grammar which recognizes the universe of the defined grammar\.
 
 But we're here to talk about helm\!  Without further ado, I introduce to you
-the star of the show\.
+the stars of the show\.
 
 
-### Modeselektor
+### Main Characters
+
+These are the major arcana, which perfom the major tasks of helm\.
+
+We begin with the star instance, which holds nearly all state in helm\.
+
+
+#### Modeselektor
 
 The [Modeselektor](@:helm/modeselektor), `modeS` by name, is our star DJ\.
 
@@ -198,9 +221,9 @@ When an actor owns the only reference to another actor, we say that the owning
 actor is the *Boss* of that actor\.  We can be as whimsical as we want in
 describing the relationship in the other order\.
 
-This is in fact one of the criteria for actors: no one can serve two masters
-\(oops, looks like I'm cancelled\) and an actor should have **only** one reference
-to it, owned by its boss\. If an Actor doesn't have a boss, well, then it's
+This is in fact one of the criteria for actors: no one can serve two mastersoops, looks like I'm cancelled\) and an actor should have **only** one reference
+to
+\( it, owned by its boss\. If an Actor doesn't have a boss, well, then it's
 the boss\.  `modeS` is an upvalue in `helm.orb`'s local namespace, when helm
 returns, it goes out of scope, and show's over folks\!  Don't forget to tip
 your waitress\.
@@ -209,10 +232,10 @@ We are in the process of introducing another big player, the Maestro\.  Let us
 begin with what we have\!
 
 
-### Historian
+#### Historian
 
-The [Historian](@:helm/historian.orb) is in charge of the history of helm, across
-all runs, sessions, and projects\.
+  The [Historian](@:helm/historian.orb) is in charge of the history of helm,
+across all runs, sessions, and projects\.
 
 Helm never forgets\.  Anything you enter into your helm is duly recorded and
 kept forever\.  We don't even offer a mechanism to prune it, and we probably
@@ -251,7 +274,7 @@ Modeselektor holds what should be the only reference to the historian, at
 `modeS.hist`, and invokes him frequently\.
 
 
-### Valiant
+#### Valiant
 
   [Valiant](@br:session/valiant) is our old friend `eval`\.  He lives in his
 own project, because we need him to run sessions from the command line as
@@ -266,6 +289,21 @@ This isn't a place to define everything an actor does, we have the modules for
 that; this suffices as an introduction\.
 
 
+#### Zoneherd
 
+  The helm terminal screen is in raw mode, and broken up into panes which we
+call Zones\.  Handling the layout of these is the job of the Zoneherd\.
+
+The Zones are actors as well, their job is to paint Zones and communicate with
+objects in the `.contents` slot, which are generally buffers, but can be a
+simple string\.
+
+In the next step, both `modeS` and the Maestro will own references to the
+Zoneherd\.  Which isn't exactly kosher, but if it were a hard\-and\-fast rule,
+we'd want to enforce it with software\.  But it does suggest that we want to
+have a better implementation before all of this is done\.  It's better if we
+know that all calls on an actor will be either from within its boss module, or
+at least preceded by the instance name of the boss actor, that is, super\-boss
+calls boss calls the scrub\.
 
 
