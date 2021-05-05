@@ -32,7 +32,7 @@ A table with a metatable, `setmetatable({}, Metatable)` is: a table with a
 metatable\.  Metatables, and metamethods, are the [Meta Object Protocol](https://en.wikipedia.org/wiki/The_Art_of_the_Metaobject_Protocol) of
 the Lua language, and they are magnificent\.
 
-To expand a bit on the object thing a bit: strings are very clearly objects\.
+To expand a bit on objects: strings are very clearly objects\.
 `(" "):rep(5) == "     "` makes this perfectly clear\.  Functions, being
 first\-class closures, are also objects, we can introspect them and change
 their state; coroutines as well\.
@@ -40,7 +40,8 @@ their state; coroutines as well\.
 I see no reason to declare the other types to be "primitives", because Lua
 semantics don't require it\.  The fact that we can't say
 `(2):times(print, "hello")` is a matter of syntax\.  I'll grant you, it would
-be pretty cool if we could\!
+be pretty cool if we could\!  We can control the meaning of `2 + tab` with
+metamethods, that's good enough\.
 
 So sometimes it's quite sensible to refer to a table as an "object", when
 we're considering it as a concrete artifact in the Lua runtime\.  But usually
@@ -88,23 +89,27 @@ we'll have to bite the bullet and rewrite it so that the call is
 
 Is `thingum` then an actor?  Sometimes, but not often\.
 
-What is an isn't an actor is necessarily somewhat subjective\.  It may be that
+What is and isn't an actor is necessarily somewhat subjective\.  It may be that
 we can spell out hard criteria which an actor must fulfill to meet the
 standard, but it isn't necessary, and will never be sufficient\.
 
 We haven't talked much about actors, so this is all new information\.  It is my
 hope that becoming explicit about this will help us write better software\.
 
-The first thing is that an actor is *sui generis*, and almost always unique\.
-We might construct a mock actor for tests, but as a general rule there is
-going to be on instance of each actor module\.
-
-I can imagine this admitting of exceptions, but in `helm`, there are not\.
+The first thing is that an actor is *sui generis*, and unique\.  Some are
+singletons, some are not: but there must be some distinctive aspect of the
+actor which gives it personality\.
 
 Second is that an actor **acts**, that is, it does things\.  It doesn't exist to
 be acted upon, but to take action; and it doesn't exist primarily to make
 other objects \(see, not a useless word\!\), although many of them do generate
 considerable objects and other data\.
+
+Actors are generally long\-lived, but as we'll see here, that isn't always
+true in `helm`\.  But maybe it should be\!  I think we'll find that we get more
+out of actors if we clear their state and reuse them, rather than throwing
+together a fresh one each time they have something to act upon, because this
+will let us build up more complex relationships with their instance\.
 
 So, to speak of [espalier](@br:espalier), neither the Grammar nor the Node
 modules are actors\. Both exist to create instances: Grammar makes grammars and
@@ -113,14 +118,16 @@ grammars parse strings into nodes\.  Are they factories?
 \.\.\.I guess\! <throws up hands, makes face>
 
 A given grammar is also not an actor\. Not really\. They are *sui generis*, but
-they don't do, they are done with\.
+they don't do, they are done with\.  PEG grammars are both Nodes and Grammars,
+but again, they have a specific job to do and it isn't controlled by mutable
+state\.
 
 Nor is `br`, the artifact produced by [pylon](@br:pylon), an actor\.  It's a
 program\!  You can tell because it has a makefile\.  It has no metatable and is
 created with no instance: it's just bridge\.
 
 Orb, and helm, are clearly programs as well, apps even\.  In bridge parlance we
-call them projects\.  A project has its own codex, and can be invoked with
+call them projects\.  A project has its own codex, and can be invoked with:
 
 ```lua
 local proj = require "project"
@@ -138,9 +145,10 @@ I think this is enough of an introduction\.  Let's get to the meat of the
 document: an introduction to the actors in bridge, and where we're going with
 the design\.
 
-As a reminder, this is a living design document: as it is written, it's going
-beyond what we have, and by the time it's written, it will have grown somewhat
-stale\.  I'll do what I can to keep it in tune with what actually happens\.
+As a reminder, this is a living design document: as it is written, it will be
+speculating beyond what we have, and by the time that refactor is written, it
+will have grown somewhat stale\.  I'll do what I can to keep it in tune with
+what actually happens\.
 
 
 ## Dramatis Personae
@@ -150,8 +158,9 @@ Helm has more actors than any other program, by a large margin\.
 In Orb, the Lume is certainly an actor\.  Skeins are probably actors as well,
 in fact, let's go with that: despite being many, each has a personality,
 defined ultimately by the File which provides the meat of each\.  They
-certainly do things\!  So a given run of Orb can have more actors than helm,
-usually\.  It's just most of them are Skeins\.
+certainly do things\!  They're written in a method\-chaining style, and exist to
+successively mutate state\.  So a given run of Orb can have more actors than
+helm, usually\.  It's just most of them are Skeins\.
 
 Doc is not, though\. Doc is a grammar, there's no instance \(except of Grammar\),
 and like any grammar it returns Nodes\.
@@ -159,9 +168,9 @@ and like any grammar it returns Nodes\.
 \.\.\.actually Doc is a Node, but calling it invokes a Grammar\.  This actually
 makes sense, bit confusing to just type it out though\.  It's just a convenient
 way to do it, because the Doc format is a PEG grammar \(several in fact\) and
-since PEG is a parsing format, parsing it returns a Node; PEG is defined the
-"old fashioned" way, as a Lua function, because implementing the full
-metacircular version is a bit of a hassle \(I did start the job though\)\.
+since PEG is a parsing format, parsing it returns a Node; PEG is defined theold fashioned" way, as a Lua function, because implementing the full
+metacircular
+" version is a bit of a hassle \(I did start the job though\)\.
 
 So we attach a `__call` method to the start rule of PEG, and that calls a
 generated Grammar which recognizes the universe of the defined grammar\.
@@ -174,7 +183,7 @@ the stars of the show\.
 
 These are the major arcana, which perfom the major tasks of helm\.
 
-We begin with the star instance, which holds nearly all state in helm\.
+We begin with the protagonist, which holds nearly all state in helm\.
 
 
 #### Modeselektor
@@ -193,6 +202,10 @@ The Modeselektor has somewhat outgrown his name, but I think we're going to
 stick with it\.  It comes from how we call him: we enter `modeS` when we get a
 sequence of input, and `modeS` responds to that sequence by *selecting* the
 response on the basis of the *mode* which helm is in at that exact instant\.
+
+Which is mode in the ordinary sense of the exact state the whole system is in,
+not "mode" in the vim sense or the emacs sense\.  What emacs calls a mode, we
+call a raga\.
 
 It turns out that to do that, `modeS` has to know all, see all, and do a lot\.
 The role is one of coordination, and personally performing the big events\.
@@ -252,7 +265,8 @@ which follows the usual objectesque pattern\.  Kind of its own thing\.
 If we're running a Session, this also lives on Historian\. That's an actor as
 well\.\.\. I think\.  It's kind of more a gets "done to" than a "doer", and I'm
 making up the criteria as I go along\.  But let's say it is one for the sake of
-argument\.
+argument\.  I would be uncomfortable with a second reference to the session
+existing elsewhere, which is diagnostic\.
 
 As we proceed, there will also be the Run, which makes a record of everything
 from when helm is invoked to when it crashes or quits\.  You'll be able to tell
@@ -265,7 +279,7 @@ and it makes an effort to persist everything it knows just as soon as it can\.
 Currently, this isn't true of the Session, but it really should be\.
 
 Crashing should have as little impact as possible on the smooth functioning of
-any bridge program as possible\.
+any bridge program\.
 
 The most important data in the Historian, a robust cache of the last few
 thousand lines, is stored in the array portion\.
@@ -306,4 +320,12 @@ know that all calls on an actor will be either from within its boss module, or
 at least preceded by the instance name of the boss actor, that is, super\-boss
 calls boss calls the scrub\.
 
+It is, in fact, an open question whether we'll have a Maestro at all\.  He's
+taking over one of Modeselektor's most important jobs, and the easiest way to
+implement the functionality is to just have promiscuous access to everything,
+which only Modeselektor can be allowed to have\.
 
+But I think we'll get a much better and more robust architecture out of the
+deal\.
+
+So let us continue, and explore the rest of helm's actors\.
