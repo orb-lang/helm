@@ -462,18 +462,19 @@ like" thing we have which isn't an actor: it knows how to edit, it knows how
 to lex, give printable content to Zones, but every time we change the command
 buffer, we knock it on the head and make a fresh one\.
 
-So ideally, a Rainbuf holds and returns Lines, which are arrays of Tokens\. It
-knows how to compose them, it can cache them, bust the cache and re\-render,
+So ideally, a Rainbuf holds and returns ResLines, which are arrays of Tokens\.
+It knows how to compose them, it can cache them, bust the cache and re\-render,
 reflow automatically if given a different width, and so on\.  Because it knows
 where every piece of text is within the abstract grid of the Zone, it can
 process mouse commands \(and some other kinds of commands to be fleshed out
-later\) to the underlying buffer; the Lines will have "targets" corresponding
-to certain regions of the Line, and will be smart enough to directly return a
-value which will let the Rainbuf handle any changes to layout implied by the
-mouse command, such as expanding or folding a table print\.
+later\) to the underlying buffer; the ResLines will have "targets"
+corresponding to certain regions of the ResLine, and will be smart enough to
+directly return a value which will let the Rainbuf handle any changes to
+layout implied by the mouse command, such as expanding or folding a table
+print\.
 
 And the Rainbuf we have *is a buffer*, so it has a good name\.  It needs to be
-a buffer of Lines, not, as the Txtbuf is, a buffer of both Lines and the
+a buffer of ResLines, not, as the Txtbuf is, a buffer of both ResLines and the
 actual text being edited\.  So the specialized\-class implementation is probably
 sound, since a result should just be a result, it doesn't need to know about
 Composers, it can be plain\-old\-data\.
@@ -497,7 +498,7 @@ all\.  Zones know all about xterm and have the ability to write to the terminal\
 And we can't have the ResultAgent owning a Resbuf, and a separate copy of the
 Resbuf living inside the Zone, even though the Resbuf is smart enough to just
 hand contents to the Zone to display it \(since a Zone will be able to render
-Lines into actual text\)\.
+ResLines into actual text\)\.
 
 So what we want is a Window, exactly like in Composer, but this time we should
 make a whole project for it \(and port Composer to use it\)\.  This lets the
@@ -506,8 +507,8 @@ mutate the Resbuf, in principle: but we should avoid this\.
 
 And this gives us a much cleaner data flow\.  Valiant returns a result, which
 Modeselektor gives to the ResultAgent\.  On `:paint`, the Zones consult their
-windows: if something needs to be painted, it requests the relevant Lines, and
-does so\.
+windows: if something needs to be painted, it requests the relevant ResLines,
+and does so\.
 
 This makes painting completely optional: we could make `:paint` a no\-op, and
 have a separate event on the loop which inspects the Agents and sends any
