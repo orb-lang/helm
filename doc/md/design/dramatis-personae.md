@@ -344,6 +344,8 @@ invoking them directly\.
 Since this category is pretty much polyphyletic, there isn't much for me to
 say about them as a group: let's just take a look at what we have\.
 
+I'm not going in any particular order here\.
+
 
 #### Suggest
 
@@ -377,3 +379,126 @@ as parameters\.
 I don't think actors like Suggest should be talking to Zones directly, since
 the Zone is a hard\-coded presentation layer and we want to abstract that\.  But
 we're still working on what that looks like\.
+
+
+#### Rainbufs
+
+Rainbufs, as the lede says, encapsulate data to be written to the screen\.
+
+The thing is, they aren't really actors\.
+
+Are they *sui generis*?  Yes\.  Do they have personality, do they do things to
+other things?  Yes and yes\.
+
+But they're ephemeral\.  We instantiate a new one with every new contents\. If
+we want to see that data again, we make a new Rainbuf\.  They're too
+specialized, and not durable enough\.
+
+They point to a missing actor, basically\.  But they're the closest thing we
+have, so let's explore the implementation we have\.
+
+Originally, Rainbufs were about printing the contents of tables\.  The naive
+way of doing this is to render a string with the contents of the table, and
+iterate it by lines, which is what the repl originally did\.
+
+We didn't want to do that, because a large table can block the event loop,
+which we avoid whenever it's possible given the single\-threaded nature of helm\.
+Rainbufs can still handle a simple string, exactly by iterating it into lines,
+but when given a result, they fire up a Composer and render only the lines
+which the user has decided to look at\.
+
+In the current implementation, which is a decided improvement, Rainbufs are a
+class\.  We specialize them into Resbufs, Sessionbufs, and Txtbufs, for
+results, session review, and text editing, respectively\.  We should also have
+a Suggestbuf, for autocompletes, which might be the same thing as an equally
+hypothetical Searchbuf, which would display search results\.
+
+\(As an aside, this really points to the deficit in `idEst` being a field
+instead of a method\.  Daniel did the same thing I've done with Nodes and
+Phrases, putting a separate flag on Rainbufs called `is_rainbuf`; I used
+`isPhrase` and `isNode`, which\.\.\. might be better?  The name of class\-like
+modules is capitalized, but flags and inert things are generally in variable
+case\.  Either way, it should be true of a Resbuf that `resbuf:idEst(Resbuf)`
+and `resbuf:idEst(Rainbuf)` are both `true`\.  This is a meaty bullet but we
+should bite it soon\.\)
+
+This is going to be a problem for us going forward, because it conflates two
+entirely separate things\.  Rainbufs are basically about markup and layout:
+they have to know the allowable width, so that they can insert appropriate
+line breaks, but they shouldn't know anything about the xterm protocol\.
+
+And they certainly shouldn't know anything about how to edit text: and the
+Txtbuf knows everything about how to edit text\.
+
+So ideally, a Rainbuf holds and returns Lines, which are arrays of Tokens\. It
+knows how to compose them, it can cache them, bust the cache and re\-render,
+reflow automatically if given a different width, and so on\.  Because it knows
+where every piece of text is within the abstract grid of the Zone, it can pass
+mouse commands \(and some other kinds of commands to be fleshed out later\) to
+the underlying buffer, which I expect can be relied upon to directly return a
+value which will let the Rainbuf handle any changes to layout implied by the
+mouse command, such as expanding or folding a table print\.
+
+And the Rainbuf we have *is a buffer*, so it has a good name\.  It needs to be
+a buffer of Lines, not, as the Txtbuf is, a buffer of both Lines and the
+actual text being edited\.  So the specialized\-class implementation is probably
+sound, since a result should just be a result, it doesn't need to know about
+Composers, it can be plain\-old\-data\.
+
+These would not be actors, they do one job when asked, do it well, and become
+garbage when they're done\.
+
+But we need something which is, which I'm going to call an **Agent**\.  We would
+have a ResultAgent, which would live on the Modeselektor \(probably in a
+dedicated folder for agents\) and have a durable existence\.
+
+This application calls for synchronous communication, but we don't want shared
+references\.  A mailbox isn't appropriate here: the Zone isn't the right place
+for a ResultAgent to live, because we might not be sending it to a Zone at
+all\.  Zones know all about xterm and have the ability to write to the terminal\.
+
+And we can't have the ResultAgent owning a Resbuf, and a separate copy of the
+Resbuf living inside the Zone, even though the Resbuf is smart enough to just
+hand contents to the Zone to display it \(since a Zone will be able to render
+Lines into actual text\)\.
+
+So what we want is a Window, exactly like in Composer, but this time we should
+make a whole project for it \(and port Composer to use it\)\.  This lets the
+Zone call anything it needs to from the ResultAgent\.
+
+And this gives us a much cleaner data flow\.  Valiant returns a result, which
+Modeselektor gives to the ResultAgent\.  On `:paint`, the Zones consult their
+windows: if something needs to be painted, it requests the relevant Lines, and
+does so\.
+
+This makes painting completely optional: we make `:paint` a no\-op, and have a
+separate event on the loop which inspects the Agents and sends any changes as
+JSON to a client, or `:paint` could cover some of the rendering and an event
+could stream another buffer to a separate terminal process\.  We can hook them
+to log something, or perform some other action \(screen readers?\)\.
+
+Nothing should ever have to give content to the ZoneHerd or Zones, unless the
+Modeselektor needs to replace an Agent\.  There's no need to touch anything,
+because the Agents can tell the Zones when they need to paint\.  Modeselektor
+will tell the Zoneherd when popups need to be replaced, and when reflow needs
+to happen, and that's that\.
+
+
+### Txtbuf \-> EditAgent
+
+As I mentioned, we really need to decomplect editing text from painting it\.
+
+So the current Txtbuf should split off all edit functionality\.
+
+For this, I think we do want an actor: a singular EditAgent, potentially more
+than one, where the contents is replaced, instead of instantiating a new one
+each time\.
+
+So we have two things here, and they're both buffers, but we don't want to
+call them both "bufs" because that's confusing\. But it's also ok, the "text
+buffer" just exists as the replaceable contents of the EditAgent\.  When we do
+things like up\-arrow, the Maestro tells the Modeselektor that Historian needs
+to pull a new line and give it to the EditAgent, and the Zones just check this
+on `:paint`\.
+
+
