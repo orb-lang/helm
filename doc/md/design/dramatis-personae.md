@@ -539,10 +539,10 @@ things like up\-arrow, the Maestro tells the Modeselektor that Historian needs
 to pull a new line and give it to the EditAgent, and the Zones just check this
 on `:paint`\.
 
-We probably want the contents in the form of a plain\-old\-data container,
-exactly like results, with the Codepoint arrays, cursor information, and so
-on, so they can potentially be passed from an EditAgent for the command Zone
-to an EditAgent for a popup full screen editor\.
+We want the contents in the form of a plain\-old\-data container, exactly like
+results, with the Codepoint arrays, cursor information, and so on, so they can
+potentially be passed from an EditAgent for the command Zone to an EditAgent
+for a popup full screen editor\.
 
 The EditAgent should own the contents, and the associated Txtbuf should have a
 Window to retrieve the contents\.  This is completely transparent: it looks
@@ -551,3 +551,34 @@ illegal, and when the contents owned by the EditAgent changes, the underlying
 contents of the Window changes also\.  If the EditAgent disappears, then the
 Window will fail an assertion and die with a meaningful error message\.
 
+
+## The Maestro
+
+  The document is pretty content\-rich, and there are a lot of changes built in
+already\.
+
+So I'm not going to try and go deep on the implementation of the Maestro\.  But
+I am going to justify having one\.
+
+Superficially, we don't need it\.  The Modeselektor can do the keymap resolving,
+retrieve appropriate messages, and communicate with the Agents, the Historian,
+activate the Zoneherd for painting, and so on\.
+
+One thing which suggests we shouldn't: the Modeselektor module would become a
+long piece of code, most of which does a complex dance around input, and then
+has a shorter section which does a bunch of unrelated and very important
+things\.  This is suggestive that there should be a Maestro\.
+
+What I consider definitive, however, is that an input parsing uv event will
+only be one way to activate the Modeselektor\.  Input events might arrive as
+ØMQ packets, or JSON, and the Maestro can abstract this\.
+
+Getting a good separation of concerns will probably involve mail\.  The most
+important thing right now is to get Agents in place, so in terms of bringing
+the new input parsing strategy online, the Maestro can just have God
+privileges for awhile, which means that it can **borrow** modeS as a parameter\.
+
+We can't have modeS as a slot on the Maestro, that's too much\.  But we should
+think in terms of expedience for now, while we work out a strategy for the
+Maestro to communicate with everything else, without violating the premises
+that we've established here for Actor isolation\.
