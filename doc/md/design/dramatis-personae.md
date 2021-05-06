@@ -38,9 +38,9 @@ first\-class closures, are also objects, we can introspect them and change
 their state; coroutines as well\.
 
 I see no reason to declare the other types to be "primitives", because Lua
-semantics don't require it\.  The fact that we can't say
-`(2):times(print, "hello")` is a matter of syntax\.  I'll grant you, it would
-be pretty cool if we could\!  We can control the meaning of `2 + tab` with
+semantics don't require it\.  The fact that we can't say `(2):times(print, is effectively an implementation detail\.  I'll grant you, it would
+be
+"hello")` pretty cool if we could\!  We can control the meaning of `2 + tab` with
 metamethods, that's good enough\.
 
 So sometimes it's quite sensible to refer to a table as an "object", when
@@ -84,6 +84,24 @@ we'll have to bite the bullet and rewrite it so that the call is
 `thingum:idEst(Widget)`, where the simple case has `widget.orb` containing
 `Widget.__type = new` after the constructor is defined\.
 
+We describe any value accessed with a dot as a *field*, and if the value lives
+on the table itself, rather than being returned through `__index`, it is also
+a *slot*, so `instance.field`\.  Any valued accessed with a colon is a *method*,
+and must be callable, so a function or a table with a `__call` metamethod: we
+call this *passing a message*, so `instance:message(...)`\.
+
+When a callable is or isn't a method is not objective, we can and do refer to
+private functions which take the instance as the first parameter as methods,
+and use the `methodCase`, generally with the `_privateModifier`, to define
+them\.  After all, if we simply assigned them to a field on the metatable, they
+would become a method, proper, and functions get moved onto and off of
+metatables all the time, depending on whether it's useful to have them outside
+the module\.
+
+Bridge code never, ever uses `self`, we invariably define a method in the form
+`function Widget.method(widget, ...)`, although the *section header* will say
+`*** Widget:method(...)`\.
+
 
 #### All the Bridge is a Stage
 
@@ -100,10 +118,10 @@ The first thing is that an actor is *sui generis*, and unique\.  Some are
 singletons, some are not: but there must be some distinctive aspect of the
 actor which gives it personality\.
 
-Second is that an actor **acts**, that is, it does things\.  It doesn't exist to
-be acted upon, but to take action; and it doesn't exist primarily to make
-other objects \(see, not a useless word\!\), although many of them do generate
-considerable objects and other data\.
+Second is that an actor **acts**, that is, it does things\.  It doesn't existonly\) to be acted upon, but to take action; and it doesn't exist primarily to
+make
+\( other objects \(see, not a useless word\!\), although many of them do
+generate considerable objects and other data\.
 
 Actors are generally long\-lived, but as we'll see here, that isn't always
 true in `helm`\.  But maybe it should be\!  I think we'll find that we get more
@@ -158,8 +176,8 @@ Helm has more actors than any other program, by a large margin\.
 In Orb, the Lume is certainly an actor\.  Skeins are probably actors as well,
 in fact, let's go with that: despite being many, each has a personality,
 defined ultimately by the File which provides the meat of each\.  They
-certainly do things\!  They're written in a method\-chaining style, and exist to
-successively mutate state\.  So a given run of Orb can have more actors than
+certainly do things\!  Skein is written in a method\-chaining style, and exists
+to successively mutate state\.  So a given run of Orb can have more actors than
 helm, usually\.  It's just most of them are Skeins\.
 
 Doc is not, though\. Doc is a grammar, there's no instance \(except of Grammar\),
@@ -222,8 +240,11 @@ end
 Which is deliberate\.  This lets us hook `:act`, replace it, and do anything
 else we would care to\.  Though we haven't\.
 
-Modeselektor owns references to three other actors, and we're adding a fourth\.
-They are the Historian, the Zoneherd, and Valiant, our evaluator\.
+Note that the new input parser changes the call signature, but not the basic
+semantics\.
+
+Modeselektor owns references to the other three main actors, and we're adding
+a fourth\. They are the Historian, the Zoneherd, and Valiant, our evaluator\.
 
 This is a distinct relationship\.  `modeS.hist` is, aspirationally, the **only**
 reference to the Historian\.  Anything which owns such a reference can command
@@ -234,9 +255,9 @@ When an actor owns the only reference to another actor, we say that the owning
 actor is the *Boss* of that actor\.  We can be as whimsical as we want in
 describing the relationship in the other order\.
 
-This is in fact one of the criteria for actors: no one can serve two mastersoops, looks like I'm cancelled\) and an actor should have **only** one reference
-to
-\( it, owned by its boss\. If an Actor doesn't have a boss, well, then it's
+This is in fact one of the criteria for actors: no one can serve two masters
+\(oops, looks like I'm cancelled\) and an actor should have **only** one reference
+to it, owned by its boss\. If an Actor doesn't have a boss, well, then it's
 the boss\.  `modeS` is an upvalue in `helm.orb`'s local namespace, when helm
 returns, it goes out of scope, and show's over folks\!  Don't forget to tip
 your waitress\.
@@ -281,8 +302,8 @@ Currently, this isn't true of the Session, but it really should be\.
 Crashing should have as little impact as possible on the smooth functioning of
 any bridge program\.
 
-The most important data in the Historian, a robust cache of the last few
-thousand lines, is stored in the array portion\.
+The most important data in the Historian, a cache of the last few thousand
+lines, is stored in the array portion\.
 
 Modeselektor holds what should be the only reference to the historian, at
 `modeS.hist`, and invokes him frequently\.
@@ -312,13 +333,17 @@ The Zones are actors as well, their job is to paint Zones and communicate with
 objects in the `.contents` slot, which are generally buffers, but can be a
 simple string\.
 
-In the next step, both `modeS` and the Maestro will own references to the
-Zoneherd\.  Which isn't exactly kosher, but if it were a hard\-and\-fast rule,
-we'd want to enforce it with software\.  But it does suggest that we want to
-have a better implementation before all of this is done\.  It's better if we
-know that all calls on an actor will be either from within its boss module, or
-at least preceded by the instance name of the boss actor, that is, super\-boss
-calls boss calls the scrub\.
+Currently, Modeselektor has the only reference to the Zoneherd, on `.zones`,
+but there is a lot of passing in the Modeselektor to other instances, to allow
+direct calls, not even to the Zoneherd generally, but to specific Zones\.
+
+We've proposed that, as a next step, both `modeS` and the Maestro will own
+references to the Zoneherd\.  Which isn't exactly kosher, but if it were a
+hard\-and\-fast rule, we'd want to enforce it with software\.  But it does
+suggest that we want to have a better implementation before all of this is
+done\.  It's better if we know that all calls on an actor will be either from
+within its boss module, or at least preceded by the instance name of the boss
+actor, that is, super\-boss calls boss calls the scrub\.
 
 It is, in fact, an open question whether we'll have a Maestro at all\.  He's
 taking over one of Modeselektor's most important jobs, and the easiest way to
@@ -341,10 +366,13 @@ murkier\. The Historian, Valiant, and the Zoneherd all live on Modeselektor,
 which holds the only reference to them, and is the only actor which should be
 invoking them directly\.
 
-Since this category is pretty much polyphyletic, there isn't much for me to
-say about them as a group: let's just take a look at what we have\.
+In fact, the most important set of actors in this collection\.\.\. aren't actors
+at all\!  But this is turning out to be a real barrier to a robust
+implementation\.
 
-I'm not going in any particular order here\.
+I wasn't actually sure what I'd find when I started this section\.  But it
+turns out that, unless I missed something \(distinct possibility\), there is one
+actor, and one very broad class of not\-actors\-yet\.
 
 
 #### Suggest
@@ -383,7 +411,8 @@ we're still working on what that looks like\.
 
 #### Rainbufs
 
-Rainbufs, as the lede says, encapsulate data to be written to the screen\.
+  Rainbufs, as the [lede](@~helm/rainbuf) says, encapsulate data to be
+written to the screen\.
 
 The thing is, they aren't really actors\.
 
@@ -395,7 +424,7 @@ we want to see that data again, we make a new Rainbuf\.  They're too
 specialized, and not durable enough\.
 
 They point to a missing actor, basically\.  But they're the closest thing we
-have, so let's explore the implementation we have\.
+have, so let's explore the implementation\.
 
 Originally, Rainbufs were about printing the contents of tables\.  The naive
 way of doing this is to render a string with the contents of the table, and
@@ -428,14 +457,18 @@ they have to know the allowable width, so that they can insert appropriate
 line breaks, but they shouldn't know anything about the xterm protocol\.
 
 And they certainly shouldn't know anything about how to edit text: and the
-Txtbuf knows everything about how to edit text\.
+Txtbuf knows everything about how to edit text\.  The Txtbuf is the most "actor
+like" thing we have which isn't an actor: it knows how to edit, it knows how
+to lex, give printable content to Zones, but every time we change the command
+buffer, we knock it on the head and make a fresh one\.
 
 So ideally, a Rainbuf holds and returns Lines, which are arrays of Tokens\. It
 knows how to compose them, it can cache them, bust the cache and re\-render,
 reflow automatically if given a different width, and so on\.  Because it knows
-where every piece of text is within the abstract grid of the Zone, it can pass
-mouse commands \(and some other kinds of commands to be fleshed out later\) to
-the underlying buffer, which I expect can be relied upon to directly return a
+where every piece of text is within the abstract grid of the Zone, it can
+process mouse commands \(and some other kinds of commands to be fleshed out
+later\) to the underlying buffer; the Lines will have "targets" corresponding
+to certain regions of the Line, and will be smart enough to directly return a
 value which will let the Rainbuf handle any changes to layout implied by the
 mouse command, such as expanding or folding a table print\.
 
@@ -445,12 +478,16 @@ actual text being edited\.  So the specialized\-class implementation is probably
 sound, since a result should just be a result, it doesn't need to know about
 Composers, it can be plain\-old\-data\.
 
+We also want the backing state of a Txtbuf to be plain\-old\-data: it contains
+all the editable content, the Codepoints in line\-arrays, cursor, anything else,
+but is completely inert\.
+
 These would not be actors, they do one job when asked, do it well, and become
 garbage when they're done\.
 
 But we need something which is, which I'm going to call an **Agent**\.  We would
-have a ResultAgent, which would live on the Modeselektor \(probably in a
-dedicated folder for agents\) and have a durable existence\.
+have a ResultAgent, which would live on the Modeselektor \(probably on the
+Maestro\) and have a durable existence\.
 
 This application calls for synchronous communication, but we don't want shared
 references\.  A mailbox isn't appropriate here: the Zone isn't the right place
@@ -464,18 +501,19 @@ Lines into actual text\)\.
 
 So what we want is a Window, exactly like in Composer, but this time we should
 make a whole project for it \(and port Composer to use it\)\.  This lets the
-Zone call anything it needs to from the ResultAgent\.
+Zone get anything it needs to from the ResultAgent\.  It can even be used to
+mutate the Resbuf, in principle: but we should avoid this\.
 
 And this gives us a much cleaner data flow\.  Valiant returns a result, which
 Modeselektor gives to the ResultAgent\.  On `:paint`, the Zones consult their
 windows: if something needs to be painted, it requests the relevant Lines, and
 does so\.
 
-This makes painting completely optional: we make `:paint` a no\-op, and have a
-separate event on the loop which inspects the Agents and sends any changes as
-JSON to a client, or `:paint` could cover some of the rendering and an event
-could stream another buffer to a separate terminal process\.  We can hook them
-to log something, or perform some other action \(screen readers?\)\.
+This makes painting completely optional: we could make `:paint` a no\-op, and
+have a separate event on the loop which inspects the Agents and sends any
+changes as JSON to a client, or `:paint` could cover some of the rendering and
+an event could stream another buffer to a separate terminal process\.  We can
+hook them to log something, or perform some other action \(screen readers?\)\.
 
 Nothing should ever have to give content to the ZoneHerd or Zones, unless the
 Modeselektor needs to replace an Agent\.  There's no need to touch anything,
@@ -484,7 +522,7 @@ will tell the Zoneherd when popups need to be replaced, and when reflow needs
 to happen, and that's that\.
 
 
-### Txtbuf \-> EditAgent
+#### Txtbuf \-> EditAgent
 
 As I mentioned, we really need to decomplect editing text from painting it\.
 
@@ -501,4 +539,15 @@ things like up\-arrow, the Maestro tells the Modeselektor that Historian needs
 to pull a new line and give it to the EditAgent, and the Zones just check this
 on `:paint`\.
 
+We probably want the contents in the form of a plain\-old\-data container,
+exactly like results, with the Codepoint arrays, cursor information, and so
+on, so they can potentially be passed from an EditAgent for the command Zone
+to an EditAgent for a popup full screen editor\.
+
+The EditAgent should own the contents, and the associated Txtbuf should have a
+Window to retrieve the contents\.  This is completely transparent: it looks
+like accessing slots on the same data structure, just that writing to it is
+illegal, and when the contents owned by the EditAgent changes, the underlying
+contents of the Window changes also\.  If the EditAgent disappears, then the
+Window will fail an assertion and die with a meaningful error message\.
 
