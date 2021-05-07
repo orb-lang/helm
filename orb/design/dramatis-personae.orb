@@ -214,8 +214,8 @@ All of =helm.orb= is one big function, with an environment, which sets up a
 =uv= event loop, builds the modeselektor, and launches an event loop to run
 it.
 
-Modeselektor holds the references to all other actors.  We enter modeselector
-in responsed to /events/, which are currently all created by input.  This is
+Modeselektor holds the references to all other actors.  We enter modeselektor
+in response to /events/, which are currently all created by input.  This is
 handed to =modeS=, which does things with them.
 
 The Modeselektor has somewhat outgrown his name, but I think we're going to
@@ -322,6 +322,11 @@ the return key.  Valiant evaluates the current text buffer, and returns any
 results of the calculation, which Modeselektor dutifully hands to the
 Historian for bookkeeping.
 
+D.S. note: I want to say that Valiant should be more directly exposed
+to...hell, I dunno who, but like, as much as possible it shouldn't be
+`modeS:eval()` but just talk to Valiant? But then how to handle the knock-on
+effects re: Historian, display of results, etc. Maybe I'm wrong.
+
 This isn't a place to define everything an actor does, we have the modules for
 that; this suffices as an introduction.
 
@@ -411,6 +416,18 @@ the Zone is a hard-coded presentation layer and we want to abstract that.  But
 we're still working on what that looks like.
 
 
+**** Namer
+
+Right now the module repr:names is just that, a module, with no more specific
+name being applicable. This was fine when =valiant= was just a module, too,
+but now that Valiant is a class and attempts to maintain a wholly
+separate environment per-instance, the names defined in that environment need
+to be maintained separately as well. Most likely this means making =names=
+into a =Namer= class as well, and that =Namer= is probably an actor in
+its own right. Its boss is probably the =Valiant= instance that created it,
+but =Suggest= also needs it...another case of possibly-dual ownership?
+
+
 **** Rainbufs
 
   Rainbufs, as the [[lede][@~helm/rainbuf]] says, encapsulate data to be
@@ -441,8 +458,13 @@ which the user has decided to look at.
 In the current implementation, which is a decided improvement, Rainbufs are a
 class.  We specialize them into Resbufs, Sessionbufs, and Txtbufs, for
 results, session review, and text editing, respectively.  We should also have
-a Suggestbuf, for autocompletes, which might be the same thing as an equally
-hypothetical Searchbuf, which would display search results.
+a =Selectbuf=, replacing the current usage of an object with a special
+=__repr= (=SelectionList=) plus a =Resbuf= for suggestions and search results.
+(Funny thing, these _are_ actually "results" in the general sense, but, not
+the same kind as the primary usage of =Resbuf=, namely REPL evaluation
+results.)  We _might_ need to specialize this into =Searchbuf= and
+=Suggestbuf=, but I think it can be done with a couple config options a la
+=Rainbuf.scrollable=.
 
 (As an aside, this really points to the deficit in =idEst= being a field
 instead of a method.  Daniel did the same thing I've done with Nodes and
