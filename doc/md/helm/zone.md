@@ -59,7 +59,7 @@ an overlapping Zone of higher `z` we flip its touched bit as well\.
 A `Zone` needs an `onMouse` method that receives the whole packet and acts
 accordingly\.  The flow hands every input including parsed mouse messages to
 the `modeselektor`, and some, particularly scrolls, are handled there\. The
-rest are assigned by the zone herder, which sould probably normalize the
+rest are assigned by the zone herder, which should probably normalize the
 action so, for example, a click in the upper left corner of a Zone is `1,1`\.
 
 Since the hard part is repainting, I'll start with reflow, and just hard\-
@@ -79,7 +79,9 @@ local Zone = meta {}
 local Zoneherd = meta {}
 ```
 
+
 ## Zone methods
+
 
 ### Zone:height\(\), :width\(\)
 
@@ -91,6 +93,7 @@ function Zone.width(zone)
    return zone.bounds:width()
 end
 ```
+
 
 ### Zone:clientBounds\(\)
 
@@ -109,6 +112,7 @@ function Zone.clientBounds(zone)
    end
 end
 ```
+
 
 ### Zone:overlaps\(other\_zone\)
 
@@ -178,6 +182,7 @@ function Zone.scrollTo(zone, offset, allow_overscroll)
 end
 ```
 
+
 #### Zone:scrollBy\(delta, allow\_overscroll\)
 
 Relative scrolling operation\. Change the scroll position by `delta` line\(s\)\.
@@ -192,6 +197,7 @@ function Zone.scrollBy(zone, delta, allow_overscroll)
    return zone:scrollTo(zone.contents.offset + delta, allow_overscroll)
 end
 ```
+
 
 #### Zone:scrollUp\(\), :scrollDown\(\), :pageUp\(\), :pageDown\(\)
 
@@ -220,6 +226,7 @@ function Zone.halfPageDown(zone)
    return zone:scrollBy(floor(zone:height() / 2))
 end
 ```
+
 
 #### Zone:scrollToTop\(\), Zone:scrollToBottom\(allow\_overscroll\)
 
@@ -258,6 +265,7 @@ function Zone.ensureVisible(zone, start_index, end_index)
 end
 ```
 
+
 ### Zone:setBounds\(rect\)
 
 Updates the bounds of the zone, marking it as touched if they actually change\.
@@ -289,6 +297,7 @@ function Zone.setBounds(zone, rect, ...)
    return zone
 end
 ```
+
 
 ### Zone:setVisibility\(new\_visibility\), Zone:show\(\), Zone:hide\(\)
 
@@ -347,6 +356,7 @@ function Zone.paintBorder(zone, write)
 end
 ```
 
+
 ### Zone:erase\(write\)
 
 ```lua
@@ -354,6 +364,7 @@ function Zone.erase(zone, write)
    write(a.erase.box(zone.bounds))
 end
 ```
+
 
 ### Zone:paint\(write\)
 
@@ -406,7 +417,9 @@ function Zone.paint(zone, write)
 end
 ```
 
+
 ## Zoneherd methods
+
 
 ### Zoneherd:addZone\(zone\)
 
@@ -435,6 +448,7 @@ function Zoneherd.addZone(zoneherd, zone)
 end
 ```
 
+
 ### Zoneherd:newZone\(name, z, debug\_mark\)
 
 Creates a new zone and adds it to the Zoneherd\. Note that we don't
@@ -458,6 +472,7 @@ function Zoneherd.newZone(zoneherd, name, z, debug_mark)
 end
 ```
 
+
 #### \_zoneOffset\(modes\)
 
 ```lua
@@ -474,6 +489,7 @@ local function _zoneOffset(modeS)
    end
 end
 ```
+
 
 ### Zoneherd:reflow\(modeS\)
 
@@ -544,6 +560,7 @@ function Zoneherd.paint(zoneherd, modeS)
    return zoneherd
 end
 ```
+
 
 ### new
 

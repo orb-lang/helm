@@ -84,12 +84,15 @@ local Zoneherd = meta {}
 
 
 
+
+
 function Zone.height(zone)
    return zone.bounds:height()
 end
 function Zone.width(zone)
    return zone.bounds:width()
 end
+
 
 
 
@@ -108,6 +111,7 @@ function Zone.clientBounds(zone)
       return zone.bounds
    end
 end
+
 
 
 
@@ -183,6 +187,7 @@ end
 
 
 
+
 function Zone.scrollBy(zone, delta, allow_overscroll)
    -- Need to check this here even though :scrollTo already does
    -- because we talk to the Rainbuf to figure out the new offset
@@ -191,6 +196,7 @@ function Zone.scrollBy(zone, delta, allow_overscroll)
    end
    return zone:scrollTo(zone.contents.offset + delta, allow_overscroll)
 end
+
 
 
 
@@ -219,6 +225,7 @@ end
 function Zone.halfPageDown(zone)
    return zone:scrollBy(floor(zone:height() / 2))
 end
+
 
 
 
@@ -264,6 +271,7 @@ end
 
 
 
+
 local Rectangle  = require "anterm/rectangle"
 function Zone.setBounds(zone, rect, ...)
    if not instanceof(rect, Rectangle) then
@@ -288,6 +296,7 @@ function Zone.setBounds(zone, rect, ...)
    end
    return zone
 end
+
 
 
 
@@ -350,9 +359,11 @@ end
 
 
 
+
 function Zone.erase(zone, write)
    write(a.erase.box(zone.bounds))
 end
+
 
 
 
@@ -414,6 +425,8 @@ end
 
 
 
+
+
 local insert = assert(table.insert)
 
 function Zoneherd.addZone(zoneherd, zone)
@@ -442,6 +455,7 @@ end
 
 
 
+
 local function newZone(name, z, debug_mark)
    local zone = meta(Zone)
    zone.name = name
@@ -461,6 +475,7 @@ end
 
 
 
+
 local function _zoneOffset(modeS)
    local width = modeS.max_extent.col
    if width <= 80 then
@@ -473,6 +488,7 @@ local function _zoneOffset(modeS)
       return 50
    end
 end
+
 
 
 
@@ -543,6 +559,7 @@ function Zoneherd.paint(zoneherd, modeS)
    end
    return zoneherd
 end
+
 
 
 
