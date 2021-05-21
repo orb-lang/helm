@@ -3,15 +3,42 @@
 class Modeselektor
 class Historian
 class Zoneherd
+class Valiant
+class Maestro
 
-object zoneherd
+
 object hist
 
-map modeS {
-   zones *-> zoneherd
-   hist  *-> hist
+object eval
+
+map zoneherd {
+    suggest => zone
+    result  => zone
+
 }
-Modeselektor --> modeS : new
-Zoneherd --> zoneherd : new
-Historian --> hist : new
+
+map agents {
+   suggestAgent => Agent
+   editAgent => Agent
+   resultAgent => Agent
+   sessionAgent => Agent
+}
+
+map maestro {
+   agents *--> agents
+   zoneBox => Mailbox
+}
+
+map modeS {
+   zones *--> zoneherd
+   hist  *--> hist
+   maestro *--> maestro
+   eval    *--> eval
+}
+
+Modeselektor --|> modeS : new
+Zoneherd --|> zoneherd : new
+Historian --|> hist : new
+Valiant --|> eval : new
+Maestro --|> maestro : new
 @enduml
