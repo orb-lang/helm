@@ -2,23 +2,49 @@
 @startuml
 class Modeselektor
 class Historian
-class Zoneherd
+package zone_orb <<Folder>> {
+   class Zoneherd
+   class Zone
+}
 class Valiant
 class Maestro
+class Agent
+note top: These will be specialized
+class Window
+class Mailbox
 
 
 object hist
 
 object eval
 
-map zoneherd {
-    suggest => zone
-    result  => zone
 
+object suggestWindow
+
+map suggestBuf {
+   suggestWindow *-> suggestWindow
 }
 
+map suggest {
+   suggestBuf *--> suggestBuf
+}
+
+object zoneBox
+
+object maestroBox
+
+map zoneherd {
+    maestroBox *--> maestroBox
+    suggest *--> suggest
+    result  => zone
+    command => zone
+    prompt   => zone
+}
+
+object suggestAgent
+
 map agents {
-   suggestAgent => Agent
+   suggestAgent *--> suggestAgent
    editAgent => Agent
    resultAgent => Agent
    sessionAgent => Agent
@@ -26,7 +52,7 @@ map agents {
 
 map maestro {
    agents *--> agents
-   zoneBox => Mailbox
+   zoneBox *--> zoneBox
 }
 
 map modeS {
@@ -36,9 +62,20 @@ map modeS {
    eval    *--> eval
 }
 
+circle "new" as newSuggestAgent
+circle "new" as newZoneMailbox
+
 Modeselektor --|> modeS : new
 Zoneherd --|> zoneherd : new
+Zone --|> suggest : new
 Historian --|> hist : new
 Valiant --|> eval : new
 Maestro --|> maestro : new
+Agent --|> newSuggestAgent
+Mailbox --|> newZoneMailbox
+Window --|> suggestWindow : new
+newSuggestAgent --> suggestAgent
+newSuggestAgent --> suggestWindow
+newZoneMailbox --> zoneBox
+newZoneMailbox --> maestroBox
 @enduml
