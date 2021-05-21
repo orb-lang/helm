@@ -1,0 +1,17 @@
+
+@startuml
+class Modeselektor
+class Historian
+class Zoneherd
+
+object zoneherd
+object hist
+
+map modeS {
+   zones *-> zoneherd
+   hist  *-> hist
+}
+Modeselektor --> modeS : new
+Zoneherd --> zoneherd : new
+Historian --> hist : new
+@enduml
