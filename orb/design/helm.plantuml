@@ -104,10 +104,13 @@ circle "new" as newSessionAgent
 
 circle "new" as newZoneMailbox
 circle "new" as newModeSMailbox
+note right: Maybe
 
 Modeselektor --|> modeS : new
 Zoneherd --|> zoneherd : new
 Zone --|> suggest : new
+Zone --|> command : new
+Zone --|> result  : new
 Historian --|> hist : new
 Valiant --|> eval : new
 Maestro --|> maestro : new
