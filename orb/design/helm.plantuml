@@ -9,9 +9,12 @@ package zone_orb <<Folder>> {
 class Valiant
 class Maestro
 class Agent
-note top: These will be specialized
+note top: To be specialized
 class Window
 class Mailbox
+
+class Rainbuf
+note left: To be specialized
 
 
 object hist
@@ -20,39 +23,70 @@ object eval
 
 
 object suggestWindow
+object editWindow
+object resultWindow
+object sessionWindow
 
 map suggestBuf {
-   suggestWindow *-> suggestWindow
+   suggestWindow *--> suggestWindow
+}
+
+map textBuf {
+   editWindow *--> editWindow
+}
+
+map resultBuf {
+   resultWindow *--> resultWindow
+}
+
+map sessionBuf {
+   sessionWindow *--> sessionWindow
 }
 
 map suggest {
    suggestBuf *--> suggestBuf
 }
 
-object zoneBox
 
+map result {
+   resultBuf *--> resultBuf
+   sessionBuf *--> sessionBuf
+}
+
+map command {
+   textBuf *--> textBuf
+}
+
+object zoneBox
 object maestroBox
+object "maestroBox" as modeS_maestroBox
+object modeSBox
 
 map zoneherd {
     maestroBox *--> maestroBox
     suggest *--> suggest
-    result  => zone
-    command => zone
-    prompt   => zone
+    result  *--> result
+    command *--> command
+    prompt   => Zone
 }
 
 object suggestAgent
+object editAgent
+object resultAgent
+object sessionAgent
 
 map agents {
    suggestAgent *--> suggestAgent
-   editAgent => Agent
-   resultAgent => Agent
-   sessionAgent => Agent
+   editAgent *--> editAgent
+   resultAgent *--> resultAgent
+   sessionAgent *--> sessionAgent
 }
 
 map maestro {
    agents *--> agents
    zoneBox *--> zoneBox
+   modeSBox *-> modeSBox
+   more => ...
 }
 
 map modeS {
@@ -60,10 +94,16 @@ map modeS {
    hist  *--> hist
    maestro *--> maestro
    eval    *--> eval
+   maestroBox *-> modeS_maestroBox
 }
 
 circle "new" as newSuggestAgent
+circle "new" as newEditAgent
+circle "new" as newResultAgent
+circle "new" as newSessionAgent
+
 circle "new" as newZoneMailbox
+circle "new" as newModeSMailbox
 
 Modeselektor --|> modeS : new
 Zoneherd --|> zoneherd : new
@@ -71,11 +111,40 @@ Zone --|> suggest : new
 Historian --|> hist : new
 Valiant --|> eval : new
 Maestro --|> maestro : new
+
 Agent --|> newSuggestAgent
-Mailbox --|> newZoneMailbox
+Agent --|> newEditAgent
+Agent --|> newResultAgent
+Agent --|> newSessionAgent
 Window --|> suggestWindow : new
+Window --|> editWindow : new
+Window --|> resultWindow : new
+Window --|> sessionWindow : new
 newSuggestAgent --> suggestAgent
 newSuggestAgent --> suggestWindow
+newEditAgent --> editAgent
+newEditAgent --> editWindow
+newResultAgent --> resultAgent
+newResultAgent --> resultWindow
+newSessionAgent --> sessionAgent
+newSessionAgent --> sessionWindow
+
+Rainbuf --|> suggestBuf
+Rainbuf --|> resultBuf
+Rainbuf --|> textBuf
+Rainbuf --|> sessionBuf
+
+Mailbox --|> newZoneMailbox
 newZoneMailbox --> zoneBox
 newZoneMailbox --> maestroBox
+Mailbox --|> newModeSMailbox
+newModeSMailbox --> modeSBox
+newModeSMailbox --> modeS_maestroBox
+
+
+
+
+
+
+
 @enduml
