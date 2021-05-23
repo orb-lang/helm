@@ -2,7 +2,7 @@
 @startuml
 class Modeselektor
 class Historian
-package zone_orb <<Folder>> {
+package "zone.orb" as zone_orb <<Folder>> {
    class Zoneherd
    class Zone
 }
@@ -16,11 +16,8 @@ class Mailbox
 class Rainbuf
 note left: To be specialized
 
-
 object hist
-
 object eval
-
 
 object suggestWindow
 object editWindow
@@ -70,16 +67,19 @@ map zoneherd {
     prompt   => Zone
 }
 
+rectangle "agents" as AG {
 object suggestAgent
 object editAgent
 object resultAgent
 object sessionAgent
+}
+
 
 map agents {
-   suggestAgent *--> suggestAgent
-   editAgent *--> editAgent
-   resultAgent *--> resultAgent
-   sessionAgent *--> sessionAgent
+   suggestAgent *--> AG.suggestAgent
+   editAgent *--> AG.editAgent
+   resultAgent *--> AG.resultAgent
+   sessionAgent *--> AG.sessionAgent
 }
 
 map maestro {
@@ -143,11 +143,5 @@ newZoneMailbox --> maestroBox
 Mailbox --|> newModeSMailbox
 newModeSMailbox --> modeSBox
 newModeSMailbox --> modeS_maestroBox
-
-
-
-
-
-
 
 @enduml
