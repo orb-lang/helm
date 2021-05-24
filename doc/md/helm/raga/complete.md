@@ -17,14 +17,13 @@ Complete.prompt_char = "💬"
 ```lua
 
 local function _quit(modeS)
-   modeS.suggest:cancel(modeS)
    -- #todo restore last-used raga instead of always returning to default
    modeS.shift_to = modeS.raga_default
 end
 
 local function _accept(modeS)
    if modeS.suggest.active_suggestions then
-      modeS.suggest:accept(modeS)
+      modeS.suggest:accept(modeS.txtbuf)
    else
       modeS.action_complete = false
    end
@@ -63,9 +62,11 @@ local NAV = Complete.NAV
 local function _scrollAfter(modeS, func_name)
    local suggestions = modeS.suggest.active_suggestions
    local zone = modeS.zones.suggest
-   suggestions[func_name](suggestions)
-   zone:ensureVisible(suggestions.selected_index)
-   zone:beTouched()
+   if suggestions then
+      suggestions[func_name](suggestions)
+      zone:ensureVisible(suggestions.selected_index)
+      zone:beTouched()
+   end
    -- Command zone needs re-render too
    modeS.zones.command:beTouched()
 end
@@ -100,8 +101,11 @@ we will have already shifted ragas\.
 
 ```lua
 function Complete.onTxtbufChanged(modeS)
-   modeS.suggest:update(modeS)
-   EditBase.onCursorChanged(modeS)
+   modeS.suggest:update(modeS.txtbuf, modeS.zones.suggest)
+   if not modeS.suggest.active_suggestions then
+      _quit(modeS)
+   end
+   EditBase.onTxtbufChanged(modeS)
 end
 ```
 
@@ -153,6 +157,16 @@ function Complete.onShift(modeS)
 end
 ```
 
+
+### Complete\.onUnshift
+
+Deselect and prod the Txtbuf on exit\.
+
+```lua
+function Complete.onUnshift(modeS)
+   _scrollAfter(modeS, "selectNone")
+end
+```
 
 ```lua
 return Complete

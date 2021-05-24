@@ -29,10 +29,10 @@ local new
 
 
 
-local function _cursorContext(modeS)
+local function _cursorContext(txtbuf)
    local lex_tokens = {}
    -- Ignore whitespace and comments
-   for _, token in ipairs(modeS.txtbuf:tokens()) do
+   for _, token in ipairs(txtbuf:tokens()) do
       if token.color ~= "no_color" and token.color ~= "comment" then
          insert(lex_tokens, token)
       end
@@ -88,7 +88,15 @@ end
 
 
 
+<<<<<<< HEAD
 
+||||||| parent of 451fd68... Avoid handing all of modeS to Suggest
+=======
+
+
+
+
+>>>>>>> 451fd68... Avoid handing all of modeS to Suggest
 local function _suggest_sort(a, b)
    if a.score ~= b.score then
       return a.score < b.score
@@ -105,7 +113,7 @@ local safeget = import("core:table", "safeget")
 local fuzz_patt = require "helm:fuzz_patt"
 local Set = require "set:set"
 
-local function _suggestions_from(complete_against)
+local function _candidates_from(complete_against)
    -- Either no path was provided, or some part of it doesn't
    -- actually exist, fall back to completing against all symbols
    if complete_against == nil then
@@ -131,17 +139,27 @@ local function _suggestions_from(complete_against)
    return candidate_symbols
 end
 
-local function _set_suggestions(modeS, suggestions)
-   modeS.suggest.active_suggestions = suggestions
-   -- #todo Can't say I like assigning this twice like this
-   modeS.txtbuf.active_suggestions = suggestions
+local function _set_suggestions(suggest, txtbuf, zone, suggestions)
+   suggest.active_suggestions = suggestions
+   -- #todo both of the below should be handled by Txtbuf and the suggest Zone
+   -- holding on to our Window and simply retrieving from it as needed.
+   txtbuf.active_suggestions = suggestions
+   if suggestions then
+      -- #todo Should this be a separate Rainbuf subclass,
+      -- or is the __repr approach fine?
+      zone:replace(Resbuf(
+         { suggestions, n = 1 },
+         { live = true, made_in = "suggest.update" }))
+   else
+      zone:replace("")
+   end
 end
 
 
-function Suggest.update(suggest, modeS)
-   local context, path = _cursorContext(modeS)
+function Suggest.update(suggest, txtbuf, zone)
+   local context, path = _cursorContext(txtbuf)
    if context == nil then
-      suggest:cancel(modeS)
+      suggest:cancel(txtbuf, zone)
       return
    end
 
@@ -158,7 +176,7 @@ function Suggest.update(suggest, modeS)
          complete_against = nil
       end
    end
-   local candidate_symbols = _suggestions_from(complete_against)
+   local candidate_symbols = _candidates_from(complete_against)
 
    -- Now we can actually filter those candidates for whether they match or not
    local suggestions = SelectionList()
@@ -174,7 +192,7 @@ function Suggest.update(suggest, modeS)
       end
    end
    if #matches == 0 then
-      suggest:cancel(modeS)
+      suggest:cancel(txtbuf, zone)
       return
    end
    sort(matches, _suggest_sort)
@@ -184,12 +202,7 @@ function Suggest.update(suggest, modeS)
    if modeS.raga.name == "complete" then
       suggestions.selected_index = 1
    end
-   _set_suggestions(modeS, suggestions)
-   -- #todo Should this be a separate Rainbuf subclass,
-   -- or is the __repr approach fine?
-   modeS.zones.suggest:replace(Resbuf(
-      { suggestions, n = 1 },
-      { live = true, made_in = "suggest.update" }))
+   _set_suggestions(suggest, txtbuf, zone, suggestions)
 end
 
 
@@ -205,24 +218,40 @@ end
 
 
 
+<<<<<<< HEAD
 
 function Suggest.cancel(suggest, modeS)
    _set_suggestions(modeS, nil)
    modeS.zones.suggest:replace("")
    modeS.zones.command:beTouched()
+||||||| parent of 451fd68... Avoid handing all of modeS to Suggest
+function Suggest.cancel(suggest, modeS)
+   _set_suggestions(modeS, nil)
+   modeS.zones.suggest:replace("")
+   modeS.zones.command:beTouched()
+=======
+function Suggest.cancel(suggest, txtbuf, zone)
+   _set_suggestions(suggest, txtbuf, zone, nil)
+>>>>>>> 451fd68... Avoid handing all of modeS to Suggest
 end
 
 
 
 
 
+<<<<<<< HEAD
 
 function Suggest.accept(suggest, modeS)
+||||||| parent of 451fd68... Avoid handing all of modeS to Suggest
+function Suggest.accept(suggest, modeS)
+=======
+function Suggest.accept(suggest, txtbuf)
+>>>>>>> 451fd68... Avoid handing all of modeS to Suggest
    local suggestion = suggest:selectedSuggestion()
-   local context = _cursorContext(modeS)
-   modeS.txtbuf:right(context.total_disp - context.cursor_offset)
-   modeS.txtbuf:killBackward(context.total_disp)
-   modeS.txtbuf:paste(suggestion)
+   local context = _cursorContext(txtbuf)
+   txtbuf:right(context.total_disp - context.cursor_offset)
+   txtbuf:killBackward(context.total_disp)
+   txtbuf:paste(suggestion)
 end
 
 

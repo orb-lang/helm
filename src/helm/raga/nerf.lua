@@ -230,12 +230,12 @@ end
 
 
 function Nerf.onCursorChanged(modeS)
-   modeS.suggest:update(modeS)
+   modeS.suggest:update(modeS.txtbuf, modeS.zones.suggest)
    EditBase.onCursorChanged(modeS)
 end
 
 function Nerf.onTxtbufChanged(modeS)
-   modeS.suggest:update(modeS)
+   modeS.suggest:update(modeS.txtbuf, modeS.zones.suggest)
    EditBase.onTxtbufChanged(modeS)
 end
 
