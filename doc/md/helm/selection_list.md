@@ -29,6 +29,7 @@ local SelectionList = meta {}
 local new
 ```
 
+
 ### SelectionList:selectFirst\(\), :selectNext\(\), :selectPrevious\(\)
 
 Moves the highlight to the first, next or previous item in the list\.
@@ -60,6 +61,7 @@ function SelectionList.selectPrevious(list)
 end
 ```
 
+
 ### SelectionList:selectNextWrap\(\), :selectPreviousWrap\(\)
 
 As :selectNext\(\) and :selectPrevious\(\), but wraps around instead of failing
@@ -82,6 +84,19 @@ function SelectionList.selectPreviousWrap(list)
 end
 ```
 
+
+### SelectionList:selectNone\(\)
+
+De\-selects any selected item\. We use the convention of `selected_index == 0`
+to mean no selection\.
+
+```lua
+function SelectionList.selectNone(list)
+   list.selected_index = 0
+end
+```
+
+
 ### SelectionList:selectedItem\(\)
 
 Answers the actual selected item from the list \(as opposed to its index\)\.
@@ -91,6 +106,7 @@ function SelectionList.selectedItem(list)
    return list[list.selected_index]
 end
 ```
+
 
 ### \_\_repr
 
@@ -174,6 +190,7 @@ function SelectionList.__repr(list, window, c)
 end
 
 ```
+
 
 ### new
 

@@ -30,6 +30,7 @@ local new
 
 
 
+
 local clamp = assert(require "core:math" . clamp)
 function SelectionList.selectIndex(list, index)
    index = clamp(index, 1, #list)
@@ -61,6 +62,7 @@ end
 
 
 
+
 function SelectionList.selectNextWrap(list)
    local new_idx = list.selected_index < #list
       and list.selected_index + 1
@@ -81,9 +83,23 @@ end
 
 
 
+
+
+function SelectionList.selectNone(list)
+   list.selected_index = 0
+end
+
+
+
+
+
+
+
+
 function SelectionList.selectedItem(list)
    return list[list.selected_index]
 end
+
 
 
 
@@ -166,6 +182,7 @@ function SelectionList.__repr(list, window, c)
       return line, len
    end
 end
+
 
 
 
