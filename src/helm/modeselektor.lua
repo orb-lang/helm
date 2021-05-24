@@ -101,8 +101,8 @@ assert(meta, "must have meta in _G")
 local Set = require "set:set"
 local Valiant = require "valiant:valiant"
 
-local Txtbuf     = require "helm:txtbuf"
-local Resbuf     = require "helm:resbuf"
+local Txtbuf     = require "helm:buf/txtbuf"
+local Resbuf     = require "helm:buf/resbuf"
 local Historian  = require "helm:historian"
 local Lex        = require "helm:lex"
 local Zoneherd   = require "helm:zone"

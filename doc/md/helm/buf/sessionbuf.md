@@ -1,49 +1,53 @@
-* Sessionbuf
+# Sessionbuf
 
-This is a type of =Rainbuf= specialized to display and edit a =Session=.
+This is a type of `Rainbuf` specialized to display and edit a `Session`\.
 
 
-** Instance fields
+## Instance fields
 
--  session:        The Session object we are displaying and editing.
--  txtbufs:        Array of =Txtbuf=s for each line of the session.
--  resbuf:         =Resbuf= for displaying the results of the selected line.
--  selected_index: The index of the line that is selected for editing
 
-#!lua
-local Rainbuf = require "helm:rainbuf"
-local Resbuf  = require "helm:resbuf"
-local Txtbuf  = require "helm:txtbuf"
+-  session:        The Session object we are displaying and editing\.
+
+-  txtbufs:        Array of `Txtbuf`s for each line of the session\.
+
+-  resbuf:         `Resbuf` for displaying the results of the selected line\.
+
+-  selected\_index: The index of the line that is selected for editing
+
+```lua
+local Rainbuf = require "helm:buf/rainbuf"
+local Resbuf  = require "helm:buf/resbuf"
+local Txtbuf  = require "helm:buf/txtbuf"
 
 local Sessionbuf = Rainbuf:inherit()
-#/lua
+```
 
 
-** Constants
+## Constants
 
-#!lua
+```lua
 -- The (maximum) number of rows we will use for the "line" (command)
 -- (in case it is many lines long)
 Sessionbuf.ROWS_PER_LINE = 4
 -- The (maximum) number of rows we will use for the result of the selected line
 Sessionbuf.ROWS_PER_RESULT = 7
-#/lua
+```
 
 
-** Methods
+## Methods
 
 
-*** Selection, scrolling, etc
+### Selection, scrolling, etc
 
 
-**** Sessionbuf:selectIndex(index)
+#### Sessionbuf:selectIndex\(index\)
 
-Select the line at =index= in the session for possible editing.
+Select the line at `index` in the session for possible editing\.
 
-We share enough selection protocol with =SelectionList= that we can
-borrow its convenience methods.
+We share enough selection protocol with `SelectionList` that we can
+borrow its convenience methods\.
 
-#!lua
+```lua
 local clamp = assert(require "core:math" . clamp)
 function Sessionbuf.selectIndex(buf, index)
    index = #buf.session == 0
@@ -65,15 +69,15 @@ function Sessionbuf.selectIndex(buf, index)
    end
    return false
 end
-#/lua
+```
 
 
-**** Sessionbuf:selectNextWrap(), :selectPreviousWrap()
+#### Sessionbuf:selectNextWrap\(\), :selectPreviousWrap\(\)
 
 Selects the next/previous premise, wrapping around to the beginning/end
-if we're at the end/beginning, respectively.
+if we're at the end/beginning, respectively\.
 
-#!lua
+```lua
 function Sessionbuf.selectNextWrap(buf)
    local new_idx = buf.selected_index < #buf.session
       and buf.selected_index + 1
@@ -86,29 +90,29 @@ function Sessionbuf.selectPreviousWrap(buf)
       or #buf.session
    return buf:selectIndex(new_idx)
 end
-#/lua
+```
 
 
-**** Sessionbuf:rowsForSelectedResult()
+#### Sessionbuf:rowsForSelectedResult\(\)
 
 Returns the number of lines needed to display the result of the
-selected premise. This will never be greater than ROWS_PER_RESULT.
-The Sessionbuf must have had :initComposition() already called.
+selected premise\. This will never be greater than ROWS\_PER\_RESULT\.
+The Sessionbuf must have had :initComposition\(\) already called\.
 
-#!lua
+```lua
 function Sessionbuf.rowsForSelectedResult(buf)
    buf.resbuf:initComposition(buf.cols - 3)
    buf.resbuf:composeUpTo(buf.ROWS_PER_RESULT)
    return clamp(#buf.resbuf.lines, 0, buf.ROWS_PER_RESULT)
 end
-#/lua
+```
 
 
-**** Sessionbuf:positionOf(index)
+#### Sessionbuf:positionOf\(index\)
 
-Returns the line number at which display of the =index=th premise begins.
+Returns the line number at which display of the `index`th premise begins\.
 
-#!lua
+```lua
 local gsub = assert(string.gsub)
 function Sessionbuf.positionOf(buf, index)
    local position = 1
@@ -126,14 +130,14 @@ end
 function Sessionbuf.positionOfSelected(buf)
    return buf:positionOf(buf.selected_index)
 end
-#/lua
+```
 
 
-**** Sessionbuf:scrollResultsDown(), :scrollResultsUp()
+#### Sessionbuf:scrollResultsDown\(\), :scrollResultsUp\(\)
 
-Scroll within the results area for the currently-selected line.
+Scroll within the results area for the currently\-selected line\.
 
-#!lua
+```lua
 function Sessionbuf.scrollResultsDown(buf)
    -- #todo this should all be handled internally by Rainbuf--
    -- we should just be calling buf.resbuf:scrollDown()
@@ -155,27 +159,27 @@ function Sessionbuf.scrollResultsUp(buf)
    end
    return false
 end
-#/lua
+```
 
 
-**** Sessionbuf:selectedPremise()
+#### Sessionbuf:selectedPremise\(\)
 
-#!lua
+```lua
 function Sessionbuf.selectedPremise(buf)
    return buf.session[buf.selected_index]
 end
-#/lua
+```
 
 
-*** Editing
+### Editing
 
 
-**** Sessionbuf:[reverse]toggleSelectedState()
+#### Sessionbuf:\[reverse\]toggleSelectedState\(\)
 
-Toggles the state of the selected line, cycling through "accept", "reject",
-"ignore", "skip".
+Toggles the state of the selected line, cycling through "accept", "reject",ignore", "skip"\.
 
-#!lua
+"
+```lua
 local status_cycle_map = {
    ignore = "accept",
    accept = "reject",
@@ -197,18 +201,18 @@ function Sessionbuf.reverseToggleSelectedState(buf)
    premise.status = status_reverse_map[premise.status]
    return true
 end
-#/lua
+```
 
 
-**** Sessionbuf:movePremise{Up|Down}()
+#### Sessionbuf:movePremise\{Up|Down\}\(\)
 
-Moves the selected premise up/back or down/forward in the session.
+Moves the selected premise up/back or down/forward in the session\.
 
-#todo doesn't account for the premise results possibly changing as a result.
+\#todo
 For now, we assume the user knows what they're doing, and they can always
-use =br session update= to fix things separately.
+use `br session update` to fix things separately\.
 
-#!lua
+```lua
 local function _swapPremises(buf, index_a, index_b)
    local premise_a = buf.session[index_a]
    local premise_b = buf.session[index_b]
@@ -240,44 +244,44 @@ function Sessionbuf.movePremiseDown(buf)
    buf:selectNextWrap()
    return true
 end
-#/lua
+```
 
 
-*** Rendering
+### Rendering
 
 
-**** Sessionbuf:clearCaches()
+#### Sessionbuf:clearCaches\(\)
 
-Although we have sub-buffers, their caches will usually remain valid
-even when ours does not, so leave them alone.
-Discard any render coroutine we may be holding on to.
+Although we have sub\-buffers, their caches will usually remain valid
+even when ours does not, so leave them alone\.
+Discard any render coroutine we may be holding on to\.
 
-#!lua
+```lua
 function Sessionbuf.clearCaches(buf)
    buf:super"clearCaches"()
    buf._composeOneLine = nil
 end
-#/lua
+```
 
 
-**** Sessionbuf:initComposition(cols)
+#### Sessionbuf:initComposition\(cols\)
 
-#!lua
+```lua
 local wrap = assert(coroutine.wrap)
 function Sessionbuf.initComposition(buf, cols)
    buf:super"initComposition"(cols)
    buf._composeOneLine = wrap(function() buf:_composeAll() end)
 end
-#/lua
+```
 
 
-**** Sessionbuf:_composeAll(cols)
+#### Sessionbuf:\_composeAll\(cols\)
 
 Given the amount of state involved in our render process, it's easier
-to just do it all as a coroutine. This method is the body of that coroutine,
-and we assign the wrapped result dynamically to =_composeOneLine=
+to just do it all as a coroutine\. This method is the body of that coroutine,
+and we assign the wrapped result dynamically to `_composeOneLine`
 
-#!lua
+```lua
 local status_icons = {
    ignore = "🟡",
    accept = "✅",
@@ -323,26 +327,26 @@ function Sessionbuf._composeAll(buf)
    yield(box_light:bottomLine(inner_cols))
    buf._composeOneLine = nil
 end
-#/lua
+```
 
 
-*** Sessionbuf:_init()
+### Sessionbuf:\_init\(\)
 
-We have a Resbuf and an array of Txtbufs to initialize.
+We have a Resbuf and an array of Txtbufs to initialize\.
 
-#!lua
+```lua
 function Sessionbuf._init(buf)
    buf:super"_init"()
    buf.live = true
    buf.resbuf = Resbuf({ n = 0 }, { scrollable = true })
    buf.txtbufs = {}
 end
-#/lua
+```
 
 
-*** Sessionbuf:replace(session)
+### Sessionbuf:replace\(session\)
 
-#!lua
+```lua
 local lua_thor = assert(require "helm:lex" . lua_thor)
 function Sessionbuf.replace(buf, session)
    buf:super"replace"(session)
@@ -359,11 +363,11 @@ function Sessionbuf.replace(buf, session)
    end
    buf:selectIndex(1)
 end
-#/lua
+```
 
-#!lua
+```lua
 local Sessionbuf_class = setmetatable({}, Sessionbuf)
 Sessionbuf.idEst = Sessionbuf_class
 
 return Sessionbuf_class
-#/lua
+```

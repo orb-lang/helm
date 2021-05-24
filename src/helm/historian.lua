@@ -16,7 +16,7 @@
 local uv      = require "luv"
 local sql     = assert(sql, "sql must be in bridge _G")
 
-local Resbuf  = require "helm:resbuf"
+local Resbuf  = require "helm:buf/resbuf"
 local Session = require "helm:session"
 local persist_tabulate = require "repr:persist-tabulate"
 local helm_db = require "helm:helm-db"

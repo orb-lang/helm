@@ -94,7 +94,7 @@ local concat, insert, remove = assert(table.concat),
 
 
 
-local Rainbuf = require "helm:rainbuf"
+local Rainbuf = require "helm:buf/rainbuf"
 local Txtbuf = Rainbuf:inherit()
 
 

@@ -5,8 +5,8 @@
 
 local clone = assert(require "core:table" . clone)
 local RagaBase = require "helm:raga/base"
-local Txtbuf = require "helm:txtbuf"
-local Sessionbuf = require "helm:sessionbuf"
+local Txtbuf = require "helm:buf/txtbuf"
+local Sessionbuf = require "helm:buf/sessionbuf"
 
 
 

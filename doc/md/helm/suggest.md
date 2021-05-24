@@ -7,7 +7,7 @@ This is our autocomplete module\.
 ```lua
 
 local SelectionList = require "helm:selection_list"
-local Resbuf = require "helm:resbuf"
+local Resbuf = require "helm:buf/resbuf"
 local names = require "repr:names"
 local insert, sort = assert(table.insert), assert(table.sort)
 

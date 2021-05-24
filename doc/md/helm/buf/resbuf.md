@@ -14,7 +14,7 @@ local cluster = require "core:cluster"
 #### Resbuf metatable
 
 ```lua
-local Rainbuf = require "helm:rainbuf"
+local Rainbuf = require "helm:buf/rainbuf"
 local Resbuf = Rainbuf:inherit()
 ```
 
