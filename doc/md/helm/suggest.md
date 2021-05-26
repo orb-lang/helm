@@ -24,9 +24,9 @@ local new
 
 Examines the text before the cursor to determine \(a\) what token we are in the
 middle of, and \(b\) what if any path from the global environment we should
-follow to determine a list of keys to complete from\. Answers nil if the token
-we are in the middle of is not a symbol, and a nil second return value if the
-path cannot be determined\.
+follow to determine a list of keys to complete from\. Answers `nil` if the
+token we are in the middle of is not a symbol, and a `nil` second return value
+if the path cannot be determined\.
 
 ```lua
 local function _cursorContext(modeS)
@@ -81,6 +81,7 @@ local function _cursorContext(modeS)
    return context, path
 end
 ```
+
 
 ### update\(modeS, category, value\)
 
@@ -190,8 +191,8 @@ function Suggest.update(suggest, modeS)
       { suggestions, n = 1 },
       { live = true, made_in = "suggest.update" }))
 end
-
 ```
+
 
 ### selectedSuggestion\(\)
 
@@ -200,6 +201,7 @@ function Suggest.selectedSuggestion(suggest)
    return suggest.active_suggestions and suggest.active_suggestions:selectedItem()
 end
 ```
+
 
 ### cancel\(\)
 
@@ -210,6 +212,7 @@ function Suggest.cancel(suggest, modeS)
    modeS.zones.command:beTouched()
 end
 ```
+
 
 ### accept\(\)
 
@@ -222,6 +225,7 @@ function Suggest.accept(suggest, modeS)
    modeS.txtbuf:paste(suggestion)
 end
 ```
+
 
 ### new\(\)
 

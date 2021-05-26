@@ -88,6 +88,7 @@ end
 
 
 
+
 local function _suggest_sort(a, b)
    if a.score ~= b.score then
       return a.score < b.score
@@ -204,11 +205,13 @@ end
 
 
 
+
 function Suggest.cancel(suggest, modeS)
    _set_suggestions(modeS, nil)
    modeS.zones.suggest:replace("")
    modeS.zones.command:beTouched()
 end
+
 
 
 
@@ -221,6 +224,7 @@ function Suggest.accept(suggest, modeS)
    modeS.txtbuf:killBackward(context.total_disp)
    modeS.txtbuf:paste(suggestion)
 end
+
 
 
 

@@ -74,8 +74,8 @@ local Rainbuf = meta {}
 
 ### Rainbuf:clearCaches\(\)
 
-Clears any cached lineGen iterators and their output, causing a full re\-compose
-the next time lineGen is called\.
+  Clears any cached lineGen iterators and their output, causing a full
+re\-compose the next time lineGen is called\.
 
 ```lua
 local clear = assert(table.clear)
