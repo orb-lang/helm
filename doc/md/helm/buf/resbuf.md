@@ -43,15 +43,16 @@ Set up the lineGen\(\) iterators we'll use to build our output\.
 
 ```lua
 local lines = import("core/string", "lines")
+local npairs = assert(require "core:table" . npairs)
 function Resbuf.initComposition(resbuf, cols)
    resbuf:super"initComposition"(cols)
    if not resbuf.reprs then
       resbuf.reprs = {}
       resbuf.r_num = 1
-      for i = 1, resbuf.n do
+      for i = 1, resbuf.value.n do
          resbuf.reprs[i] = resbuf.frozen
-            and lines(resbuf[i])
-            or lineGen(resbuf[i], resbuf.cols)
+            and lines(resbuf.value[i])
+            or lineGen(resbuf.value[i], resbuf.cols)
       end
    end
 end
@@ -67,18 +68,12 @@ results we may previously have held, even if res contains fewer\.
 ```lua
 local max = assert(math.max)
 function Resbuf.replace(resbuf, res)
-   resbuf:super"replace"(res)
-   if not res then
-      res = { n = 0 }
-   end
+   res = res or { n = 0 }
    assert(res.n, "must have n")
-   for i = 1, max(resbuf.n, res.n) do
-      resbuf[i] = res[i]
-   end
+   resbuf:super"replace"(res)
    -- Treat an error result from valiant as just a string,
    -- not something to repr
    resbuf.frozen = res.error
-   resbuf.n = res.n
 end
 ```
 
@@ -92,7 +87,7 @@ from the current repr, moving on to the next if that one has run out\.
 function Resbuf._composeOneLine(resbuf)
    assert(resbuf.r_num,
       "r_num has been niled (missing an :initComposition after :clearCaches?)")
-   while resbuf.r_num <= resbuf.n do
+   while resbuf.r_num <= resbuf.value.n do
       local line = resbuf.reprs[resbuf.r_num]()
       if line then
          return line

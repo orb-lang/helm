@@ -591,7 +591,7 @@ function ModeS.setTxtbuf(modeS, txtbuf)
    -- #todo keep the same Txtbuf around (updating it using :replace())
    -- rather than swapping it out
    txtbuf.lex = modeS.txtbuf.lex
-   txtbuf.active_suggestions = modeS.txtbuf.active_suggestions
+   txtbuf.suggestions = modeS.suggest:window()
    modeS.txtbuf = txtbuf
    modeS.txtbuf.cursor_changed = true
    modeS.txtbuf.contents_changed = true
@@ -799,7 +799,9 @@ local function new(max_extent, writer, db)
    modeS.write = writer
    modeS.repl_top = ModeS.REPL_LINE
    modeS.zones = Zoneherd(modeS, writer)
+   modeS.txtbuf.suggestions = modeS.suggest:window()
    modeS.zones.command:replace(modeS.txtbuf)
+   modeS.zones.suggest:replace(Resbuf(modeS.suggest:window()))
    -- If we are loading an existing session, start in review mode
    local session = modeS.hist.session
    if session.session_id then

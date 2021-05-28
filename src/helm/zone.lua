@@ -172,13 +172,7 @@ function Zone.scrollTo(zone, offset, allow_overscroll)
    local required_lines_visible = allow_overscroll and 1 or client_height
    local max_offset = clamp(#buf.lines - required_lines_visible, 0)
    offset = clamp(offset, 0, max_offset)
-   if offset ~= buf.offset then
-      buf.offset = offset
-      zone:beTouched()
-      return true
-   else
-      return false
-   end
+   return buf:scrollTo(offset)
 end
 
 
@@ -463,7 +457,7 @@ local function newZone(name, z, debug_mark)
    zone.z = z
    zone.visible = true
    zone.touched = false
-   -- zone.contents, aspirationally a rainbuf, is provided later
+   zone.contents = ''
    return zone
 end
 
@@ -554,6 +548,15 @@ end
 function Zoneherd.paint(zoneherd, modeS)
    local write = zoneherd.write
    write(a.cursor.hide(), a.clear())
+   for i, zone in ipairs(zoneherd) do
+      -- Propagate touched-ness so it can also spread "horizontally"
+      -- to neighboring Zones
+      -- #todo There has *got* to be a better way than this. An events
+      -- framework would work, might be other options
+      if zone.contents.is_rainbuf and zone.contents:checkTouched() then
+         zone:beTouched()
+      end
+   end
    for i, zone in ipairs(zoneherd) do
       zone:paint(write)
    end

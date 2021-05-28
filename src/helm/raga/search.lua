@@ -23,7 +23,17 @@ Search.prompt_char = "⁉️"
 
 function Search.onTxtbufChanged(modeS)
    local searchResult = modeS.hist:search(tostring(modeS.txtbuf))
-   modeS.txtbuf.active_suggestions = searchResult[1]
+   -- #todo This will be a Window, until then everything is terrible
+   modeS.txtbuf.suggestions = {
+      touched = true,
+      checkTouched = function() return true end,
+      selectedSuggestion = function(t)
+         return searchResult.value and searchResult.value[1] and searchResult.value[1]:selectedItem()
+      end,
+      highlight = function(...)
+         return searchResult.value[1]:highlight(...)
+      end
+   }
    modeS:setResults(searchResult)
 end
 

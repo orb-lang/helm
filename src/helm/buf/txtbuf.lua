@@ -79,6 +79,7 @@
 
 
 
+
 assert(meta)
 local Codepoints = require "singletons/codepoints"
 local lines = import("core/string", "lines")
@@ -134,8 +135,10 @@ end
 
 
 
+
 function Txtbuf.contentsChanged(txtbuf)
    txtbuf.contents_changed = true
+   txtbuf.touched = true
    txtbuf:clearCaches()
 end
 
@@ -819,15 +822,15 @@ local c = assert(require "singletons:color" . color)
 function Txtbuf._composeOneLine(txtbuf)
    if txtbuf.render_row > #txtbuf then return nil end
    local tokens = txtbuf:tokens(txtbuf.render_row)
-   local suggestion = txtbuf.active_suggestions
-      and txtbuf.active_suggestions:selectedItem()
+   local suggestion = txtbuf.suggestions
+      and txtbuf.suggestions:selectedSuggestion()
    for i, tok in ipairs(tokens) do
       -- If suggestions are active and one is highlighted,
       -- display it in grey instead of what the user has typed so far
       -- Note this only applies once Tab has been pressed, as until then
-      -- :selectedItem() will be nil
+      -- :selectedSuggestion() will be nil
       if suggestion and tok.cursor_offset then
-         tokens[i] = txtbuf.active_suggestions:highlight(suggestion, txtbuf.cols, c)
+         tokens[i] = txtbuf.suggestions.highlight(suggestion, txtbuf.cols, c)
       else
          tokens[i] = tok:toString(c)
       end
@@ -852,6 +855,31 @@ function Txtbuf.tokens(txtbuf, row)
       return txtbuf.lex(tostring(txtbuf), txtbuf:cursorIndex())
    end
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function Txtbuf.checkTouched(txtbuf)
+   local touched = txtbuf:super"checkTouched"()
+   if txtbuf.suggestions and txtbuf.suggestions.touched then
+      touched = true
+      -- #todo unify clearing of caches damnit
+      txtbuf:clearCaches()
+   end
+   return touched
+end
+
 
 
 
@@ -884,18 +912,29 @@ end
 
 
 
+
+
+
+
 function Txtbuf._init(txtbuf)
    txtbuf:super"_init"()
-   -- Txtbuf needs to re-render in most event-loop cycles, detecting
-   -- whether a re-render is actually needed is tricky,
-   -- and it's reasonably cheap to just *always* re-render, so...
    txtbuf.live = true
    txtbuf.contents_changed = false
    txtbuf.cursor_changed = false
 end
 
+
+
+
+
+
+
+
+
+
+
+
 function Txtbuf.replace(txtbuf, str)
-   txtbuf:super"replace"(str)
    str = str or ""
    -- We always have at least one line--will be overwritten
    -- if there's actual content provided in str

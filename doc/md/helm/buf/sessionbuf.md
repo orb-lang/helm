@@ -50,9 +50,9 @@ borrow its convenience methods\.
 ```lua
 local clamp = assert(require "core:math" . clamp)
 function Sessionbuf.selectIndex(buf, index)
-   index = #buf.session == 0
+   index = #buf.value == 0
       and 0
-      or clamp(index, 1, #buf.session)
+      or clamp(index, 1, #buf.value)
    if index ~= buf.selected_index then
       buf.selected_index = index
       local premise = buf:selectedPremise()
@@ -79,7 +79,7 @@ if we're at the end/beginning, respectively\.
 
 ```lua
 function Sessionbuf.selectNextWrap(buf)
-   local new_idx = buf.selected_index < #buf.session
+   local new_idx = buf.selected_index < #buf.value
       and buf.selected_index + 1
       or 1
    return buf:selectIndex(new_idx)
@@ -87,7 +87,7 @@ end
 function Sessionbuf.selectPreviousWrap(buf)
    local new_idx = buf.selected_index > 1
       and buf.selected_index - 1
-      or #buf.session
+      or #buf.value
    return buf:selectIndex(new_idx)
 end
 ```
@@ -117,7 +117,7 @@ local gsub = assert(string.gsub)
 function Sessionbuf.positionOf(buf, index)
    local position = 1
    for i = 1, index - 1 do
-      local num_lines = select(2, gsub(buf.session[i].line, '\n', '\n')) + 1
+      local num_lines = select(2, gsub(buf.value[i].line, '\n', '\n')) + 1
       num_lines = clamp(num_lines, 1, buf.ROWS_PER_LINE)
       position = position + num_lines + 1
       if i == buf.selected_index then
@@ -166,7 +166,7 @@ end
 
 ```lua
 function Sessionbuf.selectedPremise(buf)
-   return buf.session[buf.selected_index]
+   return buf.value[buf.selected_index]
 end
 ```
 
@@ -214,12 +214,12 @@ use `br session update` to fix things separately\.
 
 ```lua
 local function _swapPremises(buf, index_a, index_b)
-   local premise_a = buf.session[index_a]
-   local premise_b = buf.session[index_b]
-   buf.session[index_a] = premise_b
+   local premise_a = buf.value[index_a]
+   local premise_b = buf.value[index_b]
+   buf.value[index_a] = premise_b
    buf.txtbufs[index_a]:replace(premise_b.line)
    premise_b.ordinal = index_a
-   buf.session[index_b] = premise_a
+   buf.value[index_b] = premise_a
    buf.txtbufs[index_b]:replace(premise_a.line)
    premise_a.ordinal = index_b
    buf:clearCaches()
@@ -237,7 +237,7 @@ function Sessionbuf.movePremiseUp(buf)
 end
 
 function Sessionbuf.movePremiseDown(buf)
-   if buf.selected_index == #buf.session then
+   if buf.selected_index == #buf.value then
       return false
    end
    _swapPremises(buf, buf.selected_index, buf.selected_index + 1)
@@ -294,7 +294,7 @@ local yield = assert(coroutine.yield)
 local c = assert(require "singletons:color" . color)
 function Sessionbuf._composeAll(buf)
    local inner_cols = buf.cols - 2 -- For the box borders
-   for i, premise in ipairs(buf.session) do
+   for i, premise in ipairs(buf.value) do
       yield(i == 1
          and box_light:topLine(inner_cols)
          or box_light:spanningLine(inner_cols))
@@ -320,7 +320,7 @@ function Sessionbuf._composeAll(buf)
          end
       end
    end
-   if #buf.session == 0 then
+   if #buf.value == 0 then
       yield(box_light:topLine(inner_cols))
       yield(box_light:contentLine(inner_cols) .. "No premises to display")
    end
@@ -350,7 +350,6 @@ end
 local lua_thor = assert(require "helm:lex" . lua_thor)
 function Sessionbuf.replace(buf, session)
    buf:super"replace"(session)
-   buf.session = session
    for i, premise in ipairs(session) do
       if buf.txtbufs[i] then
          buf.txtbufs[i]:replace(premise.line)

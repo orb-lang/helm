@@ -204,14 +204,53 @@ end
 
 ### Rainbuf:replace\(\[res\]\)
 
-Replace the contents of the Rainbuf with those from res, emptying it
-if res is nil\. Most of the implementation here is delegated to subclasses,
-but we know in general that we will want to clear any caches when the contents
-completely change\.
+Replace the contents of the Rainbuf with those from res, emptying it if res is
+nil\. We must clear any caches, and consider ourselves touched/changed\.
 
 ```lua
-function Rainbuf.replace(rainbuf)
+function Rainbuf.replace(rainbuf, res)
+   rainbuf.value = res
    rainbuf:clearCaches()
+   rainbuf.touched = true
+end
+```
+
+
+### Rainbuf:scrollTo\(offset\)
+
+Right now, just a setter for `.offset`, but we'll be moving `Zone:scrollTo()`
+here soon\. For now, returns a boolean indicating whether scrolling occurred,
+but I don't think we make any use of that\.\.\.
+
+```lua
+function Rainbuf.scrollTo(rainbuf, offset)
+   if offset ~= rainbuf.offset then
+      rainbuf.offset = offset
+      rainbuf.touched = true
+      return true
+   else
+      return false
+   end
+end
+```
+
+
+### Rainbuf:checkTouched\(\)
+
+Answers whether the Rainbuf \(or its `source`, if it has one\) have been touched
+since the last time this method was called, clearing the flag in the process\.
+
+\#todo
+be nice not to duplicate\.
+
+```lua
+function Rainbuf.checkTouched(rainbuf)
+   if rainbuf.source and rainbuf.source:checkTouched() then
+      rainbuf:replace(rainbuf.source.buffer_value)
+   end
+   local touched = rainbuf.touched
+   rainbuf.touched = false
+   return touched
 end
 ```
 
@@ -223,9 +262,9 @@ for easy extension\.
 
 ```lua
 function Rainbuf._init(rainbuf)
-   rainbuf.n = 0
    rainbuf.offset = 0
    rainbuf.lines = {}
+   rainbuf.touched = false
 end
 ```
 
@@ -233,18 +272,30 @@ end
 ### Rainbuf\(\[res\]\[, cfg\]\)
 
 ```lua
+local Window = require "window:window"
+local pget = assert(require "core:table" . pget)
+
 function Rainbuf.__call(buf_class, res, cfg)
    if type(res) == "table" then
       if res.idEst == buf_class then
          return res
-      elseif res.is_rainbuf then
+      -- #todo blech Window blows up on is_rainbuf. Do we really even need
+      -- this assert? Or the early-out above for that matter?
+      elseif pget(res, "is_rainbuf") then
          error("Trying to make a Rainbuf from another type of Rainbuf")
       end
    end
    local buf_M = getmetatable(buf_class)
    local rainbuf = setmetatable({}, buf_M)
    rainbuf:_init()
-   rainbuf:replace(res)
+   -- #todo should check something else here--or just have mutually-exclusive
+   -- parameters for source and value?
+   if res and res.idEst == Window then
+      rainbuf.source = res
+      rainbuf:replace(res.buffer_value)
+   else
+      rainbuf:replace(res)
+   end
    if cfg then
       for k, v in pairs(cfg) do
          rainbuf[k] = v

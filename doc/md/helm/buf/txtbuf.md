@@ -65,7 +65,8 @@ A closed line is just a string\.
 -  render\_row : Index of the row being rendered \(Rainbuf implementation detail\)
 
 
--  active\_suggestions : `SelectionList` of active suggestions, if any, provided
+-  suggestions : The `Window` to the `SuggestAgent`, from which the list of
+    active suggestions is available, along with whether it has changed\.
 
 The intention is that all of these fields are manipulated internally: the
 codebase doesn't completely respect this, yet, but it should\.
@@ -139,13 +140,15 @@ end
 
 ### Txtbuf:contentsChanged\(\)
 
-Notification that the contents of the Txtbuf have changed\.
-Clear our render cache, and set a flag for the Modeselektor to check
-and notify others\.
+Notification that the contents of the Txtbuf have changed\. I believe this is
+equivalent to the intended semantics of `.touched`, except that
+`contents_changed` is cleared earlier, so we sorta need both\. Also need to
+clear caches\.
 
 ```lua
 function Txtbuf.contentsChanged(txtbuf)
    txtbuf.contents_changed = true
+   txtbuf.touched = true
    txtbuf:clearCaches()
 end
 ```
@@ -429,9 +432,9 @@ thus proceeds through :killSelection\(\)
 
 #### Txtbuf:killSelection\(\)
 
-Deletes the selected text, if any\. Returns whether anything was deleted
-\(i\.e\. whether anything was initially selected\)\.
+Deletes the selected text, if any\. Returns whether anything was deletedi\.e\. whether anything was initially selected\)\.
 
+\(
 ```lua
 local deleterange = import("core/table", "deleterange")
 function Txtbuf.killSelection(txtbuf)
@@ -830,15 +833,15 @@ local c = assert(require "singletons:color" . color)
 function Txtbuf._composeOneLine(txtbuf)
    if txtbuf.render_row > #txtbuf then return nil end
    local tokens = txtbuf:tokens(txtbuf.render_row)
-   local suggestion = txtbuf.active_suggestions
-      and txtbuf.active_suggestions:selectedItem()
+   local suggestion = txtbuf.suggestions
+      and txtbuf.suggestions:selectedSuggestion()
    for i, tok in ipairs(tokens) do
       -- If suggestions are active and one is highlighted,
       -- display it in grey instead of what the user has typed so far
       -- Note this only applies once Tab has been pressed, as until then
-      -- :selectedItem() will be nil
+      -- :selectedSuggestion() will be nil
       if suggestion and tok.cursor_offset then
-         tokens[i] = txtbuf.active_suggestions:highlight(suggestion, txtbuf.cols, c)
+         tokens[i] = txtbuf.suggestions.highlight(suggestion, txtbuf.cols, c)
       else
          tokens[i] = tok:toString(c)
       end
@@ -864,6 +867,31 @@ function Txtbuf.tokens(txtbuf, row)
    end
 end
 ```
+
+
+### Txtbuf:checkTouched\(\)
+
+We additionally check if something has changed about the active suggestions\.
+We must **not** clear the touched flag there in the process, but \#todo THIS WAY
+IS BAD, since it depends on us going first, before the suggest zone itself is
+checked\.
+
+We've also got two different notions of "changed" going, here, but that's
+because we have too much responsiblity\-\-moving most of the editing logic to
+EditAgent should clear things up\.
+
+```lua
+function Txtbuf.checkTouched(txtbuf)
+   local touched = txtbuf:super"checkTouched"()
+   if txtbuf.suggestions and txtbuf.suggestions.touched then
+      touched = true
+      -- #todo unify clearing of caches damnit
+      txtbuf:clearCaches()
+   end
+   return touched
+end
+```
+
 
 ### Txtbuf:suspend\(\), Txtbuf:resume\(\)
 
@@ -892,21 +920,32 @@ end
 ```
 
 
-### Txtbuf:\_init\(\), Txtbuf:replace\(str\)
+### Txtbuf:\_init\(\)
+
+Txtbuf needs to re\-render in most event\-loop cycles, detecting whether a
+re\-render is actually needed is tricky, and it's reasonably cheap to just
+**always** re\-render, so we set the "live" flag automatically\.
 
 ```lua
 function Txtbuf._init(txtbuf)
    txtbuf:super"_init"()
-   -- Txtbuf needs to re-render in most event-loop cycles, detecting
-   -- whether a re-render is actually needed is tricky,
-   -- and it's reasonably cheap to just *always* re-render, so...
    txtbuf.live = true
    txtbuf.contents_changed = false
    txtbuf.cursor_changed = false
 end
+```
 
+
+### Txtbuf:replace\(str\)
+
+Although we are constructed from a string, the actual value we store is an
+array of lines\. For now, to keep things simple, we're also going to keep using
+our own indexed slots rather than a `.value` property, so we can't make use of
+the super implementation\. Fortunately `:contentsChanged()` already takes care
+of all the parts we do need\.
+
+```lua
 function Txtbuf.replace(txtbuf, str)
-   txtbuf:super"replace"(str)
    str = str or ""
    -- We always have at least one line--will be overwritten
    -- if there's actual content provided in str

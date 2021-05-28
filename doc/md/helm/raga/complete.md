@@ -63,12 +63,13 @@ local function _scrollAfter(modeS, func_name)
    local suggestions = modeS.suggest.active_suggestions
    local zone = modeS.zones.suggest
    if suggestions then
+      -- #todo route scrolling commands through the SuggestAgent or Window so
+      -- it can set .touched itself?
       suggestions[func_name](suggestions)
+      modeS.suggest.touched = true
+      -- #todo should have a Selectbuf that does this automatically
       zone:ensureVisible(suggestions.selected_index)
-      zone:beTouched()
    end
-   -- Command zone needs re-render too
-   modeS.zones.command:beTouched()
 end
 
 function NAV.TAB(modeS, category, value)
@@ -102,6 +103,9 @@ we will have already shifted ragas\.
 ```lua
 function Complete.onTxtbufChanged(modeS)
    modeS.suggest:update(modeS.txtbuf, modeS.zones.suggest)
+   if modeS.suggest.active_suggestions then
+      modeS.suggest.active_suggestions.selected_index = 1
+   end
    if not modeS.suggest.active_suggestions then
       _quit(modeS)
    end

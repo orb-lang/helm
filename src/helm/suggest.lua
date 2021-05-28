@@ -136,18 +136,7 @@ end
 
 local function _set_suggestions(suggest, txtbuf, zone, suggestions)
    suggest.active_suggestions = suggestions
-   -- #todo both of the below should be handled by Txtbuf and the suggest Zone
-   -- holding on to our Window and simply retrieving from it as needed.
-   txtbuf.active_suggestions = suggestions
-   if suggestions then
-      -- #todo Should this be a separate Rainbuf subclass,
-      -- or is the __repr approach fine?
-      zone:replace(Resbuf(
-         { suggestions, n = 1 },
-         { live = true, made_in = "suggest.update" }))
-   else
-      zone:replace("")
-   end
+   suggest.touched = true
 end
 
 
@@ -194,9 +183,6 @@ function Suggest.update(suggest, txtbuf, zone)
    for _, match in ipairs(matches) do
       insert(suggestions, match.sym)
    end
-   if modeS.raga.name == "complete" then
-      suggestions.selected_index = 1
-   end
    _set_suggestions(suggest, txtbuf, zone, suggestions)
 end
 
@@ -237,8 +223,51 @@ end
 
 
 
+
+
+function Suggest.checkTouched(suggest)
+   local touched = suggest.touched
+   suggest.touched = false
+   return touched
+end
+
+
+
+
+
+local Window = require "window:window"
+local window_cfg = {
+   field = { touched = true },
+   fn = {
+      buffer_value = function(suggest, window, field)
+         return suggest.active_suggestions
+            and { n = 1, suggest.active_suggestions }
+      end
+   },
+   closure = {
+      checkTouched = true,
+      selectedSuggestion = true,
+      highlight = function(suggest, window, field, ...)
+         return suggest.active_suggestions:highlight(...)
+      end
+   }
+}
+function Suggest.window(suggest)
+   -- #todo is it reasonable for Agents to cache their window like this?
+   -- Is it reasonable for others to *assume* that they will (if it even matters)?
+   suggest._window = suggest._window or Window(suggest, window_cfg)
+   return suggest._window
+end
+
+
+
+
+
+
+
 new = function()
    local suggest = meta(Suggest)
+   suggest.touched = false
    return suggest
 end
 
