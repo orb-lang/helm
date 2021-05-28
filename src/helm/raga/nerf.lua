@@ -21,8 +21,8 @@ assert(meta, "must have meta in _G")
 
 
 local a         = require "anterm:anterm"
-local Txtbuf    = require "helm/txtbuf"
-local Rainbuf   = require "helm/rainbuf"
+local Txtbuf    = require "helm:buf/txtbuf"
+local Rainbuf   = require "helm:buf/rainbuf"
 local Historian = require "helm/historian"
 local Lex       = require "helm/lex"
 

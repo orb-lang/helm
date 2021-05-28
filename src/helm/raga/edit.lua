@@ -6,7 +6,7 @@
 
 local addall, clone = import("core/table", "addall", "clone")
 local RagaBase = require "helm:helm/raga/base"
-local Txtbuf = require "helm/txtbuf"
+local Txtbuf = require "helm:buf/txtbuf"
 
 
 

@@ -6,8 +6,8 @@ A light wrapper over `nerf`\.
 ```lua
 local clone = import("core/table", "clone")
 local EditBase = require "helm/raga/edit"
-local Rainbuf = require "helm/rainbuf"
-local Txtbuf = require "helm/txtbuf"
+local Rainbuf = require "helm:buf/rainbuf"
+local Txtbuf = require "helm:buf/txtbuf"
 
 local Search = clone(EditBase, 2)
 

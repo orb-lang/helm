@@ -428,7 +428,7 @@ but `Suggest` also needs it\.\.\.another case of possibly\-dual ownership?
 
 #### Rainbufs
 
-  Rainbufs, as the [lede](@~helm/rainbuf) says, encapsulate data to be
+  Rainbufs, as the [lede](@~helm:buf/rainbuf) says, encapsulate data to be
 written to the screen\.
 
 The thing is, they aren't really actors\.

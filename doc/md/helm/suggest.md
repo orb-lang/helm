@@ -82,14 +82,7 @@ local function _cursorContext(txtbuf)
 end
 ```
 
-<<<<<<< HEAD
-
-### update\(modeS, category, value\)
-||||||| parent of 451fd68... Avoid handing all of modeS to Suggest
-### update\(modeS, category, value\)
-=======
 ### Suggest:update\(txtbuf, zone\)
->>>>>>> 451fd68... Avoid handing all of modeS to Suggest
 
 Updates the completion list based on the current contents of the Txtbuf,
 sending the results to the given Zone\.

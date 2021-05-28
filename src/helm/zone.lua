@@ -67,8 +67,8 @@
 
 
 
-local Txtbuf = require "helm/txtbuf"
-local Rainbuf = require "helm/rainbuf"
+local Txtbuf = require "helm:buf/txtbuf"
+local Rainbuf = require "helm:buf/rainbuf"
 local a = require "anterm:anterm"
 
 local instanceof = import("core/meta", "instanceof")

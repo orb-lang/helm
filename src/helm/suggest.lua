@@ -88,15 +88,10 @@ end
 
 
 
-<<<<<<< HEAD
-
-||||||| parent of 451fd68... Avoid handing all of modeS to Suggest
-=======
 
 
 
 
->>>>>>> 451fd68... Avoid handing all of modeS to Suggest
 local function _suggest_sort(a, b)
    if a.score ~= b.score then
       return a.score < b.score
@@ -218,35 +213,17 @@ end
 
 
 
-<<<<<<< HEAD
 
-function Suggest.cancel(suggest, modeS)
-   _set_suggestions(modeS, nil)
-   modeS.zones.suggest:replace("")
-   modeS.zones.command:beTouched()
-||||||| parent of 451fd68... Avoid handing all of modeS to Suggest
-function Suggest.cancel(suggest, modeS)
-   _set_suggestions(modeS, nil)
-   modeS.zones.suggest:replace("")
-   modeS.zones.command:beTouched()
-=======
 function Suggest.cancel(suggest, txtbuf, zone)
    _set_suggestions(suggest, txtbuf, zone, nil)
->>>>>>> 451fd68... Avoid handing all of modeS to Suggest
 end
 
 
 
 
 
-<<<<<<< HEAD
 
-function Suggest.accept(suggest, modeS)
-||||||| parent of 451fd68... Avoid handing all of modeS to Suggest
-function Suggest.accept(suggest, modeS)
-=======
 function Suggest.accept(suggest, txtbuf)
->>>>>>> 451fd68... Avoid handing all of modeS to Suggest
    local suggestion = suggest:selectedSuggestion()
    local context = _cursorContext(txtbuf)
    txtbuf:right(context.total_disp - context.cursor_offset)
