@@ -251,7 +251,7 @@ local fuzz_patt = require "helm:helm/fuzz_patt"
 
 function Historian.search(historian, frag)
    if historian.last_collection
-      and historian.last_collection[1].lit_frag == frag then
+      and historian.last_collection.lit_frag == frag then
       -- don't repeat a search
       return historian.last_collection
    end
@@ -282,9 +282,8 @@ function Historian.search(historian, frag)
       result.frag = frag:sub(1, -3) .. frag:sub(-1, -1) .. frag:sub(-2, -2)
       try_search()
    end
-   historian.last_collection = Resbuf({ result, n = 1 }, { live = true })
-   historian.last_collection.made_in = "historian.search"
-   return historian.last_collection
+   historian.last_collection = result
+   return result
 end
 
 
