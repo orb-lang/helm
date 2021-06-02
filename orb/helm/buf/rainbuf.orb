@@ -276,15 +276,6 @@ local Window = require "window:window"
 local pget = assert(require "core:table" . pget)
 
 function Rainbuf.__call(buf_class, res, cfg)
-   if type(res) == "table" then
-      if res.idEst == buf_class then
-         return res
-      -- #todo blech Window blows up on is_rainbuf. Do we really even need
-      -- this assert? Or the early-out above for that matter?
-      elseif pget(res, "is_rainbuf") then
-         error("Trying to make a Rainbuf from another type of Rainbuf")
-      end
-   end
    local buf_M = getmetatable(buf_class)
    local rainbuf = setmetatable({}, buf_M)
    rainbuf:_init()

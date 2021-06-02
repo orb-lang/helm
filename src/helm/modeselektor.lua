@@ -547,12 +547,18 @@ function ModeS.setResults(modeS, results)
       modeS.zones.results:replace(results)
       return modeS
    end
-   local cfg = { scrollable = true }
-   if type(results) == "string" then
-      cfg.frozen = true
-      results = { results, n = 1 }
+   -- #todo ultimately this all wants to be handled by a Window, updating the
+   -- contents of an existing Resbuf, so we won't have to think about whether
+   -- or not what we're dealing with is already a Rainbuf
+   if not results.is_rainbuf then
+      local cfg = { scrollable = true }
+      if type(results) == "string" then
+         cfg.frozen = true
+         results = { results, n = 1 }
+      end
+      results = Resbuf(results, cfg)
    end
-   modeS.zones.results:replace(Resbuf(results, cfg))
+   modeS.zones.results:replace(results)
    return modeS
 end
 
