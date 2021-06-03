@@ -134,128 +134,21 @@ end
 
 
 
+
+local function update_content_extent(zone)
+   if zone.bounds and zone.contents.is_rainbuf then
+      zone.contents:setExtent(zone:clientBounds():extent():rowcol())
+   end
+end
+
 function Zone.replace(zone, contents)
    zone.contents = contents or ""
+   -- #todo shouldn't have to do this nearly as often--Zone contents will
+   -- change much less once Window refactoring is done--though this may still
+   -- be the right place to do it
+   update_content_extent(zone)
    zone:beTouched()
    return zone
-end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-local clamp = import("core/math", "clamp")
-function Zone.scrollTo(zone, offset, allow_overscroll)
-   local buf = zone.contents
-   if not buf.is_rainbuf then
-      return false
-   end
-   -- Try to render the content that will be visible after the scroll
-   local client_height = zone:clientBounds():height()
-   buf:initComposition(zone:clientBounds():width())
-   buf:composeUpTo(offset + client_height)
-   local required_lines_visible = allow_overscroll and 1 or client_height
-   local max_offset = clamp(#buf.lines - required_lines_visible, 0)
-   offset = clamp(offset, 0, max_offset)
-   return buf:scrollTo(offset)
-end
-
-
-
-
-
-
-
-
-function Zone.scrollBy(zone, delta, allow_overscroll)
-   -- Need to check this here even though :scrollTo already does
-   -- because we talk to the Rainbuf to figure out the new offset
-   if not zone.contents.is_rainbuf then
-      return false
-   end
-   return zone:scrollTo(zone.contents.offset + delta, allow_overscroll)
-end
-
-
-
-
-
-
-
-
-function Zone.scrollUp(zone)
-   return zone:scrollBy(-1)
-end
-function Zone.scrollDown(zone)
-   return zone:scrollBy(1)
-end
-
-function Zone.pageUp(zone)
-   return zone:scrollBy(-zone:height())
-end
-function Zone.pageDown(zone)
-   return zone:scrollBy(zone:height())
-end
-
-local floor = assert(math.floor)
-function Zone.halfPageUp(zone)
-   return zone:scrollBy(-floor(zone:height() / 2))
-end
-function Zone.halfPageDown(zone)
-   return zone:scrollBy(floor(zone:height() / 2))
-end
-
-
-
-
-
-
-
-
-
-
-
-function Zone.scrollToTop(zone)
-   return zone:scrollTo(0)
-end
-
-function Zone.scrollToBottom(zone, allow_overscroll)
-   zone.contents:composeAll()
-   -- Choose a definitely out-of-range value,
-   -- which scrollTo will clamp appropriately
-   return zone:scrollTo(#zone.contents.lines, allow_overscroll)
-end
-
-
-
-
-
-
-
-
-
-
-
-function Zone.ensureVisible(zone, start_index, end_index)
-   end_index = end_index or start_index
-   local min_offset = clamp(end_index - zone:clientBounds():height(), 0)
-   local max_offset = clamp(start_index - 1, 0)
-   zone:scrollTo(clamp(zone.contents.offset, min_offset, max_offset))
 end
 
 
@@ -273,19 +166,11 @@ function Zone.setBounds(zone, rect, ...)
    end
    rect:assertNotEmpty("Zone must have non-zero area")
    if zone.bounds ~= rect then
-      if zone.bounds
-         and zone.bounds:width() ~= rect:width()
-         and zone.contents
-         and zone.contents.is_rainbuf then
-         zone.contents:clearCaches()
-      end
       zone.bounds = rect
-      -- #todo technically this is incomplete as we need to care about
-      -- cells we may previously have owned and no longer do, and what zones
-      -- *are* now responsible for them. Doing that properly requires a real
-      -- two-step layout process, though (figure out where everything is going
-      -- to be, *then* put it there and mark things touched), so we'll
-      -- hold off for now
+      update_content_extent(zone)
+      -- Technically this could be incomplete in the case where we relinquish some cells,
+      -- but as long as every cell is covered by at least one Zone by the time layout is
+      -- complete, the new owner will figure things out.
       zone:beTouched()
    end
    return zone
@@ -322,6 +207,7 @@ end
 
 
 
+
 function Zone.beTouched(zone)
    if zone.touched then return end
    zone.touched = true
@@ -330,6 +216,32 @@ function Zone.beTouched(zone)
          zone.visible == (other_zone.z > zone.z) and
          zone:overlaps(other_zone) then
          other_zone.touched = true
+      end
+   end
+end
+
+
+
+
+
+
+
+
+
+
+for _, scroll_fn in ipairs{
+   "scrollTo", "scrollBy",
+   "scrollUp", "scrollDown",
+   "pageUp", "pageDown",
+   "halfPageUp", "halfPageDown",
+   "scrollToTop", "scrollToBottom",
+   "ensureVisible"
+} do
+   Zone[scroll_fn] = function(zone, ...)
+      if zone.contents.is_rainbuf then
+         return zone.contents[scroll_fn](zone.contents, ...)
+      else
+         return false
       end
    end
 end
@@ -528,7 +440,7 @@ function Zoneherd.reflow(zoneherd, modeS)
    -- required, we must account for the borders--seems like a good
    -- division of responsibility.
    if zoneherd.modal.visible then
-      local modal_extent = zoneherd.modal.contents[1]:requiredExtent() + Point(2, 4)
+      local modal_extent = zoneherd.modal.contents.value[1]:requiredExtent() + Point(2, 4)
       local margins = ((modeS.max_extent - modal_extent) / 2):floor()
       zoneherd.modal:setBounds(margins.row, margins.col,
                                (margins + modal_extent - 1):rowcol())

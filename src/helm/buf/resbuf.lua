@@ -44,15 +44,14 @@ end
 
 local lines = import("core/string", "lines")
 local npairs = assert(require "core:table" . npairs)
-function Resbuf.initComposition(resbuf, cols)
-   resbuf:super"initComposition"(cols)
+function Resbuf.initComposition(resbuf)
    if not resbuf.reprs then
       resbuf.reprs = {}
       resbuf.r_num = 1
       for i = 1, resbuf.value.n do
          resbuf.reprs[i] = resbuf.frozen
             and lines(resbuf.value[i])
-            or lineGen(resbuf.value[i], resbuf.cols)
+            or lineGen(resbuf.value[i], resbuf:contentCols())
       end
    end
 end

@@ -16,15 +16,16 @@ Page.prompt_char = "❓"
 local alias = require "helm/raga/aliaser" (Page)
 #/lua
 
-** toZone(fn)
+** toRainbuf(fn)
 
 Returns a ModeS handler function that just calls the given method
-of the popup zone.
+of the popup zone's contents (a Rainbuf).
 
 #!lua
-local function toZone(fn)
+local function toRainbuf(fn)
    return function(modeS, category, value)
-      return modeS.zones.popup[fn](modeS.zones.popup)
+      local rainbuf = modeS.zones.popup.contents
+      return rainbuf[fn](rainbuf)
    end
 end
 #/lua
@@ -32,36 +33,36 @@ end
 ** Scrolling
 
 #!lua
-alias{ toZone "scrollDown",
+alias{ toRainbuf "scrollDown",
        NAV   = {"DOWN", "SHIFT_DOWN", "RETURN"},
        ASCII = {"e", "j"},
        CTRL  = {"^N", "^E", "^J"} }
 
-alias{ toZone "scrollUp",
+alias{ toRainbuf "scrollUp",
        NAV   = {"UP", "SHIFT_UP", "SHIFT_RETURN"},
        ASCII = {"y", "k"},
        CTRL  = {"^Y", "^P", "^K"} }
 
-alias{ toZone "pageDown",
+alias{ toRainbuf "pageDown",
        NAV   = {"PAGE_DOWN"},
        ASCII = {" ", "f"},
        CTRL  = {"^V", "^F"} }
-alias{ toZone "pageUp",
+alias{ toRainbuf "pageUp",
        NAV   = {"PAGE_UP"},
        ASCII = {"b"},
        CTRL  = {"^B"} }
 
-alias{ toZone "halfPageDown",
+alias{ toRainbuf "halfPageDown",
        ASCII = {"d"},
        CTRL  = {"^D"} }
-alias{ toZone "halfPageUp",
+alias{ toRainbuf "halfPageUp",
        ASCII = {"u"},
        CTRL  = {"^U"} }
 
-alias{ toZone "scrollToTop",
+alias{ toRainbuf "scrollToTop",
        NAV   = {"HOME"},
        ASCII = {"g", "<"} }
-alias{ toZone "scrollToBottom",
+alias{ toRainbuf "scrollToBottom",
        NAV   = {"END"},
        ASCII = {"G", ">"} }
 #/lua
@@ -83,9 +84,9 @@ alias{_quit, NAV = {"ESC"}, ASCII = {"q"} }
 function Page.MOUSE(modeS, category, value)
    if value.scrolling then
       if value.button == "MB0" then
-         modeS.zones.popup:scrollUp()
+         modeS.zones.popup.contents:scrollUp()
       elseif value.button == "MB1" then
-         modeS.zones.popup:scrollDown()
+         modeS.zones.popup.contents:scrollDown()
       end
    end
 end

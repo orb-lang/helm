@@ -72,42 +72,171 @@ local Rainbuf = meta {}
 ## Methods
 
 
-### Rainbuf:clearCaches\(\)
+### Rainbuf:setExtent\(rows, cols\)
 
-  Clears any cached lineGen iterators and their output, causing a full
-re\-compose the next time lineGen is called\.
-
-```lua
-local clear = assert(table.clear)
-function Rainbuf.clearCaches(rainbuf)
-   clear(rainbuf.lines)
-end
-```
-
-
-### Rainbuf:initComposition\(cols\)
-
-Sets up the composition process with a line width of `cols`\.
+Sets the extent of the area the Rainbuf output will be painted in, adjusting
+scroll position and clearing caches as needed\.
 
 ```lua
 local lines = import("core/string", "lines")
-function Rainbuf.initComposition(rainbuf, cols)
+function Rainbuf.setExtent(rainbuf, rows, cols)
+   rows = rows or 20
    cols = cols or 80
-   if rainbuf.scrollable then
-      cols = cols - 3
-   end
    -- If width is changing, we need a re-render
-   -- "live" means re-render every time
-   if cols ~= rainbuf.cols or rainbuf.live then
+   if cols ~= rainbuf.cols then
       rainbuf:clearCaches()
    end
+   -- If the number of rows is increasing, may need to adjust our offset
+   -- to avoid blank lines at the bottom. Note that if cols has also changed
+   -- we don't know what's going on--but rainbuf.more will have also been reset
+   -- so we won't try anything
+   if rainbuf.rows and rows > rainbuf.rows and not rainbuf.more then
+      -- #todo actually do the thing
+   end
+   rainbuf.rows = rows
    rainbuf.cols = cols
-   rainbuf.more = true
 end
 ```
 
 
-### Rainbuf:composeOneLine\(\)
+### Rainbuf:contentCols\(\)
+
+The number of columns available to the Rainbuf's content, less any gutter
+\(used for the scroll indicator, for now\)\.
+
+```lua
+function Rainbuf.contentCols(rainbuf)
+   return rainbuf.scrollable and rainbuf.cols - 3 or rainbuf.cols
+end
+```
+
+
+### Scrolling
+
+
+#### Rainbuf:scrollTo\(offset, allow\_overscroll\)
+
+Main scrolling method\. Scrolls the contents of the Rainbuf to start `offset`
+lines into the underlying content\.
+
+`allow_overscroll` determines whether we are willing to scroll past the
+available content\. If falsy, scrolling stops when the last line of content
+is the last line on the screen\. If truthy, scrolling stops when the last
+line of content is the **first** line on the screen\.
+
+Returns a boolean indicating whether any scrolling occurred\.
+
+```lua
+local clamp = import("core/math", "clamp")
+function Rainbuf.scrollTo(rainbuf, offset, allow_overscroll)
+   if offset > 0 then
+      -- Try to render the content that will be visible after the scroll
+      rainbuf:composeUpTo(offset + rainbuf.rows)
+      local required_lines_visible = allow_overscroll and 1 or rainbuf.rows
+      local max_offset = clamp(#rainbuf.lines - required_lines_visible, 0)
+      offset = clamp(offset, 0, max_offset)
+   end
+   if offset ~= rainbuf.offset then
+      rainbuf.offset = offset
+      rainbuf:beTouched()
+      return true
+   else
+      return false
+   end
+end
+```
+
+
+#### Rainbuf:scrollBy\(delta, allow\_overscroll\)
+
+Relative scrolling operation\. Change the scroll position by `delta` line\(s\)\.
+
+```lua
+function Rainbuf.scrollBy(rainbuf, delta, allow_overscroll)
+   return rainbuf:scrollTo(rainbuf.offset + delta, allow_overscroll)
+end
+```
+
+
+#### Rainbuf:scrollUp\(\), :scrollDown\(\), :pageUp\(\), :pageDown\(\)
+
+Helpers for common scrolling operations\.
+
+```lua
+function Rainbuf.scrollUp(rainbuf)
+   return rainbuf:scrollBy(-1)
+end
+function Rainbuf.scrollDown(rainbuf)
+   return rainbuf:scrollBy(1)
+end
+
+function Rainbuf.pageUp(rainbuf)
+   return rainbuf:scrollBy(-rainbuf.rows)
+end
+function Rainbuf.pageDown(rainbuf)
+   return rainbuf:scrollBy(rainbuf.rows)
+end
+
+local floor = assert(math.floor)
+function Rainbuf.halfPageUp(rainbuf)
+   return rainbuf:scrollBy(-floor(rainbuf.rows / 2))
+end
+function Rainbuf.halfPageDown(rainbuf)
+   return rainbuf:scrollBy(floor(rainbuf.rows / 2))
+end
+```
+
+
+#### Rainbuf:scrollToTop\(\), Rainbuf:scrollToBottom\(allow\_overscroll\)
+
+Scroll to the very beginning or end of the content\.
+Beginning is easy, end is a little more interesting, as we have to first
+render all the content \(in order to know how much there is\), then account
+for allow\_overscroll in deciding how far to go\.
+
+```lua
+function Rainbuf.scrollToTop(rainbuf)
+   return rainbuf:scrollTo(0)
+end
+
+function Rainbuf.scrollToBottom(rainbuf, allow_overscroll)
+   rainbuf:composeAll()
+   -- Choose a definitely out-of-range value,
+   -- which scrollTo will clamp appropriately
+   return rainbuf:scrollTo(#rainbuf.lines, allow_overscroll)
+end
+```
+
+
+#### Rainbuf:ensureVisible\(start\_index\[, end\_index\]\)
+
+Scrolls such that the line at `start_index` is visible\. If `end_index` is also
+provided, attempts to fit the entire range `start_index..end_index` on screen,
+falling back to scrolling such that `start_index` is at the top of the screen
+if this is not possible \(because the number of lines requested is too great\)\.
+
+```lua
+function Rainbuf.ensureVisible(rainbuf, start_index, end_index)
+   end_index = end_index or start_index
+   local min_offset = clamp(end_index - rainbuf.rows, 0)
+   local max_offset = clamp(start_index - 1, 0)
+   rainbuf:scrollTo(clamp(rainbuf.offset, min_offset, max_offset))
+end
+```
+
+
+### Rendering
+
+
+#### Rainbuf:initComposition\(\)
+
+Abstract method\. Perform any setup necessary to begin composition\. Do nothing
+if setup is already done, i\.e\. this is a lazy\-init\.
+
+A call to :clearCaches\(\) should tear down everything this method sets up\.
+
+
+#### Rainbuf:composeOneLine\(\)
 
 Composes one line and saves it to the cached `lines` array\.
 Actual composition is delegated to an abstract method \_composeOneLine\.
@@ -129,13 +258,13 @@ end
 ```
 
 
-### Rainbuf:\_composeOneLine\(\)
+#### Rainbuf:\_composeOneLine\(\)
 
 Abstract method\. Generate the next line of content \(without caching it\),
 returning nil if the available content is exhausted\.
 
 
-### Rainbuf:composeUpTo\(line\_number\)
+#### Rainbuf:composeUpTo\(line\_number\)
 
 Attempts to compose at least `line_number` lines to the cached `lines` array\.
 In order to correctly set `rainbuf.more`, we attempt to render
@@ -143,6 +272,7 @@ one additional line\.
 
 ```lua
 function Rainbuf.composeUpTo(rainbuf, line_number)
+   rainbuf:initComposition()
    while rainbuf.more and #rainbuf.lines <= line_number do
       rainbuf:composeOneLine()
    end
@@ -151,12 +281,13 @@ end
 ```
 
 
-### Rainbuf:composeAll\(\)
+#### Rainbuf:composeAll\(\)
 
 Renders all of our content to the cached `lines` array\.
 
 ```lua
 function Rainbuf.composeAll(rainbuf)
+   rainbuf:initComposition()
    while rainbuf.more do
       rainbuf:composeOneLine()
    end
@@ -165,20 +296,21 @@ end
 ```
 
 
-### Rainbuf:lineGen\(rows, cols\)
+#### Rainbuf:lineGen\(\)
 
-This is a generator which yields `rows` number of lines\.
+Generator which yields the portion of the Rainbuf that should be displayed
+\(based on \.rows and \.cols\), one line at a time\.
 
 Since we've replaced the old all\-at\-once `repr` with something that generates
 a line at a time \(and it only took, oh, six months\), we're finally able to
 generate these on the fly\.
 
 ```lua
-function Rainbuf.lineGen(rainbuf, rows, cols)
-   rainbuf:initComposition(cols)
+function Rainbuf.lineGen(rainbuf)
+   rainbuf:initComposition()
    -- state for iterator
    local cursor = rainbuf.offset
-   local max_row = rainbuf.offset + rows
+   local max_row = rainbuf.offset + rainbuf.rows
    local function _nextLine()
       -- Off the end
       if cursor >= max_row then
@@ -202,43 +334,56 @@ end
 ```
 
 
+### Content management and change detection
+
+
+### Rainbuf:clearCaches\(\)
+
+  Clears any cached lineGen iterators and their output, causing a full
+re\-compose the next time lineGen is called\.
+
+```lua
+local clear = assert(table.clear)
+function Rainbuf.clearCaches(rainbuf)
+   clear(rainbuf.lines)
+   rainbuf.more = true
+end
+```
+
+
 ### Rainbuf:replace\(\[res\]\)
 
 Replace the contents of the Rainbuf with those from res, emptying it if res is
-nil\. We must clear any caches, and consider ourselves touched/changed\.
+nil\. Obviously we must be marked touched, clearing caches in the process\.
 
 ```lua
 function Rainbuf.replace(rainbuf, res)
    rainbuf.value = res
-   rainbuf:clearCaches()
-   rainbuf.touched = true
+   rainbuf:beTouched()
 end
 ```
 
 
-### Rainbuf:scrollTo\(offset\)
+### Rainbuf:beTouched\(\)
 
-Right now, just a setter for `.offset`, but we'll be moving `Zone:scrollTo()`
-here soon\. For now, returns a boolean indicating whether scrolling occurred,
-but I don't think we make any use of that\.\.\.
+Mark the Rainbuf as touched\. Might as well clear caches at this point, we'll
+certainly need to before our next render\.
 
 ```lua
-function Rainbuf.scrollTo(rainbuf, offset)
-   if offset ~= rainbuf.offset then
-      rainbuf.offset = offset
-      rainbuf.touched = true
-      return true
-   else
-      return false
-   end
+function Rainbuf.beTouched(rainbuf)
+   rainbuf.touched = true
+   rainbuf:clearCaches()
 end
 ```
-
 
 ### Rainbuf:checkTouched\(\)
 
 Answers whether the Rainbuf \(or its `source`, if it has one\) have been touched
 since the last time this method was called, clearing the flag in the process\.
+
+Overrides should generally follow the pattern of checking any sub\-buffers or
+other data sources first, calling `:beTouched()` if they answer true, and
+calling `super` only at the end to reset the flag\.
 
 \#todo
 be nice not to duplicate\.

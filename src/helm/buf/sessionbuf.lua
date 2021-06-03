@@ -40,6 +40,54 @@ Sessionbuf.ROWS_PER_RESULT = 7
 
 
 
+function Sessionbuf.contentCols(buf)
+   return buf:super"contentCols"() - 2
+end
+
+
+
+
+
+
+
+
+function Sessionbuf.setExtent(buf, rows, cols)
+   buf:super"setExtent"(rows, cols)
+   -- Account for additional padding
+   buf.resbuf:setExtent(buf.ROWS_PER_RESULT, buf:contentCols() - 2)
+   for _, txtbuf in ipairs(buf.txtbufs) do
+      -- As above, but additionally three cells for the icon and space after it
+      txtbuf:setExtent(buf.ROWS_PER_LINE, buf:contentCols() - 5)
+   end
+end
+
+
+
+
+
+
+
+
+
+
+function Sessionbuf.checkTouched(buf)
+   if buf.resbuf:checkTouched() then
+      buf:beTouched()
+   end
+   for _, txtbuf in ipairs(buf.txtbufs) do
+      if txtbuf:checkTouched() then
+         buf:beTouched()
+      end
+   end
+   return buf:super"checkTouched"()
+end
+
+
+
+
+
+
+
 
 
 
@@ -60,7 +108,7 @@ function Sessionbuf.selectIndex(buf, index)
          result = premise.new_result or premise.old_result
       end
       buf.resbuf:replace(result)
-      buf.resbuf.offset = 0
+      buf.resbuf:scrollTo(0)
       return true
    end
    return false
@@ -97,7 +145,6 @@ end
 
 
 function Sessionbuf.rowsForSelectedResult(buf)
-   buf.resbuf:initComposition(buf.cols - 3)
    buf.resbuf:composeUpTo(buf.ROWS_PER_RESULT)
    return clamp(#buf.resbuf.lines, 0, buf.ROWS_PER_RESULT)
 end
@@ -135,25 +182,11 @@ end
 
 
 function Sessionbuf.scrollResultsDown(buf)
-   -- #todo this should all be handled internally by Rainbuf--
-   -- we should just be calling buf.resbuf:scrollDown()
-   local offset = buf.resbuf.offset + 1
-   buf.resbuf:composeUpTo(offset + buf.ROWS_PER_RESULT)
-   local max_offset = clamp(#buf.resbuf.lines - buf.ROWS_PER_RESULT, 0)
-   offset = clamp(offset, 0, max_offset)
-   if offset ~= buf.resbuf.offset then
-      buf.resbuf.offset = offset
-      return true
-   end
-   return false
+   return buf.resbuf:scrollDown()
 end
 
 function Sessionbuf.scrollResultsUp(buf)
-   if buf.resbuf.offset > 0 then
-      buf.resbuf.offset = buf.resbuf.offset - 1
-      return true
-   end
-   return false
+   return buf.resbuf:scrollUp()
 end
 
 
@@ -186,6 +219,7 @@ local status_cycle_map = {
 function Sessionbuf.toggleSelectedState(buf)
    local premise = buf:selectedPremise()
    premise.status = status_cycle_map[premise.status]
+   buf:beTouched()
    return true
 end
 
@@ -195,6 +229,7 @@ local status_reverse_map = inverse(status_cycle_map)
 function Sessionbuf.reverseToggleSelectedState(buf)
    local premise = buf:selectedPremise()
    premise.status = status_reverse_map[premise.status]
+   buf:beTouched()
    return true
 end
 
@@ -264,9 +299,9 @@ end
 
 
 local wrap = assert(coroutine.wrap)
-function Sessionbuf.initComposition(buf, cols)
-   buf:super"initComposition"(cols)
-   buf._composeOneLine = wrap(function() buf:_composeAll() end)
+function Sessionbuf.initComposition(buf)
+   buf._composeOneLine = buf._composeOneLine or
+      wrap(function() buf:_composeAll() end)
 end
 
 
@@ -289,38 +324,34 @@ local box_light = assert(require "anterm:box" . light)
 local yield = assert(coroutine.yield)
 local c = assert(require "singletons:color" . color)
 function Sessionbuf._composeAll(buf)
-   local inner_cols = buf.cols - 2 -- For the box borders
    for i, premise in ipairs(buf.value) do
       yield(i == 1
-         and box_light:topLine(inner_cols)
-         or box_light:spanningLine(inner_cols))
+         and box_light:topLine(buf:contentCols())
+         or box_light:spanningLine(buf:contentCols()))
       -- Render the line (which could actually be multiple physical lines)
-      -- Leave 4 columns on the left for the status icon,
-      -- and one on the right for padding
-      local line_prefix = box_light:contentLine(inner_cols) ..
+      local line_prefix = box_light:contentLine(buf:contentCols()) ..
          status_icons[premise.status] .. ' '
-      for line in buf.txtbufs[i]:lineGen(buf.ROWS_PER_LINE, inner_cols - 5) do
+      for line in buf.txtbufs[i]:lineGen() do
          -- Selected premise gets a highlight
          if i == buf.selected_index then
             line = c.highlight(line)
          end
          yield(line_prefix .. line)
-         line_prefix = box_light:contentLine(inner_cols) .. '   '
+         line_prefix = box_light:contentLine(buf:contentCols()) .. '   '
       end
       -- Selected premise also displays results
       if i == buf.selected_index then
-         yield(box_light:spanningLine(inner_cols))
-         -- Account for left and right padding inside the box
-         for line in buf.resbuf:lineGen(buf.ROWS_PER_RESULT, inner_cols - 2) do
-            yield(box_light:contentLine(inner_cols) .. line)
+         yield(box_light:spanningLine(buf:contentCols()))
+         for line in buf.resbuf:lineGen() do
+            yield(box_light:contentLine(buf:contentCols()) .. line)
          end
       end
    end
    if #buf.value == 0 then
-      yield(box_light:topLine(inner_cols))
-      yield(box_light:contentLine(inner_cols) .. "No premises to display")
+      yield(box_light:topLine(buf:contentCols()))
+      yield(box_light:contentLine(buf:contentCols()) .. "No premises to display")
    end
-   yield(box_light:bottomLine(inner_cols))
+   yield(box_light:bottomLine(buf:contentCols()))
    buf._composeOneLine = nil
 end
 
@@ -333,7 +364,6 @@ end
 
 function Sessionbuf._init(buf)
    buf:super"_init"()
-   buf.live = true
    buf.resbuf = Resbuf({ n = 0 }, { scrollable = true })
    buf.txtbufs = {}
 end

@@ -148,8 +148,7 @@ clear caches\.
 ```lua
 function Txtbuf.contentsChanged(txtbuf)
    txtbuf.contents_changed = true
-   txtbuf.touched = true
-   txtbuf:clearCaches()
+   txtbuf:beTouched()
 end
 ```
 
@@ -432,9 +431,9 @@ thus proceeds through :killSelection\(\)
 
 #### Txtbuf:killSelection\(\)
 
-Deletes the selected text, if any\. Returns whether anything was deletedi\.e\. whether anything was initially selected\)\.
+Deletes the selected text, if any\. Returns whether anything was deleted
+\(i\.e\. whether anything was initially selected\)\.
 
-\(
 ```lua
 local deleterange = import("core/table", "deleterange")
 function Txtbuf.killSelection(txtbuf)
@@ -816,12 +815,21 @@ end
 ### Rendering \(Rainbuf protocol\)
 
 
-#### Txtbuf:initComposition\(cols\)
+#### Txtbuf:clearCaches\(\)
 
 ```lua
-function Txtbuf.initComposition(txtbuf, cols)
-   txtbuf:super"initComposition"(cols)
-   txtbuf.render_row = 1
+function Txtbuf.clearCaches(txtbuf)
+   txtbuf:super"clearCaches"()
+   txtbuf.render_row = nil
+end
+```
+
+
+#### Txtbuf:initComposition\(\)
+
+```lua
+function Txtbuf.initComposition(txtbuf)
+   txtbuf.render_row = txtbuf.render_row or 1
 end
 ```
 
@@ -841,7 +849,7 @@ function Txtbuf._composeOneLine(txtbuf)
       -- Note this only applies once Tab has been pressed, as until then
       -- :selectedSuggestion() will be nil
       if suggestion and tok.cursor_offset then
-         tokens[i] = txtbuf.suggestions.highlight(suggestion, txtbuf.cols, c)
+         tokens[i] = txtbuf.suggestions.highlight(suggestion, txtbuf:contentCols(), c)
       else
          tokens[i] = tok:toString(c)
       end
@@ -882,13 +890,10 @@ EditAgent should clear things up\.
 
 ```lua
 function Txtbuf.checkTouched(txtbuf)
-   local touched = txtbuf:super"checkTouched"()
    if txtbuf.suggestions and txtbuf.suggestions.touched then
-      touched = true
-      -- #todo unify clearing of caches damnit
-      txtbuf:clearCaches()
+      txtbuf:beTouched()
    end
-   return touched
+   return txtbuf:super"checkTouched"()
 end
 ```
 
@@ -922,14 +927,9 @@ end
 
 ### Txtbuf:\_init\(\)
 
-Txtbuf needs to re\-render in most event\-loop cycles, detecting whether a
-re\-render is actually needed is tricky, and it's reasonably cheap to just
-**always** re\-render, so we set the "live" flag automatically\.
-
 ```lua
 function Txtbuf._init(txtbuf)
    txtbuf:super"_init"()
-   txtbuf.live = true
    txtbuf.contents_changed = false
    txtbuf.cursor_changed = false
 end

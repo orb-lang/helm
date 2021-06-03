@@ -23,7 +23,7 @@ We need to update the search result whenever the contents of the Txtbuf change.
 
 function Search.onTxtbufChanged(modeS)
    local searchResult = modeS.hist:search(tostring(modeS.txtbuf))
-   modeS:setResults(Resbuf({ searchResult, n = 1 }, { live = true }))
+   modeS:setResults({ searchResult, n = 1 })
 end
 
 #/lua
@@ -38,11 +38,11 @@ function NAV.SHIFT_DOWN(modeS, category, value)
    if not search_result then return end
    if search_result:selectNext() then
       local search_buf = modeS.zones.results.contents
-      if search_result.selected_index >= search_buf.offset + modeS.zones.results:height() then
-        search_buf:scrollDown()
-      end
-      modeS.zones.command:beTouched()
-      modeS.zones.results:beTouched()
+      -- #todo route this through a Window that can handle the
+      -- change-detection automatically
+      search_buf:beTouched()
+      search_buf:ensureVisible(search_result.selected_index)
+      modeS.txtbuf:beTouched()
    end
 end
 #/lua
@@ -52,11 +52,9 @@ function NAV.SHIFT_UP(modeS, category, value)
    local search_result = modeS.hist.last_collection
    if search_result:selectPrevious() then
       local search_buf = modeS.zones.results.contents
-      if search_result.selected_index < search_buf.offset then
-         search_buf:scrollUp()
-      end
-      modeS.zones.command:beTouched()
-      modeS.zones.results:beTouched()
+      search_buf:beTouched()
+      search_buf:ensureVisible(search_result.selected_index)
+      modeS.txtbuf:beTouched()
    end
 end
 #/lua
@@ -70,9 +68,11 @@ function NAV.ESC(modeS, category, value)
       modeS:setResults("")
    -- If something *is* selected, deselect it first
    else
-      search_result.selected_index = 0
-      modeS.zones.command:beTouched()
-      modeS.zones.results:beTouched()
+      search_result:selectNone()
+      local search_buf = modeS.zones.results.contents
+      search_buf:ensureVisible(1)
+      search_buf:beTouched()
+      modeS.txtbuf:beTouched()
    end
 end
 #/lua
