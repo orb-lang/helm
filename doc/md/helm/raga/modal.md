@@ -17,7 +17,7 @@ Modal.prompt_char = " "
 
 ```lua
 local function _getModel(modeS)
-   return modeS.zones.modal.contents[1]
+   return modeS.zones.modal.contents.value[1]
 end
 
 function Modal.close(modeS, value)

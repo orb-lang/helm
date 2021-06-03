@@ -757,7 +757,7 @@ hardly ideal, but it's not clear what the mechanism **should** look like\.
 ```lua
 function ModeS.modalAnswer(modeS)
    local contents = modeS.zones.modal.contents
-   return (contents and contents.is_rainbuf) and contents[1].value or nil
+   return (contents and contents.is_rainbuf) and contents.value[1].value or nil
 end
 ```
 
