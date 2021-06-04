@@ -279,12 +279,26 @@ function Historian.search(historian, frag)
 end
 ```
 
+
+## History navigation
+
+
+### \_setCursor\(cursor\)
+
+Sets the cursor and returns the line and results for that index\. Unlike
+`:index()` this is allowed to be out\-of\-bounds, in which we return `nil`\.
+
 ```lua
 local db_result_M = assert(persist_tabulate.db_result_M)
 
-local function _resultsFrom(historian, cursor)
+local function _setCursor(historian, cursor)
+   historian.cursor = cursor
+   local line = historian[cursor]
+   if not line then
+      return nil, nil
+   end
    if historian.result_buffer[cursor] then
-      return historian.result_buffer[cursor]
+      return line, historian.result_buffer[cursor]
    end
    local line_id = historian.line_ids[cursor]
    local stmt = historian.get_results
@@ -302,26 +316,20 @@ local function _resultsFrom(historian, cursor)
    stmt:reset()
    -- may as well memoize the database call, while we're here
    historian.result_buffer[line_id] = results
-   return results
+   return line, results
 end
 ```
 
 
-## Historian:delta\(\), :prev\(\), :next\(\)
+### Historian:delta\(\), :prev\(\), :next\(\)
 
 Moves the cursor by the given delta, returning the line
 and result \(if any\) at the new cursor position\.
 
 ```lua
 function Historian.delta(historian, delta)
-   historian.cursor = clamp(historian.cursor + delta, 1, historian.n + 1)
-   local line = historian[historian.cursor]
-   if line then
-      local result = _resultsFrom(historian, historian.cursor)
-      return line, result
-   else
-      return nil, nil
-   end
+   return _setCursor(historian,
+                     clamp(historian.cursor + delta, 1, historian.n + 1))
 end
 
 function Historian.prev(historian)
@@ -341,10 +349,7 @@ exists, i\.e\. 1 <= index <= historian\.n\-\-historian\.n \+ 1 is not allowed\.
 ```lua
 function Historian.index(historian, cursor)
    assert(inbounds(cursor, 1, historian.n))
-   historian.cursor = cursor
-   local line = historian[cursor]
-   local result = _resultsFrom(historian, cursor)
-   return line, result
+   return _setCursor(historian, cursor)
 end
 ```
 
