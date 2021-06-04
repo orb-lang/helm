@@ -163,10 +163,8 @@ function Suggest.update(suggest, txtbuf, zone)
    local candidate_symbols = _candidates_from(complete_against)
 
    -- Now we can actually filter those candidates for whether they match or not
-   local suggestions = SelectionList()
-   suggestions.best = true
-   suggestions.frag = tostring(context):sub(1, context.cursor_offset)
-   suggestions.lit_frag = suggestions.frag
+   local suggestions = SelectionList(tostring(context)
+                                       :sub(1, context.cursor_offset))
    local match_patt = fuzz_patt(suggestions.frag)
    local matches = {}
    for sym in pairs(candidate_symbols) do

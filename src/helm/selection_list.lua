@@ -189,10 +189,20 @@ end
 
 
 
-new = function()
+
+
+new = function(frag, cfg)
    local list = meta(SelectionList)
+   if frag then
+      list.frag = frag
+      list.lit_frag = frag
+      list.best = true
+   end
    list.selected_index = 0
    -- list.n = 0
+   for k, v in pairs(cfg) do
+      list[k] = v
+   end
    return list
 end
 

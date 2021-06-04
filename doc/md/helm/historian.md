@@ -255,12 +255,7 @@ function Historian.search(historian, frag)
    if frag == "" then
       return ""
    end
-   local result = SelectionList()
-   result.cursors = {}
-   result.frag = frag
-   result.lit_frag = frag
-   result.best = true
-   result.show_shortcuts = true
+   local result = SelectionList(frag, { show_shortcuts = true, cursors = {}})
    local function try_search()
       local patt = fuzz_patt(result.frag)
       local dup = {}
