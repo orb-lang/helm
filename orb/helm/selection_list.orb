@@ -200,8 +200,10 @@ new = function(frag, cfg)
    end
    list.selected_index = 0
    -- list.n = 0
-   for k, v in pairs(cfg) do
-      list[k] = v
+   if cfg then
+      for k, v in pairs(cfg) do
+         list[k] = v
+      end
    end
    return list
 end
