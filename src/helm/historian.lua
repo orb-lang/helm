@@ -14,17 +14,13 @@
 
 
 local uv      = require "luv"
-local sql     = assert(sql, "sql must be in bridge _G")
 
-local Resbuf  = require "helm:buf/resbuf"
 local Session = require "helm:session"
 local persist_tabulate = require "repr:persist-tabulate"
 local helm_db = require "helm:helm-db"
 
-local concat, insert = assert(table.concat), assert(table.insert)
-local reverse = require "core/table" . reverse
+local insert = assert(table.insert)
 local meta = require "core/meta" . meta
-local sha = assert(require "util:sha" . shorthash)
 
 local Set = require "set:set"
 
@@ -132,9 +128,9 @@ end
 
 
 
-local tabulate = require "repr:tabulate"
 local tabulate_some = assert(persist_tabulate.tabulate_some)
-local no_color = assert(require "singletons:color" . no_color)
+local sha = assert(require "util:sha" . shorthash)
+local blob = assert(assert(sql, "sql must be in bridge _G").blob)
 function Historian.persist(historian, line, results)
    if type(results) ~= "table" or results.n == 0 then
       results = nil
@@ -145,7 +141,7 @@ function Historian.persist(historian, line, results)
    end
    historian.stmts.savepoint_persist()
    historian.insert_line:bindkv { project = historian.project_id,
-                                       line    = sql.blob(line) }
+                                  line    = blob(line) }
    local err = historian.insert_line:step()
    if not err then
       historian.insert_line:clearbind():reset()
