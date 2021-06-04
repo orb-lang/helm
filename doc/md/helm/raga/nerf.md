@@ -145,7 +145,7 @@ Nerf.CTRL["^\\"] = NAV.CTRL_RETURN
 NAV.ALT_RETURN = NAV.SHIFT_RETURN
 
 local function _activateCompletion(modeS)
-   if modeS.suggest.active_suggestions then
+   if modeS.suggest.last_collection then
       modeS.shift_to = "complete"
       return true
    else

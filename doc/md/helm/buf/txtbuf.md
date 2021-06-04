@@ -842,12 +842,12 @@ function Txtbuf._composeOneLine(txtbuf)
    if txtbuf.render_row > #txtbuf then return nil end
    local tokens = txtbuf:tokens(txtbuf.render_row)
    local suggestion = txtbuf.suggestions
-      and txtbuf.suggestions:selectedSuggestion()
+      and txtbuf.suggestions:selectedItem()
    for i, tok in ipairs(tokens) do
       -- If suggestions are active and one is highlighted,
       -- display it in grey instead of what the user has typed so far
       -- Note this only applies once Tab has been pressed, as until then
-      -- :selectedSuggestion() will be nil
+      -- :selectedItem() will be nil
       if suggestion and tok.cursor_offset then
          tokens[i] = txtbuf.suggestions.highlight(suggestion, txtbuf:contentCols(), c)
       else

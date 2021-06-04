@@ -135,7 +135,7 @@ local function _candidates_from(complete_against)
 end
 
 local function _set_suggestions(suggest, txtbuf, zone, suggestions)
-   suggest.active_suggestions = suggestions
+   suggest.last_collection = suggestions
    suggest.touched = true
 end
 
@@ -186,15 +186,6 @@ end
 #/lua
 
 
-*** selectedSuggestion()
-
-#!lua
-function Suggest.selectedSuggestion(suggest)
-   return suggest.active_suggestions and suggest.active_suggestions:selectedItem()
-end
-#/lua
-
-
 *** cancel()
 
 #!lua
@@ -208,7 +199,7 @@ end
 
 #!lua
 function Suggest.accept(suggest, txtbuf)
-   local suggestion = suggest:selectedSuggestion()
+   local suggestion = suggest.last_collection:selectedItem()
    local context = _cursorContext(txtbuf)
    txtbuf:right(context.total_disp - context.cursor_offset)
    txtbuf:killBackward(context.total_disp)
@@ -234,20 +225,22 @@ end
 
 #!lua
 local Window = require "window:window"
+local function _toLastCollection(agent, window, field, ...)
+   local lc = agent.last_collection
+   return lc and lc[field](lc, ...) -- i.e. lc:<field>(...)
+end
 local window_cfg = {
    field = { touched = true },
    fn = {
-      buffer_value = function(suggest, window, field)
-         return suggest.active_suggestions
-            and { n = 1, suggest.active_suggestions }
+      buffer_value = function(agent, window, field)
+         return agent.last_collection
+            and { n = 1, agent.last_collection }
       end
    },
    closure = {
       checkTouched = true,
-      selectedSuggestion = true,
-      highlight = function(suggest, window, field, ...)
-         return suggest.active_suggestions:highlight(...)
-      end
+      selectedItem = _toLastCollection,
+      highlight = _toLastCollection
    }
 }
 function Suggest.window(suggest)

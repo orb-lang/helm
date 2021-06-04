@@ -22,7 +22,7 @@ local function _quit(modeS)
 end
 
 local function _accept(modeS)
-   if modeS.suggest.active_suggestions then
+   if modeS.suggest.last_collection then
       modeS.suggest:accept(modeS.txtbuf)
    else
       modeS.action_complete = false
@@ -60,7 +60,7 @@ Complete.UTF8 = _insert
 local NAV = Complete.NAV
 
 local function _scrollAfter(modeS, func_name)
-   local suggestions = modeS.suggest.active_suggestions
+   local suggestions = modeS.suggest.last_collection
    if suggestions then
       -- #todo route selection commands through the SuggestAgent or Window so
       -- it can set .touched itself?
@@ -102,10 +102,10 @@ we will have already shifted ragas\.
 ```lua
 function Complete.onTxtbufChanged(modeS)
    modeS.suggest:update(modeS.txtbuf, modeS.zones.suggest)
-   if modeS.suggest.active_suggestions then
-      modeS.suggest.active_suggestions.selected_index = 1
+   if modeS.suggest.last_collection then
+      modeS.suggest.last_collection.selected_index = 1
    end
-   if not modeS.suggest.active_suggestions then
+   if not modeS.suggest.last_collection then
       _quit(modeS)
    end
    EditBase.onTxtbufChanged(modeS)
@@ -136,7 +136,7 @@ to the end of the suggestion\.
 local Point = require "anterm:point"
 function Complete.getCursorPosition(modeS)
    local point = EditBase.getCursorPosition(modeS)
-   local suggestion = modeS.suggest:selectedSuggestion()
+   local suggestion = modeS.suggest.last_collection:selectedItem()
    if suggestion then
       for _, tok in ipairs(modeS.txtbuf:tokens()) do
          if tok.cursor_offset then
