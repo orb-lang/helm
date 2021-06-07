@@ -428,6 +428,9 @@ function ModeS.shiftMode(modeS, raga_name)
    -- Switch in the new raga and associated lexer
    modeS.raga = modeS.closet[raga_name].raga
    modeS.txtbuf.lex = modeS.closet[raga_name].lex
+   -- #todo Txtbuf should probably be directly aware that a lexer change
+   -- requires a re-render
+   modeS.txtbuf:beTouched()
    modeS.raga.onShift(modeS)
    modeS:updatePrompt()
    return modeS
@@ -475,7 +478,6 @@ function ModeS.actOnce(modeS, event, old_cat_val)
       modeS.shift_to = nil
    end
    if modeS.txtbuf.contents_changed then
-      modeS.zones.command:beTouched()
       modeS.raga.onTxtbufChanged(modeS)
     -- Treat contents_changed as implying cursor_changed
     -- only ever fire one of the two events
@@ -597,7 +599,7 @@ function ModeS.setTxtbuf(modeS, txtbuf)
    -- #todo keep the same Txtbuf around (updating it using :replace())
    -- rather than swapping it out
    txtbuf.lex = modeS.txtbuf.lex
-   txtbuf.suggestions = modeS.suggest:window()
+   txtbuf.suggestions = modeS.txtbuf.suggestions
    modeS.txtbuf = txtbuf
    modeS.txtbuf.cursor_changed = true
    modeS.txtbuf.contents_changed = true

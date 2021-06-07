@@ -253,7 +253,9 @@ function Historian.search(historian, frag)
       return historian.last_collection
    end
    if frag == "" then
-      return ""
+      historian.last_collection = nil
+      historian.touched = true
+      return nil
    end
    local result = SelectionList(frag, { show_shortcuts = true, cursors = {}})
    local function try_search()
@@ -275,7 +277,59 @@ function Historian.search(historian, frag)
       try_search()
    end
    historian.last_collection = result
+   historian.touched = true
    return result
+end
+```
+
+
+### checkTouched\(\)
+
+\#todo
+it to an Agent base class, but there are also appearances in the \*bufs etc\.
+
+```lua
+function Historian.checkTouched(historian)
+   local touched = historian.touched
+   historian.touched = false
+   return touched
+end
+```
+
+
+### Historian:window\(\)
+
+A window into the active search result, if any\.
+
+\#todo
+Much of the behavior probably **won't** be in common with other `Agent`s'
+Windows though\-\-just `touched` and `checkTouched` really\.
+
+```lua
+local Window = require "window:window"
+local function _toLastCollection(agent, window, field, ...)
+   local lc = agent.last_collection
+   return lc and lc[field](lc, ...) -- i.e. lc:<field>(...)
+end
+local window_cfg = {
+   field = { touched = true },
+   fn = {
+      buffer_value = function(agent, window, field)
+         return agent.last_collection
+            and { n = 1, agent.last_collection }
+      end
+   },
+   closure = {
+      checkTouched = true,
+      selectedItem = _toLastCollection,
+      highlight = _toLastCollection
+   }
+}
+function Historian.window(historian)
+   -- #todo is it reasonable for Agents to cache their window like this?
+   -- Is it reasonable for others to *assume* that they will (if it even matters)?
+   historian._window = historian._window or Window(historian, window_cfg)
+   return historian._window
 end
 ```
 

@@ -2,8 +2,6 @@
 
 
 
-
-
 local clone = import("core/table", "clone")
 local EditBase = require "helm/raga/edit"
 local Txtbuf = require "helm:buf/txtbuf"
@@ -21,11 +19,19 @@ Search.prompt_char = "⁉️"
 
 
 
+
+
 function Search.onTxtbufChanged(modeS)
-   local searchResult = modeS.hist:search(tostring(modeS.txtbuf))
-   modeS:setResults({ searchResult, n = 1 })
+   modeS.hist:search(tostring(modeS.txtbuf))
 end
 
+function Search.ASCII(modeS, category, value)
+   modeS.txtbuf:insert(value)
+end
+Search.UTF8 = Search.ASCII
+function Search.PASTE(modeS, category, value)
+   modeS.txtbuf:paste(value)
+end
 
 
 
@@ -35,14 +41,11 @@ local NAV = Search.NAV
 
 function NAV.SHIFT_DOWN(modeS, category, value)
    local search_result = modeS.hist.last_collection
-   if not search_result then return end
-   if search_result:selectNext() then
-      local search_buf = modeS.zones.results.contents
+   if search_result and search_result:selectNext() then
       -- #todo route this through a Window that can handle the
       -- change-detection automatically
-      search_buf:beTouched()
-      search_buf:ensureVisible(search_result.selected_index)
-      modeS.txtbuf:beTouched()
+      modeS.hist.touched = true
+      modeS.zones.results.contents:ensureVisible(search_result.selected_index)
    end
 end
 
@@ -50,11 +53,9 @@ end
 
 function NAV.SHIFT_UP(modeS, category, value)
    local search_result = modeS.hist.last_collection
-   if search_result:selectPrevious() then
-      local search_buf = modeS.zones.results.contents
-      search_buf:beTouched()
-      search_buf:ensureVisible(search_result.selected_index)
-      modeS.txtbuf:beTouched()
+   if search_result and search_result:selectPrevious() then
+      modeS.hist.touched = true
+      modeS.zones.results.contents:ensureVisible(search_result.selected_index)
    end
 end
 
@@ -65,14 +66,11 @@ function NAV.ESC(modeS, category, value)
    -- No results or nothing is selected, exit search mode
    if not search_result or search_result.selected_index == 0 then
       modeS.shift_to = modeS.raga_default
-      modeS:setResults("")
    -- If something *is* selected, deselect it first
    else
       search_result:selectNone()
-      local search_buf = modeS.zones.results.contents
-      search_buf:ensureVisible(1)
-      search_buf:beTouched()
-      modeS.txtbuf:beTouched()
+      modeS.hist.touched = true
+      modeS.zones.results.contents:ensureVisible(1)
    end
 end
 
@@ -94,7 +92,6 @@ NAV.SHIFT_TAB = NAV.SHIFT_UP
 local function _modeShiftOnDeleteWhenEmpty(modeS, category, value)
    if tostring(modeS.txtbuf) == "" then
       modeS.shift_to = modeS.raga_default
-      modeS:setResults("")
    else
       EditBase(modeS, category, value)
    end
@@ -148,6 +145,32 @@ function Search.MOUSE(modeS, category, value)
       elseif value.button == "MB1" then
          modeS.raga.NAV.SHIFT_UP(modeS, category, value)
       end
+   end
+end
+
+
+
+
+
+
+
+
+
+
+function Search.onShift(modeS)
+   EditBase.onShift(modeS)
+   modeS.hist:search(tostring(modeS.txtbuf))
+   modeS.txtbuf.suggestions = modeS.hist:window()
+   modeS:setResults(Resbuf(modeS.hist:window(), { scrollable = true }))
+end
+
+function Search.onUnshift(modeS)
+   EditBase.onShift(modeS)
+   -- #todo this is a hack to avoid stomping the results when we accept
+   -- a search result. Once we have a ResultsAgent we'll just hand control
+   -- back to it and the problem goes away
+   if modeS.zones.results.contents.source then
+      modeS:setResults("")
    end
 end
 

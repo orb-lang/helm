@@ -241,5 +241,17 @@ end
 
 
 
+
+
+
+
+
+function Nerf.onShift(modeS)
+   EditBase.onShift(modeS)
+   modeS.txtbuf.suggestions = modeS.suggest:window()
+end
+
+
+
 return Nerf
 

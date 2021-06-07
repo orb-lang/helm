@@ -241,6 +241,18 @@ function Nerf.onTxtbufChanged(modeS)
 end
 ```
 
+
+### Nerf\.onShift
+
+Install the SuggestAgent's Window as the provider of suggestions for the Txtbuf\.
+
+```lua
+function Nerf.onShift(modeS)
+   EditBase.onShift(modeS)
+   modeS.txtbuf.suggestions = modeS.suggest:window()
+end
+```
+
 ```lua
 return Nerf
 ```
