@@ -170,7 +170,7 @@ function Search.onUnshift(modeS)
    -- a search result. Once we have a ResultsAgent we'll just hand control
    -- back to it and the problem goes away
    if modeS.zones.results.contents.source then
-      modeS:setResults("")
+      modeS:clearResults()
    end
 end
 #/lua

@@ -535,7 +535,7 @@ end
 ```
 
 
-### ModeS:setResults\(results\)
+### ModeS:setResults\(results\), :clearResults\(\)
 
 Sets the contents of the results area to `results`, wrapping it in a Resbuf
 if necessary\. Strings are passed through unchanged\.
@@ -561,6 +561,11 @@ function ModeS.setResults(modeS, results)
       results = Resbuf(results, cfg)
    end
    modeS.zones.results:replace(results)
+   return modeS
+end
+
+function ModeS.clearResults(modeS)
+   modeS:setResults ""
    return modeS
 end
 ```
@@ -685,7 +690,7 @@ This resets `_G` and runs all commands in the current session\.
 function ModeS.restart(modeS)
    modeS :setStatusLine 'restart'
    -- remove existing result
-   modeS :setResults "" :paint()
+   modeS :clearResults() :paint()
    -- perform rerun
    -- Replace results:
    local hist = modeS.hist
@@ -734,9 +739,9 @@ end
 
 ### ModeS:showModal\(text, button\_style\)
 
-Shows a modal dialog with the given text and button style
-\(see raga/modal\.orb for valid button styles\)\.
+Shows a modal dialog with the given text and button stylesee raga/modal\.orb for valid button styles\)\.
 
+\(
 When the modal closes, the button that was clicked can be retrieved
 with modeS:modalAnswer\(\)\.
 

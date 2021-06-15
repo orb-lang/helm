@@ -535,7 +535,7 @@ end
 #/lua
 
 
-*** ModeS:setResults(results)
+*** ModeS:setResults(results), :clearResults()
 
 Sets the contents of the results area to =results=, wrapping it in a Resbuf
 if necessary. Strings are passed through unchanged.
@@ -561,6 +561,11 @@ function ModeS.setResults(modeS, results)
       results = Resbuf(results, cfg)
    end
    modeS.zones.results:replace(results)
+   return modeS
+end
+
+function ModeS.clearResults(modeS)
+   modeS:setResults ""
    return modeS
 end
 #/lua
@@ -685,7 +690,7 @@ This resets =_G= and runs all commands in the current session.
 function ModeS.restart(modeS)
    modeS :setStatusLine 'restart'
    -- remove existing result
-   modeS :setResults "" :paint()
+   modeS :clearResults() :paint()
    -- perform rerun
    -- Replace results:
    local hist = modeS.hist

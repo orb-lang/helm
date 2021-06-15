@@ -564,6 +564,11 @@ function ModeS.setResults(modeS, results)
    return modeS
 end
 
+function ModeS.clearResults(modeS)
+   modeS:setResults ""
+   return modeS
+end
+
 
 
 
@@ -685,7 +690,7 @@ end
 function ModeS.restart(modeS)
    modeS :setStatusLine 'restart'
    -- remove existing result
-   modeS :setResults "" :paint()
+   modeS :clearResults() :paint()
    -- perform rerun
    -- Replace results:
    local hist = modeS.hist

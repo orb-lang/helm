@@ -52,7 +52,7 @@ end
 
 function EditBase.clearTxtbuf(maestro, event)
    maestro.modeS:setTxtbuf(Txtbuf())
-   maestro.modeS:setResults("")
+   maestro.modeS:clearResults()
    maestro.modeS.hist.cursor = maestro.modeS.hist.n + 1
 end
 map["C-l"] = "clearTxtbuf"
@@ -72,7 +72,7 @@ EditBase.default_keymaps = { map }
 
 local function _insert(modeS, category, value)
    if tostring(modeS.txtbuf) == "" then
-      modeS:setResults ""
+      modeS:clearResults()
    end
    modeS.txtbuf:insert(value)
 end
@@ -82,7 +82,7 @@ EditBase.UTF8 = _insert
 
 function EditBase.PASTE(modeS, category, value)
    if tostring(modeS.txtbuf) == "" then
-      modeS:setResults ""
+      modeS:clearResults()
    end
    modeS.txtbuf:paste(value)
 end

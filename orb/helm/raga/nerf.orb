@@ -50,7 +50,7 @@ Nerf.prompt_char = "👉"
 
 local function _insert(modeS, category, value)
    if tostring(modeS.txtbuf) == "" then
-      modeS:setResults ""
+      modeS:clearResults()
       if value == "/" then
          modeS.shift_to = "search"
          return
