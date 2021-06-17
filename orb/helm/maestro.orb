@@ -5,14 +5,18 @@ keymap-resolver logic, and when we need to start buffering commands, switching
 to sub-keymaps, or whatever we do for vril-style commands, that'll be here
 too.
 
-We hold a reference to the Modeselektor because we are explicitly stateful and
-most of our operations need access to it.
+This will eventually be the home for all the Agents, and possibly some
+non-Agent Actors as well. We will eventually communicate with modeS via
+coroutine yield/resume, but for now, between Agents not yet migrated and not
+*having* said mechanism, we just keep a reference to modeS.
 
 
 **** imports
 
 #!lua
 local input_event = require "anterm:input-event"
+
+local InputEchoAgent = require "helm:agent/input-echo"
 #/lua
 
 
@@ -88,6 +92,12 @@ end
 local function new(modeS)
    local maestro = meta(Maestro)
    maestro.modeS = modeS
+   maestro.agents = {
+      -- edit = EditAgent(),
+      input_echo = InputEchoAgent(),
+      -- results = ResultsAgent(),
+      -- status = StatusAgent(),
+   }
    return maestro
 end
 #/lua

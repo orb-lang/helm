@@ -110,7 +110,6 @@ local Suggest    = require "helm:suggest"
 local Maestro    = require "helm:maestro"
 local repr       = require "repr:repr"
 local lua_parser = require "helm:lua-parser"
-local input_event = require "anterm:input-event"
 
 local concat               = assert(table.concat)
 local sub, gsub, rep, find = assert(string.sub),
@@ -166,124 +165,6 @@ function ModeS.errPrint(modeS, log_stmt)
 end
 ```
 
-
-### status painter \(colwrite\)
-
-This is a grab\-bag with many traces of the bootstrap process\.
-
-It also contains the state\-of\-the\-art renderers\.
-
-
-#### bootstrappers
-
-A lot of this just paints mouse events, which we aren't using and won't be
-able to use until we rigorously keep track of what's printed where\.
-
-Which is painstaking and annoying, but we'll get there\.\.\.
-
-This will continue to exist for awhile\.
-
-```lua
-local c = import("singletons:color", "color")
-
-local STAT_ICON = "◉ "
-
-local function tf(bool)
-   return bool and c["true"]("t") or c["false"]("f")
-end
-
-local function mouse_paint(m)
-   return c.userdata(STAT_ICON)
-      .. a.magenta(m.button) .. ": "
-      .. tf(m.shift) .. " "
-      .. tf(m.meta) .. " "
-      .. tf(m.ctrl) .. " "
-      .. tf(m.moving) .. " "
-      .. tf(m.scrolling) .. " "
-      .. a.cyan(m.col) .. "," .. a.cyan(m.row)
-end
-
-local function mk_paint(fragment, shade)
-   return function(action)
-      return shade(fragment .. action)
-   end
-end
-
-local function paste_paint(frag)
-   local result
-   -- #todo handle escaping of special characters in pasted data
-   if #frag < 20 then
-      result = "PASTE: " .. frag
-   else
-      result = ("PASTE(%d): %s..."):format(#frag, frag:sub(1, 17))
-   end
-   return a.green(STAT_ICON .. result)
-end
-
-local icon_map = { MOUSE = mouse_paint,
-                   NAV   = mk_paint(STAT_ICON, a.magenta),
-                   CTRL  = mk_paint(STAT_ICON, a.blue),
-                   ALT   = mk_paint(STAT_ICON, c["function"]),
-                   ASCII = mk_paint(STAT_ICON, a.green),
-                   UTF8  = mk_paint(STAT_ICON, a.green),
-                   PASTE = paste_paint,
-                   NYI   = mk_paint(STAT_ICON .. "! ", a.red) }
-
-local function _make_icon(category, value)
-   return icon_map[category](value)
-end
-```
-
-
-#### For new\-style events
-
-```lua
-local function _make_new_icon(event, command, args)
-   local event_str = STAT_ICON .. input_event.serialize(event)
-   if event.type == "mouse" then
-      local subtype
-      if event.pressed then
-         if event.moving then
-            subtype = "drag"
-         else
-            subtype = "press"
-         end
-      else
-         if event.moving then
-            subtype = "move"
-         else
-            subtype = "release"
-         end
-      end
-      event_str = c.userdata(event_str) .. (' (%s: %s,%s)'):format(
-         subtype,
-         a.cyan(event.col),
-         a.cyan(event.row))
-      if command then
-         event_str = event_str .. ' : ' .. command
-      end
-      return event_str
-   elseif event.type == "paste" then
-      return paste_paint(event.text)
-   else --event.type == "keypress"
-      local color = a.green
-      if command == "NYI" then
-         color = a.red
-      -- #todo this is a mostly-accurate but terrible way to distinguish named keys
-      -- We will have problems with UTF-8 if nothing else, and...just no
-      elseif #event.key > 1 then
-         color = a.magenta
-      elseif event.modifiers ~= 0 then
-         color = a.blue
-      end
-      event_str = color(event_str)
-      if command then
-         event_str = event_str .. ' : ' .. command
-      end
-      return event_str
-   end
-end
-```
 
 ### ModeS:placeCursor\(\)
 
@@ -445,9 +326,9 @@ by `onseq`\)\. It may try the dispatch multiple times if the raga indicates
 that reprocessing is needed by setting `modeS.action_complete` to =false\.
 
 Note that our common interface is `method(modeS, category, value)`,
-we need to distinguish betwen the tuple `("INSERT", "SHIFT-LEFT")`which could arrive from copy\-paste\) and `("NAV", "SHIFT-LEFT")`
-and
-\( preserve information for our fall\-through method\.
+we need to distinguish betwen the tuple `("INSERT", "SHIFT-LEFT")`
+\(which could arrive from copy\-paste\) and `("NAV", "SHIFT-LEFT")`
+and preserve information for our fall\-through method\.
 
 `act` always succeeds, meaning we need some metatable action to absorb and
 log anything unexpected\.
@@ -459,24 +340,26 @@ Dispatches a seq to the current raga, answering whether or not the raga could
 process it \(if this never occurs, we display an NYI message in the status area\)\.
 
 ```lua
-function ModeS.actOnce(modeS, event, old_cat_val)
-   -- Try to dispatch the new-style event via keymap
-   local command, args = modeS.maestro:translate(event)
-   local icon
-   if command then
-      modeS.maestro:dispatch(event, command, args)
-      icon = _make_new_icon(event, command, args)
-   elseif old_cat_val then
-      -- Okay, didn't find anything there, fall back to the old way
-      local handled = modeS.raga(modeS, unpack(old_cat_val))
-      if handled then
-         icon = _make_icon(unpack(old_cat_val))
-      end
-   end
+local function _check_shift(modeS)
    if modeS.shift_to then
       modeS:shiftMode(modeS.shift_to)
       modeS.shift_to = nil
    end
+end
+
+function ModeS.actOnce(modeS, event, old_cat_val)
+   -- Try to dispatch the new-style event via keymap
+   local command, args = modeS.maestro:translate(event)
+   if command then
+      modeS.maestro:dispatch(event, command, args)
+   elseif old_cat_val then
+      -- Okay, didn't find anything there, fall back to the old way
+      local handled = modeS.raga(modeS, unpack(old_cat_val))
+      if handled then
+         command = 'LEGACY'
+      end
+   end
+   _check_shift(modeS)
    if modeS.txtbuf.contents_changed then
       modeS.raga.onTxtbufChanged(modeS)
     -- Treat contents_changed as implying cursor_changed
@@ -487,30 +370,27 @@ function ModeS.actOnce(modeS, event, old_cat_val)
     modeS.txtbuf.contents_changed = false
     modeS.txtbuf.cursor_changed = false
    -- Check shift_to again in case one of the cursor handlers set it
-   if modeS.shift_to then
-      modeS:shiftMode(modeS.shift_to)
-      modeS.shift_to = nil
-   end
-   return icon
+   _check_shift(modeS)
+   return command
 end
 ```
 
 ```lua
 function ModeS.act(modeS, event, old_cat_val)
-   local icon
+   local command
    repeat
       modeS.action_complete = true
       -- The raga may set action_complete to false to cause the command
       -- to be re-processed, most likely after a mode-switch
-      local iconThisTime = modeS:actOnce(event, old_cat_val)
-      icon = icon or iconThisTime
+      local commandThisTime = modeS:actOnce(event, old_cat_val)
+      command = command or commandThisTime
    until modeS.action_complete == true
-   if not icon then
-      icon = _make_new_icon(event, "NYI", {})
+   if not command then
+      command = 'NYI'
    end
-
-   -- Replace zones
-   modeS.zones.stat_col:replace(icon)
+   -- Inform the input-echo agent of what just happened
+   modeS.maestro.agents.input_echo:update(event, command)
+   -- Update the prompt--obsolete once this is handled by a Window
    modeS:updatePrompt()
    -- Reflow in case command height has changed. Includes a paint.
    -- Don't allow errors encountered here to break this entire
@@ -739,9 +619,9 @@ end
 
 ### ModeS:showModal\(text, button\_style\)
 
-Shows a modal dialog with the given text and button stylesee raga/modal\.orb for valid button styles\)\.
+Shows a modal dialog with the given text and button style
+\(see raga/modal\.orb for valid button styles\)\.
 
-\(
 When the modal closes, the button that was clicked can be retrieved
 with modeS:modalAnswer\(\)\.
 
@@ -802,6 +682,7 @@ local deepclone = assert(core.deepclone)
 local function new(max_extent, writer, db)
    local modeS = meta(ModeS)
 
+   -- Create Actors and other major sub-components
    modeS.txtbuf = Txtbuf()
    modeS.hist  = Historian(db)
    modeS.suggest = Suggest()
@@ -812,9 +693,13 @@ local function new(max_extent, writer, db)
    modeS.write = writer
    modeS.repl_top = ModeS.REPL_LINE
    modeS.zones = Zoneherd(modeS, writer)
+   -- Bind Zones to bufs-of-windows-of-agents
+   -- #todo this should definitely not be our responsibility
    modeS.txtbuf.suggestions = modeS.suggest:window()
    modeS.zones.command:replace(modeS.txtbuf)
    modeS.zones.suggest:replace(Resbuf(modeS.suggest:window()))
+   modeS.zones.stat_col
+      :replace(Resbuf(modeS.maestro.agents.input_echo:window()))
    -- If we are loading an existing session, start in review mode
    local session = modeS.hist.session
    if session.session_id then

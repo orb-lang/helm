@@ -12,7 +12,11 @@
 
 
 
+
+
 local input_event = require "anterm:input-event"
+
+local InputEchoAgent = require "helm:agent/input-echo"
 
 
 
@@ -88,6 +92,12 @@ end
 local function new(modeS)
    local maestro = meta(Maestro)
    maestro.modeS = modeS
+   maestro.agents = {
+      -- edit = EditAgent(),
+      input_echo = InputEchoAgent(),
+      -- results = ResultsAgent(),
+      -- status = StatusAgent(),
+   }
    return maestro
 end
 
