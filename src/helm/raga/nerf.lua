@@ -144,7 +144,7 @@ Nerf.CTRL["^\\"] = NAV.CTRL_RETURN
 NAV.ALT_RETURN = NAV.SHIFT_RETURN
 
 local function _activateCompletion(modeS)
-   if modeS.suggest.last_collection then
+   if modeS.maestro.agents.suggest.last_collection then
       modeS.shift_to = "complete"
       return true
    else
@@ -230,12 +230,12 @@ end
 
 
 function Nerf.onCursorChanged(modeS)
-   modeS.suggest:update(modeS.txtbuf, modeS.zones.suggest)
+   modeS.maestro.agents.suggest:update(modeS.txtbuf)
    EditBase.onCursorChanged(modeS)
 end
 
 function Nerf.onTxtbufChanged(modeS)
-   modeS.suggest:update(modeS.txtbuf, modeS.zones.suggest)
+   modeS.maestro.agents.suggest:update(modeS.txtbuf)
    EditBase.onTxtbufChanged(modeS)
 end
 
@@ -248,7 +248,7 @@ end
 
 function Nerf.onShift(modeS)
    EditBase.onShift(modeS)
-   modeS.txtbuf.suggestions = modeS.suggest:window()
+   modeS.txtbuf.suggestions = modeS.maestro.agents.suggest:window()
 end
 
 

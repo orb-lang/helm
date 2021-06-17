@@ -1,34 +1,33 @@
-# Suggest
 
-This is our autocomplete module\.
 
-## Dependencies
 
-```lua
+
+
+
+
 
 local SelectionList = require "helm:selection_list"
-local Resbuf = require "helm:buf/resbuf"
 local names = require "repr:names"
 local insert, sort = assert(table.insert), assert(table.sort)
 
-```
 
-```lua
 
-local Suggest = meta {}
+
+
+local SuggestAgent = meta {}
 local new
 
-```
 
-### \_cursorContext\(txtbuf\)
 
-Examines the text before the cursor to determine \(a\) what token we are in the
-middle of, and \(b\) what if any path from the global environment we should
-follow to determine a list of keys to complete from\. Answers `nil` if the
-token we are in the middle of is not a symbol, and a `nil` second return value
-if the path cannot be determined\.
 
-```lua
+
+
+
+
+
+
+
+
 local function _cursorContext(txtbuf)
    local lex_tokens = {}
    -- Ignore whitespace and comments
@@ -80,17 +79,13 @@ local function _cursorContext(txtbuf)
    end
    return context, path
 end
-```
 
-### Suggest:update\(txtbuf, zone\)
 
-Updates the completion list based on the current contents of the Txtbuf,
-sending the results to the given Zone\.
 
-\#todo
-then we wouldn't need to interact with the Zone directly\.
 
-```lua
+
+
+
 
 local function _suggest_sort(a, b)
    if a.score ~= b.score then
@@ -134,16 +129,16 @@ local function _candidates_from(complete_against)
    return candidate_symbols
 end
 
-local function _set_suggestions(suggest, txtbuf, zone, suggestions)
+local function _set_suggestions(suggest, suggestions)
    suggest.last_collection = suggestions
    suggest.touched = true
 end
 
 
-function Suggest.update(suggest, txtbuf, zone)
+function SuggestAgent.update(suggest, txtbuf)
    local context, path = _cursorContext(txtbuf)
    if context == nil then
-      suggest:cancel(txtbuf, zone)
+      suggest:cancel(txtbuf)
       return
    end
 
@@ -174,52 +169,52 @@ function Suggest.update(suggest, txtbuf, zone)
       end
    end
    if #matches == 0 then
-      suggest:cancel(txtbuf, zone)
+      suggest:cancel(txtbuf)
       return
    end
    sort(matches, _suggest_sort)
    for _, match in ipairs(matches) do
       insert(suggestions, match.sym)
    end
-   _set_suggestions(suggest, txtbuf, zone, suggestions)
+   _set_suggestions(suggest, suggestions)
 end
-```
 
 
-### cancel\(\)
 
-```lua
-function Suggest.cancel(suggest, txtbuf, zone)
-   _set_suggestions(suggest, txtbuf, zone, nil)
+
+
+
+function SuggestAgent.cancel(suggest)
+   _set_suggestions(suggest, nil)
 end
-```
 
 
-### accept\(\)
 
-```lua
-function Suggest.accept(suggest, txtbuf)
+
+
+
+function SuggestAgent.accept(suggest, txtbuf)
    local suggestion = suggest.last_collection:selectedItem()
    local context = _cursorContext(txtbuf)
    txtbuf:right(context.total_disp - context.cursor_offset)
    txtbuf:killBackward(context.total_disp)
    txtbuf:paste(suggestion)
 end
-```
 
 
-### Window
 
-```lua
+
+
+
 local agent_utils = require "helm:agent/utils"
 
-Suggest.checkTouched = assert(agent_utils.checkTouched)
+SuggestAgent.checkTouched = assert(agent_utils.checkTouched)
 
 local function _toLastCollection(agent, window, field, ...)
    local lc = agent.last_collection
    return lc and lc[field](lc, ...) -- i.e. lc:<field>(...)
 end
-Suggest.window = agent_utils.make_window_method({
+SuggestAgent.window = agent_utils.make_window_method({
    fn = {
       buffer_value = function(agent, window, field)
          return agent.last_collection
@@ -231,22 +226,21 @@ Suggest.window = agent_utils.make_window_method({
       highlight = _toLastCollection
    }
 })
-```
 
 
-### new\(\)
 
-```lua
+
+
+
 
 new = function()
-   local suggest = meta(Suggest)
-   suggest.touched = false
+   local suggest = meta(SuggestAgent)
    return suggest
 end
 
-```
 
-```lua
-Suggest.idEst = new
+
+
+SuggestAgent.idEst = new
 return new
-```
+

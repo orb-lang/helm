@@ -106,7 +106,6 @@ local Resbuf     = require "helm:buf/resbuf"
 local Historian  = require "helm:historian"
 local Lex        = require "helm:lex"
 local Zoneherd   = require "helm:zone"
-local Suggest    = require "helm:suggest"
 local Maestro    = require "helm:maestro"
 local repr       = require "repr:repr"
 local lua_parser = require "helm:lua-parser"
@@ -498,7 +497,7 @@ local keys = assert(core.keys)
 
 function ModeS.eval(modeS)
    -- Getting ready to eval, cancel any active autocompletion
-   modeS.suggest:cancel(modeS.txtbuf, modeS.zones.suggest)
+   modeS.maestro.agents.suggest:cancel()
    local line = tostring(modeS.txtbuf)
    local success, results = eval(line)
    if not success and results == 'advance' then
@@ -677,7 +676,6 @@ local function new(max_extent, writer, db)
    -- Create Actors and other major sub-components
    modeS.txtbuf = Txtbuf()
    modeS.hist  = Historian(db)
-   modeS.suggest = Suggest()
    modeS.status = setmetatable({}, _stat_M)
    rawset(__G, "stat", modeS.status)
    modeS.max_extent = max_extent
@@ -687,9 +685,7 @@ local function new(max_extent, writer, db)
    modeS.maestro = Maestro(modeS)
    -- Bind Zones to bufs-of-windows-of-agents
    -- #todo this should definitely not be our responsibility
-   modeS.txtbuf.suggestions = modeS.suggest:window()
    modeS.zones.command:replace(modeS.txtbuf)
-   modeS.zones.suggest:replace(Resbuf(modeS.suggest:window()))
    -- If we are loading an existing session, start in review mode
    local session = modeS.hist.session
    if session.session_id then
