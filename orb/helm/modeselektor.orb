@@ -453,22 +453,14 @@ end
 
 *** ModeS:setStatusLine(status_name, format_args...)
 
-Sets the status line at the top of the screen. =status_name= selects
-a format string from the list below, and any additional parameters
-are passed through to =string.format=.
+Sets the status line at the top of the screen by updating the StatusAgent.
+
+#todo may want to just get rid of this but it's easier than inlining for now.
 
 #!lua
-ModeS.status_lines = { default = "an repl, plz reply uwu 👀",
-                       quit    = "exiting repl, owo... 🐲",
-                       restart = "restarting an repl ↩️",
-                       review  = 'reviewing session "%s"' }
-ModeS.status_lines.macro = ModeS.status_lines.default .. ' (macro-recording "%s")'
-ModeS.status_lines.new_session = ModeS.status_lines.default .. ' (recording "%s")'
 
 function ModeS.setStatusLine(modeS, status_name, ...)
-   local status_line = modeS.status_lines[status_name]:format(...)
-   modeS.zones.status:replace(status_line)
-   return modeS
+   modeS.maestro.agents.status:update(status_name, ...)
 end
 #/lua
 
@@ -686,26 +678,28 @@ local function new(max_extent, writer, db)
    modeS.txtbuf = Txtbuf()
    modeS.hist  = Historian(db)
    modeS.suggest = Suggest()
-   modeS.maestro = Maestro(modeS)
    modeS.status = setmetatable({}, _stat_M)
    rawset(__G, "stat", modeS.status)
    modeS.max_extent = max_extent
    modeS.write = writer
    modeS.repl_top = ModeS.REPL_LINE
    modeS.zones = Zoneherd(modeS, writer)
+   modeS.maestro = Maestro(modeS)
    -- Bind Zones to bufs-of-windows-of-agents
    -- #todo this should definitely not be our responsibility
    modeS.txtbuf.suggestions = modeS.suggest:window()
    modeS.zones.command:replace(modeS.txtbuf)
    modeS.zones.suggest:replace(Resbuf(modeS.suggest:window()))
-   modeS.zones.stat_col
-      :replace(Resbuf(modeS.maestro.agents.input_echo:window()))
    -- If we are loading an existing session, start in review mode
    local session = modeS.hist.session
    if session.session_id then
       modeS.raga_default = "review"
+      -- #todo we should probably do this in raga/review.onShift, but...
       modeS:setStatusLine("review", session.session_title)
    elseif session.session_title then
+      -- ...only if we can move this too, and it's less clear where it
+      -- should go--raga/nerf.onShift is a possibility, but doesn't feel
+      -- like a very good one?
       modeS:setStatusLine(
          session.mode == "macro" and "macro" or "new_session",
          session.session_title)

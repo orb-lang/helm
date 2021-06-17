@@ -17,6 +17,10 @@
 local input_event = require "anterm:input-event"
 
 local InputEchoAgent = require "helm:agent/input-echo"
+local StatusAgent = require "helm:agent/status"
+
+local Resbuf = require "helm:buf/resbuf"
+local Stringbuf = require "helm:buf/stringbuf"
 
 
 
@@ -91,13 +95,22 @@ end
 
 local function new(modeS)
    local maestro = meta(Maestro)
+   -- #todo this is temporary until we sort out communication properly
    maestro.modeS = modeS
+   -- Zoneherd we will keep a reference to (maybe the only reference) even
+   -- once we untangle from modeS, so start referring to it directly now
+   maestro.zones = modeS.zones
    maestro.agents = {
       -- edit = EditAgent(),
       input_echo = InputEchoAgent(),
       -- results = ResultsAgent(),
-      -- status = StatusAgent(),
+      status = StatusAgent()
    }
+   -- Set up common Agent -> Zone bindings
+   maestro.zones.status:replace(Stringbuf(maestro.agents.status:window()))
+   maestro.zones.stat_col
+      :replace(Resbuf(maestro.agents.input_echo:window()))
+
    return maestro
 end
 
