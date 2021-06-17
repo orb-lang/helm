@@ -288,30 +288,17 @@ end
 
 
 
-function Historian.checkTouched(historian)
-   local touched = historian.touched
-   historian.touched = false
-   return touched
-end
 
 
 
+local agent_utils = require "helm:agent/utils"
+Historian.checkTouched = assert(agent_utils.checkTouched)
 
-
-
-
-
-
-
-
-
-local Window = require "window:window"
 local function _toLastCollection(agent, window, field, ...)
    local lc = agent.last_collection
    return lc and lc[field](lc, ...) -- i.e. lc:<field>(...)
 end
-local window_cfg = {
-   field = { touched = true },
+Historian.window = agent_utils.make_window_method({
    fn = {
       buffer_value = function(agent, window, field)
          return agent.last_collection
@@ -319,17 +306,10 @@ local window_cfg = {
       end
    },
    closure = {
-      checkTouched = true,
       selectedItem = _toLastCollection,
       highlight = _toLastCollection
    }
-}
-function Historian.window(historian)
-   -- #todo is it reasonable for Agents to cache their window like this?
-   -- Is it reasonable for others to *assume* that they will (if it even matters)?
-   historian._window = historian._window or Window(historian, window_cfg)
-   return historian._window
-end
+})
 
 
 

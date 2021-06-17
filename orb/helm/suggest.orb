@@ -208,29 +208,18 @@ end
 #/lua
 
 
-*** checkTouched()
-
-#todo This pattern is repeated several places. We'll definitely want to move
-it to an Agent base class, but there are also appearances in the *bufs etc.
-
-#!lua
-function Suggest.checkTouched(suggest)
-   local touched = suggest.touched
-   suggest.touched = false
-   return touched
-end
-#/lua
-
 *** Window
 
 #!lua
-local Window = require "window:window"
+local agent_utils = require "helm:agent/utils"
+
+Suggest.checkTouched = assert(agent_utils.checkTouched)
+
 local function _toLastCollection(agent, window, field, ...)
    local lc = agent.last_collection
    return lc and lc[field](lc, ...) -- i.e. lc:<field>(...)
 end
-local window_cfg = {
-   field = { touched = true },
+Suggest.window = agent_utils.make_window_method({
    fn = {
       buffer_value = function(agent, window, field)
          return agent.last_collection
@@ -238,17 +227,10 @@ local window_cfg = {
       end
    },
    closure = {
-      checkTouched = true,
       selectedItem = _toLastCollection,
       highlight = _toLastCollection
    }
-}
-function Suggest.window(suggest)
-   -- #todo is it reasonable for Agents to cache their window like this?
-   -- Is it reasonable for others to *assume* that they will (if it even matters)?
-   suggest._window = suggest._window or Window(suggest, window_cfg)
-   return suggest._window
-end
+})
 #/lua
 
 
