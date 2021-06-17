@@ -389,6 +389,7 @@ end
 
 
 
+
 function Rainbuf.checkTouched(rainbuf)
    if rainbuf.source and rainbuf.source:checkTouched() then
       rainbuf:replace(rainbuf.source.buffer_value)

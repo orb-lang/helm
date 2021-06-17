@@ -386,7 +386,8 @@ other data sources first, calling `:beTouched()` if they answer true, and
 calling `super` only at the end to reset the flag\.
 
 \#todo
-be nice not to duplicate\.
+aren't an agent, so it feels a little weird to get it from there, but the
+actual "touched" concept is the same and the implementation certainly works\.
 
 ```lua
 function Rainbuf.checkTouched(rainbuf)
