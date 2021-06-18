@@ -44,7 +44,7 @@ local Window = require "window:window"
 StatusAgent.window = agent_utils.make_window_method({
    fn = { buffer_value = function(stat, window, field)
       return status_lines[stat.status_name]:format(unpack(stat.format_args))
-   }
+   end }
 })
 #/lua
 
