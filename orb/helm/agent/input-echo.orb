@@ -112,5 +112,6 @@ end
 #/lua
 
 #!lua
+InputEchoAgent.idEst = new
 return new
 #/lua

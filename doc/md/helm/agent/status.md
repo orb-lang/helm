@@ -60,5 +60,6 @@ end
 ```
 
 ```lua
+StatusAgent.idEst = new
 return new
 ```

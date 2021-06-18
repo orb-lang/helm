@@ -112,5 +112,6 @@ end
 
 
 
+InputEchoAgent.idEst = new
 return new
 

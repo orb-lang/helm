@@ -112,5 +112,6 @@ end
 ```
 
 ```lua
+InputEchoAgent.idEst = new
 return new
 ```

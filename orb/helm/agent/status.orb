@@ -60,5 +60,6 @@ end
 #/lua
 
 #!lua
+StatusAgent.idEst = new
 return new
 #/lua
