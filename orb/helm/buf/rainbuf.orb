@@ -129,7 +129,10 @@ Returns a boolean indicating whether any scrolling occurred.
 #!lua
 local clamp = import("core/math", "clamp")
 function Rainbuf.scrollTo(rainbuf, offset, allow_overscroll)
-   if offset > 0 then
+   if offset < 0 then
+      offset = 0
+   end
+   if offset ~= 0 then
       -- Try to render the content that will be visible after the scroll
       rainbuf:composeUpTo(offset + rainbuf.rows)
       local required_lines_visible = allow_overscroll and 1 or rainbuf.rows

@@ -129,7 +129,10 @@ Returns a boolean indicating whether any scrolling occurred\.
 ```lua
 local clamp = import("core/math", "clamp")
 function Rainbuf.scrollTo(rainbuf, offset, allow_overscroll)
-   if offset > 0 then
+   if offset < 0 then
+      offset = 0
+   end
+   if offset ~= 0 then
       -- Try to render the content that will be visible after the scroll
       rainbuf:composeUpTo(offset + rainbuf.rows)
       local required_lines_visible = allow_overscroll and 1 or rainbuf.rows
@@ -298,9 +301,9 @@ end
 
 #### Rainbuf:lineGen\(\)
 
-Generator which yields the portion of the Rainbuf that should be displayed
-\(based on \.rows and \.cols\), one line at a time\.
+Generator which yields the portion of the Rainbuf that should be displayedbased on \.rows and \.cols\), one line at a time\.
 
+\(
 Since we've replaced the old all\-at\-once `repr` with something that generates
 a line at a time \(and it only took, oh, six months\), we're finally able to
 generate these on the fly\.
