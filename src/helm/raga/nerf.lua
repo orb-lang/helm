@@ -246,8 +246,13 @@ end
 
 
 
+
+
+local Resbuf = require "helm:buf/resbuf"
 function Nerf.onShift(modeS)
    EditBase.onShift(modeS)
+   modeS.zones.results:replace(Resbuf(modeS.maestro.agents.results:window(),
+      { scrollable = true }))
    modeS.txtbuf.suggestions = modeS.maestro.agents.suggest:window()
 end
 

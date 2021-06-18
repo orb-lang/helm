@@ -244,11 +244,16 @@ end
 
 ### Nerf\.onShift
 
-Install the SuggestAgent's Window as the provider of suggestions for the Txtbuf\.
+Set up Agent connections\-\-install the SuggestAgent's Window as the provider of
+suggestions for the Txtbuf, and ResultsAgent to supply the content of the
+results zone\.
 
 ```lua
+local Resbuf = require "helm:buf/resbuf"
 function Nerf.onShift(modeS)
    EditBase.onShift(modeS)
+   modeS.zones.results:replace(Resbuf(modeS.maestro.agents.results:window(),
+      { scrollable = true }))
    modeS.txtbuf.suggestions = modeS.maestro.agents.suggest:window()
 end
 ```

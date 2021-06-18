@@ -416,36 +416,19 @@ end
 
 ### ModeS:setResults\(results\), :clearResults\(\)
 
-Sets the contents of the results area to `results`, wrapping it in a Resbuf
-if necessary\. Strings are passed through unchanged\.
+Sets the current "results" to `results`\.
+
+\#todo
+awkward right now, as migration to new keymaps proceeds it'll get easier\.
 
 ```lua
-local instanceof = import("core:meta", "instanceof")
-
 function ModeS.setResults(modeS, results)
-   results = results or ""
-   if results == "" then
-      modeS.zones.results:replace(results)
-      return modeS
-   end
-   -- #todo ultimately this all wants to be handled by a Window, updating the
-   -- contents of an existing Resbuf, so we won't have to think about whether
-   -- or not what we're dealing with is already a Rainbuf
-   if not results.is_rainbuf then
-      local cfg = { scrollable = true }
-      if type(results) == "string" then
-         cfg.frozen = true
-         results = { results, n = 1 }
-      end
-      results = Resbuf(results, cfg)
-   end
-   modeS.zones.results:replace(results)
+   modeS.maestro.agents.results:update(results)
    return modeS
 end
 
 function ModeS.clearResults(modeS)
-   modeS:setResults ""
-   return modeS
+   return modeS:setResults(nil)
 end
 ```
 

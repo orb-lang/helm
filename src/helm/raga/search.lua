@@ -156,22 +156,11 @@ end
 
 
 
-
 function Search.onShift(modeS)
    EditBase.onShift(modeS)
    modeS.hist:search(tostring(modeS.txtbuf))
    modeS.txtbuf.suggestions = modeS.hist:window()
-   modeS:setResults(Resbuf(modeS.hist:window(), { scrollable = true }))
-end
-
-function Search.onUnshift(modeS)
-   EditBase.onShift(modeS)
-   -- #todo this is a hack to avoid stomping the results when we accept
-   -- a search result. Once we have a ResultsAgent we'll just hand control
-   -- back to it and the problem goes away
-   if modeS.zones.results.contents.source then
-      modeS:clearResults()
-   end
+   modeS.zones.results:replace(Resbuf(modeS.hist:window(), { scrollable = true }))
 end
 
 
