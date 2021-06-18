@@ -27,7 +27,7 @@ local Rainbuf   = require "helm:buf/rainbuf"
 local Historian = require "helm/historian"
 local Lex       = require "helm/lex"
 
-local concat         = assert(table.concat)
+local concat, insert = assert(table.concat), assert(table.insert)
 local sub, gsub, rep = assert(string.sub),
                        assert(string.gsub),
                        assert(string.rep)
@@ -178,6 +178,12 @@ end
 ```
 
 
+## Keymap
+
+```lua
+Nerf.default_keymaps = clone(EditBase.default_keymaps)
+```
+
 ### Readline\-style NAV
 
 Provides equivalent commands for diehard Emacsians\.
@@ -185,27 +191,32 @@ Provides equivalent commands for diehard Emacsians\.
 In case RMS ever takes bridge for a spin\.\.\.
 
 ```lua
-local CTRL = Nerf.CTRL
-
-CTRL ["^B"] = NAV.LEFT
-CTRL ["^F"] = NAV.RIGHT
-CTRL ["^N"] = NAV.DOWN
-CTRL ["^P"] = NAV.UP
+insert(Nerf.default_keymaps, {
+   ["C-b"] = "left",
+   ["C-f"] = "right",
+   ["C-n"] = "down",
+   ["C-p"] = "up"
+})
 ```
 
 
-### MOUSE
+### Scroll handling
 
 ```lua
-function Nerf.MOUSE(modeS, category, value)
-   if value.scrolling then
-      if value.button == "MB0" then
-         modeS.zones.results:scrollUp()
-      elseif value.button == "MB1" then
-         modeS.zones.results:scrollDown()
-      end
-   end
+function Nerf.scrollResultsUp(maestro, event)
+   -- #todo We don't actually need the *Zone*, just the *Rainbuf*.
+   -- Is there a way that would make sense for that to be accessible directly?
+   maestro.zones.results.contents:scrollUp(event.num_lines)
 end
+
+function Nerf.scrollResultsDown(maestro, event)
+   maestro.zones.results.contents:scrollDown(event.num_lines)
+end
+
+insert(Nerf.default_keymaps, {
+   SCROLL_UP = "scrollResultsUp",
+   SCROLL_DOWN = "scrollResultsDown"
+})
 ```
 
 

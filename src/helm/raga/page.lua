@@ -81,15 +81,20 @@ alias{_quit, NAV = {"ESC"}, ASCII = {"q"} }
 
 
 
-function Page.MOUSE(modeS, category, value)
-   if value.scrolling then
-      if value.button == "MB0" then
-         modeS.zones.popup.contents:scrollUp()
-      elseif value.button == "MB1" then
-         modeS.zones.popup.contents:scrollDown()
-      end
-   end
+
+
+function Page.scrollUp(maestro, event)
+   maestro.zones.popup.contents:scrollUp(event.num_lines)
 end
+function Page.scrollDown(maestro, event)
+   maestro.zones.popup.contents:scrollDown(event.num_lines)
+end
+
+local map = {
+   SCROLL_UP = "scrollUp",
+   SCROLL_DOWN = "scrollDown"
+}
+Page.default_keymaps = { map }
 
 
 

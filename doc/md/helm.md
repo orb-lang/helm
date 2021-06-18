@@ -309,6 +309,32 @@ local input_idle = uv.new_idle()
 local input_check = uv.new_check()
 local input_buffer = ""
 
+local function is_scroll(event)
+   return event.type == "mouse" and event.scrolling
+end
+
+local compact = assert(require "core:table" . compact)
+local function consolidate_scroll_events(events)
+   -- We're going to nil-and-compact, so convert to ntable
+   events.n = #events
+   local i = 1
+   while i <= events.n do
+      local j = i + 1
+      if is_scroll(events[i]) then
+         events[i].num_lines = 1
+         while j <= events.n
+            and is_scroll(events[j])
+            and events[j].key == events[i].key do
+            events[i].num_lines = events[i].num_lines + 1
+            events[j] = nil
+            j = j + 1
+         end
+      end
+      i = j
+   end
+   compact(events)
+end
+
 local function dispatch_input(seq, dispatch_all)
    -- Clear the flag and timer indicating whether we should clear down the
    -- input buffer this cycle. Note that we must explicitly stop the timer
@@ -335,6 +361,7 @@ local function dispatch_input(seq, dispatch_all)
          input_idle:start(function() should_dispatch_all = true end)
       end
    end
+   consolidate_scroll_events(new_events)
    for i = 1, #new_events do
       modeS(new_events[i], old_events[i])
       -- Okay, if the action resulted in a quit, break out of the event loop

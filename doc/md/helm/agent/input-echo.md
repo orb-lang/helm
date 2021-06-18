@@ -21,17 +21,21 @@ local reprs_by_type = {}
 
 function reprs_by_type.mouse(event)
    local subtype
-   if event.pressed then
-      if event.moving then
-         subtype = "drag"
-      else
-         subtype = "press"
-      end
+   if event.scrolling then
+      subtype = tostring(event.num_lines) .. " lines"
    else
-      if event.moving then
-         subtype = "move"
+      if event.pressed then
+         if event.moving then
+            subtype = "drag"
+         else
+            subtype = "press"
+         end
       else
-         subtype = "release"
+         if event.moving then
+            subtype = "move"
+         else
+            subtype = "release"
+         end
       end
    end
    return ('%s (%s: %s,%s)'):format(

@@ -166,11 +166,13 @@ end
 
 
 
-function Rainbuf.scrollUp(rainbuf)
-   return rainbuf:scrollBy(-1)
+function Rainbuf.scrollUp(rainbuf, count)
+   count = count or 1
+   return rainbuf:scrollBy(-count)
 end
-function Rainbuf.scrollDown(rainbuf)
-   return rainbuf:scrollBy(1)
+function Rainbuf.scrollDown(rainbuf, count)
+   count = count or 1
+   return rainbuf:scrollBy(count)
 end
 
 function Rainbuf.pageUp(rainbuf)
