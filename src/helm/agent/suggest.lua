@@ -193,12 +193,16 @@ end
 
 
 
-function SuggestAgent.accept(suggest, txtbuf)
+
+
+
+
+function SuggestAgent.accept(suggest, txtbuf, edit_agent)
    local suggestion = suggest.last_collection:selectedItem()
    local context = _cursorContext(txtbuf)
-   txtbuf:right(context.total_disp - context.cursor_offset)
-   txtbuf:killBackward(context.total_disp)
-   txtbuf:paste(suggestion)
+   edit_agent:right(context.total_disp - context.cursor_offset)
+   edit_agent:killBackward(context.total_disp)
+   edit_agent:paste(suggestion)
 end
 
 

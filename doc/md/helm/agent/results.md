@@ -9,12 +9,16 @@ local ResultsAgent = meta {}
 ```
 
 
-### ResultsAgent:update\(result\)
+### ResultsAgent:update\(result\), :clear\(\)
 
 ```lua
 function ResultsAgent.update(agent, result)
    agent.buffer_value = result or { n = 0 }
    agent.touched = true
+end
+
+function ResultsAgent.clear(agent)
+   agent:update(nil)
 end
 ```
 

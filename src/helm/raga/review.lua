@@ -34,7 +34,7 @@ end
 local function _onSelectionChanged(modeS)
    local zone = modeS.zones.results
    local buf = zone.contents
-   modeS.txtbuf:replace(buf:selectedPremise().title)
+   modeS.maestro.agents.edit:update(buf:selectedPremise().title)
    local start_index = buf:positionOfSelected()
    local end_index = start_index + buf:rowsForSelectedResult() + 3
    modeS.zones.results:ensureVisible(start_index, end_index)
@@ -144,7 +144,7 @@ function Review.onShift(modeS)
       local buf = Sessionbuf(modeS.hist.session, { scrollable = true })
       modeS.zones.results:replace(buf)
       local premise = buf:selectedPremise()
-      modeS.txtbuf:replace(premise and premise.title or "")
+      modeS.maestro.agents.edit:update(premise and premise.title or "")
    else
       _onSelectionChanged(modeS)
    end

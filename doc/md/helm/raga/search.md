@@ -13,26 +13,6 @@ Search.name = "search"
 Search.prompt_char = "⁉️"
 ```
 
-## Input/updating search results
-
-We need to update the search result whenever the contents of the Txtbuf change\.
-
-We also need to intercept the insertion commands to not overwrite the results area\.
-\#todo
-
-```lua
-function Search.onTxtbufChanged(modeS)
-   modeS.hist:search(tostring(modeS.txtbuf))
-end
-
-function Search.ASCII(modeS, category, value)
-   modeS.txtbuf:insert(value)
-end
-Search.UTF8 = Search.ASCII
-function Search.PASTE(modeS, category, value)
-   modeS.txtbuf:paste(value)
-end
-```
 
 ## Navigation
 
@@ -91,7 +71,7 @@ NAV.UP        = NAV.SHIFT_UP
 NAV.SHIFT_TAB = NAV.SHIFT_UP
 
 local function _modeShiftOnDeleteWhenEmpty(modeS, category, value)
-   if tostring(modeS.txtbuf) == "" then
+   if modeS.maestro.agents.edit:contents() == "" then
       modeS.shift_to = modeS.raga_default
    else
       EditBase(modeS, category, value)
@@ -116,7 +96,7 @@ local function _acceptAtIndex(modeS, selected_index)
       line, result = modeS.hist:index(search_result.cursors[selected_index])
    end
    modeS.shift_to = modeS.raga_default
-   modeS:setTxtbuf(Txtbuf(line), result)
+   modeS.maestro.agents.edit:update(line)
    modeS:setResults(result)
 end
 
@@ -151,7 +131,18 @@ end
 ```
 
 
-### Search\.onShift, \.onUnshift
+## Search\.onTxtbufChanged\(modeS\)
+
+We need to update the search result whenever the contents of the Txtbuf change\.
+
+```lua
+function Search.onTxtbufChanged(modeS)
+   modeS.hist:search(modeS.maestro.agents.edit:contents())
+end
+```
+
+
+### Search\.onShift
 
 Set up Agent connections\-\-Txtbuf uses Historian for "suggestions", and that
 same Window also drives the result zone\.
@@ -159,7 +150,7 @@ same Window also drives the result zone\.
 ```lua
 function Search.onShift(modeS)
    EditBase.onShift(modeS)
-   modeS.hist:search(tostring(modeS.txtbuf))
+   modeS.hist:search(modeS.maestro.agents.edit:contents())
    modeS.txtbuf.suggestions = modeS.hist:window()
    modeS.zones.results:replace(Resbuf(modeS.hist:window(), { scrollable = true }))
 end

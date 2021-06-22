@@ -50,7 +50,7 @@ Nerf.prompt_char = "👉"
 ```lua
 
 local function _insert(modeS, category, value)
-   if tostring(modeS.txtbuf) == "" then
+   if modeS.maestro.agents.edit:contents() == "" then
       modeS:clearResults()
       if value == "/" then
          modeS.shift_to = "search"
@@ -61,7 +61,7 @@ local function _insert(modeS, category, value)
          return
       end
    end
-   modeS.txtbuf:insert(value)
+   modeS.maestro.agents.edit:insert(value)
 end
 
 Nerf.ASCII = _insert
@@ -77,7 +77,7 @@ local NAV = Nerf.NAV
 
 local function _prev(modeS)
    -- Save what the user is currently typing...
-   local linestash = tostring(modeS.txtbuf)
+   local linestash = modeS.maestro.agents.edit:contents()
    -- ...but only if they're at the end of the history,
    -- and obviously only if there's anything there
    if linestash == "" or modeS.hist.cursor <= modeS.hist.n then
@@ -87,13 +87,13 @@ local function _prev(modeS)
    if linestash then
       modeS.hist:append(linestash)
    end
-   modeS:setTxtbuf(Txtbuf(prev_line))
+   modeS.maestro.agents.edit:update(prev_line)
    modeS:setResults(prev_result)
    return modeS
 end
 
 function NAV.UP(modeS, category, value)
-   local inline = modeS.txtbuf:up()
+   local inline = modeS.maestro.agents.edit:up()
    if not inline then
       _prev(modeS)
    end
@@ -103,18 +103,18 @@ end
 local function _advance(modeS)
    local new_line, next_result = modeS.hist:next()
    if not new_line then
-      local added = modeS.hist:append(tostring(modeS.txtbuf))
+      local added = modeS.hist:append(modeS.maestro.agents.edit:contents())
       if added then
          modeS.hist.cursor = modeS.hist.n + 1
       end
    end
-   modeS:setTxtbuf(Txtbuf(new_line))
+   modeS.maestro.agents.edit:update(new_line)
    modeS:setResults(next_result)
    return modeS
 end
 
 function NAV.DOWN(modeS, category, value)
-   local inline = modeS.txtbuf:down()
+   local inline = modeS.maestro.agents.edit:down()
    if not inline then
       _advance(modeS)
    end
@@ -125,10 +125,10 @@ end
 
 ```lua
 function NAV.RETURN(modeS, category, value)
-   if modeS.txtbuf:shouldEvaluate() then
+   if modeS.maestro.agents.edit:shouldEvaluate() then
       modeS:eval()
    else
-      modeS.txtbuf:nl()
+      modeS.maestro.agents.edit:nl()
    end
 end
 
@@ -137,7 +137,7 @@ function NAV.CTRL_RETURN(modeS, category, value)
 end
 
 function NAV.SHIFT_RETURN(modeS, category, value)
-   modeS.txtbuf:nl()
+   modeS.maestro.agents.edit:nl()
 end
 
 -- Add aliases for terminals not in CSI u mode
@@ -167,7 +167,7 @@ end
 
 function NAV.TAB(modeS, category, value)
    if not _activateCompletion(modeS) then
-      modeS.txtbuf:paste("   ")
+      modeS.maestro.agents.edit:paste("   ")
    end
 end
 

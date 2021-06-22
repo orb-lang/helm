@@ -31,7 +31,7 @@ end
 
 local function _accept(modeS)
    if _suggest(modeS).last_collection then
-      _suggest(modeS):accept(modeS.txtbuf)
+      _suggest(modeS):accept(modeS.txtbuf, modeS.maestro.agents.edit)
    else
       modeS.action_complete = false
    end

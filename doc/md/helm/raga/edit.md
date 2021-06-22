@@ -46,13 +46,13 @@ local map = {
 
 for key, command in pairs(map) do
    EditBase[command] = function(maestro, event)
-      return maestro.modeS.txtbuf[command](modeS.txtbuf)
+      return maestro.agents.edit[command](maestro.agents.edit)
    end
 end
 
 function EditBase.clearTxtbuf(maestro, event)
-   maestro.modeS:setTxtbuf(Txtbuf())
-   maestro.modeS:clearResults()
+   maestro.agents.edit:clear()
+   maestro.agents.results:clear()
    maestro.modeS.hist.cursor = maestro.modeS.hist.n + 1
 end
 map["C-l"] = "clearTxtbuf"
@@ -71,20 +71,20 @@ EditBase.default_keymaps = { map }
 ```lua
 
 local function _insert(modeS, category, value)
-   if tostring(modeS.txtbuf) == "" then
+   if modeS.maestro.agents.edit:contents() == "" then
       modeS:clearResults()
    end
-   modeS.txtbuf:insert(value)
+   modeS.maestro.agents.edit:insert(value)
 end
 
 EditBase.ASCII = _insert
 EditBase.UTF8 = _insert
 
 function EditBase.PASTE(modeS, category, value)
-   if tostring(modeS.txtbuf) == "" then
+   if modeS.maestro.agents.edit:contents() == "" then
       modeS:clearResults()
    end
-   modeS.txtbuf:paste(value)
+   modeS.maestro.agents.edit:paste(value)
 end
 
 ```
@@ -96,7 +96,7 @@ Offset into the `command` zone, based on the Txtbuf's `cursor` property\.
 
 ```lua
 function EditBase.getCursorPosition(modeS)
-   return modeS.zones.command.bounds:origin() + modeS.txtbuf.cursor - 1
+   return modeS.zones.command.bounds:origin() + modeS.maestro.agents.edit.cursor - 1
 end
 ```
 

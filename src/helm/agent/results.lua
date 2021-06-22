@@ -17,6 +17,10 @@ function ResultsAgent.update(agent, result)
    agent.touched = true
 end
 
+function ResultsAgent.clear(agent)
+   agent:update(nil)
+end
+
 
 
 

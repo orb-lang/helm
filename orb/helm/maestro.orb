@@ -16,13 +16,15 @@ coroutine yield/resume, but for now, between Agents not yet migrated and not
 #!lua
 local input_event = require "anterm:input-event"
 
+local EditAgent      = require "helm:agent/edit"
 local InputEchoAgent = require "helm:agent/input-echo"
 local ResultsAgent   = require "helm:agent/results"
 local StatusAgent    = require "helm:agent/status"
 local SuggestAgent   = require "helm:agent/suggest"
 
-local Resbuf = require "helm:buf/resbuf"
+local Resbuf    = require "helm:buf/resbuf"
 local Stringbuf = require "helm:buf/stringbuf"
+local Txtbuf    = require "helm:buf/txtbuf"
 #/lua
 
 
@@ -104,7 +106,7 @@ local function new(modeS)
    local zones = modeS.zones
    maestro.zones = zones
    local agents = {
-      -- edit    = EditAgent(),
+      edit       = EditAgent(),
       input_echo = InputEchoAgent(),
       results    = ResultsAgent(),
       status     = StatusAgent(),
@@ -115,6 +117,7 @@ local function new(modeS)
    -- Note we don't do results here because that varies from raga to raga
    -- The Txtbuf also needs a source of "suggestions" (which might be
    -- history-search results instead), but that too is raga-dependent
+   zones.command:replace(Txtbuf(agents.edit:window()))
    zones.status:replace(Stringbuf(agents.status:window()))
    zones.stat_col
       :replace(Resbuf(agents.input_echo:window()))

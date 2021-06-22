@@ -239,7 +239,7 @@ ModeS.raga_default = "nerf"
 
 
 function ModeS.continuationLines(modeS)
-   return modeS.txtbuf and #modeS.txtbuf - 1 or 0
+   return #modeS.maestro.agents.edit - 1
 end
 
 
@@ -359,15 +359,15 @@ function ModeS.actOnce(modeS, event, old_cat_val)
       end
    end
    _check_shift(modeS)
-   if modeS.txtbuf.contents_changed then
+   if modeS.maestro.agents.edit.contents_changed then
       modeS.raga.onTxtbufChanged(modeS)
     -- Treat contents_changed as implying cursor_changed
     -- only ever fire one of the two events
-   elseif modeS.txtbuf.cursor_changed then
+   elseif modeS.maestro.agents.edit.cursor_changed then
       modeS.raga.onCursorChanged(modeS)
    end
-    modeS.txtbuf.contents_changed = false
-    modeS.txtbuf.cursor_changed = false
+   modeS.maestro.agents.edit.contents_changed = false
+   modeS.maestro.agents.edit.cursor_changed = false
    -- Check shift_to again in case one of the cursor handlers set it
    _check_shift(modeS)
    return command
@@ -450,27 +450,6 @@ end
 
 
 
-
-
-
-function ModeS.setTxtbuf(modeS, txtbuf)
-   -- Copy the lexer and suggestions over to the new Txtbuf
-   -- #todo keep the same Txtbuf around (updating it using :replace())
-   -- rather than swapping it out
-   txtbuf.lex = modeS.txtbuf.lex
-   txtbuf.suggestions = modeS.txtbuf.suggestions
-   modeS.txtbuf = txtbuf
-   modeS.txtbuf.cursor_changed = true
-   modeS.txtbuf.contents_changed = true
-   modeS.zones.command:replace(modeS.txtbuf)
-   return modeS
-end
-
-
-
-
-
-
 local eval = Valiant(_G, __G)
 
 
@@ -481,16 +460,16 @@ local keys = assert(core.keys)
 function ModeS.eval(modeS)
    -- Getting ready to eval, cancel any active autocompletion
    modeS.maestro.agents.suggest:cancel()
-   local line = tostring(modeS.txtbuf)
+   local line = modeS.maestro.agents.edit:contents()
    local success, results = eval(line)
    if not success and results == 'advance' then
-      modeS.txtbuf:endOfText()
-      modeS.txtbuf:nl()
+      modeS.maestro.agents.edit:endOfText()
+      modeS.maestro.agents.edit:nl()
    else
       modeS.hist:append(line, results, success)
       modeS.hist.cursor = modeS.hist.n + 1
       modeS:setResults(results)
-      modeS:setTxtbuf(Txtbuf())
+      modeS.maestro.agents.edit:clear()
    end
 
    return modeS
@@ -511,7 +490,7 @@ function ModeS.evalFromCursor(modeS)
       -- Discard the second return value from :index
       -- or it will confuse the Txtbuf constructor rather badly
       local line = modeS.hist:index(i)
-      modeS:setTxtbuf(Txtbuf(line))
+      modeS.maestro.agents.edit:update(line)
       modeS:eval()
    end
 end
@@ -657,7 +636,6 @@ local function new(max_extent, writer, db)
    local modeS = meta(ModeS)
 
    -- Create Actors and other major sub-components
-   modeS.txtbuf = Txtbuf()
    modeS.hist  = Historian(db)
    modeS.status = setmetatable({}, _stat_M)
    rawset(__G, "stat", modeS.status)
@@ -666,9 +644,8 @@ local function new(max_extent, writer, db)
    modeS.repl_top = ModeS.REPL_LINE
    modeS.zones = Zoneherd(modeS, writer)
    modeS.maestro = Maestro(modeS)
-   -- Bind Zones to bufs-of-windows-of-agents
-   -- #todo this should definitely not be our responsibility
-   modeS.zones.command:replace(modeS.txtbuf)
+   -- #todo a few people still need this convenience access, grab a ref
+   modeS.txtbuf = modeS.zones.command.contents
    -- If we are loading an existing session, start in review mode
    local session = modeS.hist.session
    if session.session_id then
