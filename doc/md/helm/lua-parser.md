@@ -6,7 +6,7 @@ repl interaction\.
 
 Eventually we may wish to replace Lex Luathor with this module\.
 
-This code is an expansion of the [parser in espalier](@br/espalier:espalier/parser), which is intended to demonstrate the PEG
+This code is an expansion of the [parser in espalier](espalier/), which is intended to demonstrate the PEG
 syntax, and shouldn't have non\-standard extensions to the base language\.
 
 Ideally, this would be accomplished through transclusion, but we have quite a

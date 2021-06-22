@@ -186,7 +186,7 @@ end)
 
 ### Orb listener
 
-  If we start with the `--listen` flag, we open up a [lume](@orb:lume/lume),
+  If we start with the `--listen` flag, we open up a [lume](https://gitlab.com/special-circumstance/orb/),
 and set an `uv` watcher on the project directory\.
 
 We then add a timer to check the lume for a flag indicating it has processed a
