@@ -164,7 +164,7 @@ function Zone.setBounds(zone, rect, ...)
    if not instanceof(rect, Rectangle) then
       rect = Rectangle(rect, ...)
    end
-   rect:assertNotEmpty("Zone must have non-zero area")
+   rect:assertNotEmpty("Zone '" .. zone.name .. "' must have non-zero area")
    if zone.bounds ~= rect then
       zone.bounds = rect
       update_content_extent(zone)
