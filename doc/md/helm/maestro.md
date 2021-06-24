@@ -18,6 +18,7 @@ local input_event = require "anterm:input-event"
 
 local EditAgent      = require "helm:agent/edit"
 local InputEchoAgent = require "helm:agent/input-echo"
+local ModalAgent     = require "helm:agent/modal"
 local ResultsAgent   = require "helm:agent/results"
 local StatusAgent    = require "helm:agent/status"
 local SuggestAgent   = require "helm:agent/suggest"
@@ -108,6 +109,7 @@ local function new(modeS)
    local agents = {
       edit       = EditAgent(),
       input_echo = InputEchoAgent(),
+      modal      = ModalAgent(),
       results    = ResultsAgent(),
       status     = StatusAgent(),
       suggest    = SuggestAgent()
@@ -118,6 +120,7 @@ local function new(modeS)
    -- The Txtbuf also needs a source of "suggestions" (which might be
    -- history-search results instead), but that too is raga-dependent
    zones.command:replace(Txtbuf(agents.edit:window()))
+   zones.modal:replace(Resbuf(agents.modal:window()))
    zones.status:replace(Stringbuf(agents.status:window()))
    zones.stat_col
       :replace(Resbuf(agents.input_echo:window()))

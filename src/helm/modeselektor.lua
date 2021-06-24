@@ -580,9 +580,7 @@ end
 
 
 function ModeS.showModal(modeS, text, button_style)
-   local modal_info = Modal.newModel(text, button_style)
-   -- #todo make DialogModel a kind of Rainbuf? Or use a generic one?
-   modeS.zones.modal:replace(Resbuf{ modal_info, n = 1 })
+   modeS.maestro.agents.modal:update(text, button_style)
    modeS.shift_to = "modal"
    return modeS
 end
@@ -594,10 +592,8 @@ end
 
 
 
-
 function ModeS.modalAnswer(modeS)
-   local contents = modeS.zones.modal.contents
-   return (contents and contents.is_rainbuf) and contents.value[1].value or nil
+   return modeS.maestro.agents.modal:answer()
 end
 
 

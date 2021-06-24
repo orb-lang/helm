@@ -573,16 +573,14 @@ end
 *** ModeS:showModal(text, button_style)
 
 Shows a modal dialog with the given text and button style
-(see raga/modal.orb for valid button styles).
+(see [[@agent/modal]] for valid button styles).
 
-When the modal closes, the button that was clicked can be retrieved
-with modeS:modalAnswer().
+#todo should ideally be able to show a modal by talking only to the agent, at
+which point we won't need this method.
 
 #!lua
 function ModeS.showModal(modeS, text, button_style)
-   local modal_info = Modal.newModel(text, button_style)
-   -- #todo make DialogModel a kind of Rainbuf? Or use a generic one?
-   modeS.zones.modal:replace(Resbuf{ modal_info, n = 1 })
+   modeS.maestro.agents.modal:update(text, button_style)
    modeS.shift_to = "modal"
    return modeS
 end
@@ -590,14 +588,12 @@ end
 
 *** ModeS:modalAnswer()
 
-Convenience method to retrieve the value answered by the most recent
-modal dialog. Storing this in the contents of the modal zone is
-hardly ideal, but it's not clear what the mechanism *should* look like.
+#todo can probably eliminate this in favor of people talking directly to the
+agent, but it'd be nice to be able to show a modal that way too, first.
 
 #!lua
 function ModeS.modalAnswer(modeS)
-   local contents = modeS.zones.modal.contents
-   return (contents and contents.is_rainbuf) and contents.value[1].value or nil
+   return modeS.maestro.agents.modal:answer()
 end
 #/lua
 
