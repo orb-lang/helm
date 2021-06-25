@@ -563,8 +563,9 @@ end
 
 
 function ModeS.openHelp(modeS)
-  -- #todo this should be a generic Rainbuf
-   local rb = Resbuf{ ("abcde "):rep(1000), n = 1 }
+  -- #todo this should be a more generic buffer--maybe a Txtbuf, actually,
+  -- or a slightly-smarter Stringbuf
+   local rb = Resbuf({ ("abcde "):rep(1000), n = 1 }, { scrollable = true })
    modeS.zones.popup:replace(rb)
    modeS.shift_to = "page"
 end

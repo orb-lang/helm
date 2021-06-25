@@ -12,90 +12,55 @@ local Page = clone(RagaBase, 2)
 
 Page.name = "page"
 Page.prompt_char = "❓"
-
-local alias = require "helm/raga/aliaser" (Page)
 ```
 
-## toRainbuf\(fn\)
-
-Returns a ModeS handler function that just calls the given method
-of the popup zone's contents \(a Rainbuf\)\.
-
-```lua
-local function toRainbuf(fn)
-   return function(modeS, category, value)
-      local rainbuf = modeS.zones.popup.contents
-      return rainbuf[fn](rainbuf)
-   end
-end
-```
-
-## Scrolling
-
-```lua
-alias{ toRainbuf "scrollDown",
-       NAV   = {"DOWN", "SHIFT_DOWN", "RETURN"},
-       ASCII = {"e", "j"},
-       CTRL  = {"^N", "^E", "^J"} }
-
-alias{ toRainbuf "scrollUp",
-       NAV   = {"UP", "SHIFT_UP", "SHIFT_RETURN"},
-       ASCII = {"y", "k"},
-       CTRL  = {"^Y", "^P", "^K"} }
-
-alias{ toRainbuf "pageDown",
-       NAV   = {"PAGE_DOWN"},
-       ASCII = {" ", "f"},
-       CTRL  = {"^V", "^F"} }
-alias{ toRainbuf "pageUp",
-       NAV   = {"PAGE_UP"},
-       ASCII = {"b"},
-       CTRL  = {"^B"} }
-
-alias{ toRainbuf "halfPageDown",
-       ASCII = {"d"},
-       CTRL  = {"^D"} }
-alias{ toRainbuf "halfPageUp",
-       ASCII = {"u"},
-       CTRL  = {"^U"} }
-
-alias{ toRainbuf "scrollToTop",
-       NAV   = {"HOME"},
-       ASCII = {"g", "<"} }
-alias{ toRainbuf "scrollToBottom",
-       NAV   = {"END"},
-       ASCII = {"G", ">"} }
-```
-
-```lua
-
-local function _quit(modeS)
-   -- #todo should have a stack of ragas and switch back to the one
-   -- we entered from, but this will do for now
-   modeS.shift_to = "nerf"
-end
-
-alias{_quit, NAV = {"ESC"}, ASCII = {"q"} }
-```
 
 ## Keymap
 
-Just mouse handling for now, we'll convert the rest later\.
+The only command that routes to us is the exit/quit command, everything else
+goes to the Rainbuf in the popup zone\.
+
+\#todo
+functions to ourself\. Ideally we'd find a way to specify the target directly,
+but we can at least not write out all these functions by hand\.
 
 ```lua
-function Page.scrollUp(maestro, event)
-   maestro.zones.popup.contents:scrollUp(event.num_lines)
-end
-function Page.scrollDown(maestro, event)
-   maestro.zones.popup.contents:scrollDown(event.num_lines)
+function Page.quit(maestro, event)
+   -- #todo should have a stack of ragas and switch back to the one
+   -- we entered from, but this will do for now
+   maestro.modeS.shift_to = maestro.modeS.raga_default
 end
 
 local map = {
-   SCROLL_UP = "scrollUp",
-   SCROLL_DOWN = "scrollDown"
+   ESC = "quit",
+   q = "quit"
 }
+
+for cmd, shortcuts in pairs{
+   scrollDown     = { "SCROLL_DOWN", "DOWN", "S-DOWN", "RETURN",
+                      "e", "j", "C-n", "C-e", "C-j" },
+   scrollUp       = { "SCROLL_UP", "UP", "S-UP", "S-RETURN",
+                      "y", "k", "C-y", "C-p", "C-l" },
+   pageDown       = { "PAGE_DOWN", " ", "f", "C-v", "C-f" },
+   pageUp         = { "PAGE_UP", "b", "C-b" },
+   halfPageDown   = { "d", "C-d" },
+   halfPageUp     = { "u", "C-u" },
+   scrollToBottom = { "END", "G", ">" },
+   scrollToTop    = { "HOME", "g", "<" }
+} do
+   Page[cmd] = function(maestro, event)
+      local rainbuf = maestro.zones.popup.contents
+      -- Most of these aren't mouse events, and most of the functions don't
+      -- accept an argument anyway, but eh, an extra nil param is harmless
+      rainbuf[cmd](rainbuf, event.num_lines)
+   end
+   for _, shortcut in ipairs(shortcuts) do
+      map[shortcut] = cmd
+   end
+end
 Page.default_keymaps = { map }
 ```
+
 
 ## Events
 
