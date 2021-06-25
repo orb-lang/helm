@@ -573,7 +573,7 @@ end
 ### ModeS:showModal\(text, button\_style\)
 
 Shows a modal dialog with the given text and button style
-\(see [@agent/modal]() for valid button styles\)\.
+\(see [](@agent/modal) for valid button styles\)\.
 
 \#todo
 which point we won't need this method\.

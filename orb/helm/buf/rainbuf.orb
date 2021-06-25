@@ -325,11 +325,16 @@ function Rainbuf.lineGen(rainbuf)
       rainbuf:composeUpTo(cursor)
       local prefix = ""
       if rainbuf.scrollable then
-         -- If this is the last line requested, but more are available,
-         -- prepend a continuation marker, otherwise left padding
-         prefix = "   "
-         if cursor == max_row and rainbuf.more then
-            prefix = a.red "..."
+         -- Use a three-column gutter (which we reserved space for in
+         -- :contentCols()) to display scrolling indicators.
+         -- Up arrows at the top if scrolled down, down arrows at the bottom
+         -- if more is available. Intervening lines get matching left padding
+         if cursor == rainbuf.offset + 1 and rainbuf.offset > 0 then
+            prefix = a.red "↑↑↑"
+         elseif cursor == max_row and rainbuf.more then
+            prefix = a.red "↓↓↓"
+         else
+            prefix = "   "
          end
       end
       return rainbuf.lines[cursor] and prefix .. rainbuf.lines[cursor]
