@@ -362,8 +362,14 @@ end
 
 
 
+
+
+
+
+
 function Rainbuf.replace(rainbuf, res)
    rainbuf.value = res
+   rainbuf.offset = 0
    rainbuf:beTouched()
 end
 

@@ -361,9 +361,15 @@ end
 Replace the contents of the Rainbuf with those from res, emptying it if res is
 nil\. Obviously we must be marked touched, clearing caches in the process\.
 
+Also reset the scroll position\-\-we don't want to start out scrolled halfway
+down in a result just because we were scrolled halfway down the previous one\.
+\#todo
+for the results area, and scrolling is much more rare in other cases\.
+
 ```lua
 function Rainbuf.replace(rainbuf, res)
    rainbuf.value = res
+   rainbuf.offset = 0
    rainbuf:beTouched()
 end
 ```
