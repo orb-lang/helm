@@ -20,6 +20,7 @@ local EditAgent      = require "helm:agent/edit"
 local InputEchoAgent = require "helm:agent/input-echo"
 local ModalAgent     = require "helm:agent/modal"
 local ResultsAgent   = require "helm:agent/results"
+local SessionAgent   = require "helm:agent/session"
 local StatusAgent    = require "helm:agent/status"
 local SuggestAgent   = require "helm:agent/suggest"
 
@@ -111,6 +112,7 @@ local function new(modeS)
       input_echo = InputEchoAgent(),
       modal      = ModalAgent(),
       results    = ResultsAgent(),
+      session    = SessionAgent(),
       status     = StatusAgent(),
       suggest    = SuggestAgent()
    }

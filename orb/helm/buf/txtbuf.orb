@@ -109,6 +109,22 @@ end
 #/lua
 
 
+*** Txtbuf:replace(str_or_lines)
+
+#todo hack since construction from a string differs from working with an EditAgent.
+
+#!lua
+local collect = assert(require "core:table" . collect)
+local lines = assert(require "core:string" . lines)
+function Txtbuf.replace(txtbuf, str_or_lines)
+   if type(str_or_lines) == "string" then
+      str_or_lines = collect(lines, str_or_lines)
+   end
+   return txtbuf:super"replace"(str_or_lines)
+end
+#/lua
+
+
 #!lua
 local Txtbuf_class = setmetatable({}, Txtbuf)
 Txtbuf.idEst = Txtbuf_class

@@ -22,29 +22,33 @@ Review.prompt_char = "💬"
 
 
 
+local function _toSessionAgent(fn)
+   return function(modeS, category, value)
+      local agent = modeS.maestro.agents.session
+      return agent[fn](agent)
+   end
+end
+
 local function _toSessionbuf(fn)
    return function(modeS, category, value)
       local buf = modeS.zones.results.contents
-      local answer = buf[fn](buf)
-      modeS.zones.results:beTouched()
-      return answer
+      return buf[fn](buf)
    end
 end
 
 local function _onSelectionChanged(modeS)
-   local zone = modeS.zones.results
-   local buf = zone.contents
-   modeS.maestro.agents.edit:update(buf:selectedPremise().title)
+   local premise = modeS.maestro.agents.session:selectedPremise()
+   modeS.maestro.agents.edit:update(premise and premise.title)
+   local buf = modeS.zones.results.contents
    local start_index = buf:positionOfSelected()
    local end_index = start_index + buf:rowsForSelectedResult() + 3
-   modeS.zones.results:ensureVisible(start_index, end_index)
-   modeS.zones.results:beTouched()
+   buf:ensureVisible(start_index, end_index)
 end
 
 local function _selectUsing(fn)
    return function(modeS, category, value)
-      local buf = modeS.zones.results.contents
-      local answer = buf[fn](buf)
+      local agent = modeS.maestro.agents.session
+      local answer = agent[fn](agent)
       _onSelectionChanged(modeS)
       return answer
    end
@@ -63,17 +67,17 @@ NAV.DOWN = _selectUsing "selectNextWrap"
 NAV.SHIFT_UP   = _toSessionbuf "scrollResultsUp"
 NAV.SHIFT_DOWN = _toSessionbuf "scrollResultsDown"
 
-NAV.TAB = _toSessionbuf "toggleSelectedState"
-NAV.SHIFT_TAB = _toSessionbuf "toggleSelectedState"
+NAV.TAB       = _toSessionAgent "toggleSelectedState"
+NAV.SHIFT_TAB = _toSessionAgent "reverseToggleSelectedState"
 
 function NAV.RETURN(modeS, category, value)
-   if modeS.zones.results.contents.selected_index ~= 0 then
+   if modeS.maestro.agents.session.selected_index ~= 0 then
       modeS.shift_to = "edit_title"
    end
 end
 
-NAV.ALT_UP   = _toSessionbuf "movePremiseUp"
-NAV.ALT_DOWN = _toSessionbuf "movePremiseDown"
+NAV.ALT_UP   = _toSessionAgent "movePremiseUp"
+NAV.ALT_DOWN = _toSessionAgent "movePremiseDown"
 
 
 
@@ -139,15 +143,10 @@ function Review.onShift(modeS)
       return
    end
 
-   local contents = modeS.zones.results.contents
-   if not contents or contents.idEst ~= Sessionbuf then
-      local buf = Sessionbuf(modeS.hist.session, { scrollable = true })
-      modeS.zones.results:replace(buf)
-      local premise = buf:selectedPremise()
-      modeS.maestro.agents.edit:update(premise and premise.title or "")
-   else
-      _onSelectionChanged(modeS)
-   end
+   local buf = Sessionbuf(modeS.maestro.agents.session:window(), { scrollable = true })
+   modeS.zones.results:replace(buf)
+   local premise = modeS.maestro.agents.session:selectedPremise()
+   modeS.maestro.agents.edit:update(premise and premise.title)
 end
 
 

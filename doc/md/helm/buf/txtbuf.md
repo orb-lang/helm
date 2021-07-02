@@ -112,6 +112,22 @@ end
 ```
 
 
+### Txtbuf:replace\(str\_or\_lines\)
+
+\#todo
+
+```lua
+local collect = assert(require "core:table" . collect)
+local lines = assert(require "core:string" . lines)
+function Txtbuf.replace(txtbuf, str_or_lines)
+   if type(str_or_lines) == "string" then
+      str_or_lines = collect(lines, str_or_lines)
+   end
+   return txtbuf:super"replace"(str_or_lines)
+end
+```
+
+
 ```lua
 local Txtbuf_class = setmetatable({}, Txtbuf)
 Txtbuf.idEst = Txtbuf_class

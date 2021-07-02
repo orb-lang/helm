@@ -645,6 +645,8 @@ local function new(max_extent, writer, db)
    modeS.txtbuf = modeS.zones.command.contents
    -- If we are loading an existing session, start in review mode
    local session = modeS.hist.session
+   -- #todo ugh this is clearly the wrong place/way to do this
+   modeS.maestro.agents.session:update(session)
    if session.session_id then
       modeS.raga_default = "review"
       -- #todo we should probably do this in raga/review.onShift, but...
