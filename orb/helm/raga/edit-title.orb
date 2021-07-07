@@ -15,25 +15,13 @@ EditTitle.prompt_char = "👉"
 #/lua
 
 
-** _getSelectedPremise(modeS)
-
-Retrieve the premise whose title we're editing.
-One of many ways in which this raga is an ugly hack.
-
-#!lua
-local function _getSelectedPremise(modeS)
-   return modeS.zones.results.contents:selectedPremise()
-end
-#/lua
-
-
 ** NAV
 
 #!lua
 local function _accept(modeS)
-   local sessionbuf = modeS.zones.results.contents
-   sessionbuf:selectedPremise().title = modeS.maestro.agents.edit:contents()
-   sessionbuf:selectNextWrap()
+   local agents = modeS.maestro.agents
+   agents.session:selectedPremise().title = agents.edit:contents()
+   agents.session:selectNextWrap()
    modeS.shift_to = "review"
 end
 
@@ -41,7 +29,8 @@ EditTitle.NAV.RETURN = _accept
 EditTitle.NAV.TAB = _accept
 
 function EditTitle.NAV.ESC(modeS, category, value)
-   modeS.maestro.agents.edit:update(_getSelectedPremise(modeS).title)
+   local agents = modeS.maestro.agents
+   agents.edit:update(agents.session:selectedPremise().title)
    modeS.shift_to = "review"
 end
 #/lua
@@ -58,6 +47,8 @@ EditTitle.CTRL["^Q"] = function(modeS, category, value)
    modeS.action_complete = false
 end
 #/lua
+
+
 ** Ignored commands
 
 "Restart" doesn't make sense for us

@@ -347,7 +347,24 @@ end
 *** Content management and change detection
 
 
-*** Rainbuf:clearCaches()
+**** Rainbuf:value()
+
+Retrieves our =value=, the thing we're primarily rendering, from our
+=source=, substituting a safe null value if we get a =nil=.
+
+#!lua
+function Rainbuf.value(rainbuf)
+   local value = rainbuf.source.buffer_value
+   if value == nil then
+      return rainbuf.null_value
+   else
+      return value
+   end
+end
+#/lua
+
+
+**** Rainbuf:clearCaches()
 
   Clears any cached lineGen iterators and their output, causing a full
 re-compose the next time lineGen is called.
@@ -361,26 +378,7 @@ end
 #/lua
 
 
-*** Rainbuf:replace([res])
-
-Replace the contents of the Rainbuf with those from res, emptying it if res is
-nil. Obviously we must be marked touched, clearing caches in the process.
-
-Also reset the scroll position--we don't want to start out scrolled halfway
-down in a result just because we were scrolled halfway down the previous one.
-#todo this is probably overly aggressive, but it's accurate for now, at least
-for the results area, and scrolling is much more rare in other cases.
-
-#!lua
-function Rainbuf.replace(rainbuf, res)
-   rainbuf.value = res
-   rainbuf.offset = 0
-   rainbuf:beTouched()
-end
-#/lua
-
-
-*** Rainbuf:beTouched()
+**** Rainbuf:beTouched()
 
 Mark the Rainbuf as touched. Might as well clear caches at this point, we'll
 certainly need to before our next render.
@@ -392,7 +390,8 @@ function Rainbuf.beTouched(rainbuf)
 end
 #/lua
 
-*** Rainbuf:checkTouched()
+
+**** Rainbuf:checkTouched()
 
 Answers whether the Rainbuf (or its =source=, if it has one) have been touched
 since the last time this method was called, clearing the flag in the process.
@@ -407,8 +406,8 @@ actual "touched" concept is the same and the implementation certainly works.
 
 #!lua
 function Rainbuf.checkTouched(rainbuf)
-   if rainbuf.source and rainbuf.source:checkTouched() then
-      rainbuf:replace(rainbuf.source.buffer_value)
+   if rainbuf.source:checkTouched() then
+      rainbuf:beTouched()
    end
    local touched = rainbuf.touched
    rainbuf.touched = false
@@ -417,49 +416,52 @@ end
 #/lua
 
 
-*** Rainbuf:_init()
+*** Construction and inheritance
 
-Initialize the rainbuf immediately after creation. Extracted from __call
-for easy extension.
+**** Rainbuf:_init()
+
+Initialize the =Rainbuf= immediately after creation. A newly-created =Rainbuf=
+is considered =touched=, on the basis that it has "changed from" nothingness.
 
 #!lua
 function Rainbuf._init(rainbuf)
    rainbuf.offset = 0
    rainbuf.lines = {}
-   rainbuf.touched = false
+   rainbuf.touched = true
 end
 #/lua
 
 
-*** Rainbuf([res][, cfg])
+**** Rainbuf(source[, cfg])
+
+Creates a Rainbuf drawing its content from =source=--generally a Window,
+though a lookalike table can be used for one-off/static content.
+
+#todo Document the interface a Rainbuf "source" must implement.
 
 #!lua
-local Window = require "window:window"
-local pget = assert(require "core:table" . pget)
-
-function Rainbuf.__call(buf_class, res, cfg)
+function Rainbuf.__call(buf_class, source, cfg)
    local buf_M = getmetatable(buf_class)
    local rainbuf = setmetatable({}, buf_M)
-   rainbuf:_init()
-   -- #todo should check something else here--or just have mutually-exclusive
-   -- parameters for source and value?
-   if res and res.idEst == Window then
-      rainbuf.source = res
-      rainbuf:replace(res.buffer_value)
-   else
-      rainbuf:replace(res)
+   -- Kinda-hacky detection of something that isn't a proper source.
+   -- Wrap it in a dummy table so we can function properly.
+   if not source.checkTouched then
+      source = {
+         buffer_value = source,
+         checkTouched = function() return false end
+      }
    end
-   if cfg then
-      for k, v in pairs(cfg) do
-         rainbuf[k] = v
-      end
+   rainbuf.source = source
+   rainbuf:_init()
+   for k, v in pairs(cfg or {}) do
+      rainbuf[k] = v
    end
    return rainbuf
 end
 #/lua
 
 
-*** Rainbuf:inherit([cfg])
+**** Rainbuf:inherit([cfg])
 
 Create a metatable for a "subclass" of Rainbuf. Cribbed from Phrase:inherit().
 
@@ -491,7 +493,7 @@ end
 #/lua
 
 
-*** Rainbuf:super(method_name)
+**** Rainbuf:super(method_name)
 
 We mixin core:cluster.super.
 
@@ -500,7 +502,7 @@ Rainbuf.super = assert(require "core:cluster" . super)
 #/lua
 
 
-*** Rainbuf.is_rainbuf
+**** Rainbuf.is_rainbuf
 
 We need a way to answer whether we are a Rainbuf *or any subclass*,
 attach a property at this level similar to espalier:node.

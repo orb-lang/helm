@@ -3,8 +3,43 @@
 
 
 
+
+
+
+local EditAgent = require "helm:agent/edit"
+local ResultsAgent = require "helm:agent/results"
+
+
+
+
 local SessionAgent = meta {}
 
+
+
+
+
+
+
+
+
+local function _update_edit_agent(agent, index)
+   local edit_agent = agent.edit_agents[index]
+   if edit_agent then
+      edit_agent:update(agent.session[index].line)
+   end
+end
+
+local function _update_results_agent(agent)
+   local results_agent = agent.results_agent
+   if results_agent then
+      local premise = agent:selectedPremise()
+      local result = premise and (premise.new_result or premise.old_result)
+      results_agent:update(result)
+      -- #todo scroll offset of the Resbuf needs to be reset at this point
+      -- we have some serious thinking to do about how changes are
+      -- communicated to the buffer
+   end
+end
 
 
 
@@ -14,6 +49,11 @@ local SessionAgent = meta {}
 function SessionAgent.update(agent, sesh)
    agent.session = sesh
    agent.selected_index = #sesh == 0 and 0 or 1
+   _update_results_agent(agent)
+   -- Update any EditAgents we have without creating any more
+   for index in pairs(agent.edit_agents) do
+      _update_edit_agent(agent, index)
+   end
    agent.touched = true
 end
 
@@ -34,8 +74,10 @@ function SessionAgent.selectIndex(agent, index)
       or clamp(index, 1, #agent.session)
    if index ~= agent.selected_index then
       agent.selected_index = index
+      _update_results_agent(agent)
       agent.touched = true
-      -- #todo can/should we be the ones to update the EditAgent somehow?
+      -- #todo can/should we be the ones to update the EditAgent
+      -- for the title somehow?
    end
 end
 
@@ -115,13 +157,18 @@ end
 
 
 
-local function _swapPremises(agent, index_a, index_b)
+local function _swap_premises(agent, index_a, index_b)
    local premise_a = agent.session[index_a]
    local premise_b = agent.session[index_b]
+
    agent.session[index_a] = premise_b
    premise_b.ordinal = index_a
+   _update_edit_agent(agent, index_a)
+
    agent.session[index_b] = premise_a
    premise_a.ordinal = index_b
+   _update_edit_agent(agent, index_b)
+
    agent.touched = true
 end
 
@@ -129,7 +176,7 @@ function SessionAgent.movePremiseUp(agent)
    if agent.selected_index == 1 then
       return false
    end
-   _swapPremises(agent, agent.selected_index, agent.selected_index - 1)
+   _swap_premises(agent, agent.selected_index, agent.selected_index - 1)
    -- Maintain selection of the same premise after the move
    -- Will never wrap because we disallowed moving the first premise up
    agent:selectPreviousWrap()
@@ -140,10 +187,11 @@ function SessionAgent.movePremiseDown(agent)
    if agent.selected_index == #agent.session then
       return false
    end
-   _swapPremises(agent, agent.selected_index, agent.selected_index + 1)
+   _swap_premises(agent, agent.selected_index, agent.selected_index + 1)
    agent:selectNextWrap()
    return true
 end
+
 
 
 
@@ -163,8 +211,44 @@ SessionAgent.window = agent_utils.make_window_method({
          return agent.session
       end
    },
-   closure = { selectedPremise = true }
+   closure = { selectedPremise = true,
+               editWindow = true,
+               resultsWindow = true }
 })
+
+
+
+
+
+
+
+
+local inbounds = assert(require "core:math" . inbounds)
+function SessionAgent.editWindow(agent, index)
+   assert(inbounds(index, 1, #agent.session))
+   if not agent.edit_agents[index] then
+      agent.edit_agents[index] = EditAgent()
+      _update_edit_agent(agent, index)
+   end
+   return agent.edit_agents[index]:window()
+end
+
+
+
+
+
+
+
+
+
+
+function SessionAgent.resultsWindow(agent)
+   if not agent.results_agent then
+      agent.results_agent = ResultsAgent()
+      _update_results_agent(agent)
+   end
+   return agent.results_agent:window()
+end
 
 
 
@@ -174,6 +258,7 @@ SessionAgent.window = agent_utils.make_window_method({
 local function new()
    local agent = meta(SessionAgent)
    agent.selected_index = 0
+   agent.edit_agents = {}
    return agent
 end
 

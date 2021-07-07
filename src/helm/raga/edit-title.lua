@@ -18,22 +18,10 @@ EditTitle.prompt_char = "👉"
 
 
 
-
-
-
-local function _getSelectedPremise(modeS)
-   return modeS.zones.results.contents:selectedPremise()
-end
-
-
-
-
-
-
 local function _accept(modeS)
-   local sessionbuf = modeS.zones.results.contents
-   sessionbuf:selectedPremise().title = modeS.maestro.agents.edit:contents()
-   sessionbuf:selectNextWrap()
+   local agents = modeS.maestro.agents
+   agents.session:selectedPremise().title = agents.edit:contents()
+   agents.session:selectNextWrap()
    modeS.shift_to = "review"
 end
 
@@ -41,7 +29,8 @@ EditTitle.NAV.RETURN = _accept
 EditTitle.NAV.TAB = _accept
 
 function EditTitle.NAV.ESC(modeS, category, value)
-   modeS.maestro.agents.edit:update(_getSelectedPremise(modeS).title)
+   local agents = modeS.maestro.agents
+   agents.edit:update(agents.session:selectedPremise().title)
    modeS.shift_to = "review"
 end
 
@@ -57,6 +46,8 @@ EditTitle.CTRL["^Q"] = function(modeS, category, value)
    _accept(modeS)
    modeS.action_complete = false
 end
+
+
 
 
 

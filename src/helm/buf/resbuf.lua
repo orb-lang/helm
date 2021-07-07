@@ -48,10 +48,12 @@ function Resbuf.initComposition(resbuf)
    if not resbuf.reprs then
       resbuf.reprs = {}
       resbuf.r_num = 1
-      for i = 1, resbuf.value.n do
+      local value = resbuf:value()
+      assert(value.n, "must have n")
+      for i = 1, value.n do
          resbuf.reprs[i] = resbuf.frozen
-            and lines(resbuf.value[i])
-            or lineGen(resbuf.value[i], resbuf:contentCols())
+            and lines(value[i])
+            or lineGen(value[i], resbuf:contentCols())
       end
    end
 end
@@ -64,15 +66,11 @@ end
 
 
 
+Resbuf.null_value = { n = 0 }
 
-local max = assert(math.max)
-function Resbuf.replace(resbuf, res)
-   res = res or { n = 0 }
-   assert(res.n, "must have n")
-   resbuf:super"replace"(res)
-   -- Treat an error result from valiant as just a string,
-   -- not something to repr
-   resbuf.frozen = res.error
+function Resbuf._init(resbuf)
+   resbuf:super"_init"()
+   resbuf.frozen = resbuf:value().error
 end
 
 
@@ -86,7 +84,7 @@ end
 function Resbuf._composeOneLine(resbuf)
    assert(resbuf.r_num,
       "r_num has been niled (missing an :initComposition after :clearCaches?)")
-   while resbuf.r_num <= resbuf.value.n do
+   while resbuf.r_num <= #resbuf.reprs do
       local line = resbuf.reprs[resbuf.r_num]()
       if line then
          return line

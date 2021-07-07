@@ -353,10 +353,13 @@ end
 
 
 
-local clear = assert(table.clear)
-function Rainbuf.clearCaches(rainbuf)
-   clear(rainbuf.lines)
-   rainbuf.more = true
+function Rainbuf.value(rainbuf)
+   local value = rainbuf.source.buffer_value
+   if value == nil then
+      return rainbuf.null_value
+   else
+      return value
+   end
 end
 
 
@@ -367,15 +370,10 @@ end
 
 
 
-
-
-
-
-
-function Rainbuf.replace(rainbuf, res)
-   rainbuf.value = res
-   rainbuf.offset = 0
-   rainbuf:beTouched()
+local clear = assert(table.clear)
+function Rainbuf.clearCaches(rainbuf)
+   clear(rainbuf.lines)
+   rainbuf.more = true
 end
 
 
@@ -406,9 +404,10 @@ end
 
 
 
+
 function Rainbuf.checkTouched(rainbuf)
-   if rainbuf.source and rainbuf.source:checkTouched() then
-      rainbuf:replace(rainbuf.source.buffer_value)
+   if rainbuf.source:checkTouched() then
+      rainbuf:beTouched()
    end
    local touched = rainbuf.touched
    rainbuf.touched = false
@@ -423,10 +422,12 @@ end
 
 
 
+
+
 function Rainbuf._init(rainbuf)
    rainbuf.offset = 0
    rainbuf.lines = {}
-   rainbuf.touched = false
+   rainbuf.touched = true
 end
 
 
@@ -434,25 +435,26 @@ end
 
 
 
-local Window = require "window:window"
-local pget = assert(require "core:table" . pget)
 
-function Rainbuf.__call(buf_class, res, cfg)
+
+
+
+
+function Rainbuf.__call(buf_class, source, cfg)
    local buf_M = getmetatable(buf_class)
    local rainbuf = setmetatable({}, buf_M)
-   rainbuf:_init()
-   -- #todo should check something else here--or just have mutually-exclusive
-   -- parameters for source and value?
-   if res and res.idEst == Window then
-      rainbuf.source = res
-      rainbuf:replace(res.buffer_value)
-   else
-      rainbuf:replace(res)
+   -- Kinda-hacky detection of something that isn't a proper source.
+   -- Wrap it in a dummy table so we can function properly.
+   if not source.checkTouched then
+      source = {
+         buffer_value = source,
+         checkTouched = function() return false end
+      }
    end
-   if cfg then
-      for k, v in pairs(cfg) do
-         rainbuf[k] = v
-      end
+   rainbuf.source = source
+   rainbuf:_init()
+   for k, v in pairs(cfg or {}) do
+      rainbuf[k] = v
    end
    return rainbuf
 end

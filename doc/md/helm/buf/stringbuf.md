@@ -31,7 +31,7 @@ end
 
 local lines = assert(require "core:string" . lines)
 function Stringbuf.initComposition(buf)
-   buf._composeOneLine = buf._composeOneLine or lines(buf.value)
+   buf._composeOneLine = buf._composeOneLine or lines(buf:value())
 end
 ```
 
