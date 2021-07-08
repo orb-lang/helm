@@ -149,7 +149,7 @@ function Suggest.update(suggest, modeS)
    -- in the current position.
    local complete_against
    if path then
-      complete_against = __G
+      complete_against = modeS.eval.eval_env
       for _, key in ipairs(path) do
          complete_against = safeget(complete_against, key)
       end

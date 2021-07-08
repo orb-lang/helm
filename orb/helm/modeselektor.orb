@@ -739,7 +739,7 @@ local deepclone = assert(core.deepclone)
 local function new(max_extent, writer, db)
    local modeS = meta(ModeS)
 
-   modeS.eval = Valiant(_G, __G)
+   modeS.eval = Valiant(__G)
    modeS.txtbuf = Txtbuf()
    modeS.hist  = Historian(db)
    modeS.suggest = Suggest()
