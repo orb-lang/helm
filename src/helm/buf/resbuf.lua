@@ -43,7 +43,6 @@ end
 
 
 local lines = import("core/string", "lines")
-local npairs = assert(require "core:table" . npairs)
 function Resbuf.initComposition(resbuf)
    if not resbuf.reprs then
       resbuf.reprs = {}

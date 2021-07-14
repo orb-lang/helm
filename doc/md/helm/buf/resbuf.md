@@ -43,7 +43,6 @@ Set up the lineGen\(\) iterators we'll use to build our output\.
 
 ```lua
 local lines = import("core/string", "lines")
-local npairs = assert(require "core:table" . npairs)
 function Resbuf.initComposition(resbuf)
    if not resbuf.reprs then
       resbuf.reprs = {}
