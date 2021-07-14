@@ -802,6 +802,7 @@ end
 
 
 
+
 local function cat(l)
    if l == nil then
       return ""
@@ -827,6 +828,18 @@ end
 
 
 
+
+
+
+function EditAgent.continuationLines(agent)
+   return #agent - 1
+end
+
+
+
+
+
+
 local agent_utils = require "helm:agent/utils"
 
 EditAgent.checkTouched = agent_utils.checkTouched
@@ -842,7 +855,7 @@ EditAgent.window = agent_utils.make_window_method({
          return answer
       end
    },
-   closure = { cursorIndex = true }
+   closure = { cursorIndex = true, continuationLines = true }
 })
 
 

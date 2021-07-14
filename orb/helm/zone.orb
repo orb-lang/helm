@@ -404,7 +404,7 @@ local ceil, floor = assert(math.ceil), assert(math.floor)
 
 function Zoneherd.reflow(zoneherd, modeS)
    local right_col = modeS.max_extent.col - _zoneOffset(modeS)
-   local txt_off = modeS:continuationLines()
+   local txt_off = modeS.maestro.agents.edit:continuationLines()
    zoneherd.status:setBounds(  1, 1, 1, right_col)
    zoneherd.stat_col:setBounds(1, right_col + 1,
                                1, modeS.max_extent.col )

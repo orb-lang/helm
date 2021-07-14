@@ -805,6 +805,7 @@ function EditAgent.clear(agent)
 end
 ```
 
+
 ### EditAgent:contents\(\)
 
 Returns the contents of the agent as a single \(potentially multiline\) string\.
@@ -832,6 +833,18 @@ end
 ```
 
 
+### EditAgent:continuationLines\(\)
+
+The number of continuation lines \(lines past the first\)\. Simple enough, but
+used in a couple places\.
+
+```lua
+function EditAgent.continuationLines(agent)
+   return #agent - 1
+end
+```
+
+
 ### Window
 
 ```lua
@@ -850,7 +863,7 @@ EditAgent.window = agent_utils.make_window_method({
          return answer
       end
    },
-   closure = { cursorIndex = true }
+   closure = { cursorIndex = true, continuationLines = true }
 })
 ```
 

@@ -238,29 +238,6 @@ ModeS.raga_default = "nerf"
 
 
 
-function ModeS.continuationLines(modeS)
-   return #modeS.maestro.agents.edit - 1
-end
-
-
-
-
-
-
-
-function ModeS.updatePrompt(modeS)
-   local prompt = modeS.raga.prompt_char .. " " .. ("\n..."):rep(modeS:continuationLines())
-   modeS.zones.prompt:replace(prompt)
-   return modeS
-end
-
-
-
-
-
-
-
-
 
 
 
@@ -312,7 +289,11 @@ function ModeS.shiftMode(modeS, raga_name)
    -- requires a re-render
    modeS.txtbuf:beTouched()
    modeS.raga.onShift(modeS)
-   modeS:updatePrompt()
+   -- #todo feels wrong to do this here, like it's something the raga
+   -- should handle, but onShift feels kinda like it "doesn't inherit",
+   -- like it's not something you should actually super-send, so there's
+   -- not one good place to do this.
+   modeS.maestro.agents.prompt:update(modeS.raga.prompt_char)
    return modeS
 end
 
@@ -389,8 +370,6 @@ function ModeS.act(modeS, event, old_cat_val)
    end
    -- Inform the input-echo agent of what just happened
    modeS.maestro.agents.input_echo:update(event, command)
-   -- Update the prompt--obsolete once this is handled by a Window
-   modeS:updatePrompt()
    -- Reflow in case command height has changed. Includes a paint.
    -- Don't allow errors encountered here to break this entire
    -- event-loop iteration, otherwise we become unable to quit if

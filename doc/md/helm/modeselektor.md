@@ -232,29 +232,6 @@ repainting is a good example of this\.
 
 The next mode we're going to write is `"search"`\.
 
-#### ModeS:continuationLines\(\)
-
-Answers the number of additional lines \(beyond the first\) needed
-for the command zone\.
-
-```lua
-function ModeS.continuationLines(modeS)
-   return #modeS.maestro.agents.edit - 1
-end
-```
-
-#### ModeS:updatePrompt\(\)
-
-Updates the prompt with the correct symbol and number of continuation prompts\.
-
-```lua
-function ModeS.updatePrompt(modeS)
-   local prompt = modeS.raga.prompt_char .. " " .. ("\n..."):rep(modeS:continuationLines())
-   modeS.zones.prompt:replace(prompt)
-   return modeS
-end
-```
-
 
 ### ModeS:shiftMode\(raga\)
 
@@ -312,7 +289,11 @@ function ModeS.shiftMode(modeS, raga_name)
    -- requires a re-render
    modeS.txtbuf:beTouched()
    modeS.raga.onShift(modeS)
-   modeS:updatePrompt()
+   -- #todo feels wrong to do this here, like it's something the raga
+   -- should handle, but onShift feels kinda like it "doesn't inherit",
+   -- like it's not something you should actually super-send, so there's
+   -- not one good place to do this.
+   modeS.maestro.agents.prompt:update(modeS.raga.prompt_char)
    return modeS
 end
 ```
@@ -325,9 +306,9 @@ by `onseq`\)\. It may try the dispatch multiple times if the raga indicates
 that reprocessing is needed by setting `modeS.action_complete` to =false\.
 
 Note that our common interface is `method(modeS, category, value)`,
-we need to distinguish betwen the tuple `("INSERT", "SHIFT-LEFT")`which could arrive from copy\-paste\) and `("NAV", "SHIFT-LEFT")`
-and
-\( preserve information for our fall\-through method\.
+we need to distinguish betwen the tuple `("INSERT", "SHIFT-LEFT")`
+\(which could arrive from copy\-paste\) and `("NAV", "SHIFT-LEFT")`
+and preserve information for our fall\-through method\.
 
 `act` always succeeds, meaning we need some metatable action to absorb and
 log anything unexpected\.
@@ -389,8 +370,6 @@ function ModeS.act(modeS, event, old_cat_val)
    end
    -- Inform the input-echo agent of what just happened
    modeS.maestro.agents.input_echo:update(event, command)
-   -- Update the prompt--obsolete once this is handled by a Window
-   modeS:updatePrompt()
    -- Reflow in case command height has changed. Includes a paint.
    -- Don't allow errors encountered here to break this entire
    -- event-loop iteration, otherwise we become unable to quit if

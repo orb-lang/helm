@@ -19,6 +19,7 @@ local input_event = require "anterm:input-event"
 local EditAgent      = require "helm:agent/edit"
 local InputEchoAgent = require "helm:agent/input-echo"
 local ModalAgent     = require "helm:agent/modal"
+local PromptAgent    = require "helm:agent/prompt"
 local ResultsAgent   = require "helm:agent/results"
 local SessionAgent   = require "helm:agent/session"
 local StatusAgent    = require "helm:agent/status"
@@ -111,17 +112,20 @@ local function new(modeS)
       edit       = EditAgent(),
       input_echo = InputEchoAgent(),
       modal      = ModalAgent(),
+      prompt     = PromptAgent(),
       results    = ResultsAgent(),
       session    = SessionAgent(),
       status     = StatusAgent(),
       suggest    = SuggestAgent()
    }
    maestro.agents = agents
+   agents.prompt.edit_window = agents.edit:window()
    -- Set up common Agent -> Zone bindings
    -- Note we don't do results here because that varies from raga to raga
    -- The Txtbuf also needs a source of "suggestions" (which might be
    -- history-search results instead), but that too is raga-dependent
    zones.command:replace(Txtbuf(agents.edit:window()))
+   zones.prompt:replace(Stringbuf(agents.prompt:window()))
    zones.modal:replace(Resbuf(agents.modal:window()))
    zones.status:replace(Stringbuf(agents.status:window()))
    zones.stat_col
