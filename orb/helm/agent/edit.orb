@@ -565,6 +565,7 @@ function EditAgent.startOfText(agent)
 end
 
 function EditAgent.endOfText(agent)
+   agent:openRow(#agent)
    agent:setCursor(#agent, #agent[#agent] + 1)
 end
 #/lua
