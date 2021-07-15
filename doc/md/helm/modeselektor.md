@@ -542,19 +542,16 @@ Opens a simple help screen\.
 
 ```lua
 function ModeS.openHelp(modeS)
-  -- #todo this should be a more generic buffer--maybe a Txtbuf, actually,
-  -- or a slightly-smarter Stringbuf
-   local rb = Resbuf({ ("abcde "):rep(1000), n = 1 }, { scrollable = true })
-   modeS.zones.popup:replace(rb)
+   modeS.maestro.agents.pager:update(("abcde "):rep(1000))
    modeS.shift_to = "page"
 end
 ```
 
 ### ModeS:showModal\(text, button\_style\)
 
-Shows a modal dialog with the given text and button stylesee [](@agent/modal) for valid button styles\)\.
+Shows a modal dialog with the given text and button style
+\(see [](@agent/modal) for valid button styles\)\.
 
-\(
 \#todo
 which point we won't need this method\.
 

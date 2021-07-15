@@ -19,6 +19,7 @@ local input_event = require "anterm:input-event"
 local EditAgent      = require "helm:agent/edit"
 local InputEchoAgent = require "helm:agent/input-echo"
 local ModalAgent     = require "helm:agent/modal"
+local PagerAgent     = require "helm:agent/pager"
 local PromptAgent    = require "helm:agent/prompt"
 local ResultsAgent   = require "helm:agent/results"
 local SessionAgent   = require "helm:agent/session"
@@ -112,6 +113,7 @@ local function new(modeS)
       edit       = EditAgent(),
       input_echo = InputEchoAgent(),
       modal      = ModalAgent(),
+      pager      = PagerAgent(),
       prompt     = PromptAgent(),
       results    = ResultsAgent(),
       session    = SessionAgent(),
@@ -125,6 +127,7 @@ local function new(modeS)
    -- The Txtbuf also needs a source of "suggestions" (which might be
    -- history-search results instead), but that too is raga-dependent
    zones.command:replace(Txtbuf(agents.edit:window()))
+   zones.popup:replace(Resbuf(agents.pager:window(), { scrollable = true }))
    zones.prompt:replace(Stringbuf(agents.prompt:window()))
    zones.modal:replace(Resbuf(agents.modal:window()))
    zones.status:replace(Stringbuf(agents.status:window()))

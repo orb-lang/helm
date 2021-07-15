@@ -542,10 +542,7 @@ end
 
 
 function ModeS.openHelp(modeS)
-  -- #todo this should be a more generic buffer--maybe a Txtbuf, actually,
-  -- or a slightly-smarter Stringbuf
-   local rb = Resbuf({ ("abcde "):rep(1000), n = 1 }, { scrollable = true })
-   modeS.zones.popup:replace(rb)
+   modeS.maestro.agents.pager:update(("abcde "):rep(1000))
    modeS.shift_to = "page"
 end
 

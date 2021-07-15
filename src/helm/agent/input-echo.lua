@@ -102,7 +102,7 @@ InputEchoAgent.checkTouched = assert(agent_utils.checkTouched)
 local Window = require "window:window"
 InputEchoAgent.window = agent_utils.make_window_method({
    fn = { buffer_value = function(echo)
-      return echo.last_event and { n = 1, echo.last_event }
+      return { n = 1, echo.last_event }
    end }
 })
 
