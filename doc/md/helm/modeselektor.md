@@ -274,20 +274,19 @@ ModeS.closet = { nerf =       { raga = Nerf,
                                 lex  = Lex.null } }
 
 function ModeS.shiftMode(modeS, raga_name)
+   local edit_agent = modeS.maestro.agents.edit
    -- Stash the current lexer associated with the current raga
    -- Currently we never change the lexer separate from the raga,
    -- but this will change when we start supporting multiple languages
    -- Guard against nil raga or lexer during startup
    if modeS.raga then
       modeS.raga.onUnshift(modeS)
-      modeS.closet[modeS.raga.name].lex = modeS.txtbuf.lex
+      modeS.closet[modeS.raga.name].lex = edit_agent.lex
    end
    -- Switch in the new raga and associated lexer
    modeS.raga = modeS.closet[raga_name].raga
-   modeS.txtbuf.lex = modeS.closet[raga_name].lex
-   -- #todo Txtbuf should probably be directly aware that a lexer change
-   -- requires a re-render
-   modeS.txtbuf:beTouched()
+   edit_agent.lex = modeS.closet[raga_name].lex
+   edit_agent.touched = true
    modeS.raga.onShift(modeS)
    -- #todo feels wrong to do this here, like it's something the raga
    -- should handle, but onShift feels kinda like it "doesn't inherit",
@@ -306,9 +305,9 @@ by `onseq`\)\. It may try the dispatch multiple times if the raga indicates
 that reprocessing is needed by setting `modeS.action_complete` to =false\.
 
 Note that our common interface is `method(modeS, category, value)`,
-we need to distinguish betwen the tuple `("INSERT", "SHIFT-LEFT")`
-\(which could arrive from copy\-paste\) and `("NAV", "SHIFT-LEFT")`
-and preserve information for our fall\-through method\.
+we need to distinguish betwen the tuple `("INSERT", "SHIFT-LEFT")`which could arrive from copy\-paste\) and `("NAV", "SHIFT-LEFT")`
+and
+\( preserve information for our fall\-through method\.
 
 `act` always succeeds, meaning we need some metatable action to absorb and
 log anything unexpected\.
@@ -437,8 +436,6 @@ local insert = assert(table.insert)
 local keys = assert(core.keys)
 
 function ModeS.eval(modeS)
-   -- Getting ready to eval, cancel any active autocompletion
-   modeS.maestro.agents.suggest:cancel()
    local line = modeS.maestro.agents.edit:contents()
    local success, results = eval(line)
    if not success and results == 'advance' then
@@ -617,8 +614,6 @@ local function new(max_extent, writer, db)
    modeS.repl_top = ModeS.REPL_LINE
    modeS.zones = Zoneherd(modeS, writer)
    modeS.maestro = Maestro(modeS)
-   -- #todo a few people still need this convenience access, grab a ref
-   modeS.txtbuf = modeS.zones.command.contents
    -- If we are loading an existing session, start in review mode
    local session = modeS.hist.session
    -- #todo ugh this is clearly the wrong place/way to do this

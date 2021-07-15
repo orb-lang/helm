@@ -28,10 +28,10 @@ local new
 
 
 
-local function _cursorContext(txtbuf)
+function SuggestAgent.cursorContext(suggest)
    local lex_tokens = {}
    -- Ignore whitespace and comments
-   for _, token in ipairs(txtbuf:tokens()) do
+   for _, token in ipairs(suggest.tokens()) do
       if token.color ~= "no_color" and token.color ~= "comment" then
          insert(lex_tokens, token)
       end
@@ -45,8 +45,6 @@ local function _cursorContext(txtbuf)
          break
       end
    end
-   -- #todo once we're using =palette=, we'll be able to check the name
-   -- of the color rather than needing the color table ourselves
    if not context or context.color ~= "field" then
       -- We're in a non-completable token
       return nil
@@ -135,11 +133,10 @@ local function _set_suggestions(suggest, suggestions)
 end
 
 
-function SuggestAgent.update(suggest, txtbuf)
-   local context, path = _cursorContext(txtbuf)
+function SuggestAgent.update(suggest)
+   local context, path = suggest:cursorContext()
    if context == nil then
-      suggest:cancel(txtbuf)
-      return
+      return _set_suggestions(suggest, nil)
    end
 
    -- First, build a list of candidate symbols--those that would be valid
@@ -169,8 +166,7 @@ function SuggestAgent.update(suggest, txtbuf)
       end
    end
    if #matches == 0 then
-      suggest:cancel(txtbuf)
-      return
+      return _set_suggestions(suggest, nil)
    end
    sort(matches, _suggest_sort)
    for _, match in ipairs(matches) do
@@ -184,25 +180,10 @@ end
 
 
 
-function SuggestAgent.cancel(suggest)
-   _set_suggestions(suggest, nil)
-end
 
-
-
-
-
-
-
-
-
-
-function SuggestAgent.accept(suggest, txtbuf, edit_agent)
+function SuggestAgent.accept(suggest)
    local suggestion = suggest.last_collection:selectedItem()
-   local context = _cursorContext(txtbuf)
-   edit_agent:right(context.total_disp - context.cursor_offset)
-   edit_agent:killBackward(context.total_disp)
-   edit_agent:paste(suggestion)
+   suggest.replaceToken(suggestion)
 end
 
 

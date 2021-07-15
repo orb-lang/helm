@@ -31,7 +31,7 @@ end
 
 local function _accept(modeS)
    if _suggest(modeS).last_collection then
-      _suggest(modeS):accept(modeS.txtbuf, modeS.maestro.agents.edit)
+      _suggest(modeS):accept()
    else
       modeS.action_complete = false
    end
@@ -109,11 +109,10 @@ we will have already shifted ragas\.
 
 ```lua
 function Complete.onTxtbufChanged(modeS)
-   _suggest(modeS):update(modeS.txtbuf)
+   _suggest(modeS):update()
    if _suggest(modeS).last_collection then
       _suggest(modeS).last_collection.selected_index = 1
-   end
-   if not _suggest(modeS).last_collection then
+   else
       _quit(modeS)
    end
    EditBase.onTxtbufChanged(modeS)
@@ -146,7 +145,7 @@ function Complete.getCursorPosition(modeS)
    local point = EditBase.getCursorPosition(modeS)
    local suggestion = _suggest(modeS).last_collection:selectedItem()
    if suggestion then
-      for _, tok in ipairs(modeS.txtbuf:tokens()) do
+      for _, tok in ipairs(modeS.maestro.agents.edit:tokens()) do
          if tok.cursor_offset then
             point = point + Point(0, #suggestion - tok.cursor_offset)
             break

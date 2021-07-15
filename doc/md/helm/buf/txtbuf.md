@@ -10,11 +10,6 @@ syntax highlighting\.
 ### Instance fields
 
 
-
--  lex :  A function accepting a string and returning an array of Tokens,
-    used by the Txtbuf to provide syntax highlighting\.
-
-
 -  render\_row : Index of the row being rendered \(Rainbuf implementation detail\)
 
 
@@ -56,7 +51,7 @@ local c = assert(require "singletons:color" . color)
 local concat = assert(table.concat)
 function Txtbuf._composeOneLine(txtbuf)
    if txtbuf.render_row > #txtbuf:value() then return nil end
-   local tokens = txtbuf:tokens(txtbuf.render_row)
+   local tokens = txtbuf.source.tokens(txtbuf.render_row)
    local suggestion = txtbuf.suggestions
       and txtbuf.suggestions:selectedItem()
    for i, tok in ipairs(tokens) do
@@ -76,24 +71,6 @@ end
 ```
 
 
-### Txtbuf:tokens\(\[row\]\)
-
-Breaks the contents of the Txtbuf, or a single row if `row` is supplied,
-into tokens using the assigned lexer
-
-```lua
-function Txtbuf.tokens(txtbuf, row)
-   if row then
-      local cursor_col = txtbuf.source.cursor.row == row
-         and txtbuf.source.cursor.col or 0
-      return txtbuf.lex(txtbuf:value()[row], cursor_col)
-   else
-      return txtbuf.lex(concat(txtbuf:value()), txtbuf.source.cursorIndex())
-   end
-end
-```
-
-
 ### Txtbuf:checkTouched\(\)
 
 We additionally check if something has changed about the active suggestions\.
@@ -107,22 +84,6 @@ function Txtbuf.checkTouched(txtbuf)
       txtbuf:beTouched()
    end
    return txtbuf:super"checkTouched"()
-end
-```
-
-
-### Txtbuf:replace\(str\_or\_lines\)
-
-\#todo
-
-```lua
-local collect = assert(require "core:table" . collect)
-local lines = assert(require "core:string" . lines)
-function Txtbuf.replace(txtbuf, str_or_lines)
-   if type(str_or_lines) == "string" then
-      str_or_lines = collect(lines, str_or_lines)
-   end
-   return txtbuf:super"replace"(str_or_lines)
 end
 ```
 

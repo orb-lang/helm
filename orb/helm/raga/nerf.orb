@@ -241,12 +241,12 @@ update the suggestions.
 
 #!lua
 function Nerf.onCursorChanged(modeS)
-   modeS.maestro.agents.suggest:update(modeS.txtbuf)
+   modeS.maestro.agents.suggest:update()
    EditBase.onCursorChanged(modeS)
 end
 
 function Nerf.onTxtbufChanged(modeS)
-   modeS.maestro.agents.suggest:update(modeS.txtbuf)
+   modeS.maestro.agents.suggest:update()
    EditBase.onTxtbufChanged(modeS)
 end
 #/lua
@@ -262,9 +262,9 @@ results zone.
 local Resbuf = require "helm:buf/resbuf"
 function Nerf.onShift(modeS)
    EditBase.onShift(modeS)
-   modeS.zones.results:replace(Resbuf(modeS.maestro.agents.results:window(),
-      { scrollable = true }))
-   modeS.txtbuf.suggestions = modeS.maestro.agents.suggest:window()
+   modeS.maestro:bindZone("results", "results", Resbuf, { scrollable = true })
+   local txtbuf = modeS.zones.command.contents
+   txtbuf.suggestions = modeS.maestro.agents.suggest:window()
 end
 #/lua
 

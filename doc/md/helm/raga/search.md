@@ -151,7 +151,7 @@ same Window also drives the result zone\.
 function Search.onShift(modeS)
    EditBase.onShift(modeS)
    modeS.hist:search(modeS.maestro.agents.edit:contents())
-   modeS.txtbuf.suggestions = modeS.hist:window()
+   modeS.zones.command.contents.suggestions = modeS.hist:window()
    modeS.zones.results:replace(Resbuf(modeS.hist:window(), { scrollable = true }))
 end
 ```

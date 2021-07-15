@@ -98,17 +98,33 @@ end
 ```
 
 
+### Maestro:bindZone\(zone\_name, agent\_name, buf\_class, cfg\)
+
+Changes the Zone `zone_name` to display content from the Agent named `agent_name`\.
+
+\#todo
+as arguments is probably not the best choice\.
+
+```lua
+function Maestro.bindZone(maestro, zone_name, agent_name, buf_class, cfg)
+   local zone = maestro.zones[zone_name]
+   local agent = maestro.agents[agent_name]
+   zone:replace(buf_class(agent:window(), cfg))
+end
+```
+
+
 ### new\(modeS\)
 
 ```lua
+local borrowmethod = assert(require "core:cluster/actor" . borrowmethod)
 local function new(modeS)
    local maestro = meta(Maestro)
    -- #todo this is temporary until we sort out communication properly
    maestro.modeS = modeS
    -- Zoneherd we will keep a reference to (maybe the only reference) even
    -- once we untangle from modeS, so start referring to it directly now
-   local zones = modeS.zones
-   maestro.zones = zones
+   maestro.zones = modeS.zones
    local agents = {
       edit       = EditAgent(),
       input_echo = InputEchoAgent(),
@@ -121,19 +137,27 @@ local function new(modeS)
       suggest    = SuggestAgent()
    }
    maestro.agents = agents
-   agents.prompt.edit_window = agents.edit:window()
+   -- Set up Agent <-> Agent interaction via borrowmethod
+   local function borrowto(dst, src, name)
+      dst[name] = borrowmethod(src, name)
+   end
+   borrowto(agents.suggest, agents.edit, "tokens")
+   borrowto(agents.suggest, agents.edit, "replaceToken")
+   borrowto(agents.prompt,  agents.edit, "continuationLines")
+   -- #todo this is just...ugly
+   agents.prompt.editTouched = borrowmethod(agents.edit,
+                                 function(agent) return agent.touched end)
    -- Set up common Agent -> Zone bindings
    -- Note we don't do results here because that varies from raga to raga
    -- The Txtbuf also needs a source of "suggestions" (which might be
    -- history-search results instead), but that too is raga-dependent
-   zones.command:replace(Txtbuf(agents.edit:window()))
-   zones.popup:replace(Resbuf(agents.pager:window(), { scrollable = true }))
-   zones.prompt:replace(Stringbuf(agents.prompt:window()))
-   zones.modal:replace(Resbuf(agents.modal:window()))
-   zones.status:replace(Stringbuf(agents.status:window()))
-   zones.stat_col
-      :replace(Resbuf(agents.input_echo:window()))
-   zones.suggest:replace(Resbuf(agents.suggest:window()))
+   maestro:bindZone("command",  "edit",       Txtbuf)
+   maestro:bindZone("popup",    "pager",      Resbuf,    { scrollable = true })
+   maestro:bindZone("prompt",   "prompt",     Stringbuf)
+   maestro:bindZone("modal",    "modal",      Resbuf)
+   maestro:bindZone("status",   "status",     Stringbuf)
+   maestro:bindZone("stat_col", "input_echo", Resbuf)
+   maestro:bindZone("suggest",  "suggest",    Resbuf)
    return maestro
 end
 ```

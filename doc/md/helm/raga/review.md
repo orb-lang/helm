@@ -143,8 +143,7 @@ function Review.onShift(modeS)
       return
    end
 
-   local buf = Sessionbuf(modeS.maestro.agents.session:window(), { scrollable = true })
-   modeS.zones.results:replace(buf)
+   modeS.maestro:bindZone("results", "session", Sessionbuf, {scrollable = true})
    local premise = modeS.maestro.agents.session:selectedPremise()
    modeS.maestro.agents.edit:update(premise and premise.title)
 end

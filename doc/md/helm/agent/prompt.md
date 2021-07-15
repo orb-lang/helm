@@ -30,8 +30,8 @@ local agent_utils = require "helm:agent/utils"
 
 function PromptAgent.checkTouched(agent)
    -- #todo .touched propagation is weird, we can't :checkTouched()
-   -- on the edit window because we'll clear stuff prematurely
-   agent.touched = agent.touched or agent.edit_window.touched
+   -- on the EditAgent because we'll clear stuff prematurely
+   agent.touched = agent.touched or agent.editTouched()
    return agent_utils.checkTouched(agent)
 end
 ```
@@ -42,7 +42,7 @@ end
 PromptAgent.window = agent_utils.make_window_method({
    fn = { buffer_value = function(agent, window, field)
       return agent.prompt_char .. " " ..
-                ("\n..."):rep(agent.edit_window.continuationLines())
+                ("\n..."):rep(agent.continuationLines())
    end}
 })
 ```

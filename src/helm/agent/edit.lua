@@ -92,6 +92,10 @@ local concat, insert, remove = assert(table.concat),
 
 
 
+
+
+
+
 function EditAgent.contentsChanged(agent)
    agent.contents_changed = true
    agent.touched = true
@@ -717,6 +721,26 @@ end
 
 
 
+function EditAgent.replaceToken(agent, frag)
+   local cursor_token
+   for _, token in ipairs(agent:tokens(agent.cursor.row)) do
+      if token.cursor_offset then
+         cursor_token = token
+         break
+      end
+   end
+   agent:right(cursor_token.total_disp - cursor_token.cursor_offset)
+   agent:killBackward(cursor_token.total_disp)
+   agent:paste(frag)
+end
+
+
+
+
+
+
+
+
 
 
 
@@ -840,6 +864,24 @@ end
 
 
 
+
+
+
+function EditAgent.tokens(agent, row)
+   if row then
+      local cursor_col = agent.cursor.row == row
+         and agent.cursor.col or 0
+      return agent.lex(cat(agent[row]), cursor_col)
+   else
+      return agent.lex(agent:contents(), agent:cursorIndex())
+   end
+end
+
+
+
+
+
+
 local agent_utils = require "helm:agent/utils"
 
 EditAgent.checkTouched = agent_utils.checkTouched
@@ -855,7 +897,8 @@ EditAgent.window = agent_utils.make_window_method({
          return answer
       end
    },
-   closure = { cursorIndex = true, continuationLines = true }
+   closure = { cursorIndex = true,
+               tokens = true }
 })
 
 

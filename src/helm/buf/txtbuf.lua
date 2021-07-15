@@ -18,10 +18,6 @@
 
 
 
-
-
-
-
 local Rainbuf = require "helm:buf/rainbuf"
 local Txtbuf = Rainbuf:inherit()
 
@@ -53,7 +49,7 @@ local c = assert(require "singletons:color" . color)
 local concat = assert(table.concat)
 function Txtbuf._composeOneLine(txtbuf)
    if txtbuf.render_row > #txtbuf:value() then return nil end
-   local tokens = txtbuf:tokens(txtbuf.render_row)
+   local tokens = txtbuf.source.tokens(txtbuf.render_row)
    local suggestion = txtbuf.suggestions
       and txtbuf.suggestions:selectedItem()
    for i, tok in ipairs(tokens) do
@@ -79,24 +75,6 @@ end
 
 
 
-function Txtbuf.tokens(txtbuf, row)
-   if row then
-      local cursor_col = txtbuf.source.cursor.row == row
-         and txtbuf.source.cursor.col or 0
-      return txtbuf.lex(txtbuf:value()[row], cursor_col)
-   else
-      return txtbuf.lex(concat(txtbuf:value()), txtbuf.source.cursorIndex())
-   end
-end
-
-
-
-
-
-
-
-
-
 
 
 function Txtbuf.checkTouched(txtbuf)
@@ -104,22 +82,6 @@ function Txtbuf.checkTouched(txtbuf)
       txtbuf:beTouched()
    end
    return txtbuf:super"checkTouched"()
-end
-
-
-
-
-
-
-
-
-local collect = assert(require "core:table" . collect)
-local lines = assert(require "core:string" . lines)
-function Txtbuf.replace(txtbuf, str_or_lines)
-   if type(str_or_lines) == "string" then
-      str_or_lines = collect(lines, str_or_lines)
-   end
-   return txtbuf:super"replace"(str_or_lines)
 end
 
 

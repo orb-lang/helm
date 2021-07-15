@@ -43,7 +43,7 @@ local concat, insert, remove = assert(table.concat),
    `agent:currentPosition()`\.
 
 
-- desired\_col : The column where the cursor "should" be, even if this is
+-  desired\_col : The column where the cursor "should" be, even if this is
     out\-of\-bounds in the current row\-\-used to retain a "memory"
     of where we were when moving from a long line, to a shorter
     one, back to a longer one\.
@@ -58,6 +58,11 @@ local concat, insert, remove = assert(table.concat),
     Mutation of these should be encapsulated such that they can be
     combined into a "region" structure, of which there may eventually be
     multiple instances, during for instance search and replace\.
+
+
+-  lex :  A function accepting a string and returning an array of Tokens,
+    which supports \`SuggestAgent\` and syntax highlighting in \`Txtbuf\`\.
+
 
 
 -  cursor\_changed :   A flag indicating whether the cursor has changed since
@@ -384,9 +389,9 @@ thus proceeds through :killSelection\(\)
 
 #### EditAgent:killSelection\(\)
 
-Deletes the selected text, if any\. Returns whether anything was deletedi\.e\. whether anything was initially selected\)\.
+Deletes the selected text, if any\. Returns whether anything was deleted
+\(i\.e\. whether anything was initially selected\)\.
 
-\(
 ```lua
 local deleterange = import("core/table", "deleterange")
 function EditAgent.killSelection(agent)
@@ -720,6 +725,26 @@ really nail displacement we need to be looking up displacements in some kind
 of region\-defined lookup table\.
 
 
+#### EditAgent:replaceToken\(frag\)
+
+Replaces the Token in which the cursor resides with the given fragment\.
+
+```lua
+function EditAgent.replaceToken(agent, frag)
+   local cursor_token
+   for _, token in ipairs(agent:tokens(agent.cursor.row)) do
+      if token.cursor_offset then
+         cursor_token = token
+         break
+      end
+   end
+   agent:right(cursor_token.total_disp - cursor_token.cursor_offset)
+   agent:killBackward(cursor_token.total_disp)
+   agent:paste(frag)
+end
+```
+
+
 #### EditAgent:transposeLetter\(\)
 
 Transposes the letter at the cursor with the one before it\.
@@ -845,6 +870,24 @@ end
 ```
 
 
+### EditAgent:tokens\(\[row\]\)
+
+Breaks the contents of the agent, or a single row if `row` is supplied,
+into tokens using the assigned lexer\.
+
+```lua
+function EditAgent.tokens(agent, row)
+   if row then
+      local cursor_col = agent.cursor.row == row
+         and agent.cursor.col or 0
+      return agent.lex(cat(agent[row]), cursor_col)
+   else
+      return agent.lex(agent:contents(), agent:cursorIndex())
+   end
+end
+```
+
+
 ### Window
 
 ```lua
@@ -863,7 +906,8 @@ EditAgent.window = agent_utils.make_window_method({
          return answer
       end
    },
-   closure = { cursorIndex = true, continuationLines = true }
+   closure = { cursorIndex = true,
+               tokens = true }
 })
 ```
 
