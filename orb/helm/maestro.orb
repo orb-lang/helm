@@ -145,6 +145,9 @@ local function new(modeS)
    borrowto(agents.suggest, agents.edit, "replaceToken")
    borrowto(agents.prompt,  agents.edit, "continuationLines")
    -- #todo this is just...ugly
+   -- it is, the signature should be something like this:
+   -- agents.prompt.editTouched = getter(agents.edit, "touched")
+   -- which is pretty trivial, I'll write it on core right now
    agents.prompt.editTouched = borrowmethod(agents.edit,
                                  function(agent) return agent.touched end)
    -- Set up common Agent -> Zone bindings
