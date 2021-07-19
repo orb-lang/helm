@@ -7,10 +7,14 @@ in constructing them.
 local agent_utils = {}
 #/lua
 
+@atman :  I notice that this could easily be a base class.  There are some
+unanswered questions about what an abstract base class looks like, but let's
+answer them and write this as such.
 
 *** checkTouched()
 
-This implementation is used by things that aren't Agents, though they are Actors.
+  This implementation is used by things that aren't Agents, though they are
+Actors.
 
 #!lua
 function agent_utils.checkTouched(agent)

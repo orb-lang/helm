@@ -16,6 +16,10 @@ coroutine yield/resume, but for now, between Agents not yet migrated and not
 #!lua
 local input_event = require "anterm:input-event"
 
+-- @atman: I wonder if it makes sense to have an abstract class which every
+-- Agent inherits from.  I notice that you have an agent/utils, which is good,
+-- it tends to make sense to start with the least abstraction necessary, which
+-- in this case is a library.  More comments in that module.
 local EditAgent      = require "helm:agent/edit"
 local InputEchoAgent = require "helm:agent/input-echo"
 local ModalAgent     = require "helm:agent/modal"
