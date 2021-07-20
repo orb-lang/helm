@@ -64,6 +64,22 @@ function agent_utils.make_window_method(more_cfg)
    return function(agent)
       -- #todo is it reasonable for Agents to cache their window like this?
       -- Is it reasonable for others to *assume* that they will (if it even matters)?
+      --
+      -- @atman Probably not, no.  Agents shouldn't be in the business of
+      -- disbursing their windows, possibly at all although the current
+      -- implementation is reasonable.
+      --
+      -- The numerous EditAgents and ResultAgents in SessionAgent do mean that
+      -- we'll need more than one copy of those Windows in the system (we only
+      -- need one Agent of each flavor per SessionAgent, since we only edit
+      -- one premise and display one result at a time).
+      --
+      -- Ultimately we want the Windows to be disbursed to the Buf
+      -- constructors at load time, inside the main modeS constructor.
+      --
+      -- Implying that if anything needs the ability to make Windows and
+      -- Agents at runtime, it should be modeS retaining that ability.
+
       agent._window = agent._window or Window(agent, window_cfg)
       return agent._window
    end
