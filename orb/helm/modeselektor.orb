@@ -189,6 +189,9 @@ but we must also place the cursor.
 #!lua
 function ModeS.paint(modeS)
    modeS.zones:paint(modeS)
+   -- @man good example of what the message queue can get us
+   -- modeS already knows how to paint the cursor position and
+   -- can just ask the zoneherd to do it.
    modeS:placeCursor(modeS)
    return modeS
 end
@@ -439,6 +442,8 @@ function ModeS.eval(modeS)
    local line = modeS.maestro.agents.edit:contents()
    local success, results = eval(line)
    if not success and results == 'advance' then
+      -- @atman this is going to get real boring to write
+      -- let's close over it: modeS :agent 'edit' .endOfText()
       modeS.maestro.agents.edit:endOfText()
       modeS.maestro.agents.edit:nl()
    else
