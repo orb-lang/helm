@@ -117,7 +117,8 @@ end
 *** new(modeS)
 
 #!lua
-local borrowmethod = assert(require "core:cluster/actor" . borrowmethod)
+local actor = require "core:cluster/actor"
+local borrowmethod, getter = assert(actor.borrowmethod, actor.getter)
 local function new(modeS)
    local maestro = meta(Maestro)
    -- #todo this is temporary until we sort out communication properly
@@ -145,8 +146,7 @@ local function new(modeS)
    borrowto(agents.suggest, agents.edit, "replaceToken")
    borrowto(agents.prompt,  agents.edit, "continuationLines")
    -- #todo this is just...ugly
-   agents.prompt.editTouched = borrowmethod(agents.edit,
-                                 function(agent) return agent.touched end)
+   agents.prompt.editTouched = getter(agents.edit, "touched")
    -- Set up common Agent -> Zone bindings
    -- Note we don't do results here because that varies from raga to raga
    -- The Txtbuf also needs a source of "suggestions" (which might be
