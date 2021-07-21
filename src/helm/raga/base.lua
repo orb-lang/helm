@@ -62,6 +62,7 @@ RagaBase.CTRL["^Q"] = function(modeS, category, value)
       -- would *definitely* fix this
       modeS.raga_default = "review"
       modeS.shift_to = "review"
+      modeS.maestro.agents.session:selectIndex(1)
       modeS:setStatusLine("review", modeS.hist.session.session_title)
    else
       modeS:quit()
