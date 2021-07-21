@@ -92,13 +92,27 @@ cleaner that transition can be.
 
 Notification that the contents of the EditAgent have changed. I believe this is
 equivalent to the intended semantics of =.touched=, except that
-=contents_changed= is cleared earlier, so we sorta need both. Also need to
-clear caches.
+=contents_changed= is cleared earlier, so we sorta need both.
 
 #!lua
 function EditAgent.contentsChanged(agent)
    agent.contents_changed = true
    agent.touched = true
+end
+#/lua
+
+
+*** EditAgent:setLexer(lex_fn)
+
+Set the lexer function. Wrapped in a method because this marks us =touched=,
+assuming the lexer is actually changed.
+
+#!lua
+function EditAgent.setLexer(agent, lex_fn)
+   if agent.lex ~= lex_fn then
+      agent.lex = lex_fn
+      agent.touched = true
+   end
 end
 #/lua
 

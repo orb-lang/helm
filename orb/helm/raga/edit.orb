@@ -71,20 +71,20 @@ EditBase.default_keymaps = { map }
 #!lua
 
 local function _insert(modeS, category, value)
-   if modeS.maestro.agents.edit:contents() == "" then
+   if modeS:agent'edit':contents() == "" then
       modeS:clearResults()
    end
-   modeS.maestro.agents.edit:insert(value)
+   modeS:agent'edit':insert(value)
 end
 
 EditBase.ASCII = _insert
 EditBase.UTF8 = _insert
 
 function EditBase.PASTE(modeS, category, value)
-   if modeS.maestro.agents.edit:contents() == "" then
+   if modeS:agent'edit':contents() == "" then
       modeS:clearResults()
    end
-   modeS.maestro.agents.edit:paste(value)
+   modeS:agent'edit':paste(value)
 end
 
 #/lua
@@ -96,7 +96,7 @@ Offset into the =command= zone, based on the Txtbuf's =cursor= property.
 
 #!lua
 function EditBase.getCursorPosition(modeS)
-   return modeS.zones.command.bounds:origin() + modeS.maestro.agents.edit.cursor - 1
+   return modeS.zones.command.bounds:origin() + modeS:agent'edit'.cursor - 1
 end
 #/lua
 

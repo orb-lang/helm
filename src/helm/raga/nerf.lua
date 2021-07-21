@@ -49,7 +49,7 @@ Nerf.prompt_char = "👉"
 
 
 local function _insert(modeS, category, value)
-   if modeS.maestro.agents.edit:contents() == "" then
+   if modeS:agent'edit':contents() == "" then
       modeS:clearResults()
       if value == "/" then
          modeS.shift_to = "search"
@@ -60,7 +60,7 @@ local function _insert(modeS, category, value)
          return
       end
    end
-   modeS.maestro.agents.edit:insert(value)
+   modeS:agent'edit':insert(value)
 end
 
 Nerf.ASCII = _insert
@@ -76,7 +76,7 @@ local NAV = Nerf.NAV
 
 local function _prev(modeS)
    -- Save what the user is currently typing...
-   local linestash = modeS.maestro.agents.edit:contents()
+   local linestash = modeS:agent'edit':contents()
    -- ...but only if they're at the end of the history,
    -- and obviously only if there's anything there
    if linestash == "" or modeS.hist.cursor <= modeS.hist.n then
@@ -86,13 +86,13 @@ local function _prev(modeS)
    if linestash then
       modeS.hist:append(linestash)
    end
-   modeS.maestro.agents.edit:update(prev_line)
+   modeS:agent'edit':update(prev_line)
    modeS:setResults(prev_result)
    return modeS
 end
 
 function NAV.UP(modeS, category, value)
-   local inline = modeS.maestro.agents.edit:up()
+   local inline = modeS:agent'edit':up()
    if not inline then
       _prev(modeS)
    end
@@ -102,18 +102,18 @@ end
 local function _advance(modeS)
    local new_line, next_result = modeS.hist:next()
    if not new_line then
-      local added = modeS.hist:append(modeS.maestro.agents.edit:contents())
+      local added = modeS.hist:append(modeS:agent'edit':contents())
       if added then
          modeS.hist.cursor = modeS.hist.n + 1
       end
    end
-   modeS.maestro.agents.edit:update(new_line)
+   modeS:agent'edit':update(new_line)
    modeS:setResults(next_result)
    return modeS
 end
 
 function NAV.DOWN(modeS, category, value)
-   local inline = modeS.maestro.agents.edit:down()
+   local inline = modeS:agent'edit':down()
    if not inline then
       _advance(modeS)
    end
@@ -124,10 +124,10 @@ end
 
 
 function NAV.RETURN(modeS, category, value)
-   if modeS.maestro.agents.edit:shouldEvaluate() then
+   if modeS:agent'edit':shouldEvaluate() then
       modeS:eval()
    else
-      modeS.maestro.agents.edit:nl()
+      modeS:agent'edit':nl()
    end
 end
 
@@ -136,7 +136,7 @@ function NAV.CTRL_RETURN(modeS, category, value)
 end
 
 function NAV.SHIFT_RETURN(modeS, category, value)
-   modeS.maestro.agents.edit:nl()
+   modeS:agent'edit':nl()
 end
 
 -- Add aliases for terminals not in CSI u mode
@@ -144,7 +144,7 @@ Nerf.CTRL["^\\"] = NAV.CTRL_RETURN
 NAV.ALT_RETURN = NAV.SHIFT_RETURN
 
 local function _activateCompletion(modeS)
-   if modeS.maestro.agents.suggest.last_collection then
+   if modeS:agent'suggest'.last_collection then
       modeS.shift_to = "complete"
       return true
    else
@@ -166,7 +166,7 @@ end
 
 function NAV.TAB(modeS, category, value)
    if not _activateCompletion(modeS) then
-      modeS.maestro.agents.edit:paste("   ")
+      modeS:agent'edit':paste("   ")
    end
 end
 
@@ -241,12 +241,12 @@ end
 
 
 function Nerf.onCursorChanged(modeS)
-   modeS.maestro.agents.suggest:update()
+   modeS:agent'suggest':update()
    EditBase.onCursorChanged(modeS)
 end
 
 function Nerf.onTxtbufChanged(modeS)
-   modeS.maestro.agents.suggest:update()
+   modeS:agent'suggest':update()
    EditBase.onTxtbufChanged(modeS)
 end
 
@@ -264,7 +264,7 @@ function Nerf.onShift(modeS)
    EditBase.onShift(modeS)
    modeS.maestro:bindZone("results", "results", Resbuf, { scrollable = true })
    local txtbuf = modeS.zones.command.contents
-   txtbuf.suggestions = modeS.maestro.agents.suggest:window()
+   txtbuf.suggestions = modeS:agent'suggest':window()
 end
 
 

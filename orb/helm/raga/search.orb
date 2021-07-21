@@ -70,7 +70,7 @@ NAV.UP        = NAV.SHIFT_UP
 NAV.SHIFT_TAB = NAV.SHIFT_UP
 
 local function _modeShiftOnDeleteWhenEmpty(modeS, category, value)
-   if modeS.maestro.agents.edit:contents() == "" then
+   if modeS:agent'edit':contents() == "" then
       modeS.shift_to = modeS.raga_default
    else
       EditBase(modeS, category, value)
@@ -95,7 +95,7 @@ local function _acceptAtIndex(modeS, selected_index)
       line, result = modeS.hist:index(search_result.cursors[selected_index])
    end
    modeS.shift_to = modeS.raga_default
-   modeS.maestro.agents.edit:update(line)
+   modeS:agent'edit':update(line)
    modeS:setResults(result)
 end
 
@@ -136,7 +136,7 @@ We need to update the search result whenever the contents of the Txtbuf change.
 
 #!lua
 function Search.onTxtbufChanged(modeS)
-   modeS.hist:search(modeS.maestro.agents.edit:contents())
+   modeS.hist:search(modeS:agent'edit':contents())
 end
 #/lua
 
@@ -149,7 +149,7 @@ same Window also drives the result zone.
 #!lua
 function Search.onShift(modeS)
    EditBase.onShift(modeS)
-   modeS.hist:search(modeS.maestro.agents.edit:contents())
+   modeS.hist:search(modeS:agent'edit':contents())
    modeS.zones.command.contents.suggestions = modeS.hist:window()
    modeS.zones.results:replace(Resbuf(modeS.hist:window(), { scrollable = true }))
 end

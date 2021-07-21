@@ -12,13 +12,6 @@ Complete.name = "complete"
 Complete.prompt_char = "💬"
 ```
 
-Hopefully once the new keymap resolution code is working properly these long chains will get shortened, but for now it's worth a helper function:
-
-```lua
-function _suggest(modeS)
-   return modeS.maestro.agents.suggest
-end
-```
 
 ## Inserts
 
@@ -30,8 +23,8 @@ local function _quit(modeS)
 end
 
 local function _accept(modeS)
-   if _suggest(modeS).last_collection then
-      _suggest(modeS):accept()
+   if modeS:agent'suggest'.last_collection then
+      modeS:agent'suggest':accept()
    else
       modeS.action_complete = false
    end
@@ -68,12 +61,12 @@ Complete.UTF8 = _insert
 local NAV = Complete.NAV
 
 local function _scrollAfter(modeS, func_name)
-   local suggestions = _suggest(modeS).last_collection
+   local suggestions = modeS:agent'suggest'.last_collection
    if suggestions then
       -- #todo route selection commands through the SuggestAgent or Window so
       -- it can set .touched itself?
       suggestions[func_name](suggestions)
-      _suggest(modeS).touched = true
+      modeS:agent'suggest'.touched = true
       -- #todo should have a Selectbuf that does this automatically
       modeS.zones.suggest.contents:ensureVisible(suggestions.selected_index)
    end
@@ -109,9 +102,9 @@ we will have already shifted ragas\.
 
 ```lua
 function Complete.onTxtbufChanged(modeS)
-   _suggest(modeS):update()
-   if _suggest(modeS).last_collection then
-      _suggest(modeS).last_collection.selected_index = 1
+   modeS:agent'suggest':update()
+   if modeS:agent'suggest'.last_collection then
+      modeS:agent'suggest'.last_collection.selected_index = 1
    else
       _quit(modeS)
    end
@@ -143,9 +136,9 @@ to the end of the suggestion\.
 local Point = require "anterm:point"
 function Complete.getCursorPosition(modeS)
    local point = EditBase.getCursorPosition(modeS)
-   local suggestion = _suggest(modeS).last_collection:selectedItem()
+   local suggestion = modeS:agent'suggest'.last_collection:selectedItem()
    if suggestion then
-      for _, tok in ipairs(modeS.maestro.agents.edit:tokens()) do
+      for _, tok in ipairs(modeS:agent'edit':tokens()) do
          if tok.cursor_offset then
             point = point + Point(0, #suggestion - tok.cursor_offset)
             break

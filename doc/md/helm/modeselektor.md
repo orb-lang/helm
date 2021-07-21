@@ -274,25 +274,23 @@ ModeS.closet = { nerf =       { raga = Nerf,
                                 lex  = Lex.null } }
 
 function ModeS.shiftMode(modeS, raga_name)
-   local edit_agent = modeS.maestro.agents.edit
    -- Stash the current lexer associated with the current raga
    -- Currently we never change the lexer separate from the raga,
    -- but this will change when we start supporting multiple languages
    -- Guard against nil raga or lexer during startup
    if modeS.raga then
       modeS.raga.onUnshift(modeS)
-      modeS.closet[modeS.raga.name].lex = edit_agent.lex
+      modeS.closet[modeS.raga.name].lex = modeS:agent'edit'.lex
    end
    -- Switch in the new raga and associated lexer
    modeS.raga = modeS.closet[raga_name].raga
-   edit_agent.lex = modeS.closet[raga_name].lex
-   edit_agent.touched = true
+   modeS:agent'edit':setLexer(modeS.closet[raga_name].lex)
    modeS.raga.onShift(modeS)
    -- #todo feels wrong to do this here, like it's something the raga
    -- should handle, but onShift feels kinda like it "doesn't inherit",
    -- like it's not something you should actually super-send, so there's
    -- not one good place to do this.
-   modeS.maestro.agents.prompt:update(modeS.raga.prompt_char)
+   modeS:agent'prompt':update(modeS.raga.prompt_char)
    return modeS
 end
 ```
@@ -339,15 +337,15 @@ function ModeS.actOnce(modeS, event, old_cat_val)
       end
    end
    _check_shift(modeS)
-   if modeS.maestro.agents.edit.contents_changed then
+   if modeS:agent'edit'.contents_changed then
       modeS.raga.onTxtbufChanged(modeS)
     -- Treat contents_changed as implying cursor_changed
     -- only ever fire one of the two events
-   elseif modeS.maestro.agents.edit.cursor_changed then
+   elseif modeS:agent'edit'.cursor_changed then
       modeS.raga.onCursorChanged(modeS)
    end
-   modeS.maestro.agents.edit.contents_changed = false
-   modeS.maestro.agents.edit.cursor_changed = false
+   modeS:agent'edit'.contents_changed = false
+   modeS:agent'edit'.cursor_changed = false
    -- Check shift_to again in case one of the cursor handlers set it
    _check_shift(modeS)
    return command
@@ -368,7 +366,7 @@ function ModeS.act(modeS, event, old_cat_val)
       command = 'NYI'
    end
    -- Inform the input-echo agent of what just happened
-   modeS.maestro.agents.input_echo:update(event, command)
+   modeS:agent'input_echo':update(event, command)
    -- Reflow in case command height has changed. Includes a paint.
    -- Don't allow errors encountered here to break this entire
    -- event-loop iteration, otherwise we become unable to quit if
@@ -392,6 +390,18 @@ end
 ```
 
 
+### ModeS:agent\(agent\_name\)
+
+Shorthand for referring to `Agent`s, which are stored on `Maestro`, but which
+we often talk to directly\.
+
+```lua
+function ModeS.agent(modeS, agent_name)
+   return modeS.maestro.agents[agent_name]
+end
+```
+
+
 ### ModeS:setResults\(results\), :clearResults\(\)
 
 Sets the current "results" to `results`\.
@@ -401,7 +411,7 @@ awkward right now, as migration to new keymaps proceeds it'll get easier\.
 
 ```lua
 function ModeS.setResults(modeS, results)
-   modeS.maestro.agents.results:update(results)
+   modeS:agent'results':update(results)
    return modeS
 end
 
@@ -420,7 +430,7 @@ Sets the status line at the top of the screen by updating the StatusAgent\.
 ```lua
 
 function ModeS.setStatusLine(modeS, status_name, ...)
-   modeS.maestro.agents.status:update(status_name, ...)
+   modeS:agent'status':update(status_name, ...)
 end
 ```
 
@@ -436,16 +446,16 @@ local insert = assert(table.insert)
 local keys = assert(core.keys)
 
 function ModeS.eval(modeS)
-   local line = modeS.maestro.agents.edit:contents()
+   local line = modeS:agent'edit':contents()
    local success, results = eval(line)
    if not success and results == 'advance' then
-      modeS.maestro.agents.edit:endOfText()
-      modeS.maestro.agents.edit:nl()
+      modeS:agent'edit':endOfText()
+      modeS:agent'edit':nl()
    else
       modeS.hist:append(line, results, success)
       modeS.hist.cursor = modeS.hist.n + 1
       modeS:setResults(results)
-      modeS.maestro.agents.edit:clear()
+      modeS:agent'edit':clear()
    end
 
    return modeS
@@ -466,7 +476,7 @@ function ModeS.evalFromCursor(modeS)
       -- Discard the second return value from :index
       -- or it will confuse the Txtbuf constructor rather badly
       local line = modeS.hist:index(i)
-      modeS.maestro.agents.edit:update(line)
+      modeS:agent'edit':update(line)
       modeS:eval()
    end
 end
@@ -539,7 +549,7 @@ Opens a simple help screen\.
 
 ```lua
 function ModeS.openHelp(modeS)
-   modeS.maestro.agents.pager:update(("abcde "):rep(1000))
+   modeS:agent'pager':update(("abcde "):rep(1000))
    modeS.shift_to = "page"
 end
 ```
@@ -554,7 +564,7 @@ which point we won't need this method\.
 
 ```lua
 function ModeS.showModal(modeS, text, button_style)
-   modeS.maestro.agents.modal:update(text, button_style)
+   modeS:agent'modal':update(text, button_style)
    modeS.shift_to = "modal"
    return modeS
 end
@@ -567,7 +577,7 @@ agent, but it'd be nice to be able to show a modal that way too, first\.
 
 ```lua
 function ModeS.modalAnswer(modeS)
-   return modeS.maestro.agents.modal:answer()
+   return modeS:agent'modal':answer()
 end
 ```
 
@@ -617,7 +627,7 @@ local function new(max_extent, writer, db)
    -- If we are loading an existing session, start in review mode
    local session = modeS.hist.session
    -- #todo ugh this is clearly the wrong place/way to do this
-   modeS.maestro.agents.session:update(session)
+   modeS:agent'session':update(session)
    if session.session_id then
       modeS.raga_default = "review"
       -- #todo we should probably do this in raga/review.onShift, but...

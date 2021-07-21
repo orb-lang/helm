@@ -404,7 +404,7 @@ local ceil, floor = assert(math.ceil), assert(math.floor)
 
 function Zoneherd.reflow(zoneherd, modeS)
    local right_col = modeS.max_extent.col - _zoneOffset(modeS)
-   local txt_off = modeS.maestro.agents.edit:continuationLines()
+   local txt_off = modeS:agent'edit':continuationLines()
    zoneherd.status:setBounds(  1, 1, 1, right_col)
    zoneherd.stat_col:setBounds(1, right_col + 1,
                                1, modeS.max_extent.col )
@@ -440,7 +440,7 @@ function Zoneherd.reflow(zoneherd, modeS)
    -- required, we must account for the borders--seems like a good
    -- division of responsibility.
    if zoneherd.modal.visible then
-      local modal_extent = modeS.maestro.agents.modal.model:requiredExtent() + Point(2, 4)
+      local modal_extent = modeS:agent'modal'.model:requiredExtent() + Point(2, 4)
       local margins = ((modeS.max_extent - modal_extent) / 2):floor()
       zoneherd.modal:setBounds(margins.row, margins.col,
                                (margins + modal_extent - 1):rowcol())

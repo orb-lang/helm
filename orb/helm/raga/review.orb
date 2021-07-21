@@ -24,7 +24,7 @@ of the Sessionbuf" and "ditto, then clean up our scroll state".
 #!lua
 local function _toSessionAgent(fn)
    return function(modeS, category, value)
-      local agent = modeS.maestro.agents.session
+      local agent = modeS:agent'session'
       return agent[fn](agent)
    end
 end
@@ -37,8 +37,8 @@ local function _toSessionbuf(fn)
 end
 
 local function _onSelectionChanged(modeS)
-   local premise = modeS.maestro.agents.session:selectedPremise()
-   modeS.maestro.agents.edit:update(premise and premise.title)
+   local premise = modeS:agent'session':selectedPremise()
+   modeS:agent'edit':update(premise and premise.title)
    local buf = modeS.zones.results.contents
    local start_index = buf:positionOfSelected()
    local end_index = start_index + buf:rowsForSelectedResult() + 3
@@ -47,7 +47,7 @@ end
 
 local function _selectUsing(fn)
    return function(modeS, category, value)
-      local agent = modeS.maestro.agents.session
+      local agent = modeS:agent'session'
       local answer = agent[fn](agent)
       _onSelectionChanged(modeS)
       return answer
@@ -71,7 +71,7 @@ NAV.TAB       = _toSessionAgent "toggleSelectedState"
 NAV.SHIFT_TAB = _toSessionAgent "reverseToggleSelectedState"
 
 function NAV.RETURN(modeS, category, value)
-   if modeS.maestro.agents.session.selected_index ~= 0 then
+   if modeS:agent'session'.selected_index ~= 0 then
       modeS.shift_to = "edit_title"
    end
 end
@@ -144,8 +144,8 @@ function Review.onShift(modeS)
    end
 
    modeS.maestro:bindZone("results", "session", Sessionbuf, {scrollable = true})
-   local premise = modeS.maestro.agents.session:selectedPremise()
-   modeS.maestro.agents.edit:update(premise and premise.title)
+   local premise = modeS:agent'session':selectedPremise()
+   modeS:agent'edit':update(premise and premise.title)
 end
 #/lua
 
