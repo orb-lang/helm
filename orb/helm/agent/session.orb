@@ -224,10 +224,12 @@ Retrieve the window for the EditAgent for the =index=th premise.
 
 #!lua
 local inbounds = assert(require "core:math" . inbounds)
+local lua_thor = assert(require "helm:lex" . lua_thor)
 function SessionAgent.editWindow(agent, index)
    assert(inbounds(index, 1, #agent.session))
    if not agent.edit_agents[index] then
       agent.edit_agents[index] = EditAgent()
+      agent.edit_agents[index].lex = lua_thor
       _update_edit_agent(agent, index)
    end
    return agent.edit_agents[index]:window()
