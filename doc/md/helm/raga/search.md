@@ -152,7 +152,7 @@ function Search.onShift(modeS)
    EditBase.onShift(modeS)
    modeS:agent'search':update(modeS)
    modeS.zones.command.contents.suggestions = modeS:agent'search':window()
-   modeS.maestro:bindZone("results", "search", Resbuf, { scrollable = true })
+   modeS:bindZone("results", "search", Resbuf, { scrollable = true })
 end
 ```
 

@@ -27,10 +27,6 @@ local SessionAgent   = require "helm:agent/session"
 local StatusAgent    = require "helm:agent/status"
 local SuggestAgent   = require "helm:agent/suggest"
 
-local Resbuf    = require "helm:buf/resbuf"
-local Stringbuf = require "helm:buf/stringbuf"
-local Txtbuf    = require "helm:buf/txtbuf"
-
 
 
 
@@ -102,32 +98,11 @@ end
 
 
 
-
-
-
-
-
-function Maestro.bindZone(maestro, zone_name, agent_name, buf_class, cfg)
-   local zone = maestro.zones[zone_name]
-   local agent = maestro.agents[agent_name]
-   zone:replace(buf_class(agent:window(), cfg))
-end
-
-
-
-
-
-
-local actor = require "core:cluster/actor"
-local borrowmethod, getter = assert(actor.borrowmethod, actor.getter)
 local function new(modeS)
    local maestro = meta(Maestro)
    -- #todo this is temporary until we sort out communication properly
    maestro.modeS = modeS
-   -- Zoneherd we will keep a reference to (maybe the only reference) even
-   -- once we untangle from modeS, so start referring to it directly now
-   maestro.zones = modeS.zones
-   local agents = {
+   maestro.agents = {
       edit       = EditAgent(),
       input_echo = InputEchoAgent(),
       modal      = ModalAgent(),
@@ -139,27 +114,6 @@ local function new(modeS)
       status     = StatusAgent(),
       suggest    = SuggestAgent()
    }
-   maestro.agents = agents
-   -- Set up Agent <-> Agent interaction via borrowmethod
-   local function borrowto(dst, src, name)
-      dst[name] = borrowmethod(src, name)
-   end
-   borrowto(agents.suggest, agents.edit, "tokens")
-   borrowto(agents.suggest, agents.edit, "replaceToken")
-   borrowto(agents.prompt,  agents.edit, "continuationLines")
-   agents.prompt.editTouched = getter(agents.edit, "touched")
-   agents.search.searchText = borrowmethod(agents.edit, "contents")
-   -- Set up common Agent -> Zone bindings
-   -- Note we don't do results here because that varies from raga to raga
-   -- The Txtbuf also needs a source of "suggestions" (which might be
-   -- history-search results instead), but that too is raga-dependent
-   maestro:bindZone("command",  "edit",       Txtbuf)
-   maestro:bindZone("popup",    "pager",      Resbuf,    { scrollable = true })
-   maestro:bindZone("prompt",   "prompt",     Stringbuf)
-   maestro:bindZone("modal",    "modal",      Resbuf)
-   maestro:bindZone("status",   "status",     Stringbuf)
-   maestro:bindZone("stat_col", "input_echo", Resbuf)
-   maestro:bindZone("suggest",  "suggest",    Resbuf)
    return maestro
 end
 

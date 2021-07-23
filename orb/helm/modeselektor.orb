@@ -102,6 +102,10 @@ local Historian  = require "helm:historian"
 local Maestro    = require "helm:maestro"
 local Valiant = require "valiant:valiant"
 local Zoneherd   = require "helm:zone"
+
+local Resbuf    = require "helm:buf/resbuf"
+local Stringbuf = require "helm:buf/stringbuf"
+local Txtbuf    = require "helm:buf/txtbuf"
 #/lua
 
 #!lua
@@ -538,35 +542,49 @@ end
 #/lua
 
 
-** new
+*** ModeS:bindZone(zone_name, agent_name, buf_class, cfg)
 
-Start by making a snapshot of _G and package.loaded. We use this for reloading;
-since all userspace is stored in _G, this allows us to drop all data held
-in a session, while keeping our own state separate.
+Changes the Zone =zone_name= to display content from the Agent named =agent_name=.
 
-#NB it turns out the runtime keeps a separate reference to =package.loaded=
-in the registry, and uses that for access within =require=, so we must
-separately keep track of what packages were loaded so we can nil out any
-"extras" when we restart.
+#todo the buffer class and cfg is generally fixed for any given agent, having them
+as arguments is probably not the best choice.
 
 #!lua
+function ModeS.bindZone(modeS, zone_name, agent_name, buf_class, cfg)
+   local zone = modeS.zones[zone_name]
+   local agent = modeS:agent(agent_name)
+   zone:replace(buf_class(agent:window(), cfg))
+end
+#/lua
+
+
+** new
+
+#!lua
+local actor = require "core:cluster/actor"
+local borrowmethod, getter = assert(actor.borrowmethod, actor.getter)
+
 local function new(max_extent, writer, db)
    local modeS = meta(ModeS)
 
-   -- Create Actors and other major sub-components
+   -- Some miscellany to copy and initialize
+   modeS.max_extent = max_extent
+   modeS.write = writer
+   modeS.repl_top = ModeS.REPL_LINE
+
+   -- Create Actors (status isn't, but should be)
    modeS.eval = Valiant(__G)
    modeS.hist  = Historian(db)
    modeS.status = setmetatable({}, _stat_M)
    rawset(__G, "stat", modeS.status)
-   modeS.max_extent = max_extent
-   modeS.write = writer
-   modeS.repl_top = ModeS.REPL_LINE
    modeS.zones = Zoneherd(modeS, writer)
    modeS.maestro = Maestro(modeS)
-   -- If we are loading an existing session, start in review mode
-   local session = modeS.hist.session
+
+   -- Session-related setup
    -- #todo ugh this is clearly the wrong place/way to do this
+   local session = modeS.hist.session
    modeS:agent'session':update(session)
+   -- If we are loading an existing session, start in review mode
    if session.session_id then
       modeS.raga_default = "review"
       -- #todo we should probably do this in raga/review.onShift, but...
@@ -581,6 +599,30 @@ local function new(max_extent, writer, db)
    else
       modeS:setStatusLine("default")
    end
+
+   -- Set up Agent <-> Agent interaction via borrowmethod
+   local agents = modeS.maestro.agents
+   local function borrowto(dst, src, name)
+      dst[name] = borrowmethod(src, name)
+   end
+   borrowto(agents.suggest, agents.edit, "tokens")
+   borrowto(agents.suggest, agents.edit, "replaceToken")
+   borrowto(agents.prompt,  agents.edit, "continuationLines")
+   agents.prompt.editTouched = getter(agents.edit, "touched")
+   agents.search.searchText = borrowmethod(agents.edit, "contents")
+
+   -- Set up common Agent -> Zone bindings
+   -- Note we don't do results here because that varies from raga to raga
+   -- The Txtbuf also needs a source of "suggestions" (which might be
+   -- history-search results instead), but that too is raga-dependent
+   modeS:bindZone("command",  "edit",       Txtbuf)
+   modeS:bindZone("popup",    "pager",      Resbuf,    { scrollable = true })
+   modeS:bindZone("prompt",   "prompt",     Stringbuf)
+   modeS:bindZone("modal",    "modal",      Resbuf)
+   modeS:bindZone("status",   "status",     Stringbuf)
+   modeS:bindZone("stat_col", "input_echo", Resbuf)
+   modeS:bindZone("suggest",  "suggest",    Resbuf)
+
    -- initial state
    modeS:shiftMode(modeS.raga_default)
    modeS.action_complete = true

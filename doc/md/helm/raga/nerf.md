@@ -218,13 +218,14 @@ insert(Nerf.default_keymaps, {
 
 ```lua
 function Nerf.scrollResultsUp(maestro, event)
-   -- #todo We don't actually need the *Zone*, just the *Rainbuf*.
-   -- Is there a way that would make sense for that to be accessible directly?
-   maestro.zones.results.contents:scrollUp(event.num_lines)
+   -- #todo The ResultsAgent will eventually be able to queue a command for
+   -- the scrolling, so we'll be able to talk to it instead. In fact this
+   -- command will likely be routed to it directly.
+   maestro.modeS.zones.results.contents:scrollUp(event.num_lines)
 end
 
 function Nerf.scrollResultsDown(maestro, event)
-   maestro.zones.results.contents:scrollDown(event.num_lines)
+   maestro.modeS.zones.results.contents:scrollDown(event.num_lines)
 end
 
 insert(Nerf.default_keymaps, {
@@ -285,7 +286,7 @@ results zone\.
 local Resbuf = require "helm:buf/resbuf"
 function Nerf.onShift(modeS)
    EditBase.onShift(modeS)
-   modeS.maestro:bindZone("results", "results", Resbuf, { scrollable = true })
+   modeS:bindZone("results", "results", Resbuf, { scrollable = true })
    local txtbuf = modeS.zones.command.contents
    txtbuf.suggestions = modeS:agent'suggest':window()
 end
