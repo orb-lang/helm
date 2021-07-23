@@ -98,32 +98,15 @@ The easiest way to go mad in concurrent environments is to share memory\.
 `modeselektor` will own txtbuf, historian, and the entire screen\.
 
 ```lua
-local Set = require "set:set"
-local Valiant = require "valiant:valiant"
-
-local Txtbuf     = require "helm:buf/txtbuf"
-local Resbuf     = require "helm:buf/resbuf"
 local Historian  = require "helm:historian"
-local Lex        = require "helm:lex"
-local Zoneherd   = require "helm:zone"
 local Maestro    = require "helm:maestro"
-local repr       = require "repr:repr"
-local lua_parser = require "helm:lua-parser"
-
-local concat               = assert(table.concat)
-local sub, gsub, rep, find = assert(string.sub),
-                             assert(string.gsub),
-                             assert(string.rep),
-                             assert(string.find)
-
-local ts = repr.ts_color
-
+local Valiant = require "valiant:valiant"
+local Zoneherd   = require "helm:zone"
 ```
 
 ```lua
 local ModeS = meta()
 ```
-
 
 
 Color schemes are supposed to be one\-and\-done, and I strongly suspect we
@@ -258,6 +241,8 @@ local Modal     = require "helm:raga/modal"
 local Review    = require "helm:raga/review"
 local EditTitle = require "helm:raga/edit-title"
 
+local Lex        = require "helm:lex"
+
 ModeS.closet = { nerf =       { raga = Nerf,
                                 lex  = Lex.lua_thor },
                  search =     { raga = Search,
@@ -303,9 +288,9 @@ by `onseq`\)\. It may try the dispatch multiple times if the raga indicates
 that reprocessing is needed by setting `modeS.action_complete` to =false\.
 
 Note that our common interface is `method(modeS, category, value)`,
-we need to distinguish betwen the tuple `("INSERT", "SHIFT-LEFT")`which could arrive from copy\-paste\) and `("NAV", "SHIFT-LEFT")`
-and
-\( preserve information for our fall\-through method\.
+we need to distinguish betwen the tuple `("INSERT", "SHIFT-LEFT")`
+\(which could arrive from copy\-paste\) and `("NAV", "SHIFT-LEFT")`
+and preserve information for our fall\-through method\.
 
 `act` always succeeds, meaning we need some metatable action to absorb and
 log anything unexpected\.
@@ -548,6 +533,7 @@ end
 Opens a simple help screen\.
 
 ```lua
+local rep = assert(string.rep)
 function ModeS.openHelp(modeS)
    modeS:agent'pager':update(("abcde "):rep(1000))
    modeS.shift_to = "page"
@@ -556,9 +542,9 @@ end
 
 ### ModeS:showModal\(text, button\_style\)
 
-Shows a modal dialog with the given text and button style
-\(see [](@agent/modal) for valid button styles\)\.
+Shows a modal dialog with the given text and button stylesee [](@agent/modal) for valid button styles\)\.
 
+\(
 \#todo
 which point we won't need this method\.
 
@@ -586,12 +572,13 @@ end
 A way to jack into `status`\.
 
 ```lua
-local function _status__repr(status_table)
-   return concat(status_table)
-end
+local concat = assert(table.concat)
 
 local _stat_M = meta {}
-_stat_M.__repr = _status__repr
+
+function _stat_M.__repr(status_table)
+   return concat(status_table)
+end
 
 function _stat_M.clear(status_table)
    return setmetatable({}, getmetatable(status_table))
@@ -607,11 +594,10 @@ in a session, while keeping our own state separate\.
 
 \#NB
 in the registry, and uses that for access within `require`, so we must
-separately keep track of what packages were loaded so we can nil out any
-"extras" when we restart\.
+separately keep track of what packages were loaded so we can nil out anyextras" when we restart\.
 
+"
 ```lua
-local deepclone = assert(core.deepclone)
 local function new(max_extent, writer, db)
    local modeS = meta(ModeS)
 

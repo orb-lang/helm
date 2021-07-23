@@ -98,31 +98,14 @@ assert(meta, "must have meta in _G")
 
 
 
-local Set = require "set:set"
-local Valiant = require "valiant:valiant"
-
-local Txtbuf     = require "helm:buf/txtbuf"
-local Resbuf     = require "helm:buf/resbuf"
 local Historian  = require "helm:historian"
-local Lex        = require "helm:lex"
-local Zoneherd   = require "helm:zone"
 local Maestro    = require "helm:maestro"
-local repr       = require "repr:repr"
-local lua_parser = require "helm:lua-parser"
-
-local concat               = assert(table.concat)
-local sub, gsub, rep, find = assert(string.sub),
-                             assert(string.gsub),
-                             assert(string.rep),
-                             assert(string.find)
-
-local ts = repr.ts_color
-
+local Valiant = require "valiant:valiant"
+local Zoneherd   = require "helm:zone"
 
 
 
 local ModeS = meta()
-
 
 
 
@@ -257,6 +240,8 @@ local Page      = require "helm:raga/page"
 local Modal     = require "helm:raga/modal"
 local Review    = require "helm:raga/review"
 local EditTitle = require "helm:raga/edit-title"
+
+local Lex        = require "helm:lex"
 
 ModeS.closet = { nerf =       { raga = Nerf,
                                 lex  = Lex.lua_thor },
@@ -548,6 +533,7 @@ end
 
 
 
+local rep = assert(string.rep)
 function ModeS.openHelp(modeS)
    modeS:agent'pager':update(("abcde "):rep(1000))
    modeS.shift_to = "page"
@@ -586,12 +572,13 @@ end
 
 
 
-local function _status__repr(status_table)
-   return concat(status_table)
-end
+local concat = assert(table.concat)
 
 local _stat_M = meta {}
-_stat_M.__repr = _status__repr
+
+function _stat_M.__repr(status_table)
+   return concat(status_table)
+end
 
 function _stat_M.clear(status_table)
    return setmetatable({}, getmetatable(status_table))
@@ -611,7 +598,6 @@ end
 
 
 
-local deepclone = assert(core.deepclone)
 local function new(max_extent, writer, db)
    local modeS = meta(ModeS)
 
