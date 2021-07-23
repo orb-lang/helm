@@ -20,11 +20,11 @@ Search.prompt_char = "⁉️"
 local NAV = Search.NAV
 
 function NAV.SHIFT_DOWN(modeS, category, value)
-   local search_result = modeS.hist.last_collection
+   local search_result = modeS:agent'search'.last_collection
    if search_result and search_result:selectNext() then
       -- #todo route this through a Window that can handle the
       -- change-detection automatically
-      modeS.hist.touched = true
+      modeS:agent'search'.touched = true
       modeS.zones.results.contents:ensureVisible(search_result.selected_index)
    end
 end
@@ -32,9 +32,9 @@ end
 
 #!lua
 function NAV.SHIFT_UP(modeS, category, value)
-   local search_result = modeS.hist.last_collection
+   local search_result = modeS:agent'search'.last_collection
    if search_result and search_result:selectPrevious() then
-      modeS.hist.touched = true
+      modeS:agent'search'.touched = true
       modeS.zones.results.contents:ensureVisible(search_result.selected_index)
    end
 end
@@ -42,14 +42,14 @@ end
 
 #!lua
 function NAV.ESC(modeS, category, value)
-   local search_result = modeS.hist.last_collection
+   local search_result = modeS:agent'search'.last_collection
    -- No results or nothing is selected, exit search mode
    if not search_result or search_result.selected_index == 0 then
       modeS.shift_to = modeS.raga_default
    -- If something *is* selected, deselect it first
    else
       search_result:selectNone()
-      modeS.hist.touched = true
+      modeS:agent'search'.touched = true
       modeS.zones.results.contents:ensureVisible(1)
    end
 end
@@ -87,7 +87,7 @@ NAV.DELETE    = _modeShiftOnDeleteWhenEmpty
 #!lua
 
 local function _acceptAtIndex(modeS, selected_index)
-   local search_result = modeS.hist.last_collection
+   local search_result = modeS:agent'search'.last_collection
    local line, result
    if #search_result > 0 then
       selected_index = selected_index or search_result.selected_index
@@ -136,7 +136,7 @@ We need to update the search result whenever the contents of the Txtbuf change.
 
 #!lua
 function Search.onTxtbufChanged(modeS)
-   modeS.hist:search(modeS:agent'edit':contents())
+   modeS:agent'search':update(modeS)
 end
 #/lua
 
@@ -149,9 +149,9 @@ same Window also drives the result zone.
 #!lua
 function Search.onShift(modeS)
    EditBase.onShift(modeS)
-   modeS.hist:search(modeS:agent'edit':contents())
-   modeS.zones.command.contents.suggestions = modeS.hist:window()
-   modeS.zones.results:replace(Resbuf(modeS.hist:window(), { scrollable = true }))
+   modeS:agent'search':update(modeS)
+   modeS.zones.command.contents.suggestions = modeS:agent'search':window()
+   modeS.maestro:bindZone("results", "search", Resbuf, { scrollable = true })
 end
 #/lua
 

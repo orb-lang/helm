@@ -22,6 +22,7 @@ local ModalAgent     = require "helm:agent/modal"
 local PagerAgent     = require "helm:agent/pager"
 local PromptAgent    = require "helm:agent/prompt"
 local ResultsAgent   = require "helm:agent/results"
+local SearchAgent    = require "helm:agent/search"
 local SessionAgent   = require "helm:agent/session"
 local StatusAgent    = require "helm:agent/status"
 local SuggestAgent   = require "helm:agent/suggest"
@@ -133,6 +134,7 @@ local function new(modeS)
       pager      = PagerAgent(),
       prompt     = PromptAgent(),
       results    = ResultsAgent(),
+      search     = SearchAgent(),
       session    = SessionAgent(),
       status     = StatusAgent(),
       suggest    = SuggestAgent()
@@ -145,8 +147,8 @@ local function new(modeS)
    borrowto(agents.suggest, agents.edit, "tokens")
    borrowto(agents.suggest, agents.edit, "replaceToken")
    borrowto(agents.prompt,  agents.edit, "continuationLines")
-   -- #todo this is just...ugly
    agents.prompt.editTouched = getter(agents.edit, "touched")
+   agents.search.searchText = borrowmethod(agents.edit, "contents")
    -- Set up common Agent -> Zone bindings
    -- Note we don't do results here because that varies from raga to raga
    -- The Txtbuf also needs a source of "suggestions" (which might be

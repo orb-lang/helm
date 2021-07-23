@@ -246,14 +246,7 @@ local SelectionList = require "helm/selection_list"
 local fuzz_patt = require "helm:helm/fuzz_patt"
 
 function Historian.search(historian, frag)
-   if historian.last_collection
-      and historian.last_collection.lit_frag == frag then
-      -- don't repeat a search
-      return historian.last_collection
-   end
    if frag == "" then
-      historian.last_collection = nil
-      historian.touched = true
       return nil
    end
    local result = SelectionList(frag, { show_shortcuts = true, cursors = {}})
@@ -275,41 +268,8 @@ function Historian.search(historian, frag)
       result.frag = frag:sub(1, -3) .. frag:sub(-1, -1) .. frag:sub(-2, -2)
       try_search()
    end
-   historian.last_collection = result
-   historian.touched = true
    return result
 end
-
-
-
-
-
-
-
-
-
-
-
-
-local agent_utils = require "helm:agent/utils"
-Historian.checkTouched = assert(agent_utils.checkTouched)
-
-local function _toLastCollection(agent, window, field, ...)
-   local lc = agent.last_collection
-   return lc and lc[field](lc, ...) -- i.e. lc:<field>(...)
-end
-Historian.window = agent_utils.make_window_method({
-   fn = {
-      buffer_value = function(agent, window, field)
-         return agent.last_collection
-            and { n = 1, agent.last_collection }
-      end
-   },
-   closure = {
-      selectedItem = _toLastCollection,
-      highlight = _toLastCollection
-   }
-})
 
 
 
