@@ -123,16 +123,30 @@ end
 
 
 
+function _eval(modeS)
+   local line = modeS:agent'edit':contents()
+   local success, results = modeS.eval(line)
+   if not success and results == 'advance' then
+      modeS:agent'edit':endOfText()
+      modeS:agent'edit':nl()
+   else
+      modeS.hist:append(line, results, success)
+      modeS.hist.cursor = modeS.hist.n + 1
+      modeS:setResults(results)
+      modeS:agent'edit':clear()
+   end
+end
+
 function NAV.RETURN(modeS, category, value)
    if modeS:agent'edit':shouldEvaluate() then
-      modeS:eval()
+      _eval(modeS)
    else
       modeS:agent'edit':nl()
    end
 end
 
 function NAV.CTRL_RETURN(modeS, category, value)
-   modeS:eval()
+   _eval(modeS)
 end
 
 function NAV.SHIFT_RETURN(modeS, category, value)
@@ -230,7 +244,15 @@ local ALT = Nerf.ALT
 
 
 ALT ["M-e"] = function(modeS, category, value)
-   modeS:evalFromCursor()
+   local top = modeS.hist.n
+   local cursor = modeS.hist.cursor
+   for i = cursor, top do
+      -- Discard the second return value from :index
+      -- or it will confuse the Txtbuf constructor rather badly
+      local line = modeS.hist:index(i)
+      modeS:agent'edit':update(line)
+      _eval(modeS)
+   end
 end
 
 

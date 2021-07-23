@@ -423,54 +423,6 @@ end
 
 
 
-local eval = Valiant(_G, __G)
-
-
-
-local insert = assert(table.insert)
-local keys = assert(core.keys)
-
-function ModeS.eval(modeS)
-   local line = modeS:agent'edit':contents()
-   local success, results = eval(line)
-   if not success and results == 'advance' then
-      modeS:agent'edit':endOfText()
-      modeS:agent'edit':nl()
-   else
-      modeS.hist:append(line, results, success)
-      modeS.hist.cursor = modeS.hist.n + 1
-      modeS:setResults(results)
-      modeS:agent'edit':clear()
-   end
-
-   return modeS
-end
-
-
-
-
-
-
-
-
-
-function ModeS.evalFromCursor(modeS)
-   local top = modeS.hist.n
-   local cursor = modeS.hist.cursor
-   for i = cursor, top do
-      -- Discard the second return value from :index
-      -- or it will confuse the Txtbuf constructor rather badly
-      local line = modeS.hist:index(i)
-      modeS:agent'edit':update(line)
-      modeS:eval()
-   end
-end
-
-
-
-
-
-
 
 
 
@@ -501,14 +453,14 @@ function ModeS.restart(modeS)
    local top = hist.n
    hist.n = hist.cursor_start - 1
    -- put instrumented require in restart mode
-   eval:restart()
+   modeS.eval:restart()
    hist.stmts.savepoint_restart_session()
    for i = hist.cursor_start, top do
-      local success, results = eval(tostring(hist[i]))
+      local success, results = modeS.eval(tostring(hist[i]))
       assert(results ~= "advance", "Incomplete line when restarting session")
       hist:append(hist[i], results, success, modeS.session)
    end
-   eval:reset()
+   modeS.eval:reset()
    assert(hist.n == #hist, "History length mismatch after restart: n = "
          .. tostring(hist.n) .. ", # = " , tostring(#hist))
    modeS :setResults(hist.result_buffer[hist.cursor]) :paint()
@@ -602,6 +554,7 @@ local function new(max_extent, writer, db)
    local modeS = meta(ModeS)
 
    -- Create Actors and other major sub-components
+   modeS.eval = Valiant(__G)
    modeS.hist  = Historian(db)
    modeS.status = setmetatable({}, _stat_M)
    rawset(__G, "stat", modeS.status)
