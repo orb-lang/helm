@@ -601,56 +601,6 @@ end
 #/lua
 
 
-*** ModeS:eval()
-
-#!lua
-local eval = Valiant(_G, __G)
-#/lua
-
-#!lua
-local insert = assert(table.insert)
-local keys = assert(core.keys)
-
-function ModeS.eval(modeS)
-   -- Getting ready to eval, cancel any active autocompletion
-   modeS.suggest:cancel(modeS)
-   local line = tostring(modeS.txtbuf)
-   local success, results = eval(line)
-   if not success and results == 'advance' then
-      modeS.txtbuf:endOfText()
-      modeS.txtbuf:nl()
-   else
-      modeS.hist:append(line, results, success)
-      modeS.hist.cursor = modeS.hist.n + 1
-      modeS:setResults(results)
-      modeS:setTxtbuf(Txtbuf())
-   end
-
-   return modeS
-end
-#/lua
-
-
-*** ModeS:evalFromCursor()
-
-Evaluates every result from the current historian cursor to the top of the
-history.
-
-#!lua
-function ModeS.evalFromCursor(modeS)
-   local top = modeS.hist.n
-   local cursor = modeS.hist.cursor
-   for i = cursor, top do
-      -- Discard the second return value from :index
-      -- or it will confuse the Txtbuf constructor rather badly
-      local line = modeS.hist:index(i)
-      modeS:setTxtbuf(Txtbuf(line))
-      modeS:eval()
-   end
-end
-#/lua
-
-
 *** ModeS:quit()
 
 Marks the modeselektor as ready to quit (the actual teardown will happen
@@ -684,14 +634,14 @@ function ModeS.restart(modeS)
    local top = hist.n
    hist.n = hist.cursor_start - 1
    -- put instrumented require in restart mode
-   eval:restart()
+   modeS.eval:restart()
    hist.stmts.savepoint_restart_session()
    for i = hist.cursor_start, top do
-      local success, results = eval(tostring(hist[i]))
+      local success, results = modeS.eval(tostring(hist[i]))
       assert(results ~= "advance", "Incomplete line when restarting session")
       hist:append(hist[i], results, success, modeS.session)
    end
-   eval:reset()
+   modeS.eval:reset()
    assert(hist.n == #hist, "History length mismatch after restart: n = "
          .. tostring(hist.n) .. ", # = " , tostring(#hist))
    modeS :setResults(hist.result_buffer[hist.cursor]) :paint()
@@ -789,6 +739,7 @@ local deepclone = assert(core.deepclone)
 local function new(max_extent, writer, db)
    local modeS = meta(ModeS)
 
+   modeS.eval = Valiant(__G)
    modeS.txtbuf = Txtbuf()
    modeS.hist  = Historian(db)
    modeS.suggest = Suggest()

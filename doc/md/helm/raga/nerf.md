@@ -124,16 +124,32 @@ end
 ```
 
 ```lua
+function _eval(modeS)
+   -- Getting ready to eval, cancel any active autocompletion
+   modeS.suggest:cancel(modeS)
+   local line = tostring(modeS.txtbuf)
+   local success, results = modeS.eval(line)
+   if not success and results == 'advance' then
+      modeS.txtbuf:endOfText()
+      modeS.txtbuf:nl()
+   else
+      modeS.hist:append(line, results, success)
+      modeS.hist.cursor = modeS.hist.n + 1
+      modeS:setResults(results)
+      modeS:setTxtbuf(Txtbuf())
+   end
+end
+
 function NAV.RETURN(modeS, category, value)
    if modeS.txtbuf:shouldEvaluate() then
-      modeS:eval()
+      _eval(modeS)
    else
       modeS.txtbuf:nl()
    end
 end
 
 function NAV.CTRL_RETURN(modeS, category, value)
-   modeS:eval()
+   _eval(modeS)
 end
 
 function NAV.SHIFT_RETURN(modeS, category, value)
@@ -220,7 +236,15 @@ local ALT = Nerf.ALT
 
 ```lua
 ALT ["M-e"] = function(modeS, category, value)
-   modeS:evalFromCursor()
+   local top = modeS.hist.n
+   local cursor = modeS.hist.cursor
+   for i = cursor, top do
+      -- Discard the second return value from :index
+      -- or it will confuse the Txtbuf constructor rather badly
+      local line = modeS.hist:index(i)
+      modeS:setTxtbuf(Txtbuf(line))
+      _eval(modeS)
+   end
 end
 ```
 
