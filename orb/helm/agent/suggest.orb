@@ -1,28 +1,27 @@
 * Suggest Agent
 
-This is our autocomplete module.
+  This is our autocomplete module.
 
-** Dependencies
+
+**** imports
 
 #!lua
-
 local SelectionList = require "helm:selection_list"
 local names = require "repr:names"
 local insert, sort = assert(table.insert), assert(table.sort)
-
 #/lua
+
 
 #!lua
-
 local SuggestAgent = meta {}
 local new
-
 #/lua
+
 
 *** SuggestAgent:cursorContext()
 
-Examines the text before the cursor to determine (a) what token we are in the
-middle of, and (b) what if any path from the global environment we should
+  Examines the text before the cursor to determine (a) what token we are in
+the middle of, and (b) what if any path from the global environment we should
 follow to determine a list of keys to complete from. Answers =nil= if the
 token we are in the middle of is not a symbol, and a =nil= second return value
 if the path cannot be determined.
@@ -79,12 +78,12 @@ function SuggestAgent.cursorContext(suggest)
 end
 #/lua
 
+
 *** SuggestAgent:update()
 
 Updates the completion list based on the current contents of the Txtbuf.
 
 #!lua
-
 local function _suggest_sort(a, b)
    if a.score ~= b.score then
       return a.score < b.score
@@ -177,8 +176,7 @@ end
 #/lua
 
 
-*** accept()
-
+*** SuggestAgent:accept()
 
 #!lua
 function SuggestAgent.accept(suggest)
@@ -217,12 +215,10 @@ SuggestAgent.window = agent_utils.make_window_method({
 *** new()
 
 #!lua
-
 new = function()
    local suggest = meta(SuggestAgent)
    return suggest
 end
-
 #/lua
 
 #!lua

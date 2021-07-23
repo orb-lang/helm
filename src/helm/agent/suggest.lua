@@ -13,7 +13,6 @@ local insert, sort = assert(table.insert), assert(table.sort)
 
 
 
-
 local SuggestAgent = meta {}
 local new
 
@@ -180,7 +179,6 @@ end
 
 
 
-
 function SuggestAgent.accept(suggest)
    local suggestion = suggest.last_collection:selectedItem()
    suggest.replaceToken(suggestion)
@@ -217,12 +215,10 @@ SuggestAgent.window = agent_utils.make_window_method({
 
 
 
-
 new = function()
    local suggest = meta(SuggestAgent)
    return suggest
 end
-
 
 
 
