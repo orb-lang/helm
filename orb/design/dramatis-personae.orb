@@ -280,7 +280,7 @@ can.
 
 The Historian loads up a bunch of information from this database using
 =helm-db=, a instance containing a proxy table.  You pass it messages, it
-returns prepared statements, and it has a few other tricks under its sleve.
+returns prepared statements, and it has a few other tricks up its sleve.
 
 While a proxy table is definitely not an actor, it is an instance, but not one
 which follows the usual objectesque pattern.  Kind of its own thing.
