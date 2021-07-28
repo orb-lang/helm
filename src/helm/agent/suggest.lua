@@ -1,38 +1,36 @@
-* Suggest
 
-This is our autocomplete module.
 
-** Dependencies
 
-#!lua
+
+
+
+
 
 local SelectionList = require "helm:selection_list"
-local Resbuf = require "helm:resbuf"
 local names = require "repr:names"
 local insert, sort = assert(table.insert), assert(table.sort)
 
-#/lua
 
-#!lua
 
-local Suggest = meta {}
+
+local SuggestAgent = meta {}
 local new
 
-#/lua
 
-*** _cursorContext(modeS)
 
-Examines the text before the cursor to determine (a) what token we are in the
-middle of, and (b) what if any path from the global environment we should
-follow to determine a list of keys to complete from. Answers =nil= if the
-token we are in the middle of is not a symbol, and a =nil= second return value
-if the path cannot be determined.
 
-#!lua
-local function _cursorContext(modeS)
+
+
+
+
+
+
+
+
+function SuggestAgent.cursorContext(suggest)
    local lex_tokens = {}
    -- Ignore whitespace and comments
-   for _, token in ipairs(modeS.txtbuf:tokens()) do
+   for _, token in ipairs(suggest.tokens()) do
       if token.color ~= "no_color" and token.color ~= "comment" then
          insert(lex_tokens, token)
       end
@@ -46,8 +44,6 @@ local function _cursorContext(modeS)
          break
       end
    end
-   -- #todo once we're using =palette=, we'll be able to check the name
-   -- of the color rather than needing the color table ourselves
    if not context or context.color ~= "field" then
       -- We're in a non-completable token
       return nil
@@ -80,14 +76,13 @@ local function _cursorContext(modeS)
    end
    return context, path
 end
-#/lua
 
 
-*** update(modeS, category, value)
 
-Updates the completion list based on the current contents of the Txtbuf.
 
-#!lua
+
+
+
 
 local function _suggest_sort(a, b)
    if a.score ~= b.score then
@@ -105,7 +100,7 @@ local safeget = import("core:table", "safeget")
 local fuzz_patt = require "helm:fuzz_patt"
 local Set = require "set:set"
 
-local function _suggestions_from(complete_against)
+local function _candidates_from(complete_against)
    -- Either no path was provided, or some part of it doesn't
    -- actually exist, fall back to completing against all symbols
    if complete_against == nil then
@@ -131,18 +126,16 @@ local function _suggestions_from(complete_against)
    return candidate_symbols
 end
 
-local function _set_suggestions(modeS, suggestions)
-   modeS.suggest.active_suggestions = suggestions
-   -- #todo Can't say I like assigning this twice like this
-   modeS.txtbuf.active_suggestions = suggestions
+local function _set_suggestions(suggest, suggestions)
+   suggest.last_collection = suggestions
+   suggest.touched = true
 end
 
 
-function Suggest.update(suggest, modeS)
-   local context, path = _cursorContext(modeS)
+function SuggestAgent.update(suggest)
+   local context, path = suggest:cursorContext()
    if context == nil then
-      suggest:cancel(modeS)
-      return
+      return _set_suggestions(suggest, nil)
    end
 
    -- First, build a list of candidate symbols--those that would be valid
@@ -158,13 +151,11 @@ function Suggest.update(suggest, modeS)
          complete_against = nil
       end
    end
-   local candidate_symbols = _suggestions_from(complete_against)
+   local candidate_symbols = _candidates_from(complete_against)
 
    -- Now we can actually filter those candidates for whether they match or not
-   local suggestions = SelectionList()
-   suggestions.best = true
-   suggestions.frag = tostring(context):sub(1, context.cursor_offset)
-   suggestions.lit_frag = suggestions.frag
+   local suggestions = SelectionList(tostring(context)
+                                       :sub(1, context.cursor_offset))
    local match_patt = fuzz_patt(suggestions.frag)
    local matches = {}
    for sym in pairs(candidate_symbols) do
@@ -174,71 +165,63 @@ function Suggest.update(suggest, modeS)
       end
    end
    if #matches == 0 then
-      suggest:cancel(modeS)
-      return
+      return _set_suggestions(suggest, nil)
    end
    sort(matches, _suggest_sort)
    for _, match in ipairs(matches) do
       insert(suggestions, match.sym)
    end
-   if modeS.raga.name == "complete" then
-      suggestions.selected_index = 1
-   end
-   _set_suggestions(modeS, suggestions)
-   -- #todo Should this be a separate Rainbuf subclass,
-   -- or is the __repr approach fine?
-   modeS.zones.suggest:replace(Resbuf(
-      { suggestions, n = 1 },
-      { live = true, made_in = "suggest.update" }))
+   _set_suggestions(suggest, suggestions)
 end
-#/lua
 
 
-*** selectedSuggestion()
 
-#!lua
-function Suggest.selectedSuggestion(suggest)
-   return suggest.active_suggestions and suggest.active_suggestions:selectedItem()
+
+
+
+function SuggestAgent.accept(suggest)
+   local suggestion = suggest.last_collection:selectedItem()
+   suggest.replaceToken(suggestion)
 end
-#/lua
 
 
-*** cancel()
 
-#!lua
-function Suggest.cancel(suggest, modeS)
-   _set_suggestions(modeS, nil)
-   modeS.zones.suggest:replace("")
-   modeS.zones.command:beTouched()
+
+
+
+local agent_utils = require "helm:agent/utils"
+
+SuggestAgent.checkTouched = assert(agent_utils.checkTouched)
+
+local function _toLastCollection(agent, window, field, ...)
+   local lc = agent.last_collection
+   return lc and lc[field](lc, ...) -- i.e. lc:<field>(...)
 end
-#/lua
+SuggestAgent.window = agent_utils.make_window_method({
+   fn = {
+      buffer_value = function(agent, window, field)
+         return agent.last_collection
+            and { n = 1, agent.last_collection }
+      end
+   },
+   closure = {
+      selectedItem = _toLastCollection,
+      highlight = _toLastCollection
+   }
+})
 
 
-*** accept()
-
-#!lua
-function Suggest.accept(suggest, modeS)
-   local suggestion = suggest:selectedSuggestion()
-   local context = _cursorContext(modeS)
-   modeS.txtbuf:right(context.total_disp - context.cursor_offset)
-   modeS.txtbuf:killBackward(context.total_disp)
-   modeS.txtbuf:paste(suggestion)
-end
-#/lua
 
 
-*** new()
 
-#!lua
 
 new = function()
-   local suggest = meta(Suggest)
+   local suggest = meta(SuggestAgent)
    return suggest
 end
 
-#/lua
 
-#!lua
-Suggest.idEst = new
+
+SuggestAgent.idEst = new
 return new
-#/lua
+

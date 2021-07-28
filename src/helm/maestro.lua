@@ -12,7 +12,20 @@
 
 
 
+
+
 local input_event = require "anterm:input-event"
+
+local EditAgent      = require "helm:agent/edit"
+local InputEchoAgent = require "helm:agent/input-echo"
+local ModalAgent     = require "helm:agent/modal"
+local PagerAgent     = require "helm:agent/pager"
+local PromptAgent    = require "helm:agent/prompt"
+local ResultsAgent   = require "helm:agent/results"
+local SearchAgent    = require "helm:agent/search"
+local SessionAgent   = require "helm:agent/session"
+local StatusAgent    = require "helm:agent/status"
+local SuggestAgent   = require "helm:agent/suggest"
 
 
 
@@ -87,7 +100,20 @@ end
 
 local function new(modeS)
    local maestro = meta(Maestro)
+   -- #todo this is temporary until we sort out communication properly
    maestro.modeS = modeS
+   maestro.agents = {
+      edit       = EditAgent(),
+      input_echo = InputEchoAgent(),
+      modal      = ModalAgent(),
+      pager      = PagerAgent(),
+      prompt     = PromptAgent(),
+      results    = ResultsAgent(),
+      search     = SearchAgent(),
+      session    = SessionAgent(),
+      status     = StatusAgent(),
+      suggest    = SuggestAgent()
+   }
    return maestro
 end
 

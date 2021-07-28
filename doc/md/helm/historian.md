@@ -14,17 +14,13 @@ records\.
 
 ```lua
 local uv      = require "luv"
-local sql     = assert(sql, "sql must be in bridge _G")
 
-local Resbuf  = require "helm:resbuf"
 local Session = require "helm:session"
 local persist_tabulate = require "repr:persist-tabulate"
 local helm_db = require "helm:helm-db"
 
-local concat, insert = assert(table.concat), assert(table.insert)
-local reverse = require "core/table" . reverse
+local insert = assert(table.insert)
 local meta = require "core/meta" . meta
-local sha = assert(require "util:sha" . shorthash)
 
 local Set = require "set:set"
 ```
@@ -132,9 +128,9 @@ end
 Persists a line and results to store\.
 
 ```lua
-local tabulate = require "repr:tabulate"
 local tabulate_some = assert(persist_tabulate.tabulate_some)
-local no_color = assert(require "singletons:color" . no_color)
+local sha = assert(require "util:sha" . shorthash)
+local blob = assert(assert(sql, "sql must be in bridge _G").blob)
 function Historian.persist(historian, line, results)
    if type(results) ~= "table" or results.n == 0 then
       results = nil
@@ -145,7 +141,7 @@ function Historian.persist(historian, line, results)
    end
    historian.stmts.savepoint_persist()
    historian.insert_line:bindkv { project = historian.project_id,
-                                       line    = sql.blob(line) }
+                                  line    = blob(line) }
    local err = historian.insert_line:step()
    if not err then
       historian.insert_line:clearbind():reset()
@@ -251,20 +247,10 @@ local SelectionList = require "helm/selection_list"
 local fuzz_patt = require "helm:helm/fuzz_patt"
 
 function Historian.search(historian, frag)
-   if historian.last_collection
-      and historian.last_collection[1].lit_frag == frag then
-      -- don't repeat a search
-      return historian.last_collection
-   end
    if frag == "" then
-      return ""
+      return nil
    end
-   local result = SelectionList()
-   result.cursors = {}
-   result.frag = frag
-   result.lit_frag = frag
-   result.best = true
-   result.show_shortcuts = true
+   local result = SelectionList(frag, { show_shortcuts = true, cursors = {}})
    local function try_search()
       local patt = fuzz_patt(result.frag)
       local dup = {}
@@ -283,18 +269,30 @@ function Historian.search(historian, frag)
       result.frag = frag:sub(1, -3) .. frag:sub(-1, -1) .. frag:sub(-2, -2)
       try_search()
    end
-   historian.last_collection = Resbuf({ result, n = 1 }, { live = true })
-   historian.last_collection.made_in = "historian.search"
-   return historian.last_collection
+   return result
 end
 ```
+
+
+## History navigation
+
+
+### \_setCursor\(cursor\)
+
+Sets the cursor and returns the line and results for that index\. Unlike
+`:index()` this is allowed to be out\-of\-bounds, in which we return `nil`\.
 
 ```lua
 local db_result_M = assert(persist_tabulate.db_result_M)
 
-local function _resultsFrom(historian, cursor)
+local function _setCursor(historian, cursor)
+   historian.cursor = cursor
+   local line = historian[cursor]
+   if not line then
+      return nil, nil
+   end
    if historian.result_buffer[cursor] then
-      return historian.result_buffer[cursor]
+      return line, historian.result_buffer[cursor]
    end
    local line_id = historian.line_ids[cursor]
    local stmt = historian.get_results
@@ -312,26 +310,20 @@ local function _resultsFrom(historian, cursor)
    stmt:reset()
    -- may as well memoize the database call, while we're here
    historian.result_buffer[line_id] = results
-   return results
+   return line, results
 end
 ```
 
 
-## Historian:delta\(\), :prev\(\), :next\(\)
+### Historian:delta\(\), :prev\(\), :next\(\)
 
 Moves the cursor by the given delta, returning the line
 and result \(if any\) at the new cursor position\.
 
 ```lua
 function Historian.delta(historian, delta)
-   historian.cursor = clamp(historian.cursor + delta, 1, historian.n + 1)
-   local line = historian[historian.cursor]
-   if line then
-      local result = _resultsFrom(historian, historian.cursor)
-      return line, result
-   else
-      return nil, nil
-   end
+   return _setCursor(historian,
+                     clamp(historian.cursor + delta, 1, historian.n + 1))
 end
 
 function Historian.prev(historian)
@@ -351,10 +343,7 @@ exists, i\.e\. 1 <= index <= historian\.n\-\-historian\.n \+ 1 is not allowed\.
 ```lua
 function Historian.index(historian, cursor)
    assert(inbounds(cursor, 1, historian.n))
-   historian.cursor = cursor
-   local line = historian[cursor]
-   local result = _resultsFrom(historian, cursor)
-   return line, result
+   return _setCursor(historian, cursor)
 end
 ```
 

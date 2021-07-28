@@ -1,0 +1,291 @@
+* Sessionbuf
+
+This is a type of =Rainbuf= specialized to display and edit a =Session=.
+
+
+** Instance fields
+
+-  session:        The Session object we are displaying and editing.
+-  txtbufs:        Array of =Txtbuf=s for each line of the session.
+-  resbuf:         =Resbuf= for displaying the results of the selected line.
+-  selected_index: The index of the line that is selected for editing
+
+#!lua
+local Rainbuf = require "helm:buf/rainbuf"
+local Resbuf  = require "helm:buf/resbuf"
+local Txtbuf  = require "helm:buf/txtbuf"
+
+local Sessionbuf = Rainbuf:inherit()
+#/lua
+
+
+** Constants
+
+#!lua
+-- The (maximum) number of rows we will use for the "line" (command)
+-- (in case it is many lines long)
+Sessionbuf.ROWS_PER_LINE = 4
+-- The (maximum) number of rows we will use for the result of the selected line
+Sessionbuf.ROWS_PER_RESULT = 7
+#/lua
+
+
+** Methods
+
+
+*** Sessionbuf:contentCols()
+
+We have left and right borders, which immediately take off two columns of
+width. Padding matters too, but only to our sub-buffers, so we can't account
+for it here.
+
+#!lua
+function Sessionbuf.contentCols(buf)
+   return buf:super"contentCols"() - 2
+end
+#/lua
+
+
+*** Sub-buffer management
+
+We lazy-create our subsidiary buffers--centralize this with helper functions.
+
+#!lua
+local function _set_resbuf_extent(buf)
+   if buf.resbuf then
+      -- Account for additional padding
+      buf.resbuf:setExtent(buf.ROWS_PER_RESULT, buf:contentCols() - 2)
+   end
+end
+
+local function _set_txtbuf_extent(buf, index)
+   if buf.txtbufs[index] then
+      -- As above, but additionally three cells for the icon and space after it
+      buf.txtbufs[index]:setExtent(buf.ROWS_PER_LINE, buf:contentCols() - 5)
+   end
+end
+
+local function _resbuf(buf)
+   if not buf.resbuf then
+      buf.resbuf = Resbuf(buf.source.resultsWindow(), { scrollable = true })
+      _set_resbuf_extent(buf)
+   end
+   return buf.resbuf
+end
+
+local lua_thor = assert(require "helm:lex" . lua_thor)
+local function _txtbuf(buf, index)
+   if not buf.txtbufs[index] then
+      buf.txtbufs[index] = Txtbuf(buf.source.editWindow(index), { lex = lua_thor })
+      _set_txtbuf_extent(buf, index)
+   end
+   return buf.txtbufs[index]
+end
+#/lua
+
+
+*** Sessionbuf:setExtent(rows, cols)
+
+Pass through extent changes to our sub-buffers as needed. We extract this to a
+function because it also needs to happen when we create new sub-buffers.
+
+#!lua
+function Sessionbuf.setSubExtents(buf)
+   if not (buf.rows and buf.cols) then return end
+   _set_resbuf_extent(buf)
+   -- There'll probably never be holes in the txtbufs array, but it doesn't
+   -- really matter what order we do this in, so better safe than sorry.
+   for index in pairs(buf.txtbufs) do
+      _set_txtbuf_extent(buf, index)
+   end
+end
+
+function Sessionbuf.setExtent(buf, rows, cols)
+   buf:super"setExtent"(rows, cols)
+   buf:setSubExtents()
+end
+#/lua
+
+
+*** Sessionbuf:checkTouched()
+
+Changes to our sub-buffers (e.g. from scrolling) also count as touches. We
+don't early-out once we know we're touched because we must still check and
+clear everyone.
+
+#!lua
+function Sessionbuf.checkTouched(buf)
+   if buf.resbuf and buf.resbuf:checkTouched() then
+      buf:beTouched()
+   end
+   for _, txtbuf in pairs(buf.txtbufs) do
+      if txtbuf:checkTouched() then
+         buf:beTouched()
+      end
+   end
+   return buf:super"checkTouched"()
+end
+#/lua
+
+
+*** Sessionbuf:rowsForSelectedResult()
+
+Returns the number of lines needed to display the result of the
+selected premise. This will never be greater than ROWS_PER_RESULT.
+The Sessionbuf must have had :initComposition() already called.
+
+#!lua
+local clamp = assert(require "core:math" . clamp)
+function Sessionbuf.rowsForSelectedResult(buf)
+   _resbuf(buf):composeUpTo(buf.ROWS_PER_RESULT)
+   return clamp(#_resbuf(buf).lines, 0, buf.ROWS_PER_RESULT)
+end
+#/lua
+
+
+*** Sessionbuf:positionOf(index)
+
+Returns the line number at which display of the =index=th premise begins.
+
+#!lua
+local gsub = assert(string.gsub)
+function Sessionbuf.positionOf(buf, index)
+   local position = 1
+   for i = 1, index - 1 do
+      local num_lines = select(2, gsub(buf:value()[i].line, '\n', '\n')) + 1
+      num_lines = clamp(num_lines, 1, buf.ROWS_PER_LINE)
+      position = position + num_lines + 1
+      if i == buf.source.selected_index then
+         position = position + buf:rowsForSelectedResult() + 1
+      end
+   end
+   return position
+end
+
+function Sessionbuf.positionOfSelected(buf)
+   return buf:positionOf(buf.source.selected_index)
+end
+#/lua
+
+
+**** Sessionbuf:scrollResultsDown(), :scrollResultsUp()
+
+Scroll within the results area for the currently-selected line.
+
+#!lua
+function Sessionbuf.scrollResultsDown(buf)
+   return _resbuf(buf):scrollDown()
+end
+
+function Sessionbuf.scrollResultsUp(buf)
+   return _resbuf(buf):scrollUp()
+end
+#/lua
+
+
+*** Rendering
+
+
+**** Sessionbuf:clearCaches()
+
+Although we have sub-buffers, their caches will usually remain valid
+even when ours does not, so leave them alone.
+Discard any render coroutine we may be holding on to.
+
+#!lua
+function Sessionbuf.clearCaches(buf)
+   buf:super"clearCaches"()
+   buf._composeOneLine = nil
+end
+#/lua
+
+
+**** Sessionbuf:initComposition()
+
+#!lua
+local wrap = assert(coroutine.wrap)
+function Sessionbuf.initComposition(buf)
+   buf._composeOneLine = buf._composeOneLine or wrap(
+      function()
+         local success, err = xpcall(function() buf:_composeAll() end,
+                                     debug.traceback)
+         if not success then
+            error(err)
+         end
+      end)
+end
+#/lua
+
+
+**** Sessionbuf:_composeAll()
+
+Given the amount of state involved in our render process, it's easier
+to just do it all as a coroutine. This method is the body of that coroutine,
+and we assign the wrapped result dynamically to =_composeOneLine=
+
+#!lua
+local status_icons = {
+   ignore = "🟡",
+   accept = "✅",
+   reject = "🚫",
+   skip   = "🗑 "
+}
+
+local box_light = assert(require "anterm:box" . light)
+local yield = assert(coroutine.yield)
+local c = assert(require "singletons:color" . color)
+
+function Sessionbuf._composeAll(buf)
+   local function box_line(line_type)
+      return box_light[line_type .. "Line"](box_light, buf:contentCols())
+   end
+   for i, premise in ipairs(buf:value()) do
+      yield(box_line(i == 1 and "top" or "spanning"))
+      -- Render the line (which could actually be multiple physical lines)
+      local line_prefix = status_icons[premise.status] .. ' '
+      for line in _txtbuf(buf, i):lineGen() do
+         -- Selected premise gets a highlight
+         if i == buf.source.selected_index then
+            line = c.highlight(line)
+         end
+         yield(box_line"content" .. line_prefix .. line)
+         line_prefix = '   '
+      end
+      -- Selected premise also displays results
+      if i == buf.source.selected_index then
+         yield(box_line"spanning")
+         for line in _resbuf(buf):lineGen() do
+            yield(box_line"content" .. line)
+         end
+      end
+   end
+   if #buf:value() == 0 then
+      yield(box_line"top")
+      yield(box_line"content" .. "No premises to display")
+   end
+   yield(box_line"bottom")
+   buf._composeOneLine = nil
+end
+#/lua
+
+
+*** Sessionbuf:_init()
+
+We have an array of Txtbufs to initialize, though we leave it empty and fill
+it lazily. We also defer creating a Resbuf until we need it, since we need to
+have our source window in order to do so.
+
+#!lua
+function Sessionbuf._init(buf)
+   buf:super"_init"()
+   buf.txtbufs = {}
+end
+#/lua
+
+
+#!lua
+local Sessionbuf_class = setmetatable({}, Sessionbuf)
+Sessionbuf.idEst = Sessionbuf_class
+
+return Sessionbuf_class
+#/lua

@@ -14,7 +14,7 @@ local cluster = require "core:cluster"
 
 
 
-local Rainbuf = require "helm:rainbuf"
+local Rainbuf = require "helm:buf/rainbuf"
 local Resbuf = Rainbuf:inherit()
 
 
@@ -43,15 +43,16 @@ end
 
 
 local lines = import("core/string", "lines")
-function Resbuf.initComposition(resbuf, cols)
-   resbuf:super"initComposition"(cols)
+function Resbuf.initComposition(resbuf)
    if not resbuf.reprs then
       resbuf.reprs = {}
       resbuf.r_num = 1
-      for i = 1, resbuf.n do
+      local value = resbuf:value()
+      assert(value.n, "must have n")
+      for i = 1, value.n do
          resbuf.reprs[i] = resbuf.frozen
-            and lines(resbuf[i])
-            or lineGen(resbuf[i], resbuf.cols)
+            and lines(value[i])
+            or lineGen(value[i], resbuf:contentCols())
       end
    end
 end
@@ -64,21 +65,11 @@ end
 
 
 
+Resbuf.null_value = { n = 0 }
 
-local max = assert(math.max)
-function Resbuf.replace(resbuf, res)
-   resbuf:super"replace"(res)
-   if not res then
-      res = { n = 0 }
-   end
-   assert(res.n, "must have n")
-   for i = 1, max(resbuf.n, res.n) do
-      resbuf[i] = res[i]
-   end
-   -- Treat an error result from valiant as just a string,
-   -- not something to repr
-   resbuf.frozen = res.error
-   resbuf.n = res.n
+function Resbuf._init(resbuf)
+   resbuf:super"_init"()
+   resbuf.frozen = resbuf:value().error
 end
 
 
@@ -92,7 +83,7 @@ end
 function Resbuf._composeOneLine(resbuf)
    assert(resbuf.r_num,
       "r_num has been niled (missing an :initComposition after :clearCaches?)")
-   while resbuf.r_num <= resbuf.n do
+   while resbuf.r_num <= #resbuf.reprs do
       local line = resbuf.reprs[resbuf.r_num]()
       if line then
          return line

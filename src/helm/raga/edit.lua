@@ -6,7 +6,7 @@
 
 local addall, clone = import("core/table", "addall", "clone")
 local RagaBase = require "helm:helm/raga/base"
-local Txtbuf = require "helm/txtbuf"
+local Txtbuf = require "helm:buf/txtbuf"
 
 
 
@@ -46,13 +46,13 @@ local map = {
 
 for key, command in pairs(map) do
    EditBase[command] = function(maestro, event)
-      return maestro.modeS.txtbuf[command](modeS.txtbuf)
+      return maestro.agents.edit[command](maestro.agents.edit)
    end
 end
 
 function EditBase.clearTxtbuf(maestro, event)
-   maestro.modeS:setTxtbuf(Txtbuf())
-   maestro.modeS:setResults("")
+   maestro.agents.edit:clear()
+   maestro.agents.results:clear()
    maestro.modeS.hist.cursor = maestro.modeS.hist.n + 1
 end
 map["C-l"] = "clearTxtbuf"
@@ -71,20 +71,20 @@ EditBase.default_keymaps = { map }
 
 
 local function _insert(modeS, category, value)
-   if tostring(modeS.txtbuf) == "" then
-      modeS:setResults ""
+   if modeS:agent'edit':contents() == "" then
+      modeS:clearResults()
    end
-   modeS.txtbuf:insert(value)
+   modeS:agent'edit':insert(value)
 end
 
 EditBase.ASCII = _insert
 EditBase.UTF8 = _insert
 
 function EditBase.PASTE(modeS, category, value)
-   if tostring(modeS.txtbuf) == "" then
-      modeS:setResults ""
+   if modeS:agent'edit':contents() == "" then
+      modeS:clearResults()
    end
-   modeS.txtbuf:paste(value)
+   modeS:agent'edit':paste(value)
 end
 
 
@@ -96,7 +96,7 @@ end
 
 
 function EditBase.getCursorPosition(modeS)
-   return modeS.zones.command.bounds:origin() + modeS.txtbuf.cursor - 1
+   return modeS.zones.command.bounds:origin() + modeS:agent'edit'.cursor - 1
 end
 
 

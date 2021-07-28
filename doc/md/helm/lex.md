@@ -122,7 +122,7 @@ end
 local Token = require "repr:token"
 local inbounds = assert(require "core:math" . inbounds)
 local instanceof = assert(require "core:meta" . instanceof)
-local Txtbuf = require "helm:txtbuf"
+local Txtbuf = require "helm:buf/txtbuf"
 
 function Lex.lua_thor(code, cursor_index)
    local toks = {}

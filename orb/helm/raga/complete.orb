@@ -12,19 +12,19 @@ Complete.name = "complete"
 Complete.prompt_char = "💬"
 #/lua
 
+
 ** Inserts
 
 #!lua
 
 local function _quit(modeS)
-   modeS.suggest:cancel(modeS)
    -- #todo restore last-used raga instead of always returning to default
    modeS.shift_to = modeS.raga_default
 end
 
 local function _accept(modeS)
-   if modeS.suggest.active_suggestions then
-      modeS.suggest:accept(modeS)
+   if modeS:agent'suggest'.last_collection then
+      modeS:agent'suggest':accept()
    else
       modeS.action_complete = false
    end
@@ -61,13 +61,15 @@ Complete.UTF8 = _insert
 local NAV = Complete.NAV
 
 local function _scrollAfter(modeS, func_name)
-   local suggestions = modeS.suggest.active_suggestions
-   local zone = modeS.zones.suggest
-   suggestions[func_name](suggestions)
-   zone:ensureVisible(suggestions.selected_index)
-   zone:beTouched()
-   -- Command zone needs re-render too
-   modeS.zones.command:beTouched()
+   local suggestions = modeS:agent'suggest'.last_collection
+   if suggestions then
+      -- #todo route selection commands through the SuggestAgent or Window so
+      -- it can set .touched itself?
+      suggestions[func_name](suggestions)
+      modeS:agent'suggest'.touched = true
+      -- #todo should have a Selectbuf that does this automatically
+      modeS.zones.suggest.contents:ensureVisible(suggestions.selected_index)
+   end
 end
 
 function NAV.TAB(modeS, category, value)
@@ -100,8 +102,13 @@ we will have already shifted ragas.
 
 #!lua
 function Complete.onTxtbufChanged(modeS)
-   modeS.suggest:update(modeS)
-   EditBase.onCursorChanged(modeS)
+   modeS:agent'suggest':update()
+   if modeS:agent'suggest'.last_collection then
+      modeS:agent'suggest'.last_collection.selected_index = 1
+   else
+      _quit(modeS)
+   end
+   EditBase.onTxtbufChanged(modeS)
 end
 #/lua
 
@@ -129,9 +136,9 @@ to the end of the suggestion.
 local Point = require "anterm:point"
 function Complete.getCursorPosition(modeS)
    local point = EditBase.getCursorPosition(modeS)
-   local suggestion = modeS.suggest:selectedSuggestion()
+   local suggestion = modeS:agent'suggest'.last_collection:selectedItem()
    if suggestion then
-      for _, tok in ipairs(modeS.txtbuf:tokens()) do
+      for _, tok in ipairs(modeS:agent'edit':tokens()) do
          if tok.cursor_offset then
             point = point + Point(0, #suggestion - tok.cursor_offset)
             break
@@ -153,6 +160,16 @@ function Complete.onShift(modeS)
 end
 #/lua
 
+
+*** Complete.onUnshift
+
+Deselect and prod the Txtbuf on exit.
+
+#!lua
+function Complete.onUnshift(modeS)
+   _scrollAfter(modeS, "selectNone")
+end
+#/lua
 
 #!lua
 return Complete

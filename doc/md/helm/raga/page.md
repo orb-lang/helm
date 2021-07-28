@@ -12,84 +12,55 @@ local Page = clone(RagaBase, 2)
 
 Page.name = "page"
 Page.prompt_char = "❓"
-
-local alias = require "helm/raga/aliaser" (Page)
 ```
 
-## toZone\(fn\)
 
-Returns a ModeS handler function that just calls the given method
-of the popup zone\.
+## Keymap
 
-```lua
-local function toZone(fn)
-   return function(modeS, category, value)
-      return modeS.zones.popup[fn](modeS.zones.popup)
-   end
-end
-```
+The only command that routes to us is the exit/quit command, everything else
+goes to the Rainbuf in the popup zone\.
 
-## Scrolling
+\#todo
+functions to ourself\. Ideally we'd find a way to specify the target directly,
+but we can at least not write out all these functions by hand\.
 
 ```lua
-alias{ toZone "scrollDown",
-       NAV   = {"DOWN", "SHIFT_DOWN", "RETURN"},
-       ASCII = {"e", "j"},
-       CTRL  = {"^N", "^E", "^J"} }
-
-alias{ toZone "scrollUp",
-       NAV   = {"UP", "SHIFT_UP", "SHIFT_RETURN"},
-       ASCII = {"y", "k"},
-       CTRL  = {"^Y", "^P", "^K"} }
-
-alias{ toZone "pageDown",
-       NAV   = {"PAGE_DOWN"},
-       ASCII = {" ", "f"},
-       CTRL  = {"^V", "^F"} }
-alias{ toZone "pageUp",
-       NAV   = {"PAGE_UP"},
-       ASCII = {"b"},
-       CTRL  = {"^B"} }
-
-alias{ toZone "halfPageDown",
-       ASCII = {"d"},
-       CTRL  = {"^D"} }
-alias{ toZone "halfPageUp",
-       ASCII = {"u"},
-       CTRL  = {"^U"} }
-
-alias{ toZone "scrollToTop",
-       NAV   = {"HOME"},
-       ASCII = {"g", "<"} }
-alias{ toZone "scrollToBottom",
-       NAV   = {"END"},
-       ASCII = {"G", ">"} }
-```
-
-```lua
-
-local function _quit(modeS)
+function Page.quit(maestro, event)
    -- #todo should have a stack of ragas and switch back to the one
    -- we entered from, but this will do for now
-   modeS.shift_to = "nerf"
+   maestro.modeS.shift_to = maestro.modeS.raga_default
 end
 
-alias{_quit, NAV = {"ESC"}, ASCII = {"q"} }
-```
+local map = {
+   ESC = "quit",
+   q = "quit"
+}
 
-## MOUSE
-
-```lua
-function Page.MOUSE(modeS, category, value)
-   if value.scrolling then
-      if value.button == "MB0" then
-         modeS.zones.popup:scrollUp()
-      elseif value.button == "MB1" then
-         modeS.zones.popup:scrollDown()
-      end
+for cmd, shortcuts in pairs{
+   scrollDown     = { "SCROLL_DOWN", "DOWN", "S-DOWN", "RETURN",
+                      "e", "j", "C-n", "C-e", "C-j" },
+   scrollUp       = { "SCROLL_UP", "UP", "S-UP", "S-RETURN",
+                      "y", "k", "C-y", "C-p", "C-l" },
+   pageDown       = { "PAGE_DOWN", " ", "f", "C-v", "C-f" },
+   pageUp         = { "PAGE_UP", "b", "C-b" },
+   halfPageDown   = { "d", "C-d" },
+   halfPageUp     = { "u", "C-u" },
+   scrollToBottom = { "END", "G", ">" },
+   scrollToTop    = { "HOME", "g", "<" }
+} do
+   Page[cmd] = function(maestro, event)
+      local rainbuf = maestro.modeS.zones.popup.contents
+      -- Most of these aren't mouse events, and most of the functions don't
+      -- accept an argument anyway, but eh, an extra nil param is harmless
+      rainbuf[cmd](rainbuf, event.num_lines)
+   end
+   for _, shortcut in ipairs(shortcuts) do
+      map[shortcut] = cmd
    end
 end
+Page.default_keymaps = { map }
 ```
+
 
 ## Events
 

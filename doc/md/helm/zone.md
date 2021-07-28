@@ -67,8 +67,8 @@ switch the REPL to a 'reflow mode' that just draws characters to a screen,
 then add a popup\.
 
 ```lua
-local Txtbuf = require "helm/txtbuf"
-local Rainbuf = require "helm/rainbuf"
+local Txtbuf = require "helm:buf/txtbuf"
+local Rainbuf = require "helm:buf/rainbuf"
 local a = require "anterm:anterm"
 
 local instanceof = import("core/meta", "instanceof")
@@ -129,139 +129,26 @@ function Zone.overlaps(zone, other_zone)
 end
 ```
 
+
 ### Zone:replace\(contents\)
 
 Replaces the contents of the zone with the provided value\.
 
 ```lua
+local function update_content_extent(zone)
+   if zone.bounds and zone.contents.is_rainbuf then
+      zone.contents:setExtent(zone:clientBounds():extent():rowcol())
+   end
+end
+
 function Zone.replace(zone, contents)
    zone.contents = contents or ""
+   -- #todo shouldn't have to do this nearly as often--Zone contents will
+   -- change much less once Window refactoring is done--though this may still
+   -- be the right place to do it
+   update_content_extent(zone)
    zone:beTouched()
    return zone
-end
-```
-
-### Scrolling
-
-#### Zone:scrollTo\(offset, allow\_overscroll\)
-
-Main scrolling method\. Scrolls the contents of the Zone to start `offset`
-lines into the underlying content\.
-
-`allow_overscroll` determines whether we are willing to scroll past the
-available content\. If falsy, scrolling stops when the last line of content
-is the last line on the screen\. If truthy, scrolling stops when the last
-line of content is the **first** line on the screen\.
-
-Returns a boolean indicating whether any scrolling occurred\.
-
-Depends on the zone contents being a Rainbuf
-\(which handles the actual scrolling\)\.
-
-```lua
-local clamp = import("core/math", "clamp")
-function Zone.scrollTo(zone, offset, allow_overscroll)
-   local buf = zone.contents
-   if not buf.is_rainbuf then
-      return false
-   end
-   -- Try to render the content that will be visible after the scroll
-   local client_height = zone:clientBounds():height()
-   buf:initComposition(zone:clientBounds():width())
-   buf:composeUpTo(offset + client_height)
-   local required_lines_visible = allow_overscroll and 1 or client_height
-   local max_offset = clamp(#buf.lines - required_lines_visible, 0)
-   offset = clamp(offset, 0, max_offset)
-   if offset ~= buf.offset then
-      buf.offset = offset
-      zone:beTouched()
-      return true
-   else
-      return false
-   end
-end
-```
-
-
-#### Zone:scrollBy\(delta, allow\_overscroll\)
-
-Relative scrolling operation\. Change the scroll position by `delta` line\(s\)\.
-
-```lua
-function Zone.scrollBy(zone, delta, allow_overscroll)
-   -- Need to check this here even though :scrollTo already does
-   -- because we talk to the Rainbuf to figure out the new offset
-   if not zone.contents.is_rainbuf then
-      return false
-   end
-   return zone:scrollTo(zone.contents.offset + delta, allow_overscroll)
-end
-```
-
-
-#### Zone:scrollUp\(\), :scrollDown\(\), :pageUp\(\), :pageDown\(\)
-
-Helpers for common scrolling operations\.
-
-```lua
-function Zone.scrollUp(zone)
-   return zone:scrollBy(-1)
-end
-function Zone.scrollDown(zone)
-   return zone:scrollBy(1)
-end
-
-function Zone.pageUp(zone)
-   return zone:scrollBy(-zone:height())
-end
-function Zone.pageDown(zone)
-   return zone:scrollBy(zone:height())
-end
-
-local floor = assert(math.floor)
-function Zone.halfPageUp(zone)
-   return zone:scrollBy(-floor(zone:height() / 2))
-end
-function Zone.halfPageDown(zone)
-   return zone:scrollBy(floor(zone:height() / 2))
-end
-```
-
-
-#### Zone:scrollToTop\(\), Zone:scrollToBottom\(allow\_overscroll\)
-
-Scroll to the very beginning or end of the content\.
-Beginning is easy, end is a little more interesting, as we have to first
-render all the content \(in order to know how much there is\), then account
-for allow\_overscroll in deciding how far to go\.
-
-```lua
-function Zone.scrollToTop(zone)
-   return zone:scrollTo(0)
-end
-
-function Zone.scrollToBottom(zone, allow_overscroll)
-   zone.contents:composeAll()
-   -- Choose a definitely out-of-range value,
-   -- which scrollTo will clamp appropriately
-   return zone:scrollTo(#zone.contents.lines, allow_overscroll)
-end
-```
-
-
-#### Zone:ensureVisible\(start\_index\[, end\_index\]\)
-
-Scrolls such that the line at `start_index` is visible\. If `end_index` is also
-provided, attempts to fit the entire range `start_index..end_index` on screen,
-falling back to scrolling such that `start_index` is at the top of the screen
-if this is not possible \(because the number of lines requested is too great\)\.
-
-```lua
-function Zone.ensureVisible(zone, start_index, end_index)
-   end_index = end_index or start_index
-   local min_offset = clamp(end_index - zone:clientBounds():height(), 0)
-   local max_offset = clamp(start_index - 1, 0)
-   zone:scrollTo(clamp(zone.contents.offset, min_offset, max_offset))
 end
 ```
 
@@ -277,21 +164,13 @@ function Zone.setBounds(zone, rect, ...)
    if not instanceof(rect, Rectangle) then
       rect = Rectangle(rect, ...)
    end
-   rect:assertNotEmpty("Zone must have non-zero area")
+   rect:assertNotEmpty("Zone '" .. zone.name .. "' must have non-zero area")
    if zone.bounds ~= rect then
-      if zone.bounds
-         and zone.bounds:width() ~= rect:width()
-         and zone.contents
-         and zone.contents.is_rainbuf then
-         zone.contents:clearCaches()
-      end
       zone.bounds = rect
-      -- #todo technically this is incomplete as we need to care about
-      -- cells we may previously have owned and no longer do, and what zones
-      -- *are* now responsible for them. Doing that properly requires a real
-      -- two-step layout process, though (figure out where everything is going
-      -- to be, *then* put it there and mark things touched), so we'll
-      -- hold off for now
+      update_content_extent(zone)
+      -- Technically this could be incomplete in the case where we relinquish some cells,
+      -- but as long as every cell is covered by at least one Zone by the time layout is
+      -- complete, the new owner will figure things out.
       zone:beTouched()
    end
    return zone
@@ -318,6 +197,7 @@ function Zone.hide(zone)
 end
 ```
 
+
 ### Zone:beTouched\(\)
 
 Marks a zone as touched, also marking others that may be affected based
@@ -336,6 +216,32 @@ function Zone.beTouched(zone)
          zone.visible == (other_zone.z > zone.z) and
          zone:overlaps(other_zone) then
          other_zone.touched = true
+      end
+   end
+end
+```
+
+
+### Scrolling methods
+
+Forward scrolling messages to our contents if it is a Rainbuf\.
+\#todo
+shim for now\.
+
+```lua
+for _, scroll_fn in ipairs{
+   "scrollTo", "scrollBy",
+   "scrollUp", "scrollDown",
+   "pageUp", "pageDown",
+   "halfPageUp", "halfPageDown",
+   "scrollToTop", "scrollToBottom",
+   "ensureVisible"
+} do
+   Zone[scroll_fn] = function(zone, ...)
+      if zone.contents.is_rainbuf then
+         return zone.contents[scroll_fn](zone.contents, ...)
+      else
+         return false
       end
    end
 end
@@ -463,7 +369,7 @@ local function newZone(name, z, debug_mark)
    zone.z = z
    zone.visible = true
    zone.touched = false
-   -- zone.contents, aspirationally a rainbuf, is provided later
+   zone.contents = ''
    return zone
 end
 
@@ -498,7 +404,7 @@ local ceil, floor = assert(math.ceil), assert(math.floor)
 
 function Zoneherd.reflow(zoneherd, modeS)
    local right_col = modeS.max_extent.col - _zoneOffset(modeS)
-   local txt_off = modeS:continuationLines()
+   local txt_off = modeS:agent'edit':continuationLines()
    zoneherd.status:setBounds(  1, 1, 1, right_col)
    zoneherd.stat_col:setBounds(1, right_col + 1,
                                1, modeS.max_extent.col )
@@ -534,7 +440,7 @@ function Zoneherd.reflow(zoneherd, modeS)
    -- required, we must account for the borders--seems like a good
    -- division of responsibility.
    if zoneherd.modal.visible then
-      local modal_extent = zoneherd.modal.contents[1]:requiredExtent() + Point(2, 4)
+      local modal_extent = modeS:agent'modal'.model:requiredExtent() + Point(2, 4)
       local margins = ((modeS.max_extent - modal_extent) / 2):floor()
       zoneherd.modal:setBounds(margins.row, margins.col,
                                (margins + modal_extent - 1):rowcol())
@@ -554,6 +460,15 @@ like the lexer\.
 function Zoneherd.paint(zoneherd, modeS)
    local write = zoneherd.write
    write(a.cursor.hide(), a.clear())
+   for i, zone in ipairs(zoneherd) do
+      -- Propagate touched-ness so it can also spread "horizontally"
+      -- to neighboring Zones
+      -- #todo There has *got* to be a better way than this. An events
+      -- framework would work, might be other options
+      if zone.contents.is_rainbuf and zone.contents:checkTouched() then
+         zone:beTouched()
+      end
+   end
    for i, zone in ipairs(zoneherd) do
       zone:paint(write)
    end

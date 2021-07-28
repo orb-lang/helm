@@ -15,41 +15,13 @@ EditTitle.prompt_char = "👉"
 ```
 
 
-## Insertion
-
-Unlike most editing ragas, we don't clear the results zone when inserting text\.
-
-```lua
-function EditTitle.ASCII(modeS, category, value)
-   modeS.txtbuf:insert(value)
-end
-EditTitle.UTF8 = EditTitle.ASCII
-
-function EditTitle.PASTE(modeS, category, value)
-   modeS.txtbuf:paste(value)
-end
-```
-
-
-## \_getSelectedPremise\(modeS\)
-
-Retrieve the premise whose title we're editing\.
-One of many ways in which this raga is an ugly hack\.
-
-```lua
-local function _getSelectedPremise(modeS)
-   return modeS.zones.results.contents:selectedPremise()
-end
-```
-
-
 ## NAV
 
 ```lua
 local function _accept(modeS)
-   local sessionbuf = modeS.zones.results.contents
-   sessionbuf:selectedPremise().title = tostring(modeS.txtbuf)
-   sessionbuf:selectNextWrap()
+   local agents = modeS.maestro.agents
+   agents.session:selectedPremise().title = agents.edit:contents()
+   agents.session:selectNextWrap()
    modeS.shift_to = "review"
 end
 
@@ -57,7 +29,8 @@ EditTitle.NAV.RETURN = _accept
 EditTitle.NAV.TAB = _accept
 
 function EditTitle.NAV.ESC(modeS, category, value)
-   modeS.txtbuf:replace(_getSelectedPremise(modeS).title)
+   local agents = modeS.maestro.agents
+   agents.edit:update(agents.session:selectedPremise().title)
    modeS.shift_to = "review"
 end
 ```
@@ -74,6 +47,8 @@ EditTitle.CTRL["^Q"] = function(modeS, category, value)
    modeS.action_complete = false
 end
 ```
+
+
 ## Ignored commands
 
 "Restart" doesn't make sense for us

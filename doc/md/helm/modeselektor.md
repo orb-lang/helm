@@ -98,34 +98,19 @@ The easiest way to go mad in concurrent environments is to share memory\.
 `modeselektor` will own txtbuf, historian, and the entire screen\.
 
 ```lua
-local Set = require "set:set"
-local Valiant = require "valiant:valiant"
-
-local Txtbuf     = require "helm:txtbuf"
-local Resbuf     = require "helm:resbuf"
 local Historian  = require "helm:historian"
-local Lex        = require "helm:lex"
-local Zoneherd   = require "helm:zone"
-local Suggest    = require "helm:suggest"
 local Maestro    = require "helm:maestro"
-local repr       = require "repr:repr"
-local lua_parser = require "helm:lua-parser"
-local input_event = require "anterm:input-event"
+local Valiant = require "valiant:valiant"
+local Zoneherd   = require "helm:zone"
 
-local concat               = assert(table.concat)
-local sub, gsub, rep, find = assert(string.sub),
-                             assert(string.gsub),
-                             assert(string.rep),
-                             assert(string.find)
-
-local ts = repr.ts_color
-
+local Resbuf    = require "helm:buf/resbuf"
+local Stringbuf = require "helm:buf/stringbuf"
+local Txtbuf    = require "helm:buf/txtbuf"
 ```
 
 ```lua
 local ModeS = meta()
 ```
-
 
 
 Color schemes are supposed to be one\-and\-done, and I strongly suspect we
@@ -166,124 +151,6 @@ function ModeS.errPrint(modeS, log_stmt)
 end
 ```
 
-
-### status painter \(colwrite\)
-
-This is a grab\-bag with many traces of the bootstrap process\.
-
-It also contains the state\-of\-the\-art renderers\.
-
-
-#### bootstrappers
-
-A lot of this just paints mouse events, which we aren't using and won't be
-able to use until we rigorously keep track of what's printed where\.
-
-Which is painstaking and annoying, but we'll get there\.\.\.
-
-This will continue to exist for awhile\.
-
-```lua
-local c = import("singletons:color", "color")
-
-local STAT_ICON = "◉ "
-
-local function tf(bool)
-   return bool and c["true"]("t") or c["false"]("f")
-end
-
-local function mouse_paint(m)
-   return c.userdata(STAT_ICON)
-      .. a.magenta(m.button) .. ": "
-      .. tf(m.shift) .. " "
-      .. tf(m.meta) .. " "
-      .. tf(m.ctrl) .. " "
-      .. tf(m.moving) .. " "
-      .. tf(m.scrolling) .. " "
-      .. a.cyan(m.col) .. "," .. a.cyan(m.row)
-end
-
-local function mk_paint(fragment, shade)
-   return function(action)
-      return shade(fragment .. action)
-   end
-end
-
-local function paste_paint(frag)
-   local result
-   -- #todo handle escaping of special characters in pasted data
-   if #frag < 20 then
-      result = "PASTE: " .. frag
-   else
-      result = ("PASTE(%d): %s..."):format(#frag, frag:sub(1, 17))
-   end
-   return a.green(STAT_ICON .. result)
-end
-
-local icon_map = { MOUSE = mouse_paint,
-                   NAV   = mk_paint(STAT_ICON, a.magenta),
-                   CTRL  = mk_paint(STAT_ICON, a.blue),
-                   ALT   = mk_paint(STAT_ICON, c["function"]),
-                   ASCII = mk_paint(STAT_ICON, a.green),
-                   UTF8  = mk_paint(STAT_ICON, a.green),
-                   PASTE = paste_paint,
-                   NYI   = mk_paint(STAT_ICON .. "! ", a.red) }
-
-local function _make_icon(category, value)
-   return icon_map[category](value)
-end
-```
-
-
-#### For new\-style events
-
-```lua
-local function _make_new_icon(event, command, args)
-   local event_str = STAT_ICON .. input_event.serialize(event)
-   if event.type == "mouse" then
-      local subtype
-      if event.pressed then
-         if event.moving then
-            subtype = "drag"
-         else
-            subtype = "press"
-         end
-      else
-         if event.moving then
-            subtype = "move"
-         else
-            subtype = "release"
-         end
-      end
-      event_str = c.userdata(event_str) .. (' (%s: %s,%s)'):format(
-         subtype,
-         a.cyan(event.col),
-         a.cyan(event.row))
-      if command then
-         event_str = event_str .. ' : ' .. command
-      end
-      return event_str
-   elseif event.type == "paste" then
-      return paste_paint(event.text)
-   else --event.type == "keypress"
-      local color = a.green
-      if command == "NYI" then
-         color = a.red
-      -- #todo this is a mostly-accurate but terrible way to distinguish named keys
-      -- We will have problems with UTF-8 if nothing else, and...just no
-      elseif #event.key > 1 then
-         color = a.magenta
-      elseif event.modifiers ~= 0 then
-         color = a.blue
-      end
-      event_str = color(event_str)
-      if command then
-         event_str = event_str .. ' : ' .. command
-      end
-      return event_str
-   end
-end
-```
 
 ### ModeS:placeCursor\(\)
 
@@ -352,29 +219,6 @@ repainting is a good example of this\.
 
 The next mode we're going to write is `"search"`\.
 
-#### ModeS:continuationLines\(\)
-
-Answers the number of additional lines \(beyond the first\) needed
-for the command zone\.
-
-```lua
-function ModeS.continuationLines(modeS)
-   return modeS.txtbuf and #modeS.txtbuf - 1 or 0
-end
-```
-
-#### ModeS:updatePrompt\(\)
-
-Updates the prompt with the correct symbol and number of continuation prompts\.
-
-```lua
-function ModeS.updatePrompt(modeS)
-   local prompt = modeS.raga.prompt_char .. " " .. ("\n..."):rep(modeS:continuationLines())
-   modeS.zones.prompt:replace(prompt)
-   return modeS
-end
-```
-
 
 ### ModeS:shiftMode\(raga\)
 
@@ -401,6 +245,8 @@ local Modal     = require "helm:raga/modal"
 local Review    = require "helm:raga/review"
 local EditTitle = require "helm:raga/edit-title"
 
+local Lex        = require "helm:lex"
+
 ModeS.closet = { nerf =       { raga = Nerf,
                                 lex  = Lex.lua_thor },
                  search =     { raga = Search,
@@ -423,13 +269,17 @@ function ModeS.shiftMode(modeS, raga_name)
    -- Guard against nil raga or lexer during startup
    if modeS.raga then
       modeS.raga.onUnshift(modeS)
-      modeS.closet[modeS.raga.name].lex = modeS.txtbuf.lex
+      modeS.closet[modeS.raga.name].lex = modeS:agent'edit'.lex
    end
    -- Switch in the new raga and associated lexer
    modeS.raga = modeS.closet[raga_name].raga
-   modeS.txtbuf.lex = modeS.closet[raga_name].lex
+   modeS:agent'edit':setLexer(modeS.closet[raga_name].lex)
    modeS.raga.onShift(modeS)
-   modeS:updatePrompt()
+   -- #todo feels wrong to do this here, like it's something the raga
+   -- should handle, but onShift feels kinda like it "doesn't inherit",
+   -- like it's not something you should actually super-send, so there's
+   -- not one good place to do this.
+   modeS:agent'prompt':update(modeS.raga.prompt_char)
    return modeS
 end
 ```
@@ -456,60 +306,56 @@ Dispatches a seq to the current raga, answering whether or not the raga could
 process it \(if this never occurs, we display an NYI message in the status area\)\.
 
 ```lua
+local function _check_shift(modeS)
+   if modeS.shift_to then
+      modeS:shiftMode(modeS.shift_to)
+      modeS.shift_to = nil
+   end
+end
+
 function ModeS.actOnce(modeS, event, old_cat_val)
    -- Try to dispatch the new-style event via keymap
    local command, args = modeS.maestro:translate(event)
-   local icon
    if command then
       modeS.maestro:dispatch(event, command, args)
-      icon = _make_new_icon(event, command, args)
    elseif old_cat_val then
       -- Okay, didn't find anything there, fall back to the old way
       local handled = modeS.raga(modeS, unpack(old_cat_val))
       if handled then
-         icon = _make_icon(unpack(old_cat_val))
+         command = 'LEGACY'
       end
    end
-   if modeS.shift_to then
-      modeS:shiftMode(modeS.shift_to)
-      modeS.shift_to = nil
-   end
-   if modeS.txtbuf.contents_changed then
-      modeS.zones.command:beTouched()
+   _check_shift(modeS)
+   if modeS:agent'edit'.contents_changed then
       modeS.raga.onTxtbufChanged(modeS)
     -- Treat contents_changed as implying cursor_changed
     -- only ever fire one of the two events
-   elseif modeS.txtbuf.cursor_changed then
+   elseif modeS:agent'edit'.cursor_changed then
       modeS.raga.onCursorChanged(modeS)
    end
-    modeS.txtbuf.contents_changed = false
-    modeS.txtbuf.cursor_changed = false
+   modeS:agent'edit'.contents_changed = false
+   modeS:agent'edit'.cursor_changed = false
    -- Check shift_to again in case one of the cursor handlers set it
-   if modeS.shift_to then
-      modeS:shiftMode(modeS.shift_to)
-      modeS.shift_to = nil
-   end
-   return icon
+   _check_shift(modeS)
+   return command
 end
 ```
 
 ```lua
 function ModeS.act(modeS, event, old_cat_val)
-   local icon
+   local command
    repeat
       modeS.action_complete = true
       -- The raga may set action_complete to false to cause the command
       -- to be re-processed, most likely after a mode-switch
-      local iconThisTime = modeS:actOnce(event, old_cat_val)
-      icon = icon or iconThisTime
+      local commandThisTime = modeS:actOnce(event, old_cat_val)
+      command = command or commandThisTime
    until modeS.action_complete == true
-   if not icon then
-      icon = _make_new_icon(event, "NYI", {})
+   if not command then
+      command = 'NYI'
    end
-
-   -- Replace zones
-   modeS.zones.stat_col:replace(icon)
-   modeS:updatePrompt()
+   -- Inform the input-echo agent of what just happened
+   modeS:agent'input_echo':update(event, command)
    -- Reflow in case command height has changed. Includes a paint.
    -- Don't allow errors encountered here to break this entire
    -- event-loop iteration, otherwise we become unable to quit if
@@ -533,70 +379,47 @@ end
 ```
 
 
-### ModeS:setResults\(results\)
+### ModeS:agent\(agent\_name\)
 
-Sets the contents of the results area to `results`, wrapping it in a Resbuf
-if necessary\. Strings are passed through unchanged\.
+Shorthand for referring to `Agent`s, which are stored on `Maestro`, but which
+we often talk to directly\.
 
 ```lua
-local instanceof = import("core:meta", "instanceof")
+function ModeS.agent(modeS, agent_name)
+   return modeS.maestro.agents[agent_name]
+end
+```
 
+
+### ModeS:setResults\(results\), :clearResults\(\)
+
+Sets the current "results" to `results`\.
+
+\#todo
+awkward right now, as migration to new keymaps proceeds it'll get easier\.
+
+```lua
 function ModeS.setResults(modeS, results)
-   results = results or ""
-   if results == "" then
-      modeS.zones.results:replace(results)
-      return modeS
-   end
-   local cfg = { scrollable = true }
-   if type(results) == "string" then
-      cfg.frozen = true
-      results = { results, n = 1 }
-   end
-   modeS.zones.results:replace(Resbuf(results, cfg))
+   modeS:agent'results':update(results)
    return modeS
+end
+
+function ModeS.clearResults(modeS)
+   return modeS:setResults(nil)
 end
 ```
 
 
 ### ModeS:setStatusLine\(status\_name, format\_args\.\.\.\)
 
-Sets the status line at the top of the screen\. `status_name` selects
-a format string from the list below, and any additional parameters
-are passed through to `string.format`\.
+Sets the status line at the top of the screen by updating the StatusAgent\.
+
+\#todo
 
 ```lua
-ModeS.status_lines = { default = "an repl, plz reply uwu 👀",
-                       quit    = "exiting repl, owo... 🐲",
-                       restart = "restarting an repl ↩️",
-                       review  = 'reviewing session "%s"' }
-ModeS.status_lines.macro = ModeS.status_lines.default .. ' (macro-recording "%s")'
-ModeS.status_lines.new_session = ModeS.status_lines.default .. ' (recording "%s")'
 
 function ModeS.setStatusLine(modeS, status_name, ...)
-   local status_line = modeS.status_lines[status_name]:format(...)
-   modeS.zones.status:replace(status_line)
-   return modeS
-end
-```
-
-
-### ModeS:setTxtbuf\(txtbuf\)
-
-Replaces the current Txtbuf with `txtbuf`\. This effectively involves
-changes to the cursor and contents, so we set those flags\.
-
-```lua
-function ModeS.setTxtbuf(modeS, txtbuf)
-   -- Copy the lexer and suggestions over to the new Txtbuf
-   -- #todo keep the same Txtbuf around (updating it using :replace())
-   -- rather than swapping it out
-   txtbuf.lex = modeS.txtbuf.lex
-   txtbuf.active_suggestions = modeS.txtbuf.active_suggestions
-   modeS.txtbuf = txtbuf
-   modeS.txtbuf.cursor_changed = true
-   modeS.txtbuf.contents_changed = true
-   modeS.zones.command:replace(modeS.txtbuf)
-   return modeS
+   modeS:agent'status':update(status_name, ...)
 end
 ```
 
@@ -627,7 +450,7 @@ This resets `_G` and runs all commands in the current session\.
 function ModeS.restart(modeS)
    modeS :setStatusLine 'restart'
    -- remove existing result
-   modeS :setResults "" :paint()
+   modeS :clearResults() :paint()
    -- perform rerun
    -- Replace results:
    local hist = modeS.hist
@@ -666,27 +489,24 @@ end
 Opens a simple help screen\.
 
 ```lua
+local rep = assert(string.rep)
 function ModeS.openHelp(modeS)
-  -- #todo this should be a generic Rainbuf
-   local rb = Resbuf{ ("abcde "):rep(1000), n = 1 }
-   modeS.zones.popup:replace(rb)
+   modeS:agent'pager':update(("abcde "):rep(1000))
    modeS.shift_to = "page"
 end
 ```
 
 ### ModeS:showModal\(text, button\_style\)
 
-Shows a modal dialog with the given text and button stylesee raga/modal\.orb for valid button styles\)\.
+Shows a modal dialog with the given text and button stylesee [](@agent/modal) for valid button styles\)\.
 
 \(
-When the modal closes, the button that was clicked can be retrieved
-with modeS:modalAnswer\(\)\.
+\#todo
+which point we won't need this method\.
 
 ```lua
 function ModeS.showModal(modeS, text, button_style)
-   local modal_info = Modal.newModel(text, button_style)
-   -- #todo make DialogModel a kind of Rainbuf? Or use a generic one?
-   modeS.zones.modal:replace(Resbuf{ modal_info, n = 1 })
+   modeS:agent'modal':update(text, button_style)
    modeS.shift_to = "modal"
    return modeS
 end
@@ -694,14 +514,12 @@ end
 
 ### ModeS:modalAnswer\(\)
 
-Convenience method to retrieve the value answered by the most recent
-modal dialog\. Storing this in the contents of the modal zone is
-hardly ideal, but it's not clear what the mechanism **should** look like\.
+\#todo
+agent, but it'd be nice to be able to show a modal that way too, first\.
 
 ```lua
 function ModeS.modalAnswer(modeS)
-   local contents = modeS.zones.modal.contents
-   return (contents and contents.is_rainbuf) and contents[1].value or nil
+   return modeS:agent'modal':answer()
 end
 ```
 
@@ -710,12 +528,13 @@ end
 A way to jack into `status`\.
 
 ```lua
-local function _status__repr(status_table)
-   return concat(status_table)
-end
+local concat = assert(table.concat)
 
 local _stat_M = meta {}
-_stat_M.__repr = _status__repr
+
+function _stat_M.__repr(status_table)
+   return concat(status_table)
+end
 
 function _stat_M.clear(status_table)
    return setmetatable({}, getmetatable(status_table))
@@ -723,46 +542,87 @@ end
 ```
 
 
-## new
+### ModeS:bindZone\(zone\_name, agent\_name, buf\_class, cfg\)
 
-Start by making a snapshot of \_G and package\.loaded\. We use this for reloading;
-since all userspace is stored in \_G, this allows us to drop all data held
-in a session, while keeping our own state separate\.
+Changes the Zone `zone_name` to display content from the Agent named `agent_name`\.
 
-\#NB
-in the registry, and uses that for access within `require`, so we must
-separately keep track of what packages were loaded so we can nil out any
-"extras" when we restart\.
+\#todo
+as arguments is probably not the best choice\.
 
 ```lua
-local deepclone = assert(core.deepclone)
+function ModeS.bindZone(modeS, zone_name, agent_name, buf_class, cfg)
+   local zone = modeS.zones[zone_name]
+   local agent = modeS:agent(agent_name)
+   zone:replace(buf_class(agent:window(), cfg))
+end
+```
+
+
+## new
+
+```lua
+local actor = require "core:cluster/actor"
+local borrowmethod, getter = assert(actor.borrowmethod, actor.getter)
+
 local function new(max_extent, writer, db)
    local modeS = meta(ModeS)
 
-   modeS.eval = Valiant(__G)
-   modeS.txtbuf = Txtbuf()
-   modeS.hist  = Historian(db)
-   modeS.suggest = Suggest()
-   modeS.maestro = Maestro(modeS)
-   modeS.status = setmetatable({}, _stat_M)
-   rawset(__G, "stat", modeS.status)
+   -- Some miscellany to copy and initialize
    modeS.max_extent = max_extent
    modeS.write = writer
    modeS.repl_top = ModeS.REPL_LINE
+
+   -- Create Actors (status isn't, but should be)
+   modeS.eval = Valiant(__G)
+   modeS.hist  = Historian(db)
+   modeS.status = setmetatable({}, _stat_M)
+   rawset(__G, "stat", modeS.status)
    modeS.zones = Zoneherd(modeS, writer)
-   modeS.zones.command:replace(modeS.txtbuf)
-   -- If we are loading an existing session, start in review mode
+   modeS.maestro = Maestro(modeS)
+
+   -- Session-related setup
+   -- #todo ugh this is clearly the wrong place/way to do this
    local session = modeS.hist.session
+   modeS:agent'session':update(session)
+   -- If we are loading an existing session, start in review mode
    if session.session_id then
       modeS.raga_default = "review"
+      -- #todo we should probably do this in raga/review.onShift, but...
       modeS:setStatusLine("review", session.session_title)
    elseif session.session_title then
+      -- ...only if we can move this too, and it's less clear where it
+      -- should go--raga/nerf.onShift is a possibility, but doesn't feel
+      -- like a very good one?
       modeS:setStatusLine(
          session.mode == "macro" and "macro" or "new_session",
          session.session_title)
    else
       modeS:setStatusLine("default")
    end
+
+   -- Set up Agent <-> Agent interaction via borrowmethod
+   local agents = modeS.maestro.agents
+   local function borrowto(dst, src, name)
+      dst[name] = borrowmethod(src, name)
+   end
+   borrowto(agents.suggest, agents.edit, "tokens")
+   borrowto(agents.suggest, agents.edit, "replaceToken")
+   borrowto(agents.prompt,  agents.edit, "continuationLines")
+   agents.prompt.editTouched = getter(agents.edit, "touched")
+   agents.search.searchText = borrowmethod(agents.edit, "contents")
+
+   -- Set up common Agent -> Zone bindings
+   -- Note we don't do results here because that varies from raga to raga
+   -- The Txtbuf also needs a source of "suggestions" (which might be
+   -- history-search results instead), but that too is raga-dependent
+   modeS:bindZone("command",  "edit",       Txtbuf)
+   modeS:bindZone("popup",    "pager",      Resbuf,    { scrollable = true })
+   modeS:bindZone("prompt",   "prompt",     Stringbuf)
+   modeS:bindZone("modal",    "modal",      Resbuf)
+   modeS:bindZone("status",   "status",     Stringbuf)
+   modeS:bindZone("stat_col", "input_echo", Resbuf)
+   modeS:bindZone("suggest",  "suggest",    Resbuf)
+
    -- initial state
    modeS:shiftMode(modeS.raga_default)
    modeS.action_complete = true
