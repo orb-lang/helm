@@ -111,7 +111,9 @@ there's no reason to limit ourselves to this.
 
   The important thing we get out of this is Actors taking action within their
 own module, in a consistent place.  We've all traced call stacks to see where
-and when
+and when an object is getting called, and paged through a few source files to
+really trace a piece of logic.  It's easier to reason about one modules at a
+time.
 
 It also behaves better with user extensions.  We can, and should, check that
 a given Message is asking for something valid before trying to execute it.
@@ -128,7 +130,7 @@ Buffers and Zones need to do their work.
 Where Maestro and Zoneherd are concerned, there could be more than one
 round of this back-and-forth: maestro sends a mouse click to zoneherd, which
 returns a specific Target, this is passed to the Agent which e.g. collapses
-a table in a Result, and zoneherd is then instructed to paint.
+a table in a Result, and Zoneherd is then instructed to paint.
 
 This is a simple =repeat until= at the end of =modeS:act=, where we first
 empty Maestro's =zoneBox=, then call =zone:paint()=, then exit the loop if the
@@ -138,8 +140,7 @@ within the Zoneherd instead of just painting again.
 
 Reified Messages are also extensible, capable of holding more information than
 fits in a method call.  This is in principle open-ended, and our initial
-use of Messages will go beyond what a method call is capable of (I think, see
-below).
+use of Messages will go beyond what a method call is capable of.
 
 Last but not least, a carefully-crafted Message can travel across process
 boundaries.  Of the Lua objects, we can't stream functions, coroutines, or
@@ -163,13 +164,13 @@ always used.  We may as well make =#msg= return =.n= while we're at it.
 
 **** fields
 
-This seems inherently open-ended, in that sense that we can make up a new kind
-of Message whenever we need one.  A message can't /just/ be array parameters
-and =.n=, that would imply some kind of default method we don't necessarily
-have.  =__call=?  That seems awkward, I'd rather that be expressed as
+  This is inherently open-ended, in that we can make up a new kind of Message
+whenever we need one.  A message can't /just/ be array parameters and =.n=,
+that would imply some kind of default method we don't necessarily have.
+=__call=?  That seems awkward, I'd rather that be expressed as
 ==call = true==.
 
-To begin that list:
+For a request for action we need some of:
 
 - method:  Says "receiver, call this method with the provided parameters".
            Value is a symbol.  Without =sendto=, the method is called on the
