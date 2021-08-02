@@ -115,6 +115,11 @@ and when an object is getting called, and paged through a few source files to
 really trace a piece of logic.  It's easier to reason about one modules at a
 time.
 
+> DS: One *problem* this sort of architecture creates is that it separates
+>     sending and processing of messages, meaning that when a message is
+>     processed the send isn't on the call stack. This sucks for debugging. We
+>     may be stuck with it, but I think this is a step *backwards* for reasoning.
+
 It also behaves better with user extensions.  We can, and should, check that
 a given Message is asking for something valid before trying to execute it.
 
@@ -196,6 +201,33 @@ For a request for action we need some of:
 - n:  Already mentioned, but for completeness, an integer >= 0 which specifies
       the number of parameters in the array portion of the Message.
 
+> DS: Why have =sendto= when we already need a mechanism to decide who even
+>     gets a message in the first place? (At its simplest this is just called
+>     "knowing who's at the other end of a particular queue", and that may be
+>     sufficient.) This is something of a rhetorical question--I can see
+>     situations where we'd use it, but it's usually going to be a Law of
+>     Demeter violation, and frankly I'd tend towards leaving it out until we
+>     actually need it.
+>
+>     It also seems like there's a lot of redundancy between =method=,
+>     =sendto=, =message= and =call=. First off we could just use ==method =
+>     "__call"== for that case. Strictly speaking this is ambiguous between a
+>     function property in slot =__call= and a true metamethod, but (a) so
+>     many of our metatables are self-indexed that there is usually no
+>     difference, and (b) if there is a difference and you care, Something Is
+>     Wrong, please don't. So I'd be fine with just special-casing that if the
+>     method name is "__call" we just call the receiver. Or not, this is
+>     orthogonal to the other simplification I'm suggesting.
+>
+>     That being, replace =sendto= and =message= with something like
+>     =callpath= or =sendpath=, which is an array-table of keys to traverse in
+>     order before calling the =method=. So =={ method = "baz", path = {
+>     "foo", "bar" }}== would ultimately result in
+>     =receiver.foo.bar.baz(...)=. But also, per my first paragraph, I would
+>     tend to leave this out until we actually need it--indeed until we need
+>     it *more than once*, the first time I would just write a forwarder
+>     function on the receiver itself.
+
 This gives us everything we need for an Actor to take action, but it then
 needs to reply in many cases, so we need more for that.
 
@@ -211,6 +243,8 @@ working on this one for awhile to get it right.
            its own name, and can craft Messages which provide that without
            explicitly adding it as a parameter.
 
+> DS: +1 this is good.
+
 - reply:  A flag.  When set to =true=, the Actor receiving the message is
           expected to package up the return value of the method call into a
           Message and send it back.
@@ -223,10 +257,15 @@ working on this one for awhile to get it right.
           off return values directly, and when that's the case, that's what we
           should do.
 
+> DS: How would this be the case?
+
 - replyto:  I don't love this name, but =returnto= isn't great either, so it
             will do for a discussion.  The default reply is back to the sender,
             but the payload might not be intended directly for the sender, but
             rather someone living on one of his slots.
+
+> DS: I would YAGNI this for now, and implement it as =replypath= analogous with
+   =sendpath= if/when we need it.
 
 - ret:  An ntable containing the return values of a reply Message.  This is
         what we call packaged return values in Valiant, and I see no reason to
@@ -238,6 +277,35 @@ The intention here is that =sender= is used to route the reply Message, and
 =replyto= becomes =sendto= in the reply (when present).  That gets us one
 level deep, and only covers the case where the reply Message goes back to the
 Actor who sent the first Message.
+
+> DS: So a function call and return is fundamentally asymmetric. The caller
+>     needs to know who they're talking to and get everything in order, the
+>     callee just offers the return value up to the world without knowing who
+>     it's going to. With an asynchronous messaging system, fundamentally
+>     every message has to know its receiver, which means in order to reply,
+>     you need to know the sender of a message. This is great so far.
+>
+>     But at that point, what makes a reply different from any other message?
+>     Seems like...nothing, really? And when the reply gets back to its
+>     sender, how does the sender know what to do with it? We could route all
+>     "replies" through a single =_dispatchReply= function or something, but
+>     that seems inferior to just...receiving new messages that happen to be
+>     related to one that was sent earlier. In which case there's no need for
+>     =ret=, it's just another message.
+>
+>     So. I would suggest, for now, that we start with =sender= (and the
+>     implementation on Agent that you suggested to handle it automatically),
+>     and any message that needs a reply, well, the receiver just sends an
+>     appropriate message back. If we start seeing a lot of uses of this
+>     pattern, and if for instance different senders of the same message want
+>     different replies, then I would suggest making =reply= a sort of
+>     "message prototype", a Message with everything filled in except the
+>     sender, receiver, and arguments, which the reply-er will finish filling
+>     in and send back. That takes care of all the nuances of where it goes
+>     without adding any new fields.
+>
+>     All that said, also see below about how this interacts with the
+>     coroutine loop, which suddenly *isn't* asynchronous.
 
 We can and should extend the protocol when we have more complex routing, but
 we should also avoid this!  Abstractions should pull their weight, and we
@@ -285,6 +353,29 @@ Message, with the understanding that modeS will =resume= any results
 directly, since there's no reason to have to unwrap a return message every
 time.
 
+> DS: Right. So here's the thing. We have some messages that we send
+>     asynchronously, by putting them on a Deque somewhere probably. There
+>     might be a logical "reply" to these, but if so, IMO it should just come
+>     as another message directed back at us, with no special affordance for
+>     "being a reply". Likely we won't even need the ability to specify *that*
+>     there should be a reply, or where it should go, because this will be
+>     obvious, though we can add those if needed.
+>
+>     Then we have messages =yield=ed to =modeS=, which are actually
+>     *synchronous*, and as such, sure, they can have return values, but
+>     that's because they behave *exactly like function calls*, just with more
+>     indirection. The receiver doesn't need to know anything about where the
+>     return value is going, and the return value isn't a =Message= at all, it
+>     will become the return value of the =yield=.
+>
+>     It's good and correct to have a unified reification of a =Message=, and
+>     to use that for both queued and =yield=ed messages, but I don't actually
+>     think we need *any* of the reply-related machinery (except =sender=, but
+>     that mostly because why the hell not and it might be helpful for
+>     debugging). Synchronous messages just...can have return values...while
+>     async messages rely on the receiver to respond if needed (for now, and
+>     we can do something later if we need it).
+
 Now, there's some unavoidable complexity here, and the only question is how
 we choose to handle it.  Namely, a lot of what the Agents need is from other
 Agents, which means that Maestro could handle those himself.
@@ -313,6 +404,45 @@ to do something himself, and that's actually fine.  It could cause problems
 if we're careless, but it probably won't: any recursion risks a stack overflow,
 but that's a bad reason to eschew it.
 
+> DS: (Re: starting from "I see a few possibilities here".) "Next"? I'm thinking
+>     about this in context: We start with an input event, =modeS= spins up a
+>     coroutine in which =Maestro= translates that into...what is logically a
+>     =Message= but in fact is just *him calling a method on an Agent*. This is
+>     synchronous. If the Agent needs to talk to another Actor (Agent or
+>     otherwise), it =yield=s a =Message=, which =modeS= processes and =resume=s
+>     the coroutine with the return values. From the Agent's perspective this is
+>     also synchronous, so there's no situation where we'd be breaking up an
+>     operation in order to phone the boss--we phone the boss, the boss *picks up*
+>     and (synchronously) answers our question and life goes on.
+>
+>     Aside: We could also do this by allowing Agents to have a backlink to
+>     Maestro, and just call it and each other as normal function calls. This seems
+>     like it's not that different from indirecting through modeS, in that Maestro
+>     is never going to be in another process from the Agents or anything like
+>     that--right? (Neither is modeS, really, but some of the other Actors might
+>     be, like if we're running Python code instead of Lua, =eval= might be.) If
+>     there's a reason this seems bad, I'd like to hear it, it might help clarify
+>     how you want the whole thing to work.
+>
+>     Now, potentially more than one Agent is interested in the input
+>     event--potentially there is more than one matching entry in a keymap. (We
+>     haven't talked about this and may not be on the same page, so if this seems
+>     wrong let's straighten that out first.) But in that case, IMO there should be
+>     no actual communication between successive consumers of the same input.
+>     An Agent should be able to say "the buck stops here, nobody else gets to
+>     process this", like =evt.stopPropagation()= in JavaScript--or possibly
+>     something more nuanced--but not affect what method is called or its
+>     parameters for the next guy in line. The whole dispatch mechanism is
+>     basically an outer loop here.
+>
+>     When aaaaalll is finally said and done, =Maestro= returns and the coroutine
+>     dies--but it dies without returning any values, because at this point it's
+>     too late, if Maestro/the Agent wanted something that needed to be done with
+>     a =yield= earlier so there'd be somewhere to =resume= the return value. I
+>     suppose it could return a "just one more thing" message which modeS would
+>     process and throw away the return value, that's really neither here nor
+>     there.
+
 I don't like the alternative, because it means that every Message passes
 through Maestro, even if it isn't intended for him or an Agent.  So this has
 to get relayed with another =yield=, the results handed back with two
@@ -326,6 +456,8 @@ hierarchy might want to get something from.
 This leaves us with a very simple =repeat until= in =modeS=: we set up a
 coroutine, and call it repeatedly, handling messages, until the coroutine is
 dead.
+
+> DS: Yep, this sounds fine.
 
 Now on the one hand, this is moderately opaque: Modeselektor is going to be
 doing a bunch of stuff, and we have no idea what just looking at the code.
