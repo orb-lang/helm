@@ -205,23 +205,34 @@ For a request for action we need some of:
 - n:  Already mentioned, but for completeness, an integer >= 0 which specifies
     the number of parameters in the array portion of the Message\.
 
-> DS: Why have `sendto` when we already need a mechanism to decide who even
+> DS: Why have =sendto= when we already need a mechanism to decide who even
 >     gets a message in the first place? \(At its simplest this is just called
 >     "knowing who's at the other end of a particular queue", and that may be
 >     sufficient\.\) This is something of a rhetorical question\-\-I can see
 >     situations where we'd use it, but it's usually going to be a Law of
 >     Demeter violation, and frankly I'd tend towards leaving it out until we
 >     actually need it\.
+
+We'll need it immediately, when messages to modeS need to go to Historian\.
+
 >
->     It also seems like there's a lot of redundancy between `method`,
->     `sendto`, `message` and `call`\. First off we could just use `method =
->     "__call"` for that case\. Strictly speaking this is ambiguous between a
->     function property in slot `__call` and a true metamethod, but \(a\) so
+>     It also seems like there's a lot of redundancy between =method=,
+>     =sendto=, =message= and =call=\. First off we could just use ==method =
+>     "\_\_call"== for that case\. Strictly speaking this is ambiguous between a
+>     function property in slot =\_\_call= and a true metamethod, but \(a\) so
 >     many of our metatables are self\-indexed that there is usually no
 >     difference, and \(b\) if there is a difference and you care, Something Is
 >     Wrong, please don't\. So I'd be fine with just special\-casing that if the
 >     method name is "\_\_call" we just call the receiver\. Or not, this is
 >     orthogonal to the other simplification I'm suggesting\.
+
+A message is `target:message(...)`, a call is `target.call(...)` or if call is
+`true`, it's `target(...)`\.
+
+As you point out, conflating calling with a method via `__call` gets mixed up
+with whether the metatable is a self\-table, so I'd rather have a mechanism
+which works regardless of the minutiae of how we set up the instance\.
+
 >
 >     That being, replace =sendto= and =message= with something like
 >     =callpath= or =sendpath=, which is an array\-table of keys to traverse in
@@ -231,6 +242,19 @@ For a request for action we need some of:
 >     tend to leave this out until we actually need it\-\-indeed until we need
 >     it \*more than once\*, the first time I would just write a forwarder
 >     function on the receiver itself\.
+
+I considered and rejected that architecture\.
+
+Each target in a call path needs the same flexibility as the receiver of the
+message\.  The parsimonious way to handle that is to pass an entire Message in
+the case where the primary receiver is forwarding the message to an Actor in
+its call heirarchy\.
+
+We're going to want to bake message dispatch into the class definition of an
+Actor, they're all going to be able to receive them\.  So it will automatically
+unwrap the envelope and dispatch the Message\.
+
+\-\-\-\-\-
 
 This gives us everything we need for an Actor to take action, but it then
 needs to reply in many cases, so we need more for that\.
@@ -265,6 +289,14 @@ working on this one for awhile to get it right\.
 
 > DS: How would this be the case?
 
+@atman:
+        Actor dispatch will always `return` the value of the dispatch: if
+        there's a `reply` flag, it packages those return values into a Message\.
+
+When there isn't, as in the coro loop, we have additional logic which handles
+the return values: in this case, we call the dispatch inside `resume`, so
+no need to `pack` and `unpack` the result\.
+
 
 - replyto:  I don't love this name, but `returnto` isn't great either, so it
     will do for a discussion\.  The default reply is back to the sender,
@@ -273,6 +305,8 @@ working on this one for awhile to get it right\.
 
 > DS: I would YAGNI this for now, and implement it as `replypath` analogous with
    `sendpath` if/when we need it\.
+
+@atman:
 
 
 - ret:  An ntable containing the return values of a reply Message\.  This is
@@ -314,6 +348,9 @@ Actor who sent the first Message\.
 >
 >     All that said, also see below about how this interacts with the
 >     coroutine loop, which suddenly \*isn't\* asynchronous\.
+
+@atman:
+
 
 We can and should extend the protocol when we have more complex routing, but
 we should also avoid this\!  Abstractions should pull their weight, and we
@@ -365,9 +402,19 @@ time\.
 >     asynchronously, by putting them on a Deque somewhere probably\. There
 >     might be a logical "reply" to these, but if so, IMO it should just come
 >     as another message directed back at us, with no special affordance for
->     "being a reply"\. Likely we won't even need the ability to specify **that**
+>     "being a reply"\. Likely we won't even need the ability to specify \*that\*
 >     there should be a reply, or where it should go, because this will be
 >     obvious, though we can add those if needed\.
+
+A method shouldn't need to know that it should package a reply in a Message,
+and as I indicated above, there are cases where the return values
+don't **need** to be a Message and that just creates extra work\.
+
+So yes, we *can* handle these cases with custom logic, and probably *should*
+for the immediate applications we're putting Messages to\.
+
+But we can't do so in a general way without additional information\.
+
 >
 >     Then we have messages `yield`ed to `modeS`, which are actually
 >     **synchronous**, and as such, sure, they can have return values, but
@@ -383,6 +430,11 @@ time\.
 >     debugging\)\. Synchronous messages just\.\.\.can have return values\.\.\.while
 >     async messages rely on the receiver to respond if needed \(for now, and
 >     we can do something later if we need it\)\.
+
+@atman:
+        "things we're obviously going to need" and "things we might not need
+        which are natural extensions of the basic protocol"\.
+
 
 Now, there's some unavoidable complexity here, and the only question is how
 we choose to handle it\.  Namely, a lot of what the Agents need is from other
