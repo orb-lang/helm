@@ -191,8 +191,11 @@ For a request for action we need some of:
            Messages, but =sendto= will always mean "send this to your own slot
            with this name".
 
-- message:  Here the value is an entire Message.  These may be chained to make
-            a call arbitrarily deep in nested tables.
+- message:  A Message which is dispatched to whatever is returned from
+            dispatching *this* message. In other words, =={ call = "foo",
+            message = { method = "bar", "baz" } }== ultimately evaluates to
+            ==target.foo():bar("baz")==.  These may be nested arbitrarily deep
+            to produce a chain of calls.
 
 - call:  Value is either =true= or a symbol.  If a symbol, call the function
          at that slot with the parameters, if =true=, then call the receiver
@@ -211,6 +214,13 @@ For a request for action we need some of:
 
 We'll need it immediately, when messages to modeS need to go to Historian.
 
+DS: Right, I was putting a lot on "a mechanism to decide who even gets a
+message in the first place" without realizing that this basically *is* that
+mechanism. I do wonder how it interacts with Mailman, and especially my notion
+of a MIMO Mailman with named "boxes". We certainly want to make sure that if
+there's more than one way to send a message to someone, you identify them the
+same way across the board.
+
 >
 >     It also seems like there's a lot of redundancy between =method=,
 >     =sendto=, =message= and =call=. First off we could just use ==method =
@@ -228,6 +238,25 @@ A message is =target:message(...)=, a call is =target.call(...)= or if call is
 As you point out, conflating calling with a method via =__call= gets mixed up
 with whether the metatable is a self-table, so I'd rather have a mechanism
 which works regardless of the minutiae of how we set up the instance.
+
+DS: Right, non-method function calls. Yeah, in that case we need both so might
+as well also disambiguate =target:__call(...)= from =target(...)=.
+
+At that point though I would do:
+
+- property: Just retrieve a property. No parameters allowed in this case.
+            =={ property = "foo" }== -> =target.foo=.
+- method: Call a method. =={ method = "foo", "bar" }== -> =target:foo("bar")=.
+- call: Call a function (or the receiver itself if ==call = true==).
+        =={ call = "foo", "bar" }== -> =target.foo("bar")=
+
+No =sendto=, handle that with a nested message like
+=={ property = "foo", message = { method = "bar", n = 1, "baz" } }==.
+
+Alternatively, have =name= (a symbol) and =action= (one of {"property",
+"call", "method"). This is convenient for implementation (we always need to
+retrieve something, it's convenient to alsways store it under the same key)
+but yes, it is a little string-ly typed.
 
 >
 >     That being, replace =sendto= and =message= with something like
@@ -249,6 +278,20 @@ its call heirarchy.
 We're going to want to bake message dispatch into the class definition of an
 Actor, they're all going to be able to receive them.  So it will automatically
 unwrap the envelope and dispatch the Message.
+
+DS: Right, need nesting to be able to handle the full range of possibilities.
+I updated the description of =message=, above.
+
+As an additional affordance, we could allow...well, see above, I'm thinking we
+don't actually need =sendto=, but we could allow it anyway *at construction
+time*, and allow it to be a dotted path, and expand that into a nested message
+like:
+
+#!lua #noKnit
+{ sendto = "foo.bar", method = "baz" }
+-- becomes:
+{ property = "foo", message = { property = "bar", message = { method = "baz" }}}
+#/lua
 
 -----
 
@@ -290,6 +333,22 @@ working on this one for awhile to get it right.
 When there isn't, as in the coro loop, we have additional logic which handles
 the return values: in this case, we call the dispatch inside =resume=, so
 no need to =pack= and =unpack= the result.
+
+DS: Right, I asked this and then later got clear about the
+synchronous/asynchronous distinction. I'm still not really getting the
+purpose/need for =reply= and =replyto=, honestly. Like, asynchronous messages,
+in my experience, generally don't have "replies". They may prompt the person
+receiving them to need to talk to someone, and that someone might happen to be
+the sender of the original message, thus making it a sort of "reply", but it
+still happens on the initiative of the receiver, rather than by request from
+the original sender.
+
+Also. This interacts with the whole thing of do we have a global Mailman with
+named boxes, or route everything through modeS, or what? Like, it's not
+automatically clear where to *start* when sending a reply--not the receiver,
+but the receiver could itself be many levels deep, and we discussed how the
+nesting thing is useful in that it *hides* that from the ultimate receiver, a
+message looks the same no matter what path it took to get there.
 
 - replyto:  I don't love this name, but =returnto= isn't great either, so it
             will do for a discussion.  The default reply is back to the sender,
@@ -401,6 +460,9 @@ time.
 A method shouldn't need to know that it should package a reply in a Message,
 and as I indicated above, there are cases where the return values
 don't *need* to be a Message and that just creates extra work.
+
+DS: See my latest notes about =reply= and =replyto= above--but we can swing
+back around to this, no need to decide right now.
 
 So yes, we /can/ handle these cases with custom logic, and probably /should/
 for the immediate applications we're putting Messages to.
