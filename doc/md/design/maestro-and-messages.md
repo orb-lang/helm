@@ -480,9 +480,23 @@ but that's a bad reason to eschew it\.
 >     like it's not that different from indirecting through modeS, in that Maestro
 >     is never going to be in another process from the Agents or anything like
 >     that\-\-right? \(Neither is modeS, really, but some of the other Actors might
->     be, like if we're running Python code instead of Lua, `eval` might be\.\) If
+>     be, like if we're running Python code instead of Lua, =eval= might be\.\) If
 >     there's a reason this seems bad, I'd like to hear it, it might help clarify
 >     how you want the whole thing to work\.
+
+Two things\.  First, that's not a safe assumption\.  An example would be a
+language server, and we'll be adding that sort of thing relatively soon\.
+
+Second, we'd be reconstructing the sort of objects\-call\-objects architecture
+which we're moving away from, just in a subset of the program\.  As we've
+discovered, teasing that sort of thing apart gets expensive\.
+
+It leaves us with two mechanisms to get outside of an Agent's primary
+responsibility, instead of one\.  We need to pay the cost of doing all this
+dispatch already, so I'm confident we'll want to lean in and use it
+consistently, this lets us rely on it in various ways\.
+
+
 >
 >     Now, potentially more than one Agent is interested in the input
 >     event\-\-potentially there is more than one matching entry in a keymap\. \(We
