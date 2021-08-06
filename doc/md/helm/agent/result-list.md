@@ -48,8 +48,6 @@ end
 
 
 ```lua
-local ResultListAgent_class = setmetatable({}, ResultListAgent)
-ResultListAgent.idEst = ResultListAgent_class
-
-return ResultListAgent_class
+local constructor = assert(require "core:cluster" . constructor)
+return constructor(ResultListAgent)
 ```

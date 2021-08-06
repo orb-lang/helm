@@ -939,8 +939,6 @@ end
 
 
 
-local EditAgent_class = setmetatable({}, EditAgent)
-EditAgent.idEst = EditAgent_class
-
-return EditAgent_class
+local constructor = assert(require "core:cluster" . constructor)
+return constructor(EditAgent)
 

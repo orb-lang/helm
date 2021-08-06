@@ -109,8 +109,6 @@ end
 
 
 ```lua
-local InputEchoAgent_class = setmetatable({}, InputEchoAgent)
-InputEchoAgent.idEst = InputEchoAgent_class
-
-return InputEchoAgent_class
+local constructor = assert(require "core:cluster" . constructor)
+return constructor(InputEchoAgent)
 ```

@@ -146,8 +146,6 @@ end
 
 
 ```lua
-local ModalAgent_class = setmetatable({}, ModalAgent)
-ModalAgent.idEst = ModalAgent_class
-
-return ModalAgent_class
+local constructor = assert(require "core:cluster" . constructor)
+return constructor(ModalAgent)
 ```

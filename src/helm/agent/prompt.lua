@@ -47,8 +47,6 @@ end
 
 
 
-local PromptAgent_class = setmetatable({}, PromptAgent)
-PromptAgent.idEst = PromptAgent_class
-
-return PromptAgent_class
+local constructor = assert(require "core:cluster" . constructor)
+return constructor(PromptAgent)
 

@@ -35,8 +35,6 @@ end
 
 
 
-local ResultsAgent_class = setmetatable({}, ResultsAgent)
-ResultsAgent.idEst = ResultsAgent_class
-
-return ResultsAgent_class
+local constructor = assert(require "core:cluster" . constructor)
+return constructor(ResultsAgent)
 

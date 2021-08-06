@@ -37,8 +37,6 @@ end
 
 
 
-local PagerAgent_class = setmetatable({}, PagerAgent)
-PagerAgent.idEst = PagerAgent_class
-
-return PagerAgent_class
+local constructor = assert(require "core:cluster" . constructor)
+return constructor(PagerAgent)
 

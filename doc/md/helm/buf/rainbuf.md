@@ -513,8 +513,6 @@ Rainbuf.is_rainbuf = true
 
 
 ```lua
-local Rainbuf_class = setmetatable({}, Rainbuf)
-Rainbuf.idEst = Rainbuf_class
-
-return Rainbuf_class
+local constructor = assert(require "core:cluster" . constructor)
+return constructor(Rainbuf)
 ```

@@ -15,11 +15,12 @@ This is a type of `Rainbuf` specialized to display and edit a `Session`\.
 -  selected\_index: The index of the line that is selected for editing
 
 ```lua
+local meta = assert(require "core:cluster" . Meta)
 local Rainbuf = require "helm:buf/rainbuf"
 local Resbuf  = require "helm:buf/resbuf"
 local Txtbuf  = require "helm:buf/txtbuf"
 
-local Sessionbuf = Rainbuf:inherit()
+local Sessionbuf = meta(getmetatable(Rainbuf))
 ```
 
 
@@ -288,8 +289,6 @@ end
 
 
 ```lua
-local Sessionbuf_class = setmetatable({}, Sessionbuf)
-Sessionbuf.idEst = Sessionbuf_class
-
-return Sessionbuf_class
+local constructor = assert(require "core:cluster" . constructor)
+return constructor(Sessionbuf)
 ```

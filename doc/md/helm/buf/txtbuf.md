@@ -20,8 +20,9 @@ syntax highlighting\.
 ## Methods
 
 ```lua
+local meta = assert(require "core:cluster" . Meta)
 local Rainbuf = require "helm:buf/rainbuf"
-local Txtbuf = Rainbuf:inherit()
+local Txtbuf = meta(getmetatable(Rainbuf))
 ```
 
 
@@ -89,8 +90,6 @@ end
 
 
 ```lua
-local Txtbuf_class = setmetatable({}, Txtbuf)
-Txtbuf.idEst = Txtbuf_class
-
-return Txtbuf_class
+local constructor = assert(require "core:cluster" . constructor)
+return constructor(Txtbuf)
 ```

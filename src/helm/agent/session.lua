@@ -269,8 +269,6 @@ end
 
 
 
-local SessionAgent_class = setmetatable({}, SessionAgent)
-SessionAgent.idEst = SessionAgent_class
-
-return SessionAgent_class
+local constructor = assert(require "core:cluster" . constructor)
+return constructor(SessionAgent)
 
