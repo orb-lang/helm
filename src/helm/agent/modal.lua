@@ -3,7 +3,9 @@
 
 
 
-local ModalAgent = meta {}
+local meta = assert(require "core:cluster" . Meta)
+local Agent = require "helm:agent/agent"
+local ModalAgent = meta(getmetatable(Agent))
 
 
 
@@ -137,29 +139,15 @@ end
 
 
 
-local agent_utils = require "helm:agent/utils"
-
-ModalAgent.checkTouched = agent_utils.checkTouched
-
-ModalAgent.window = agent_utils.make_window_method({
-   fn = {
-      buffer_value = function(agent, window, field)
-         return agent.model and { n = 1, agent.model } or { n = 0 }
-      end
-   }
-})
-
-
-
-
-
-
-local function new()
-   return meta(ModalAgent)
+function ModalAgent.bufferValue(agent)
+   return agent.model and { n = 1, agent.model } or { n = 0 }
 end
 
 
 
-ModalAgent.idEst = new
-return new
+
+local ModalAgent_class = setmetatable({}, ModalAgent)
+ModalAgent.idEst = ModalAgent_class
+
+return ModalAgent_class
 

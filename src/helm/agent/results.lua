@@ -5,7 +5,9 @@
 
 
 
-local ResultsAgent = meta {}
+local meta = assert(require "core:cluster" . Meta)
+local Agent = require "helm:agent/agent"
+local ResultsAgent = meta(getmetatable(Agent))
 
 
 
@@ -13,7 +15,7 @@ local ResultsAgent = meta {}
 
 
 function ResultsAgent.update(agent, result)
-   agent.buffer_value = result or { n = 0 }
+   agent.result = result
    agent.touched = true
 end
 
@@ -26,27 +28,15 @@ end
 
 
 
-local agent_utils = require "helm:agent/utils"
-
-ResultsAgent.checkTouched = agent_utils.checkTouched
-
-ResultsAgent.window = agent_utils.make_window_method({
-   field = { buffer_value = true }
-})
-
-
-
-
-
-
-local function new()
-   local agent = meta(ResultsAgent)
-   agent.buffer_value = { n = 0 }
-   return agent
+function ResultsAgent.bufferValue(agent)
+   return agent.result or { n = 0 }
 end
 
 
 
-ResultsAgent.idEst = new
-return new
+
+local ResultsAgent_class = setmetatable({}, ResultsAgent)
+ResultsAgent.idEst = ResultsAgent_class
+
+return ResultsAgent_class
 

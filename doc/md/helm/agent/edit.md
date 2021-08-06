@@ -7,14 +7,15 @@ Text is stored as an array of lines, which start out as strings\. When the
 cursor enters a line, it is "opened" into an array of codepoints\.
 
 ```lua
-local EditAgent = meta {}
+local meta = assert(require "core:cluster" . Meta)
+local Agent = require "helm:agent/agent"
+local EditAgent = meta(getmetatable(Agent))
 ```
 
 
-#### dependencies
+#### imports
 
 ```lua
-assert(meta)
 local Codepoints = require "singletons/codepoints"
 local lines = import("core/string", "lines")
 local clone, collect, slice, splice =
@@ -403,9 +404,9 @@ thus proceeds through :killSelection\(\)
 
 #### EditAgent:killSelection\(\)
 
-Deletes the selected text, if any\. Returns whether anything was deleted
-\(i\.e\. whether anything was initially selected\)\.
+Deletes the selected text, if any\. Returns whether anything was deletedi\.e\. whether anything was initially selected\)\.
 
+\(
 ```lua
 local deleterange = import("core/table", "deleterange")
 function EditAgent.killSelection(agent)
@@ -902,44 +903,53 @@ end
 ```
 
 
-### Window
+### EditAgent:bufferValue\(\)
+
+The buffer need not concern itself with which lines are "open"\.
 
 ```lua
-local agent_utils = require "helm:agent/utils"
-
-EditAgent.checkTouched = agent_utils.checkTouched
-
-EditAgent.window = agent_utils.make_window_method({
-   field = { cursor = true },
-   fn = {
-      buffer_value = function(agent, window, field)
-         local answer = {}
-         for i, line in ipairs(agent) do
-            answer[i] = cat(line)
-         end
-         return answer
-      end
-   },
-   closure = { cursorIndex = true,
-               tokens = true }
-})
+function EditAgent.bufferValue(agent)
+   local answer = {}
+   for i, line in ipairs(agent) do
+      answer[i] = cat(line)
+   end
+   return answer
+end
 ```
 
 
-### new
+### EditAgent:windowConfiguration\(\)
+
+We expose the cursor position and some functions related to lexing, which the
+buffer uses in syntax highlighting\.
 
 ```lua
-local function new()
-   local agent = meta(EditAgent)
+function EditAgent.windowConfiguration(agent)
+   return agent.mergeWindowConfig(Agent.windowConfiguration(), {
+      field = { cursor = true },
+      closure = { cursorIndex = true,
+                  tokens = true }
+   })
+end
+```
+
+
+### EditAgent:\_init\(\)
+
+```lua
+function EditAgent._init(agent)
+   Agent._init(agent)
    agent[1] = ""
    agent:setCursor(1, 1)
    agent.contents_changed = false
    agent.cursor_changed = false
-   return agent
 end
 ```
 
+
 ```lua
-EditAgent.idEst = new
-return new
+local EditAgent_class = setmetatable({}, EditAgent)
+EditAgent.idEst = EditAgent_class
+
+return EditAgent_class
 ```

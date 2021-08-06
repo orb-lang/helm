@@ -4,11 +4,16 @@
 
 
 
+
 local c = assert(require "singletons:color" . color)
 local input_event = require "anterm:input-event"
 
-local InputEchoAgent = meta {}
 
+
+
+local meta = assert(require "core:cluster" . Meta)
+local Agent = require "helm:agent/agent"
+local InputEchoAgent = meta(getmetatable(Agent))
 
 
 
@@ -96,26 +101,16 @@ end
 
 
 
-local agent_utils = require "helm:agent/utils"
-InputEchoAgent.checkTouched = assert(agent_utils.checkTouched)
 
-local Window = require "window:window"
-InputEchoAgent.window = agent_utils.make_window_method({
-   fn = { buffer_value = function(echo)
-      return echo.last_event and { n = 1, echo.last_event } or { n = 0 }
-   end }
-})
-
-
-
-
-
-local function new()
-   return meta(InputEchoAgent)
+function InputEchoAgent.bufferValue(echo)
+   return echo.last_event and { n = 1, echo.last_event } or { n = 0 }
 end
 
 
 
-InputEchoAgent.idEst = new
-return new
+
+local InputEchoAgent_class = setmetatable({}, InputEchoAgent)
+InputEchoAgent.idEst = InputEchoAgent_class
+
+return InputEchoAgent_class
 

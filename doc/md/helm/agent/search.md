@@ -3,10 +3,9 @@
   An Agent providing history\-search functionality\.
 
 ```lua
-
-local SearchAgent = meta {}
-local new
-
+local meta = assert(require "core:cluster" . Meta)
+local ResultListAgent = require "helm:agent/result-list"
+local SearchAgent = meta(getmetatable(ResultListAgent))
 ```
 
 
@@ -35,56 +34,18 @@ end
 
 ### accept\(\)
 
-
 ```lua
 function SearchAgent.accept(agent)
    local suggestion = agent.last_collection:selectedItem()
    agent.replaceToken(suggestion)
+   -- yield(Message{sendto = "maestro.agents.edit", method = "replaceToken", n = 1, suggestion})
 end
 ```
 
 
-### Window
-
-\#todo
-a superclass?
-
 ```lua
-local agent_utils = require "helm:agent/utils"
+local SearchAgent_class = setmetatable({}, SearchAgent)
+SearchAgent.idEst = SearchAgent_class
 
-SearchAgent.checkTouched = assert(agent_utils.checkTouched)
-
-local function _toLastCollection(agent, window, field, ...)
-   local lc = agent.last_collection
-   return lc and lc[field](lc, ...) -- i.e. lc:<field>(...)
-end
-SearchAgent.window = agent_utils.make_window_method({
-   fn = {
-      buffer_value = function(agent, window, field)
-         return agent.last_collection
-            and { n = 1, agent.last_collection }
-      end
-   },
-   closure = {
-      selectedItem = _toLastCollection,
-      highlight = _toLastCollection
-   }
-})
-```
-
-
-### new\(\)
-
-```lua
-
-new = function()
-   local agent = meta(SearchAgent)
-   return agent
-end
-
-```
-
-```lua
-SearchAgent.idEst = new
-return new
+return SearchAgent_class
 ```

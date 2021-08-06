@@ -13,8 +13,9 @@ local insert, sort = assert(table.insert), assert(table.sort)
 
 
 
-local SuggestAgent = meta {}
-local new
+local meta = assert(require "core:cluster" . Meta)
+local ResultListAgent = require "helm:agent/result-list"
+local SuggestAgent = meta(getmetatable(ResultListAgent))
 
 
 
@@ -187,41 +188,8 @@ end
 
 
 
+local SuggestAgent_class = setmetatable({}, SuggestAgent)
+SuggestAgent.idEst = SuggestAgent_class
 
-
-local agent_utils = require "helm:agent/utils"
-
-SuggestAgent.checkTouched = assert(agent_utils.checkTouched)
-
-local function _toLastCollection(agent, window, field, ...)
-   local lc = agent.last_collection
-   return lc and lc[field](lc, ...) -- i.e. lc:<field>(...)
-end
-SuggestAgent.window = agent_utils.make_window_method({
-   fn = {
-      buffer_value = function(agent, window, field)
-         return agent.last_collection
-            and { n = 1, agent.last_collection }
-      end
-   },
-   closure = {
-      selectedItem = _toLastCollection,
-      highlight = _toLastCollection
-   }
-})
-
-
-
-
-
-
-new = function()
-   local suggest = meta(SuggestAgent)
-   return suggest
-end
-
-
-
-SuggestAgent.idEst = new
-return new
+return SuggestAgent_class
 

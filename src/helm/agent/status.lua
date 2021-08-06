@@ -4,7 +4,9 @@
 
 
 
-local StatusAgent = meta {}
+local meta = assert(require "core:cluster" . Meta)
+local Agent = require "helm:agent/agent"
+local StatusAgent = meta(getmetatable(Agent))
 
 
 
@@ -37,29 +39,27 @@ end
 
 
 
-local agent_utils = require "helm:agent/utils"
-StatusAgent.checkTouched = assert(agent_utils.checkTouched)
 
-local Window = require "window:window"
-StatusAgent.window = agent_utils.make_window_method({
-   fn = { buffer_value = function(stat, window, field)
-      return status_lines[stat.status_name]:format(unpack(stat.format_args))
-   end }
-})
-
-
-
-
-
-local function new()
-   local stat = meta(StatusAgent)
-   stat.status_name = 'default'
-   stat.format_args = { n = 0 }
-   return stat
+function StatusAgent.bufferValue(stat)
+   return status_lines[stat.status_name]:format(unpack(stat.format_args))
 end
 
 
 
-StatusAgent.idEst = new
-return new
+
+
+
+function StatusAgent._init(agent)
+   Agent._init(agent)
+   agent.status_name = 'default'
+   agent.format_args = { n = 0 }
+end
+
+
+
+
+local StatusAgent_class = setmetatable({}, StatusAgent)
+StatusAgent.idEst = StatusAgent_class
+
+return StatusAgent_class
 

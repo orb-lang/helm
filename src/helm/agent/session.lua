@@ -6,13 +6,15 @@
 
 
 
+local meta = assert(require "core:cluster" . Meta)
 local EditAgent = require "helm:agent/edit"
 local ResultsAgent = require "helm:agent/results"
 
 
 
 
-local SessionAgent = meta {}
+local Agent = require "helm:agent/agent"
+local SessionAgent = meta(getmetatable(Agent))
 
 
 
@@ -197,24 +199,26 @@ end
 
 
 
+function SessionAgent.bufferValue(agent)
+   return agent.session
+end
 
 
 
-local agent_utils = require "helm:agent/utils"
 
-SessionAgent.checkTouched = agent_utils.checkTouched
 
-SessionAgent.window = agent_utils.make_window_method({
-   field = { selected_index = true },
-   fn = {
-      buffer_value = function(agent, window, field)
-         return agent.session
-      end
-   },
-   closure = { selectedPremise = true,
-               editWindow = true,
-               resultsWindow = true }
-})
+
+
+
+
+function SessionAgent.windowConfiguration(agent)
+   return agent.mergeWindowConfig(Agent.windowConfiguration(), {
+      field = { selected_index = true },
+      closure = { selectedPremise = true,
+                  editWindow = true,
+                  resultsWindow = true }
+   })
+end
 
 
 
@@ -257,15 +261,16 @@ end
 
 
 
-local function new()
-   local agent = meta(SessionAgent)
+function SessionAgent._init(agent)
    agent.selected_index = 0
    agent.edit_agents = {}
-   return agent
 end
 
 
 
-SessionAgent.idEst = new
-return new
+
+local SessionAgent_class = setmetatable({}, SessionAgent)
+SessionAgent.idEst = SessionAgent_class
+
+return SessionAgent_class
 

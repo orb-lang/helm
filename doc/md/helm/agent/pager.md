@@ -5,7 +5,9 @@ lot, basically just a dumb value holder\. It may get some more responsibility
 later, not sure\.
 
 ```lua
-local PagerAgent = meta {}
+local meta = assert(require "core:cluster" . Meta)
+local Agent = require "helm:agent/agent"
+local PagerAgent = meta(getmetatable(Agent))
 ```
 
 
@@ -23,32 +25,20 @@ end
 ```
 
 
-### Window
+### PagerAgent:bufferValue\(\)
 
 ```lua
-local agent_utils = require "helm:agent/utils"
-
-PagerAgent.checkTouched = agent_utils.checkTouched
-
-PagerAgent.window = agent_utils.make_window_method({
-   fn = { buffer_value = function(agent, window, field)
-      -- #todo we should work with a Rainbuf that does word-aware wrapping
-      -- and accepts a string directly, rather than abusing Resbuf
-      return { n = 1, agent.str }
-   end }
-})
-```
-
-
-### new
-
-```lua
-local function new()
-   return meta(PagerAgent)
+function PagerAgent.bufferValue(agent)
+   -- #todo we should work with a Rainbuf that does word-aware wrapping
+   -- and accepts a string directly, rather than abusing Resbuf
+   return { n = 1, agent.str }
 end
 ```
 
+
 ```lua
-PagerAgent.idEst = new
-return new
+local PagerAgent_class = setmetatable({}, PagerAgent)
+PagerAgent.idEst = PagerAgent_class
+
+return PagerAgent_class
 ```
