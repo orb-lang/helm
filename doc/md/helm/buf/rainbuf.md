@@ -461,38 +461,6 @@ end
 ```
 
 
-#### Rainbuf:inherit\(\[cfg\]\)
-
-Create a metatable for a "subclass" of Rainbuf\. Cribbed from Phrase:inherit\(\)\.
-
-N\.B\. This will function against either an instance \(`Rainbuf():inherit()`\)
-or the class itself \(`Rainbuf:inherit()`\), but in either case this is not true
-prototype inheritance, only behavior on the Rainbuf metatable is inherited\.
-
-```lua
-local sub = assert(string.sub)
-function Rainbuf.inherit(buf_class, cfg)
-   local parent_M = getmetatable(buf_class)
-   local child_M = setmetatable({}, parent_M)
-   -- Copy metamethods because mmethod lookup does not respect =__index=es
-   for k,v in pairs(parent_M) do
-      if sub(k, 1, 2) == "__" then
-         child_M[k] = v
-      end
-   end
-   -- But, the new MT should have itself as __index, not the parent
-   child_M.__index = child_M
-   if cfg then
-      -- this can override the above metamethod assignment
-      for k,v in pairs(cfg) do
-         child_M[k] = v
-      end
-   end
-   return child_M
-end
-```
-
-
 #### Rainbuf:super\(method\_name\)
 
 We mixin core:cluster\.super\.
