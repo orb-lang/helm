@@ -2,8 +2,8 @@
 
 An Agent is a particular kind of [Actor](httk://) which is responsible for
 implementing responses to input events, and drives a region of the screen by
-providing a [Window](@window) that is the `source` for a
-[Rainbuf](@helm:buf/rainbuf)\.
+providing a [Window](https://gitlab.com/special-circumstance/helm/-/blob/trunk/doc/md/window.md) that is the `source` for a
+[Rainbuf](https://gitlab.com/special-circumstance/helm/-/blob/trunk/doc/md/buf/rainbuf.md)\.
 
 
 #### imports

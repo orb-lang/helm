@@ -498,7 +498,7 @@ end
 
 ### ModeS:showModal\(text, button\_style\)
 
-Shows a modal dialog with the given text and button stylesee [](@agent/modal) for valid button styles\)\.
+Shows a modal dialog with the given text and button stylesee [https://gitlab.com/special-circumstance/helm/-/blob/trunk/doc/md/agent/modal.md](https://gitlab.com/special-circumstance/helm/-/blob/trunk/doc/md/agent/modal.md) for valid button styles\)\.
 
 \(
 \#todo
