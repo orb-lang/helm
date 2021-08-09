@@ -26,7 +26,7 @@ local Stringbuf = meta(getmetatable(Rainbuf))
 
 
 function Stringbuf.clearCaches(buf)
-   buf:super"clearCaches"()
+   Rainbuf.clearCaches(buf)
    buf._composeOneLine = nil
 end
 

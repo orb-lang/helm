@@ -461,15 +461,6 @@ end
 #/lua
 
 
-**** Rainbuf:super(method_name)
-
-We mixin core:cluster.super.
-
-#!lua
-Rainbuf.super = assert(require "core:cluster" . super)
-#/lua
-
-
 **** Rainbuf.is_rainbuf
 
 We need a way to answer whether we are a Rainbuf *or any subclass*,

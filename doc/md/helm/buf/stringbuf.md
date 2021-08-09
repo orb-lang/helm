@@ -26,7 +26,7 @@ however ours is vastly simpler\.
 
 ```lua
 function Stringbuf.clearCaches(buf)
-   buf:super"clearCaches"()
+   Rainbuf.clearCaches(buf)
    buf._composeOneLine = nil
 end
 

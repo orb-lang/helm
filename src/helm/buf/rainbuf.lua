@@ -466,15 +466,6 @@ end
 
 
 
-Rainbuf.super = assert(require "core:cluster" . super)
-
-
-
-
-
-
-
-
 
 Rainbuf.is_rainbuf = true
 

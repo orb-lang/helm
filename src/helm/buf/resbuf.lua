@@ -31,7 +31,7 @@ local Resbuf = meta(getmetatable(Rainbuf))
 
 local clear = assert(table.clear)
 function Resbuf.clearCaches(resbuf)
-   resbuf:super"clearCaches"()
+   Rainbuf.clearCaches(resbuf)
    resbuf.reprs = nil
    resbuf.r_num = nil
 end
@@ -69,7 +69,7 @@ end
 Resbuf.null_value = { n = 0 }
 
 function Resbuf._init(resbuf)
-   resbuf:super"_init"()
+   Rainbuf._init(resbuf)
    resbuf.frozen = resbuf:value().error
 end
 

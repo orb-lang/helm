@@ -42,7 +42,7 @@ Sessionbuf.ROWS_PER_RESULT = 7
 
 
 function Sessionbuf.contentCols(buf)
-   return buf:super"contentCols"() - 2
+   return Rainbuf.contentCols(buf) - 2
 end
 
 
@@ -102,7 +102,7 @@ function Sessionbuf.setSubExtents(buf)
 end
 
 function Sessionbuf.setExtent(buf, rows, cols)
-   buf:super"setExtent"(rows, cols)
+   Rainbuf.setExtent(buf, rows, cols)
    buf:setSubExtents()
 end
 
@@ -124,7 +124,7 @@ function Sessionbuf.checkTouched(buf)
          buf:beTouched()
       end
    end
-   return buf:super"checkTouched"()
+   return Rainbuf.checkTouched(buf)
 end
 
 
@@ -195,7 +195,7 @@ end
 
 
 function Sessionbuf.clearCaches(buf)
-   buf:super"clearCaches"()
+   Rainbuf.clearCaches(buf)
    buf._composeOneLine = nil
 end
 
@@ -278,7 +278,7 @@ end
 
 
 function Sessionbuf._init(buf)
-   buf:super"_init"()
+   Rainbuf._init(buf)
    buf.txtbufs = {}
 end
 

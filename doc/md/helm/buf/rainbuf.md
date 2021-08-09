@@ -461,15 +461,6 @@ end
 ```
 
 
-#### Rainbuf:super\(method\_name\)
-
-We mixin core:cluster\.super\.
-
-```lua
-Rainbuf.super = assert(require "core:cluster" . super)
-```
-
-
 #### Rainbuf\.is\_rainbuf
 
 We need a way to answer whether we are a Rainbuf **or any subclass**,

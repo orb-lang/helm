@@ -28,7 +28,7 @@ local Txtbuf = meta(getmetatable(Rainbuf))
 
 
 function Txtbuf.clearCaches(txtbuf)
-   txtbuf:super"clearCaches"()
+   Rainbuf.clearCaches(txtbuf)
    txtbuf.render_row = nil
 end
 
@@ -82,7 +82,7 @@ function Txtbuf.checkTouched(txtbuf)
    if txtbuf.suggestions and txtbuf.suggestions.touched then
       txtbuf:beTouched()
    end
-   return txtbuf:super"checkTouched"()
+   return Rainbuf.checkTouched(txtbuf)
 end
 
 
