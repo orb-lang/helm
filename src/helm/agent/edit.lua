@@ -96,10 +96,12 @@ local concat, insert, remove = assert(table.concat),
 
 
 
+
 function EditAgent.contentsChanged(agent)
+   Agent.contentsChanged(agent)
    agent.contents_changed = true
-   agent.touched = true
 end
+
 
 
 
@@ -112,7 +114,7 @@ end
 function EditAgent.setLexer(agent, lex_fn)
    if agent.lex ~= lex_fn then
       agent.lex = lex_fn
-      agent.touched = true
+      agent:bufferCommand("clearCaches")
    end
 end
 

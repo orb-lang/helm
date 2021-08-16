@@ -16,7 +16,7 @@ local PagerAgent = meta(getmetatable(Agent))
 
 function PagerAgent.update(agent, str)
    agent.str = str
-   agent.touched = true
+   agent:contentsChanged()
 end
 
 function PagerAgent.clear(agent)

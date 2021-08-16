@@ -10,7 +10,7 @@ providing a [[Window][@window]] that is the =source= for a
 
 #!lua
 local Window = require "window:window"
--- local Deque = require "deque:deque"
+local Deque = require "deque:deque"
 #/lua
 
 
@@ -22,11 +22,40 @@ local Agent = meta {}
 
 *** Agent:checkTouched()
 
+#deprecated
+
 #!lua
 function Agent.checkTouched(agent)
    local touched = agent.touched
    agent.touched = false
    return touched
+end
+#/lua
+
+
+*** Agent:bufferCommand(name, args...)
+
+Queues a message to be processed by our associated Rainbuf.
+
+#!lua
+function Agent.bufferCommand(agent, name, ...)
+   local msg = pack(...)
+   msg.method = name
+   agent.buffer_commands:push(msg)
+end
+#/lua
+
+
+*** Agent:contentsChanged()
+
+Notify the Agent (and associated buffer) that its contents have changed in
+some way. The buffer needs to clear caches as well as the zone needing a
+repaint.
+
+#!lua
+function Agent.contentsChanged(agent)
+   agent.touched = true -- #deprecated
+   agent:bufferCommand("clearCaches")
 end
 #/lua
 
@@ -37,7 +66,7 @@ Abstract method. Return the primary value which should be displayed in the
 Rainbuf associated with this Agent.
 
 
-*** Agent:window()
+*** Agent:window(), :windowConfiguration()
 
 The =Window=s of =Agent=s need to implement some common behavior in order to
 interact correctly with =Rainbuf=s and change detection, so we start with a
@@ -58,9 +87,14 @@ end
 function Agent.windowConfiguration(agent)
    return {
       field = { touched = true },
-      fn = { buffer_value = function(agent, window, field)
-         return agent:bufferValue()
-      end },
+      fn = {
+         buffer_value = function(agent, window, field)
+            return agent:bufferValue()
+         end,
+         commands = function(agent, window, field)
+            return agent.buffer_commands
+         end
+      },
       closure = { checkTouched = true }
    }
 end
@@ -80,7 +114,7 @@ to the constructor?
 
 #!lua
 function Agent._init(agent)
-   return
+   agent.buffer_commands = Deque()
 end
 
 function Agent.__call(agent_class)

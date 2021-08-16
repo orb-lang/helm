@@ -120,7 +120,7 @@ function ModalAgent.update(agent, text, button_style)
    end
    model.buttons = button_style
    agent.model = model
-   agent.touched = true
+   agent:contentsChanged()
 end
 
 

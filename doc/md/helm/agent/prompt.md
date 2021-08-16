@@ -16,7 +16,7 @@ local PromptAgent = meta(getmetatable(Agent))
 ```lua
 function PromptAgent.update(agent, prompt_char)
    agent.prompt_char = prompt_char
-   agent.touched = true
+   agent:contentsChanged()
 end
 ```
 

@@ -94,7 +94,7 @@ function InputEchoAgent.update(echo, event, command)
    echo.last_event = clone(event)
    echo.last_event.command = command
    setmetatable(echo.last_event, echo_M)
-   echo.touched = true
+   echo:contentsChanged()
 end
 
 

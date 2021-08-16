@@ -10,7 +10,7 @@
 
 
 local Window = require "window:window"
--- local Deque = require "deque:deque"
+local Deque = require "deque:deque"
 
 
 
@@ -23,10 +23,39 @@ local Agent = meta {}
 
 
 
+
+
 function Agent.checkTouched(agent)
    local touched = agent.touched
    agent.touched = false
    return touched
+end
+
+
+
+
+
+
+
+
+function Agent.bufferCommand(agent, name, ...)
+   local msg = pack(...)
+   msg.method = name
+   agent.buffer_commands:push(msg)
+end
+
+
+
+
+
+
+
+
+
+
+function Agent.contentsChanged(agent)
+   agent.touched = true -- #deprecated
+   agent:bufferCommand("clearCaches")
 end
 
 
@@ -58,9 +87,14 @@ end
 function Agent.windowConfiguration(agent)
    return {
       field = { touched = true },
-      fn = { buffer_value = function(agent, window, field)
-         return agent:bufferValue()
-      end },
+      fn = {
+         buffer_value = function(agent, window, field)
+            return agent:bufferValue()
+         end,
+         commands = function(agent, window, field)
+            return agent.buffer_commands
+         end
+      },
       closure = { checkTouched = true }
    }
 end
@@ -80,7 +114,7 @@ end
 
 
 function Agent._init(agent)
-   return
+   agent.buffer_commands = Deque()
 end
 
 function Agent.__call(agent_class)

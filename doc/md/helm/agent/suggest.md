@@ -129,7 +129,7 @@ end
 
 local function _set_suggestions(suggest, suggestions)
    suggest.last_collection = suggestions
-   suggest.touched = true
+   suggest:contentsChanged()
 end
 
 

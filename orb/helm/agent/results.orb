@@ -16,7 +16,7 @@ local ResultsAgent = meta(getmetatable(Agent))
 #!lua
 function ResultsAgent.update(agent, result)
    agent.result = result
-   agent.touched = true
+   agent:contentsChanged()
 end
 
 function ResultsAgent.clear(agent)

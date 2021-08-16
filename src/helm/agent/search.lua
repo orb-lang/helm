@@ -14,12 +14,6 @@ local SearchAgent = meta(getmetatable(ResultListAgent))
 
 
 
-local function _set_suggestions(agent, suggestions)
-   agent.last_collection = suggestions
-   agent.touched = true
-end
-
-
 function SearchAgent.update(agent, modeS)
    local frag = agent.searchText()
    if agent.last_collection
@@ -27,7 +21,7 @@ function SearchAgent.update(agent, modeS)
       return
    end
    agent.last_collection = modeS.hist:search(frag)
-   agent.touched = true
+   agent:contentsChanged()
 end
 
 

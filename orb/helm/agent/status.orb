@@ -32,7 +32,7 @@ from the list below, and any additional parameters are passed through to
 function StatusAgent.update(stat, status_name, ...)
    stat.status_name = status_name
    stat.format_args = pack(...)
-   stat.touched = true
+   stat:contentsChanged()
 end
 #/lua
 

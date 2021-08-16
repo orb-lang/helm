@@ -32,7 +32,7 @@ status_lines.new_session = status_lines.default .. ' (recording "%s")'
 function StatusAgent.update(stat, status_name, ...)
    stat.status_name = status_name
    stat.format_args = pack(...)
-   stat.touched = true
+   stat:contentsChanged()
 end
 
 

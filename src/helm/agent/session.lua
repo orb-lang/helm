@@ -56,7 +56,7 @@ function SessionAgent.update(agent, sesh)
    for index in pairs(agent.edit_agents) do
       _update_edit_agent(agent, index)
    end
-   agent.touched = true
+   agent:contentsChanged()
 end
 
 
@@ -77,9 +77,9 @@ function SessionAgent.selectIndex(agent, index)
    if index ~= agent.selected_index then
       agent.selected_index = index
       _update_results_agent(agent)
-      agent.touched = true
+      agent:contentsChanged()
       -- #todo can/should we be the ones to update the EditAgent
-      -- for the title somehow?
+      -- for the title somehow? Send it a message...
    end
 end
 
@@ -134,7 +134,7 @@ local status_cycle_map = {
 function SessionAgent.toggleSelectedState(agent)
    local premise = agent:selectedPremise()
    premise.status = status_cycle_map[premise.status]
-   agent.touched = true
+   agent:contentsChanged()
    return true
 end
 
@@ -144,7 +144,7 @@ local status_reverse_map = inverse(status_cycle_map)
 function SessionAgent.reverseToggleSelectedState(agent)
    local premise = agent:selectedPremise()
    premise.status = status_reverse_map[premise.status]
-   agent.touched = true
+   agent:contentsChanged()
    return true
 end
 
@@ -171,7 +171,7 @@ local function _swap_premises(agent, index_a, index_b)
    premise_a.ordinal = index_b
    _update_edit_agent(agent, index_b)
 
-   agent.touched = true
+   agent:contentsChanged()
 end
 
 function SessionAgent.movePremiseUp(agent)
@@ -262,6 +262,7 @@ end
 
 
 function SessionAgent._init(agent)
+   Agent._init(agent)
    agent.selected_index = 0
    agent.edit_agents = {}
 end
