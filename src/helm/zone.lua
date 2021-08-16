@@ -461,12 +461,18 @@ function Zoneherd.paint(zoneherd, modeS)
    local write = zoneherd.write
    write(a.cursor.hide(), a.clear())
    for i, zone in ipairs(zoneherd) do
-      -- Propagate touched-ness so it can also spread "horizontally"
-      -- to neighboring Zones
-      -- #todo There has *got* to be a better way than this. An events
-      -- framework would work, might be other options
-      if zone.contents.is_rainbuf and zone.contents:checkTouched() then
-         zone:beTouched()
+      -- Process queued commands from the `source` of our Rainbufs
+      if zone.contents.is_rainbuf then
+         local commands = zone.contents.source.commands
+         local msg = commands:pop()
+         while msg do
+            zone.contents[msg.method](zone.contents, unpack(msg))
+            zone:beTouched()
+            msg = commands:pop()
+         end
+         if zone.contents:checkTouched() then
+            zone:beTouched()
+         end
       end
    end
    for i, zone in ipairs(zoneherd) do
