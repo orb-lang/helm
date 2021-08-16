@@ -18,6 +18,26 @@ local ResultListAgent = meta(getmetatable(Agent))
 #/lua
 
 
+*** Selection methods
+
+We wrap =select*= methods of =SelectionList= to also re-render and make sure
+the new selection is visible.
+
+#!lua
+for _, method_name in ipairs{"selectNext", "selectPrevious",
+                    "selectNextWrap", "selectPreviousWrap",
+                    "selectFirst", "selectIndex", "selectNone"} do
+   ResultListAgent[method_name] = function(agent, ...)
+      if agent.last_collection then
+         agent.last_collection[method_name](agent.last_collection, ...)
+         agent:contentsChanged()
+         agent:bufferCommand("ensureVisible", agent.last_collection.selected_index)
+      end
+   end
+end
+#/lua
+
+
 *** ResultListAgent:bufferValue()
 
 #!lua

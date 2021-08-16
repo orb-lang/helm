@@ -20,23 +20,13 @@ Search.prompt_char = "⁉️"
 local NAV = Search.NAV
 
 function NAV.SHIFT_DOWN(modeS, category, value)
-   local search_result = modeS:agent'search'.last_collection
-   if search_result and search_result:selectNext() then
-      -- #todo route this through a Window that can handle the
-      -- change-detection automatically
-      modeS:agent'search'.touched = true
-      modeS.zones.results.contents:ensureVisible(search_result.selected_index)
-   end
+   modeS:agent'search':selectNext()
 end
 #/lua
 
 #!lua
 function NAV.SHIFT_UP(modeS, category, value)
-   local search_result = modeS:agent'search'.last_collection
-   if search_result and search_result:selectPrevious() then
-      modeS:agent'search'.touched = true
-      modeS.zones.results.contents:ensureVisible(search_result.selected_index)
-   end
+   modeS:agent'search':selectPrevious()
 end
 #/lua
 
@@ -48,9 +38,7 @@ function NAV.ESC(modeS, category, value)
       modeS.shift_to = modeS.raga_default
    -- If something *is* selected, deselect it first
    else
-      search_result:selectNone()
-      modeS:agent'search'.touched = true
-      modeS.zones.results.contents:ensureVisible(1)
+      modeS:agent'search':selectNone()
    end
 end
 #/lua

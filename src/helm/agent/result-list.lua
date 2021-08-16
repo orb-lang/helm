@@ -21,6 +21,26 @@ local ResultListAgent = meta(getmetatable(Agent))
 
 
 
+
+
+
+for _, method_name in ipairs{"selectNext", "selectPrevious",
+                    "selectNextWrap", "selectPreviousWrap",
+                    "selectFirst", "selectIndex", "selectNone"} do
+   ResultListAgent[method_name] = function(agent, ...)
+      if agent.last_collection then
+         agent.last_collection[method_name](agent.last_collection, ...)
+         agent:contentsChanged()
+         agent:bufferCommand("ensureVisible", agent.last_collection.selected_index)
+      end
+   end
+end
+
+
+
+
+
+
 function ResultListAgent.bufferValue(agent)
    return agent.last_collection and { n = 1, agent.last_collection }
 end
