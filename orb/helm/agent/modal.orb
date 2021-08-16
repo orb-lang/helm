@@ -113,7 +113,7 @@ local button_styles = {
 }
 
 function ModalAgent.update(agent, text, button_style)
-   local model = meta(DialogModel)
+   local model = setmetatable({}, DialogModel)
    model.text = text
    if type(button_style) == "string" then
       button_style = button_styles[button_style]
