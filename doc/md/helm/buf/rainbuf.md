@@ -416,6 +416,26 @@ end
 ```
 
 
+#### Rainbuf:processQueuedMessages\(\)
+
+Processes messages from `source.commands`\. Returns a boolean indicating
+whether anything was processed, and therefore whether the buffer needs to be
+re\-rendered\.
+
+```lua
+function Rainbuf.processQueuedMessages(buf)
+   local had_any = false
+   local msg = buf.source.commands:pop()
+   while msg do
+      buf[msg.method](buf, unpack(msg))
+      had_any = true
+      msg = buf.source.commands:pop()
+   end
+   return had_any
+end
+```
+
+
 ### Construction and inheritance
 
 #### Rainbuf:\_init\(\)

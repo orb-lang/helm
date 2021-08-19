@@ -423,6 +423,26 @@ end
 
 
 
+function Rainbuf.processQueuedMessages(buf)
+   local had_any = false
+   local msg = buf.source.commands:pop()
+   while msg do
+      buf[msg.method](buf, unpack(msg))
+      had_any = true
+      msg = buf.source.commands:pop()
+   end
+   return had_any
+end
+
+
+
+
+
+
+
+
+
+
 
 function Rainbuf._init(rainbuf)
    rainbuf.offset = 0

@@ -78,6 +78,7 @@ function SessionAgent.selectIndex(agent, index)
       agent.selected_index = index
       _update_results_agent(agent)
       agent:contentsChanged()
+      agent:bufferCommand("ensureSelectedVisible")
       -- #todo can/should we be the ones to update the EditAgent
       -- for the title somehow? Send it a message...
    end
@@ -111,6 +112,21 @@ end
 
 function SessionAgent.selectedPremise(agent)
    return agent.session[agent.selected_index]
+end
+
+
+
+
+
+
+
+
+function SessionAgent.scrollResultsDown(agent)
+   agent.results_agent:scrollDown()
+end
+
+function SessionAgent.scrollResultsUp(agent)
+   agent.results_agent:scrollUp()
 end
 
 

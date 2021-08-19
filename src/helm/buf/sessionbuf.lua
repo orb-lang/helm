@@ -174,12 +174,38 @@ end
 
 
 
-function Sessionbuf.scrollResultsDown(buf)
-   return _resbuf(buf):scrollDown()
+function Sessionbuf.ensureSelectedVisible(buf)
+   local start_index = buf:positionOfSelected()
+   local end_index = start_index + buf:rowsForSelectedResult() + 3
+   buf:ensureVisible(start_index, end_index)
 end
 
-function Sessionbuf.scrollResultsUp(buf)
-   return _resbuf(buf):scrollUp()
+
+
+
+
+
+
+
+
+function Sessionbuf.processQueuedMessages(buf)
+   local had_any = false
+   if buf.resbuf and buf.resbuf:processQueuedMessages() then
+      had_any = true
+   end
+   for _, txtbuf in pairs(buf.txtbufs) do
+      if txtbuf:processQueuedMessages() then
+         had_any = true
+      end
+   end
+   -- Anything from sub-buffers means we need to clear our line cache as well
+   if had_any then
+      buf:clearCaches()
+   end
+   if Rainbuf.processQueuedMessages(buf) then
+      had_any = true
+   end
+   return had_any
 end
 
 

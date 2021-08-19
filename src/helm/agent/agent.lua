@@ -73,6 +73,28 @@ end
 
 
 
+for _, scroll_fn in ipairs{
+   "scrollTo", "scrollBy",
+   "scrollUp", "scrollDown",
+   "pageUp", "pageDown",
+   "halfPageUp", "halfPageDown",
+   "scrollToTop", "scrollToBottom",
+   "ensureVisible"
+} do
+   Agent[scroll_fn] = function(agent, ...)
+      agent:bufferCommand(scroll_fn, ...)
+   end
+end
+
+
+
+
+
+
+
+
+
+
 
 
 local addall = assert(require "core:table" . addall)

@@ -66,6 +66,28 @@ Abstract method\. Return the primary value which should be displayed in the
 Rainbuf associated with this Agent\.
 
 
+### Scrolling methods
+
+We forward any scrolling messages that Rainbuf understands as queued commands\.
+\#todo
+this the only place it'll come up, in which case it's probably fine?
+
+```lua
+for _, scroll_fn in ipairs{
+   "scrollTo", "scrollBy",
+   "scrollUp", "scrollDown",
+   "pageUp", "pageDown",
+   "halfPageUp", "halfPageDown",
+   "scrollToTop", "scrollToBottom",
+   "ensureVisible"
+} do
+   Agent[scroll_fn] = function(agent, ...)
+      agent:bufferCommand(scroll_fn, ...)
+   end
+end
+```
+
+
 ### Agent:window\(\), :windowConfiguration\(\)
 
 The `Window`s of `Agent`s need to implement some common behavior in order to

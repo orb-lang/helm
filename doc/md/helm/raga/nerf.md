@@ -169,13 +169,13 @@ end
 
 function NAV.SHIFT_DOWN(modeS, category, value)
    if not _activateCompletion(modeS) then
-      modeS.zones.results:scrollDown()
+      modeS:agent'results':scrollDown()
    end
 end
 
 function NAV.SHIFT_UP(modeS, category, value)
    if not _activateCompletion(modeS) then
-      modeS.zones.results:scrollUp()
+      modeS:agent'results':scrollUp()
    end
 end
 
@@ -218,14 +218,11 @@ insert(Nerf.default_keymaps, {
 
 ```lua
 function Nerf.scrollResultsUp(maestro, event)
-   -- #todo The ResultsAgent will eventually be able to queue a command for
-   -- the scrolling, so we'll be able to talk to it instead. In fact this
-   -- command will likely be routed to it directly.
-   maestro.modeS.zones.results.contents:scrollUp(event.num_lines)
+   maestro.agents.results:scrollUp(event.num_lines)
 end
 
 function Nerf.scrollResultsDown(maestro, event)
-   maestro.modeS.zones.results.contents:scrollDown(event.num_lines)
+   maestro.agents.results:scrollDown(event.num_lines)
 end
 
 insert(Nerf.default_keymaps, {

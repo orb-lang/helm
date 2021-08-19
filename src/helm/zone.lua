@@ -228,32 +228,6 @@ end
 
 
 
-
-for _, scroll_fn in ipairs{
-   "scrollTo", "scrollBy",
-   "scrollUp", "scrollDown",
-   "pageUp", "pageDown",
-   "halfPageUp", "halfPageDown",
-   "scrollToTop", "scrollToBottom",
-   "ensureVisible"
-} do
-   Zone[scroll_fn] = function(zone, ...)
-      if zone.contents.is_rainbuf then
-         return zone.contents[scroll_fn](zone.contents, ...)
-      else
-         return false
-      end
-   end
-end
-
-
-
-
-
-
-
-
-
 local box = require "anterm/box"
 function Zone.paintBorder(zone, write)
    if zone.border then
@@ -463,14 +437,8 @@ function Zoneherd.paint(zoneherd, modeS)
    for i, zone in ipairs(zoneherd) do
       -- Process queued commands from the `source` of our Rainbufs
       if zone.contents.is_rainbuf then
-         local commands = zone.contents.source.commands
-         local msg = commands:pop()
-         while msg do
-            zone.contents[msg.method](zone.contents, unpack(msg))
-            zone:beTouched()
-            msg = commands:pop()
-         end
-         if zone.contents:checkTouched() then
+         local touched = zone.contents:processQueuedMessages()
+         if touched then
             zone:beTouched()
          end
       end
