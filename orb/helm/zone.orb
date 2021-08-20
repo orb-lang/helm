@@ -437,8 +437,11 @@ function Zoneherd.paint(zoneherd, modeS)
    for i, zone in ipairs(zoneherd) do
       -- Process queued commands from the `source` of our Rainbufs
       if zone.contents.is_rainbuf then
-         local touched = zone.contents:processQueuedMessages()
-         if touched then
+         if zone.contents:processQueuedMessages() then
+            zone:beTouched()
+         end
+         -- #deprecated
+         if zone.contents:checkTouched() then
             zone:beTouched()
          end
       end
