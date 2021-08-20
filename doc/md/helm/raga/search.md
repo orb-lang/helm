@@ -35,7 +35,7 @@ function NAV.ESC(modeS, category, value)
    local search_result = modeS:agent'search'.last_collection
    -- No results or nothing is selected, exit search mode
    if not search_result or search_result.selected_index == 0 then
-      modeS.shift_to = modeS.raga_default
+      modeS:shiftMode(modeS.raga_default)
    -- If something *is* selected, deselect it first
    else
       modeS:agent'search':selectNone()
@@ -60,7 +60,7 @@ NAV.SHIFT_TAB = NAV.SHIFT_UP
 
 local function _modeShiftOnDeleteWhenEmpty(modeS, category, value)
    if modeS:agent'edit':contents() == "" then
-      modeS.shift_to = modeS.raga_default
+      modeS:shiftMode(modeS.raga_default)
    else
       EditBase(modeS, category, value)
    end
@@ -83,7 +83,7 @@ local function _acceptAtIndex(modeS, selected_index)
       if selected_index == 0 then selected_index = 1 end
       line, result = modeS.hist:index(search_result.cursors[selected_index])
    end
-   modeS.shift_to = modeS.raga_default
+   modeS:shiftMode(modeS.raga_default)
    modeS:agent'edit':update(line)
    modeS:setResults(result)
 end

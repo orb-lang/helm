@@ -61,7 +61,7 @@ RagaBase.CTRL["^Q"] = function(modeS, category, value)
       -- the only way to make Modal work properly. A proper raga stack
       -- would *definitely* fix this
       modeS.raga_default = "review"
-      modeS.shift_to = "review"
+      modeS:shiftMode "review"
       modeS:agent'session':selectIndex(1)
       modeS:setStatusLine("review", modeS.hist.session.session_title)
    else

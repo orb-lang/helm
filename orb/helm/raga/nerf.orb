@@ -52,7 +52,7 @@ local function _insert(modeS, category, value)
    if modeS:agent'edit':contents() == "" then
       modeS:clearResults()
       if value == "/" then
-         modeS.shift_to = "search"
+         modeS:shiftMode "search"
          return
       end
       if value == "?" then
@@ -159,7 +159,7 @@ NAV.ALT_RETURN = NAV.SHIFT_RETURN
 
 local function _activateCompletion(modeS)
    if modeS:agent'suggest'.last_collection then
-      modeS.shift_to = "complete"
+      modeS:shiftMode "complete"
       return true
    else
       return false

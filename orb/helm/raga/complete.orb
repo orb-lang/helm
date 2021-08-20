@@ -19,7 +19,7 @@ Complete.prompt_char = "💬"
 
 local function _quit(modeS)
    -- #todo restore last-used raga instead of always returning to default
-   modeS.shift_to = modeS.raga_default
+   modeS:shiftMode(modeS.raga_default)
 end
 
 local function _accept(modeS)

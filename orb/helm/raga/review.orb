@@ -58,7 +58,7 @@ NAV.SHIFT_TAB = _toSessionAgent "reverseToggleSelectedState"
 
 function NAV.RETURN(modeS, category, value)
    if modeS:agent'session'.selected_index ~= 0 then
-      modeS.shift_to = "edit_title"
+      modeS:shiftMode "edit_title"
    end
 end
 

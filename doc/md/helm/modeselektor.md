@@ -306,13 +306,6 @@ Dispatches a seq to the current raga, answering whether or not the raga could
 process it \(if this never occurs, we display an NYI message in the status area\)\.
 
 ```lua
-local function _check_shift(modeS)
-   if modeS.shift_to then
-      modeS:shiftMode(modeS.shift_to)
-      modeS.shift_to = nil
-   end
-end
-
 function ModeS.actOnce(modeS, event, old_cat_val)
    -- Try to dispatch the new-style event via keymap
    local command, args = modeS.maestro:translate(event)
@@ -325,7 +318,6 @@ function ModeS.actOnce(modeS, event, old_cat_val)
          command = 'LEGACY'
       end
    end
-   _check_shift(modeS)
    if modeS:agent'edit'.contents_changed then
       modeS.raga.onTxtbufChanged(modeS)
     -- Treat contents_changed as implying cursor_changed
@@ -335,8 +327,6 @@ function ModeS.actOnce(modeS, event, old_cat_val)
    end
    modeS:agent'edit'.contents_changed = false
    modeS:agent'edit'.cursor_changed = false
-   -- Check shift_to again in case one of the cursor handlers set it
-   _check_shift(modeS)
    return command
 end
 ```
@@ -492,7 +482,7 @@ Opens a simple help screen\.
 local rep = assert(string.rep)
 function ModeS.openHelp(modeS)
    modeS:agent'pager':update(("abcde "):rep(1000))
-   modeS.shift_to = "page"
+   modeS:shiftMode "page"
 end
 ```
 
@@ -507,7 +497,7 @@ which point we won't need this method\.
 ```lua
 function ModeS.showModal(modeS, text, button_style)
    modeS:agent'modal':update(text, button_style)
-   modeS.shift_to = "modal"
+   modeS:shiftMode "modal"
    return modeS
 end
 ```
@@ -626,7 +616,6 @@ local function new(max_extent, writer, db)
    -- initial state
    modeS:shiftMode(modeS.raga_default)
    modeS.action_complete = true
-   modeS.shift_to = nil
    return modeS
 end
 

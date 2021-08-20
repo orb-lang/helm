@@ -28,7 +28,7 @@ Page.prompt_char = "❓"
 function Page.quit(maestro, event)
    -- #todo should have a stack of ragas and switch back to the one
    -- we entered from, but this will do for now
-   maestro.modeS.shift_to = maestro.modeS.raga_default
+   maestro.modeS:shiftMode(maestro.modeS.raga_default)
 end
 
 local map = {
