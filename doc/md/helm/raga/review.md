@@ -1,6 +1,6 @@
 # Session review
 
-Raga for reviewing a previously\-saved session\.
+Raga for reviewing a previously-saved session.
 
 ```lua
 local clone = assert(require "core:table" . clone)
@@ -8,18 +8,15 @@ local RagaBase = require "helm:raga/base"
 local Txtbuf = require "helm:buf/txtbuf"
 local Sessionbuf = require "helm:buf/sessionbuf"
 ```
-
 ```lua
 local Review = clone(RagaBase, 2)
 Review.name = "review"
 Review.prompt_char = "💬"
 ```
-
-
-### \_toSessionbuf\(fn\), \_selectUsing\(fn\)
+### _toSessionbuf(fn), _selectUsing(fn)
 
 Wraps the common command patterns of "call the following method
-of the Sessionbuf" and "ditto, then clean up our scroll state"\.
+of the Sessionbuf" and "ditto, then clean up our scroll state".
 
 ```lua
 local function _toSessionAgent(fn)
@@ -54,8 +51,6 @@ local function _selectUsing(fn)
    end
 end
 ```
-
-
 ### NAV
 
 ```lua
@@ -79,11 +74,9 @@ end
 NAV.ALT_UP   = _toSessionAgent "movePremiseUp"
 NAV.ALT_DOWN = _toSessionAgent "movePremiseDown"
 ```
-
-
 ### Quit handler
 
-We intercept ^Q to prompt the user whether to save the session before quitting\.
+We intercept ^Q to prompt the user whether to save the session before quitting.
 
 ```lua
 Review.CTRL["^Q"] = function(modeS, category, value)
@@ -92,13 +85,11 @@ Review.CTRL["^Q"] = function(modeS, category, value)
       "yes_no_cancel")
 end
 ```
-
-
 ### MOUSE
 
-We use the mouse wheel to scroll the results area\. Ideally it would be nice
+We use the mouse wheel to scroll the results area. Ideally it would be nice
 to choose between the results area and the entire session display based on
-cursor position, but that'll have to wait for more general focus\-tracking\.
+cursor position, but that'll have to wait for more general focus-tracking.
 
 ```lua
 function Review.MOUSE(modeS, category, value)
@@ -111,17 +102,16 @@ function Review.MOUSE(modeS, category, value)
    end
 end
 ```
-
-
-### Review\.onShift\(modeS\)
+### Review.onShift(modeS)
 
 We use the results area for displaying the lines and results
-of the session in a Sessionbuf\-\-if one is not already there,
-set it up\.
+of the session in a Sessionbuf--if one is not already there,
+set it up.
+
 
 We use a modal to prompt the user to save on quit, so if a modal
-answer is set, this is what it is about\. This is rather ugly, but
-requires a whole bunch of refactoring of Ragas and Zones to improve\.
+answer is set, this is what it is about. This is rather ugly, but
+requires a whole bunch of refactoring of Ragas and Zones to improve.
 
 ```lua
 function Review.onShift(modeS)
@@ -148,7 +138,6 @@ function Review.onShift(modeS)
    modeS:agent'edit':update(premise and premise.title)
 end
 ```
-
 ```lua
 return Review
 ```

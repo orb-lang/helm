@@ -1,16 +1,14 @@
 # ModalAgent
 
-Agent that powers our modal dialog\.
+Agent that powers our modal dialog.
 
 ```lua
 local ModalAgent = meta {}
 ```
-
-
 ## Dialog model
 
 Basically just a holder for the text, button style, and result,
-with an \_\_repr to generate the contents of the dialog\.
+with an __repr to generate the contents of the dialog.
 
 ```lua
 local DialogModel = meta {}
@@ -74,11 +72,9 @@ function DialogModel.__repr(model, window, c)
    return concat(phrase)
 end
 ```
+### DialogModel:requiredExtent()
 
-
-### DialogModel:requiredExtent\(\)
-
-Computes the extent required to display the modal\.
+Computes the extent required to display the modal.
 
 ```lua
 local max = assert(math.max)
@@ -93,12 +89,10 @@ function DialogModel.requiredExtent(model)
    return Point(text_height + 2, max(text_width, button_row_width))
 end
 ```
-
-
-### ModalAgent:update\(text, button\_style\)
+### ModalAgent:update(text, button_style)
 
 Prepares to display a modal with the given text and button style,
-which may be either a table or a shorthand name from the table below\.
+which may be either a table or a shorthand name from the table below.
 
 ```lua
 local button_styles = {
@@ -121,19 +115,15 @@ function ModalAgent.update(agent, text, button_style)
    agent.touched = true
 end
 ```
+### ModalAgent:answer()
 
-
-### ModalAgent:answer\(\)
-
-Retrieves the value answered by the current/most\-recent modal dialog\.
+Retrieves the value answered by the current/most-recent modal dialog.
 
 ```lua
 function ModalAgent.answer(agent)
    return agent.model and agent.model.value
 end
 ```
-
-
 ### Window
 
 ```lua
@@ -149,8 +139,6 @@ ModalAgent.window = agent_utils.make_window_method({
    }
 })
 ```
-
-
 ### new
 
 ```lua
@@ -158,7 +146,6 @@ local function new()
    return meta(ModalAgent)
 end
 ```
-
 ```lua
 ModalAgent.idEst = new
 return new

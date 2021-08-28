@@ -12,8 +12,6 @@ local Search = clone(EditBase, 2)
 Search.name = "search"
 Search.prompt_char = "⁉️"
 ```
-
-
 ## Navigation
 
 ```lua
@@ -29,7 +27,6 @@ function NAV.SHIFT_DOWN(modeS, category, value)
    end
 end
 ```
-
 ```lua
 function NAV.SHIFT_UP(modeS, category, value)
    local search_result = modeS:agent'search'.last_collection
@@ -39,7 +36,6 @@ function NAV.SHIFT_UP(modeS, category, value)
    end
 end
 ```
-
 ```lua
 function NAV.ESC(modeS, category, value)
    local search_result = modeS:agent'search'.last_collection
@@ -55,14 +51,12 @@ function NAV.ESC(modeS, category, value)
 end
 ```
 
+  - [ ]  Add NAV.SHIFT_ALT_(UP|DOWN), to move a page at a time.
+         Hook them to PgUp and PgDown while we're at it.
 
-- [ ]  \#Todo
 
-  - [ ]  Add NAV\.SHIFT\_ALT\_\(UP|DOWN\), to move a page at a time\.
-      Hook them to PgUp and PgDown while we're at it\.
-
-  - [ ]  Add NAV\.HOME and NAV\.END to snap to the
-      top and bottom\.
+  - [ ]  Add NAV.HOME and NAV.END to snap to the
+         top and bottom.
 
 ```lua
 NAV.DOWN      = NAV.SHIFT_DOWN
@@ -82,7 +76,6 @@ NAV.BACKSPACE = _modeShiftOnDeleteWhenEmpty
 NAV.DELETE    = _modeShiftOnDeleteWhenEmpty
 
 ```
-
 ### Accepting results
 
 ```lua
@@ -115,7 +108,6 @@ for i = 1, 9 do
 end
 
 ```
-
 ### MOUSE
 
 ```lua
@@ -129,23 +121,19 @@ function Search.MOUSE(modeS, category, value)
    end
 end
 ```
+## Search.onTxtbufChanged(modeS)
 
-
-## Search\.onTxtbufChanged\(modeS\)
-
-We need to update the search result whenever the contents of the Txtbuf change\.
+We need to update the search result whenever the contents of the Txtbuf change.
 
 ```lua
 function Search.onTxtbufChanged(modeS)
    modeS:agent'search':update(modeS)
 end
 ```
+### Search.onShift
 
-
-### Search\.onShift
-
-Set up Agent connections\-\-Txtbuf uses Historian for "suggestions", and that
-same Window also drives the result zone\.
+Set up Agent connections--Txtbuf uses Historian for "suggestions", and that
+same Window also drives the result zone.
 
 ```lua
 function Search.onShift(modeS)
@@ -155,7 +143,6 @@ function Search.onShift(modeS)
    modeS:bindZone("results", "search", Resbuf, { scrollable = true })
 end
 ```
-
 ```lua
 return Search
 ```

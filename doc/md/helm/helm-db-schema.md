@@ -2,13 +2,15 @@
 
 
   It's gotten intractable to tell the current schema from the latest table
-creation string\.  We've used ALTER TABLE, and we'll start using ALTER COLUMN
-eventually as well\.
+creation string.  We've used ALTER TABLE, and we'll start using ALTER COLUMN
+eventually as well.
 
-So this is just a copy\-paste of the schema, straight from the database, which
-we'll replace after each migration\.
 
-This is the schema as of migration 6\.
+So this is just a copy-paste of the schema, straight from the database, which
+we'll replace after each migration.
+
+
+This is the schema as of migration 6.
 
 ```sql
 CREATE TABLE IF NOT EXISTS "project" (

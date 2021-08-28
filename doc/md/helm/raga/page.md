@@ -1,28 +1,21 @@
 # Page
 
-`page` is our equivalent of `less`, used for displaying help files and the like\.
+``page`` is our equivalent of ``less``, used for displaying help files and the like.
 
 ```lua
 local clone = import("core/table", "clone")
 local RagaBase = require "helm:helm/raga/base"
 ```
-
 ```lua
 local Page = clone(RagaBase, 2)
 
 Page.name = "page"
 Page.prompt_char = "❓"
 ```
-
-
 ## Keymap
 
 The only command that routes to us is the exit/quit command, everything else
-goes to the Rainbuf in the popup zone\.
-
-\#todo
-functions to ourself\. Ideally we'd find a way to specify the target directly,
-but we can at least not write out all these functions by hand\.
+goes to the Rainbuf in the popup zone.
 
 ```lua
 function Page.quit(maestro, event)
@@ -60,12 +53,10 @@ for cmd, shortcuts in pairs{
 end
 Page.default_keymaps = { map }
 ```
-
-
 ## Events
 
-We basically ignore the majority of the zones and use the popup zone instead\.
-Show and hide it automatically when we shift/unshift\.
+We basically ignore the majority of the zones and use the popup zone instead.
+Show and hide it automatically when we shift/unshift.
 
 ```lua
 function Page.onShift(modeS)
@@ -75,7 +66,6 @@ function Page.onUnshift(modeS)
    modeS.zones.popup:hide()
 end
 ```
-
 ```lua
 return Page
 ```

@@ -1,44 +1,44 @@
 # Reflect
 
-\#NB
-
-It's no longer needed to monkey\-patch the SQLite library, since I've
-moved all of that into a bytecode loaded in `bridge`\.
-
-This lovely library has been [borrowed in](https://github.com/corsix/ffi-reflect)
+#NB I think this is what's been causing the segfaults, so let's phase it out.
 so we can find names for struct fields and otherwise iterate over compound
-data in C\.
+data in C.
+
 
 This is going to take awhile: I want to be able to derive both the C type
 signature and the Lua type signature of a function, and likewise for all the
-other primitive and compound C types\.
+other primitive and compound C types.
+
 
 "Note that typedefs are resolved by the parser, and are therefore not visible
-when reflected"\.  [Indeed](http://corsix.github.io/ffi-reflect/)\.
+when reflected".  [Indeed](http://corsix.github.io/ffi-reflect/).
 
 
-#### License \(MIT\)
+#### License (MIT)
 
 LuaJIT FFI reflection Library
-Copyright \(C\) 2014 Peter Cawley [mailto:lua@corsix.org](mailto:lua@corsix.org)\. All rights reserved\.
+Copyright (C) 2014 Peter Cawley [[mailto:lua@corsix.org]]. All rights reserved.
+
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files \(the "Software"\), to deal
+of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
 
+
 The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software\.
+all copies or substantial portions of the Software.
+
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT\.  IN NO EVENT SHALL THE
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE\.
+THE SOFTWARE.
 
 
 ### reflect

@@ -2,22 +2,24 @@
 
 
   The primary purpose of this module is to enable metavariables, for easier
-repl interaction\.
+repl interaction.
 
-Eventually we may wish to replace Lex Luathor with this module\.
 
-This code is an expansion of the [parser in espalier](https://gitlab.com/special-circumstance/espalier/-/blob/trunk/doc/md/espalier/parser.md), which is intended to demonstrate the PEG
-syntax, and shouldn't have non\-standard extensions to the base language\.
+Eventually we may wish to replace Lex Luathor with this module.
+
+
+This code is an expansion of the [[parser in espalier]
+[@br/espalier:espalier/parser]], which is intended to demonstrate the PEG
+syntax, and shouldn't have non-standard extensions to the base language.
+
 
 Ideally, this would be accomplished through transclusion, but we have quite a
-ways to go before transclusion between projects is feasible\.
+ways to go before transclusion between projects is feasible.
 
 ```lua
 local Peg  = require "espalier:espalier/peg"
 local Node = require "espalier:espalier/node"
 ```
-
-
 ### Extended Lua PEG grammar
 
 ```peg
@@ -127,9 +129,6 @@ keyword = ("and" / "break" / "do" / "else" / "elseif"
         t
 `t` = !([A-Z] / [a-z] / [0-9] / "_")
 ```
-
-
-
 ## Metatables
 
 ```lua
@@ -142,7 +141,6 @@ end
 
 local lua_metas = { lua = Lua }
 ```
-
 ```lua
 return Peg(lua_str) : toGrammar(lua_metas)
 ```

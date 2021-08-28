@@ -26,4 +26,3 @@ local function fuzz_patt(frag)
 end
 
 return fuzz_patt
-

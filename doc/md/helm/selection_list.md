@@ -1,40 +1,34 @@
 # SelectionList
 
-A list with a concept of an item being "selected"\. Currently used by and
-specialized for search results, from either an actual search or `suggest`\.
+A list with a concept of an item being "selected". Currently used by and
+specialized for search results, from either an actual search or ``suggest``.
 
 ## Interface
 
 ### Instance Fields
 
-
 -  <numbers>:        The items available to select
+-  selected_index:   Index of the currently selected item
+-  show_shortcuts:   Whether to show M-n shortcut indicators
 
--  selected\_index:   Index of the currently selected item
 
--  show\_shortcuts:   Whether to show M\-n shortcut indicators
-
-Search\-specific fields:
+Search-specific fields:
 
 
 -  frag:       The search string that produced the list, to be highlighted
-    in the output
-
--  lit\_frag:   The original search string, unmodified by any fuzzy matching
-
+               in the output
+-  lit_frag:   The original search string, unmodified by any fuzzy matching
 -  best:       Whether a match was found without employing any fuzzy matching
 
 ```lua
 local SelectionList = meta {}
 local new
 ```
+### SelectionList:selectFirst(), :selectNext(), :selectPrevious()
 
-
-### SelectionList:selectFirst\(\), :selectNext\(\), :selectPrevious\(\)
-
-Moves the highlight to the first, next or previous item in the list\.
-Answers whether the highlight was able to be moved \(false if we're
-already at the end/beginning of the list\)
+Moves the highlight to the first, next or previous item in the list.
+Answers whether the highlight was able to be moved (false if we're
+already at the end/beginning of the list)
 
 ```lua
 local clamp = assert(require "core:math" . clamp)
@@ -60,13 +54,11 @@ function SelectionList.selectPrevious(list)
    return list:selectIndex(list.selected_index - 1)
 end
 ```
+### SelectionList:selectNextWrap(), :selectPreviousWrap()
 
-
-### SelectionList:selectNextWrap\(\), :selectPreviousWrap\(\)
-
-As :selectNext\(\) and :selectPrevious\(\), but wraps around instead of failing
-if we are at the end/beginning of the list\. Answers whether the highlight was
-able to be moved\-\-false only if the list has 0 or 1 items\.
+As :selectNext() and :selectPrevious(), but wraps around instead of failing
+if we are at the end/beginning of the list. Answers whether the highlight was
+able to be moved--false only if the list has 0 or 1 items.
 
 ```lua
 function SelectionList.selectNextWrap(list)
@@ -83,37 +75,31 @@ function SelectionList.selectPreviousWrap(list)
    return list:selectIndex(new_idx)
 end
 ```
+### SelectionList:selectNone()
 
-
-### SelectionList:selectNone\(\)
-
-De\-selects any selected item\. We use the convention of `selected_index == 0`
-to mean no selection\.
+De-selects any selected item. We use the convention of ``selected_index == 0``
+to mean no selection.
 
 ```lua
 function SelectionList.selectNone(list)
    list.selected_index = 0
 end
 ```
+### SelectionList:selectedItem()
 
-
-### SelectionList:selectedItem\(\)
-
-Answers the actual selected item from the list \(as opposed to its index\)\.
+Answers the actual selected item from the list (as opposed to its index).
 
 ```lua
 function SelectionList.selectedItem(list)
    return list[list.selected_index]
 end
 ```
+### __repr
 
-
-### \_\_repr
-
-Displays the list, highlighting the currently selected item\.
-Optionally provides indicators for Alt\-number \(M\-n\) shortcuts for the
-first 10 items of the list\. Also highlights the characters of `frag`
-where they appear\.
+Displays the list, highlighting the currently selected item.
+Optionally provides indicators for Alt-number (M-n) shortcuts for the
+first 10 items of the list. Also highlights the characters of ``frag``
+where they appear.
 
 ```lua
 
@@ -190,11 +176,9 @@ function SelectionList.__repr(list, window, c)
 end
 
 ```
+### new(frag, cfg)
 
-
-### new\(frag, cfg\)
-
-Creates a new, empty SelectionList\. If `frag` is provided it is used as the search term\. Additional options may be supplied in `cfg`\.
+Creates a new, empty SelectionList. If ``frag`` is provided it is used as the search term. Additional options may be supplied in ``cfg``.
 
 ```lua
 new = function(frag, cfg)
@@ -214,7 +198,6 @@ new = function(frag, cfg)
    return list
 end
 ```
-
 ```lua
 SelectionList.idEst = new
 return new

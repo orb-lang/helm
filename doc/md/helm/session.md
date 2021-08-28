@@ -1,40 +1,50 @@
 # Session
 
 
-  `helm` is expected to have a **session mode**, where it runs a sequence of
-commands, and optionally validates some or all of the results\.
+  ``helm`` is expected to have a **session mode**, where it runs a sequence of
+commands, and optionally validates some or all of the results.
+
 
 There will be a way to run these headlessly, which will also help in
-refactoring `modeselektor` to have no information about how display is
-happening\.
+refactoring ``modeselektor`` to have no information about how display is
+happening.
 
-A session will have a Session object, called `sesh` by default, which will
+
+A session will have a Session object, called ``sesh`` by default, which will
 have some methods:
 
-`sesh:pin(to_pin)` will take a number or the string "all", and pin that
-step of the session\.
+
+``sesh:pin(to_pin)`` will take a number or the string "all", and pin that
+step of the session.
+
 
 This means that it expects the same result, and will inform the user if it
-isn't\.
+isn't.
 
-`sesh:unpin(to_unpin)` will do the opposite\.
 
-Both return the session object, which has a `__repr` which is informative of
-these statuses and, for pinned objects, if they have passed on the last round\.
+``sesh:unpin(to_unpin)`` will do the opposite.
 
-`sesh:add(string)` will execute a string, and add it to a session\.
-`sesh:addLast(pin=(true|false))` and `sesh:addNext()` will add the last
-line, optionally pinning it, or flag the session to add the next line\.
 
-`sesh:record()` and `sesh:stop()` will start and stop recording a session\.
-`^R` or `sesh:reset()` will reload the session, and return the session object
-with changes to pinned lines noted\.
+Both return the session object, which has a ``__repr`` which is informative of
+these statuses and, for pinned objects, if they have passed on the last round.
+
+
+``sesh:add(string)`` will execute a string, and add it to a session.
+``sesh:addLast(pin=(true|false))`` and ``sesh:addNext()`` will add the last
+line, optionally pinning it, or flag the session to add the next line.
+
+
+``sesh:record()`` and ``sesh:stop()`` will start and stop recording a session.
+``^R`` or ``sesh:reset()`` will reload the session, and return the session object
+with changes to pinned lines noted.
+
 
 It's intended that any changes to files the session depends on, will also
-trigger a session reset\.
+trigger a session reset.
+
 
 A session will load the session lines into the history buffer, but only once,
-no matter how many times the session is reset or run\.
+no matter how many times the session is reset or run.
 
 ```lua
 local meta = assert(require "core:meta" . meta)
@@ -42,12 +52,11 @@ local helm_db = require "helm:helm-db"
 local Session = meta {}
 local new
 ```
+### Session:premiseCount(), :passCount()
 
-### Session:premiseCount\(\), :passCount\(\)
-
-The number of non\-ignored \(accepted or rejected\) premises in the session\.
+The number of non-ignored (accepted or rejected) premises in the session.
 Note that during review we may have "skip"ped premises as well, so we
-cannot just check status ~= "ignore"\.
+cannot just check status ~= "ignore".
 
 ```lua
 function Session.premiseCount(session)
@@ -60,10 +69,9 @@ function Session.premiseCount(session)
    return count
 end
 ```
+### Session:passCount()
 
-### Session:passCount\(\)
-
-The number of "passing" premises \(accepted premises with matching output\)
+The number of "passing" premises (accepted premises with matching output)
 
 ```lua
 function Session.passCount(session)
@@ -76,13 +84,13 @@ function Session.passCount(session)
    return count
 end
 ```
+### Session:evaluate(isolated, historian)
 
-### Session:evaluate\(isolated, historian\)
+(Re-)Evaluates the session and determines pass/fail state for all its premises.
+If ``isolated`` is set, avoids mutating _G by creating a temporary wrapper environment.
 
-\(Re\-\)Evaluates the session and determines pass/fail state for all its premises\.
-If `isolated` is set, avoids mutating \_G by creating a temporary wrapper environment\.
 
-If a Historian is provided, appends the results of the re\-evaluation to it\.
+If a Historian is provided, appends the results of the re-evaluation to it.
 
 ```lua
 local tabulate = assert(require "repr:persist-tabulate" . tabulate)
@@ -114,12 +122,10 @@ function Session.evaluate(session, valiant, historian)
    end
 end
 ```
+### Session:loadPremises()
 
-
-### Session:loadPremises\(\)
-
-Loads the session from the database, retrieving its lines and results\.
-Does not re\-run the lines\.
+Loads the session from the database, retrieving its lines and results.
+Does not re-run the lines.
 
 ```lua
 
@@ -172,12 +178,10 @@ function Session.loadPremises(session)
    end
 end
 ```
+### Session:append(line_id)
 
-
-### Session:append\(line\_id\)
-
-Appends the line with the given id as a new premise\. The session mode
-determines whether it is marked as accepted or not\.
+Appends the line with the given id as a new premise. The session mode
+determines whether it is marked as accepted or not.
 
 ```lua
 function Session.append(session, line_id, line, results)
@@ -201,13 +205,11 @@ function Session.append(session, line_id, line, results)
    _appendPremise(session, premise)
 end
 ```
-
-
-### Session:resultsAvailable\(line\_id, results\)
+### Session:resultsAvailable(line_id, results)
 
 Notification from the Historian that an idler has finished stringifying results
-for a particular line\_id\. If that line\_id is part of this session, attach
-the results to the appropriate premise\.
+for a particular line_id. If that line_id is part of this session, attach
+the results to the appropriate premise.
 
 ```lua
 function Session.resultsAvailable(session, line_id, results)
@@ -219,12 +221,10 @@ function Session.resultsAvailable(session, line_id, results)
    end
 end
 ```
+### Session:save()
 
-
-### Session:save\(\)
-
-Save the current state of the session to the database\. For simplicity's sake,
-we always just save everything, without checking whether it has changed\.
+Save the current state of the session to the database. For simplicity's sake,
+we always just save everything, without checking whether it has changed.
 
 ```lua
 local compact = assert(require "core:table" . compact)
@@ -256,15 +256,13 @@ function Session.save(session)
    session.stmts.commit()
 end
 ```
+### Session(db, project_id, title_or_index, cfg)
 
-
-### Session\(db, project\_id, title\_or\_index, cfg\)
-
-Searches the database for a session with the given title \(if a string\) or
-index within the list of sessions for the project \(if a number\) and retrieves
-its core information \(ID, title, accepted\)\. If one is not found, creates a
-new, empty session with the given title, which MUST be a non\-integer string in
-this case\. \(Note that this is assured by the command\-line argument parser\.\)
+Searches the database for a session with the given title (if a string) or
+index within the list of sessions for the project (if a number) and retrieves
+its core information (ID, title, accepted). If one is not found, creates a
+new, empty session with the given title, which MUST be a non-integer string in
+this case. (Note that this is assured by the command-line argument parser.)
 
 ```lua
 local collect = assert(require 'core:table' . collect)
@@ -305,7 +303,6 @@ new = function(db, project_id, title_or_index, cfg)
    return session
 end
 ```
-
 ```lua
 Session.idEst = new
 return new

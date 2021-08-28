@@ -91,4 +91,3 @@ local Txtbuf_class = setmetatable({}, Txtbuf)
 Txtbuf.idEst = Txtbuf_class
 
 return Txtbuf_class
-

@@ -1,6 +1,6 @@
 # Resbuf
 
-A `Resbuf` is a `Rainbuf` specialized to displaying REPL results using `repr`\.
+A ``Resbuf`` is a ``Rainbuf`` specialized to displaying REPL results using ``repr``.
 
 
 #### includes
@@ -9,23 +9,19 @@ A `Resbuf` is a `Rainbuf` specialized to displaying REPL results using `repr`\.
 local lineGen = import("repr:repr", "lineGen")
 local cluster = require "core:cluster"
 ```
-
-
 #### Resbuf metatable
 
 ```lua
 local Rainbuf = require "helm:buf/rainbuf"
 local Resbuf = Rainbuf:inherit()
 ```
-
-
 ## Methods
 
 
-### Resbuf:clearCaches\(\)
+### Resbuf:clearCaches()
 
 In addition to cached lines, we must clear lineGen iterators and the
-index we're working on\.
+index we're working on.
 
 ```lua
 local clear = assert(table.clear)
@@ -35,11 +31,9 @@ function Resbuf.clearCaches(resbuf)
    resbuf.r_num = nil
 end
 ```
+### Resbuf:initComposition(cols)
 
-
-### Resbuf:initComposition\(cols\)
-
-Set up the lineGen\(\) iterators we'll use to build our output\.
+Set up the lineGen() iterators we'll use to build our output.
 
 ```lua
 local lines = import("core/string", "lines")
@@ -57,12 +51,10 @@ function Resbuf.initComposition(resbuf)
    end
 end
 ```
+### Resbuf:_init(res)
 
-
-### Resbuf:\_init\(res\)
-
-Initially set buf\.frozen for error results\. `null_value` can just be a
-constant on the metatable, but this seems like a good place to mention it\.
+Initially set buf.frozen for error results. ``null_value`` can just be a
+constant on the metatable, but this seems like a good place to mention it.
 
 ```lua
 Resbuf.null_value = { n = 0 }
@@ -72,12 +64,10 @@ function Resbuf._init(resbuf)
    resbuf.frozen = resbuf:value().error
 end
 ```
+### Resbuf:_composeOneLine()
 
-
-### Resbuf:\_composeOneLine\(\)
-
-Internal implementation to generate one line of output\. Try to retrieve a line
-from the current repr, moving on to the next if that one has run out\.
+Internal implementation to generate one line of output. Try to retrieve a line
+from the current repr, moving on to the next if that one has run out.
 
 ```lua
 function Resbuf._composeOneLine(resbuf)
@@ -93,8 +83,6 @@ function Resbuf._composeOneLine(resbuf)
    return nil
 end
 ```
-
-
 ```lua
 local Resbuf_class = setmetatable({}, Resbuf)
 Resbuf.idEst = Resbuf_class

@@ -1,6 +1,6 @@
 # SessionAgent
 
-Agent responsible for editing/reviewing a session\.
+Agent responsible for editing/reviewing a session.
 
 
 #### imports
@@ -9,17 +9,13 @@ Agent responsible for editing/reviewing a session\.
 local EditAgent = require "helm:agent/edit"
 local ResultsAgent = require "helm:agent/results"
 ```
-
-
 ```lua
 local SessionAgent = meta {}
 ```
+### _update_edit_agent(index), _update_results_agent()
 
-
-### \_update\_edit\_agent\(index\), \_update\_results\_agent\(\)
-
-Since we lazy\-create our subsidiary agents, it's worth a function wrapper to
-update them if\-and\-only\-if they exist\.
+Since we lazy-create our subsidiary agents, it's worth a function wrapper to
+update them if-and-only-if they exist.
 
 ```lua
 local function _update_edit_agent(agent, index)
@@ -41,9 +37,7 @@ local function _update_results_agent(agent)
    end
 end
 ```
-
-
-### SessionAgent:update\(sesh\)
+### SessionAgent:update(sesh)
 
 ```lua
 function SessionAgent.update(agent, sesh)
@@ -57,14 +51,12 @@ function SessionAgent.update(agent, sesh)
    agent.touched = true
 end
 ```
-
-
 ### Selection, scrolling, etc
 
 
-#### SessionAgent:selectIndex\(index\)
+#### SessionAgent:selectIndex(index)
 
-Select the line at `index` in the session for possible editing\.
+Select the line at ``index`` in the session for possible editing.
 
 ```lua
 local clamp = assert(require "core:math" . clamp)
@@ -81,12 +73,10 @@ function SessionAgent.selectIndex(agent, index)
    end
 end
 ```
-
-
-#### SessionAgent:selectNextWrap\(\), :selectPreviousWrap\(\)
+#### SessionAgent:selectNextWrap(), :selectPreviousWrap()
 
 Selects the next/previous premise, wrapping around to the beginning/end
-if we're at the end/beginning, respectively\.
+if we're at the end/beginning, respectively.
 
 ```lua
 function SessionAgent.selectNextWrap(agent)
@@ -102,25 +92,21 @@ function SessionAgent.selectPreviousWrap(agent)
    return agent:selectIndex(new_idx)
 end
 ```
-
-
-#### SessionAgent:selectedPremise\(\)
+#### SessionAgent:selectedPremise()
 
 ```lua
 function SessionAgent.selectedPremise(agent)
    return agent.session[agent.selected_index]
 end
 ```
-
-
 ### Editing
 
 
-#### SessionAgent:\[reverse\]toggleSelectedState\(\)
+#### SessionAgent:[reverse]toggleSelectedState()
 
-Toggles the state of the selected line, cycling through "accept", "reject",ignore", "skip"\.
+Toggles the state of the selected line, cycling through "accept", "reject",
+"ignore", "skip".
 
-"
 ```lua
 local status_cycle_map = {
    ignore = "accept",
@@ -146,15 +132,9 @@ function SessionAgent.reverseToggleSelectedState(agent)
    return true
 end
 ```
+#### SessionAgent:movePremise{Up|Down}()
 
-
-#### SessionAgent:movePremise\{Up|Down\}\(\)
-
-Moves the selected premise up/back or down/forward in the session\.
-
-\#todo
-For now, we assume the user knows what they're doing, and they can always
-use `br session update` to fix things separately\.
+Moves the selected premise up/back or down/forward in the session.
 
 ```lua
 local function _swap_premises(agent, index_a, index_b)
@@ -192,12 +172,10 @@ function SessionAgent.movePremiseDown(agent)
    return true
 end
 ```
-
-
-### Window\(s\)
+### Window(s)
 
 We have our primary window, but it can also retrieve windows for our
-subsidiary `Edit` and `ResultsAgent`s\.
+subsidiary ``Edit`` and ``ResultsAgent``s.
 
 ```lua
 local agent_utils = require "helm:agent/utils"
@@ -216,11 +194,9 @@ SessionAgent.window = agent_utils.make_window_method({
                resultsWindow = true }
 })
 ```
+#### SessionAgent:editWindow(index)
 
-
-#### SessionAgent:editWindow\(index\)
-
-Retrieve the window for the EditAgent for the `index`th premise\.
+Retrieve the window for the EditAgent for the ``index``th premise.
 
 ```lua
 local inbounds = assert(require "core:math" . inbounds)
@@ -235,13 +211,11 @@ function SessionAgent.editWindow(agent, index)
    return agent.edit_agents[index]:window()
 end
 ```
-
-
-#### SessionAgent:resultsWindow\(\)
+#### SessionAgent:resultsWindow()
 
 Retrieve the window to the ResultsAgent for the results of the
-currently\-selected premise\. This Agent and its Window is persistent, and is
-updated when the selected premise changes\.
+currently-selected premise. This Agent and its Window is persistent, and is
+updated when the selected premise changes.
 
 ```lua
 function SessionAgent.resultsWindow(agent)
@@ -252,8 +226,6 @@ function SessionAgent.resultsWindow(agent)
    return agent.results_agent:window()
 end
 ```
-
-
 ### new
 
 ```lua
@@ -264,7 +236,6 @@ local function new()
    return agent
 end
 ```
-
 ```lua
 SessionAgent.idEst = new
 return new

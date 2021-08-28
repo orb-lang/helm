@@ -1,15 +1,13 @@
 # PagerAgent
 
-Agent for results display\. For now this turns out to be the simplest of the
-lot, basically just a dumb value holder\. It may get some more responsibility
-later, not sure\.
+Agent for results display. For now this turns out to be the simplest of the
+lot, basically just a dumb value holder. It may get some more responsibility
+later, not sure.
 
 ```lua
 local PagerAgent = meta {}
 ```
-
-
-### PagerAgent:update\(result\), :clear\(\)
+### PagerAgent:update(result), :clear()
 
 ```lua
 function PagerAgent.update(agent, str)
@@ -21,8 +19,6 @@ function PagerAgent.clear(agent)
    agent:update(nil)
 end
 ```
-
-
 ### Window
 
 ```lua
@@ -38,8 +34,6 @@ PagerAgent.window = agent_utils.make_window_method({
    end }
 })
 ```
-
-
 ### new
 
 ```lua
@@ -47,7 +41,6 @@ local function new()
    return meta(PagerAgent)
 end
 ```
-
 ```lua
 PagerAgent.idEst = new
 return new

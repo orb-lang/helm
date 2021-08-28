@@ -1,15 +1,13 @@
 # ResultsAgent
 
-Agent for results display\. For now this turns out to be the simplest of the
-lot, basically just a dumb value holder\. It may get some more responsibility
-later, not sure\.
+Agent for results display. For now this turns out to be the simplest of the
+lot, basically just a dumb value holder. It may get some more responsibility
+later, not sure.
 
 ```lua
 local ResultsAgent = meta {}
 ```
-
-
-### ResultsAgent:update\(result\), :clear\(\)
+### ResultsAgent:update(result), :clear()
 
 ```lua
 function ResultsAgent.update(agent, result)
@@ -21,8 +19,6 @@ function ResultsAgent.clear(agent)
    agent:update(nil)
 end
 ```
-
-
 ### Window
 
 ```lua
@@ -34,8 +30,6 @@ ResultsAgent.window = agent_utils.make_window_method({
    field = { buffer_value = true }
 })
 ```
-
-
 ### new
 
 ```lua
@@ -45,7 +39,6 @@ local function new()
    return agent
 end
 ```
-
 ```lua
 ResultsAgent.idEst = new
 return new

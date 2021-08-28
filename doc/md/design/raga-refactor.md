@@ -1,120 +1,140 @@
 # Refactoring Ragas
 
 
-  Time to tackle ragas\.
+  Time to tackle ragas.
 
-We've made a lot of progress on reducing global state in `helm`, decoupling
-components, and delineating areas of responsiblity within the system\.
+
+We've made a lot of progress on reducing global state in ``helm``, decoupling
+components, and delineating areas of responsiblity within the system.
+
 
 Ragas, the part of helm which responds to keystrokes, are lagging in that
-respect\.  This is typical of a bootstrap, but it's time to refactor them\.
+respect.  This is typical of a bootstrap, but it's time to refactor them.
 
 
 ### Keystroke parser
 
-This first issue is fortunately self\-contained: we shotgun keystrokes into
-various categories\.  This isn't *badly* done, I'd say that the categories we
-use \(ASCII, UTF8, ALT, CTRL, PASTE, NAV, and MOUSE\) are reasonable, although
-NAV is kind of unprincipled, a grab\-bag of terminal sequences which are issued
-by arrow keys, PgUp/Dn, and so on\.
+This first issue is fortunately self-contained: we shotgun keystrokes into
+various categories.  This isn't _badly_ done, I'd say that the categories we
+use (ASCII, UTF8, ALT, CTRL, PASTE, NAV, and MOUSE) are reasonable, although
+NAV is kind of unprincipled, a grab-bag of terminal sequences which are issued
+by arrow keys, PgUp/Dn, and so on.
+
 
 The biggest problem here is that, if anything hangs the event loop for long
 enough for the buffer to fill up, our shotgun parser just drops things on the
-floor\.
-
-So this is one, reasonably self\-contained task:
+floor.
 
 
-#### \[x\] Write a better terminal sequence parser
+So this is one, reasonably self-contained task:
 
-I think we should be using `lpeg` for this, but using it directly: The output
-is a sequence of \(category, value\) tuples, not an abstract syntax tree, so the
-existing PEG machinery is going to fight against us\.
+
+#### [x] Write a better terminal sequence parser
+
+I think we should be using ``lpeg`` for this, but using it directly: The output
+is a sequence of (category, value) tuples, not an abstract syntax tree, so the
+existing PEG machinery is going to fight against us.
+
 
 In any case, this needs to break the assumption that exactly one sequence is
-arriving at a time, so it should produce a pair of \(\(category, value\), index\),
-such that if `index < #seq`, we send the tuple off to `modeS` and keep parsing
-from `index` until the sequence is consumed\.
+arriving at a time, so it should produce a pair of ((category, value), index),
+such that if ``index < #seq``, we send the tuple off to ``modeS`` and keep parsing
+from ``index`` until the sequence is consumed.
 
 
-##### \[ \] Optional: distinguish numeric keypad from number row
+##### [ ] Optional: distinguish numeric keypad from number row
 
 There is a thing called "application keypad mode" that causes the numeric
-keypad to send escape sequences of the form `SS3 [j-yX]`, i\.e\. `ESC O [j-y]`\.This is distinguishable from an alt sequence because Alt\-Shift\-o is encoded
-using
-\( `CSI u` as `CSI 79;3u`\.\)\.
+keypad to send escape sequences of the form ``SS3 [j-yX]``, i.e. ``ESC O [j-y]``.
+(This is distinguishable from an alt sequence because Alt-Shift-o is encoded
+using ``CSI u`` as ``CSI 79;3u``.).
 
 
-### \[ \] Conflating keystrokes with actions
+### [ ] Conflating keystrokes with actions
 
   This is one of the places where we're rapidly painting ourselves into a
-corner\.
+corner.
+
 
 It's impossible to discuss this without some leakage from later parts of this
-document, I'll do my best to keep that to a minimum\.
+document, I'll do my best to keep that to a minimum.
+
 
 Currently, we have exactly one raga, and stateless shifts to new ragas which
-constitute a state machine, one which is somewhat scattered between modules\.
+constitute a state machine, one which is somewhat scattered between modules.
+
 
 All of those things are problems, but not the one I'm addressing here, which
-is that ragas act on \(category, value\) pairs directly\.
+is that ragas act on (category, value) pairs directly.
 
-What we need is a two\-stage process, where keystrokes are turned into
+
+What we need is a two-stage process, where keystrokes are turned into
 something with more semantic meaning by the parser, and this is then resolved
-into a message, which is sent to the raga\.
+into a message, which is sent to the raga.
 
-There are more layers than this, but that's the essence of it\. The raga itself
+
+There are more layers than this, but that's the essence of it. The raga itself
 is a layered stack of available functions, with some kind of 'action resolver'
-sitting on top of it, translating user commands into those actions\.
+sitting on top of it, translating user commands into those actions.
+
 
 I'm not entirely sure what to call the latter, but I'm going to go with
-"keymap" until/unless I come up with something better\.
+"keymap" until/unless I come up with something better.
+
 
 This is important because interaction at a terminal is only one contemplated
-mode of helm interaction\.  We need to be able to run it headlessly, and should
-be able to front it with a GUI, a web client, and anything else that comes up\.
+mode of helm interaction.  We need to be able to run it headlessly, and should
+be able to front it with a GUI, a web client, and anything else that comes up.
+
 
 It's also important for user extensibility: it gives all the functions of the
-ragas as direct actions, and allows us to provide the ability to hook events\.
+ragas as direct actions, and allows us to provide the ability to hook events.
 
 
-### \[ \] Layered keymaps and ragas
+### [ ] Layered keymaps and ragas
 
   Our current ragas are flat: we use cloning to borrow commands out of other
-ragas \(at this moment, only the EditBase pseudo\-raga\), and lookup proceeds
-accordingly\.
+ragas (at this moment, only the EditBase pseudo-raga), and lookup proceeds
+accordingly.
 
-We need them to be in layers, and the same for the keymaps\.  This isn't
+
+We need them to be in layers, and the same for the keymaps.  This isn't
 immediately urgent, but it's critical for helm's future: we intend it as a
-general\-purpose interactive environment for exercising and *editing* Orb
+general-purpose interactive environment for exercising and _editing_ Orb
 documents, which means that running the REPL inside the same Lua state as helm
 itself will be quite impossible, since the code might well be Python or
-conceivably anything else\.
+conceivably anything else.
+
 
 We can't achieve this layered effect by simply setting base ragas to be the
 metatable of overlay ragas, because that mutates the overlay, and introduces
-state, precisely what we wish to avoid\.
+state, precisely what we wish to avoid.
+
 
 But we do want it to behave that way: lookup on a keymap should simply be
-`message = keymap[category][value]`, and dispatch should be
-`raga[message](...)`\.  Maybe not those exact signatures, but something to that
-effect\.
+``message = keymap[category][value]``, and dispatch should be
+``raga[message](...)``.  Maybe not those exact signatures, but something to that
+effect.
+
 
 So we need keymap and raga **resolvers** which look through these layers and
-come up with appropriate messages\. Tentative name for this/these: "maestro"\.
+come up with appropriate messages. Tentative name for this/these: "maestro".
+
 
 At least the keymap resolvers, and possibly the raga resolvers as well, need
-to be able to hold state\.  We'll have a keymap resolved for the vril\-normal
-raga, as one example: it needs to be able to take the sequence `d, 3, w` and
-store it until it can send the message `{'delete-word', 3}` or something of
-that nature\.
+to be able to hold state.  We'll have a keymap resolved for the vril-normal
+raga, as one example: it needs to be able to take the sequence ``d, 3, w`` and
+store it until it can send the message ``{'delete-word', 3}`` or something of
+that nature.
+
 
 The keymaps and ragas themselves must be completely stateless; we should think
 of them as immutable, although it may not be worth the extra steps to actually
-make them so\.
+make them so.
 
-A raga is mostly a collection of keymaps \(definitely more than one to aid
-composition\)\. May also be where the functions referred to by those keymaps
+
+A raga is mostly a collection of keymaps (definitely more than one to aid
+composition). May also be where the functions referred to by those keymaps
 live?
 
 
@@ -125,332 +145,352 @@ live?
 
 Right now we have Nerf, which is really made up of lots of distinct bits of
 functionality:
-
 -  Basic text editing
-
 -  Syntax highlighting and brace matching
-
 -  Suggestions
-
 -  History navigation
-
 -  Evaluation
+-  Results display, scrolling etc. (and eventually all sorts of fun stuff like
+   mouse interactivity)
 
--  Results display, scrolling etc\. \(and eventually all sorts of fun stuff like
-    mouse interactivity\)
 
 ===
 
 
 - Sam:  Ok, but most of this simply sends messages to appropriate objects, and
-    we'll need to continue that trend\.  Conflating the resolution of
-    keystrokes with the closures which actually send messages to, say, the
-    Txtbuf, that's what we're looking to fix here\.
+        we'll need to continue that trend.  Conflating the resolution of
+        keystrokes with the closures which actually send messages to, say, the
+        Txtbuf, that's what we're looking to fix here.
 
-    Like Nerf doesn't really do any text editing, certainly no syntax
-    highlighting, it just tells the Txtbuf and Searchbuf\(?\) what to do\.
 
-    Right now, we have precomposed actions like this:
+        Like Nerf doesn't really do any text editing, certainly no syntax
+        highlighting, it just tells the Txtbuf and Searchbuf(?) what to do.
+
+
+        Right now, we have precomposed actions like this:
 
 ```lua-
 CTRL ["^K"] = toTxtbuf "killToEndOfLine"
 ```
 
+- Sam:  (Side note, I'm very close to being able to make a ``#noKnit`` tag
+        without adding more special cases to Orb, so fake codeblocks won't be
+        necessary in the near future.)
 
-- Sam:  \(Side note, I'm very close to being able to make a `#noKnit` tag
-    without adding more special cases to Orb, so fake codeblocks won't be
-    necessary in the near future\.\)
 
-    Continuing:  The composed keymap \(raga\) needs to just tell us
-    `"kill-to-end-of-line"` \(no idea what case style keymap messages will
-    actually want to take, just doing them lisp\-style for now\), and the
-    Maestro hands this to a dispatch object, which knows which edit object
-    receives it, and listens to a response\.
+        Continuing:  The composed keymap (raga) needs to just tell us
+        ``"kill-to-end-of-line"`` (no idea what case style keymap messages will
+        actually want to take, just doing them lisp-style for now), and the
+        Maestro hands this to a dispatch object, which knows which edit object
+        receives it, and listens to a response.
 
-When considering a suggestion \(having pressed tab\), or in search mode, we need:
 
+When considering a suggestion (having pressed tab), or in search mode, we need:
 -  Scrolling through the list of suggestions/search results
-
 -  Ghost display of the suggestion/search result
-But note that the list lives in different zones in these two cases\.
+But note that the list lives in different zones in these two cases.
+
 
 We also need what amounts to a modal editor/prompter, a way to edit a piece of
-text and then accept/save and return to what we were previously doing\. The
+text and then accept/save and return to what we were previously doing. The
 only case right now is editing the title of a session premise, but in any such
 case, we'll need:
-
--  A concept of 
-what
-    we're editing, so we can store the result back there
-    when we quit
-
+-  A concept of _what_ we're editing, so we can store the result back there
+   when we quit
 -  Change detection and prompt to save changes if we try to go do something
-    else when there are changes\.
+   else when there are changes.
+
 
 So clearly we need a way to break out some of these bits of functionality, both
 from each other and from being tied to a specific Zone, so we can recompose them
-to use for other purposes\. Allowing a raga to activate multiple keymaps is a
+to use for other purposes. Allowing a raga to activate multiple keymaps is a
 part of this, but I think there are unanswered questions about where the
 **implementation** of the functions should live, and how the whole focus thing
-works\.
+works.
 
 
-- Sam:  Right, this is the hard problem right now\.
+- Sam:  Right, this is the hard problem right now.
 
-    The Maestro sends an `a` to the keymap resolver \(raga\), and gets back,
-    let's say, `self-insert-key`\.  Something needs to know that, when
-    editing a normal repl line, it sends this to the Txtbuf, but when
-    editing a search line, it also has to trigger an update of the search
-    results\.
 
-    We can't just bake that logic into the Maestro, it has to live in
-    relatively self\-contained objects, so that the Maestro can send an
-    `Esc` to the keymap, get back an `exit-modal`, and perform tasks such
-    as swapping in the relevant keymap and replacing the dispatch object
-    with something new\.
+        The Maestro sends an ``a`` to the keymap resolver (raga), and gets back,
+        let's say, ``self-insert-key``.  Something needs to know that, when
+        editing a normal repl line, it sends this to the Txtbuf, but when
+        editing a search line, it also has to trigger an update of the search
+        results.
 
-    I picture most of this being handled by edit objects returning
-    messages, which allow the dispatch object \(not yet named, and I don't
-    want to start calling it a controller because we can do better\) to
-    send more messages\.  So a Txtbuf doesn't need to know that it's in
-    search mode or what have you, the lexer takes care of printing it, but
-    it should tell the dispatcher things like `"cursor-moved"` and
-    `"inserted"` and `"deleted"`\.  `"more-lines"` if needed, that sort of
-    thing\.  The dispatcher can then tell the search results to refresh,
-    and anything else which has to happen before painting the screen\.
 
-    There are some non\-obvious areas of responsibility, but we should
-    short circuit as little as possible\.  Even something like `exit-modal`,
-    which is handled by the Maestro setting up new dispatchers, keymaps,
-    and so on, should just get sent to the dispatcher, because it might
-    do something first\.  Plausibly, the dispatcher would be the one to
-    tell the modal to hide or destroy its Zone, for instance\.
+        We can't just bake that logic into the Maestro, it has to live in
+        relatively self-contained objects, so that the Maestro can send an
+        ``Esc`` to the keymap, get back an ``exit-modal``, and perform tasks such
+        as swapping in the relevant keymap and replacing the dispatch object
+        with something new.
 
-    Basically the dispatch object holds references to anything which might
-    conceivably need to take a message, and all of those objects are wired
-    up to return a message if they need to\.
 
-    The Maestro itself would pass messages to the modeSelektor, to trigger
-    various responses to the changes\.
+        I picture most of this being handled by edit objects returning
+        messages, which allow the dispatch object (not yet named, and I don't
+        want to start calling it a controller because we can do better) to
+        send more messages.  So a Txtbuf doesn't need to know that it's in
+        search mode or what have you, the lexer takes care of printing it, but
+        it should tell the dispatcher things like ``"cursor-moved"`` and
+        ``"inserted"`` and ``"deleted"``.  ``"more-lines"`` if needed, that sort of
+        thing.  The dispatcher can then tell the search results to refresh,
+        and anything else which has to happen before painting the screen.
 
-    It's likely that we want to make every dispatch hookable, so it
-    shouldn't be `dispatch.txtbuf[message](txtbuf, ...)` but rather
-    `dispatch:sendTo[maestro.txtbuf](message, ...)`\.  Those signatures are
-    by no means written in stone\!  Just exploring the space here\.
 
-    `:sendTo` might even match on `.idEst` first, then use that generic
-    hookable to to pass everything on to the instance\.  All of which we
-    can elaborate as we go, I'm painting a picture of the amount of
-    indirection we're going to need to really get this right\.
+        There are some non-obvious areas of responsibility, but we should
+        short circuit as little as possible.  Even something like ``exit-modal``,
+        which is handled by the Maestro setting up new dispatchers, keymaps,
+        and so on, should just get sent to the dispatcher, because it might
+        do something first.  Plausibly, the dispatcher would be the one to
+        tell the modal to hide or destroy its Zone, for instance.
 
-    The main point of having dynamics is that modifying one copy, by
-    adding/removing hooks or changing the main function, will modify every
-    copy\.  So we can have a table, well away from the action, which just
-    holds anything we might want to hook, so we don't have to rummage
-    around inside various tables to find them\.
 
-    I'm thinking that we want an instance which corresponds to "the
-    Txtbuf", not the current *edit object*, although they would often be
-    the same thing: but not the Zone which is displaying the current
-    Txtbuf, and not the current Txtbuf itself: a consistent target, which
-    doesn't change when we switch lines\.  Right now this could just be the
-    Zone, but they seem like distinct concepts\.
+        Basically the dispatch object holds references to anything which might
+        conceivably need to take a message, and all of those objects are wired
+        up to return a message if they need to.
 
-    Consider: it could be very useful to be able to "pop out" a repl line
-    into a modal edit window, which acts as an ordinary text editor, the
-    user can only leave it with one command, and you can even give it a
-    name, make it into a file, and so on\.  That would be one Txtbuf, and
-    it would go back and forth from a modal to the command Zone\.
 
-    This can be done by just passing that Txtbuf between Zones, and having
-    the dispatch object set up the modal or command zone as the edit
-    target\.  It feels like conflating two things though, like the Zone
-    will handle painting the Txtbuf, including line breaks which we've
-    been ignoring\.  I think an object which knows how to pass messages to
-    and from a buffer, but doesn't know how big it is or where to paint it,
-    will be a useful abstraction\.
+        The Maestro itself would pass messages to the modeSelektor, to trigger
+        various responses to the changes.
 
-    Open question: should the raga live on the Maestro, or on the dispatch
-    object? I'm favoring the Maestro, because ideally we don't need
-    different code paths for a dispatch object being driven in `nerf` vs
-    `vril` mode\.
 
-    One of the rules of the dispatch objects is that they don't know
-    anything about keys, one of the rules of the Maestro is that it
-    doesn't know how to talk to anything but the dispatcher and the
-    Modeselektor\.
+        It's likely that we want to make every dispatch hookable, so it
+        shouldn't be ``dispatch.txtbuf[message](txtbuf, ...)`` but rather
+        ``dispatch:sendTo[maestro.txtbuf](message, ...)``.  Those signatures are
+        by no means written in stone!  Just exploring the space here.
 
-    I'm thinking the dispatcher should be unable to talk to some objects,
-    at least directly\.  In particular the Historian and Valiant\.  Unless
-    we just decide that, hey presto\!  The Maestro is the Modeselektor\!
-    Which I don't think is going to serve us well, but I did want to bring
-    it up\.
 
-    This would be a good example of why having e\.g\. a Txtbuf container
-    would pull weight: an up arrow should ask the Historian for a prior
-    Txtbuf, and having the dispatch object ask the Historian for it
-    directly and swap the Txtbuf out seems like a distraction from its
-    central purpose\.
+        ``:sendTo`` might even match on ``.idEst`` first, then use that generic
+        hookable to to pass everything on to the instance.  All of which we
+        can elaborate as we go, I'm painting a picture of the amount of
+        indirection we're going to need to really get this right.
 
-    As we flesh this out, I'm thinking that focus turns out to not be a
-    very coherent concept\!  We will have `:onStart` and `:onExit` messages
-    for setting up and tearing down dispatchers, and `:onExit` will tell
-    the Maestro what object to set up next\.  `:onStart` could return the
-    `:onExit` closure, so that a popup modal knows what to go back to when
-    dismissed, for example\.
 
-    This embeds the state graph in actions, rather than data representing
-    instructions\.  Which is maximally flexible, and I think it would be
-    adequately easy to reason about, but: harder to introspect\.  There are
-    ways to solve that if we need to, however\.
+        The main point of having dynamics is that modifying one copy, by
+        adding/removing hooks or changing the main function, will modify every
+        copy.  So we can have a table, well away from the action, which just
+        holds anything we might want to hook, so we don't have to rummage
+        around inside various tables to find them.
+
+
+        I'm thinking that we want an instance which corresponds to "the
+        Txtbuf", not the current _edit object_, although they would often be
+        the same thing: but not the Zone which is displaying the current
+        Txtbuf, and not the current Txtbuf itself: a consistent target, which
+        doesn't change when we switch lines.  Right now this could just be the
+        Zone, but they seem like distinct concepts.
+
+
+        Consider: it could be very useful to be able to "pop out" a repl line
+        into a modal edit window, which acts as an ordinary text editor, the
+        user can only leave it with one command, and you can even give it a
+        name, make it into a file, and so on.  That would be one Txtbuf, and
+        it would go back and forth from a modal to the command Zone.
+
+
+        This can be done by just passing that Txtbuf between Zones, and having
+        the dispatch object set up the modal or command zone as the edit
+        target.  It feels like conflating two things though, like the Zone
+        will handle painting the Txtbuf, including line breaks which we've
+        been ignoring.  I think an object which knows how to pass messages to
+        and from a buffer, but doesn't know how big it is or where to paint it,
+        will be a useful abstraction.
+
+
+        Open question: should the raga live on the Maestro, or on the dispatch
+        object? I'm favoring the Maestro, because ideally we don't need
+        different code paths for a dispatch object being driven in ``nerf`` vs
+        ``vril`` mode.
+
+
+        One of the rules of the dispatch objects is that they don't know
+        anything about keys, one of the rules of the Maestro is that it
+        doesn't know how to talk to anything but the dispatcher and the
+        Modeselektor.
+
+
+        I'm thinking the dispatcher should be unable to talk to some objects,
+        at least directly.  In particular the Historian and Valiant.  Unless
+        we just decide that, hey presto!  The Maestro is the Modeselektor!
+        Which I don't think is going to serve us well, but I did want to bring
+        it up.
+
+
+        This would be a good example of why having e.g. a Txtbuf container
+        would pull weight: an up arrow should ask the Historian for a prior
+        Txtbuf, and having the dispatch object ask the Historian for it
+        directly and swap the Txtbuf out seems like a distraction from its
+        central purpose.
+
+
+        As we flesh this out, I'm thinking that focus turns out to not be a
+        very coherent concept!  We will have ``:onStart`` and ``:onExit`` messages
+        for setting up and tearing down dispatchers, and ``:onExit`` will tell
+        the Maestro what object to set up next.  ``:onStart`` could return the
+        ``:onExit`` closure, so that a popup modal knows what to go back to when
+        dismissed, for example.
+
+
+        This embeds the state graph in actions, rather than data representing
+        instructions.  Which is maximally flexible, and I think it would be
+        adequately easy to reason about, but: harder to introspect.  There are
+        ways to solve that if we need to, however.
 
 
 ##### Complex commands and input buffering
 
-`emacs` has shortcuts like `C-x C-c`, Ctrl\-X followed by Ctrl\-C\. `vim` \(and
-thus `vril`\) has commands like `d3w` as mentioned above\. The `C-x C-c` case we
-can handle the way emacs does: have the value for `C-x` be itself a keymap,
+``emacs`` has shortcuts like ``C-x C-c``, Ctrl-X followed by Ctrl-C. ``vim`` (and
+thus ``vril``) has commands like ``d3w`` as mentioned above. The ``C-x C-c`` case we
+can handle the way emacs does: have the value for ``C-x`` be itself a keymap,
 rather than a function name, and have the resolver switch to such a keymap when
-it encounters it\. There are some decisions to make about when to switch back to
-the "normal" keymap for the current raga stack\-\-should probably look at how
-`emacs` handles that\.
+it encounters it. There are some decisions to make about when to switch back to
+the "normal" keymap for the current raga stack--should probably look at how
+``emacs`` handles that.
 
 
 - Sam:  The effect we're looking for here is to switch back to the default
-    keymap whenever we miss\.  So if `C-x C-u` isn't defined, we just drop
-    that one and switch back to the default\.
-
-    Or really, to be more general, a keymap to `C-x` returns either
-    another keymap, a message, or `nil`, and the latter two mean switching
-    back to the default\.
-
-    I don't think we end up with a raga stack, I know we've played around
-    with that idea but I think we're better off with an action graph as
-    described above\.  The raga itself is a list, not really a stack in the
-    sense that it is manipulated with push and pop, but in the sense that
-    keymaps are layered one "on top" of another, sure\.
-
-`vril`'s case is more complicated, though, because `d3w` and `d5b` and `2dd` are
-all pretty much the same command \(delete\), with arguments \(motion and count\)\.
-How does `emacs` `evil-mode` handle this?
+        keymap whenever we miss.  So if ``C-x C-u`` isn't defined, we just drop
+        that one and switch back to the default.
 
 
-- Sam:  No idea how `emacs` does it, and it would likely be good for you to to
-    do some reading on that one\.  What we can do, is pre\- and post\-
-    hook\.\.\. something which calls the messages, so that we always pass in
-    `1`, but a number pre hooks that, replaces it with e\.g\. `4`, then
-    uses the posthook to unhook everything\.
+        Or really, to be more general, a keymap to ``C-x`` returns either
+        another keymap, a message, or ``nil``, and the latter two mean switching
+        back to the default.
 
-    Or the normal mode might just have to be an explicit state machine,
-    unclear at this point\.  We'll need to give the Maestro a chance to
-    handle an input with a sparse keymap before trying whatever composed
-    collection is assigned, so it can change focus or raga\.
 
-    The general answer is that we can figure out how to expand our code to
-    handle this once it's doing something for what we have now which isn't
-    completely ad hoc\.
+        I don't think we end up with a raga stack, I know we've played around
+        with that idea but I think we're better off with an action graph as
+        described above.  The raga itself is a list, not really a stack in the
+        sense that it is manipulated with push and pop, but in the sense that
+        keymaps are layered one "on top" of another, sure.
 
-    For now, the Maestro will call a keymap resolver, which holds a raga:
-    a precomposed list of keymaps, checked for messages in a deterministic
-    order\.  We might be able to get away with having one keymap resolver
-    for every mode, or switching to `vril` might be a whole different one
-    which has the same API but completely different internals\.
+
+``vril``'s case is more complicated, though, because ``d3w`` and ``d5b`` and ``2dd`` are
+all pretty much the same command (delete), with arguments (motion and count).
+How does ``emacs`` ``evil-mode`` handle this?
+
+
+- Sam:  No idea how ``emacs`` does it, and it would likely be good for you to to
+        do some reading on that one.  What we can do, is pre- and post-
+        hook... something which calls the messages, so that we always pass in
+         ``1``, but a number pre hooks that, replaces it with e.g. ``4``, then
+        uses the posthook to unhook everything.
+
+
+        Or the normal mode might just have to be an explicit state machine,
+        unclear at this point.  We'll need to give the Maestro a chance to
+        handle an input with a sparse keymap before trying whatever composed
+        collection is assigned, so it can change focus or raga.
+
+
+        The general answer is that we can figure out how to expand our code to
+        handle this once it's doing something for what we have now which isn't
+        completely ad hoc.
+
+
+        For now, the Maestro will call a keymap resolver, which holds a raga:
+        a precomposed list of keymaps, checked for messages in a deterministic
+        order.  We might be able to get away with having one keymap resolver
+        for every mode, or switching to ``vril`` might be a whole different one
+        which has the same API but completely different internals.
+
 
 Also, apparently sufficiently long pastes do in fact result in multiple calls
-to `onseq`, so we may need to hold on to the beginning of one and wait for the
-rest\.
+to ``onseq``, so we may need to hold on to the beginning of one and wait for the
+rest.
 
 
-##### Real\-time interaction with the terminal vs\. buffered input
+##### Real-time interaction with the terminal vs. buffered input
 
-If we want to e\.g\. read the current cursor position, we do this by writing to
-the terminal, then immediately reading from stdin\. This is fine if stdin never
+If we want to e.g. read the current cursor position, we do this by writing to
+the terminal, then immediately reading from stdin. This is fine if stdin never
 has a backlog of input, but if it does, we may read something other than the
-response to our query\. We should be able to hand off this information such
-that it doesn't get lost while we search for the info we actually wanted\.
+response to our query. We should be able to hand off this information such
+that it doesn't get lost while we search for the info we actually wanted.
 
 
 ##### Overlays and fallback to "default" behavior
 
-Some ragas \(Search and Complete come to mind\) are really more like overlays on
-top of e\.g\. Nerf, and in many cases they want to check a condition, do
+Some ragas (Search and Complete come to mind) are really more like overlays on
+top of e.g. Nerf, and in many cases they want to check a condition, do
 something special in one case, and fall back to whatever Nerf would have done
-otherwise\. Or, do something special and then 
-also
- do whatever Nerf would
-have done\. Right now this is handled differently depending on whether we're
-shifting modes or not\-\-if the "overlay" is going away, we can set
-`modeS.action_complete = false`, but if it's sticking around, we have to
-explicitly call \`Nerf\(modeS, category, value\)\`\. Seems like it 
-might
- be good
-for these to work the same way? It helps a bit if the overlay\-ing is happening
+otherwise. Or, do something special and then _also_ do whatever Nerf would
+have done. Right now this is handled differently depending on whether we're
+shifting modes or not--if the "overlay" is going away, we can set
+``modeS.action_complete = false``, but if it's sticking around, we have to
+explicitly call Nerf(modeS, category, value). Seems like it _might_ be good
+for these to work the same way? It helps a bit if the overlay-ing is happening
 at the keymap level, rather than directly implementing a new function of the
 same name/in the same slot—"disregard the keymap that you found me in and
-re\-dispatch" could be a reasonable operation for the resolver to have\.
+re-dispatch" could be a reasonable operation for the resolver to have.
 
-Additionally or alternatively, I know you \[Sam\] have mentioned pre\- and
-post\-hooks\. I know vaguely what those words mean but not how you intend to
+
+Additionally or alternatively, I know you [Sam] have mentioned pre- and
+post-hooks. I know vaguely what those words mean but not how you intend to
 apply them here, but I could see a mechanism like that doing some or all of
-what we want here\.
-
-Ah, also\. Sometimes we want to replace \(or hook\) a particular 
-behavior
-
-rather than a particular 
-keybinding
-\. Like, `Complete` effectively hooks what
-in `emacs` or `readline` would be called `self-insert` to accept when a
-non\-identifier character is typed\. `emacs` lets you remap a command name to
-another command name \(only one level deep though, you can't remap a \-> b and b
-\-> c and expect that to remap a \-> c\), should we support that?
+what we want here.
 
 
-### \[ \] Ragas, Zones, shifts
+Ah, also. Sometimes we want to replace (or hook) a particular _behavior_
+rather than a particular _keybinding_. Like, ``Complete`` effectively hooks what
+in ``emacs`` or ``readline`` would be called ``self-insert`` to accept when a
+non-identifier character is typed. ``emacs`` lets you remap a command name to
+another command name (only one level deep though, you can't remap a -> b and b
+-> c and expect that to remap a -> c), should we support that?
+
+
+### [ ] Ragas, Zones, shifts
 
   Currently, we have one global raga for everything, and this is getting
-increasingly annoying\.
+increasingly annoying.
 
-We also handle shifting ragas in a sort of ad\-hoc fashion, which is going to
-break badly as soon as we try to add a vril mode to go with nerf\.
+
+We also handle shifting ragas in a sort of ad-hoc fashion, which is going to
+break badly as soon as we try to add a vril mode to go with nerf.
+
 
 What we need is some sort of controller, with a concept of focus, which Zone
-is expecting to handle messages\.  It also needs an ability to dispatch to
+is expecting to handle messages.  It also needs an ability to dispatch to
 other keymaps, relevant for MOUSE events in particular, as well as some
-concept of which raga stack to switch to, and under what circumstances\.
+concept of which raga stack to switch to, and under what circumstances.
+
 
 This is **probably** the true primary responsibility of the "maestro", and the
 mechanics of keymap/raga resolution may be part of it, or may be delegated to
-a simple subcomponent, these are implementation details\. In any case, the
-maestro may replace modeselektor as the first argument to handler functions\.
+a simple subcomponent, these are implementation details. In any case, the
+maestro may replace modeselektor as the first argument to handler functions.
+
 
 This is really the hard part, because to get it right also requires solving
-some inadequacies in how we handle the concepts of Zones, Rainbufs, and so on\.
+some inadequacies in how we handle the concepts of Zones, Rainbufs, and so on.
+
 
 Just as we don't want ragas tied to keystrokes, we don't want rendering tied
-to the concept of a raw xterm\.  Decoupling this will have numerous advantages,
+to the concept of a raw xterm.  Decoupling this will have numerous advantages,
 starting with the ability to delegate our rendering logic to its own project
-which other projects can then reuse\.
+which other projects can then reuse.
+
 
 Other obvious ones: we can move Zones to multiple terminal processes, render
-them in a browser or other GUI, and so on and so forth\.
+them in a browser or other GUI, and so on and so forth.
 
 
-#### Zone/raga hierarchy? MV\*, or what do we do instead?
+#### Zone/raga hierarchy? MV*, or what do we do instead?
 
 There's an important question about the relationship between ragas and
-zones\-\-basically which of \(one/many\)\-to\-\(one/many\) it is\. Right now a single
-raga can influence the content of multiple zones \(obviously\-\-command and
-results\)\. Some ragas also influence which zones are visible, and it might be
-nice to delegate some of the reflow/layout logic to them too\-\-or anyway to
-have it be changeable\. But we clearly want to move towards a more flexible
-paradigm where ragas \(or something like them\) are composable, and more than
-one of them can influence what's on screen at once \(e\.g\. with Complete\)\. So
-then\.\.\.how does this work?
+zones--basically which of (one/many)-to-(one/many) it is. Right now a single
+raga can influence the content of multiple zones (obviously--command and
+results). Some ragas also influence which zones are visible, and it might be
+nice to delegate some of the reflow/layout logic to them too--or anyway to
+have it be changeable. But we clearly want to move towards a more flexible
+paradigm where ragas (or something like them) are composable, and more than
+one of them can influence what's on screen at once (e.g. with Complete). So
+then...how does this work?
 
-The obvious\-to\-me\-because\-I'm\-used\-to\-it answer is an MV\* paradigm, but what
+
+The obvious-to-me-because-I'm-used-to-it answer is an MV* paradigm, but what
 we have now is pretty sharply opposed to that, in that it's clear that there
-is one raga for the whole screen\. We could certainly change that, but the
-easiest change would be to add something like `emacs`' minor modes\-\-a proper
-hierarchy would be a bigger step\. Can/should we make do without it, and how?
-Or should we move in that \(hierarchy/MV\*\) direction, and how?
+is one raga for the whole screen. We could certainly change that, but the
+easiest change would be to add something like ``emacs``' minor modes--a proper
+hierarchy would be a bigger step. Can/should we make do without it, and how?
+Or should we move in that (hierarchy/MV*) direction, and how?

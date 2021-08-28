@@ -1,8 +1,8 @@
 # Edit premise title
 
-A simple, single\-purpose raga for editing the title of a session premise\.
+A simple, single-purpose raga for editing the title of a session premise.
 This is ugly and really should be able to be generalized, but without a
-proper raga stack it's the best we can do\.
+proper raga stack it's the best we can do.
 
 
 ```lua
@@ -13,8 +13,6 @@ local EditTitle = clone(EditBase, 2)
 EditTitle.name = "edit_title"
 EditTitle.prompt_char = "👉"
 ```
-
-
 ## NAV
 
 ```lua
@@ -34,12 +32,10 @@ function EditTitle.NAV.ESC(modeS, category, value)
    modeS.shift_to = "review"
 end
 ```
-
-
 ## Quit handler
 
 Quitting while editing a title still needs to prompt to save the session,
-which we can handle by returning to review mode and retrying\.
+which we can handle by returning to review mode and retrying.
 
 ```lua
 EditTitle.CTRL["^Q"] = function(modeS, category, value)
@@ -47,8 +43,6 @@ EditTitle.CTRL["^Q"] = function(modeS, category, value)
    modeS.action_complete = false
 end
 ```
-
-
 ## Ignored commands
 
 "Restart" doesn't make sense for us
@@ -56,8 +50,6 @@ end
 ```lua
 EditTitle.CTRL["^R"] = nil
 ```
-
-
 ```lua
 return EditTitle
 ```

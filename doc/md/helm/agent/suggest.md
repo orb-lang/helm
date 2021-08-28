@@ -1,6 +1,6 @@
 # Suggest Agent
 
-  This is our autocomplete module\.
+  This is our autocomplete module.
 
 
 #### imports
@@ -10,21 +10,17 @@ local SelectionList = require "helm:selection_list"
 local names = require "repr:names"
 local insert, sort = assert(table.insert), assert(table.sort)
 ```
-
-
 ```lua
 local SuggestAgent = meta {}
 local new
 ```
+### SuggestAgent:cursorContext()
 
-
-### SuggestAgent:cursorContext\(\)
-
-  Examines the text before the cursor to determine \(a\) what token we are in
-the middle of, and \(b\) what if any path from the global environment we should
-follow to determine a list of keys to complete from\. Answers `nil` if the
-token we are in the middle of is not a symbol, and a `nil` second return value
-if the path cannot be determined\.
+  Examines the text before the cursor to determine (a) what token we are in
+the middle of, and (b) what if any path from the global environment we should
+follow to determine a list of keys to complete from. Answers ``nil`` if the
+token we are in the middle of is not a symbol, and a ``nil`` second return value
+if the path cannot be determined.
 
 ```lua
 function SuggestAgent.cursorContext(suggest)
@@ -77,11 +73,9 @@ function SuggestAgent.cursorContext(suggest)
    return context, path
 end
 ```
+### SuggestAgent:update()
 
-
-### SuggestAgent:update\(\)
-
-Updates the completion list based on the current contents of the Txtbuf\.
+Updates the completion list based on the current contents of the Txtbuf.
 
 ```lua
 local function _suggest_sort(a, b)
@@ -174,9 +168,7 @@ function SuggestAgent.update(suggest)
    _set_suggestions(suggest, suggestions)
 end
 ```
-
-
-### SuggestAgent:accept\(\)
+### SuggestAgent:accept()
 
 ```lua
 function SuggestAgent.accept(suggest)
@@ -184,8 +176,6 @@ function SuggestAgent.accept(suggest)
    suggest.replaceToken(suggestion)
 end
 ```
-
-
 ### Window
 
 ```lua
@@ -210,9 +200,7 @@ SuggestAgent.window = agent_utils.make_window_method({
    }
 })
 ```
-
-
-### new\(\)
+### new()
 
 ```lua
 new = function()
@@ -220,7 +208,6 @@ new = function()
    return suggest
 end
 ```
-
 ```lua
 SuggestAgent.idEst = new
 return new

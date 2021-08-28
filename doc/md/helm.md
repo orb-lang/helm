@@ -1,15 +1,16 @@
-#  Helm
+# Helm
 
 
-`helm` is our repl\.
+``helm`` is our repl.
 
 
 ##### profiler
 
-Normally commented out\.
+Normally commented out.
+
 
 Planning to run this from time to time if it looks like we have significant
-performance regressions\.
+performance regressions.
 
 ```lua
 --[[
@@ -21,34 +22,30 @@ profile.start("li1", function(th, samples, vmmode)
 end)
 --]]
 ```
-
 ```lua
 assert(true)
 if rawget(_G, "_Bridge") then
    _Bridge.helm = true
 end
 ```
+#### Intercept _G
 
-
-#### Intercept \_G
-
-We don't want to put `helm` into the environment of the codebase under
+We don't want to put ``helm`` into the environment of the codebase under
 examination, so we replace the global environment with a table which falls
-back to `_G`\. We make it available as a global anywhere in \`helm\`, without
-exposing it to others who are still using the normal \_G global environment\.
+back to ``_G``. We make it available as a global anywhere in helm, without
+exposing it to others who are still using the normal _G global environment.
 
-Man\.  I really like having first\-class environments\.
+
+Man.  I really like having first-class environments.
 
 ```lua
 local __G = setmetatable({}, {__index = _G})
 __G.__G = __G
 ```
-
-
-### \_helm
+### _helm
 
 The entire module is setup as a function, to allow our new fenv
-to be passed in\.
+to be passed in.
 
 ```lua
 local function _helm(_ENV)
@@ -67,23 +64,20 @@ jit.vmdef = require "helm:helm/vmdef"
 jit.p = require "helm:helm/ljprof"
 sql = assert(sql, "sql must be in _G")
 ```
-
 ## Boot sequence
 
-This boot sequence builds on Tim Caswell and the Luvit Author's repl example\.
+This boot sequence builds on Tim Caswell and the Luvit Author's repl example.
 
 ```lua
 uv = require "luv"
 local usecolors
 stdout = ""
 ```
-
-
 ##### tty detection
 
-  Should move this into `pylon` as a method in a bridge preload package, or
-something like that\.  We're not using the not tty branch, we just bail later
-if we're in a pipe\.
+  Should move this into ``pylon`` as a method in a bridge preload package, or
+something like that.  We're not using the not tty branch, we just bail later
+if we're in a pipe.
 
 ```lua
 if uv.guess_handle(1) == 'tty' then
@@ -96,14 +90,13 @@ else
 end
 ```
 
-Not\-blocking `write` and `print`:
+Not-blocking ``write`` and ``print``:
 
 ```lua
 local function write(...)
    uv.write(stdout, {...})
 end
 ```
-
 ```lua
 local concat = assert(table.concat)
 
@@ -116,8 +109,6 @@ function print(...)
    uv.write(stdout, concat(arguments, "\t") .. "\n")
 end
 ```
-
-
 ### tty setup
 
 ```lua
@@ -129,15 +120,11 @@ end
 
 local stdin = uv.new_tty(0, true)
 ```
-
-Primitives for terminal manipulation\.
-
 ```lua
 a = require "anterm:anterm"
 local Point = require "anterm:point"
 --watch = require "watcher"
 ```
-
 ## Modeselektor
 
 
@@ -182,15 +169,14 @@ uv.timer_start(bounds_watch, 500, 500, function()
    end
 end)
 ```
-
-
 ### Orb listener
 
-  If we start with the `--listen` flag, we open up a [lume](https://gitlab.com/special-circumstance/orb/-/blob/trunk/doc/md/lume/lume.md),
-and set an `uv` watcher on the project directory\.
+  If we start with the ``--listen`` flag, we open up a [[lume][@orb:lume/lume]],
+and set an ``uv`` watcher on the project directory.
+
 
 We then add a timer to check the lume for a flag indicating it has processed a
-file, and restart the modeselektor if it has\.
+file, and restart the modeselektor if it has.
 
 
 ```lua
@@ -211,15 +197,13 @@ if _Bridge.args.listen then
    end)
 end
 ```
-
-
 ## Reader
 
-The reader takes a stream of data from `stdin`, asynchronously, and
-processes it into tokens, which stream to the `modeselektor`\.
+The reader takes a stream of data from ``stdin``, asynchronously, and
+processes it into tokens, which stream to the ``modeselektor``.
 
 
-### process\_escapes\(seq\)
+### process_escapes(seq)
 
 ```lua
 local Codepoints = require "singletons/codepoints"
@@ -243,11 +227,9 @@ local function process_escapes(seq)
    end
 end
 ```
+### old_parse_input
 
-
-### old\_parse\_input
-
-Extract this logic to a function to keep `onseq` itself clean\.
+Extract this logic to a function to keep ``onseq`` itself clean.
 
 ```lua
 local function old_parse_input(seq)
@@ -279,25 +261,25 @@ local function old_parse_input(seq)
    return events
 end
 ```
-
-
 ### onseq
 
-Our `uv` read handler\. Parses an input sequence into events and dispatches
-them to the `Modeselektor`\.
+Our ``uv`` read handler. Parses an input sequence into events and dispatches
+them to the ``Modeselektor``.
+
 
 There seems to be a maximum size of sequence that we will be given at once, so
-when input arrives extremely rapidly \(the most common case being a large
-paste\), it may be chopped off at an arbitrary point\. By default, the input
-parser rejects any input that may represent an incomplete escape sequence\. In
-this case, we store the remaining input and try again in the next event\-loop
-cycle\. If we did not receive any new input in that cycle, we inform the parser
+when input arrives extremely rapidly (the most common case being a large
+paste), it may be chopped off at an arbitrary point. By default, the input
+parser rejects any input that may represent an incomplete escape sequence. In
+this case, we store the remaining input and try again in the next event-loop
+cycle. If we did not receive any new input in that cycle, we inform the parser
 that no more input is expected and it should parse ESC and CSI immediately
-rather than holding on to them in case they begin an escape sequence\.
+rather than holding on to them in case they begin an escape sequence.
 
-`uv`, being an event loop, seems to sometimes keep reading after we expect it
-to stop\. We use a `_ditch` flag to prevents modeS from being reloaded in such
-circumstances\. Maybe\.
+
+``uv``, being an event loop, seems to sometimes keep reading after we expect it
+to stop. We use a ``_ditch`` flag to prevents modeS from being reloaded in such
+circumstances. Maybe.
 
 ```lua
 
@@ -392,7 +374,6 @@ local function onseq(err,seq)
    dispatch_input(input_buffer .. seq, false)
 end
 ```
-
 ```lua
 
 
@@ -461,7 +442,6 @@ io.stdin:read "*a"
 setfenv(0, _G)
 end -- of _helm
 ```
-
 #### Call helm
 
 ```lua

@@ -1,13 +1,11 @@
 # Status Agent
 
-A simple Agent providing a status\-bar display with standard and custom messages\.
+A simple Agent providing a status-bar display with standard and custom messages.
 
 
 ```lua
 local StatusAgent = meta {}
 ```
-
-
 ### Available status lines
 
 ```lua
@@ -18,13 +16,11 @@ local status_lines = { default = "an repl, plz reply uwu 👀",
 status_lines.macro       = status_lines.default .. ' (macro-recording "%s")'
 status_lines.new_session = status_lines.default .. ' (recording "%s")'
 ```
+### StatusAgent:update(status_name, format_args...)
 
-
-### StatusAgent:update\(status\_name, format\_args\.\.\.\)
-
-Sets which status line is displayed\. `status_name` selects a format string
+Sets which status line is displayed. ``status_name`` selects a format string
 from the list below, and any additional parameters are passed through to
-`string.format`\.
+``string.format``.
 
 ```lua
 function StatusAgent.update(stat, status_name, ...)
@@ -33,7 +29,6 @@ function StatusAgent.update(stat, status_name, ...)
    stat.touched = true
 end
 ```
-
 ### Window
 
 ```lua
@@ -47,7 +42,6 @@ StatusAgent.window = agent_utils.make_window_method({
    end }
 })
 ```
-
 ### new
 
 ```lua
@@ -58,7 +52,6 @@ local function new()
    return stat
 end
 ```
-
 ```lua
 StatusAgent.idEst = new
 return new

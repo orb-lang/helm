@@ -517,4 +517,3 @@ local Rainbuf_class = setmetatable({}, Rainbuf)
 Rainbuf.idEst = Rainbuf_class
 
 return Rainbuf_class
-

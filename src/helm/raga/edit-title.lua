@@ -60,4 +60,3 @@ EditTitle.CTRL["^R"] = nil
 
 
 return EditTitle
-

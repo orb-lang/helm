@@ -1,16 +1,15 @@
 # EditAgent
 
 Agent responsible for editing text, primarily the line in the command zone,
-but also premise titles and other things as needed\.
+but also premise titles and other things as needed.
 
-Text is stored as an array of lines, which start out as strings\. When the
-cursor enters a line, it is "opened" into an array of codepoints\.
+
+Text is stored as an array of lines, which start out as strings. When the
+cursor enters a line, it is "opened" into an array of codepoints.
 
 ```lua
 local EditAgent = meta {}
 ```
-
-
 #### dependencies
 
 ```lua
@@ -24,83 +23,79 @@ local concat, insert, remove = assert(table.concat),
                                assert(table.insert),
                                assert(table.remove)
 ```
-
-
 ### Instance fields
 
-
--  <array portion> :  An array of strings \(closed lines\), or arrays containing
-    codepoints \(string fragments\) \(open lines\)\.
+-  <array portion> :  An array of strings (closed lines), or arrays containing
+                      codepoints (string fragments) (open lines).
 
 
 -  cursor :  A <Point> representing the cursor position:
-   - row : Row containing the cursor\. Valid values are 1 to \#lines\.
-   - col : Number of fragments to skip before an insertion\.
-       Valid values are 1 to \#lines\[row\] \+ 1\.
-
-   These fields shouldn't be written to, use `agent:setCursor()` which will
-   check bounds\.  They may be retrieved, along with the line, with
-   `agent:currentPosition()`\.
+   - row : Row containing the cursor. Valid values are 1 to #lines.
+   - col : Number of fragments to skip before an insertion.
+           Valid values are 1 to #lines[row] + 1.
 
 
--  desired\_col : The column where the cursor "should" be, even if this is
-    out\-of\-bounds in the current row\-\-used to retain a "memory"
-    of where we were when moving from a long line, to a shorter
-    one, back to a longer one\.
+   These fields shouldn't be written to, use ``agent:setCursor()`` which will
+   check bounds.  They may be retrieved, along with the line, with
+   ``agent:currentPosition()``.
 
 
--  mark :  A structure like `cursor`, representing the fixed end of a region,
-    with the `cursor` field being the mobile end\. Note that `cursor` may
-    be earlier than `mark`, respresenting the case where selection
-    proceeded backwards, e\.g\. by pressing Shift\+Left\. The "cursor" end
-    is always the one that moves when executing additional motions\.
+-  desired_col : The column where the cursor "should" be, even if this is
+                 out-of-bounds in the current row--used to retain a "memory"
+                 of where we were when moving from a long line, to a shorter
+                 one, back to a longer one.
 
-    Mutation of these should be encapsulated such that they can be
-    combined into a "region" structure, of which there may eventually be
-    multiple instances, during for instance search and replace\.
+
+-  mark :  A structure like ``cursor``, representing the fixed end of a region,
+           with the ``cursor`` field being the mobile end. Note that ``cursor`` may
+           be earlier than ``mark``, respresenting the case where selection
+           proceeded backwards, e.g. by pressing Shift+Left. The "cursor" end
+           is always the one that moves when executing additional motions.
+
+
+           Mutation of these should be encapsulated such that they can be
+           combined into a "region" structure, of which there may eventually be
+           multiple instances, during for instance search and replace.
 
 
 -  lex :  A function accepting a string and returning an array of Tokens,
-    which supports \`SuggestAgent\` and syntax highlighting in \`Txtbuf\`\.
+          which supports SuggestAgent and syntax highlighting in Txtbuf.
 
 
 
--  cursor\_changed :   A flag indicating whether the cursor has changed since
-    the flag was last reset\.
+-  cursor_changed :   A flag indicating whether the cursor has changed since
+                      the flag was last reset.
+-  contents_changed : Similar flag for whether the actual contents of the
+                      buffer have changed.
+                      #todo this is redundant with .touched, but is cleared
+codebase doesn't completely respect this, yet, but it should.
 
--  contents\_changed : Similar flag for whether the actual contents of the
-    buffer have changed\.
-    \#todo this is redundant with \.touched, but is cleared
-    at a different time\. Maybe we can combine somehow?
 
-The intention is that all of these fields are manipulated internally: the
-codebase doesn't completely respect this, yet, but it should\.
-
-This will let us expand, for instance, the definition of `cursor` to allow for
+This will let us expand, for instance, the definition of ``cursor`` to allow for
 an array of cursors, in the event that there's more than one, without exposing
-this elaboration to the rest of the system\.
+this elaboration to the rest of the system.
 
-The `EditAgent` is also a candidate for full replacement with the quipu data
+
+The ``EditAgent`` is also a candidate for full replacement with the quipu data
 structure, so the more we can encapsulate its region of responsiblity, the
-cleaner that transition can be\.
+cleaner that transition can be.
 
 
 #### Instance fields to be added
 
-
-- disp :  Array of numbers, representing the furthest\-right column which
-    may be reached by printing the corresponding row\. Not equivalent
-    to \#lines\[n\] as one codepoint \!= one column\.
+- disp :  Array of numbers, representing the furthest-right column which
+          may be reached by printing the corresponding row. Not equivalent
+          to #lines[n] as one codepoint != one column.
 
 
 ## Methods
 
 
-### EditAgent:contentsChanged\(\)
+### EditAgent:contentsChanged()
 
-Notification that the contents of the EditAgent have changed\. I believe this is
-equivalent to the intended semantics of `.touched`, except that
-`contents_changed` is cleared earlier, so we sorta need both\.
+Notification that the contents of the EditAgent have changed. I believe this is
+equivalent to the intended semantics of ``.touched``, except that
+``contents_changed`` is cleared earlier, so we sorta need both.
 
 ```lua
 function EditAgent.contentsChanged(agent)
@@ -108,12 +103,10 @@ function EditAgent.contentsChanged(agent)
    agent.touched = true
 end
 ```
+### EditAgent:setLexer(lex_fn)
 
-
-### EditAgent:setLexer\(lex\_fn\)
-
-Set the lexer function\. Wrapped in a method because this marks us `touched`,
-assuming the lexer is actually changed\.
+Set the lexer function. Wrapped in a method because this marks us ``touched``,
+assuming the lexer is actually changed.
 
 ```lua
 function EditAgent.setLexer(agent, lex_fn)
@@ -123,17 +116,16 @@ function EditAgent.setLexer(agent, lex_fn)
    end
 end
 ```
-
-
 ### Cursor and selection handling
 
 
-#### EditAgent:currentPosition\(\)
+#### EditAgent:currentPosition()
 
-Getter returning `line, cursor.col, cursor.row`\.
+Getter returning ``line, cursor.col, cursor.row``.
+
 
 In that order, because we often need the first two and occasionally need the
-third\.
+third.
 
 ```lua
 function EditAgent.currentPosition(agent)
@@ -141,19 +133,18 @@ function EditAgent.currentPosition(agent)
    return agent[row], col, row
 end
 ```
+#### EditAgent:setCursor(rowOrTable, col)
+
+Set the ``cursor``, ensuring that the value is not shared with the caller.
+Accepts either a cursor-like table, or two arguments representing ``row`` and ``col``.
+Either ``row`` or ``col`` may be ``nil``, in which case the current value is retained.
+Also opens the row to which the cursor is being moved.
 
 
-#### EditAgent:setCursor\(rowOrTable, col\)
-
-Set the `cursor`, ensuring that the value is not shared with the caller\.
-Accepts either a cursor\-like table, or two arguments representing `row` and `col`\.
-Either `row` or `col` may be `nil`, in which case the current value is retained\.
-Also opens the row to which the cursor is being moved\.
-
-Explicit new values must be in\-bounds\. If `col` is `nil`, we constrain the
+Explicit new values must be in-bounds. If ``col`` is ``nil``, we constrain the
 value saved in the cursor to be within the length of the new row, but save the
-unconstrained value in `agent.desired_col` so we can "remember" the
-horizontal position when moving between lines of differing lengths\.
+unconstrained value in ``agent.desired_col`` so we can "remember" the
+horizontal position when moving between lines of differing lengths.
 
 ```lua
 local core_math = require "core/math"
@@ -183,12 +174,10 @@ function EditAgent.setCursor(agent, rowOrTable, col)
    agent.cursor_changed = true
 end
 ```
-
-
-#### EditAgent:cursorIndex\(\)
+#### EditAgent:cursorIndex()
 
 Answers the index of the cursor in the string represented by the EditAgent,
-with newlines counted as a single slot/character\.
+with newlines counted as a single slot/character.
 
 ```lua
 function EditAgent.cursorIndex(agent)
@@ -199,24 +188,20 @@ function EditAgent.cursorIndex(agent)
    return index
 end
 ```
+#### EditAgent:beginSelection()
 
-
-#### EditAgent:beginSelection\(\)
-
-Begins a selection operation by setting the `mark` equal to the `cursor`\.
+Begins a selection operation by setting the ``mark`` equal to the ``cursor``.
 Note that until the cursor is subsequently moved, this state is not a valid
-selection and will be cleared as soon as someone inquires :hasSelection\(\)
+selection and will be cleared as soon as someone inquires :hasSelection()
 
 ```lua
 function EditAgent.beginSelection(agent)
    agent.mark = clone(agent.cursor)
 end
 ```
+#### EditAgent:clearSelection()
 
-
-#### EditAgent:clearSelection\(\)
-
-Clears the current selection\. This again is considered a cursor change\.
+Clears the current selection. This again is considered a cursor change.
 
 ```lua
 function EditAgent.clearSelection(agent)
@@ -226,15 +211,13 @@ function EditAgent.clearSelection(agent)
    agent.mark = nil
 end
 ```
+#### EditAgent:hasSelection()
 
-
-#### EditAgent:hasSelection\(\)
-
-Answers whether there is an active selection\. Note that a zero\-width selection
-is only transiently valid\-\-it is necessary to start with, immediately after
-a :beginSelection\(\), but for the purposes of this method the two must be
-different\. If they are not, we actually clear the mark, since otherwise
-further cursor moves **would** create a selection\.
+Answers whether there is an active selection. Note that a zero-width selection
+is only transiently valid--it is necessary to start with, immediately after
+a :beginSelection(), but for the purposes of this method the two must be
+different. If they are not, we actually clear the mark, since otherwise
+further cursor moves **would** create a selection.
 
 ```lua
 function EditAgent.hasSelection(agent)
@@ -248,15 +231,14 @@ function EditAgent.hasSelection(agent)
    end
 end
 ```
+#### EditAgent:selectionStart(), EditAgent:selectionEnd()
+
+Returns the left and right edge of the selection, respectively--the earlier
+or later of ``cursor`` and ``mark``. Used by operations that care only about what
+is selected, not how it got that way.
 
 
-#### EditAgent:selectionStart\(\), EditAgent:selectionEnd\(\)
-
-Returns the left and right edge of the selection, respectively\-\-the earlier
-or later of `cursor` and `mark`\. Used by operations that care only about what
-is selected, not how it got that way\.
-
-Returns two values, in `col`, `row` order for consistency with `currentPosition`\.
+Returns two values, in ``col``, ``row`` order for consistency with ``currentPosition``.
 
 ```lua
 function EditAgent.selectionStart(agent)
@@ -281,15 +263,13 @@ function EditAgent.selectionEnd(agent)
    end
 end
 ```
-
-
 ### Insertion
 
 
-#### EditAgent:openRow\(row\_num\)
+#### EditAgent:openRow(row_num)
 
-Opens the row at index `row_num` for editing, breaking it into a grid of characters\.
-Answers the newly\-opened line and index, or nil if the index is out of bounds\.
+Opens the row at index ``row_num`` for editing, breaking it into a grid of characters.
+Answers the newly-opened line and index, or nil if the index is out of bounds.
 
 ```lua
 
@@ -304,12 +284,10 @@ function EditAgent.openRow(agent, row_num)
 end
 
 ```
-
-
-#### EditAgent:nl\(\)
+#### EditAgent:nl()
 
 Splits the line at the current cursor position, effectively
-inserting a newline\.
+inserting a newline.
 
 ```lua
 function EditAgent.nl(agent)
@@ -324,13 +302,11 @@ function EditAgent.nl(agent)
    return false
 end
 ```
+#### EditAgent:insert(frag)
 
-
-#### EditAgent:insert\(frag\)
-
-Inserts `frag` \(which must be exactly one codepoint\) at the current cursor
-position\. Intended for when the user has pressed the corresponding key\-\-
-performs automatic brace pairing\.
+Inserts ``frag`` (which must be exactly one codepoint) at the current cursor
+position. Intended for when the user has pressed the corresponding key--
+performs automatic brace pairing.
 
 ```lua
 local inverse = assert(require "core:table" . inverse)
@@ -370,13 +346,11 @@ function EditAgent.insert(agent, frag)
    return true
 end
 ```
+#### EditAgent:paste(frag)
 
-
-#### EditAgent:paste\(frag\)
-
-Pastes `frag` \(which may be many characters and may include newlines\)
-at the current cursor position\. The only translation performed is
-tab to three spaces\.
+Pastes ``frag`` (which may be many characters and may include newlines)
+at the current cursor position. The only translation performed is
+tab to three spaces.
 
 ```lua
 function EditAgent.paste(agent, frag)
@@ -392,19 +366,17 @@ function EditAgent.paste(agent, frag)
    agent:contentsChanged()
 end
 ```
-
-
 ### Deletion
 
 Most deletion commands correspond to a cursor motion, deleting everything
-between the current cursor position and that after the move\. All deletion
-thus proceeds through :killSelection\(\)
+between the current cursor position and that after the move. All deletion
+thus proceeds through :killSelection()
 
 
-#### EditAgent:killSelection\(\)
+#### EditAgent:killSelection()
 
-Deletes the selected text, if any\. Returns whether anything was deleted
-\(i\.e\. whether anything was initially selected\)\.
+Deletes the selected text, if any. Returns whether anything was deleted
+(i.e. whether anything was initially selected).
 
 ```lua
 local deleterange = import("core/table", "deleterange")
@@ -436,11 +408,9 @@ function EditAgent.killSelection(agent)
    agent:clearSelection()
 end
 ```
+#### EditAgent:killForward(), :killToBeginningOfLine(), etc.
 
-
-#### EditAgent:killForward\(\), :killToBeginningOfLine\(\), etc\.
-
-Other deletion commands are implemented as a select\-move\-delete sequence:
+Other deletion commands are implemented as a select-move-delete sequence:
 
 ```lua
 local function _delete_for_motion(motionName)
@@ -462,13 +432,11 @@ for delete_name, motion_name in pairs({
 end
 
 ```
-
-
-#### EditAgent:killBackward\(disp\)
+#### EditAgent:killBackward(disp)
 
 killBackward is slightly special, because we want to remove adjacent
-paired braces if the opening brace is deleted\. We can still handle this
-with a select\-move\-delete sequence, but need to inspect nearby chars first\.
+paired braces if the opening brace is deleted. We can still handle this
+with a select-move-delete sequence, but need to inspect nearby chars first.
 
 ```lua
 local function _is_paired(a, b)
@@ -492,16 +460,15 @@ function EditAgent.killBackward(agent, disp)
    agent:killSelection()
 end
 ```
-
-
 ### Cursor motions
 
 
-#### EditAgent:left\(disp\), EditAgent:right\(disp\)
+#### EditAgent:left(disp), EditAgent:right(disp)
 
-These methods shift a cursor left or right, handling line breaks internally\.
+These methods shift a cursor left or right, handling line breaks internally.
 
-`disp` is a number of codepoints to shift\.
+
+``disp`` is a number of codepoints to shift.
 
 ```lua
 function EditAgent.left(agent, disp)
@@ -537,15 +504,14 @@ function EditAgent.right(agent, disp)
    return true
 end
 ```
-
-
-#### EditAgent:up\(\), EditAgent:down\(\)
+#### EditAgent:up(), EditAgent:down()
 
 Moves the cursor up or down a line, or to the beginning of the first line or
-end of the last line if there is no line above/below\.
+end of the last line if there is no line above/below.
 
-Returns whether it was able to move to a different line, i\.e\. false in the
-case of moving to the beginning/end of the first/last line\.
+
+Returns whether it was able to move to a different line, i.e. false in the
+case of moving to the beginning/end of the first/last line.
 
 ```lua
 function EditAgent.up(agent)
@@ -566,9 +532,7 @@ function EditAgent.down(agent)
    return true
 end
 ```
-
-
-#### EditAgent:startOfLine\(\), EditAgent:endOfLine\(\)
+#### EditAgent:startOfLine(), EditAgent:endOfLine()
 
 ```lua
 function EditAgent.startOfLine(agent)
@@ -579,11 +543,9 @@ function EditAgent.endOfLine(agent)
    agent:setCursor(nil, #agent[agent.cursor.row] + 1)
 end
 ```
+#### EditAgent:startOfText(), EditAgent:endOfText()
 
-
-#### EditAgent:startOfText\(\), EditAgent:endOfText\(\)
-
-Moves to the very beginning or end of the buffer\.
+Moves to the very beginning or end of the buffer.
 
 ```lua
 function EditAgent.startOfText(agent)
@@ -595,27 +557,29 @@ function EditAgent.endOfText(agent)
    agent:setCursor(#agent, #agent[#agent] + 1)
 end
 ```
+#### EditAgent:scanFor(pattern, reps, forward)
 
-
-#### EditAgent:scanFor\(pattern, reps, forward\)
-
-Search left or right for a character matching `pattern`, after
-encountering at least one character **not** matching `pattern`\. Matches the
+Search left or right for a character matching ``pattern``, after
+encountering at least one character **not** matching ``pattern``. Matches the
 position on the matching character when moving right, or one cell ahead of it
-when moving left, "between" a non\-matching character
-and a matching one\.
-
-Returns move, the cursor delta, and the row delta\.
+when moving left, "between" a non-matching character
+and a matching one.
 
 
-- \#parameters
+Returns move, the cursor delta, and the row delta.
 
-   - pattern:  A pattern matching character\(s\) to stop at\. Generally either a
-       single character or a single character class, e\.g\. %W
+
+- #parameters
+
+
+   - pattern:  A pattern matching character(s) to stop at. Generally either a
+               single character or a single character class, e.g. %W
+
 
    - reps:     Number of times to repeat the motion
 
-   - forward:  Boolean, true for forward search, false for backward\.
+
+   - forward:  Boolean, true for forward search, false for backward.
 
 ```lua
 local match = assert(string.match)
@@ -653,11 +617,9 @@ function EditAgent.scanFor(agent, pattern, reps, forward)
    return moved, search_pos - cur_col, search_row - cur_row
 end
 ```
+#### EditAgent[left|right]ToBoundary(pattern, reps)
 
-
-#### EditAgent\[left|right\]ToBoundary\(pattern, reps\)
-
-Finds the left or right delta, and moves the cursor if the pattern was found\.
+Finds the left or right delta, and moves the cursor if the pattern was found.
 
 ```lua
 function EditAgent.leftToBoundary(agent, pattern, reps)
@@ -682,13 +644,11 @@ function EditAgent.rightToBoundary(agent, pattern, reps)
    end
 end
 ```
+#### EditAgent:firstNonWhitespace()
 
-
-#### EditAgent:firstNonWhitespace\(\)
-
-Moves to the first non\-whitespace character of the current line\. Return value
-indicates whether such a character exists\. Does not move the cursor if the
-line is empty or all whitespace\.
+Moves to the first non-whitespace character of the current line. Return value
+indicates whether such a character exists. Does not move the cursor if the
+line is empty or all whitespace.
 
 ```lua
 function EditAgent.firstNonWhitespace(agent)
@@ -704,9 +664,7 @@ function EditAgent.firstNonWhitespace(agent)
    return false
 end
 ```
-
-
-#### EditAgent:leftWordAlpha\(reps\), EditAgent:rightWordAlpha\(reps\), EditAgent:leftWordWhitespace\(reps\), EditAgent:rightWordWhitespace\(reps\)
+#### EditAgent:leftWordAlpha(reps), EditAgent:rightWordAlpha(reps), EditAgent:leftWordWhitespace(reps), EditAgent:rightWordWhitespace(reps)
 
 ```lua
 function EditAgent.leftWordAlpha(agent, reps)
@@ -725,23 +683,22 @@ function EditAgent.rightWordWhitespace(agent, reps)
    return agent:rightToBoundary('%s', reps)
 end
 ```
-
-
 ### Other editing commands
 
 
-#### EditAgent:replaceChar\(frag\)
+#### EditAgent:replaceChar(frag)
 
-Replaces the character to the right of the cursor with the given codepoint\.
+Replaces the character to the right of the cursor with the given codepoint.
 
-This is called `frag` as a reminder that, a\) it's variable width and b\) to
+
+This is called ``frag`` as a reminder that, a) it's variable width and b) to
 really nail displacement we need to be looking up displacements in some kind
-of region\-defined lookup table\.
+of region-defined lookup table.
 
 
-#### EditAgent:replaceToken\(frag\)
+#### EditAgent:replaceToken(frag)
 
-Replaces the Token in which the cursor resides with the given fragment\.
+Replaces the Token in which the cursor resides with the given fragment.
 
 ```lua
 function EditAgent.replaceToken(agent, frag)
@@ -757,14 +714,13 @@ function EditAgent.replaceToken(agent, frag)
    agent:paste(frag)
 end
 ```
+#### EditAgent:transposeLetter()
 
+Transposes the letter at the cursor with the one before it.
 
-#### EditAgent:transposeLetter\(\)
-
-Transposes the letter at the cursor with the one before it\.
 
 Readline has a small affordance where it will still transpose if the cursor is
-at the end of a line, which this implementation respects\.
+at the end of a line, which this implementation respects.
 
 ```lua
 function EditAgent.transposeLetter(agent)
@@ -783,12 +739,10 @@ function EditAgent.transposeLetter(agent)
    return true
 end
 ```
-
-
-### EditAgent:shouldEvaluate\(\)
+### EditAgent:shouldEvaluate()
 
 Answers true if the agent should be evaluated when Return is pressed,
-false if we should insert a newline\.
+false if we should insert a newline.
 
 ```lua
 function EditAgent.shouldEvaluate(agent)
@@ -806,15 +760,10 @@ function EditAgent.shouldEvaluate(agent)
    end
 end
 ```
-
-
-### EditAgent:update\(str\)
+### EditAgent:update(str)
 
 Although we are constructed from a string, the actual value we store is an
-array of lines\.
-
-\#todo
-best name for it?
+array of lines.
 
 ```lua
 function EditAgent.update(agent, str)
@@ -832,22 +781,16 @@ function EditAgent.update(agent, str)
    return agent
 end
 ```
-
-
-### EditAgent:clear\(\)
-
-\#todo
+### EditAgent:clear()
 
 ```lua
 function EditAgent.clear(agent)
    agent:update("")
 end
 ```
+### EditAgent:contents()
 
-
-### EditAgent:contents\(\)
-
-Returns the contents of the agent as a single \(potentially multiline\) string\.
+Returns the contents of the agent as a single (potentially multiline) string.
 
 ```lua
 local function cat(l)
@@ -870,24 +813,20 @@ function EditAgent.contents(agent)
    return concat(closed_lines, "\n")
 end
 ```
+### EditAgent:continuationLines()
 
-
-### EditAgent:continuationLines\(\)
-
-The number of continuation lines \(lines past the first\)\. Simple enough, but
-used in a couple places\.
+The number of continuation lines (lines past the first). Simple enough, but
+used in a couple places.
 
 ```lua
 function EditAgent.continuationLines(agent)
    return #agent - 1
 end
 ```
+### EditAgent:tokens([row])
 
-
-### EditAgent:tokens\(\[row\]\)
-
-Breaks the contents of the agent, or a single row if `row` is supplied,
-into tokens using the assigned lexer\.
+Breaks the contents of the agent, or a single row if ``row`` is supplied,
+into tokens using the assigned lexer.
 
 ```lua
 function EditAgent.tokens(agent, row)
@@ -900,8 +839,6 @@ function EditAgent.tokens(agent, row)
    end
 end
 ```
-
-
 ### Window
 
 ```lua
@@ -924,8 +861,6 @@ EditAgent.window = agent_utils.make_window_method({
                tokens = true }
 })
 ```
-
-
 ### new
 
 ```lua
@@ -938,7 +873,6 @@ local function new()
    return agent
 end
 ```
-
 ```lua
 EditAgent.idEst = new
 return new

@@ -268,4 +268,3 @@ end
 
 SessionAgent.idEst = new
 return new
-

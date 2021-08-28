@@ -1,25 +1,26 @@
 # Nerf mode
 
 
-`nerf` is the default mode for the repl\.
+``nerf`` is the default mode for the repl.
 
 
--  \#Todo
+-  #Todo
 
-  - [X]  All of the content for the first draft is in `modeselektor`, so
-      let's transfer that\.
 
-  - [?]  There should probably be a metatable for Mode objects\.
+  - [X]  All of the content for the first draft is in ``modeselektor``, so
+         let's transfer that.
+
+
+  - [?]  There should probably be a metatable for Mode objects.
 
 
 #### includes
 
-This is copypasta from Modeselektor, but yeah, we'll need most of this\.
+This is copypasta from Modeselektor, but yeah, we'll need most of this.
 
 ```lua
 assert(meta, "must have meta in _G")
 ```
-
 ```lua
 local a         = require "anterm:anterm"
 local Txtbuf    = require "helm:buf/txtbuf"
@@ -32,8 +33,6 @@ local sub, gsub, rep = assert(string.sub),
                        assert(string.gsub),
                        assert(string.rep)
 ```
-
-
 ## Nerf
 
 ```lua
@@ -44,7 +43,6 @@ local Nerf = clone(EditBase, 2)
 Nerf.name = "nerf"
 Nerf.prompt_char = "👉"
 ```
-
 ### Insertion
 
 ```lua
@@ -68,7 +66,6 @@ Nerf.ASCII = _insert
 Nerf.UTF8 = _insert
 
 ```
-
 ### NAV
 
 ```lua
@@ -122,7 +119,6 @@ function NAV.DOWN(modeS, category, value)
    return modeS
 end
 ```
-
 ```lua
 function _eval(modeS)
    local line = modeS:agent'edit':contents()
@@ -190,19 +186,17 @@ function NAV.SHIFT_TAB(modeS, category, value)
    _activateCompletion(modeS)
 end
 ```
-
-
 ## Keymap
 
 ```lua
 Nerf.default_keymaps = clone(EditBase.default_keymaps)
 ```
+### Readline-style NAV
 
-### Readline\-style NAV
+Provides equivalent commands for diehard Emacsians.
 
-Provides equivalent commands for diehard Emacsians\.
 
-In case RMS ever takes bridge for a spin\.\.\.
+In case RMS ever takes bridge for a spin...
 
 ```lua
 insert(Nerf.default_keymaps, {
@@ -212,8 +206,6 @@ insert(Nerf.default_keymaps, {
    ["C-p"] = "up"
 })
 ```
-
-
 ### Scroll handling
 
 ```lua
@@ -233,16 +225,12 @@ insert(Nerf.default_keymaps, {
    SCROLL_DOWN = "scrollResultsDown"
 })
 ```
-
-
 ### ALT
 
 ```lua
 local ALT = Nerf.ALT
 ```
-
-
-#### M\-e
+#### M-e
 
 ```lua
 ALT ["M-e"] = function(modeS, category, value)
@@ -257,11 +245,10 @@ ALT ["M-e"] = function(modeS, category, value)
    end
 end
 ```
-
-### Nerf\.onCursorChanged\(modeS\), Nerf\.onTxtbufChanged\(modeS\)
+### Nerf.onCursorChanged(modeS), Nerf.onTxtbufChanged(modeS)
 
 Whenever the cursor moves or the Txtbuf contents change, need to
-update the suggestions\.
+update the suggestions.
 
 ```lua
 function Nerf.onCursorChanged(modeS)
@@ -274,13 +261,11 @@ function Nerf.onTxtbufChanged(modeS)
    EditBase.onTxtbufChanged(modeS)
 end
 ```
+### Nerf.onShift
 
-
-### Nerf\.onShift
-
-Set up Agent connections\-\-install the SuggestAgent's Window as the provider of
+Set up Agent connections--install the SuggestAgent's Window as the provider of
 suggestions for the Txtbuf, and ResultsAgent to supply the content of the
-results zone\.
+results zone.
 
 ```lua
 local Resbuf = require "helm:buf/resbuf"
@@ -291,7 +276,6 @@ function Nerf.onShift(modeS)
    txtbuf.suggestions = modeS:agent'suggest':window()
 end
 ```
-
 ```lua
 return Nerf
 ```

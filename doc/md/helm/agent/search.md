@@ -1,6 +1,6 @@
 # Search Agent
 
-  An Agent providing history\-search functionality\.
+  An Agent providing history-search functionality.
 
 ```lua
 
@@ -8,11 +8,9 @@ local SearchAgent = meta {}
 local new
 
 ```
+### SearchAgent:update()
 
-
-### SearchAgent:update\(\)
-
-Updates the history results based on the current contents of the Txtbuf\.
+Updates the history results based on the current contents of the Txtbuf.
 
 ```lua
 local function _set_suggestions(agent, suggestions)
@@ -31,9 +29,7 @@ function SearchAgent.update(agent, modeS)
    agent.touched = true
 end
 ```
-
-
-### accept\(\)
+### accept()
 
 
 ```lua
@@ -42,12 +38,7 @@ function SearchAgent.accept(agent)
    agent.replaceToken(suggestion)
 end
 ```
-
-
 ### Window
-
-\#todo
-a superclass?
 
 ```lua
 local agent_utils = require "helm:agent/utils"
@@ -71,9 +62,7 @@ SearchAgent.window = agent_utils.make_window_method({
    }
 })
 ```
-
-
-### new\(\)
+### new()
 
 ```lua
 
@@ -83,7 +72,6 @@ new = function()
 end
 
 ```
-
 ```lua
 SearchAgent.idEst = new
 return new

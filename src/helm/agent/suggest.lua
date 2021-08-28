@@ -224,4 +224,3 @@ end
 
 SuggestAgent.idEst = new
 return new
-

@@ -1,6 +1,6 @@
-# Input\-echo Agent
+# Input-echo Agent
 
-A simple Agent providing echo\-display of input events\.
+A simple Agent providing echo-display of input events.
 
 
 ```lua
@@ -10,9 +10,7 @@ local input_event = require "anterm:input-event"
 local InputEchoAgent = meta {}
 
 ```
-
-
-### \_\_repr for input events
+### __repr for input events
 
 ```lua
 local STAT_ICON = "◉ "
@@ -79,9 +77,7 @@ function echo_M.__repr(event)
    return event_str
 end
 ```
-
-
-### InputEchoAgent:update\(event, command\)
+### InputEchoAgent:update(event, command)
 
 ```lua
 local clone = assert(require "core:table" . clone)
@@ -92,7 +88,6 @@ function InputEchoAgent.update(echo, event, command)
    echo.touched = true
 end
 ```
-
 ### Window
 
 ```lua
@@ -106,7 +101,6 @@ InputEchoAgent.window = agent_utils.make_window_method({
    end }
 })
 ```
-
 ### new
 
 ```lua
@@ -114,7 +108,6 @@ local function new()
    return meta(InputEchoAgent)
 end
 ```
-
 ```lua
 InputEchoAgent.idEst = new
 return new

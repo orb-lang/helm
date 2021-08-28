@@ -288,4 +288,3 @@ local Sessionbuf_class = setmetatable({}, Sessionbuf)
 Sessionbuf.idEst = Sessionbuf_class
 
 return Sessionbuf_class
-

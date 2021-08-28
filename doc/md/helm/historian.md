@@ -1,13 +1,15 @@
 # Historian
 
 
-This module is responsible for REPL history\.
+This module is responsible for REPL history.
+
 
 Historian loads old records of lines and results from a SQLite database, as
-well as persisting new ones to the same store\.
+well as persisting new ones to the same store.
 
-It is also responsible for fuzzy searching across the last `HISTORY_LIMIT` of
-records\.
+
+It is also responsible for fuzzy searching across the last ``HISTORY_LIMIT`` of
+records.
 
 
 #### imports
@@ -24,8 +26,6 @@ local meta = require "core/meta" . meta
 
 local Set = require "set:set"
 ```
-
-
 ### Historian metatable
 
 ```lua
@@ -34,8 +34,7 @@ Historian.HISTORY_LIMIT = 2000
 Historian.helm_db_home = helm_db.helm_db_home
 Historian.project = uv.cwd()
 ```
-
-### Historian:createPreparedStatements\(helm\_db\)
+### Historian:createPreparedStatements(helm_db)
 
 ```lua
 function Historian.createPreparedStatements(historian, helm_db_home)
@@ -50,18 +49,20 @@ function Historian.createPreparedStatements(historian, helm_db_home)
    historian.get_results = stmts.get_results
 end
 ```
+### Historian:load()
 
-### Historian:load\(\)
+Brings up the project history and result ids.
 
-Brings up the project history and result ids\.
 
 Most of the complexity serves to make a simple key/value relationship
-between the lines and their associated result history\.
+between the lines and their associated result history.
+
 
 We want as much history as practical, because we search in it, but most of
-the results never get used\.
+the results never get used.
 
-As much of the work as possible is offloaded to a uv idler process\.
+
+As much of the work as possible is offloaded to a uv idler process.
 
 ```lua
 local clamp, inbounds = import("core:core/math", "clamp", "inbounds")
@@ -121,11 +122,9 @@ function Historian.load(historian)
    idler:start(load_one)
 end
 ```
+### Historian:persist(line, results)
 
-
-### Historian:persist\(line, results\)
-
-Persists a line and results to store\.
+Persists a line and results to store.
 
 ```lua
 local tabulate_some = assert(persist_tabulate.tabulate_some)
@@ -190,13 +189,12 @@ function Historian.persist(historian, line, results)
    return line_id
 end
 ```
+### Historian:append(line, results, success)
+
+As :persist(), but also appends to the history and the current session.
 
 
-### Historian:append\(line, results, success\)
-
-As :persist\(\), but also appends to the history and the current session\.
-
-Doesn't adjust the cursor, but does store the results in the result\_buffer\.
+Doesn't adjust the cursor, but does store the results in the result_buffer.
 
 ```lua
 function Historian.append(historian, line, results, success)
@@ -213,33 +211,36 @@ function Historian.append(historian, line, results, success)
    return true
 end
 ```
-
-
-## Historian:search\(frag\)
+## Historian:search(frag)
 
 This is a 'fuzzy search', that attempts to find a string containing the
-letters of the fragment in order\.
+letters of the fragment in order.
 
-If it finds nothing, it switches the last two letters and tries again\. This
+
+If it finds nothing, it switches the last two letters and tries again. This
 is an affordance for incremental searches, it's easy to make this mistake and
-harmless to suggest the alternative\.
-
-Returns a `collection`\. The array portion of a collection is any line
-which matches the search\. The other fields are:
+harmless to suggest the alternative.
 
 
-- \#fields
-  -  best :  Whether this is a best\-fit collection, that is, one with all
-      codepoints in order\.
+Returns a ``collection``. The array portion of a collection is any line
+which matches the search. The other fields are:
 
-  -  frag :  The fragment, used to highlight the collection\.  Is transposed
-      in a next\-best search\.
 
-  -  lit\_frag :  The literal fragment passed as the `frag` parameter\.  Used to
-      compare to the last search\.
+- #fields
+  -  best :  Whether this is a best-fit collection, that is, one with all
+             codepoints in order.
+
+
+  -  frag :  The fragment, used to highlight the collection.  Is transposed
+             in a next-best search.
+
+
+  -  lit_frag :  The literal fragment passed as the ``frag`` parameter.  Used to
+                 compare to the last search.
+
 
   -  cursors :  This is an array, each value is the cursor position of
-      the corresponding line in the history\.
+                the corresponding line in the history.
 
 
 ```lua
@@ -272,15 +273,13 @@ function Historian.search(historian, frag)
    return result
 end
 ```
-
-
 ## History navigation
 
 
-### \_setCursor\(cursor\)
+### _setCursor(cursor)
 
-Sets the cursor and returns the line and results for that index\. Unlike
-`:index()` this is allowed to be out\-of\-bounds, in which we return `nil`\.
+Sets the cursor and returns the line and results for that index. Unlike
+``:index()`` this is allowed to be out-of-bounds, in which we return ``nil``.
 
 ```lua
 local db_result_M = assert(persist_tabulate.db_result_M)
@@ -313,12 +312,10 @@ local function _setCursor(historian, cursor)
    return line, results
 end
 ```
-
-
-### Historian:delta\(\), :prev\(\), :next\(\)
+### Historian:delta(), :prev(), :next()
 
 Moves the cursor by the given delta, returning the line
-and result \(if any\) at the new cursor position\.
+and result (if any) at the new cursor position.
 
 ```lua
 function Historian.delta(historian, delta)
@@ -333,12 +330,10 @@ function Historian.next(historian)
    return historian:delta(1)
 end
 ```
+### Historian:index(cursor)
 
-
-### Historian:index\(cursor\)
-
-  Loads the history to an exact index\. The index must be one that actually
-exists, i\.e\. 1 <= index <= historian\.n\-\-historian\.n \+ 1 is not allowed\.
+  Loads the history to an exact index. The index must be one that actually
+exists, i.e. 1 <= index <= historian.n--historian.n + 1 is not allowed.
 
 ```lua
 function Historian.index(historian, cursor)
@@ -346,19 +341,18 @@ function Historian.index(historian, cursor)
    return _setCursor(historian, cursor)
 end
 ```
+### Historian(helm_db)
+
+Creates a new ``historian``.
 
 
-### Historian\(helm\_db\)
-
-Creates a new `historian`\.
-
-`helm_db` is an optional string parameter to load a non\-standard helm database\.
+``helm_db`` is an optional string parameter to load a non-standard helm database.
 
 
 ##### Metatable for result buffer
 
-We need this so that attempts to \_\_repr the result buffer don't produce an
-infinite loop\.
+We need this so that attempts to __repr the result buffer don't produce an
+infinite loop.
 
 ```lua
 local __result_buffer_M = meta {}
@@ -408,7 +402,7 @@ end
 
 Historian.idEst = new
 ```
-
 ```lua
 return new
+
 ```

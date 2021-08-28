@@ -1,58 +1,71 @@
 # Rainbuf
 
-This class encapsulates data to be written to the screen\.
+This class encapsulates data to be written to the screen.
 
-As it stands, we have two special cases, the `txtbuf` and `results`\.
 
-We need to extend the functionality of `results`, so we're building this as a
-root metatable for those methods\.
+As it stands, we have two special cases, the ``txtbuf`` and ``results``.
 
-Plausibly, we can make this a 'mixin' for `txtbuf` as well, since they have
-the additional complexity of receiving input\.
+
+We need to extend the functionality of ``results``, so we're building this as a
+root metatable for those methods.
+
+
+Plausibly, we can make this a 'mixin' for ``txtbuf`` as well, since they have
+the additional complexity of receiving input.
 
 
 ## Design
 
-We're aiming for complex interactivity with data\.
+We're aiming for complex interactivity with data.
+
 
 Our current renderer is crude: it converts the entire table into a string
-representation, including newlines, and returns it\.
+representation, including newlines, and returns it.
 
-One sophistication we've added is a `__repr` metamethod, which overrides the
-default use of `ts()`\.  It still returns a dumb block of strings, using
-concatenation at the moment of combination\.  This is inefficient and also
-impedes more intelligent rendering\.  But it's a start\.
 
-`rainbuf` needs to have a cell\-by\-cell understanding of what's rendered and
+One sophistication we've added is a ``__repr`` metamethod, which overrides the
+default use of ``ts()``.  It still returns a dumb block of strings, using
+concatenation at the moment of combination.  This is inefficient and also
+impedes more intelligent rendering.  But it's a start.
+
+
+``rainbuf`` needs to have a cell-by-cell understanding of what's rendered and
 what's not, must calculate a printable representation given the constraints of
-the `zone`, and, eventually, will respond to mouse and cursor events\.
+the ``zone``, and, eventually, will respond to mouse and cursor events.
+
 
 Doing this correctly is extraordinarily complex but we can fake it adequately
-as long as the engineering is correct\.  Everything we're currently using is
-ASCII\-range or emojis and both of those are predictable, narrow/ordinary and
-wide respectively\.
+as long as the engineering is correct.  Everything we're currently using is
+ASCII-range or emojis and both of those are predictable, narrow/ordinary and
+wide respectively.
 
-There are libraries/databases which purport to answer this question\.  We plan
-to link one of those in\.
+
+There are libraries/databases which purport to answer this question.  We plan
+to link one of those in.
+
 
 Results, as we currently manifest them, use an array for the raw objects and
-`n` rather than `#res` to represent the length\.  That's a remnant of the
-original repl from `luv`\.  The `.n` is neceessary because `nil` can be a
-positional result\.
+``n`` rather than ``#res`` to represent the length.  That's a remnant of the
+original repl from ``luv``.  The ``.n`` is neceessary because ``nil`` can be a
+positional result.
 
-A `txtbuf` keeps its contents in a `.lines` table, and so we can reuse this
-field for cached textual representations\.  All internals should support both
-strings and array\-of\-strings as possible values of the `lines` array\.
 
-We also need a `.wids` array of arrays of numbers and should probably hide
-this behind methods so as to fake it when we just have strings\.
+A ``txtbuf`` keeps its contents in a ``.lines`` table, and so we can reuse this
+field for cached textual representations.  All internals should support both
+strings and array-of-strings as possible values of the ``lines`` array.
 
-Later, we add a `.targets`, this is a dense array for the number of lines,
-each with a sparse array containing handlers for mouse events\.  If a mouse
-event doesn't hit a `target` then the default handler is engaged\.
 
-We also have `offset`, a number, and `more`, which is `true` if the buffer
-continues past the edge of the zone and otherwise falsy\.
+We also need a ``.wids`` array of arrays of numbers and should probably hide
+this behind methods so as to fake it when we just have strings.
+
+
+Later, we add a ``.targets``, this is a dense array for the number of lines,
+each with a sparse array containing handlers for mouse events.  If a mouse
+event doesn't hit a ``target`` then the default handler is engaged.
+
+
+We also have ``offset``, a number, and ``more``, which is ``true`` if the buffer
+continues past the edge of the zone and otherwise falsy.
 
 
 #### includes
@@ -60,22 +73,18 @@ continues past the edge of the zone and otherwise falsy\.
 ```lua
 local lineGen = import("repr:repr", "lineGen")
 ```
-
-
 #### Rainbuf metatable
 
 ```lua
 local Rainbuf = meta {}
 ```
-
-
 ## Methods
 
 
-### Rainbuf:setExtent\(rows, cols\)
+### Rainbuf:setExtent(rows, cols)
 
 Sets the extent of the area the Rainbuf output will be painted in, adjusting
-scroll position and clearing caches as needed\.
+scroll position and clearing caches as needed.
 
 ```lua
 local lines = import("core/string", "lines")
@@ -97,34 +106,32 @@ function Rainbuf.setExtent(rainbuf, rows, cols)
    rainbuf.cols = cols
 end
 ```
-
-
-### Rainbuf:contentCols\(\)
+### Rainbuf:contentCols()
 
 The number of columns available to the Rainbuf's content, less any gutter
-\(used for the scroll indicator, for now\)\.
+(used for the scroll indicator, for now).
 
 ```lua
 function Rainbuf.contentCols(rainbuf)
    return rainbuf.scrollable and rainbuf.cols - 3 or rainbuf.cols
 end
 ```
-
-
 ### Scrolling
 
 
-#### Rainbuf:scrollTo\(offset, allow\_overscroll\)
+#### Rainbuf:scrollTo(offset, allow_overscroll)
 
-Main scrolling method\. Scrolls the contents of the Rainbuf to start `offset`
-lines into the underlying content\.
+Main scrolling method. Scrolls the contents of the Rainbuf to start ``offset``
+lines into the underlying content.
 
-`allow_overscroll` determines whether we are willing to scroll past the
-available content\. If falsy, scrolling stops when the last line of content
-is the last line on the screen\. If truthy, scrolling stops when the last
-line of content is the **first** line on the screen\.
 
-Returns a boolean indicating whether any scrolling occurred\.
+``allow_overscroll`` determines whether we are willing to scroll past the
+available content. If falsy, scrolling stops when the last line of content
+is the last line on the screen. If truthy, scrolling stops when the last
+line of content is the **first** line on the screen.
+
+
+Returns a boolean indicating whether any scrolling occurred.
 
 ```lua
 local clamp = import("core/math", "clamp")
@@ -148,22 +155,18 @@ function Rainbuf.scrollTo(rainbuf, offset, allow_overscroll)
    end
 end
 ```
+#### Rainbuf:scrollBy(delta, allow_overscroll)
 
-
-#### Rainbuf:scrollBy\(delta, allow\_overscroll\)
-
-Relative scrolling operation\. Change the scroll position by `delta` line\(s\)\.
+Relative scrolling operation. Change the scroll position by ``delta`` line(s).
 
 ```lua
 function Rainbuf.scrollBy(rainbuf, delta, allow_overscroll)
    return rainbuf:scrollTo(rainbuf.offset + delta, allow_overscroll)
 end
 ```
+#### Rainbuf:scrollUp(count), :scrollDown(count), :pageUp(), :pageDown()
 
-
-#### Rainbuf:scrollUp\(count\), :scrollDown\(count\), :pageUp\(\), :pageDown\(\)
-
-Helpers for common scrolling operations\.
+Helpers for common scrolling operations.
 
 ```lua
 function Rainbuf.scrollUp(rainbuf, count)
@@ -190,14 +193,12 @@ function Rainbuf.halfPageDown(rainbuf)
    return rainbuf:scrollBy(floor(rainbuf.rows / 2))
 end
 ```
+#### Rainbuf:scrollToTop(), Rainbuf:scrollToBottom(allow_overscroll)
 
-
-#### Rainbuf:scrollToTop\(\), Rainbuf:scrollToBottom\(allow\_overscroll\)
-
-Scroll to the very beginning or end of the content\.
+Scroll to the very beginning or end of the content.
 Beginning is easy, end is a little more interesting, as we have to first
-render all the content \(in order to know how much there is\), then account
-for allow\_overscroll in deciding how far to go\.
+render all the content (in order to know how much there is), then account
+for allow_overscroll in deciding how far to go.
 
 ```lua
 function Rainbuf.scrollToTop(rainbuf)
@@ -211,14 +212,12 @@ function Rainbuf.scrollToBottom(rainbuf, allow_overscroll)
    return rainbuf:scrollTo(#rainbuf.lines, allow_overscroll)
 end
 ```
+#### Rainbuf:ensureVisible(start_index[, end_index])
 
-
-#### Rainbuf:ensureVisible\(start\_index\[, end\_index\]\)
-
-Scrolls such that the line at `start_index` is visible\. If `end_index` is also
-provided, attempts to fit the entire range `start_index..end_index` on screen,
-falling back to scrolling such that `start_index` is at the top of the screen
-if this is not possible \(because the number of lines requested is too great\)\.
+Scrolls such that the line at ``start_index`` is visible. If ``end_index`` is also
+provided, attempts to fit the entire range ``start_index..end_index`` on screen,
+falling back to scrolling such that ``start_index`` is at the top of the screen
+if this is not possible (because the number of lines requested is too great).
 
 ```lua
 function Rainbuf.ensureVisible(rainbuf, start_index, end_index)
@@ -228,25 +227,24 @@ function Rainbuf.ensureVisible(rainbuf, start_index, end_index)
    rainbuf:scrollTo(clamp(rainbuf.offset, min_offset, max_offset))
 end
 ```
-
-
 ### Rendering
 
 
-#### Rainbuf:initComposition\(\)
+#### Rainbuf:initComposition()
 
-Abstract method\. Perform any setup necessary to begin composition\. Do nothing
-if setup is already done, i\.e\. this is a lazy\-init\.
-
-A call to :clearCaches\(\) should tear down everything this method sets up\.
+Abstract method. Perform any setup necessary to begin composition. Do nothing
+if setup is already done, i.e. this is a lazy-init.
 
 
-#### Rainbuf:composeOneLine\(\)
+A call to :clearCaches() should tear down everything this method sets up.
 
-Composes one line and saves it to the cached `lines` array\.
-Actual composition is delegated to an abstract method \_composeOneLine\.
-Sets `more` to false and returns false if we are at the end of the content,
-otherwise returns true\.
+
+#### Rainbuf:composeOneLine()
+
+Composes one line and saves it to the cached ``lines`` array.
+Actual composition is delegated to an abstract method _composeOneLine.
+Sets ``more`` to false and returns false if we are at the end of the content,
+otherwise returns true.
 
 ```lua
 local insert = assert(table.insert)
@@ -261,19 +259,17 @@ function Rainbuf.composeOneLine(rainbuf)
    end
 end
 ```
+#### Rainbuf:_composeOneLine()
+
+Abstract method. Generate the next line of content (without caching it),
+returning nil if the available content is exhausted.
 
 
-#### Rainbuf:\_composeOneLine\(\)
+#### Rainbuf:composeUpTo(line_number)
 
-Abstract method\. Generate the next line of content \(without caching it\),
-returning nil if the available content is exhausted\.
-
-
-#### Rainbuf:composeUpTo\(line\_number\)
-
-Attempts to compose at least `line_number` lines to the cached `lines` array\.
-In order to correctly set `rainbuf.more`, we attempt to render
-one additional line\.
+Attempts to compose at least ``line_number`` lines to the cached ``lines`` array.
+In order to correctly set ``rainbuf.more``, we attempt to render
+one additional line.
 
 ```lua
 function Rainbuf.composeUpTo(rainbuf, line_number)
@@ -284,11 +280,9 @@ function Rainbuf.composeUpTo(rainbuf, line_number)
    return rainbuf
 end
 ```
+#### Rainbuf:composeAll()
 
-
-#### Rainbuf:composeAll\(\)
-
-Renders all of our content to the cached `lines` array\.
+Renders all of our content to the cached ``lines`` array.
 
 ```lua
 function Rainbuf.composeAll(rainbuf)
@@ -299,16 +293,15 @@ function Rainbuf.composeAll(rainbuf)
    return rainbuf
 end
 ```
+#### Rainbuf:lineGen()
+
+Generator which yields the portion of the Rainbuf that should be displayed
+(based on .rows and .cols), one line at a time.
 
 
-#### Rainbuf:lineGen\(\)
-
-Generator which yields the portion of the Rainbuf that should be displayedbased on \.rows and \.cols\), one line at a time\.
-
-\(
-Since we've replaced the old all\-at\-once `repr` with something that generates
-a line at a time \(and it only took, oh, six months\), we're finally able to
-generate these on the fly\.
+Since we've replaced the old all-at-once ``repr`` with something that generates
+a line at a time (and it only took, oh, six months), we're finally able to
+generate these on the fly.
 
 ```lua
 function Rainbuf.lineGen(rainbuf)
@@ -342,15 +335,13 @@ function Rainbuf.lineGen(rainbuf)
    return _nextLine
 end
 ```
-
-
 ### Content management and change detection
 
 
-#### Rainbuf:value\(\)
+#### Rainbuf:value()
 
-Retrieves our `value`, the thing we're primarily rendering, from our
-`source`, substituting a safe null value if we get a `nil`\.
+Retrieves our ``value``, the thing we're primarily rendering, from our
+``source``, substituting a safe null value if we get a ``nil``.
 
 ```lua
 function Rainbuf.value(rainbuf)
@@ -362,12 +353,10 @@ function Rainbuf.value(rainbuf)
    end
 end
 ```
-
-
-#### Rainbuf:clearCaches\(\)
+#### Rainbuf:clearCaches()
 
   Clears any cached lineGen iterators and their output, causing a full
-re\-compose the next time lineGen is called\.
+re-compose the next time lineGen is called.
 
 ```lua
 local clear = assert(table.clear)
@@ -376,12 +365,10 @@ function Rainbuf.clearCaches(rainbuf)
    rainbuf.more = true
 end
 ```
+#### Rainbuf:beTouched()
 
-
-#### Rainbuf:beTouched\(\)
-
-Mark the Rainbuf as touched\. Might as well clear caches at this point, we'll
-certainly need to before our next render\.
+Mark the Rainbuf as touched. Might as well clear caches at this point, we'll
+certainly need to before our next render.
 
 ```lua
 function Rainbuf.beTouched(rainbuf)
@@ -389,20 +376,15 @@ function Rainbuf.beTouched(rainbuf)
    rainbuf:clearCaches()
 end
 ```
+#### Rainbuf:checkTouched()
+
+Answers whether the Rainbuf (or its ``source``, if it has one) have been touched
+since the last time this method was called, clearing the flag in the process.
 
 
-#### Rainbuf:checkTouched\(\)
-
-Answers whether the Rainbuf \(or its `source`, if it has one\) have been touched
-since the last time this method was called, clearing the flag in the process\.
-
-Overrides should generally follow the pattern of checking any sub\-buffers or
-other data sources first, calling `:beTouched()` if they answer true, and
-calling `super` only at the end to reset the flag\.
-
-\#todo
-aren't an agent, so it feels a little weird to get it from there, but the
-actual "touched" concept is the same and the implementation certainly works\.
+Overrides should generally follow the pattern of checking any sub-buffers or
+other data sources first, calling ``:beTouched()`` if they answer true, and
+calling ``super`` only at the end to reset the flag.
 
 ```lua
 function Rainbuf.checkTouched(rainbuf)
@@ -414,14 +396,12 @@ function Rainbuf.checkTouched(rainbuf)
    return touched
 end
 ```
-
-
 ### Construction and inheritance
 
-#### Rainbuf:\_init\(\)
+#### Rainbuf:_init()
 
-Initialize the `Rainbuf` immediately after creation\. A newly\-created `Rainbuf`
-is considered `touched`, on the basis that it has "changed from" nothingness\.
+Initialize the ``Rainbuf`` immediately after creation. A newly-created ``Rainbuf``
+is considered ``touched``, on the basis that it has "changed from" nothingness.
 
 ```lua
 function Rainbuf._init(rainbuf)
@@ -430,14 +410,10 @@ function Rainbuf._init(rainbuf)
    rainbuf.touched = true
 end
 ```
+#### Rainbuf(source[, cfg])
 
-
-#### Rainbuf\(source\[, cfg\]\)
-
-Creates a Rainbuf drawing its content from `source`\-\-generally a Window,
-though a lookalike table can be used for one\-off/static content\.
-
-\#todo
+Creates a Rainbuf drawing its content from ``source``--generally a Window,
+though a lookalike table can be used for one-off/static content.
 
 ```lua
 function Rainbuf.__call(buf_class, source, cfg)
@@ -459,15 +435,14 @@ function Rainbuf.__call(buf_class, source, cfg)
    return rainbuf
 end
 ```
+#### Rainbuf:inherit([cfg])
+
+Create a metatable for a "subclass" of Rainbuf. Cribbed from Phrase:inherit().
 
 
-#### Rainbuf:inherit\(\[cfg\]\)
-
-Create a metatable for a "subclass" of Rainbuf\. Cribbed from Phrase:inherit\(\)\.
-
-N\.B\. This will function against either an instance \(`Rainbuf():inherit()`\)
-or the class itself \(`Rainbuf:inherit()`\), but in either case this is not true
-prototype inheritance, only behavior on the Rainbuf metatable is inherited\.
+N.B. This will function against either an instance (=Rainbuf():inherit()=)
+or the class itself (=Rainbuf:inherit()=), but in either case this is not true
+prototype inheritance, only behavior on the Rainbuf metatable is inherited.
 
 ```lua
 local sub = assert(string.sub)
@@ -491,27 +466,21 @@ function Rainbuf.inherit(buf_class, cfg)
    return child_M
 end
 ```
+#### Rainbuf:super(method_name)
 
-
-#### Rainbuf:super\(method\_name\)
-
-We mixin core:cluster\.super\.
+We mixin core:cluster.super.
 
 ```lua
 Rainbuf.super = assert(require "core:cluster" . super)
 ```
-
-
-#### Rainbuf\.is\_rainbuf
+#### Rainbuf.is_rainbuf
 
 We need a way to answer whether we are a Rainbuf **or any subclass**,
-attach a property at this level similar to espalier:node\.
+attach a property at this level similar to espalier:node.
 
 ```lua
 Rainbuf.is_rainbuf = true
 ```
-
-
 ```lua
 local Rainbuf_class = setmetatable({}, Rainbuf)
 Rainbuf.idEst = Rainbuf_class

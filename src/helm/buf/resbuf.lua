@@ -100,4 +100,3 @@ local Resbuf_class = setmetatable({}, Resbuf)
 Resbuf.idEst = Resbuf_class
 
 return Resbuf_class
-

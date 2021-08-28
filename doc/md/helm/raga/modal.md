@@ -1,6 +1,6 @@
 # Modal dialog
 
-Raga for displaying a modal dialog\. Uses a small z=2 zone to display\.
+Raga for displaying a modal dialog. Uses a small z=2 zone to display.
 
 ```lua
 
@@ -8,13 +8,11 @@ local clone = assert(require 'core:table' . clone)
 local a = require "anterm:anterm"
 local RagaBase = require "helm:raga/base"
 ```
-
 ```lua
 local Modal = clone(RagaBase, 2)
 Modal.name = "modal"
 Modal.prompt_char = " "
 ```
-
 ```lua
 function Modal.close(maestro, value)
    maestro.agents.modal.model.value = value
@@ -22,7 +20,6 @@ function Modal.close(maestro, value)
    maestro.modeS.shift_to = maestro.modeS.raga_default
 end
 ```
-
 ### Keyboard input
 
 ```lua
@@ -59,8 +56,6 @@ function Modal.acceptDefault(maestro, event)
    end
 end
 ```
-
-
 ### Keymap
 
 ```lua
@@ -73,9 +68,7 @@ for i = 1, 26 do
 end
 Modal.default_keymaps = { map }
 ```
-
-
-### Modal\.onShift, \.onUnshift
+### Modal.onShift, .onUnshift
 
 ```lua
 function Modal.onShift(modeS)
@@ -86,7 +79,6 @@ function Modal.onUnshift(modeS)
    modeS.zones.modal:hide()
 end
 ```
-
 ```lua
 return Modal
 ```

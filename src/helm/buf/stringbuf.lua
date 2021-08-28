@@ -41,4 +41,3 @@ local Stringbuf_class = setmetatable({}, Stringbuf)
 Stringbuf.idEst = Stringbuf_class
 
 return Stringbuf_class
-

@@ -1,6 +1,6 @@
 # Complete
 
-Handles choosing and accepting a suggestion from `suggest`\.
+Handles choosing and accepting a suggestion from ``suggest``.
 
 ```lua
 local clone = import("core/table", "clone")
@@ -11,8 +11,6 @@ local Complete = clone(EditBase, 2)
 Complete.name = "complete"
 Complete.prompt_char = "💬"
 ```
-
-
 ## Inserts
 
 ```lua
@@ -37,7 +35,6 @@ function Complete.PASTE(modeS, category, value)
 end
 
 ```
-
 ```lua
 local find = assert(string.find)
 local function _insert(modeS, category, value)
@@ -54,7 +51,6 @@ end
 Complete.ASCII = _insert
 Complete.UTF8 = _insert
 ```
-
 ## NAV
 
 ```lua
@@ -92,13 +88,11 @@ function NAV.LEFT(modeS, category, value)
    modeS.action_complete = false
 end
 ```
+### Complete.onTxtbufChanged(modeS)
 
-
-### Complete\.onTxtbufChanged\(modeS\)
-
-Update the suggestion list when the user types something\. Note that this won't
+Update the suggestion list when the user types something. Note that this won't
 be hit after a paste, or if the character inserted caused an accept, because
-we will have already shifted ragas\.
+we will have already shifted ragas.
 
 ```lua
 function Complete.onTxtbufChanged(modeS)
@@ -111,13 +105,11 @@ function Complete.onTxtbufChanged(modeS)
    EditBase.onTxtbufChanged(modeS)
 end
 ```
+### Complete.onCursorChanged(modeS)
 
-
-### Complete\.onCursorChanged\(modeS\)
-
-Any cursor movement drops us out of Complete mode\. Note that
-onCursorChanged and onTxtbufChanged are mutually exclusive\-\-this does not
-fire on a simple insert\.
+Any cursor movement drops us out of Complete mode. Note that
+onCursorChanged and onTxtbufChanged are mutually exclusive--this does not
+fire on a simple insert.
 
 ```lua
 function Complete.onCursorChanged(modeS)
@@ -125,12 +117,10 @@ function Complete.onCursorChanged(modeS)
    EditBase.onCursorChanged(modeS)
 end
 ```
-
-
-### Complete\.getCursorPosition\(modeS\)
+### Complete.getCursorPosition(modeS)
 
 If a suggestion is selected, adjust the cursor position
-to the end of the suggestion\.
+to the end of the suggestion.
 
 ```lua
 local Point = require "anterm:point"
@@ -148,29 +138,24 @@ function Complete.getCursorPosition(modeS)
    return point
 end
 ```
+### Complete.onShift
 
-
-### Complete\.onShift
-
-Select the first item in the list when entering complete mode\.
+Select the first item in the list when entering complete mode.
 
 ```lua
 function Complete.onShift(modeS)
    _scrollAfter(modeS, "selectFirst")
 end
 ```
+### Complete.onUnshift
 
-
-### Complete\.onUnshift
-
-Deselect and prod the Txtbuf on exit\.
+Deselect and prod the Txtbuf on exit.
 
 ```lua
 function Complete.onUnshift(modeS)
    _scrollAfter(modeS, "selectNone")
 end
 ```
-
 ```lua
 return Complete
 ```

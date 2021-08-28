@@ -1,15 +1,13 @@
 # PromptAgent
 
-Agent supplying the prompt\. The prompt character is supplied by the raga,
+Agent supplying the prompt. The prompt character is supplied by the raga,
 we're just a dumb value holder for that, but we do retrieve the number of
-continuation lines from a reference to the EditAgent's Window\.
+continuation lines from a reference to the EditAgent's Window.
 
 ```lua
 local PromptAgent = meta {}
 ```
-
-
-### PromptAgent:update\(prompt\_char\)
+### PromptAgent:update(prompt_char)
 
 ```lua
 function PromptAgent.update(agent, prompt_char)
@@ -17,13 +15,11 @@ function PromptAgent.update(agent, prompt_char)
    agent.touched = true
 end
 ```
+### PromptAgent:checkTouched()
 
-
-### PromptAgent:checkTouched\(\)
-
-Changes to the number of continuation lines also affect us\. Easiest to just
+Changes to the number of continuation lines also affect us. Easiest to just
 consider ourselves touched whenever the EditAgent is, not like painting the
-prompt is expensive\.
+prompt is expensive.
 
 ```lua
 local agent_utils = require "helm:agent/utils"
@@ -35,7 +31,6 @@ function PromptAgent.checkTouched(agent)
    return agent_utils.checkTouched(agent)
 end
 ```
-
 ### Window
 
 ```lua
@@ -46,8 +41,6 @@ PromptAgent.window = agent_utils.make_window_method({
    end}
 })
 ```
-
-
 ### new
 
 ```lua
@@ -56,7 +49,6 @@ local function new()
    return agent
 end
 ```
-
 ```lua
 PromptAgent.idEst = new
 return new

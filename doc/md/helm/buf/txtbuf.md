@@ -1,7 +1,7 @@
 # Txtbuf
 
-A `Rainbuf` specialized for displaying editable text, with optional
-syntax highlighting\.
+A ``Rainbuf`` specialized for displaying editable text, with optional
+syntax highlighting.
 
 
 ## Interface
@@ -9,12 +9,11 @@ syntax highlighting\.
 
 ### Instance fields
 
+-  render_row : Index of the row being rendered (Rainbuf implementation detail)
 
--  render\_row : Index of the row being rendered \(Rainbuf implementation detail\)
 
-
--  suggestions : The `Window` to the `SuggestAgent`, from which the list of
-    active suggestions is available, along with whether it has changed\.
+-  suggestions : The ``Window`` to the ``SuggestAgent``, from which the list of
+   active suggestions is available, along with whether it has changed.
 
 
 ## Methods
@@ -23,9 +22,7 @@ syntax highlighting\.
 local Rainbuf = require "helm:buf/rainbuf"
 local Txtbuf = Rainbuf:inherit()
 ```
-
-
-### Txtbuf:clearCaches\(\)
+### Txtbuf:clearCaches()
 
 ```lua
 function Txtbuf.clearCaches(txtbuf)
@@ -33,18 +30,14 @@ function Txtbuf.clearCaches(txtbuf)
    txtbuf.render_row = nil
 end
 ```
-
-
-### Txtbuf:initComposition\(\)
+### Txtbuf:initComposition()
 
 ```lua
 function Txtbuf.initComposition(txtbuf)
    txtbuf.render_row = txtbuf.render_row or 1
 end
 ```
-
-
-#### Txtbuf:\_composeOneLine\(\)
+#### Txtbuf:_composeOneLine()
 
 ```lua
 local c = assert(require "singletons:color" . color)
@@ -69,14 +62,12 @@ function Txtbuf._composeOneLine(txtbuf)
    return concat(tokens)
 end
 ```
+### Txtbuf:checkTouched()
 
-
-### Txtbuf:checkTouched\(\)
-
-We additionally check if something has changed about the active suggestions\.
-We must **not** clear the touched flag there in the process, but \#todo THIS WAY
+We additionally check if something has changed about the active suggestions.
+We must **not** clear the touched flag there in the process, but #todo THIS WAY
 IS BAD, since it depends on us going first, before the suggest zone itself is
-checked\.
+checked.
 
 ```lua
 function Txtbuf.checkTouched(txtbuf)
@@ -86,8 +77,6 @@ function Txtbuf.checkTouched(txtbuf)
    return txtbuf:super"checkTouched"()
 end
 ```
-
-
 ```lua
 local Txtbuf_class = setmetatable({}, Txtbuf)
 Txtbuf.idEst = Txtbuf_class

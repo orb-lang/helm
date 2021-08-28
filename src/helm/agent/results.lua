@@ -49,4 +49,3 @@ end
 
 ResultsAgent.idEst = new
 return new
-

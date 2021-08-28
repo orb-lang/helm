@@ -1,19 +1,33 @@
 
 @startuml
+
 class Modeselektor
-class Historian
-package "zone.orb" as zone_orb <<Folder>> {
-   class Zoneherd
-   class Zone
-}
+
+
+
 class Valiant
+
+
+class Historian
+
+package "scriveners.orb" as agent_hist <<Folder>> {
+   class Sessionagent
+   class Runagent
+}
+
+
 class Maestro
 
+
 class Agent
-class Editagent
-class Sessionagent
-class Suggestagent
-class Resultagent
+
+
+package "agent.orb" as agent_orb <<Folder>> {
+   class Editagent
+   class Suggestagent
+   class Resultagent
+}
+
 
 Agent --* Editagent
 Agent --* Sessionagent
@@ -47,26 +61,25 @@ object resultWindow
 object sessionWindow
 object runWindow
 
-oval "bufs" as BUF {
-   map suggestBuf {
-      suggestWindow *--> suggestWindow
-   }
 
-   map textBuf {
-      editWindow *--> editWindow
-   }
+map suggestBuf {
+    suggestWindow *--> suggestWindow
+}
 
-   map resultBuf {
-      resultWindow *--> resultWindow
-   }
+map textBuf {
+      editWindow  *--> editWindow
+}
 
-   map sessionBuf {
-      sessionWindow *--> sessionWindow
-   }
+map resultBuf {
+    resultWindow  *--> resultWindow
+}
 
-   map runBuf {
-      runWindow *--> runWindow
-   }
+map sessionBuf {
+   sessionWindow  *--> sessionWindow
+}
+
+map runBuf {
+       runWindow  *--> runWindow
 }
 
 map bufs {
@@ -76,6 +89,12 @@ map bufs {
    sessionBuf *--> BUF.sessionBuf
    runBuf *--> BUF.runBuf
    more => ...
+}
+
+
+package "zone.orb" as zone_orb <<Folder>> {
+   class Zoneherd
+   class Zone
 }
 
 object zoneBox

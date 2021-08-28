@@ -87,4 +87,3 @@ end
 
 SearchAgent.idEst = new
 return new
-

@@ -1,14 +1,16 @@
-# fuzz\_patt
+# fuzz_patt
 
-Builds an `lpeg` pattern which will recognize strings containing the characters
-of `frag`, in order but allowing other characters in between\.
+Builds an ``lpeg`` pattern which will recognize strings containing the characters
+of ``frag``, in order but allowing other characters in between.
 
-`(P(1) - P(frag[n]))^0` matches anything that isn't the next fragment,
-including `""`\.  We then require this to be followed by the next fragment,
-and so on\.
+
+``(P(1) - P(frag[n]))^0`` matches anything that isn't the next fragment,
+including ``""``.  We then require this to be followed by the next fragment,
+and so on.
+
 
 Exists as its own module for now because it's needed by history search and
-`suggest`\. There's probably a better place to put it\.
+``suggest``. There's probably a better place to put it.
 
 ```lua
 local L        = require "lpeg"

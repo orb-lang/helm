@@ -1,16 +1,14 @@
 # Agent utils
 
 Some functions commonly needed as methods on Agents, and some utils to assist
-in constructing them\.
+in constructing them.
 
 ```lua
 local agent_utils = {}
 ```
+### checkTouched()
 
-
-### checkTouched\(\)
-
-This implementation is used by things that aren't Agents, though they are Actors\.
+This implementation is used by things that aren't Agents, though they are Actors.
 
 ```lua
 function agent_utils.checkTouched(agent)
@@ -19,17 +17,16 @@ function agent_utils.checkTouched(agent)
    return touched
 end
 ```
-
-
 ### Basic Window config
 
-The `Window`s of `Agent`s need to implement some common behavior in order to
-interact correctly with `Rainbuf`s and change detection, so much of the config
-can be standardized\.
+The ``Window``s of ``Agent``s need to implement some common behavior in order to
+interact correctly with ``Rainbuf``s and change detection, so much of the config
+can be standardized.
+
 
 We need to produce a new copy of the config each time, and also we want to
 make it easy to extend, so we return a function that accepts additional config
-options, merges the two and returns a new table\.
+options, merges the two and returns a new table.
 
 ```lua
 local addall = assert(require "core:table" . addall)
@@ -45,12 +42,10 @@ local function make_window_cfg(more_cfg)
    return cfg
 end
 ```
+### make_window_method(cfg)
 
-
-### make\_window\_method\(cfg\)
-
-Constructs a function that can be installed as `AgentClass:window()`, with
-config based on the provided cfg plus some common behavior\.
+Constructs a function that can be installed as ``AgentClass:window()``, with
+config based on the provided cfg plus some common behavior.
 
 ```lua
 local Window = require "window:window"
@@ -65,7 +60,6 @@ function agent_utils.make_window_method(more_cfg)
    end
 end
 ```
-
 ```lua
 return agent_utils
 ```

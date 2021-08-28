@@ -1,18 +1,14 @@
 # Sessionbuf
 
-This is a type of `Rainbuf` specialized to display and edit a `Session`\.
+This is a type of ``Rainbuf`` specialized to display and edit a ``Session``.
 
 
 ## Instance fields
 
-
--  session:        The Session object we are displaying and editing\.
-
--  txtbufs:        Array of `Txtbuf`s for each line of the session\.
-
--  resbuf:         `Resbuf` for displaying the results of the selected line\.
-
--  selected\_index: The index of the line that is selected for editing
+-  session:        The Session object we are displaying and editing.
+-  txtbufs:        Array of ``Txtbuf``s for each line of the session.
+-  resbuf:         ``Resbuf`` for displaying the results of the selected line.
+-  selected_index: The index of the line that is selected for editing
 
 ```lua
 local Rainbuf = require "helm:buf/rainbuf"
@@ -21,8 +17,6 @@ local Txtbuf  = require "helm:buf/txtbuf"
 
 local Sessionbuf = Rainbuf:inherit()
 ```
-
-
 ## Constants
 
 ```lua
@@ -32,27 +26,23 @@ Sessionbuf.ROWS_PER_LINE = 4
 -- The (maximum) number of rows we will use for the result of the selected line
 Sessionbuf.ROWS_PER_RESULT = 7
 ```
-
-
 ## Methods
 
 
-### Sessionbuf:contentCols\(\)
+### Sessionbuf:contentCols()
 
 We have left and right borders, which immediately take off two columns of
-width\. Padding matters too, but only to our sub\-buffers, so we can't account
-for it here\.
+width. Padding matters too, but only to our sub-buffers, so we can't account
+for it here.
 
 ```lua
 function Sessionbuf.contentCols(buf)
    return buf:super"contentCols"() - 2
 end
 ```
+### Sub-buffer management
 
-
-### Sub\-buffer management
-
-We lazy\-create our subsidiary buffers\-\-centralize this with helper functions\.
+We lazy-create our subsidiary buffers--centralize this with helper functions.
 
 ```lua
 local function _set_resbuf_extent(buf)
@@ -86,12 +76,10 @@ local function _txtbuf(buf, index)
    return buf.txtbufs[index]
 end
 ```
+### Sessionbuf:setExtent(rows, cols)
 
-
-### Sessionbuf:setExtent\(rows, cols\)
-
-Pass through extent changes to our sub\-buffers as needed\. We extract this to a
-function because it also needs to happen when we create new sub\-buffers\.
+Pass through extent changes to our sub-buffers as needed. We extract this to a
+function because it also needs to happen when we create new sub-buffers.
 
 ```lua
 function Sessionbuf.setSubExtents(buf)
@@ -109,13 +97,11 @@ function Sessionbuf.setExtent(buf, rows, cols)
    buf:setSubExtents()
 end
 ```
+### Sessionbuf:checkTouched()
 
-
-### Sessionbuf:checkTouched\(\)
-
-Changes to our sub\-buffers \(e\.g\. from scrolling\) also count as touches\. We
-don't early\-out once we know we're touched because we must still check and
-clear everyone\.
+Changes to our sub-buffers (e.g. from scrolling) also count as touches. We
+don't early-out once we know we're touched because we must still check and
+clear everyone.
 
 ```lua
 function Sessionbuf.checkTouched(buf)
@@ -130,13 +116,11 @@ function Sessionbuf.checkTouched(buf)
    return buf:super"checkTouched"()
 end
 ```
-
-
-### Sessionbuf:rowsForSelectedResult\(\)
+### Sessionbuf:rowsForSelectedResult()
 
 Returns the number of lines needed to display the result of the
-selected premise\. This will never be greater than ROWS\_PER\_RESULT\.
-The Sessionbuf must have had :initComposition\(\) already called\.
+selected premise. This will never be greater than ROWS_PER_RESULT.
+The Sessionbuf must have had :initComposition() already called.
 
 ```lua
 local clamp = assert(require "core:math" . clamp)
@@ -145,11 +129,9 @@ function Sessionbuf.rowsForSelectedResult(buf)
    return clamp(#_resbuf(buf).lines, 0, buf.ROWS_PER_RESULT)
 end
 ```
+### Sessionbuf:positionOf(index)
 
-
-### Sessionbuf:positionOf\(index\)
-
-Returns the line number at which display of the `index`th premise begins\.
+Returns the line number at which display of the ``index``th premise begins.
 
 ```lua
 local gsub = assert(string.gsub)
@@ -170,11 +152,9 @@ function Sessionbuf.positionOfSelected(buf)
    return buf:positionOf(buf.source.selected_index)
 end
 ```
+#### Sessionbuf:scrollResultsDown(), :scrollResultsUp()
 
-
-#### Sessionbuf:scrollResultsDown\(\), :scrollResultsUp\(\)
-
-Scroll within the results area for the currently\-selected line\.
+Scroll within the results area for the currently-selected line.
 
 ```lua
 function Sessionbuf.scrollResultsDown(buf)
@@ -185,16 +165,14 @@ function Sessionbuf.scrollResultsUp(buf)
    return _resbuf(buf):scrollUp()
 end
 ```
-
-
 ### Rendering
 
 
-#### Sessionbuf:clearCaches\(\)
+#### Sessionbuf:clearCaches()
 
-Although we have sub\-buffers, their caches will usually remain valid
-even when ours does not, so leave them alone\.
-Discard any render coroutine we may be holding on to\.
+Although we have sub-buffers, their caches will usually remain valid
+even when ours does not, so leave them alone.
+Discard any render coroutine we may be holding on to.
 
 ```lua
 function Sessionbuf.clearCaches(buf)
@@ -202,9 +180,7 @@ function Sessionbuf.clearCaches(buf)
    buf._composeOneLine = nil
 end
 ```
-
-
-#### Sessionbuf:initComposition\(\)
+#### Sessionbuf:initComposition()
 
 ```lua
 local wrap = assert(coroutine.wrap)
@@ -219,13 +195,11 @@ function Sessionbuf.initComposition(buf)
       end)
 end
 ```
-
-
-#### Sessionbuf:\_composeAll\(\)
+#### Sessionbuf:_composeAll()
 
 Given the amount of state involved in our render process, it's easier
-to just do it all as a coroutine\. This method is the body of that coroutine,
-and we assign the wrapped result dynamically to `_composeOneLine`
+to just do it all as a coroutine. This method is the body of that coroutine,
+and we assign the wrapped result dynamically to ``_composeOneLine``
 
 ```lua
 local status_icons = {
@@ -271,13 +245,11 @@ function Sessionbuf._composeAll(buf)
    buf._composeOneLine = nil
 end
 ```
-
-
-### Sessionbuf:\_init\(\)
+### Sessionbuf:_init()
 
 We have an array of Txtbufs to initialize, though we leave it empty and fill
-it lazily\. We also defer creating a Resbuf until we need it, since we need to
-have our source window in order to do so\.
+it lazily. We also defer creating a Resbuf until we need it, since we need to
+have our source window in order to do so.
 
 ```lua
 function Sessionbuf._init(buf)
@@ -285,8 +257,6 @@ function Sessionbuf._init(buf)
    buf.txtbufs = {}
 end
 ```
-
-
 ```lua
 local Sessionbuf_class = setmetatable({}, Sessionbuf)
 Sessionbuf.idEst = Sessionbuf_class

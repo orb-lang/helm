@@ -1,101 +1,117 @@
 # Modeselektor
 
-`helm` will hold all state for an terminal session, including setup of io,
-the main event loop, teardown and exuent\.  Soon, we will encapsulate that,
-making the library re\-entrant\.
+``helm`` will hold all state for an terminal session, including setup of io,
+the main event loop, teardown and exuent.  Soon, we will encapsulate that,
+making the library re-entrant.
 
-`modeselektor` is the modal interpreter for the repl language, which becomes
-the core of `ed`\.  This is a glorified lookup table with a state switch and
-a pointer to the `helm`cell we're operating on\.
+
+``modeselektor`` is the modal interpreter for the repl language, which becomes
+the core of ``ed``.  This is a glorified lookup table with a state switch and
+a pointer to the ``helm``cell we're operating on.
 
 
 ## Design
 
-  `helm` passes keystrokes as messages to `modeselektor`\.  It does no writes
-to stdout at all\.  It is smart enough to categorize and parse various device
-reports, but has no knowledge of why those reports were requested\.
+  ``helm`` passes keystrokes as messages to ``modeselektor``.  It does no writes
+to stdout at all.  It is smart enough to categorize and parse various device
+reports, but has no knowledge of why those reports were requested.
 
-`helm` runs the event loop, so all other members are pulled in as modules\.
 
-`modeselektor` takes care of system\-level housekeeping: opening files
+``helm`` runs the event loop, so all other members are pulled in as modules.
+
+
+``modeselektor`` takes care of system-level housekeeping: opening files
 and sockets, keeping command history, fuzzy completion, and has its own eval
-loop off the main track\.  For evaluating lines, it will call a small executor,
-so that in a little while we can put the user program in its own `LuaL_state`\.
+loop off the main track.  For evaluating lines, it will call a small executor,
+so that in a little while we can put the user program in its own ``LuaL_state``.
+
 
 This is both good practice, and absolutely necessary if we are to REPL other
-`bridge` programs, each of which has its own event loop\.
+``bridge`` programs, each of which has its own event loop.
 
-The implementation is essentially a VM\.  Category and value are
-successively looked up in jump tables and the method applied with the `modeS`
-instance as the first argument\.
+
+The implementation is essentially a VM.  Category and value are
+successively looked up in jump tables and the method applied with the ``modeS``
+instance as the first argument.
+
 
 The state machine has to represent two sorts of state: the mode we're
-operating in, and a buffer of commands\.  Our mode engine is modeled after
+operating in, and a buffer of commands.  Our mode engine is modeled after
 emacs: rather than have some kind of flag that can be set to "insert",
 "navigate", "command", or "visual", these will be modeled as swiching the
-pointer to jump tables\.  If a command needs to know which mode it's in, this
-can be done with pointer comparison\.
+pointer to jump tables.  If a command needs to know which mode it's in, this
+can be done with pointer comparison.
 
-We're starting with `vi` mode and `nerf` mode, which is a lightweight
-`readline` implementation that won't use the command buffer\.  Issuing a
-command like `d3w` requires a simple command buffer\.
 
-The syntax can't be tied to the semantics in any tighly\-coupled way\. I intend
-to support `kakoune` syntax as soon as possible; there you would say `w3d`\.
+We're starting with ``vi`` mode and ``nerf`` mode, which is a lightweight
+``readline`` implementation that won't use the command buffer.  Issuing a
+command like ``d3w`` requires a simple command buffer.
 
-This implies that the commands can't be aware of the buffer; because `d3w`
-and `w3d` are two ways of saying the same thing, they should end in an
-identical method call\.
 
-This means when the time comes we handle it with a secondary dispatch layer\.
+The syntax can't be tied to the semantics in any tighly-coupled way. I intend
+to support ``kakoune`` syntax as soon as possible; there you would say ``w3d``.
+
+
+This implies that the commands can't be aware of the buffer; because ``d3w``
+and ``w3d`` are two ways of saying the same thing, they should end in an
+identical method call.
+
+
+This means when the time comes we handle it with a secondary dispatch layer.
+
 
 There really are effectively arbitrary levels of indirection possible in an
-editor\.  This is why we must be absolutely consistent about everything
-receiving the same tuple \(modeS, category, value\)\.
+editor.  This is why we must be absolutely consistent about everything
+receiving the same tuple (modeS, category, value).
 
-They must also have the same return type, with is either `true` or
-`false, err`  where `err` is an error object which may be a primitive string\.
 
-`modeselektor` passes any edit or movement commands to an internally\-owned
-`txtbuf`, which keeps all modeling of the line\.  `modeselektor` decides when
-to repaint the screen, calling `rainbuf` \(currently just `lex`\) with a region
-of `txtbuf` and instructions as to how to paint it\.
+They must also have the same return type, with is either ``true`` or
+``false, err``  where ``err`` is an error object which may be a primitive string.
 
-There is one `deck` instance member per screen, which tiles the available
-space\.  `modeselektor` is the writer, and `rainbuf` holds a pointer to the
-table for read access\.
+
+``modeselektor`` passes any edit or movement commands to an internally-owned
+``txtbuf``, which keeps all modeling of the line.  ``modeselektor`` decides when
+to repaint the screen, calling ``rainbuf`` (currently just ``lex``) with a region
+of ``txtbuf`` and instructions as to how to paint it.
+
+
+There is one ``deck`` instance member per screen, which tiles the available
+space.  ``modeselektor`` is the writer, and ``rainbuf`` holds a pointer to the
+table for read access.
+
 
 When we have our fancy parse engine and quipu structure, txtbuf will call
-`comb` to redecorate the syntax tree before passing it to `rainbuf` for
-markup\.  At the moment I'm just going to write some crude lexers, which
-will be more than enough for Clu and Lua, which have straightforward syntax\.
+``comb`` to redecorate the syntax tree before passing it to ``rainbuf`` for
+markup.  At the moment I'm just going to write some crude lexers, which
+will be more than enough for Clu and Lua, which have straightforward syntax.
+
 
 An intermediate step could just squeeze the txtbuf into a string, parse it
-with `espalier` and emit a `rainbuf` through the usual recursive method
-lookup\.  The problem isn't speed, not for a REPL, it's not having error
-recovery parsing available\.
+with ``espalier`` and emit a ``rainbuf`` through the usual recursive method
+lookup.  The problem isn't speed, not for a REPL, it's not having error
+recovery parsing available.
+
 
 I will likely content myself with a grammar that kicks in when the user
-presses return\.  I'll want that to perform rewrites \(such as removing
-outer\-level `local`s to facilicate copy\-pasting\) and keep the readline
-grammar from becoming too ad\-hoc\.
+presses return.  I'll want that to perform rewrites (such as removing
+outer-level ``local``s to facilicate copy-pasting) and keep the readline
+grammar from becoming too ad-hoc.
 
 
 #### asserts
 
-  There is little sense running `modeselektor` outside of the `bridge`
-environment\.
+  There is little sense running ``modeselektor`` outside of the ``bridge``
+environment.
 
 ```lua
 assert(meta, "must have meta in _G")
 ```
-
-
 #### includes
 
-The easiest way to go mad in concurrent environments is to share memory\.
+The easiest way to go mad in concurrent environments is to share memory.
 
-`modeselektor` will own txtbuf, historian, and the entire screen\.
+
+``modeselektor`` will own txtbuf, historian, and the entire screen.
 
 ```lua
 local Historian  = require "helm:historian"
@@ -107,41 +123,43 @@ local Resbuf    = require "helm:buf/resbuf"
 local Stringbuf = require "helm:buf/stringbuf"
 local Txtbuf    = require "helm:buf/txtbuf"
 ```
-
 ```lua
 local ModeS = meta()
 ```
 
+Color schemes are supposed to be one-and-done, and I strongly suspect we
+have a ``__concat`` dominated workflow, although I have yet to turn on the
+profiler.
 
-Color schemes are supposed to be one\-and\-done, and I strongly suspect we
-have a `__concat` dominated workflow, although I have yet to turn on the
-profiler\.
 
-Therefore we use reference equality for the `color` and `hints` tables\.
-Switching themes is a matter of repopulating those tables\.  I intend to
+Therefore we use reference equality for the ``color`` and ``hints`` tables.
+Switching themes is a matter of repopulating those tables.  I intend to
 isolate this within an instance so that multiple terminals can each run their
-own theme, through a simple 'fat inheritance' method\.
+own theme, through a simple 'fat inheritance' method.
 
-`modeselektor` is what you might call hypermodal\. Everything is isolated in
-its own lookup, that is, we use *value* equality\.  This lets us pass strings
-as messages and use jump tables to resolve most things\.
+
+``modeselektor`` is what you might call hypermodal. Everything is isolated in
+its own lookup, that is, we use _value_ equality.  This lets us pass strings
+as messages and use jump tables to resolve most things.
+
 
 It typically runs at the speed of human fingers and can afford to be much less
-efficient than it will be, even before the JIT gets involved\.
+efficient than it will be, even before the JIT gets involved.
+
 
 Note also that everything is a method, our dispatch pattern will always
-include the `modeS` instance as the first argument\.
+include the ``modeS`` instance as the first argument.
 
-With some semi\-constants:
+
+With some semi-constants:
 
 ```lua
 ModeS.REPL_LINE = 2
 ModeS.PROMPT_WIDTH = 3
 ```
+### ModeS:errPrint(modeS, category, value)
 
-### ModeS:errPrint\(modeS, category, value\)
-
-Debug aide\.
+Debug aide.
 
 ```lua
 function ModeS.errPrint(modeS, log_stmt)
@@ -150,12 +168,10 @@ function ModeS.errPrint(modeS, log_stmt)
    return modeS
 end
 ```
+### ModeS:placeCursor()
 
-
-### ModeS:placeCursor\(\)
-
-Places the cursor where it belongs on the screen\.
-We delegate determining where this is to the Raga\.
+Places the cursor where it belongs on the screen.
+We delegate determining where this is to the Raga.
 
 ```lua
 local Point = require "anterm:point"
@@ -167,11 +183,10 @@ function ModeS.placeCursor(modeS)
    return modeS
 end
 ```
+### ModeS:paint()
 
-### ModeS:paint\(\)
-
-Paint the screen\. Primarily handled by the same method on the Zoneherd,
-but we must also place the cursor\.
+Paint the screen. Primarily handled by the same method on the Zoneherd,
+but we must also place the cursor.
 
 ```lua
 function ModeS.paint(modeS)
@@ -180,9 +195,7 @@ function ModeS.paint(modeS)
    return modeS
 end
 ```
-
-
-### ModeS:reflow\(\)
+### ModeS:reflow()
 
 ```lua
 function ModeS.reflow(modeS)
@@ -191,12 +204,12 @@ function ModeS.reflow(modeS)
    return modeS
 end
 ```
-
 ### Prompts and modes / ragas
 
-Time to add modes to the `modeselektor`\! Yes, I'm calling it `raga`
-and that's a bit precious, but it's an important and heavily\-used concept,
-so it's good to have a unique name\.
+Time to add modes to the ``modeselektor``! Yes, I'm calling it ``raga``
+and that's a bit precious, but it's an important and heavily-used concept,
+so it's good to have a unique name.
+
 
 Right now everything works on the default mode, "nerf":
 
@@ -205,36 +218,42 @@ ModeS.raga_default = "nerf"
 ```
 
 We'll need several basic modes and some ways to do overlay, and we need a
-single source of truth as to what mode we're in\.
+single source of truth as to what mode we're in.
 
-The entrance for that should be a single function, `ModeS:shiftMode(raga)`,
-which takes care of all stateful changes to `modeselektor` needed to enter
-the mode\.  One thing it will do is set the field `raga` to the parameter\.
+
+The entrance for that should be a single function, ``ModeS:shiftMode(raga)``,
+which takes care of all stateful changes to ``modeselektor`` needed to enter
+the mode.  One thing it will do is set the field ``raga`` to the parameter.
+
 
 As a general rule, we want mode changes to work generically, by changing
-the functions attached to `(category, value)` pairs\.
+the functions attached to ``(category, value)`` pairs.
+
 
 But sometimes we'll want a bit of logic that dispatches on the mode directly,
-repainting is a good example of this\.
-
-The next mode we're going to write is `"search"`\.
+repainting is a good example of this.
 
 
-### ModeS:shiftMode\(raga\)
-
-The `modeselektor`, as described in the prelude, is a stateful and hypermodal
-`repl` environment\.
-
-`shiftMode` is the gear stick which drives the state\. It encapsulates the
-state changes needed to switch between them\.
-
-I'm going to go ahead and weld on `search` before I start waxing eloquent\.
+The next mode we're going to write is ``"search"``.
 
 
-#### ModeS\.closet
+### ModeS:shiftMode(raga)
+
+The ``modeselektor``, as described in the prelude, is a stateful and hypermodal
+``repl`` environment.
+
+
+``shiftMode`` is the gear stick which drives the state. It encapsulates the
+state changes needed to switch between them.
+
+
+I'm going to go ahead and weld on ``search`` before I start waxing eloquent.
+
+
+#### ModeS.closet
 
 A storage table for modes and other things we aren't using and need to
-retrieve\.
+retrieve.
 
 ```lua
 local Nerf      = require "helm:raga/nerf"
@@ -283,27 +302,27 @@ function ModeS.shiftMode(modeS, raga_name)
    return modeS
 end
 ```
-
-
 ## act
 
-`act` dispatches a single seq \(which has already been parsed into \(category, value\)
-by `onseq`\)\. It may try the dispatch multiple times if the raga indicates
-that reprocessing is needed by setting `modeS.action_complete` to =false\.
+``act`` dispatches a single seq (which has already been parsed into (category, value)
+by ``onseq``). It may try the dispatch multiple times if the raga indicates
+that reprocessing is needed by setting ``modeS.action_complete`` to =false.
 
-Note that our common interface is `method(modeS, category, value)`,
-we need to distinguish betwen the tuple `("INSERT", "SHIFT-LEFT")`
-\(which could arrive from copy\-paste\) and `("NAV", "SHIFT-LEFT")`
-and preserve information for our fall\-through method\.
 
-`act` always succeeds, meaning we need some metatable action to absorb and
-log anything unexpected\.
+Note that our common interface is ``method(modeS, category, value)``,
+we need to distinguish betwen the tuple ``("INSERT", "SHIFT-LEFT")``
+(which could arrive from copy-paste) and ``("NAV", "SHIFT-LEFT")``
+and preserve information for our fall-through method.
+
+
+``act`` always succeeds, meaning we need some metatable action to absorb and
+log anything unexpected.
 
 
 ### actOnce
 
 Dispatches a seq to the current raga, answering whether or not the raga could
-process it \(if this never occurs, we display an NYI message in the status area\)\.
+process it (if this never occurs, we display an NYI message in the status area).
 
 ```lua
 local function _check_shift(modeS)
@@ -340,7 +359,6 @@ function ModeS.actOnce(modeS, event, old_cat_val)
    return command
 end
 ```
-
 ```lua
 function ModeS.act(modeS, event, old_cat_val)
    local command
@@ -370,33 +388,26 @@ function ModeS.act(modeS, event, old_cat_val)
 end
 ```
 
-To keep `act` itself replaceable, we look it up on each call:
+To keep ``act`` itself replaceable, we look it up on each call:
 
 ```lua
 function ModeS.__call(modeS, category, value)
    return modeS:act(category, value)
 end
 ```
+### ModeS:agent(agent_name)
 
-
-### ModeS:agent\(agent\_name\)
-
-Shorthand for referring to `Agent`s, which are stored on `Maestro`, but which
-we often talk to directly\.
+Shorthand for referring to ``Agent``s, which are stored on ``Maestro``, but which
+we often talk to directly.
 
 ```lua
 function ModeS.agent(modeS, agent_name)
    return modeS.maestro.agents[agent_name]
 end
 ```
+### ModeS:setResults(results), :clearResults()
 
-
-### ModeS:setResults\(results\), :clearResults\(\)
-
-Sets the current "results" to `results`\.
-
-\#todo
-awkward right now, as migration to new keymaps proceeds it'll get easier\.
+Sets the current "results" to ``results``.
 
 ```lua
 function ModeS.setResults(modeS, results)
@@ -408,13 +419,9 @@ function ModeS.clearResults(modeS)
    return modeS:setResults(nil)
 end
 ```
+### ModeS:setStatusLine(status_name, format_args...)
 
-
-### ModeS:setStatusLine\(status\_name, format\_args\.\.\.\)
-
-Sets the status line at the top of the screen by updating the StatusAgent\.
-
-\#todo
+Sets the status line at the top of the screen by updating the StatusAgent.
 
 ```lua
 
@@ -422,12 +429,10 @@ function ModeS.setStatusLine(modeS, status_name, ...)
    modeS:agent'status':update(status_name, ...)
 end
 ```
+### ModeS:quit()
 
-
-### ModeS:quit\(\)
-
-Marks the modeselektor as ready to quit \(the actual teardown will happen
-in the outer event\-loop code in helm\.orb\)
+Marks the modeselektor as ready to quit (the actual teardown will happen
+in the outer event-loop code in helm.orb)
 
 ```lua
 function ModeS.quit(modeS)
@@ -440,11 +445,9 @@ function ModeS.quit(modeS)
    modeS.has_quit = true
 end
 ```
+### ModeS:restart()
 
-
-### ModeS:restart\(\)
-
-This resets `_G` and runs all commands in the current session\.
+This resets ``_G`` and runs all commands in the current session.
 
 ```lua
 function ModeS.restart(modeS)
@@ -483,10 +486,9 @@ function ModeS.restart(modeS)
    return modeS
 end
 ```
+### ModeS:openHelp()
 
-### ModeS:openHelp\(\)
-
-Opens a simple help screen\.
+Opens a simple help screen.
 
 ```lua
 local rep = assert(string.rep)
@@ -495,14 +497,10 @@ function ModeS.openHelp(modeS)
    modeS.shift_to = "page"
 end
 ```
+### ModeS:showModal(text, button_style)
 
-### ModeS:showModal\(text, button\_style\)
-
-Shows a modal dialog with the given text and button stylesee [https://gitlab.com/special-circumstance/helm/-/blob/trunk/doc/md/agent/modal.md](https://gitlab.com/special-circumstance/helm/-/blob/trunk/doc/md/agent/modal.md) for valid button styles\)\.
-
-\(
-\#todo
-which point we won't need this method\.
+Shows a modal dialog with the given text and button style
+(see [[@agent/modal]] for valid button styles).
 
 ```lua
 function ModeS.showModal(modeS, text, button_style)
@@ -511,21 +509,16 @@ function ModeS.showModal(modeS, text, button_style)
    return modeS
 end
 ```
-
-### ModeS:modalAnswer\(\)
-
-\#todo
-agent, but it'd be nice to be able to show a modal that way too, first\.
+### ModeS:modalAnswer()
 
 ```lua
 function ModeS.modalAnswer(modeS)
    return modeS:agent'modal':answer()
 end
 ```
+#### modeS.status
 
-#### modeS\.status
-
-A way to jack into `status`\.
+A way to jack into ``status``.
 
 ```lua
 local concat = assert(table.concat)
@@ -540,14 +533,9 @@ function _stat_M.clear(status_table)
    return setmetatable({}, getmetatable(status_table))
 end
 ```
+### ModeS:bindZone(zone_name, agent_name, buf_class, cfg)
 
-
-### ModeS:bindZone\(zone\_name, agent\_name, buf\_class, cfg\)
-
-Changes the Zone `zone_name` to display content from the Agent named `agent_name`\.
-
-\#todo
-as arguments is probably not the best choice\.
+Changes the Zone ``zone_name`` to display content from the Agent named ``agent_name``.
 
 ```lua
 function ModeS.bindZone(modeS, zone_name, agent_name, buf_class, cfg)
@@ -556,8 +544,6 @@ function ModeS.bindZone(modeS, zone_name, agent_name, buf_class, cfg)
    zone:replace(buf_class(agent:window(), cfg))
 end
 ```
-
-
 ## new
 
 ```lua
@@ -632,30 +618,6 @@ end
 
 ModeS.idEst = new
 ```
-
 ```lua
 return new
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

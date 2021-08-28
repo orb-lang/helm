@@ -8,19 +8,12 @@ local addall, clone = import("core/table", "addall", "clone")
 local RagaBase = require "helm:helm/raga/base"
 local Txtbuf = require "helm:buf/txtbuf"
 ```
-
 ```lua
 local EditBase = clone(RagaBase, 2)
 ```
-
-
 ## Keymap
 
-Almost all of our actions are just passed through to the Txtbuf\.
-
-\#todo
-just than on the raga, but that probably needs a concept of focus in order to
-work\.
+Almost all of our actions are just passed through to the Txtbuf.
 
 ```lua
 local map = {
@@ -64,8 +57,6 @@ map["C-r"] = "restartSession"
 
 EditBase.default_keymaps = { map }
 ```
-
-
 ### Insertion
 
 ```lua
@@ -88,19 +79,15 @@ function EditBase.PASTE(modeS, category, value)
 end
 
 ```
+## EditBase.getCursorPosition(modeS)
 
-
-## EditBase\.getCursorPosition\(modeS\)
-
-Offset into the `command` zone, based on the Txtbuf's `cursor` property\.
+Offset into the ``command`` zone, based on the Txtbuf's ``cursor`` property.
 
 ```lua
 function EditBase.getCursorPosition(modeS)
    return modeS.zones.command.bounds:origin() + modeS:agent'edit'.cursor - 1
 end
 ```
-
-
 ```lua
 return EditBase
 ```

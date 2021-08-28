@@ -1,9 +1,7 @@
 # Lex
 
 
-We're going to do this will straight el peg, and fold in `espalier` ASAP\.
-
-\#Todo
+We're going to do this will straight el peg, and fold in ``espalier`` ASAP.
 
 ```lua
 local L = require "lpeg"
@@ -12,8 +10,6 @@ local Lex = meta {}
 local sub, gsub = assert(string.sub), assert(string.gsub)
 local concat, insert = assert(table.concat), assert(table.insert)
 ```
-
-
 ### Lua lexers
 
 ```lua
@@ -96,17 +92,15 @@ local color_map = {
 }
 
 ```
+## Lex.lua_thor(txtbuf)
+
+...it's late.
 
 
-## Lex\.lua\_thor\(txtbuf\)
+### chomp_token(lb)
 
-\.\.\.it's late\.
-
-
-### chomp\_token\(lb\)
-
-This is an almost pessimal way to use `lpeg`, which is quite capable of
-handling a full line in one pass\.
+This is an almost pessimal way to use ``lpeg``, which is quite capable of
+handling a full line in one pass.
 
 ```lua
 local function chomp_token(lb, start_pos)
@@ -162,17 +156,15 @@ function Lex.lua_thor(code, cursor_index)
    return toks
 end
 ```
+## Lex.null
 
-## Lex\.null
-
-A lexer that does no actual lexing \(used by search\)\.
+A lexer that does no actual lexing (used by search).
 
 ```lua
 function Lex.null(code, cursor_index)
    return { Token(code, { color = "no_color", cursor_offset = cursor_index - 1 }) }
 end
 ```
-
 ```lua
 return Lex
 ```

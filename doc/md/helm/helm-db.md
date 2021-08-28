@@ -2,7 +2,7 @@
 
 
   This module provides all the mechanisms for CRUDing the helm SQLite
-database\.
+database.
 
 
 #### imports
@@ -11,42 +11,36 @@ database\.
 local uv  = require "luv"
 local sql = assert(sql, "sql must be in bridge _G")
 ```
-
-
-## helm\_db
+## helm_db
 
 ```lua
 local helm_db = {}
 ```
-
-
-#### helm\_db\_home
+#### helm_db_home
 
 ```lua
 local helm_db_home =  os.getenv 'HELM_HOME'
                       or _Bridge.bridge_home .. "/helm/helm.sqlite"
 helm_db.helm_db_home = helm_db_home
 ```
+#### _conns
+
+A weak table to hold conns, keyed by string path.
 
 
-#### \_conns
-
-A weak table to hold conns, keyed by string path\.
-
-This does mean we can only have one in\-memory database `""` at a time, which
-should be okay\.
+This does mean we can only have one in-memory database ``""`` at a time, which
+should be okay.
 
 ```lua
 local _conns = setmetatable({}, { __mode = 'v' })
 ```
+#### _resolveConn(conn)
+
+A helper function to retrieve a conn if we already have one.
 
 
-#### \_resolveConn\(conn\)
-
-A helper function to retrieve a conn if we already have one\.
-
-Doesn't build a conn if it can't find one, and presumes that non\-string
-parameters are already conns\.
+Doesn't build a conn if it can't find one, and presumes that non-string
+parameters are already conns.
 
 ```lua
 local function _resolveConn(conn)
@@ -60,12 +54,10 @@ local function _resolveConn(conn)
    return nil
 end
 ```
+#### _openConn(conn_handle?)
 
-
-#### \_openConn\(conn\_handle?\)
-
-Returns an open conn, defaults to `helm_db_home`, will reuse existing conns if
-it has them\.
+Returns an open conn, defaults to ``helm_db_home``, will reuse existing conns if
+it has them.
 
 ```lua
 local function _openConn(conn_handle)
@@ -80,22 +72,22 @@ local function _openConn(conn_handle)
    return conn
 end
 ```
-
-
 ### Create tables
 
 The schema with the highest version number is the one which is current for
-that table\.  The table will of course not have the `_n` suffix in the
-database\.  The number is that of the migration where the table was recreated\.
+that table.  The table will of course not have the ``_n`` suffix in the
+database.  The number is that of the migration where the table was recreated.
 
-Other than that, SQLite lets you add columns and rename tables\.
 
-When this is done, it will be noted\.
+Other than that, SQLite lets you add columns and rename tables.
+
+
+When this is done, it will be noted.
 
 
 #### Canonical
 
-These are the current forms of each table\.
+These are the current forms of each table.
 
 
 ##### Project
@@ -107,8 +99,6 @@ CREATE TABLE IF NOT EXISTS project_3 (
    time DATETIME DEFAULT (strftime('%Y-%m-%dT%H:%M:%f', 'now'))
 );
 ```
-
-
 ##### Repl
 
 ```sql
@@ -122,8 +112,6 @@ CREATE TABLE IF NOT EXISTS repl_3 (
       ON DELETE CASCADE
 );
 ```
-
-
 ##### Result
 
 ```sql
@@ -137,8 +125,6 @@ CREATE TABLE IF NOT EXISTS result (
       ON DELETE CASCADE
 );
 ```
-
-
 ##### Session
 
 ```sql
@@ -153,8 +139,6 @@ CREATE TABLE IF NOT EXISTS session (
       ON DELETE CASCADE
 );
 ```
-
-
 ##### Premise
 
 ```sql
@@ -176,11 +160,9 @@ CREATE TABLE IF NOT EXISTS premise (
       ON DELETE CASCADE
 );
 ```
-
-
 #### Obsolete
 
-These are old forms of tables, which we need in order to properly migrate\.
+These are old forms of tables, which we need in order to properly migrate.
 
 ```sql
 CREATE TABLE IF NOT EXISTS project (
@@ -189,7 +171,6 @@ CREATE TABLE IF NOT EXISTS project (
    time DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 ```
-
 ```sql
 CREATE TABLE IF NOT EXISTS session (
 session_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -204,7 +185,6 @@ FOREIGN KEY (project)
    REFERENCES project (project_id)
    ON DELETE CASCADE );
 ```
-
 ```sql
 CREATE TABLE IF NOT EXISTS repl (
    line_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -216,24 +196,26 @@ CREATE TABLE IF NOT EXISTS repl (
       ON DELETE CASCADE
 );
 ```
-
-
 ### Migrations
 
-  We follow a simple format for migrations, incrementing the `user_version`
-pragma by 1 for each alteration of the schema\.
+  We follow a simple format for migrations, incrementing the ``user_version``
+pragma by 1 for each alteration of the schema.
+
 
 We write a single function, which receives the database conn, for each change,
 such that we should be able to take a database at any schema and bring it up
-to the standard needed for this version of `helm`\.
+to the standard needed for this version of ``helm``.
 
-We store these migrations in an array, such that `migration[i]` creates
-`user_version` `i`\.
 
-We skip `1` because a pragma equal to 1 is translated to the boolean `true`\.
+We store these migrations in an array, such that ``migration[i]`` creates
+``user_version`` ``i``.
 
-Migrations return `true`, in case we find a migration that needs a check to
-pass\.  Unless that happens, we won't bother to check the return value\.
+
+We skip ``1`` because a pragma equal to 1 is translated to the boolean ``true``.
+
+
+Migrations return ``true``, in case we find a migration that needs a check to
+pass.  Unless that happens, we won't bother to check the return value.
 
 ```lua
 helm_db.HELM_DB_VERSION = 3
@@ -241,9 +223,7 @@ helm_db.HELM_DB_VERSION = 3
 local migrations = {function() return true end}
 helm_db.migrations = migrations
 ```
-
-
-#### Version 2: Creates tables\.
+#### Version 2: Creates tables.
 
 ```lua
 local insert = assert(table.insert)
@@ -257,131 +237,116 @@ local migration_2 = {
 
 insert(migrations, migration_2)
 ```
-
-
-#### Version 3: Millisecond\-resolution timestamps\.
+#### Version 3: Millisecond-resolution timestamps.
 
   We want to accomplish two things here: change the format of all existing
-timestamps, and change the default to have millisecond resolution and useT" instead of " " as the separator\.
+timestamps, and change the default to have millisecond resolution and use
+"T" instead of " " as the separator.
 
-"
+
 SQLite being what it is, the latter requires us to copy everything to a new
-table\.  This must be done for the `project` and `repl` tables\.
+table.  This must be done for the ``project`` and ``repl`` tables.
 
 ```lua
 local migration_3 = {}
 ```
-
 ```sql
 UPDATE project
 SET time = strftime('%Y-%m-%dT%H:%M:%f', time);
 ```
-
 ```lua
 migration_3[2] = create_project_table_3
 ```
-
 ```sql
 INSERT INTO project_3 (project_id, directory, time)
 SELECT project_id, directory, time
 FROM project;
 ```
-
 ```sql
 DROP TABLE project;
 ```
-
 ```sql
 ALTER TABLE project_3
 RENAME TO project;
 ```
-
 ```sql
 UPDATE repl
 SET time = strftime('%Y-%m-%dT%H:%M:%f', time);
 ```
-
 ```lua
 migration_3[7] = create_repl_table_3
 ```
-
 ```sql
 INSERT INTO repl_3 (line_id, project, line, time)
 SELECT line_id, project, line, time
 FROM repl;
 ```
-
 ```sql
 DROP TABLE repl;
 ```
-
 ```sql
 ALTER TABLE repl_3
 RENAME to repl;
 ```
-
 ```lua
 insert(migrations, migration_3)
 ```
-
-
 #### Version 4: Sessions
 
 
 ##### Sessions
 
   The current session table is a stub, and isn't useful as is; nor is it
-referred to anywhere in the codebase\.
+referred to anywhere in the codebase.
+
 
 So the first step is to drop that table, and replace it with a new one which
-does\.
+does.
 
-We add a second table, `premise`, for each line of a given session\.  This way,
-a session doesn't have to be a single block of line\_ids \(which is brittle\),
-but maintains its own order\.
+
+We add a second table, ``premise``, for each line of a given session.  This way,
+a session doesn't have to be a single block of line_ids (which is brittle),
+but maintains its own order.
+
 
 So running a session as a test, we load all the premises into a clean
 environment, executing them in order, and checking the results against the
-retrieved database values\. If a premise marked as accepted = true changes, we
-throw an error and \(eventually\) provide a diff\.
+retrieved database values. If a premise marked as accepted = true changes, we
+throw an error and (eventually) provide a diff.
+
 
 We'll want to add additional affordances for easy testing, which will be
-documented elsewhere\.
+documented elsewhere.
 
 ```lua
 local migration_4 = {}
 ```
-
 ```sql
 DROP TABLE session;
 ```
-
 ```lua
 insert(migration_4, create_session_table_4)
 insert(migration_4, create_premise_table)
 
 insert(migrations, migration_4)
 ```
-
-
 #### Version 5
 
-The primary change in this migration is to store results uniquely by hash\.
+The primary change in this migration is to store results uniquely by hash.
 
 ```lua
 local migration_5 = {}
 insert(migrations, migration_5)
 ```
-
-
 ##### Simple Migrations
 
-  "Simple" in the sense that they require little\-to\-no changes to the
-applications\.
+  "Simple" in the sense that they require little-to-no changes to the
+applications.
 
-The name `repl` for our collection of lines was never great, and `line` is a
-reserved word in SQL, so we're already pushing our luck by having a `.line`
-column\.  So we'll rename to `input`, which is simple:
+
+The name ``repl`` for our collection of lines was never great, and ``line`` is a
+reserved word in SQL, so we're already pushing our luck by having a ``.line``
+column.  So we'll rename to ``input``, which is simple:
 
 ```sql
 ALTER TABLE repl RENAME TO input;
@@ -394,9 +359,10 @@ CREATE INDEX idx_input_time ON input (time);
 ```
 
 This is a good idea anyway, since lines are our most expensive DB call during
-startup, and with sessions, lines will be placed out of order\.
+startup, and with sessions, lines will be placed out of order.
 
-We need to add an `AUTOINCREMENT` to the session table to get a stable
+
+We need to add an ``AUTOINCREMENT`` to the session table to get a stable
 ordering while allowing deletions, and adding constraints means a full copy:
 
 ```sql
@@ -413,60 +379,62 @@ CREATE TABLE IF NOT EXISTS session_5 (
 ```
 
 We'll move this to the top once this migration is complete; it's more
-important to have an at\-a\-glance view into the schema, and we don't have
-transclusions yet\.
+important to have an at-a-glance view into the schema, and we don't have
+transclusions yet.
 
 ```lua
 migration_5[3] = create_session_table_5
 ```
-
 ```sql
 INSERT INTO session_5(title, project, accepted, vc_hash)
 SELECT title, project, accepted, vc_hash FROM session
 ;
 ```
-
 ```sql
 DROP TABLE session;
 ```
-
 ```sql
 ALTER TABLE session_5 RENAME TO session;
 ```
-
-
-##### hashing and de\-duplication of results \(w\. truncation\)
+##### hashing and de-duplication of results (w. truncation)
 
 We want to start storing results as the hash of the repr string, and use that
-as the foreign key into a new table, `repr`\.
+as the foreign key into a new table, ``repr``.
+
 
 There are a number of circumstances where we will only need the hash, and by
-making the hash column of `repr` a `UNIQUE`, we can get deduplication
-without needing to handle it in\-memory\.
+making the hash column of ``repr`` a ``UNIQUE``, we can get deduplication
+without needing to handle it in-memory.
+
 
 This does mean we have to pull every result, hash it, update the result
-foreign key to point to the result, and commit to a new table\.
+foreign key to point to the result, and commit to a new table.
 
-While we're at this, it might pay off to truncate our absurdly long results\.
 
-It's likely I have the only database which *has* a large result collection, so
+While we're at this, it might pay off to truncate our absurdly long results.
+
+
+It's likely I have the only database which _has_ a large result collection, so
 maybe not worth the extra complexity? But I have a GB or so of data in my helm
-DB, and it's not *that* much extra work\.
+DB, and it's not _that_ much extra work.
+
 
 One minor optimization: we don't actually have to hash results which are
-smaller than 64 bytes, the length of our hash\.  We can simply treat the repr
+smaller than 64 bytes, the length of our hash.  We can simply treat the repr
 as the hash, and commit it twice to the database, and this will save some tiny
-amount of space\.  There are circumstances when we pull the repr \(and hence the
-hash\) without pulling the result right away, and if the result is less than 63
-bytes, we know we don't have to bother with the second database call\.
+amount of space.  There are circumstances when we pull the repr (and hence the
+hash) without pulling the result right away, and if the result is less than 63
+bytes, we know we don't have to bother with the second database call.
+
 
 I'm not convinced this is worth doing, but it doesn't have any obvious
-downsides\.  The important part is that we can completely ignore this logic if
+downsides.  The important part is that we can completely ignore this logic if
 we want to, and get the same result, as long as we bake the conditional
 hashing into a function, and use that function everywhere we hash: and we're
-truncating anyway, relative to stock sha3\-512\.
+truncating anyway, relative to stock sha3-512.
 
-For reference, here's the current schema of `result`:
+
+For reference, here's the current schema of ``result``:
 
 ```sql
 CREATE TABLE IF NOT EXISTS result (
@@ -495,14 +463,16 @@ CREATE TABLE IF NOT EXISTS result_5 (
 );
 ```
 
-We never used the value blob for anything, so we can just ignore it\.
+We never used the value blob for anything, so we can just ignore it.
+
 
 This does leave us with an exception to our schema rules, namely, we keep
-calling the primary key on what is now `input` the `line_id`, instead of
-`input_id` on the master table and `input` elsewhere\.  A wart, but an
-acceptable one\.
+calling the primary key on what is now ``input`` the ``line_id``, instead of
+``input_id`` on the master table and ``input`` elsewhere.  A wart, but an
+acceptable one.
 
-And we need our `repr` table as well:
+
+And we need our ``repr`` table as well:
 
 ```sql
 CREATE TABLE IF NOT EXISTS repr (
@@ -518,7 +488,7 @@ CREATE INDEX repr_hash_idx ON repr (hash);
 ```
 
 Which we'll add to the migration in a Lua block, so we can move these
-schema\-defining operations to the top of the file\.
+schema-defining operations to the top of the file.
 
 ```lua
 migration_5[7] = create_result_table_5
@@ -527,9 +497,10 @@ migration_5[9] = create_repr_hash_idx
 ```
 
 Now for the fun part: we need a function which will create the new table,
-select every line, hash the `repr` field, write the new hash and repr to
-`repr`, and write the rest of the contents to `result_5`, then drop `result`
-and rename\.
+select every line, hash the ``repr`` field, write the new hash and repr to
+``repr``, and write the rest of the contents to ``result_5``, then drop ``result``
+and rename.
+
 
 We want the results in order of entry:
 
@@ -552,21 +523,21 @@ To write the hash:
 INSERT INTO repr (hash, repr) VALUES (?, ?);
 ```
 
-Letting our ON CONFLICT IGNORE perform deduplication\.
+Letting our ON CONFLICT IGNORE perform deduplication.
+
 
 Then drop and rename:
 
 ```sql
 DROP TABLE result;
 ```
-
 ```sql
 ALTER TABLE result_5 RENAME TO result;
 ```
 
-Now we tie it all together in a function\.  `sha` is required locally, because
-migrations are run seldom; by the nature of `valiant` and `helm`, we'll need
-the function elsewhere, but this is good practice\.
+Now we tie it all together in a function.  ``sha`` is required locally, because
+migrations are run seldom; by the nature of ``valiant`` and ``helm``, we'll need
+the function elsewhere, but this is good practice.
 
 ```lua
 local TRUNCATE_AT = 1048576 * 4 -- 4 MiB is long enough for one repr...
@@ -616,16 +587,17 @@ migration_5[10] = function (conn, s)
 end
 ```
 
-This reduces the size of my database from 1\.6GB to 70MB\.  It's unclear whether
+This reduces the size of my database from 1.6GB to 70MB.  It's unclear whether
 this will actually reduce the size of databases in general, since mine was
 dominated by excessively large prints of the environment from the uncompressed
-interregnum of results storage\.  It seems likely, but it triples the size of
+interregnum of results storage.  It seems likely, but it triples the size of
 small, unique values, and only shrinks the storage requirement for larger
-prints which happen more than once\.
+prints which happen more than once.
 
-But I must have a few hundred copies of `uv` alone in there, and this halved
-the number of results in my database\.  We'll see\.  The motive here is less
-optimization, and more good architecture\.
+
+But I must have a few hundred copies of ``uv`` alone in there, and this halved
+the number of results in my database.  We'll see.  The motive here is less
+optimization, and more good architecture.
 
 
 #### Version 6: run table
@@ -636,68 +608,77 @@ local migration_6 = {}
 insert(migrations, migration_6)
 ```
 
-It has become clear that we need a concept of a 'run', distinct from sessions\.
+A run is simply everything which happens from starting helm to closing it.
 
-A run is simply everything which happens from starting helm to closing it\.
 
-The model for the `input` table is straightforward, although we're doing
+The model for the ``input`` table is straightforward, although we're doing
 deduplication if a line is executed multiple times in a row, we actually
-shouldn't: conceptually, `input` is a simple linear collection of lines
-executed from the helm\.
+shouldn't: conceptually, ``input`` is a simple linear collection of lines
+executed from the helm.
 
-We *could* do what we do with reprs, and have a unique `line_text` table for
+
+We _could_ do what we do with reprs, and have a unique ``line_text`` table for
 each unique typed at the repl, but I don't think it's worth the extra level of
-indirection\.
+indirection.
+
 
 Runs, at a base level, are a collection of lines, but there is also metadata
-we want to preserve\.  In particular, the point at which a restart is triggered,
+we want to preserve.  In particular, the point at which a restart is triggered,
 but I would be surprised if that is the full extent of what we want to
-preserve\.
+preserve.
 
-What is clear enough is that we have two tables, `run` and `run_action`\.  We
-have one entry in `run` per execution of `helm`, and the contents are stored
-in `run_action`\.  Since most of these are lines, we want a `input` foreign key,
+
+What is clear enough is that we have two tables, ``run`` and ``run_action``.  We
+have one entry in ``run`` per execution of ``helm``, and the contents are stored
+in ``run_action``.  Since most of these are lines, we want a ``input`` foreign key,
 which can be null, to represent the most common case, and we can probably get
-by with one more column \(perhaps `run_action.action`?\) which is a string which
-represents the type of action\.  I've been using short, human\-readable strings
+by with one more column (perhaps ``run_action.action``?) which is a string which
+represents the type of action.  I've been using short, human-readable strings
 for this sort of data, but it's probably better to use a single byte of ASCII
-and rehydrate the data in\-memory\.  SQLite doesn't reserve disk space it isn't
-using, and there's an appreciable difference between storing `'line'` and
-`'restart'` versus merely `'l'` and `'r'`\.
+and rehydrate the data in-memory.  SQLite doesn't reserve disk space it isn't
+using, and there's an appreciable difference between storing ``'line'`` and
+``'restart'`` versus merely ``'l'`` and ``'r'``.
+
 
 I'll apply a check constraint here, but limit it to 3 characters instead of
-one\.  This assures that we put a string in that column, and gives some
-headroom for expansion\.
+one.  This assures that we put a string in that column, and gives some
+headroom for expansion.
 
-Like premises, our best bet is to make the foreign key for `run_action` a
-tuple of `(run, ordinal)`, since we'll be recording every meaningful action
-in order\.
+
+Like premises, our best bet is to make the foreign key for ``run_action`` a
+tuple of ``(run, ordinal)``, since we'll be recording every meaningful action
+in order.
+
 
 I don't know if there's a way to enforce "every ordinal for a given repr must
 be monotonic and increasing, starting with 1" from within SQLite, but it seems
-like a common enough pattern and would be nice to have, so I'll look into it\.
+like a common enough pattern and would be nice to have, so I'll look into it.
+
 
 The run itself is a date and a project, and a foreign key to hang the actions
-upon\.  We'll also include a third table, `run_attr`, with `(run, key, value)`,
-to store metadata in an open\-ended fashion\.  We can move some of these as
-columns onto `run`, if we end up using them consistently, and/or add a JSON
-field to `run` itself and fold the map table in, once we have the
-prerequisites for working with JSON inside bridge\.
+upon.  We'll also include a third table, ``run_attr``, with ``(run, key, value)``,
+to store metadata in an open-ended fashion.  We can move some of these as
+columns onto ``run``, if we end up using them consistently, and/or add a JSON
+field to ``run`` itself and fold the map table in, once we have the
+prerequisites for working with JSON inside bridge.
 
 
 ##### run tables
 
-  The `run` table itself holds data pertaining to the run, and serves as a
-foreign key for `run_action`\.
+  The ``run`` table itself holds data pertaining to the run, and serves as a
+foreign key for ``run_action``.
 
-We'll also create a `run_attr` table, which is a classic EAV\.
+
+We'll also create a ``run_attr`` table, which is a classic EAV.
+
 
 In this case, we're doing it for flexibility in expanding what information we
-store about a run, without needing to migrate every time we make changes\.
+store about a run, without needing to migrate every time we make changes.
+
 
 The expectation is that we'll migrate information which we keep for every run
-over to the run table itself, and may eventually drop the `run_attr` table
-completely\.
+over to the run table itself, and may eventually drop the ``run_attr`` table
+completely.
 
 ```sql
 CREATE TABLE IF NOT EXISTS run (
@@ -710,7 +691,6 @@ CREATE TABLE IF NOT EXISTS run (
       ON DELETE CASCADE
 );
 ```
-
 ```sql
 CREATE TABLE IF NOT EXISTS run_attr (
    run_attr_id INTEGER PRIMARY KEY,
@@ -722,27 +702,28 @@ CREATE TABLE IF NOT EXISTS run_attr (
       ON DELETE CASCADE
 );
 ```
-
-
-##### run\_action tables
+##### run_action tables
 
   A run action is a single action taken at the repl, such as a line of input,
-a restart, entering or exiting session review mode, and so on\.
+a restart, entering or exiting session review mode, and so on.
 
-We also create an EAV table here, `action_attr`\.  This is a more principled
-use of the EAV pattern: run actions are a grab\-bag of different things, which
+
+We also create an EAV table here, ``action_attr``.  This is a more principled
+use of the EAV pattern: run actions are a grab-bag of different things, which
 do belong in one table, because actions are a definite thing which happens in
-a linear order\.
+a linear order.
+
 
 However, each of these actions has some amount of associated data, ranging
-from none to several key/value pairs\.  Input is the most common type of action,
+from none to several key/value pairs.  Input is the most common type of action,
 and the paradigm case, so as an optimization, if the action is an input, we
-put the foreign key on the run\_action itself\.
+put the foreign key on the run_action itself.
+
 
 But joining across a table for each type of action would be fiddly, require
 frequent migrations and query maintenance, and probably doesn't do us much of
 a favor efficiency wise, although the SQLite query planner is a thing of
-beauty and I wouldn't second\-guess it\.
+beauty and I wouldn't second-guess it.
 
 ```sql
 CREATE TABLE IF NOT EXISTS run_action (
@@ -758,7 +739,6 @@ CREATE TABLE IF NOT EXISTS run_action (
       REFERENCES input (line_id)
 );
 ```
-
 ```sql
 CREATE TABLE IF NOT EXISTS action_attr (
    action_attr_id PRIMARY KEY,
@@ -770,14 +750,13 @@ CREATE TABLE IF NOT EXISTS action_attr (
       ON DELETE CASCADE
 );
 ```
-
-
 ##### error table
 
   We're going to start storing everything before "stack traceback:" in an
-error, for use in sessions\.
+error, for use in sessions.
 
-That won't live in `results`, but rather in its own error table\.
+
+That won't live in ``results``, but rather in its own error table.
 
 ```sql
 CREATE TABLE IF NOT EXISTS error_string (
@@ -792,7 +771,7 @@ Which we'll want to index:
 CREATE INDEX idx_error_string ON error_string (string);
 ```
 
-This one is all creates, we aren't altering anything we have already\.
+This one is all creates, we aren't altering anything we have already.
 
 ```lua
 insert(migration_6, create_run_table)
@@ -802,45 +781,50 @@ insert(migration_6, create_action_attr_table)
 insert(migration_6, create_error_string_table)
 insert(migration_6, create_error_string_idx)
 ```
-
-
 ### Future Migrations
 
-Right now, `helm` is omokase: you get some readline commands, and you get the
-colors we give you, and that's that\.
+Right now, ``helm`` is omokase: you get some readline commands, and you get the
+colors we give you, and that's that.
+
 
 In the near future, we intend to add persistent user preferences, starting
-with color schemes\.
+with color schemes.
 
-There are a lot of unanswered questions about how to do this in a general way\.
-The standard approach is config files, and that has a lot to recommend it\.
+
+There are a lot of unanswered questions about how to do this in a general way.
+The standard approach is config files, and that has a lot to recommend it.
+
 
 For color schemes, however, we're going to put them in the database, and we
-might continue in that vein\.  This will take the form of an EAV table called
-`preference`, which starts with one value, a foreign key to the
-`color_profile` table\.  The `color` table is a number of colors with a name
-and a foreign key to `color_profile`\.
+might continue in that vein.  This will take the form of an EAV table called
+``preference``, which starts with one value, a foreign key to the
+``color_profile`` table.  The ``color`` table is a number of colors with a name
+and a foreign key to ``color_profile``.
 
-Hmm\.  The more I think about this, it seems less than ideal\.  The alternative
+
+Hmm.  The more I think about this, it seems less than ideal.  The alternative
 being a simple orb file with Lua tables in it, which is easier to inspect and
-modify\.  I want the user to be able to change colors inside `helm` and have
+modify.  I want the user to be able to change colors inside ``helm`` and have
 those changes persist, but this isn't impossible or even that difficult to
-do with Lua files\.
+do with Lua files.
+
 
 I just wrote a TOML parser for use in the manifest files, so that's a good
-candidate for configuration data now\.
+candidate for configuration data now.
 
-I dunno\. I've been waffling on this for months\. Ah well\.
+
+I dunno. I've been waffling on this for months. Ah well.
 
 
 ## Statement proxy tables
 
-  We retain the conns within the `helm_db` singleton, returning a proxy table
-to consumers, which can be indexed to obtain fresh prepared statements\.
+  We retain the conns within the ``helm_db`` singleton, returning a proxy table
+to consumers, which can be indexed to obtain fresh prepared statements.
+
 
 These tables will also be equipped with functions which close over the conn to
 execute operations, particularly transactions, which require the use of
-`conn:exec`\.
+``conn:exec``.
 
 ```lua
 local function _prepareStatements(conn, stmts)
@@ -865,12 +849,10 @@ function _makeProxy(conn, stmts)
                          __newindex = _readOnly })
 end
 ```
-
-
 ### Historian
 
   Generates prepared statements and contains closures for the necessary
-savepoints to operate [historian](https://gitlab.com/special-circumstance/helm/-/blob/trunk/doc/md/helm/historian.md)\.
+savepoints to operate [[historian][@:helm/historian]].
 
 
 #### Historian SQL statements
@@ -879,26 +861,20 @@ savepoints to operate [historian](https://gitlab.com/special-circumstance/helm/-
 local historian_sql = {}
 helm_db.historian_sql = historian_sql
 ```
-
-
 ##### Insertions
 
 ```sql
 INSERT INTO input (project, line) VALUES (:project, :line);
 ```
-
 ```sql
 INSERT INTO result (line_id, hash) VALUES (:line_id, :hash);
 ```
-
 ```sql
 INSERT INTO repr (hash, repr) VALUES (:hash, :repr);
 ```
-
 ```sql
 INSERT INTO project (directory) VALUES (?);
 ```
-
 ##### Selections
 
 ```sql
@@ -907,18 +883,15 @@ SELECT CAST (line_id AS REAL), line FROM input
    ORDER BY line_id DESC
    LIMIT :num_lines;
 ```
-
 ```sql
 SELECT CAST (count(line) AS REAL) from input
    WHERE project = ?
 ;
 ```
-
 ```sql
 SELECT project_id FROM project
    WHERE directory = ?;
 ```
-
 ```sql
 SELECT repr
 FROM result
@@ -926,13 +899,11 @@ INNER JOIN repr ON repr.hash == result.hash
 WHERE result.line_id = :line_id
 ORDER BY result.result_id;
 ```
-
-
-#### helm\_db\.historian\(conn?\)
+#### helm_db.historian(conn?)
 
   Returns a table of the necessary prepared statements, and closures, for
-`historian` to conduct database operations\.  `conn` defaults to the system
-helm\_db\.
+``historian`` to conduct database operations.  ``conn`` defaults to the system
+helm_db.
 
 ```lua
 function helm_db.historian(conn_handle)
@@ -957,18 +928,14 @@ function helm_db.historian(conn_handle)
    return hist_proxy
 end
 ```
-
-
 ### Session
 
-  The `helm_db` singleton is also used by [valiant](https://gitlab.com/special-circumstance/valiant/-/blob/trunk/doc/md/session.md) to
-manage database operations, through the same sort of proxy table as above\.
+  The ``helm_db`` singleton is also used by [[valiant][@valiant:session]] to
+manage database operations, through the same sort of proxy table as above.
 
 ```lua
 local session_sql = {}
 ```
-
-
 #### SQL
 
 
@@ -981,7 +948,6 @@ VALUES
    (:session_title, :project_id, :accepted)
 ;
 ```
-
 ```sql
 INSERT INTO
    premise (session, ordinal, line, title, status)
@@ -989,17 +955,12 @@ VALUES
    (:session_id, :ordinal, :line_id, :title, :status)
 ;
 ```
-
 ```sql
 DELETE FROM premise WHERE session = :session_id AND ordinal > :n;
 ```
-
 ```sql
 DELETE FROM session WHERE session_id = :session_id;
 ```
-
-We need to add lines, including a timestamp, for imports:
-
 ```sql
 INSERT INTO input (project, line, time) VALUES (:project, :line, :time);
 ```
@@ -1010,33 +971,26 @@ We copy over a few statements from the historian proxy table:
 session_sql.insert_result_hash = historian_sql.insert_result_hash
 session_sql.insert_repr        = historian_sql.insert_repr
 ```
-
-
 ##### Updates
 
-Note that insert\_premise can also serve as an update, since the table is
+Note that insert_premise can also serve as an update, since the table is
 declared with ON CONFLICT REPLACE and we always supply all fields
 
 ```sql
 UPDATE session SET title = :session_title, accepted = :accepted
    WHERE session_id = :session_id;
 ```
-
-
 #### Deletions
 
 ```sql
 DELETE FROM session WHERE session_id = :session_id;
 ```
-
 ```sql
 UPDATE session SET accepted = :accepted WHERE session_id = :session_id;
 ```
-
 ```sql
 UPDATE session SET title = :title WHERE session_id = :session_id;
 ```
-
 ##### Selections
 
 ```sql
@@ -1058,10 +1012,6 @@ WHERE session.session_id = ?
 ORDER BY premise.ordinal
 ;
 ```
-
-Because the results have a many\-to\-one relationship with the lines, we're
-better off retrieving them separately:
-
 ```sql
 SELECT repr.repr
 FROM result
@@ -1078,11 +1028,9 @@ FROM session
 WHERE session.project = :project_id
 ORDER BY session.session_id;
 ```
-
 ```sql
 SELECT project_id FROM project WHERE directory = ?;
 ```
-
 ```sql
 SELECT title FROM session
 INNER JOIN
@@ -1095,7 +1043,6 @@ ORDER BY
    session.session_id
 ;
 ```
-
 ```sql
 SELECT title, accepted, session_id FROM session
 INNER JOIN
@@ -1106,14 +1053,12 @@ ORDER BY
    session.session_id
 ;
 ```
-
 ```sql
 SELECT CAST (count(premise.ordinal) AS REAL)
 FROM premise
 WHERE session = :session_id
 ;
 ```
-
 ```sql
 SELECT
    session_id,
@@ -1126,14 +1071,12 @@ ORDER BY
    session.session_id
 ;
 ```
-
 ```sql
 SELECT session_id FROM session
 WHERE project = ?
 ORDER BY session_id
 ;
 ```
-
 ```sql
 SELECT
    CAST (session_id AS REAL) AS session_id,
@@ -1143,7 +1086,6 @@ WHERE project = ? AND title = ?
 ORDER BY session_id
 ;
 ```
-
 ```sql
 SELECT
    CAST (ordinal AS REAL) AS ordinal,
@@ -1165,13 +1107,12 @@ ORDER BY
 ;
 ```
 
-This one is a `conn:exec` so we use a closure, rather than a prepared
-statement\.
+This one is a ``conn:exec`` so we use a closure, rather than a prepared
+statement.
 
 ```sql
 SELECT project_id, directory from project;
 ```
-
 ```sql
 UPDATE premise
 SET line = :line
@@ -1181,7 +1122,6 @@ AND
    ordinal = :ordinal
 ;
 ```
-
 ```lua
 function helm_db.session(conn_handle)
    local conn = _openConn(conn_handle)
@@ -1201,14 +1141,13 @@ function helm_db.session(conn_handle)
    return stmts
 end
 ```
+### boot(conn_handle?)
+
+``boot`` takes an open ``historian.conn``, or a file path, and brings it up to
+speed.
 
 
-### boot\(conn\_handle?\)
-
-`boot` takes an open `historian.conn`, or a file path, and brings it up to
-speed\.
-
-Returns the conn, or errors and exits the program\.
+Returns the conn, or errors and exits the program.
 
 ```lua
 local assertfmt = require "core:core/string" . assertfmt
@@ -1227,11 +1166,9 @@ function helm_db.boot(conn_handle)
    return conn
 end
 ```
+### close(conn_handle?)
 
-
-### close\(conn\_handle?\)
-
-Closes the given conn or conn\-string, defaulting to the helm\_db\_home conn\.
+Closes the given conn or conn-string, defaulting to the helm_db_home conn.
 
 ```lua
 function helm_db.close(conn_handle)
@@ -1257,13 +1194,12 @@ function helm_db.close(conn_handle)
    end)
 end
 ```
+### conn(conn_handle?)
+
+Retrieve a conn, defaulting as usual to ``helm_db_home``, if one already exists.
 
 
-### conn\(conn\_handle?\)
-
-Retrieve a conn, defaulting as usual to `helm_db_home`, if one already exists\.
-
-Primarily for use at the REPL\.
+Primarily for use at the REPL.
 
 ```lua
 function helm_db.conn(conn_handle)
@@ -1271,19 +1207,15 @@ function helm_db.conn(conn_handle)
    return _conns[conn_handle]
 end
 ```
+#### protect helm_db
 
-
-#### protect helm\_db
-
-As a singleton, it should be read only\.
+As a singleton, it should be read only.
 
 ```lua
 setmetatable(helm_db, { __newindex = function()
                                         error "cannnot assign to helm_db"
                                      end })
 ```
-
-
 ```lua
 return helm_db
 ```
