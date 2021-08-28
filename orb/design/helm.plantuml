@@ -19,6 +19,7 @@ Agent --* Editagent
 Agent --* Sessionagent
 Agent --* Suggestagent
 Agent --* Resultagent
+Agent --* Runagent
 
 
 class Window
@@ -29,11 +30,13 @@ class Textbuf
 class Resultbuf
 class Suggestbuf
 class Sessionbuf
+class Runbuf
 
 Rainbuf --* Textbuf
 Rainbuf --* Resultbuf
 Rainbuf --* Suggestbuf
 Rainbuf --* Sessionbuf
+Runbuf --* Runbuf
 
 object hist
 object eval
@@ -42,8 +45,9 @@ object suggestWindow
 object editWindow
 object resultWindow
 object sessionWindow
+object runWindow
 
-rectangle "bufs" as BUF {
+oval "bufs" as BUF {
    map suggestBuf {
       suggestWindow *--> suggestWindow
    }
@@ -59,6 +63,10 @@ rectangle "bufs" as BUF {
    map sessionBuf {
       sessionWindow *--> sessionWindow
    }
+
+   map runBuf {
+      runWindow *--> runWindow
+   }
 }
 
 map bufs {
@@ -66,6 +74,7 @@ map bufs {
    textBuf *--> BUF.textBuf
    resultBuf *--> BUF.resultBuf
    sessionBuf *--> BUF.sessionBuf
+   runBuf *--> BUF.runBuf
    more => ...
 }
 
@@ -75,11 +84,12 @@ object maestroBox
 map zoneherd {
     maestroBox *--> maestroBox
 
-    bufs *--> bufs
-    prompt   => Zone
+    bufs  *--> bufs
+    prompt  => Zone
     suggest => Zone
     result  => Zone
     command => Zone
+    run     => Zone
 }
 
 rectangle "agents" as AG {
@@ -87,6 +97,7 @@ object suggestAgent
 object editAgent
 object resultAgent
 object sessionAgent
+object runAgent
 }
 
 
@@ -95,6 +106,7 @@ map agents {
    editAgent *--> AG.editAgent
    resultAgent *--> AG.resultAgent
    sessionAgent *--> AG.sessionAgent
+   runAgent *--> AG.runAgent
 }
 
 map maestro {
@@ -114,8 +126,10 @@ circle "new" as newSuggestAgent
 circle "new" as newEditAgent
 circle "new" as newResultAgent
 circle "new" as newSessionAgent
+circle "new" as newRunAgent
 
 circle "new" as newZoneMailbox
+circle "new" as newRunMailbox
 
 Modeselektor --|> modeS : new
 Zoneherd --|> zoneherd : new
@@ -130,10 +144,12 @@ Suggestagent --|> newSuggestAgent
 Editagent --|> newEditAgent
 Resultagent --|> newResultAgent
 Sessionagent --|> newSessionAgent
+Runagent --|> newRunAgent
 Window --|> suggestWindow : new
 Window --|> editWindow : new
 Window --|> resultWindow : new
 Window --|> sessionWindow : new
+Windoww --|> runWindow : new
 newSuggestAgent --> suggestAgent
 newSuggestAgent --> suggestWindow
 newEditAgent --> editAgent
@@ -142,11 +158,15 @@ newResultAgent --> resultAgent
 newResultAgent --> resultWindow
 newSessionAgent --> sessionAgent
 newSessionAgent --> sessionWindow
+newRunAgent --> runAgent
+newRunAgent --> runWindow
+
 
 Suggestbuf --|> suggestBuf
 Resultbuf --|> resultBuf
 Textbuf --|> textBuf
 Sessionbuf --|> sessionBuf
+Runbuf --|> runBuf
 
 Mailbox --|> newZoneMailbox
 newZoneMailbox --> zoneBox
