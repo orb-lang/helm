@@ -5,7 +5,9 @@
 
 
 
-local PromptAgent = meta {}
+local meta = assert(require "core:cluster" . Meta)
+local Agent = require "helm:agent/agent"
+local PromptAgent = meta(getmetatable(Agent))
 
 
 
@@ -14,7 +16,7 @@ local PromptAgent = meta {}
 
 function PromptAgent.update(agent, prompt_char)
    agent.prompt_char = prompt_char
-   agent.touched = true
+   agent:contentsChanged()
 end
 
 
@@ -25,39 +27,26 @@ end
 
 
 
-
-local agent_utils = require "helm:agent/utils"
 
 function PromptAgent.checkTouched(agent)
    -- #todo .touched propagation is weird, we can't :checkTouched()
    -- on the EditAgent because we'll clear stuff prematurely
    agent.touched = agent.touched or agent.editTouched()
-   return agent_utils.checkTouched(agent)
+   return Agent.checkTouched(agent)
 end
 
 
 
 
 
-PromptAgent.window = agent_utils.make_window_method({
-   fn = { buffer_value = function(agent, window, field)
-      return agent.prompt_char .. " " ..
-                ("\n..."):rep(agent.continuationLines())
-   end}
-})
 
-
-
-
-
-
-local function new()
-   local agent = meta(PromptAgent)
-   return agent
+function PromptAgent.bufferValue(agent)
+   return agent.prompt_char .. " " .. ("\n..."):rep(agent.continuationLines())
 end
 
 
 
-PromptAgent.idEst = new
-return new
+
+local constructor = assert(require "core:cluster" . constructor)
+return constructor(PromptAgent)
 

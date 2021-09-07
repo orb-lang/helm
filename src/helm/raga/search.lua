@@ -20,23 +20,13 @@ Search.prompt_char = "⁉️"
 local NAV = Search.NAV
 
 function NAV.SHIFT_DOWN(modeS, category, value)
-   local search_result = modeS:agent'search'.last_collection
-   if search_result and search_result:selectNext() then
-      -- #todo route this through a Window that can handle the
-      -- change-detection automatically
-      modeS:agent'search'.touched = true
-      modeS.zones.results.contents:ensureVisible(search_result.selected_index)
-   end
+   modeS:agent'search':selectNext()
 end
 
 
 
 function NAV.SHIFT_UP(modeS, category, value)
-   local search_result = modeS:agent'search'.last_collection
-   if search_result and search_result:selectPrevious() then
-      modeS:agent'search'.touched = true
-      modeS.zones.results.contents:ensureVisible(search_result.selected_index)
-   end
+   modeS:agent'search':selectPrevious()
 end
 
 
@@ -45,12 +35,10 @@ function NAV.ESC(modeS, category, value)
    local search_result = modeS:agent'search'.last_collection
    -- No results or nothing is selected, exit search mode
    if not search_result or search_result.selected_index == 0 then
-      modeS.shift_to = modeS.raga_default
+      modeS:shiftMode(modeS.raga_default)
    -- If something *is* selected, deselect it first
    else
-      search_result:selectNone()
-      modeS:agent'search'.touched = true
-      modeS.zones.results.contents:ensureVisible(1)
+      modeS:agent'search':selectNone()
    end
 end
 
@@ -71,7 +59,7 @@ NAV.SHIFT_TAB = NAV.SHIFT_UP
 
 local function _modeShiftOnDeleteWhenEmpty(modeS, category, value)
    if modeS:agent'edit':contents() == "" then
-      modeS.shift_to = modeS.raga_default
+      modeS:shiftMode(modeS.raga_default)
    else
       EditBase(modeS, category, value)
    end
@@ -94,7 +82,7 @@ local function _acceptAtIndex(modeS, selected_index)
       if selected_index == 0 then selected_index = 1 end
       line, result = modeS.hist:index(search_result.cursors[selected_index])
    end
-   modeS.shift_to = modeS.raga_default
+   modeS:shiftMode(modeS.raga_default)
    modeS:agent'edit':update(line)
    modeS:setResults(result)
 end

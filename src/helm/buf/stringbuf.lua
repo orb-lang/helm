@@ -10,8 +10,9 @@
 
 
 
+local meta = assert(require "core:cluster" . Meta)
 local Rainbuf = require "helm:buf/rainbuf"
-local Stringbuf = Rainbuf:inherit()
+local Stringbuf = meta(getmetatable(Rainbuf))
 
 
 
@@ -25,7 +26,7 @@ local Stringbuf = Rainbuf:inherit()
 
 
 function Stringbuf.clearCaches(buf)
-   buf:super"clearCaches"()
+   Rainbuf.clearCaches(buf)
    buf._composeOneLine = nil
 end
 
@@ -37,8 +38,6 @@ end
 
 
 
-local Stringbuf_class = setmetatable({}, Stringbuf)
-Stringbuf.idEst = Stringbuf_class
-
-return Stringbuf_class
+local constructor = assert(require "core:cluster" . constructor)
+return constructor(Stringbuf)
 

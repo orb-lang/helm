@@ -6,13 +6,15 @@ Agent responsible for editing/reviewing a session.
 **** imports
 
 #!lua
+local meta = assert(require "core:cluster" . Meta)
 local EditAgent = require "helm:agent/edit"
 local ResultsAgent = require "helm:agent/results"
 #/lua
 
 
 #!lua
-local SessionAgent = meta {}
+local Agent = require "helm:agent/agent"
+local SessionAgent = meta(getmetatable(Agent))
 #/lua
 
 
@@ -54,7 +56,7 @@ function SessionAgent.update(agent, sesh)
    for index in pairs(agent.edit_agents) do
       _update_edit_agent(agent, index)
    end
-   agent.touched = true
+   agent:contentsChanged()
 end
 #/lua
 
@@ -75,9 +77,10 @@ function SessionAgent.selectIndex(agent, index)
    if index ~= agent.selected_index then
       agent.selected_index = index
       _update_results_agent(agent)
-      agent.touched = true
+      agent:contentsChanged()
+      agent:bufferCommand("ensureSelectedVisible")
       -- #todo can/should we be the ones to update the EditAgent
-      -- for the title somehow?
+      -- for the title somehow? Send it a message...
    end
 end
 #/lua
@@ -113,6 +116,21 @@ end
 #/lua
 
 
+**** SessionAgent:scrollResultsDown(), :scrollResultsUp()
+
+Scroll within the results area for the currently-selected line.
+
+#!lua
+function SessionAgent.scrollResultsDown(agent)
+   agent.results_agent:scrollDown()
+end
+
+function SessionAgent.scrollResultsUp(agent)
+   agent.results_agent:scrollUp()
+end
+#/lua
+
+
 *** Editing
 
 
@@ -132,7 +150,7 @@ local status_cycle_map = {
 function SessionAgent.toggleSelectedState(agent)
    local premise = agent:selectedPremise()
    premise.status = status_cycle_map[premise.status]
-   agent.touched = true
+   agent:contentsChanged()
    return true
 end
 
@@ -142,7 +160,7 @@ local status_reverse_map = inverse(status_cycle_map)
 function SessionAgent.reverseToggleSelectedState(agent)
    local premise = agent:selectedPremise()
    premise.status = status_reverse_map[premise.status]
-   agent.touched = true
+   agent:contentsChanged()
    return true
 end
 #/lua
@@ -169,7 +187,7 @@ local function _swap_premises(agent, index_a, index_b)
    premise_a.ordinal = index_b
    _update_edit_agent(agent, index_b)
 
-   agent.touched = true
+   agent:contentsChanged()
 end
 
 function SessionAgent.movePremiseUp(agent)
@@ -194,27 +212,29 @@ end
 #/lua
 
 
-*** Window(s)
-
-We have our primary window, but it can also retrieve windows for our
-subsidiary =Edit= and =ResultsAgent=s.
+*** SessionAgent:bufferValue()
 
 #!lua
-local agent_utils = require "helm:agent/utils"
+function SessionAgent.bufferValue(agent)
+   return agent.session
+end
+#/lua
 
-SessionAgent.checkTouched = agent_utils.checkTouched
 
-SessionAgent.window = agent_utils.make_window_method({
-   field = { selected_index = true },
-   fn = {
-      buffer_value = function(agent, window, field)
-         return agent.session
-      end
-   },
-   closure = { selectedPremise = true,
-               editWindow = true,
-               resultsWindow = true }
-})
+*** SessionAgent:windowConfiguration()
+
+Our primary window exposes selection information, and can also retrieve
+windows for our subsidiary =Edit= and =ResultsAgent=s.
+
+#!lua
+function SessionAgent.windowConfiguration(agent)
+   return agent.mergeWindowConfig(Agent.windowConfiguration(), {
+      field = { selected_index = true },
+      closure = { selectedPremise = true,
+                  editWindow = true,
+                  resultsWindow = true }
+   })
+end
 #/lua
 
 
@@ -254,18 +274,18 @@ end
 #/lua
 
 
-*** new
+*** SessionAgent:_init()
 
 #!lua
-local function new()
-   local agent = meta(SessionAgent)
+function SessionAgent._init(agent)
+   Agent._init(agent)
    agent.selected_index = 0
    agent.edit_agents = {}
-   return agent
 end
 #/lua
 
+
 #!lua
-SessionAgent.idEst = new
-return new
+local constructor = assert(require "core:cluster" . constructor)
+return constructor(SessionAgent)
 #/lua

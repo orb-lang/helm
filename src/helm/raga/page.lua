@@ -28,7 +28,7 @@ Page.prompt_char = "❓"
 function Page.quit(maestro, event)
    -- #todo should have a stack of ragas and switch back to the one
    -- we entered from, but this will do for now
-   maestro.modeS.shift_to = maestro.modeS.raga_default
+   maestro.modeS:shiftMode(maestro.modeS.raga_default)
 end
 
 local map = {
@@ -49,10 +49,13 @@ for cmd, shortcuts in pairs{
    scrollToTop    = { "HOME", "g", "<" }
 } do
    Page[cmd] = function(maestro, event)
-      local rainbuf = maestro.modeS.zones.popup.contents
+      local agent = maestro.agents.pager
       -- Most of these aren't mouse events, and most of the functions don't
       -- accept an argument anyway, but eh, an extra nil param is harmless
-      rainbuf[cmd](rainbuf, event.num_lines)
+      -- #todo the keymap should actually be responsible for extracting the
+      -- argument from the event, and the message should then be dispatched
+      -- directly to the Agent
+      agent[cmd](agent, event.num_lines)
    end
    for _, shortcut in ipairs(shortcuts) do
       map[shortcut] = cmd

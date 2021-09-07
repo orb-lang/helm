@@ -15,11 +15,12 @@ This is a type of `Rainbuf` specialized to display and edit a `Session`\.
 -  selected\_index: The index of the line that is selected for editing
 
 ```lua
+local meta = assert(require "core:cluster" . Meta)
 local Rainbuf = require "helm:buf/rainbuf"
 local Resbuf  = require "helm:buf/resbuf"
 local Txtbuf  = require "helm:buf/txtbuf"
 
-local Sessionbuf = Rainbuf:inherit()
+local Sessionbuf = meta(getmetatable(Rainbuf))
 ```
 
 
@@ -45,7 +46,7 @@ for it here\.
 
 ```lua
 function Sessionbuf.contentCols(buf)
-   return buf:super"contentCols"() - 2
+   return Rainbuf.contentCols(buf) - 2
 end
 ```
 
@@ -105,7 +106,7 @@ function Sessionbuf.setSubExtents(buf)
 end
 
 function Sessionbuf.setExtent(buf, rows, cols)
-   buf:super"setExtent"(rows, cols)
+   Rainbuf.setExtent(buf, rows, cols)
    buf:setSubExtents()
 end
 ```
@@ -127,7 +128,7 @@ function Sessionbuf.checkTouched(buf)
          buf:beTouched()
       end
    end
-   return buf:super"checkTouched"()
+   return Rainbuf.checkTouched(buf)
 end
 ```
 
@@ -172,17 +173,43 @@ end
 ```
 
 
-#### Sessionbuf:scrollResultsDown\(\), :scrollResultsUp\(\)
+### Sessionbuf:ensureSelectedVisible\(\)
 
-Scroll within the results area for the currently\-selected line\.
+Ensures that the selected premise is visible, **including its results**\.
 
 ```lua
-function Sessionbuf.scrollResultsDown(buf)
-   return _resbuf(buf):scrollDown()
+function Sessionbuf.ensureSelectedVisible(buf)
+   local start_index = buf:positionOfSelected()
+   local end_index = start_index + buf:rowsForSelectedResult() + 3
+   buf:ensureVisible(start_index, end_index)
 end
+```
 
-function Sessionbuf.scrollResultsUp(buf)
-   return _resbuf(buf):scrollUp()
+
+### Sessionbuf:processQueuedMessages\(\)
+
+We must pass this message along to our sub\-buffers, and include them in our
+answer of whether we did anything\.
+
+```lua
+function Sessionbuf.processQueuedMessages(buf)
+   local had_any = false
+   if buf.resbuf and buf.resbuf:processQueuedMessages() then
+      had_any = true
+   end
+   for _, txtbuf in pairs(buf.txtbufs) do
+      if txtbuf:processQueuedMessages() then
+         had_any = true
+      end
+   end
+   -- Anything from sub-buffers means we need to clear our line cache as well
+   if had_any then
+      buf:clearCaches()
+   end
+   if Rainbuf.processQueuedMessages(buf) then
+      had_any = true
+   end
+   return had_any
 end
 ```
 
@@ -198,7 +225,7 @@ Discard any render coroutine we may be holding on to\.
 
 ```lua
 function Sessionbuf.clearCaches(buf)
-   buf:super"clearCaches"()
+   Rainbuf.clearCaches(buf)
    buf._composeOneLine = nil
 end
 ```
@@ -281,15 +308,13 @@ have our source window in order to do so\.
 
 ```lua
 function Sessionbuf._init(buf)
-   buf:super"_init"()
+   Rainbuf._init(buf)
    buf.txtbufs = {}
 end
 ```
 
 
 ```lua
-local Sessionbuf_class = setmetatable({}, Sessionbuf)
-Sessionbuf.idEst = Sessionbuf_class
-
-return Sessionbuf_class
+local constructor = assert(require "core:cluster" . constructor)
+return constructor(Sessionbuf)
 ```

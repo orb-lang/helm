@@ -22,7 +22,7 @@ local function _accept(modeS)
    local agents = modeS.maestro.agents
    agents.session:selectedPremise().title = agents.edit:contents()
    agents.session:selectNextWrap()
-   modeS.shift_to = "review"
+   modeS:shiftMode "review"
 end
 
 EditTitle.NAV.RETURN = _accept
@@ -31,7 +31,7 @@ EditTitle.NAV.TAB = _accept
 function EditTitle.NAV.ESC(modeS, category, value)
    local agents = modeS.maestro.agents
    agents.edit:update(agents.session:selectedPremise().title)
-   modeS.shift_to = "review"
+   modeS:shiftMode "review"
 end
 
 

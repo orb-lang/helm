@@ -6,13 +6,15 @@
 
 
 
+local meta = assert(require "core:cluster" . Meta)
 local EditAgent = require "helm:agent/edit"
 local ResultsAgent = require "helm:agent/results"
 
 
 
 
-local SessionAgent = meta {}
+local Agent = require "helm:agent/agent"
+local SessionAgent = meta(getmetatable(Agent))
 
 
 
@@ -54,7 +56,7 @@ function SessionAgent.update(agent, sesh)
    for index in pairs(agent.edit_agents) do
       _update_edit_agent(agent, index)
    end
-   agent.touched = true
+   agent:contentsChanged()
 end
 
 
@@ -75,9 +77,10 @@ function SessionAgent.selectIndex(agent, index)
    if index ~= agent.selected_index then
       agent.selected_index = index
       _update_results_agent(agent)
-      agent.touched = true
+      agent:contentsChanged()
+      agent:bufferCommand("ensureSelectedVisible")
       -- #todo can/should we be the ones to update the EditAgent
-      -- for the title somehow?
+      -- for the title somehow? Send it a message...
    end
 end
 
@@ -118,6 +121,21 @@ end
 
 
 
+function SessionAgent.scrollResultsDown(agent)
+   agent.results_agent:scrollDown()
+end
+
+function SessionAgent.scrollResultsUp(agent)
+   agent.results_agent:scrollUp()
+end
+
+
+
+
+
+
+
+
 
 
 
@@ -132,7 +150,7 @@ local status_cycle_map = {
 function SessionAgent.toggleSelectedState(agent)
    local premise = agent:selectedPremise()
    premise.status = status_cycle_map[premise.status]
-   agent.touched = true
+   agent:contentsChanged()
    return true
 end
 
@@ -142,7 +160,7 @@ local status_reverse_map = inverse(status_cycle_map)
 function SessionAgent.reverseToggleSelectedState(agent)
    local premise = agent:selectedPremise()
    premise.status = status_reverse_map[premise.status]
-   agent.touched = true
+   agent:contentsChanged()
    return true
 end
 
@@ -169,7 +187,7 @@ local function _swap_premises(agent, index_a, index_b)
    premise_a.ordinal = index_b
    _update_edit_agent(agent, index_b)
 
-   agent.touched = true
+   agent:contentsChanged()
 end
 
 function SessionAgent.movePremiseUp(agent)
@@ -197,24 +215,26 @@ end
 
 
 
+function SessionAgent.bufferValue(agent)
+   return agent.session
+end
 
 
 
-local agent_utils = require "helm:agent/utils"
 
-SessionAgent.checkTouched = agent_utils.checkTouched
 
-SessionAgent.window = agent_utils.make_window_method({
-   field = { selected_index = true },
-   fn = {
-      buffer_value = function(agent, window, field)
-         return agent.session
-      end
-   },
-   closure = { selectedPremise = true,
-               editWindow = true,
-               resultsWindow = true }
-})
+
+
+
+
+function SessionAgent.windowConfiguration(agent)
+   return agent.mergeWindowConfig(Agent.windowConfiguration(), {
+      field = { selected_index = true },
+      closure = { selectedPremise = true,
+                  editWindow = true,
+                  resultsWindow = true }
+   })
+end
 
 
 
@@ -257,15 +277,15 @@ end
 
 
 
-local function new()
-   local agent = meta(SessionAgent)
+function SessionAgent._init(agent)
+   Agent._init(agent)
    agent.selected_index = 0
    agent.edit_agents = {}
-   return agent
 end
 
 
 
-SessionAgent.idEst = new
-return new
+
+local constructor = assert(require "core:cluster" . constructor)
+return constructor(SessionAgent)
 

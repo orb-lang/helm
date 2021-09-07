@@ -14,8 +14,9 @@ local cluster = require "core:cluster"
 **** Resbuf metatable
 
 #!lua
+local meta = assert(require "core:cluster" . Meta)
 local Rainbuf = require "helm:buf/rainbuf"
-local Resbuf = Rainbuf:inherit()
+local Resbuf = meta(getmetatable(Rainbuf))
 #/lua
 
 
@@ -30,7 +31,7 @@ index we're working on.
 #!lua
 local clear = assert(table.clear)
 function Resbuf.clearCaches(resbuf)
-   resbuf:super"clearCaches"()
+   Rainbuf.clearCaches(resbuf)
    resbuf.reprs = nil
    resbuf.r_num = nil
 end
@@ -68,7 +69,7 @@ constant on the metatable, but this seems like a good place to mention it.
 Resbuf.null_value = { n = 0 }
 
 function Resbuf._init(resbuf)
-   resbuf:super"_init"()
+   Rainbuf._init(resbuf)
    resbuf.frozen = resbuf:value().error
 end
 #/lua
@@ -96,8 +97,6 @@ end
 
 
 #!lua
-local Resbuf_class = setmetatable({}, Resbuf)
-Resbuf.idEst = Resbuf_class
-
-return Resbuf_class
+local constructor = assert(require "core:cluster" . constructor)
+return constructor(Resbuf)
 #/lua

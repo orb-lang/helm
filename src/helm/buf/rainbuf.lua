@@ -423,6 +423,26 @@ end
 
 
 
+function Rainbuf.processQueuedMessages(buf)
+   local had_any = false
+   local msg = buf.source.commands:pop()
+   while msg do
+      buf[msg.method](buf, unpack(msg))
+      had_any = true
+      msg = buf.source.commands:pop()
+   end
+   return had_any
+end
+
+
+
+
+
+
+
+
+
+
 
 function Rainbuf._init(rainbuf)
    rainbuf.offset = 0
@@ -467,54 +487,11 @@ end
 
 
 
-
-
-
-local sub = assert(string.sub)
-function Rainbuf.inherit(buf_class, cfg)
-   local parent_M = getmetatable(buf_class)
-   local child_M = setmetatable({}, parent_M)
-   -- Copy metamethods because mmethod lookup does not respect =__index=es
-   for k,v in pairs(parent_M) do
-      if sub(k, 1, 2) == "__" then
-         child_M[k] = v
-      end
-   end
-   -- But, the new MT should have itself as __index, not the parent
-   child_M.__index = child_M
-   if cfg then
-      -- this can override the above metamethod assignment
-      for k,v in pairs(cfg) do
-         child_M[k] = v
-      end
-   end
-   return child_M
-end
-
-
-
-
-
-
-
-
-Rainbuf.super = assert(require "core:cluster" . super)
-
-
-
-
-
-
-
-
-
 Rainbuf.is_rainbuf = true
 
 
 
 
-local Rainbuf_class = setmetatable({}, Rainbuf)
-Rainbuf.idEst = Rainbuf_class
-
-return Rainbuf_class
+local constructor = assert(require "core:cluster" . constructor)
+return constructor(Rainbuf)
 

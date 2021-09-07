@@ -3,7 +3,9 @@
 
 
 
-local ModalAgent = meta {}
+local meta = assert(require "core:cluster" . Meta)
+local Agent = require "helm:agent/agent"
+local ModalAgent = meta(getmetatable(Agent))
 
 
 
@@ -111,14 +113,14 @@ local button_styles = {
 }
 
 function ModalAgent.update(agent, text, button_style)
-   local model = meta(DialogModel)
+   local model = setmetatable({}, DialogModel)
    model.text = text
    if type(button_style) == "string" then
       button_style = button_styles[button_style]
    end
    model.buttons = button_style
    agent.model = model
-   agent.touched = true
+   agent:contentsChanged()
 end
 
 
@@ -137,29 +139,13 @@ end
 
 
 
-local agent_utils = require "helm:agent/utils"
-
-ModalAgent.checkTouched = agent_utils.checkTouched
-
-ModalAgent.window = agent_utils.make_window_method({
-   fn = {
-      buffer_value = function(agent, window, field)
-         return agent.model and { n = 1, agent.model } or { n = 0 }
-      end
-   }
-})
-
-
-
-
-
-
-local function new()
-   return meta(ModalAgent)
+function ModalAgent.bufferValue(agent)
+   return agent.model and { n = 1, agent.model } or { n = 0 }
 end
 
 
 
-ModalAgent.idEst = new
-return new
+
+local constructor = assert(require "core:cluster" . constructor)
+return constructor(ModalAgent)
 

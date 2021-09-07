@@ -20,8 +20,9 @@ syntax highlighting\.
 ## Methods
 
 ```lua
+local meta = assert(require "core:cluster" . Meta)
 local Rainbuf = require "helm:buf/rainbuf"
-local Txtbuf = Rainbuf:inherit()
+local Txtbuf = meta(getmetatable(Rainbuf))
 ```
 
 
@@ -29,7 +30,7 @@ local Txtbuf = Rainbuf:inherit()
 
 ```lua
 function Txtbuf.clearCaches(txtbuf)
-   txtbuf:super"clearCaches"()
+   Rainbuf.clearCaches(txtbuf)
    txtbuf.render_row = nil
 end
 ```
@@ -83,14 +84,12 @@ function Txtbuf.checkTouched(txtbuf)
    if txtbuf.suggestions and txtbuf.suggestions.touched then
       txtbuf:beTouched()
    end
-   return txtbuf:super"checkTouched"()
+   return Rainbuf.checkTouched(txtbuf)
 end
 ```
 
 
 ```lua
-local Txtbuf_class = setmetatable({}, Txtbuf)
-Txtbuf.idEst = Txtbuf_class
-
-return Txtbuf_class
+local constructor = assert(require "core:cluster" . constructor)
+return constructor(Txtbuf)
 ```

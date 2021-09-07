@@ -870,7 +870,7 @@ end
 ### Historian
 
   Generates prepared statements and contains closures for the necessary
-savepoints to operate [historian](@:helm/historian)\.
+savepoints to operate [historian](https://gitlab.com/special-circumstance/helm/-/blob/trunk/doc/md/helm/historian.md)\.
 
 
 #### Historian SQL statements
@@ -961,7 +961,7 @@ end
 
 ### Session
 
-  The `helm_db` singleton is also used by [valiant](@valiant:session) to
+  The `helm_db` singleton is also used by [valiant](https://gitlab.com/special-circumstance/valiant/-/blob/trunk/doc/md/session.md) to
 manage database operations, through the same sort of proxy table as above\.
 
 ```lua

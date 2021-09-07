@@ -19,7 +19,7 @@ Complete.prompt_char = "💬"
 
 local function _quit(modeS)
    -- #todo restore last-used raga instead of always returning to default
-   modeS.shift_to = modeS.raga_default
+   modeS:shiftMode(modeS.raga_default)
 end
 
 local function _accept(modeS)
@@ -60,26 +60,14 @@ Complete.UTF8 = _insert
 ```lua
 local NAV = Complete.NAV
 
-local function _scrollAfter(modeS, func_name)
-   local suggestions = modeS:agent'suggest'.last_collection
-   if suggestions then
-      -- #todo route selection commands through the SuggestAgent or Window so
-      -- it can set .touched itself?
-      suggestions[func_name](suggestions)
-      modeS:agent'suggest'.touched = true
-      -- #todo should have a Selectbuf that does this automatically
-      modeS.zones.suggest.contents:ensureVisible(suggestions.selected_index)
-   end
-end
-
 function NAV.TAB(modeS, category, value)
-   _scrollAfter(modeS, "selectNextWrap")
+   modeS:agent'suggest':selectNextWrap()
 end
 NAV.DOWN = NAV.TAB
 NAV.SHIFT_DOWN = NAV.TAB
 
 function NAV.SHIFT_TAB(modeS, category, value)
-   _scrollAfter(modeS, "selectPreviousWrap")
+   modeS:agent'suggest':selectPreviousWrap()
 end
 NAV.UP = NAV.SHIFT_TAB
 NAV.SHIFT_UP = NAV.SHIFT_TAB
@@ -104,7 +92,7 @@ we will have already shifted ragas\.
 function Complete.onTxtbufChanged(modeS)
    modeS:agent'suggest':update()
    if modeS:agent'suggest'.last_collection then
-      modeS:agent'suggest'.last_collection.selected_index = 1
+      modeS:agent'suggest':selectFirst()
    else
       _quit(modeS)
    end
@@ -156,7 +144,7 @@ Select the first item in the list when entering complete mode\.
 
 ```lua
 function Complete.onShift(modeS)
-   _scrollAfter(modeS, "selectFirst")
+   modeS:agent'suggest':selectFirst()
 end
 ```
 
@@ -167,7 +155,7 @@ Deselect and prod the Txtbuf on exit\.
 
 ```lua
 function Complete.onUnshift(modeS)
-   _scrollAfter(modeS, "selectNone")
+   modeS:agent'suggest':selectNone()
 end
 ```
 

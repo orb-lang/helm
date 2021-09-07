@@ -19,7 +19,7 @@ Modal.prompt_char = " "
 function Modal.close(maestro, value)
    maestro.agents.modal.model.value = value
    -- #todo shift back to the previous raga--modeS needs to maintain a stack
-   maestro.modeS.shift_to = maestro.modeS.raga_default
+   maestro.modeS:shiftMode(maestro.modeS.raga_default)
 end
 #/lua
 

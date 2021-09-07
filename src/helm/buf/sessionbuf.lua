@@ -11,11 +11,12 @@
 
 
 
+local meta = assert(require "core:cluster" . Meta)
 local Rainbuf = require "helm:buf/rainbuf"
 local Resbuf  = require "helm:buf/resbuf"
 local Txtbuf  = require "helm:buf/txtbuf"
 
-local Sessionbuf = Rainbuf:inherit()
+local Sessionbuf = meta(getmetatable(Rainbuf))
 
 
 
@@ -41,7 +42,7 @@ Sessionbuf.ROWS_PER_RESULT = 7
 
 
 function Sessionbuf.contentCols(buf)
-   return buf:super"contentCols"() - 2
+   return Rainbuf.contentCols(buf) - 2
 end
 
 
@@ -101,7 +102,7 @@ function Sessionbuf.setSubExtents(buf)
 end
 
 function Sessionbuf.setExtent(buf, rows, cols)
-   buf:super"setExtent"(rows, cols)
+   Rainbuf.setExtent(buf, rows, cols)
    buf:setSubExtents()
 end
 
@@ -123,7 +124,7 @@ function Sessionbuf.checkTouched(buf)
          buf:beTouched()
       end
    end
-   return buf:super"checkTouched"()
+   return Rainbuf.checkTouched(buf)
 end
 
 
@@ -173,12 +174,38 @@ end
 
 
 
-function Sessionbuf.scrollResultsDown(buf)
-   return _resbuf(buf):scrollDown()
+function Sessionbuf.ensureSelectedVisible(buf)
+   local start_index = buf:positionOfSelected()
+   local end_index = start_index + buf:rowsForSelectedResult() + 3
+   buf:ensureVisible(start_index, end_index)
 end
 
-function Sessionbuf.scrollResultsUp(buf)
-   return _resbuf(buf):scrollUp()
+
+
+
+
+
+
+
+
+function Sessionbuf.processQueuedMessages(buf)
+   local had_any = false
+   if buf.resbuf and buf.resbuf:processQueuedMessages() then
+      had_any = true
+   end
+   for _, txtbuf in pairs(buf.txtbufs) do
+      if txtbuf:processQueuedMessages() then
+         had_any = true
+      end
+   end
+   -- Anything from sub-buffers means we need to clear our line cache as well
+   if had_any then
+      buf:clearCaches()
+   end
+   if Rainbuf.processQueuedMessages(buf) then
+      had_any = true
+   end
+   return had_any
 end
 
 
@@ -194,7 +221,7 @@ end
 
 
 function Sessionbuf.clearCaches(buf)
-   buf:super"clearCaches"()
+   Rainbuf.clearCaches(buf)
    buf._composeOneLine = nil
 end
 
@@ -277,15 +304,13 @@ end
 
 
 function Sessionbuf._init(buf)
-   buf:super"_init"()
+   Rainbuf._init(buf)
    buf.txtbufs = {}
 end
 
 
 
 
-local Sessionbuf_class = setmetatable({}, Sessionbuf)
-Sessionbuf.idEst = Sessionbuf_class
-
-return Sessionbuf_class
+local constructor = assert(require "core:cluster" . constructor)
+return constructor(Sessionbuf)
 

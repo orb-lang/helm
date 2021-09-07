@@ -7,14 +7,15 @@
 
 
 
-local EditAgent = meta {}
+local meta = assert(require "core:cluster" . Meta)
+local Agent = require "helm:agent/agent"
+local EditAgent = meta(getmetatable(Agent))
 
 
 
 
 
 
-assert(meta)
 local Codepoints = require "singletons/codepoints"
 local lines = import("core/string", "lines")
 local clone, collect, slice, splice =
@@ -95,10 +96,12 @@ local concat, insert, remove = assert(table.concat),
 
 
 
+
 function EditAgent.contentsChanged(agent)
+   Agent.contentsChanged(agent)
    agent.contents_changed = true
-   agent.touched = true
 end
+
 
 
 
@@ -111,7 +114,7 @@ end
 function EditAgent.setLexer(agent, lex_fn)
    if agent.lex ~= lex_fn then
       agent.lex = lex_fn
-      agent.touched = true
+      agent:bufferCommand("clearCaches")
    end
 end
 
@@ -896,41 +899,48 @@ end
 
 
 
-local agent_utils = require "helm:agent/utils"
-
-EditAgent.checkTouched = agent_utils.checkTouched
-
-EditAgent.window = agent_utils.make_window_method({
-   field = { cursor = true },
-   fn = {
-      buffer_value = function(agent, window, field)
-         local answer = {}
-         for i, line in ipairs(agent) do
-            answer[i] = cat(line)
-         end
-         return answer
-      end
-   },
-   closure = { cursorIndex = true,
-               tokens = true }
-})
 
 
-
-
-
-
-local function new()
-   local agent = meta(EditAgent)
-   agent[1] = ""
-   agent:setCursor(1, 1)
-   agent.contents_changed = false
-   agent.cursor_changed = false
-   return agent
+function EditAgent.bufferValue(agent)
+   local answer = {}
+   for i, line in ipairs(agent) do
+      answer[i] = cat(line)
+   end
+   return answer
 end
 
 
 
-EditAgent.idEst = new
-return new
+
+
+
+
+
+
+function EditAgent.windowConfiguration(agent)
+   return agent.mergeWindowConfig(Agent.windowConfiguration(), {
+      field = { cursor = true },
+      closure = { cursorIndex = true,
+                  tokens = true }
+   })
+end
+
+
+
+
+
+
+function EditAgent._init(agent)
+   Agent._init(agent)
+   agent[1] = ""
+   agent:setCursor(1, 1)
+   agent.contents_changed = false
+   agent.cursor_changed = false
+end
+
+
+
+
+local constructor = assert(require "core:cluster" . constructor)
+return constructor(EditAgent)
 
