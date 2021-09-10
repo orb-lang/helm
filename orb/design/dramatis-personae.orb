@@ -19,14 +19,26 @@ to reading this document generally, and this section in particular.
 
 What does it mean to say an artifact of code is an actor?
 
-We avoid the use of "object" in discussing bridge code.  It has its place, but
-is seldom the correct word to use to describe something.  If a more precise
-term applies, we use that instead.
+Let us begin by discussing objects, since in historic terms the concept of
+actor is that which Alan Kay has blessed as following his original vision for
+that term.  Which has overloaded, overlaid, and even convoluted meanings in
+the contemporary discourse.
+
+An object, in systems terms, is a block of memory treated as a single record,
+which is associated with functions (procedures in Wirthian dialect) which
+receive that layout as the first parameter.  Forth can notoriously reify a
+full object system on one punchcard or "block".
+
+Lua evolved as an adjunct language to C, and shares that concept of what an
+object is.  Lua provides metatables and metamethods, the skeleton of a
+metaobject protocol in the CLOS sense, but doesn't refer to objects, or
+provide them as anything other than the basic structs which make up Lua types.
 
 This is a table: ={}=.  It is a map of anything, including itself, excluding
 only =nil=, to anything else except =nil=.  Or if you prefer, it's a map of
 absolutely everything except =nil=, to =nil=, except where otherwise
-specified.
+specified.  Lua will throw an error if the user attempts a =nil= key for an
+lvalue slot.
 
 A table with a metatable, =setmetatable({}, Metatable)= is: a table with a
 metatable.  Metatables, and metamethods, are the [[Meta Object Protocol]†] of
