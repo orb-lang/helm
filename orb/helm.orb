@@ -16,7 +16,7 @@ performance regressions.
 profile = require("jit.profile")
 profiled = {}
 profile.start("li1", function(th, samples, vmmode)
-   local d = profile.dumpstack(th, "pF", 1)
+   local d = profile.dumpstack(th, "pFZ;", 6)
    profiled[d] = (profiled[d] or 0) + samples
 end)
 --]]
@@ -427,12 +427,17 @@ uv.read_start(stdin, onseq)
 -- initial layout and paint screen
 modeS:reflow()
 
+--[[ stop profiler if we're using it to measure startup time
+profile.stop()
+--]]
+
 -- main loop
 local retcode =  uv.run('default')
 
 -- Shut down the database conn:
 local helm_db = require "helm:helm/helm-db"
 helm_db.close()
+
 
 retcode = uv.run 'default'
 

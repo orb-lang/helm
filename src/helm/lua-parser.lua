@@ -21,6 +21,21 @@ local Node = require "espalier:espalier/node"
 
 
 
+local lua_statements = [[
+statement  <-  do-state
+            /  while-state
+            /  repeat-state
+            /  if-state
+            /  for-state
+            /  function-state
+            /  local-function-state
+            /  local-assign-state
+            /  varlist-explist-state
+            /  goto-state
+            /  label-state
+            /  funcl-state
+]]
+
 local lua_str = [[
 lua = shebang* _ chunk _ Error*
 shebang = "#" (!"\n" 1)* "\n"

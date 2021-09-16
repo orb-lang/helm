@@ -21,6 +21,21 @@ local Node = require "espalier:espalier/node"
 ### Extended Lua PEG grammar
 
 ```peg
+statement  <-  do-state
+            /  while-state
+            /  repeat-state
+            /  if-state
+            /  for-state
+            /  function-state
+            /  local-function-state
+            /  local-assign-state
+            /  varlist-explist-state
+            /  goto-state
+            /  label-state
+            /  funcl-state
+```
+
+```peg
 lua = shebang* _ chunk _ Error*
 shebang = "#" (!"\n" 1)* "\n"
 chunk = _ (statement _ ";"?)* (_ laststatement _ ";"?)?

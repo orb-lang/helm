@@ -2,6 +2,7 @@
 @startuml
 class Modeselektor
 class Historian
+class Runner
 package "zone.orb" as zone_orb <<Folder>> {
    class Zoneherd
    class Zone
@@ -103,11 +104,15 @@ map maestro {
    more => ...
 }
 
+map run {
+   hist *--> hist
+   eval *--> eval
+}
+
 map modeS {
    zones *--> zoneherd
-   hist  *--> hist
    maestro *--> maestro
-   eval    *--> eval
+   run *--> run
 }
 
 circle "new" as newSuggestAgent
@@ -118,6 +123,7 @@ circle "new" as newSessionAgent
 circle "new" as newZoneMailbox
 
 Modeselektor --|> modeS : new
+Runner --|> run : new
 Zoneherd --|> zoneherd : new
 Zone --|> suggest : new
 Zone --|> command : new
