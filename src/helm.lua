@@ -305,7 +305,7 @@ local _ditch = false
 local parse_input = require "anterm:input-parser"
 
 local should_dispatch_all = false
-local input_idle = uv.new_idle()
+local input_timer = uv.new_timer()
 local input_check = uv.new_check()
 local input_buffer = ""
 
@@ -337,10 +337,13 @@ end
 
 local function dispatch_input(seq, dispatch_all)
    -- Clear the flag and timer indicating whether we should clear down the
-   -- input buffer this cycle. Note that we must explicitly stop the timer
-   -- because we need to give it a repeat value to kick the event loop along
+   -- input buffer this cycle. We explicitly stop the timer in case another
+   -- loop iteration occurs before the 5ms delay elapses (e.g. due to an
+   -- idler). We must use a timer with a nonzero delay because it seems that
+   -- the loop sometimes fails to retrieve input that should logically already
+   -- be present (e.g. due to a large paste) unless we wait.
    should_dispatch_all = false
-   input_idle:stop()
+   input_timer:stop()
    -- Try parsing, letting the parser know whether it should definitely consume
    -- everything it can or hold off on possible incomplete escape sequences
    local new_events, pos = parse_input(seq, dispatch_all)
@@ -353,12 +356,13 @@ local function dispatch_input(seq, dispatch_all)
          -- #todo perform some kind of useful error recovery here
          error("Unparseable input encountered:\n" .. input_buffer)
       else
-         -- Use an idler to wait until the beginning of the *next* loop to
+         -- Use a timer to wait until all available input has arrived to
          -- set the flag that will cause our check handler to clear the
-         -- input buffer. An idler is the type of handle that (a) runs before
-         -- blocking for input, and (b) causes the loop *not* to actually
-         -- block for input. It will only ever run once (see above).
-         input_idle:start(function() should_dispatch_all = true end)
+         -- input buffer. If more input is available sooner than the 5ms
+         -- timeout, it will be processed immediately and the timer reset.
+         -- This is (hopefully) an upper bound on how long it will take the
+         -- next chunk of a large paste to arrive.
+         input_timer:start(5, 0, function() should_dispatch_all = true end)
       end
    end
    consolidate_scroll_events(new_events)
@@ -369,7 +373,7 @@ local function dispatch_input(seq, dispatch_all)
          _ditch = true
          uv.read_stop(stdin)
          bounds_watch:stop()
-         input_idle:stop()
+         input_timer:stop()
          input_check:stop()
          if restart_watch then
             restart_watch:stop()
