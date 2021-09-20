@@ -306,7 +306,7 @@ end
 
 
 
-function ModeS.actOnce(modeS, event, old_cat_val)
+local function _actOnce(modeS, event, old_cat_val)
    -- Try to dispatch the new-style event via keymap
    local command, args = modeS.maestro:translate(event)
    if command then
@@ -328,6 +328,50 @@ function ModeS.actOnce(modeS, event, old_cat_val)
    modeS:agent'edit'.contents_changed = false
    modeS:agent'edit'.cursor_changed = false
    return command
+end
+
+local function _dispatchMessage(receiver, msg)
+   while msg do
+      -- #todo replace this with construction-time translation to nested message?
+      if msg.sendto then
+         receiver = receiver[msg.sendto]
+      end
+      if msg.property then
+         receiver = receiver[msg.property]
+      elseif msg.call == true then
+         receiver = receiver(unpack(msg))
+      elseif msg.call then
+         receiver = receiver[msg.call](unpack(msg))
+      elseif msg.method then
+         receiver = receiver[msg.method](receiver, unpack(msg))
+      else
+         error("Message must have one of property, call, or method")
+      end
+      msg = msg.message
+   end
+   return receiver
+end
+
+local create, resume, status = assert(coroutine.create),
+                               assert(coroutine.resume),
+                               assert(coroutine.status)
+function ModeS.actOnce(modeS, event, old_cat_val)
+   local coro = create(function()
+      return _actOnce(modeS, event, old_cat_val)
+   end)
+   local msg_ret = { n = 0 }
+   while true do
+      local ok, msg = resume(coro, unpack(msg_ret))
+      if not ok then
+         error(msg .. "\n" .. debug.traceback(coro))
+      elseif status(coro) == "dead" then
+         -- End of body function, pass through the return value
+         -- #todo returning the command that was executed like this is likely
+         -- to be insufficient very soon, work out something else
+         return msg
+      end
+      msg_ret = pack(_dispatchMessage(modeS, msg))
+   end
 end
 
 

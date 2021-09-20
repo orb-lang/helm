@@ -30,6 +30,7 @@ local concat, insert = assert(table.concat), assert(table.insert)
 local sub, gsub, rep = assert(string.sub),
                        assert(string.gsub),
                        assert(string.rep)
+local yield = assert(coroutine.yield)
 
 
 
@@ -52,7 +53,7 @@ local function _insert(modeS, category, value)
    if modeS:agent'edit':contents() == "" then
       modeS:clearResults()
       if value == "/" then
-         modeS:shiftMode "search"
+         yield{ method = "shiftMode", "search" }
          return
       end
       if value == "?" then
@@ -159,7 +160,7 @@ NAV.ALT_RETURN = NAV.SHIFT_RETURN
 
 local function _activateCompletion(modeS)
    if modeS:agent'suggest'.last_collection then
-      modeS:shiftMode "complete"
+      yield{ method = "shiftMode", "complete" }
       return true
    else
       return false

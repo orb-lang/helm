@@ -4,6 +4,7 @@ Raga for reviewing a previously-saved session.
 
 #!lua
 local clone = assert(require "core:table" . clone)
+local yield = assert(coroutine.yield)
 local RagaBase = require "helm:raga/base"
 local Txtbuf = require "helm:buf/txtbuf"
 local Sessionbuf = require "helm:buf/sessionbuf"
@@ -58,7 +59,7 @@ NAV.SHIFT_TAB = _toSessionAgent "reverseToggleSelectedState"
 
 function NAV.RETURN(modeS, category, value)
    if modeS:agent'session'.selected_index ~= 0 then
-      modeS:shiftMode "edit_title"
+      yield{ method = "shiftMode", "edit_title" }
    end
 end
 

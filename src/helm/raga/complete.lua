@@ -4,6 +4,7 @@
 
 
 local clone = import("core/table", "clone")
+local yield = assert(coroutine.yield)
 local EditBase = require "helm/raga/edit"
 
 local Complete = clone(EditBase, 2)
@@ -19,7 +20,7 @@ Complete.prompt_char = "💬"
 
 local function _quit(modeS)
    -- #todo restore last-used raga instead of always returning to default
-   modeS:shiftMode(modeS.raga_default)
+   yield{ method = "shiftMode", modeS.raga_default }
 end
 
 local function _accept(modeS)
