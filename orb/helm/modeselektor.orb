@@ -91,6 +91,13 @@ assert(meta, "must have meta in _G")
 #/lua
 
 
+**** imports
+
+#!lua
+local coro = require "core:core/coro"
+#/lua
+
+
 **** includes
 
 The easiest way to go mad in concurrent environments is to share memory.
@@ -329,32 +336,46 @@ local function _actOnce(modeS, event, old_cat_val)
    modeS:agent'edit'.cursor_changed = false
    return command
 end
+#/lua
 
-local function _dispatchMessage(receiver, msg)
+
+*** dispatchMessage(modeS, msg)
+
+  Dispatches messages according to the [[design document]
+[@:design/maestro-and-messages]].
+
+@atman  This is a solid implementation, I'll move it to Actor.  I've rewritten
+        it here as specific to the receiver, and made it uncloaked/public
+        because it will be =dynamic= / =hookable= eventually.
+
+
+#!lua
+local function dispatchMessage(modeS, msg)
    while msg do
       -- #todo replace this with construction-time translation to nested message?
       if msg.sendto then
-         receiver = receiver[msg.sendto]
+         modeS = modeS[msg.sendto]
       end
       if msg.property then
-         receiver = receiver[msg.property]
+         modeS = modeS[msg.property]
       elseif msg.call == true then
-         receiver = receiver(unpack(msg))
+         modeS = modeS(unpack(msg))
       elseif msg.call then
-         receiver = receiver[msg.call](unpack(msg))
+         modeS = modeS[msg.call](unpack(msg))
       elseif msg.method then
-         receiver = receiver[msg.method](receiver, unpack(msg))
+         modeS = modeS[msg.method](modeS, unpack(msg))
       else
          error("Message must have one of property, call, or method")
       end
       msg = msg.message
    end
-   return receiver
+   return modeS
 end
 
-local create, resume, status = assert(coroutine.create),
-                               assert(coroutine.resume),
-                               assert(coroutine.status)
+local create, resume, status = assert(coro.create),
+                               assert(coro.resume),
+                               assert(coro.status)
+
 function ModeS.actOnce(modeS, event, old_cat_val)
    local coro = create(function()
       return _actOnce(modeS, event, old_cat_val)
@@ -370,7 +391,7 @@ function ModeS.actOnce(modeS, event, old_cat_val)
          -- to be insufficient very soon, work out something else
          return msg
       end
-      msg_ret = pack(_dispatchMessage(modeS, msg))
+      msg_ret = pack(dispatchMessage(modeS, msg))
    end
 end
 #/lua
