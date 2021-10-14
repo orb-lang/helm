@@ -9,6 +9,7 @@
 local SelectionList = require "helm:selection_list"
 local names = require "repr:names"
 local insert, sort = assert(table.insert), assert(table.sort)
+local yield = assert(coroutine.yield)
 
 
 
@@ -184,6 +185,34 @@ function SuggestAgent.accept(suggest)
    local suggestion = suggest.last_collection:selectedItem()
    suggest.replaceToken(suggestion)
 end
+
+
+
+
+
+
+
+
+function SuggestAgent.activateCompletion(agent)
+   if agent.last_collection then
+      yield{ method = "shiftMode", "complete" }
+      return true
+   else
+      return false
+   end
+end
+
+
+
+
+
+
+SuggestAgent.keymap_try_activate = {
+   TAB = "activateCompletion",
+   SHIFT_TAB = "activateCompletion",
+   SCROLL_UP = "activateCompletion",
+   SCROLL_DOWN = "activateCompletion"
+}
 
 
 

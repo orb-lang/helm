@@ -308,16 +308,7 @@ process it \(if this never occurs, we display an NYI message in the status area\
 ```lua
 local function _actOnce(modeS, event, old_cat_val)
    -- Try to dispatch the new-style event via keymap
-   local command, args = modeS.maestro:translate(event)
-   if command then
-      modeS.maestro:dispatch(event, command, args)
-   elseif old_cat_val then
-      -- Okay, didn't find anything there, fall back to the old way
-      local handled = modeS.raga(modeS, unpack(old_cat_val))
-      if handled then
-         command = 'LEGACY'
-      end
-   end
+   local command = modeS.maestro:dispatch(event, old_cat_val)
    if modeS:agent'edit'.contents_changed then
       modeS.raga.onTxtbufChanged(modeS)
     -- Treat contents_changed as implying cursor_changed
@@ -330,31 +321,10 @@ local function _actOnce(modeS, event, old_cat_val)
    return command
 end
 
-local function _dispatchMessage(receiver, msg)
-   while msg do
-      -- #todo replace this with construction-time translation to nested message?
-      if msg.sendto then
-         receiver = receiver[msg.sendto]
-      end
-      if msg.property then
-         receiver = receiver[msg.property]
-      elseif msg.call == true then
-         receiver = receiver(unpack(msg))
-      elseif msg.call then
-         receiver = receiver[msg.call](unpack(msg))
-      elseif msg.method then
-         receiver = receiver[msg.method](receiver, unpack(msg))
-      else
-         error("Message must have one of property, call, or method")
-      end
-      msg = msg.message
-   end
-   return receiver
-end
-
 local create, resume, status = assert(coroutine.create),
                                assert(coroutine.resume),
                                assert(coroutine.status)
+local dispatchmessage = assert(require "core:cluster/actor" . dispatchmessage)
 function ModeS.actOnce(modeS, event, old_cat_val)
    local coro = create(function()
       return _actOnce(modeS, event, old_cat_val)
@@ -370,7 +340,7 @@ function ModeS.actOnce(modeS, event, old_cat_val)
          -- to be insufficient very soon, work out something else
          return msg
       end
-      msg_ret = pack(_dispatchMessage(modeS, msg))
+      msg_ret = pack(dispatchmessage(modeS, msg))
    end
 end
 ```

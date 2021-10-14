@@ -88,14 +88,29 @@ end
 ```
 
 
+#### Agent:evtScrollUp\(\), :evtScrollDown\(\)
+
+Translate the num\_lines property on a merged scroll event, or scrolls by one
+line for key events\.
+
+```lua
+function Agent.evtScrollUp(evt)
+   agent:scrollUp(evt.num_lines)
+end
+function Agent.evtScrollDown(evt)
+   agent:scrollDown(evt.num_lines)
+end
+```
+
+
 ### Agent:window\(\), :windowConfiguration\(\)
 
 The `Window`s of `Agent`s need to implement some common behavior in order to
 interact correctly with `Rainbuf`s and change detection, so we start with a
 basic config\. Subclasses may override `:windowConfiguration()` to add their
-own details, using `.mergeWindowConfig()` to include the superclass' config\.
-\(Note that this is not a method, just a function\.\)
+own details, using `.mergeWindowConfig()` to include the superclass' config\.Note that this is not a method, just a function\.\)
 
+\(
 ```lua
 local addall = assert(require "core:table" . addall)
 function Agent.mergeWindowConfig(cfg_a, cfg_b)

@@ -17,52 +17,25 @@ local EditBase = clone(RagaBase, 2)
 
 
 
-
-
-
-
-
-
-local map = {
-   LEFT            = "left",
-   RIGHT           = "right",
-   ["M-LEFT"]      = "leftWordAlpha",
-   ["M-b"]         = "leftWordAlpha",
-   ["M-RIGHT"]     = "rightWordAlpha",
-   ["M-w"]         = "rightWordAlpha",
-   HOME            = "startOfLine",
-   ["C-a"]         = "startOfLine",
-   END             = "endOfLine",
-   ["C-e"]         = "endOfLine",
-   BACKSPACE       = "killBackward",
-   DELETE          = "killForward",
-   ["M-BACKSPACE"] = "killToBeginningOfWord",
-   ["M-DELETE"]    = "killToEndOfWord",
-   ["M-d"]         = "killToEndOfWord",
-   ["C-k"]         = "killToEndOfLine",
-   ["C-u"]         = "killToBeginningOfLine",
-   ["C-t"]         = "transposeLetter"
-}
-
-for key, command in pairs(map) do
-   EditBase[command] = function(maestro, event)
-      return maestro.agents.edit[command](maestro.agents.edit)
-   end
-end
-
 function EditBase.clearTxtbuf(maestro, event)
    maestro.agents.edit:clear()
    maestro.agents.results:clear()
    maestro.modeS.hist.cursor = maestro.modeS.hist.n + 1
 end
-map["C-l"] = "clearTxtbuf"
 
 function EditBase.restartSession(maestro, event)
    maestro.modeS:restart()
 end
-map["C-r"] = "restartSession"
 
-EditBase.default_keymaps = { map }
+EditBase.keymap_extra_commands = {
+   ["C-l"] = "clearTxtbuf",
+   ["C-r"] = "restartSession"
+}
+
+EditBase.default_keymaps = {
+   { source = "agents.edit", name = "keymap_basic_editing" },
+   { source = "modeS.raga", name = "keymap_extra_commands" }
+}
 
 
 

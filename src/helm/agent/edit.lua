@@ -327,6 +327,17 @@ end
 
 
 
+function EditAgent.tab(agent)
+   agent:paste("   ")
+end
+
+
+
+
+
+
+
+
 
 local inverse = assert(require "core:table" . inverse)
 local _openers = { ["("] = ")",
@@ -872,6 +883,9 @@ end
 
 
 
+
+
+
 function EditAgent.continuationLines(agent)
    return #agent - 1
 end
@@ -924,6 +938,57 @@ function EditAgent.windowConfiguration(agent)
                   tokens = true }
    })
 end
+
+
+
+
+
+
+
+
+
+
+
+EditAgent.keymap_basic_editing = {
+   UP              = "up",
+   DOWN            = "down",
+   LEFT            = "left",
+   RIGHT           = "right",
+   ["M-LEFT"]      = "leftWordAlpha",
+   ["M-b"]         = "leftWordAlpha",
+   ["M-RIGHT"]     = "rightWordAlpha",
+   ["M-w"]         = "rightWordAlpha",
+   HOME            = "startOfLine",
+   ["C-a"]         = "startOfLine",
+   END             = "endOfLine",
+   ["C-e"]         = "endOfLine",
+   BACKSPACE       = "killBackward",
+   DELETE          = "killForward",
+   ["M-BACKSPACE"] = "killToBeginningOfWord",
+   ["M-DELETE"]    = "killToEndOfWord",
+   ["M-d"]         = "killToEndOfWord",
+   ["C-k"]         = "killToEndOfLine",
+   ["C-u"]         = "killToBeginningOfLine",
+   ["C-t"]         = "transposeLetter",
+   TAB             = "tab"
+}
+
+
+
+
+
+
+
+
+
+
+
+EditAgent.keymap_readline_nav = {
+   ["C-b"] = "left",
+   ["C-f"] = "right",
+   ["C-n"] = "down",
+   ["C-p"] = "up"
+}
 
 
 

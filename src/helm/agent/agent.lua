@@ -94,6 +94,21 @@ end
 
 
 
+function Agent.evtScrollUp(evt)
+   agent:scrollUp(evt.num_lines)
+end
+function Agent.evtScrollDown(evt)
+   agent:scrollDown(evt.num_lines)
+end
+
+
+
+
+
+
+
+
+
 
 
 

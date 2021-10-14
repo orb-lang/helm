@@ -26,7 +26,7 @@ end
 #/lua
 
 
-*** accept()
+*** SearchAgent:accept()
 
 #!lua
 function SearchAgent.accept(agent)
@@ -35,6 +35,9 @@ function SearchAgent.accept(agent)
    -- yield(Message{sendto = "maestro.agents.edit", method = "replaceToken", n = 1, suggestion})
 end
 #/lua
+
+
+*** Keymap
 
 
 #!lua

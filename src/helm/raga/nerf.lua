@@ -158,60 +158,20 @@ end
 Nerf.CTRL["^\\"] = NAV.CTRL_RETURN
 NAV.ALT_RETURN = NAV.SHIFT_RETURN
 
-local function _activateCompletion(modeS)
-   if modeS:agent'suggest'.last_collection then
-      yield{ method = "shiftMode", "complete" }
-      return true
-   else
-      return false
-   end
+
+
+
+
+
+Nerf.default_keymaps = {{ source = "agents.suggest",
+                          name = "keymap_try_activate" },
+                        { source = "agents.results",
+                          name = "keymap_scrolling" },
+                        { source = "agents.edit",
+                          name = "keymap_readline_nav" }}
+for _, map in ipairs(EditBase.default_keymaps) do
+   insert(Nerf.default_keymaps, map)
 end
-
-function NAV.SHIFT_DOWN(modeS, category, value)
-   if not _activateCompletion(modeS) then
-      modeS:agent'results':scrollDown()
-   end
-end
-
-function NAV.SHIFT_UP(modeS, category, value)
-   if not _activateCompletion(modeS) then
-      modeS:agent'results':scrollUp()
-   end
-end
-
-function NAV.TAB(modeS, category, value)
-   if not _activateCompletion(modeS) then
-      modeS:agent'edit':paste("   ")
-   end
-end
-
-function NAV.SHIFT_TAB(modeS, category, value)
-   -- If we can't activate completion, nothing to do really
-   _activateCompletion(modeS)
-end
-
-
-
-
-
-
-Nerf.default_keymaps = clone(EditBase.default_keymaps)
-
-
-
-
-
-
-
-
-
-insert(Nerf.default_keymaps, {
-   ["C-b"] = "left",
-   ["C-f"] = "right",
-   ["C-n"] = "down",
-   ["C-p"] = "up"
-})
-
 
 
 
@@ -225,10 +185,6 @@ function Nerf.scrollResultsDown(maestro, event)
    maestro.agents.results:scrollDown(event.num_lines)
 end
 
-insert(Nerf.default_keymaps, {
-   SCROLL_UP = "scrollResultsUp",
-   SCROLL_DOWN = "scrollResultsDown"
-})
 
 
 

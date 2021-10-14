@@ -321,6 +321,17 @@ end
 #/lua
 
 
+**** EditAgent:tab()
+
+Respond to a press of the Tab key (that was not handled by any other Agent).
+Translate to three spaces.
+
+#!lua
+function EditAgent.tab(agent)
+   agent:paste("   ")
+end
+#/lua
+
 **** EditAgent:insert(frag)
 
 Inserts =frag= (which must be exactly one codepoint) at the current cursor
@@ -866,7 +877,10 @@ end
 #/lua
 
 
-*** EditAgent:continuationLines()
+*** Rendering-related queries
+
+
+**** EditAgent:continuationLines()
 
 The number of continuation lines (lines past the first). Simple enough, but
 used in a couple places.
@@ -878,7 +892,7 @@ end
 #/lua
 
 
-*** EditAgent:tokens([row])
+**** EditAgent:tokens([row])
 
 Breaks the contents of the agent, or a single row if =row= is supplied,
 into tokens using the assigned lexer.
@@ -896,7 +910,7 @@ end
 #/lua
 
 
-*** EditAgent:bufferValue()
+**** EditAgent:bufferValue()
 
 The buffer need not concern itself with which lines are "open".
 
@@ -911,7 +925,7 @@ end
 #/lua
 
 
-*** EditAgent:windowConfiguration()
+**** EditAgent:windowConfiguration()
 
 We expose the cursor position and some functions related to lexing, which the
 buffer uses in syntax highlighting.
@@ -924,6 +938,57 @@ function EditAgent.windowConfiguration(agent)
                   tokens = true }
    })
 end
+#/lua
+
+
+*** Input-event handling and keymaps
+
+
+**** Basic editing commands keymap
+
+The basic editing commands that are applicable no matter what we're editing.
+
+#!lua
+EditAgent.keymap_basic_editing = {
+   UP              = "up",
+   DOWN            = "down",
+   LEFT            = "left",
+   RIGHT           = "right",
+   ["M-LEFT"]      = "leftWordAlpha",
+   ["M-b"]         = "leftWordAlpha",
+   ["M-RIGHT"]     = "rightWordAlpha",
+   ["M-w"]         = "rightWordAlpha",
+   HOME            = "startOfLine",
+   ["C-a"]         = "startOfLine",
+   END             = "endOfLine",
+   ["C-e"]         = "endOfLine",
+   BACKSPACE       = "killBackward",
+   DELETE          = "killForward",
+   ["M-BACKSPACE"] = "killToBeginningOfWord",
+   ["M-DELETE"]    = "killToEndOfWord",
+   ["M-d"]         = "killToEndOfWord",
+   ["C-k"]         = "killToEndOfLine",
+   ["C-u"]         = "killToBeginningOfLine",
+   ["C-t"]         = "transposeLetter",
+   TAB             = "tab"
+}
+
+#/lua
+
+
+**** Readline-style navigation
+
+Provides equivalent commands for diehard Emacsians.
+
+In case RMS ever takes bridge for a spin...
+
+#!lua
+EditAgent.keymap_readline_nav = {
+   ["C-b"] = "left",
+   ["C-f"] = "right",
+   ["C-n"] = "down",
+   ["C-p"] = "up"
+}
 #/lua
 
 

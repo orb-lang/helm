@@ -35,6 +35,18 @@ end
 
 
 
+
+
+ResultsAgent.keymap_scrolling = {
+   SCROLL_UP = { method = "evtScrollUp", n = 1 },
+   SCROLL_DOWN = { method = "evtScrollDown", n = 1 },
+   ["S-UP"] = { method = "evtScrollUp", n = 1 },
+   ["S-DOWN"] = { method = "evtScrollDown", n = 1 }
+}
+
+
+
+
 local constructor = assert(require "core:cluster" . constructor)
 return constructor(ResultsAgent)
 

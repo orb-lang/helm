@@ -88,6 +88,21 @@ end
 #/lua
 
 
+**** Agent:evtScrollUp(), :evtScrollDown()
+
+Translate the num_lines property on a merged scroll event, or scrolls by one
+line for key events.
+
+#!lua
+function Agent.evtScrollUp(evt)
+   agent:scrollUp(evt.num_lines)
+end
+function Agent.evtScrollDown(evt)
+   agent:scrollDown(evt.num_lines)
+end
+#/lua
+
+
 *** Agent:window(), :windowConfiguration()
 
 The =Window=s of =Agent=s need to implement some common behavior in order to
