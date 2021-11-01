@@ -11,6 +11,7 @@ providing a [Window](https://gitlab.com/special-circumstance/helm/-/blob/trunk/d
 ```lua
 local Window = require "window:window"
 local Deque = require "deque:deque"
+local yield = assert(coroutine.yield)
 ```
 
 
@@ -42,6 +43,24 @@ function Agent.bufferCommand(agent, name, ...)
    local msg = pack(...)
    msg.method = name
    agent.buffer_commands:push(msg)
+end
+```
+
+
+### Agent:agentMessage\(other\_agent\_name, method\_name, args\.\.\.\)
+
+Dispatches a message \(via a `yield` to modeS\) to one of our fellow Agents and
+answers the return value\.
+
+\#todo
+Agent\. Where should it go?
+
+```lua
+function Agent.agentMessage(agent, other_agent_name, method_name, ...)
+   local msg = pack(...)
+   msg.method = method_name
+   msg = { method = 'agent', n = 1, other_agent_name, message = msg }
+   return yield(msg)
 end
 ```
 
@@ -88,16 +107,16 @@ end
 ```
 
 
-#### Agent:evtScrollUp\(\), :evtScrollDown\(\)
+#### Agent:evtScrollUp\(evt\), :evtScrollDown\(evt\)
 
 Translate the num\_lines property on a merged scroll event, or scrolls by one
 line for key events\.
 
 ```lua
-function Agent.evtScrollUp(evt)
+function Agent.evtScrollUp(agent, evt)
    agent:scrollUp(evt.num_lines)
 end
-function Agent.evtScrollDown(evt)
+function Agent.evtScrollDown(agent, evt)
    agent:scrollDown(evt.num_lines)
 end
 ```
@@ -108,9 +127,9 @@ end
 The `Window`s of `Agent`s need to implement some common behavior in order to
 interact correctly with `Rainbuf`s and change detection, so we start with a
 basic config\. Subclasses may override `:windowConfiguration()` to add their
-own details, using `.mergeWindowConfig()` to include the superclass' config\.Note that this is not a method, just a function\.\)
+own details, using `.mergeWindowConfig()` to include the superclass' config\.
+\(Note that this is not a method, just a function\.\)
 
-\(
 ```lua
 local addall = assert(require "core:table" . addall)
 function Agent.mergeWindowConfig(cfg_a, cfg_b)

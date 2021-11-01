@@ -192,6 +192,35 @@ function ModeS.reflow(modeS)
 end
 ```
 
+
+### ModeS:processMessagesWhile\(fn\)
+
+Executes `fn` as a coroutine, processing any `Message`s it yields\.
+
+```lua
+local create, resume, status = assert(coroutine.create),
+                               assert(coroutine.resume),
+                               assert(coroutine.status)
+local dispatchmessage = assert(require "core:cluster/actor" . dispatchmessage)
+function ModeS.processMessagesWhile(modeS, fn)
+   local coro = create(fn)
+   local msg_ret = { n = 0 }
+   while true do
+      local ok, msg = resume(coro, unpack(msg_ret))
+      if not ok then
+         error(msg .. "\n" .. debug.traceback(coro))
+      elseif status(coro) == "dead" then
+         -- End of body function, pass through the return value
+         -- #todo returning the command that was executed like this is likely
+         -- to be insufficient very soon, work out something else
+         return msg
+      end
+      msg_ret = pack(dispatchmessage(modeS, msg))
+   end
+end
+```
+
+
 ### Prompts and modes / ragas
 
 Time to add modes to the `modeselektor`\! Yes, I'm calling it `raga`
@@ -263,23 +292,28 @@ ModeS.closet = { nerf =       { raga = Nerf,
                                 lex  = Lex.null } }
 
 function ModeS.shiftMode(modeS, raga_name)
-   -- Stash the current lexer associated with the current raga
-   -- Currently we never change the lexer separate from the raga,
-   -- but this will change when we start supporting multiple languages
-   -- Guard against nil raga or lexer during startup
-   if modeS.raga then
-      modeS.raga.onUnshift(modeS)
-      modeS.closet[modeS.raga.name].lex = modeS:agent'edit'.lex
-   end
-   -- Switch in the new raga and associated lexer
-   modeS.raga = modeS.closet[raga_name].raga
-   modeS:agent'edit':setLexer(modeS.closet[raga_name].lex)
-   modeS.raga.onShift(modeS)
-   -- #todo feels wrong to do this here, like it's something the raga
-   -- should handle, but onShift feels kinda like it "doesn't inherit",
-   -- like it's not something you should actually super-send, so there's
-   -- not one good place to do this.
-   modeS:agent'prompt':update(modeS.raga.prompt_char)
+   modeS:processMessagesWhile(function()
+      if raga_name == "default" then
+         raga_name = modeS.raga_default
+      end
+      -- Stash the current lexer associated with the current raga
+      -- Currently we never change the lexer separate from the raga,
+      -- but this will change when we start supporting multiple languages
+      -- Guard against nil raga or lexer during startup
+      if modeS.raga then
+         modeS.raga.onUnshift(modeS)
+         modeS.closet[modeS.raga.name].lex = modeS:agent'edit'.lex
+      end
+      -- Switch in the new raga and associated lexer
+      modeS.raga = modeS.closet[raga_name].raga
+      modeS:agent'edit':setLexer(modeS.closet[raga_name].lex)
+      modeS.raga.onShift(modeS)
+      -- #todo feels wrong to do this here, like it's something the raga
+      -- should handle, but onShift feels kinda like it "doesn't inherit",
+      -- like it's not something you should actually super-send, so there's
+      -- not one good place to do this.
+      modeS:agent'prompt':update(modeS.raga.prompt_char)
+   end)
    return modeS
 end
 ```
@@ -300,51 +334,6 @@ and preserve information for our fall\-through method\.
 log anything unexpected\.
 
 
-### actOnce
-
-Dispatches a seq to the current raga, answering whether or not the raga could
-process it \(if this never occurs, we display an NYI message in the status area\)\.
-
-```lua
-local function _actOnce(modeS, event, old_cat_val)
-   -- Try to dispatch the new-style event via keymap
-   local command = modeS.maestro:dispatch(event, old_cat_val)
-   if modeS:agent'edit'.contents_changed then
-      modeS.raga.onTxtbufChanged(modeS)
-    -- Treat contents_changed as implying cursor_changed
-    -- only ever fire one of the two events
-   elseif modeS:agent'edit'.cursor_changed then
-      modeS.raga.onCursorChanged(modeS)
-   end
-   modeS:agent'edit'.contents_changed = false
-   modeS:agent'edit'.cursor_changed = false
-   return command
-end
-
-local create, resume, status = assert(coroutine.create),
-                               assert(coroutine.resume),
-                               assert(coroutine.status)
-local dispatchmessage = assert(require "core:cluster/actor" . dispatchmessage)
-function ModeS.actOnce(modeS, event, old_cat_val)
-   local coro = create(function()
-      return _actOnce(modeS, event, old_cat_val)
-   end)
-   local msg_ret = { n = 0 }
-   while true do
-      local ok, msg = resume(coro, unpack(msg_ret))
-      if not ok then
-         error(msg .. "\n" .. debug.traceback(coro))
-      elseif status(coro) == "dead" then
-         -- End of body function, pass through the return value
-         -- #todo returning the command that was executed like this is likely
-         -- to be insufficient very soon, work out something else
-         return msg
-      end
-      msg_ret = pack(dispatchmessage(modeS, msg))
-   end
-end
-```
-
 ```lua
 function ModeS.act(modeS, event, old_cat_val)
    local command
@@ -352,13 +341,16 @@ function ModeS.act(modeS, event, old_cat_val)
       modeS.action_complete = true
       -- The raga may set action_complete to false to cause the command
       -- to be re-processed, most likely after a mode-switch
-      local commandThisTime = modeS:actOnce(event, old_cat_val)
+      local commandThisTime = modeS:processMessagesWhile(function()
+         return modeS.maestro:dispatch(event, old_cat_val)
+      end)
       command = command or commandThisTime
    until modeS.action_complete == true
    if not command then
       command = 'NYI'
    end
    -- Inform the input-echo agent of what just happened
+   -- #todo Maestro can do this once legacy commands go away
    modeS:agent'input_echo':update(event, command)
    -- Reflow in case command height has changed. Includes a paint.
    -- Don't allow errors encountered here to break this entire
@@ -391,25 +383,6 @@ we often talk to directly\.
 ```lua
 function ModeS.agent(modeS, agent_name)
    return modeS.maestro.agents[agent_name]
-end
-```
-
-
-### ModeS:setResults\(results\), :clearResults\(\)
-
-Sets the current "results" to `results`\.
-
-\#todo
-awkward right now, as migration to new keymaps proceeds it'll get easier\.
-
-```lua
-function ModeS.setResults(modeS, results)
-   modeS:agent'results':update(results)
-   return modeS
-end
-
-function ModeS.clearResults(modeS)
-   return modeS:setResults(nil)
 end
 ```
 
@@ -454,7 +427,8 @@ This resets `_G` and runs all commands in the current session\.
 function ModeS.restart(modeS)
    modeS :setStatusLine 'restart'
    -- remove existing result
-   modeS :clearResults() :paint()
+   modeS:agent'results':clear()
+   modeS:paint()
    -- perform rerun
    -- Replace results:
    local hist = modeS.hist
@@ -471,7 +445,8 @@ function ModeS.restart(modeS)
    modeS.eval:reset()
    assert(hist.n == #hist, "History length mismatch after restart: n = "
          .. tostring(hist.n) .. ", # = " , tostring(#hist))
-   modeS :setResults(hist.result_buffer[hist.cursor]) :paint()
+   modeS:agent'results':update(hist.result_buffer[hist.cursor])
+   modeS:paint()
    uv.timer_start(uv.new_timer(), 1500, 0,
                   function()
                      modeS :setStatusLine 'default' :paint()
@@ -502,9 +477,9 @@ end
 
 ### ModeS:showModal\(text, button\_style\)
 
-Shows a modal dialog with the given text and button stylesee [https://gitlab.com/special-circumstance/helm/-/blob/trunk/doc/md/agent/modal.md](https://gitlab.com/special-circumstance/helm/-/blob/trunk/doc/md/agent/modal.md) for valid button styles\)\.
+Shows a modal dialog with the given text and button style
+\(see [https://gitlab.com/special-circumstance/helm/-/blob/trunk/doc/md/agent/modal.md](https://gitlab.com/special-circumstance/helm/-/blob/trunk/doc/md/agent/modal.md) for valid button styles\)\.
 
-\(
 \#todo
 which point we won't need this method\.
 
@@ -604,16 +579,12 @@ local function new(max_extent, writer, db)
       modeS:setStatusLine("default")
    end
 
-   -- Set up Agent <-> Agent interaction via borrowmethod
+   -- #todo this interaction is messy, would be nice to be able to use yielded
+   -- messages but it happens at render time, outside a coroutine.
    local agents = modeS.maestro.agents
-   local function borrowto(dst, src, name)
-      dst[name] = borrowmethod(src, name)
-   end
-   borrowto(agents.suggest, agents.edit, "tokens")
-   borrowto(agents.suggest, agents.edit, "replaceToken")
-   borrowto(agents.prompt,  agents.edit, "continuationLines")
+   agents.prompt.continuationLines = borrowmethod(agents.edit,
+                                                  "continuationLines")
    agents.prompt.editTouched = getter(agents.edit, "touched")
-   agents.search.searchText = borrowmethod(agents.edit, "contents")
 
    -- Set up common Agent -> Zone bindings
    -- Note we don't do results here because that varies from raga to raga

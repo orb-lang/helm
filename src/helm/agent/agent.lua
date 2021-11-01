@@ -11,6 +11,7 @@
 
 local Window = require "window:window"
 local Deque = require "deque:deque"
+local yield = assert(coroutine.yield)
 
 
 
@@ -42,6 +43,24 @@ function Agent.bufferCommand(agent, name, ...)
    local msg = pack(...)
    msg.method = name
    agent.buffer_commands:push(msg)
+end
+
+
+
+
+
+
+
+
+
+
+
+
+function Agent.agentMessage(agent, other_agent_name, method_name, ...)
+   local msg = pack(...)
+   msg.method = method_name
+   msg = { method = 'agent', n = 1, other_agent_name, message = msg }
+   return yield(msg)
 end
 
 
@@ -94,10 +113,10 @@ end
 
 
 
-function Agent.evtScrollUp(evt)
+function Agent.evtScrollUp(agent, evt)
    agent:scrollUp(evt.num_lines)
 end
-function Agent.evtScrollDown(evt)
+function Agent.evtScrollDown(agent, evt)
    agent:scrollDown(evt.num_lines)
 end
 

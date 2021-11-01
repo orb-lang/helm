@@ -8,6 +8,7 @@ list of results of some kind\.
 
 ```lua
 local SelectionList = require "helm:selection_list"
+local yield = assert(coroutine.yield)
 ```
 
 
@@ -34,6 +35,26 @@ for _, method_name in ipairs{"selectNext", "selectPrevious",
          agent:bufferCommand("ensureVisible", agent.last_collection.selected_index)
       end
    end
+end
+```
+
+It's also handy to have a nil\-safe way to retrieve what is currently selected\.
+
+```lua
+function ResultListAgent.selectedItem(agent)
+   return agent.last_collection and agent.last_collection:selectedItem()
+end
+```
+
+
+### ResultListAgent:quit\(\)
+
+Quits the raga associated with the agent, returning to the default\.
+
+```lua
+function ResultListAgent.quit(agent)
+   agent:selectNone()
+   yield{ method = "shiftMode", n = 1, "default" }
 end
 ```
 
@@ -64,6 +85,35 @@ function ResultListAgent.windowConfiguration(agent)
       }
    })
 end
+```
+
+
+### Keymaps
+
+
+- [ ]  \#Todo
+
+  - [ ]  Add NAV\.SHIFT\_ALT\_\(UP|DOWN\), to move a page at a time\.
+      Hook them to PgUp and PgDown while we're at it\.
+
+  - [ ]  Add NAV\.HOME and NAV\.END to snap to the
+      top and bottom\.
+
+```lua
+ResultListAgent.keymap_selection = {
+   TAB = "selectNextWrap",
+   DOWN = "selectNextWrap",
+   ["S-DOWN"] = "selectNextWrap",
+   ["S-TAB"] = "selectPreviousWrap",
+   UP = "selectPreviousWrap",
+   ["S-UP"] = "selectPreviousWrap"
+}
+
+-- These are both abstract methods
+ResultListAgent.keymap_actions = {
+   RETURN = "acceptSelected",
+   ESC = "userCancel"
+}
 ```
 
 

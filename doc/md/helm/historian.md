@@ -348,6 +348,22 @@ end
 ```
 
 
+### Historian:atEnd\(\), :toEnd\(\)
+
+Answer whether the cursor is at the end of the history \(really off the end, ready for the next line\), or move it there\.
+Note this is outside the bounds of what is allowed via `:index()`\.
+
+```lua
+function Historian.atEnd(historian)
+   return historian.cursor > historian.n
+end
+
+function Historian.toEnd(historian)
+   historian.cursor = historian.n + 1
+end
+```
+
+
 ### Historian\(helm\_db\)
 
 Creates a new `historian`\.

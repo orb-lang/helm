@@ -1,8 +1,6 @@
 # PagerAgent
 
-Agent for results display\. For now this turns out to be the simplest of the
-lot, basically just a dumb value holder\. It may get some more responsibility
-later, not sure\.
+Agent for displaying simple content \(e\.g\. help files\)\.
 
 ```lua
 local meta = assert(require "core:cluster" . Meta)

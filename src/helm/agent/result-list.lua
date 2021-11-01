@@ -8,6 +8,7 @@
 
 
 local SelectionList = require "helm:selection_list"
+local yield = assert(coroutine.yield)
 
 
 
@@ -40,6 +41,26 @@ end
 
 
 
+function ResultListAgent.selectedItem(agent)
+   return agent.last_collection and agent.last_collection:selectedItem()
+end
+
+
+
+
+
+
+
+
+function ResultListAgent.quit(agent)
+   agent:selectNone()
+   yield{ method = "shiftMode", n = 1, "default" }
+end
+
+
+
+
+
 
 function ResultListAgent.bufferValue(agent)
    return agent.last_collection and { n = 1, agent.last_collection }
@@ -64,6 +85,34 @@ function ResultListAgent.windowConfiguration(agent)
       }
    })
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ResultListAgent.keymap_selection = {
+   TAB = "selectNextWrap",
+   DOWN = "selectNextWrap",
+   ["S-DOWN"] = "selectNextWrap",
+   ["S-TAB"] = "selectPreviousWrap",
+   UP = "selectPreviousWrap",
+   ["S-UP"] = "selectPreviousWrap"
+}
+
+-- These are both abstract methods
+ResultListAgent.keymap_actions = {
+   RETURN = "acceptSelected",
+   ESC = "userCancel"
+}
 
 
 

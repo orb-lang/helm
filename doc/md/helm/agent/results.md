@@ -34,6 +34,20 @@ end
 ```
 
 
+### ResultsAgent:clearOnFirstKey\(\)
+
+Clear the results if the EditAgent is currently empty, i\.e\. the event being
+processed will be the first character in the buffer\.
+
+```lua
+function ResultsAgent.clearOnFirstKey(agent)
+   if agent:agentMessage("edit", "isEmpty") then
+      agent:clear()
+   end
+   return false
+end
+```
+
 ### Keymaps
 
 ```lua
@@ -42,6 +56,11 @@ ResultsAgent.keymap_scrolling = {
    SCROLL_DOWN = { method = "evtScrollDown", n = 1 },
    ["S-UP"] = { method = "evtScrollUp", n = 1 },
    ["S-DOWN"] = { method = "evtScrollDown", n = 1 }
+}
+
+ResultsAgent.keymap_reset = {
+   -- #todo bind to any normal key
+   PASTE = "clearOnFirstKey"
 }
 ```
 

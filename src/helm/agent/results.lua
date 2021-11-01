@@ -37,11 +37,30 @@ end
 
 
 
+
+
+
+function ResultsAgent.clearOnFirstKey(agent)
+   if agent:agentMessage("edit", "isEmpty") then
+      agent:clear()
+   end
+   return false
+end
+
+
+
+
+
 ResultsAgent.keymap_scrolling = {
    SCROLL_UP = { method = "evtScrollUp", n = 1 },
    SCROLL_DOWN = { method = "evtScrollDown", n = 1 },
    ["S-UP"] = { method = "evtScrollUp", n = 1 },
    ["S-DOWN"] = { method = "evtScrollDown", n = 1 }
+}
+
+ResultsAgent.keymap_reset = {
+   -- #todo bind to any normal key
+   PASTE = "clearOnFirstKey"
 }
 
 

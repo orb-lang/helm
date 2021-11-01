@@ -142,7 +142,7 @@ function Maestro.dispatch(maestro, event, old_cat_val)
    local command
    -- Handle legacy event first because some legacy cases do multiple things
    -- and may not be fully migrated even if there is a handler for that event
-   if maestro.modeS.raga(maestro.modeS, unpack(old_cat_val)) then
+   if old_cat_val and maestro.modeS.raga(maestro.modeS, unpack(old_cat_val)) then
       command = 'LEGACY'
    elseif keymap[event_string] then
       for _, handler in ipairs(keymap[event_string]) do
@@ -160,6 +160,15 @@ function Maestro.dispatch(maestro, event, old_cat_val)
          end
       end
    end
+   if maestro.agents.edit.contents_changed then
+      maestro.modeS.raga.onTxtbufChanged(modeS)
+    -- Treat contents_changed as implying cursor_changed
+    -- only ever fire one of the two events
+   elseif maestro.agents.edit.cursor_changed then
+      maestro.modeS.raga.onCursorChanged(modeS)
+   end
+   maestro.agents.edit.contents_changed = false
+   maestro.agents.edit.cursor_changed = false
    return command
 end
 

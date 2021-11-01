@@ -45,21 +45,13 @@ EditBase.default_keymaps = {
 
 local function _insert(modeS, category, value)
    if modeS:agent'edit':contents() == "" then
-      modeS:clearResults()
+      modeS:agent'results':clear()
    end
    modeS:agent'edit':insert(value)
 end
 
 EditBase.ASCII = _insert
 EditBase.UTF8 = _insert
-
-function EditBase.PASTE(modeS, category, value)
-   if modeS:agent'edit':contents() == "" then
-      modeS:clearResults()
-   end
-   modeS:agent'edit':paste(value)
-end
-
 
 
 
