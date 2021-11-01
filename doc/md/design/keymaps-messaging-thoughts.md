@@ -79,6 +79,44 @@ more complete anyway for `vril`, to deal with accumulating commands like
 `d3w`, so probably that will take care of this\. Needs design though\.
 
 
+### Wildcards
+
+We're probably going to want a mechanism to declare "any event that looks
+roughly like this goes to this handler"\. **Probably** it's enough to specify the
+modifier flags and regular vs\. special keys, rather than allowing e\.g\. a match
+expression against the key\. Examples of use:
+
+
+-  The ASCII and UTF8 categories from the old system\. UTF8 especially **can't**
+    be handled any other way, since there are far too many possible UTF8 chars
+    to bind each one individually the way emacs/readline do with the basic keys
+    and `self-insert`\.
+
+-  Processing M\-<whatever> as a potential accelerator key in a modal dialog\.
+   -  Shorthand binding of M\-<digit> for quick accept of search results\-\-but
+       unless this comes up a lot, I figure better to do the discrimination in
+       the handler than allow filtering more specific than "special/non\-special"
+       in the keymap itself\.
+
+Question: Obviously specific bindings in a given keymap have priority over
+matching wildcards\. What about specific bindings in a later \(lower\-priority\)
+keymap? In other words, do we go through all the specific bindings first, then
+all the wildcards, or do we go through keymap\-by\-keymap, specific binding then
+wildcards?
+
+Question: How should these be specified in the keymap declaration? It'd be
+nice if a keymap could be declared \(and serialized to a config file\) as just a
+single table whose keys are all strings\. But, it may be appropriate to have a
+more complex in\-memory representation with separate "bindings" and "wildcards"
+or something like that\. One option would be to have, uh, "meta\-special"
+keys: Right now we have any key that generally sends a printable,
+non\-whitespace character is represented by that character, and things like the
+arrow keys are represented by an all\-caps name\. Maybe a name wrapped in some
+kind of brackets represents a category, for the purposes of the event
+parse/serialize code\. Names could be as limited as `[NORMAL]`, `[SPECIAL]` or
+as expressive as `[ASCII]`, `[UTF8]`, `[LETTER]`, `[DIGIT]`, `[SYMBOL]`,
+`[CURSOR]`, etc\.
+
 ## Re: inter\-agent messaging
 
 Right now there are a number of places where changes in one Agent ultimately
