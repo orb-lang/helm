@@ -4,9 +4,9 @@
 
 
 local clone = assert(require "core:table" . clone)
+local insert = assert(table.insert)
 local yield = assert(coroutine.yield)
 local RagaBase = require "helm:raga/base"
-local Txtbuf = require "helm:buf/txtbuf"
 local Sessionbuf = require "helm:buf/sessionbuf"
 
 
@@ -14,57 +14,6 @@ local Sessionbuf = require "helm:buf/sessionbuf"
 local Review = clone(RagaBase, 2)
 Review.name = "review"
 Review.prompt_char = "💬"
-
-
-
-
-
-
-
-
-
-
-local function _toSessionAgent(fn)
-   return function(modeS, category, value)
-      local agent = modeS:agent'session'
-      return agent[fn](agent)
-   end
-end
-
-local function _selectUsing(fn)
-   return function(modeS, category, value)
-      local agent = modeS:agent'session'
-      local answer = agent[fn](agent)
-      local premise = agent:selectedPremise()
-      modeS:agent'edit':update(premise and premise.title)
-      return answer
-   end
-end
-
-
-
-
-
-
-local NAV = Review.NAV
-
-NAV.UP   = _selectUsing "selectPreviousWrap"
-NAV.DOWN = _selectUsing "selectNextWrap"
-
-NAV.SHIFT_UP   = _toSessionAgent "scrollResultsUp"
-NAV.SHIFT_DOWN = _toSessionAgent "scrollResultsDown"
-
-NAV.TAB       = _toSessionAgent "toggleSelectedState"
-NAV.SHIFT_TAB = _toSessionAgent "reverseToggleSelectedState"
-
-function NAV.RETURN(modeS, category, value)
-   if modeS:agent'session'.selected_index ~= 0 then
-      yield{ method = "shiftMode", "edit_title" }
-   end
-end
-
-NAV.ALT_UP   = _toSessionAgent "movePremiseUp"
-NAV.ALT_DOWN = _toSessionAgent "movePremiseDown"
 
 
 
@@ -85,18 +34,12 @@ end
 
 
 
-
-
-
-
-function Review.MOUSE(modeS, category, value)
-   if value.scrolling then
-      if value.button == "MB0" then
-         NAV.SHIFT_UP(modeS, category, value)
-      elseif value.button == "MB1" then
-         NAV.SHIFT_DOWN(modeS, category, value)
-      end
-   end
+Review.default_keymaps = {
+   { source = "agents.session", name = "keymap_default"},
+   { source = "agents.session.results_agent", name = "keymap_scrolling"}
+}
+for _, map in ipairs(RagaBase.default_keymaps) do
+   insert(Review.default_keymaps, map)
 end
 
 
@@ -131,7 +74,9 @@ function Review.onShift(modeS)
       return
    end
 
-   modeS:bindZone("results", "session", Sessionbuf, {scrollable = true})
+   if modeS.zones.results.contents.idEst ~= Sessionbuf then
+      modeS:bindZone("results", "session", Sessionbuf, {scrollable = true})
+   end
    local premise = modeS:agent'session':selectedPremise()
    modeS:agent'edit':update(premise and premise.title)
 end

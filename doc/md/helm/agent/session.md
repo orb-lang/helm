@@ -79,8 +79,8 @@ function SessionAgent.selectIndex(agent, index)
       _update_results_agent(agent)
       agent:contentsChanged()
       agent:bufferCommand("ensureSelectedVisible")
-      -- #todo can/should we be the ones to update the EditAgent
-      -- for the title somehow? Send it a message...
+      local premise = agent:selectedPremise()
+      agent:agentMessage("edit", "update", premise and premise.title)
    end
 end
 ```
@@ -116,29 +116,14 @@ end
 ```
 
 
-#### SessionAgent:scrollResultsDown\(\), :scrollResultsUp\(\)
-
-Scroll within the results area for the currently\-selected line\.
-
-```lua
-function SessionAgent.scrollResultsDown(agent)
-   agent.results_agent:scrollDown()
-end
-
-function SessionAgent.scrollResultsUp(agent)
-   agent.results_agent:scrollUp()
-end
-```
-
-
 ### Editing
 
 
 #### SessionAgent:\[reverse\]toggleSelectedState\(\)
 
-Toggles the state of the selected line, cycling through "accept", "reject",ignore", "skip"\.
+Toggles the state of the selected line, cycling through "accept", "reject",
+"ignore", "skip"\.
 
-"
 ```lua
 local status_cycle_map = {
    ignore = "accept",
@@ -212,6 +197,29 @@ end
 ```
 
 
+### SessionAgent:editSelectedTitle\(\)
+
+Switches mode to edit the title of the selected premise\.
+
+```lua
+function SessionAgent.editSelectedTitle(agent)
+   agent:shiftMode("edit_title")
+end
+```
+
+
+#### SessionAgent:titleUpdated\(new\_title\)
+
+Callback from `EditTitle` that it has finished editing\. Update the premise title\.
+
+```lua
+function SessionAgent.titleUpdated(agent, new_title)
+   agent:selectedPremise().title = new_title
+   agent:selectNextWrap()
+end
+```
+
+
 ### SessionAgent:bufferValue\(\)
 
 ```lua
@@ -265,12 +273,29 @@ updated when the selected premise changes\.
 
 ```lua
 function SessionAgent.resultsWindow(agent)
-   if not agent.results_agent then
-      agent.results_agent = ResultsAgent()
-      _update_results_agent(agent)
-   end
    return agent.results_agent:window()
 end
+```
+
+
+### Keymaps and event handlers
+
+Results scrolling can actually be implemented by the Raga including that
+Agent's keymap directly\. For now, this includes mouse\-wheel scrolling\. Ideally
+it would be nice to choose between the results area and the entire session
+display based on cursor position, but that'll have to wait for more general
+focus\-tracking\.
+
+```lua
+SessionAgent.keymap_default = {
+   UP = "selectPreviousWrap",
+   DOWN = "selectNextWrap",
+   TAB = "toggleSelectedState",
+   ["S-TAB"] = "reverseToggleSelectedState",
+   ["M-UP"] = "movePremiseUp",
+   ["M-DOWN"] = "movePremiseDown",
+   RETURN = "editSelectedTitle"
+}
 ```
 
 
@@ -281,6 +306,7 @@ function SessionAgent._init(agent)
    Agent._init(agent)
    agent.selected_index = 0
    agent.edit_agents = {}
+   agent.results_agent = ResultsAgent()
 end
 ```
 
