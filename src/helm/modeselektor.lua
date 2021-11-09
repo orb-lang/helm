@@ -470,38 +470,13 @@ end
 
 
 
+
 local rep = assert(string.rep)
 function ModeS.openHelp(modeS)
    modeS:agent'pager':update(("abcde "):rep(1000))
    modeS:shiftMode "page"
 end
 
-
-
-
-
-
-
-
-
-
-
-function ModeS.showModal(modeS, text, button_style)
-   modeS:agent'modal':update(text, button_style)
-   modeS:shiftMode "modal"
-   return modeS
-end
-
-
-
-
-
-
-
-
-function ModeS.modalAnswer(modeS)
-   return modeS:agent'modal':answer()
-end
 
 
 

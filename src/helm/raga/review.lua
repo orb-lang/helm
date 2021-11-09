@@ -74,8 +74,9 @@ NAV.ALT_DOWN = _toSessionAgent "movePremiseDown"
 
 
 Review.CTRL["^Q"] = function(modeS, category, value)
-   modeS:showModal('Save changes to the session "'
-      .. modeS.hist.session.session_title .. '"?',
+   local sesh_title = modeS.hist.session.session_title
+   Review.agentMessage("modal", "show",
+      'Save changes to the session "' .. sesh_title .. '"?',
       "yes_no_cancel")
 end
 
@@ -119,7 +120,7 @@ function Review.onShift(modeS)
    -- think that'll come naturally once we have a raga stack.
    modeS.zones.suggest:hide()
 
-   local modal_answer = modeS:modalAnswer()
+   local modal_answer = Review.agentMessage("modal", "answer")
    if modal_answer then
       if modal_answer == "yes" then
          modeS.hist.session:save()

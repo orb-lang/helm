@@ -465,6 +465,7 @@ function ModeS.restart(modeS)
 end
 #/lua
 
+
 *** ModeS:openHelp()
 
 Opens a simple help screen.
@@ -477,32 +478,6 @@ function ModeS.openHelp(modeS)
 end
 #/lua
 
-*** ModeS:showModal(text, button_style)
-
-Shows a modal dialog with the given text and button style
-(see [[@agent/modal]] for valid button styles).
-
-#todo should ideally be able to show a modal by talking only to the agent, at
-which point we won't need this method.
-
-#!lua
-function ModeS.showModal(modeS, text, button_style)
-   modeS:agent'modal':update(text, button_style)
-   modeS:shiftMode "modal"
-   return modeS
-end
-#/lua
-
-*** ModeS:modalAnswer()
-
-#todo can probably eliminate this in favor of people talking directly to the
-agent, but it'd be nice to be able to show a modal that way too, first.
-
-#!lua
-function ModeS.modalAnswer(modeS)
-   return modeS:agent'modal':answer()
-end
-#/lua
 
 **** modeS.status
 

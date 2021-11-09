@@ -465,6 +465,7 @@ function ModeS.restart(modeS)
 end
 ```
 
+
 ### ModeS:openHelp\(\)
 
 Opens a simple help screen\.
@@ -477,32 +478,6 @@ function ModeS.openHelp(modeS)
 end
 ```
 
-### ModeS:showModal\(text, button\_style\)
-
-Shows a modal dialog with the given text and button style
-\(see [https://gitlab.com/special-circumstance/helm/-/blob/trunk/doc/md/agent/modal.md](https://gitlab.com/special-circumstance/helm/-/blob/trunk/doc/md/agent/modal.md) for valid button styles\)\.
-
-\#todo
-which point we won't need this method\.
-
-```lua
-function ModeS.showModal(modeS, text, button_style)
-   modeS:agent'modal':update(text, button_style)
-   modeS:shiftMode "modal"
-   return modeS
-end
-```
-
-### ModeS:modalAnswer\(\)
-
-\#todo
-agent, but it'd be nice to be able to show a modal that way too, first\.
-
-```lua
-function ModeS.modalAnswer(modeS)
-   return modeS:agent'modal':answer()
-end
-```
 
 #### modeS\.status
 
