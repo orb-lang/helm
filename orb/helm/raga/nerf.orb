@@ -136,28 +136,42 @@ end
 
 *** Keymaps
 
+First a section of commands that need to react to certain keypresses under
+certain circumstances, but often allow processing to continue.
+
+#!lua
+Nerf.default_keymaps = {
+   { source = "agents.search", name = "keymap_try_activate" },
+   { source = "agents.suggest", name = "keymap_try_activate" },
+   { source = "agents.results", name = "keymap_reset" },
+   { source = "agents.edit", name = "keymap_readline_nav" }
+}
+#/lua
+
+Then the inherited basic editing commands.
+
+#!lua
+for _, map in ipairs(EditBase.default_keymaps) do
+   insert(Nerf.default_keymaps, map)
+end
+#/lua
+
+History navigation is a fallback from cursor movement.
+
 #!lua
 Nerf.keymap_history_navigation = {
    UP = "historyBack",
    DOWN = "historyForward"
 }
+insert(Nerf.default_keymaps,
+       { source = "modeS.raga", name = "keymap_history_navigation"})
+#/lua
 
-Nerf.default_keymaps = {{ source = "agents.search",
-                          name = "keymap_try_activate" },
-                        { source = "agents.suggest",
-                          name = "keymap_try_activate" },
-                        { source = "agents.results",
-                          name = "keymap_scrolling" },
-                        { source = "agents.results",
-                          name = "keymap_reset" },
-                        { source = "agents.edit",
-                          name = "keymap_readline_nav" }}
-for _, map in ipairs(EditBase.default_keymaps) do
-   insert(Nerf.default_keymaps, map)
-end
--- History navigation is a fallback from cursor movement
-insert(Nerf.default_keymaps, { source = "modeS.raga",
-                               name = "keymap_history_navigation"})
+And results-area scrolling binds several shortcuts that are already taken, so we need to make sure those others get there first.
+
+#!lua
+insert(Nerf.default_keymaps,
+      { source = "agents.results", name = "keymap_scrolling" })
 #/lua
 
 

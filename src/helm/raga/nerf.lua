@@ -137,27 +137,41 @@ end
 
 
 
+
+
+
+Nerf.default_keymaps = {
+   { source = "agents.search", name = "keymap_try_activate" },
+   { source = "agents.suggest", name = "keymap_try_activate" },
+   { source = "agents.results", name = "keymap_reset" },
+   { source = "agents.edit", name = "keymap_readline_nav" }
+}
+
+
+
+
+
+for _, map in ipairs(EditBase.default_keymaps) do
+   insert(Nerf.default_keymaps, map)
+end
+
+
+
+
+
 Nerf.keymap_history_navigation = {
    UP = "historyBack",
    DOWN = "historyForward"
 }
+insert(Nerf.default_keymaps,
+       { source = "modeS.raga", name = "keymap_history_navigation"})
 
-Nerf.default_keymaps = {{ source = "agents.search",
-                          name = "keymap_try_activate" },
-                        { source = "agents.suggest",
-                          name = "keymap_try_activate" },
-                        { source = "agents.results",
-                          name = "keymap_scrolling" },
-                        { source = "agents.results",
-                          name = "keymap_reset" },
-                        { source = "agents.edit",
-                          name = "keymap_readline_nav" }}
-for _, map in ipairs(EditBase.default_keymaps) do
-   insert(Nerf.default_keymaps, map)
-end
--- History navigation is a fallback from cursor movement
-insert(Nerf.default_keymaps, { source = "modeS.raga",
-                               name = "keymap_history_navigation"})
+
+
+
+
+insert(Nerf.default_keymaps,
+      { source = "agents.results", name = "keymap_scrolling" })
 
 
 
