@@ -231,8 +231,6 @@ end
 SuggestAgent.keymap_try_activate = {
    TAB = "activateCompletion",
    SHIFT_TAB = "activateCompletion",
-   SCROLL_UP = "activateCompletion",
-   SCROLL_DOWN = "activateCompletion"
 }
 
 SuggestAgent.keymap_actions = clone(ResultListAgent.keymap_actions)
