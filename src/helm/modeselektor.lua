@@ -215,7 +215,9 @@ function ModeS.processMessagesWhile(modeS, fn)
          -- to be insufficient very soon, work out something else
          return msg
       end
-      msg_ret = pack(dispatchmessage(modeS, msg))
+      msg_ret = modeS:processMessagesWhile(function()
+         return pack(dispatchmessage(modeS, msg))
+      end)
    end
 end
 

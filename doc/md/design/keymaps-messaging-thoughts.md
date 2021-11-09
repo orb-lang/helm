@@ -174,6 +174,15 @@ implementation \(and I say naive, but that's probably also the most **elegant**
 implementation in a lot of cases\)\.
 
 
+### Recursive message handling
+
+As soon as I started working with the coro loop, I ran into cases where Actor
+A `yield`s a Message, it is dispatched to Actor B, and as part of processing
+that Message, Actor B wants to `yield` **another** message\. Is it reasonable for
+modeS to spin up a new coroutine for every Message to enable this? Is it
+possible to turn the recursion into a more iterative paradigm here?
+
+
 ## Re: agent/buf communications
 
 Okay, I am just really not convinced that only talking to the bufs via the
