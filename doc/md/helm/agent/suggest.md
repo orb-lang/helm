@@ -9,7 +9,6 @@
 local SelectionList = require "helm:selection_list"
 local names = require "repr:names"
 local insert, sort = assert(table.insert), assert(table.sort)
-local yield = assert(coroutine.yield)
 local clone = assert(require "core:table" . clone)
 ```
 
@@ -217,7 +216,7 @@ falling through to the next command if not\.
 function SuggestAgent.activateCompletion(agent)
    if agent.last_collection then
       agent:selectFirst()
-      yield{ method = "shiftMode", "complete" }
+      agent:shiftMode("complete")
       return true
    else
       return false

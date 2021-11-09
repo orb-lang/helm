@@ -8,7 +8,6 @@
 
 
 local SelectionList = require "helm:selection_list"
-local yield = assert(coroutine.yield)
 
 
 
@@ -54,7 +53,7 @@ end
 
 function ResultListAgent.quit(agent)
    agent:selectNone()
-   yield{ method = "shiftMode", n = 1, "default" }
+   agent:shiftMode("default")
 end
 
 

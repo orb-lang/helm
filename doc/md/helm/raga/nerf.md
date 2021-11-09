@@ -42,7 +42,7 @@ local function _insert(modeS, category, value)
    if modeS:agent'edit':contents() == "" then
       modeS:agent'results':clear()
       if value == "/" then
-         yield{ method = "shiftMode", "search" }
+         Nerf.shiftMode("search")
          return
       end
       if value == "?" then

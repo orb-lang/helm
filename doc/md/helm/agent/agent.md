@@ -65,6 +65,20 @@ end
 ```
 
 
+### Agent:shiftMode\(raga\_name\)
+
+Shorthand to ask ModeS to switch ragas\.
+
+\#todo
+as well\-\-should be in a central location\.
+
+```lua
+function Agent.shiftMode(agent, raga_name)
+   return yield{ method = "shiftMode", n = 1, raga_name }
+end
+```
+
+
 ### Agent:contentsChanged\(\)
 
 Notify the Agent \(and associated buffer\) that its contents have changed in

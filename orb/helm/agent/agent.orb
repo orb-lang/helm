@@ -65,6 +65,20 @@ end
 #/lua
 
 
+*** Agent:shiftMode(raga_name)
+
+Shorthand to ask ModeS to switch ragas.
+
+#todo like :agentMessage this doesn't need to be a method and is used by Raga
+as well--should be in a central location.
+
+#!lua
+function Agent.shiftMode(agent, raga_name)
+   return yield{ method = "shiftMode", n = 1, raga_name }
+end
+#/lua
+
+
 *** Agent:contentsChanged()
 
 Notify the Agent (and associated buffer) that its contents have changed in

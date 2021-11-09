@@ -65,7 +65,7 @@ SearchAgent.acceptSelected = SearchAgent.acceptAtIndex
 ```lua
 function SearchAgent.activateOnFirstKey(agent)
    if agent:agentMessage("edit", "isEmpty") then
-      yield{ method = "shiftMode", n = 1, "search" }
+      agent:shiftMode("search")
       return true
    else
       return false

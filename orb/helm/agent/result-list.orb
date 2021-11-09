@@ -8,7 +8,6 @@ list of results of some kind.
 
 #!lua
 local SelectionList = require "helm:selection_list"
-local yield = assert(coroutine.yield)
 #/lua
 
 
@@ -54,7 +53,7 @@ Quits the raga associated with the agent, returning to the default.
 #!lua
 function ResultListAgent.quit(agent)
    agent:selectNone()
-   yield{ method = "shiftMode", n = 1, "default" }
+   agent:shiftMode("default")
 end
 #/lua
 

@@ -72,6 +72,20 @@ end
 
 
 
+
+function Agent.shiftMode(agent, raga_name)
+   return yield{ method = "shiftMode", n = 1, raga_name }
+end
+
+
+
+
+
+
+
+
+
+
 function Agent.contentsChanged(agent)
    agent.touched = true -- #deprecated
    agent:bufferCommand("clearCaches")

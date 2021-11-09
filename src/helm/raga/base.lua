@@ -12,16 +12,53 @@ local concat         = assert(table.concat)
 local sub, gsub, rep = assert(string.sub),
                        assert(string.gsub),
                        assert(string.rep)
-
-
-
-
-
+local yield = assert(coroutine.yield)
 
 
 
 local RagaBase_meta = {}
 local RagaBase = setmetatable({}, RagaBase_meta)
+
+
+
+
+
+
+
+
+
+function RagaBase.agentMessage(agent_name, method_name, ...)
+   local msg = pack(...)
+   msg.method = method_name
+   msg = { method = 'agent', n = 1, agent_name, message = msg }
+   return yield(msg)
+end
+
+
+
+
+
+
+
+
+
+function RagaBase.shiftMode(raga_name)
+   return yield{ method = "shiftMode", n = 1, raga_name }
+end
+
+
+
+
+
+
+RagaBase.default_keymaps = {}
+
+
+
+
+
+
+
 
 for _, cat in ipairs{"NAV", "CTRL", "ALT", "ASCII",
                      "UTF8", "PASTE", "MOUSE", "NYI"} do
