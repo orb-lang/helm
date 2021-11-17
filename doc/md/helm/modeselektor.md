@@ -201,23 +201,26 @@ Executes `fn` as a coroutine, processing any `Message`s it yields\.
 local create, resume, status = assert(coroutine.create),
                                assert(coroutine.resume),
                                assert(coroutine.status)
+
 local dispatchmessage = assert(require "core:cluster/actor" . dispatchmessage)
 function ModeS.processMessagesWhile(modeS, fn)
    local coro = create(fn)
    local msg_ret = { n = 0 }
+   local ok, msg
+   local function _dispatchCurrentMessage()
+      return pack(dispatchmessage(modeS, msg))
+   end
    while true do
-      local ok, msg = resume(coro, unpack(msg_ret))
+      ok, msg = resume(coro, unpack(msg_ret))
       if not ok then
-         error(msg .. "\n" .. debug.traceback(coro))
+         error(msg .. "\nIn coro:\n" .. debug.traceback(coro))
       elseif status(coro) == "dead" then
          -- End of body function, pass through the return value
          -- #todo returning the command that was executed like this is likely
          -- to be insufficient very soon, work out something else
          return msg
       end
-      msg_ret = modeS:processMessagesWhile(function()
-         return pack(dispatchmessage(modeS, msg))
-      end)
+      msg_ret = modeS:processMessagesWhile(_dispatchCurrentMessage)
    end
 end
 ```
@@ -328,9 +331,9 @@ by `onseq`\)\. It may try the dispatch multiple times if the raga indicates
 that reprocessing is needed by setting `modeS.action_complete` to =false\.
 
 Note that our common interface is `method(modeS, category, value)`,
-we need to distinguish betwen the tuple `("INSERT", "SHIFT-LEFT")`
-\(which could arrive from copy\-paste\) and `("NAV", "SHIFT-LEFT")`
-and preserve information for our fall\-through method\.
+we need to distinguish betwen the tuple `("INSERT", "SHIFT-LEFT")`which could arrive from copy\-paste\) and `("NAV", "SHIFT-LEFT")`
+and
+\( preserve information for our fall\-through method\.
 
 `act` always succeeds, meaning we need some metatable action to absorb and
 log anything unexpected\.
