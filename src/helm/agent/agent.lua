@@ -11,6 +11,7 @@
 
 local Window = require "window:window"
 local Deque = require "deque:deque"
+local yield = assert(coroutine.yield)
 
 
 
@@ -42,6 +43,38 @@ function Agent.bufferCommand(agent, name, ...)
    local msg = pack(...)
    msg.method = name
    agent.buffer_commands:push(msg)
+end
+
+
+
+
+
+
+
+
+
+
+
+
+function Agent.agentMessage(agent, other_agent_name, method_name, ...)
+   local msg = pack(...)
+   msg.method = method_name
+   msg = { method = 'agent', n = 1, other_agent_name, message = msg }
+   return yield(msg)
+end
+
+
+
+
+
+
+
+
+
+
+
+function Agent.shiftMode(agent, raga_name)
+   return yield{ method = "shiftMode", n = 1, raga_name }
 end
 
 
@@ -86,6 +119,43 @@ for _, scroll_fn in ipairs{
    end
 end
 
+
+
+
+
+
+
+
+
+function Agent.evtScrollUp(agent, evt)
+   agent:scrollUp(evt.num_lines)
+end
+function Agent.evtScrollDown(agent, evt)
+   agent:scrollDown(evt.num_lines)
+end
+
+
+
+
+
+
+
+
+
+
+
+Agent.keymap_scrolling = {
+   SCROLL_UP   = { method = "evtScrollUp",   n = 1 },
+   SCROLL_DOWN = { method = "evtScrollDown", n = 1 },
+   UP          = "scrollUp",
+   ["S-UP"]    = "scrollUp",
+   DOWN        = "scrollDown",
+   ["S-DOWN"]  = "scrollDown",
+   PAGE_UP     = "pageUp",
+   PAGE_DOWN   = "pageDown",
+   HOME        = "scrollToTop",
+   END         = "scrollToBottom"
+}
 
 
 

@@ -11,6 +11,7 @@ providing a [[Window][@window]] that is the =source= for a
 #!lua
 local Window = require "window:window"
 local Deque = require "deque:deque"
+local yield = assert(coroutine.yield)
 #/lua
 
 
@@ -42,6 +43,38 @@ function Agent.bufferCommand(agent, name, ...)
    local msg = pack(...)
    msg.method = name
    agent.buffer_commands:push(msg)
+end
+#/lua
+
+
+*** Agent:agentMessage(other_agent_name, method_name, args...)
+
+Dispatches a message (via a =yield= to modeS) to one of our fellow Agents and
+answers the return value.
+
+#todo this doesn't need to be a method, and will work for anyone, not just an
+Agent. Where should it go?
+
+#!lua
+function Agent.agentMessage(agent, other_agent_name, method_name, ...)
+   local msg = pack(...)
+   msg.method = method_name
+   msg = { method = 'agent', n = 1, other_agent_name, message = msg }
+   return yield(msg)
+end
+#/lua
+
+
+*** Agent:shiftMode(raga_name)
+
+Shorthand to ask ModeS to switch ragas.
+
+#todo like :agentMessage this doesn't need to be a method and is used by Raga
+as well--should be in a central location.
+
+#!lua
+function Agent.shiftMode(agent, raga_name)
+   return yield{ method = "shiftMode", n = 1, raga_name }
 end
 #/lua
 
@@ -87,6 +120,43 @@ for _, scroll_fn in ipairs{
 end
 #/lua
 
+
+**** Agent:evtScrollUp(evt), :evtScrollDown(evt)
+
+Translate the num_lines property on a merged scroll event, or scrolls by one
+line for key events.
+
+#!lua
+function Agent.evtScrollUp(agent, evt)
+   agent:scrollUp(evt.num_lines)
+end
+function Agent.evtScrollDown(agent, evt)
+   agent:scrollDown(evt.num_lines)
+end
+#/lua
+
+
+*** Keymaps
+
+Provide basic scrolling commands at this level, if the raga chooses to include
+this keymap. Note that higher-priority keymaps may override some of this, e.g.
+up/down move the cursor when editing text even though the ResultsAgent would
+happily process them.
+
+#!lua
+Agent.keymap_scrolling = {
+   SCROLL_UP   = { method = "evtScrollUp",   n = 1 },
+   SCROLL_DOWN = { method = "evtScrollDown", n = 1 },
+   UP          = "scrollUp",
+   ["S-UP"]    = "scrollUp",
+   DOWN        = "scrollDown",
+   ["S-DOWN"]  = "scrollDown",
+   PAGE_UP     = "pageUp",
+   PAGE_DOWN   = "pageDown",
+   HOME        = "scrollToTop",
+   END         = "scrollToBottom"
+}
+#/lua
 
 *** Agent:window(), :windowConfiguration()
 

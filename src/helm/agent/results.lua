@@ -35,6 +35,30 @@ end
 
 
 
+
+
+
+
+
+function ResultsAgent.clearOnFirstKey(agent)
+   if agent:agentMessage("edit", "isEmpty") then
+      agent:clear()
+   end
+   return false
+end
+
+
+
+
+
+ResultsAgent.keymap_reset = {
+   -- #todo bind to any normal key
+   PASTE = "clearOnFirstKey"
+}
+
+
+
+
 local constructor = assert(require "core:cluster" . constructor)
 return constructor(ResultsAgent)
 

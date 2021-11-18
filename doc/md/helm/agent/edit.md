@@ -329,6 +329,17 @@ end
 ```
 
 
+#### EditAgent:tab\(\)
+
+Respond to a press of the Tab key \(that was not handled by any other Agent\)\.
+Translate to three spaces\.
+
+```lua
+function EditAgent.tab(agent)
+   agent:paste("   ")
+end
+```
+
 #### EditAgent:insert\(frag\)
 
 Inserts `frag` \(which must be exactly one codepoint\) at the current cursor
@@ -406,9 +417,9 @@ thus proceeds through :killSelection\(\)
 
 #### EditAgent:killSelection\(\)
 
-Deletes the selected text, if any\. Returns whether anything was deletedi\.e\. whether anything was initially selected\)\.
+Deletes the selected text, if any\. Returns whether anything was deleted
+\(i\.e\. whether anything was initially selected\)\.
 
-\(
 ```lua
 local deleterange = import("core/table", "deleterange")
 function EditAgent.killSelection(agent)
@@ -547,26 +558,37 @@ end
 Moves the cursor up or down a line, or to the beginning of the first line or
 end of the last line if there is no line above/below\.
 
-Returns whether it was able to move to a different line, i\.e\. false in the
-case of moving to the beginning/end of the first/last line\.
+Returns whether we were able to move the cursor, including the fallback case
+of moving to the beginning/end of the first/last line\.
 
 ```lua
 function EditAgent.up(agent)
-   if not agent:openRow(agent.cursor.row - 1) then
+   if agent:openRow(agent.cursor.row - 1) then
+      agent:setCursor(agent.cursor.row - 1, nil)
+      return true
+   -- Move to beginning
+   elseif agent.cursor.col > 1 then
       agent:setCursor(nil, 1)
-      return false
+      return true
    end
-   agent:setCursor(agent.cursor.row - 1, nil)
-   return true
+   -- Can't move at all
+   return false
 end
 
 function EditAgent.down(agent)
-   if not agent:openRow(agent.cursor.row + 1) then
-      agent:setCursor(nil, #agent[agent.cursor.row] + 1)
-      return false
+   if agent:openRow(agent.cursor.row + 1) then
+      agent:setCursor(agent.cursor.row + 1, nil)
+      return true
+   else
+      local row_len = #agent[agent.cursor.row]
+      -- Move to end
+      if agent.cursor.col <= row_len then
+         agent:setCursor(nil, row_len + 1)
+         return true
+      end
    end
-   agent:setCursor(agent.cursor.row + 1, nil)
-   return true
+   -- Can't move at all
+   return false
 end
 ```
 
@@ -875,7 +897,22 @@ end
 ```
 
 
-### EditAgent:continuationLines\(\)
+### EditAgent:isEmpty\(\)
+
+Some events are processed specially when the command zone is empty, so we
+expose this query separately from `:contents()`\.
+
+```lua
+function EditAgent.isEmpty(agent)
+   return #agent == 1 and #agent[1] == 0
+end
+```
+
+
+### Rendering\-related queries
+
+
+#### EditAgent:continuationLines\(\)
 
 The number of continuation lines \(lines past the first\)\. Simple enough, but
 used in a couple places\.
@@ -887,7 +924,7 @@ end
 ```
 
 
-### EditAgent:tokens\(\[row\]\)
+#### EditAgent:tokens\(\[row\]\)
 
 Breaks the contents of the agent, or a single row if `row` is supplied,
 into tokens using the assigned lexer\.
@@ -905,7 +942,7 @@ end
 ```
 
 
-### EditAgent:bufferValue\(\)
+#### EditAgent:bufferValue\(\)
 
 The buffer need not concern itself with which lines are "open"\.
 
@@ -920,7 +957,7 @@ end
 ```
 
 
-### EditAgent:windowConfiguration\(\)
+#### EditAgent:windowConfiguration\(\)
 
 We expose the cursor position and some functions related to lexing, which the
 buffer uses in syntax highlighting\.
@@ -933,6 +970,81 @@ function EditAgent.windowConfiguration(agent)
                   tokens = true }
    })
 end
+```
+
+
+### Input\-event handling and keymaps
+
+
+#### EditAgent:selfInsert\(evt\)
+
+Analogous to Readline's `self-insert` or emacs' `self-insert-command`\. Just
+retrieve the actual character from the event and pass it to `insert`\.
+
+```lua
+function EditAgent.selfInsert(agent, evt)
+   return agent:insert(evt.key)
+end
+```
+
+
+#### EditAgent:evtPaste\(evt\)
+
+Need to extract the pasted text from the event\.
+
+```lua
+function EditAgent.evtPaste(agent, evt)
+   agent:paste(evt.text)
+end
+```
+
+
+#### Basic editing commands keymap
+
+The basic editing commands that are applicable no matter what we're editing\.
+
+```lua
+EditAgent.keymap_basic_editing = {
+   UP              = "up",
+   DOWN            = "down",
+   LEFT            = "left",
+   RIGHT           = "right",
+   ["M-LEFT"]      = "leftWordAlpha",
+   ["M-b"]         = "leftWordAlpha",
+   ["M-RIGHT"]     = "rightWordAlpha",
+   ["M-w"]         = "rightWordAlpha",
+   HOME            = "startOfLine",
+   ["C-a"]         = "startOfLine",
+   END             = "endOfLine",
+   ["C-e"]         = "endOfLine",
+   BACKSPACE       = "killBackward",
+   DELETE          = "killForward",
+   ["M-BACKSPACE"] = "killToBeginningOfWord",
+   ["M-DELETE"]    = "killToEndOfWord",
+   ["M-d"]         = "killToEndOfWord",
+   ["C-k"]         = "killToEndOfLine",
+   ["C-u"]         = "killToBeginningOfLine",
+   ["C-t"]         = "transposeLetter",
+   TAB             = "tab",
+   PASTE           = { method = "evtPaste", n = 1 }
+}
+
+```
+
+
+#### Readline\-style navigation
+
+Provides equivalent commands for diehard Emacsians\.
+
+In case RMS ever takes bridge for a spin\.\.\.
+
+```lua
+EditAgent.keymap_readline_nav = {
+   ["C-b"] = "left",
+   ["C-f"] = "right",
+   ["C-n"] = "down",
+   ["C-p"] = "up"
+}
 ```
 
 

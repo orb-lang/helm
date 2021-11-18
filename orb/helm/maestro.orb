@@ -37,60 +37,139 @@ local Maestro = meta {}
 ** Keymap resolution
 
 
-*** Maestro:activeKeymaps()
+*** Maestro:activeKeymap()
 
-Determines the list of active keymaps.
+Builds a composed keymap from the active keymaps as provided by the raga.
+A non-composed keymap looks like:
 
-#todo concept of active keymaps is extremely primitive--entirely static, just
-retrieved wholesale from the raga.
-
-#!lua
-function Maestro.activeKeymaps(maestro)
-   return maestro.modeS.raga.default_keymaps
-end
+#!lua #noKnit
+{
+   source = "agents.edit",
+   name = "basic_editing_keymap",
+   bindings = {
+      "BACKSPACE" = "deleteBackward"
+      ...
+   }
+}
 #/lua
 
+=bindings= is optional at this stage; if absent, it will be retrieved by
+traversing to the actual =source= (which is a dotted path starting at
+=maestro=) and retrieving the property at =name=.
 
-*** Maestro:translate(event)
+The composed keymap is similar, except that the values in =bindings= are lists
+of Messages (whose =sendto= directs them to the =source= of the keymap they
+came from) representing possible handlers.
 
-Searches the active keymaps for =event=, and returns the command name to
-execute, or nil if none is found.
+#todo It might be nice to have a parser that turns a subset of Lua expressions
+into path-traversal Messages—like =:agent'edit'= could parse into =={ method =
+"agent", n = 1, 'edit' }==.
 
-#todo This is probably where we would go about determining arguments to the
-command as well. Not sure that'll come up for "simple" commands--almost by
-definition the event itself is enough information for the command to figure
-things out--but once we start buffering for =vril= this is where we would deal
-with that. Maybe if we come up with any args we *don't* actually hand the raw
-event to the command? In the =vril= case it's pretty useless really... In that
-case we would need to return the event as the sole arg in the case where we
-*do* want it, rather than the calling code passing it unconditionally.
+#todo Should the raga be a property on =maestro=, or should we retrieve it
+with a `yield`ed message? Sticking with the backlink for now because anything
+else is suuuuuuper ugly.
+
+#todo Cache the keymap alongside the raga so we don't have to rebuild it for
+every command.
+
+#todo We'll want some kind of user customizability at some point.
 
 #!lua
-function Maestro.translate(maestro, event)
-   local keymaps = maestro:activeKeymaps()
-   if not keymaps then return nil end
-   local event_string = input_event.serialize(event)
-   for _, keymap in ipairs(keymaps) do
-      if keymap[event_string] then
-         return keymap[event_string]
+local gmatch = assert(string.gmatch)
+local insert = assert(table.insert)
+local clone = assert(require "core:table" . clone)
+local dispatchmessage = assert(require "core:cluster/actor" . dispatchmessage)
+function Maestro.activeKeymap(maestro)
+   local composed_keymap = {}
+   local keymap_list = maestro.modeS.raga.default_keymaps
+   for _, keymap in ipairs(keymap_list) do
+      if not keymap.bindings then
+         keymap = clone(keymap)
+         keymap.bindings = dispatchmessage(maestro, {
+            sendto = keymap.source,
+            property = keymap.name
+         })
+         assert(keymap.bindings, "Failed to retrieve bindings for " ..
+                  keymap.source .. "." .. keymap.name)
+      end
+      for key, action in pairs(keymap.bindings) do
+         -- #todo assert that this is either a string or Message?
+         if type(action) == "string" then
+            -- See :dispatch()--by leaving out .n, we cause the command to be
+            -- executed with no arguments
+            action = { method = action }
+         else
+            action = clone(action)
+         end
+         action.sendto = keymap.source
+         composed_keymap[key] = composed_keymap[key] or {}
+         insert(composed_keymap[key], action)
       end
    end
-   return nil
+   return composed_keymap
 end
 #/lua
 
 
-*** Maestro:dispatch(event, command[, args])
+*** Maestro:dispatch(event, old_cat_val)
 
-Given a command name (and optional arguments), finds the function implementing
-the command and executes it.
+Dispatches =event= to the handler(s) specified in the active keymaps. Each
+handler may answer a boolean indicating whether the event should be considered
+handled, or whether execution should continue. Note that we look only for an
+explicit =false= return value to fall through to the next handler. Any other
+value, specifically including =nil=, stops execution.
 
-#todo should the event always be passed like this, or should that be handled
-by the definition of the command somehow?
+For now, we also accept the old {category, value} style of event, dispatching
+it to a special LEGACY handler on the raga if no match is found for the
+new-style event.
+
+#todo We may want/need a pre-translation step where the input event is
+processed to determine arguments to pass to the actual handler. Not sure
+that'll come up for "simple" commands--almost by definition the event itself
+is enough information for the command to figure things out--but once we start
+buffering for =vril= this is where we would deal with that.
+
+#todo Need to handle the case where the active raga (and thus the list of
+active keymaps) changes during command execution, and the handler wants to
+fall through. I guess for now, we just retry from the start of the new list,
+relying on the handler to ensure that it is no longer *in* that list and won't
+be executed again? Hard to say what the right thing to do here is...
 
 #!lua
-function Maestro.dispatch(maestro, event, command, args)
-   return maestro.modeS.raga[command](maestro, event, args)
+function Maestro.dispatch(maestro, event, old_cat_val)
+   local keymap = maestro:activeKeymap()
+   local event_string = input_event.serialize(event)
+   local command
+   -- Handle legacy event first because some legacy cases do multiple things
+   -- and may not be fully migrated even if there is a handler for that event
+   if old_cat_val and maestro.modeS.raga(maestro.modeS, unpack(old_cat_val)) then
+      command = 'LEGACY'
+   elseif keymap[event_string] then
+      for _, handler in ipairs(keymap[event_string]) do
+         -- #todo ugh, some way to dump a Message to a representative string?
+         -- #todo also, this is assuming that all traversal is done in `sendto`,
+         -- without nested messages--bad assumption, in general
+         command = handler.method or handler.call
+         handler = clone(handler)
+         -- #todo make this waaaaay more flexible
+         if handler.n and handler.n > 0 then
+            handler[handler.n] = event
+         end
+         if dispatchmessage(maestro, handler) ~= false then
+            break
+         end
+      end
+   end
+   if maestro.agents.edit.contents_changed then
+      maestro.modeS.raga.onTxtbufChanged(modeS)
+    -- Treat contents_changed as implying cursor_changed
+    -- only ever fire one of the two events
+   elseif maestro.agents.edit.cursor_changed then
+      maestro.modeS.raga.onCursorChanged(modeS)
+   end
+   maestro.agents.edit.contents_changed = false
+   maestro.agents.edit.cursor_changed = false
+   return command
 end
 #/lua
 

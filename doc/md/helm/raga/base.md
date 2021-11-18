@@ -3,7 +3,7 @@
 Some common functionality for ragas\.
 
 
-## Dependencies
+#### imports
 
 ```lua
 local a         = require "anterm:anterm"
@@ -12,17 +12,54 @@ local concat         = assert(table.concat)
 local sub, gsub, rep = assert(string.sub),
                        assert(string.gsub),
                        assert(string.rep)
+local yield = assert(coroutine.yield)
 ```
-
-
-## Categories
-
-These are the broad types of event\.
 
 ```lua
 local RagaBase_meta = {}
 local RagaBase = setmetatable({}, RagaBase_meta)
+```
 
+
+### Raga\.agentMessage\(agent\_name, method\_name, args\.\.\.\)
+
+\#todo
+central location\.
+
+```lua
+function RagaBase.agentMessage(agent_name, method_name, ...)
+   local msg = pack(...)
+   msg.method = method_name
+   msg = { method = 'agent', n = 1, agent_name, message = msg }
+   return yield(msg)
+end
+```
+
+
+### Raga\.shiftMode\(raga\_name\)
+
+\#todo
+central location\.
+
+```lua
+function RagaBase.shiftMode(raga_name)
+   return yield{ method = "shiftMode", n = 1, raga_name }
+end
+```
+
+
+## Keymaps
+
+```lua
+RagaBase.default_keymaps = {}
+```
+
+
+## Legacy input handling
+
+These are the broad types of event used by the legacy input handling scheme\.
+
+```lua
 for _, cat in ipairs{"NAV", "CTRL", "ALT", "ASCII",
                      "UTF8", "PASTE", "MOUSE", "NYI"} do
    RagaBase[cat] = {}

@@ -34,6 +34,30 @@ end
 #/lua
 
 
+*** ResultsAgent:clearOnFirstKey()
+
+Clear the results if the EditAgent is currently empty, i.e. the event being
+processed will be the first character in the buffer.
+
+#!lua
+function ResultsAgent.clearOnFirstKey(agent)
+   if agent:agentMessage("edit", "isEmpty") then
+      agent:clear()
+   end
+   return false
+end
+#/lua
+
+*** Keymaps
+
+#!lua
+ResultsAgent.keymap_reset = {
+   -- #todo bind to any normal key
+   PASTE = "clearOnFirstKey"
+}
+#/lua
+
+
 #!lua
 local constructor = assert(require "core:cluster" . constructor)
 return constructor(ResultsAgent)

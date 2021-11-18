@@ -327,6 +327,17 @@ end
 
 
 
+function EditAgent.tab(agent)
+   agent:paste("   ")
+end
+
+
+
+
+
+
+
+
 
 local inverse = assert(require "core:table" . inverse)
 local _openers = { ["("] = ")",
@@ -544,21 +555,32 @@ end
 
 
 function EditAgent.up(agent)
-   if not agent:openRow(agent.cursor.row - 1) then
+   if agent:openRow(agent.cursor.row - 1) then
+      agent:setCursor(agent.cursor.row - 1, nil)
+      return true
+   -- Move to beginning
+   elseif agent.cursor.col > 1 then
       agent:setCursor(nil, 1)
-      return false
+      return true
    end
-   agent:setCursor(agent.cursor.row - 1, nil)
-   return true
+   -- Can't move at all
+   return false
 end
 
 function EditAgent.down(agent)
-   if not agent:openRow(agent.cursor.row + 1) then
-      agent:setCursor(nil, #agent[agent.cursor.row] + 1)
-      return false
+   if agent:openRow(agent.cursor.row + 1) then
+      agent:setCursor(agent.cursor.row + 1, nil)
+      return true
+   else
+      local row_len = #agent[agent.cursor.row]
+      -- Move to end
+      if agent.cursor.col <= row_len then
+         agent:setCursor(nil, row_len + 1)
+         return true
+      end
    end
-   agent:setCursor(agent.cursor.row + 1, nil)
-   return true
+   -- Can't move at all
+   return false
 end
 
 
@@ -872,6 +894,21 @@ end
 
 
 
+function EditAgent.isEmpty(agent)
+   return #agent == 1 and #agent[1] == 0
+end
+
+
+
+
+
+
+
+
+
+
+
+
 function EditAgent.continuationLines(agent)
    return #agent - 1
 end
@@ -924,6 +961,81 @@ function EditAgent.windowConfiguration(agent)
                   tokens = true }
    })
 end
+
+
+
+
+
+
+
+
+
+
+
+
+function EditAgent.selfInsert(agent, evt)
+   return agent:insert(evt.key)
+end
+
+
+
+
+
+
+
+
+function EditAgent.evtPaste(agent, evt)
+   agent:paste(evt.text)
+end
+
+
+
+
+
+
+
+
+EditAgent.keymap_basic_editing = {
+   UP              = "up",
+   DOWN            = "down",
+   LEFT            = "left",
+   RIGHT           = "right",
+   ["M-LEFT"]      = "leftWordAlpha",
+   ["M-b"]         = "leftWordAlpha",
+   ["M-RIGHT"]     = "rightWordAlpha",
+   ["M-w"]         = "rightWordAlpha",
+   HOME            = "startOfLine",
+   ["C-a"]         = "startOfLine",
+   END             = "endOfLine",
+   ["C-e"]         = "endOfLine",
+   BACKSPACE       = "killBackward",
+   DELETE          = "killForward",
+   ["M-BACKSPACE"] = "killToBeginningOfWord",
+   ["M-DELETE"]    = "killToEndOfWord",
+   ["M-d"]         = "killToEndOfWord",
+   ["C-k"]         = "killToEndOfLine",
+   ["C-u"]         = "killToBeginningOfLine",
+   ["C-t"]         = "transposeLetter",
+   TAB             = "tab",
+   PASTE           = { method = "evtPaste", n = 1 }
+}
+
+
+
+
+
+
+
+
+
+
+
+EditAgent.keymap_readline_nav = {
+   ["C-b"] = "left",
+   ["C-f"] = "right",
+   ["C-n"] = "down",
+   ["C-p"] = "up"
+}
 
 
 

@@ -9,6 +9,7 @@
 local SelectionList = require "helm:selection_list"
 local names = require "repr:names"
 local insert, sort = assert(table.insert), assert(table.sort)
+local clone = assert(require "core:table" . clone)
 
 
 
@@ -31,7 +32,7 @@ local SuggestAgent = meta(getmetatable(ResultListAgent))
 function SuggestAgent.cursorContext(suggest)
    local lex_tokens = {}
    -- Ignore whitespace and comments
-   for _, token in ipairs(suggest.tokens()) do
+   for _, token in ipairs(suggest:agentMessage("edit", "tokens")) do
       if token.color ~= "no_color" and token.color ~= "comment" then
          insert(lex_tokens, token)
       end
@@ -180,10 +181,69 @@ end
 
 
 
-function SuggestAgent.accept(suggest)
-   local suggestion = suggest.last_collection:selectedItem()
-   suggest.replaceToken(suggestion)
+
+
+
+
+function SuggestAgent.acceptSelected(agent)
+   local suggestion = agent:selectedItem()
+   agent:quit()
+   if suggestion then
+      agent:agentMessage("edit", "replaceToken", suggestion)
+      return true
+   else
+      return false
+   end
 end
+
+
+
+
+
+
+
+
+SuggestAgent.userCancel = SuggestAgent.quit
+
+
+
+
+
+
+
+
+
+function SuggestAgent.activateCompletion(agent)
+   if agent.last_collection then
+      agent:selectFirst()
+      agent:shiftMode("complete")
+      return true
+   else
+      return false
+   end
+end
+
+
+
+
+
+
+SuggestAgent.keymap_try_activate = {
+   TAB = "activateCompletion",
+   SHIFT_TAB = "activateCompletion",
+}
+
+SuggestAgent.keymap_actions = clone(ResultListAgent.keymap_actions)
+function SuggestAgent.acceptAndFallthrough(agent)
+   agent:acceptSelected()
+   return false
+end
+function SuggestAgent.quitAndFallthrough(agent)
+   agent:quit()
+   return false
+end
+SuggestAgent.keymap_actions["LEFT"] = "acceptAndFallthrough"
+SuggestAgent.keymap_actions["PASTE"] = "quitAndFallthrough"
 
 
 

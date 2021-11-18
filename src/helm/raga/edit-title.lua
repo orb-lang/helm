@@ -18,21 +18,30 @@ EditTitle.prompt_char = "👉"
 
 
 
-local function _accept(modeS)
-   local agents = modeS.maestro.agents
-   agents.session:selectedPremise().title = agents.edit:contents()
-   agents.session:selectNextWrap()
-   modeS:shiftMode "review"
+function EditTitle.accept()
+   local title = EditTitle.agentMessage("edit", "contents")
+   EditTitle.agentMessage("session", "titleUpdated", title)
+   EditTitle.quit()
 end
 
-EditTitle.NAV.RETURN = _accept
-EditTitle.NAV.TAB = _accept
-
-function EditTitle.NAV.ESC(modeS, category, value)
-   local agents = modeS.maestro.agents
-   agents.edit:update(agents.session:selectedPremise().title)
-   modeS:shiftMode "review"
+function EditTitle.quit()
+   EditTitle.shiftMode("review")
 end
+
+
+
+
+
+
+EditTitle.keymap_extra_commands = {
+   RETURN = "accept",
+   TAB = "accept",
+   ESC = "cancel"
+}
+for key, msg in pairs(EditBase.keymap_extra_commands) do
+   EditTitle.keymap_extra_commands[key] = msg
+end
+
 
 
 

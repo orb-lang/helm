@@ -11,6 +11,7 @@ providing a [Window](https://gitlab.com/special-circumstance/helm/-/blob/trunk/d
 ```lua
 local Window = require "window:window"
 local Deque = require "deque:deque"
+local yield = assert(coroutine.yield)
 ```
 
 
@@ -42,6 +43,38 @@ function Agent.bufferCommand(agent, name, ...)
    local msg = pack(...)
    msg.method = name
    agent.buffer_commands:push(msg)
+end
+```
+
+
+### Agent:agentMessage\(other\_agent\_name, method\_name, args\.\.\.\)
+
+Dispatches a message \(via a `yield` to modeS\) to one of our fellow Agents and
+answers the return value\.
+
+\#todo
+Agent\. Where should it go?
+
+```lua
+function Agent.agentMessage(agent, other_agent_name, method_name, ...)
+   local msg = pack(...)
+   msg.method = method_name
+   msg = { method = 'agent', n = 1, other_agent_name, message = msg }
+   return yield(msg)
+end
+```
+
+
+### Agent:shiftMode\(raga\_name\)
+
+Shorthand to ask ModeS to switch ragas\.
+
+\#todo
+as well\-\-should be in a central location\.
+
+```lua
+function Agent.shiftMode(agent, raga_name)
+   return yield{ method = "shiftMode", n = 1, raga_name }
 end
 ```
 
@@ -87,6 +120,43 @@ for _, scroll_fn in ipairs{
 end
 ```
 
+
+#### Agent:evtScrollUp\(evt\), :evtScrollDown\(evt\)
+
+Translate the num\_lines property on a merged scroll event, or scrolls by one
+line for key events\.
+
+```lua
+function Agent.evtScrollUp(agent, evt)
+   agent:scrollUp(evt.num_lines)
+end
+function Agent.evtScrollDown(agent, evt)
+   agent:scrollDown(evt.num_lines)
+end
+```
+
+
+### Keymaps
+
+Provide basic scrolling commands at this level, if the raga chooses to include
+this keymap\. Note that higher\-priority keymaps may override some of this, e\.g\.
+up/down move the cursor when editing text even though the ResultsAgent would
+happily process them\.
+
+```lua
+Agent.keymap_scrolling = {
+   SCROLL_UP   = { method = "evtScrollUp",   n = 1 },
+   SCROLL_DOWN = { method = "evtScrollDown", n = 1 },
+   UP          = "scrollUp",
+   ["S-UP"]    = "scrollUp",
+   DOWN        = "scrollDown",
+   ["S-DOWN"]  = "scrollDown",
+   PAGE_UP     = "pageUp",
+   PAGE_DOWN   = "pageDown",
+   HOME        = "scrollToTop",
+   END         = "scrollToBottom"
+}
+```
 
 ### Agent:window\(\), :windowConfiguration\(\)
 

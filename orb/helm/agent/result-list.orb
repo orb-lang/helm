@@ -37,6 +37,26 @@ for _, method_name in ipairs{"selectNext", "selectPrevious",
 end
 #/lua
 
+It's also handy to have a nil-safe way to retrieve what is currently selected.
+
+#!lua
+function ResultListAgent.selectedItem(agent)
+   return agent.last_collection and agent.last_collection:selectedItem()
+end
+#/lua
+
+
+*** ResultListAgent:quit()
+
+Quits the raga associated with the agent, returning to the default.
+
+#!lua
+function ResultListAgent.quit(agent)
+   agent:selectNone()
+   agent:shiftMode("default")
+end
+#/lua
+
 
 *** ResultListAgent:bufferValue()
 
@@ -64,6 +84,34 @@ function ResultListAgent.windowConfiguration(agent)
       }
    })
 end
+#/lua
+
+
+*** Keymaps
+
+- [ ]  #Todo
+
+  - [ ]  Add NAV.SHIFT_ALT_(UP|DOWN), to move a page at a time.
+         Hook them to PgUp and PgDown while we're at it.
+
+  - [ ]  Add NAV.HOME and NAV.END to snap to the
+         top and bottom.
+
+#!lua
+ResultListAgent.keymap_selection = {
+   TAB = "selectNextWrap",
+   DOWN = "selectNextWrap",
+   ["S-DOWN"] = "selectNextWrap",
+   ["S-TAB"] = "selectPreviousWrap",
+   UP = "selectPreviousWrap",
+   ["S-UP"] = "selectPreviousWrap"
+}
+
+-- These are both abstract methods
+ResultListAgent.keymap_actions = {
+   RETURN = "acceptSelected",
+   ESC = "userCancel"
+}
 #/lua
 
 

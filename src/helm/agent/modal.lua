@@ -130,6 +130,31 @@ end
 
 
 
+function ModalAgent.show(agent, ...)
+   agent:update(...)
+   agent:shiftMode("modal")
+end
+
+
+
+
+
+
+
+
+function ModalAgent.close(agent, value)
+   agent.model.value = value
+   -- #todo shift back to the previous raga--modeS needs to maintain a stack
+   agent:shiftMode("default")
+end
+
+
+
+
+
+
+
+
 function ModalAgent.answer(agent)
    return agent.model and agent.model.value
 end
@@ -141,6 +166,56 @@ end
 
 function ModalAgent.bufferValue(agent)
    return agent.model and { n = 1, agent.model } or { n = 0 }
+end
+
+
+
+
+
+
+
+
+
+local function _shortcutFrom(button)
+   local shortcut_decl = button.text and button.text:match('&([^&])')
+   return shortcut_decl and shortcut_decl:lower()
+end
+
+local function _acceptButtonWhere(agent, fn)
+   for _, button in ipairs(agent.model.buttons) do
+      if fn(button) then
+         return agent:close(button.value)
+      end
+   end
+end
+
+function ModalAgent.letterShortcut(agent, event)
+   local key = event.key:lower()
+   return _acceptButtonWhere(agent, function(button)
+      return _shortcutFrom(button) == key
+   end)
+end
+
+function ModalAgent.cancel(agent)
+   return _acceptButtonWhere(agent, function(button) return button.cancel end)
+end
+
+function ModalAgent.acceptDefault(maestro, event)
+   return _acceptButtonWhere(agent, function(button) return button.default end)
+end
+
+
+
+
+
+
+ModalAgent.keymap_actions = {
+   ESC = "cancel",
+   RETURN = "acceptDefault"
+}
+for i = 1, 26 do
+   local key = ("abcdefghijklmnopqrstuvwxyz"):sub(i,i)
+   ModalAgent.keymap_actions[key] = { method = "letterShortcut", n = 1 }
 end
 
 

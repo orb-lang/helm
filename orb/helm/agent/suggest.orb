@@ -9,6 +9,7 @@
 local SelectionList = require "helm:selection_list"
 local names = require "repr:names"
 local insert, sort = assert(table.insert), assert(table.sort)
+local clone = assert(require "core:table" . clone)
 #/lua
 
 
@@ -31,7 +32,7 @@ if the path cannot be determined.
 function SuggestAgent.cursorContext(suggest)
    local lex_tokens = {}
    -- Ignore whitespace and comments
-   for _, token in ipairs(suggest.tokens()) do
+   for _, token in ipairs(suggest:agentMessage("edit", "tokens")) do
       if token.color ~= "no_color" and token.color ~= "comment" then
          insert(lex_tokens, token)
       end
@@ -177,13 +178,72 @@ end
 #/lua
 
 
-*** SuggestAgent:accept()
+*** Keymaps and Event Handlers
+
+
+*** SuggestAgent:acceptSelected()
+
 
 #!lua
-function SuggestAgent.accept(suggest)
-   local suggestion = suggest.last_collection:selectedItem()
-   suggest.replaceToken(suggestion)
+function SuggestAgent.acceptSelected(agent)
+   local suggestion = agent:selectedItem()
+   agent:quit()
+   if suggestion then
+      agent:agentMessage("edit", "replaceToken", suggestion)
+      return true
+   else
+      return false
+   end
 end
+#/lua
+
+
+**** SuggestAgent:userCancel()
+
+We just unconditionally quit when ESC is pressed.
+
+#!lua
+SuggestAgent.userCancel = SuggestAgent.quit
+#/lua
+
+
+**** SuggestAgent:activateCompletion()
+
+Event-handler function that activates completion if suggestions are available,
+falling through to the next command if not.
+
+#!lua
+function SuggestAgent.activateCompletion(agent)
+   if agent.last_collection then
+      agent:selectFirst()
+      agent:shiftMode("complete")
+      return true
+   else
+      return false
+   end
+end
+#/lua
+
+
+**** Keymaps
+
+#!lua
+SuggestAgent.keymap_try_activate = {
+   TAB = "activateCompletion",
+   SHIFT_TAB = "activateCompletion",
+}
+
+SuggestAgent.keymap_actions = clone(ResultListAgent.keymap_actions)
+function SuggestAgent.acceptAndFallthrough(agent)
+   agent:acceptSelected()
+   return false
+end
+function SuggestAgent.quitAndFallthrough(agent)
+   agent:quit()
+   return false
+end
+SuggestAgent.keymap_actions["LEFT"] = "acceptAndFallthrough"
+SuggestAgent.keymap_actions["PASTE"] = "quitAndFallthrough"
 #/lua
 
 

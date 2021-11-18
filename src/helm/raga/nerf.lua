@@ -14,18 +14,6 @@
 
 
 
-
-
-assert(meta, "must have meta in _G")
-
-
-
-local a         = require "anterm:anterm"
-local Txtbuf    = require "helm:buf/txtbuf"
-local Rainbuf   = require "helm:buf/rainbuf"
-local Historian = require "helm/historian"
-local Lex       = require "helm/lex"
-
 local concat, insert = assert(table.concat), assert(table.insert)
 local sub, gsub, rep = assert(string.sub),
                        assert(string.gsub),
@@ -51,9 +39,9 @@ Nerf.prompt_char = "👉"
 
 local function _insert(modeS, category, value)
    if modeS:agent'edit':contents() == "" then
-      modeS:clearResults()
+      modeS:agent'results':clear()
       if value == "/" then
-         yield{ method = "shiftMode", "search" }
+         Nerf.shiftMode("search")
          return
       end
       if value == "?" then
@@ -75,55 +63,6 @@ Nerf.UTF8 = _insert
 
 local NAV = Nerf.NAV
 
-local function _prev(modeS)
-   -- Save what the user is currently typing...
-   local linestash = modeS:agent'edit':contents()
-   -- ...but only if they're at the end of the history,
-   -- and obviously only if there's anything there
-   if linestash == "" or modeS.hist.cursor <= modeS.hist.n then
-      linestash = nil
-   end
-   local prev_line, prev_result = modeS.hist:prev()
-   if linestash then
-      modeS.hist:append(linestash)
-   end
-   modeS:agent'edit':update(prev_line)
-   modeS:setResults(prev_result)
-   return modeS
-end
-
-function NAV.UP(modeS, category, value)
-   local inline = modeS:agent'edit':up()
-   if not inline then
-      _prev(modeS)
-   end
-   return modeS
-end
-
-local function _advance(modeS)
-   local new_line, next_result = modeS.hist:next()
-   if not new_line then
-      local added = modeS.hist:append(modeS:agent'edit':contents())
-      if added then
-         modeS.hist.cursor = modeS.hist.n + 1
-      end
-   end
-   modeS:agent'edit':update(new_line)
-   modeS:setResults(next_result)
-   return modeS
-end
-
-function NAV.DOWN(modeS, category, value)
-   local inline = modeS:agent'edit':down()
-   if not inline then
-      _advance(modeS)
-   end
-
-   return modeS
-end
-
-
-
 function _eval(modeS)
    local line = modeS:agent'edit':contents()
    local success, results = modeS.eval(line)
@@ -133,7 +72,7 @@ function _eval(modeS)
    else
       modeS.hist:append(line, results, success)
       modeS.hist.cursor = modeS.hist.n + 1
-      modeS:setResults(results)
+      modeS:agent'results':update(results)
       modeS:agent'edit':clear()
    end
 end
@@ -158,36 +97,40 @@ end
 Nerf.CTRL["^\\"] = NAV.CTRL_RETURN
 NAV.ALT_RETURN = NAV.SHIFT_RETURN
 
-local function _activateCompletion(modeS)
-   if modeS:agent'suggest'.last_collection then
-      yield{ method = "shiftMode", "complete" }
-      return true
-   else
-      return false
+
+
+
+
+
+-- #todo ugh put this somewhere common and fix the args
+local _agentMessage = assert(require "helm:agent/agent" . agentMessage)
+local function agentMessage(...)
+   return _agentMessage(nil, ...)
+end
+
+function Nerf.historyBack()
+   -- If we're at the end of the history (the user was typing a new
+   -- expression), save it before moving
+   if yield{ sendto = "hist", method = "atEnd" } then
+      local linestash = agentMessage("edit", "contents")
+      yield{ sendto = "hist", method = "append", n = 1, linestash }
    end
+   local prev_line, prev_result = modeS.hist:prev()
+   agentMessage("edit", "update", prev_line)
+   agentMessage("results", "update", prev_result)
 end
 
-function NAV.SHIFT_DOWN(modeS, category, value)
-   if not _activateCompletion(modeS) then
-      modeS:agent'results':scrollDown()
+function Nerf.historyForward()
+   local new_line, next_result = yield{ sendto = "hist", method = "next" }
+   if not new_line then
+      local old_line = agentMessage("edit", "contents")
+      local added = yield{ sendto = "hist", method = "append", n = 1, old_line }
+      if added then
+         yield{ sendto = "hist", method = "toEnd" }
+      end
    end
-end
-
-function NAV.SHIFT_UP(modeS, category, value)
-   if not _activateCompletion(modeS) then
-      modeS:agent'results':scrollUp()
-   end
-end
-
-function NAV.TAB(modeS, category, value)
-   if not _activateCompletion(modeS) then
-      modeS:agent'edit':paste("   ")
-   end
-end
-
-function NAV.SHIFT_TAB(modeS, category, value)
-   -- If we can't activate completion, nothing to do really
-   _activateCompletion(modeS)
+   agentMessage("edit", "update", new_line)
+   agentMessage("results", "update", next_result)
 end
 
 
@@ -195,40 +138,40 @@ end
 
 
 
-Nerf.default_keymaps = clone(EditBase.default_keymaps)
+
+
+Nerf.default_keymaps = {
+   { source = "agents.search", name = "keymap_try_activate" },
+   { source = "agents.suggest", name = "keymap_try_activate" },
+   { source = "agents.results", name = "keymap_reset" },
+   { source = "agents.edit", name = "keymap_readline_nav" }
+}
 
 
 
 
 
-
-
-
-
-insert(Nerf.default_keymaps, {
-   ["C-b"] = "left",
-   ["C-f"] = "right",
-   ["C-n"] = "down",
-   ["C-p"] = "up"
-})
-
-
-
-
-
-
-function Nerf.scrollResultsUp(maestro, event)
-   maestro.agents.results:scrollUp(event.num_lines)
+for _, map in ipairs(EditBase.default_keymaps) do
+   insert(Nerf.default_keymaps, map)
 end
 
-function Nerf.scrollResultsDown(maestro, event)
-   maestro.agents.results:scrollDown(event.num_lines)
-end
 
-insert(Nerf.default_keymaps, {
-   SCROLL_UP = "scrollResultsUp",
-   SCROLL_DOWN = "scrollResultsDown"
-})
+
+
+
+Nerf.keymap_history_navigation = {
+   UP = "historyBack",
+   DOWN = "historyForward"
+}
+insert(Nerf.default_keymaps,
+       { source = "modeS.raga", name = "keymap_history_navigation"})
+
+
+
+
+
+insert(Nerf.default_keymaps,
+      { source = "agents.results", name = "keymap_scrolling" })
 
 
 
