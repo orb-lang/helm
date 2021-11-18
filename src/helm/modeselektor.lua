@@ -454,7 +454,8 @@ function ModeS.restart(modeS)
    modeS:paint()
    uv.timer_start(uv.new_timer(), 1500, 0,
                   function()
-                     modeS :setStatusLine 'default' :paint()
+                     modeS:setStatusLine 'default'
+                     modeS:paint()
                   end)
    local restart_idle = uv.new_idle()
    restart_idle:start(function()

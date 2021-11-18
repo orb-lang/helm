@@ -4,7 +4,8 @@ Common functionality for ragas that accept keyboard input mostly by
 directing it to the Txtbuf
 
 #!lua
-local addall, clone = import("core/table", "addall", "clone")
+local clone = assert(require "core:table" . clone)
+local yield = assert(coroutine.yield)
 local RagaBase = require "helm:helm/raga/base"
 local Txtbuf = require "helm:buf/txtbuf"
 #/lua
@@ -18,13 +19,13 @@ local EditBase = clone(RagaBase, 2)
 
 #!lua
 function EditBase.clearTxtbuf(maestro, event)
-   maestro.agents.edit:clear()
-   maestro.agents.results:clear()
-   maestro.modeS.hist.cursor = maestro.modeS.hist.n + 1
+   EditBase.agentMessage("edit", "clear")
+   EditBase.agentMessage("results", "clear")
+   yield{ sendto = "hist", method = "toEnd" }
 end
 
-function EditBase.restartSession(maestro, event)
-   maestro.modeS:restart()
+function EditBase.restartSession()
+   yield{ method = "restart" }
 end
 
 EditBase.keymap_extra_commands = {
