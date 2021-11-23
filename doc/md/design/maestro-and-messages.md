@@ -114,10 +114,10 @@ and when an object is getting called, and paged through a few source files to
 really trace a piece of logic\.  It's easier to reason about one modules at a
 time\.
 
-> DS: One **problem** this sort of architecture creates is that it separates
+> DS: One \*problem\* this sort of architecture creates is that it separates
 >     sending and processing of messages, meaning that when a message is
 >     processed the send isn't on the call stack\. This sucks for debugging\. We
->     may be stuck with it, but I think this is a step **backwards** for reasoning\.
+>     may be stuck with it, but I think this is a step \*backwards\* for reasoning\.
 
 It also behaves better with user extensions\.  We can, and should, check that
 a given Message is asking for something valid before trying to execute it\.
@@ -208,7 +208,7 @@ For a request for action we need some of:
 - n:  Already mentioned, but for completeness, an integer >= 0 which specifies
     the number of parameters in the array portion of the Message\.
 
-> DS: Why have `sendto` when we already need a mechanism to decide who even
+> DS: Why have =sendto= when we already need a mechanism to decide who even
 >     gets a message in the first place? \(At its simplest this is just called
 >     "knowing who's at the other end of a particular queue", and that may be
 >     sufficient\.\) This is something of a rhetorical question\-\-I can see
@@ -226,10 +226,10 @@ there's more than one way to send a message to someone, you identify them the
 same way across the board\.
 
 >
->     It also seems like there's a lot of redundancy between `method`,
->     `sendto`, `message` and `call`\. First off we could just use `method =
->     "__call"` for that case\. Strictly speaking this is ambiguous between a
->     function property in slot `__call` and a true metamethod, but \(a\) so
+>     It also seems like there's a lot of redundancy between =method=,
+>     =sendto=, =message= and =call=\. First off we could just use ==method =
+>     "\_\_call"== for that case\. Strictly speaking this is ambiguous between a
+>     function property in slot =\_\_call= and a true metamethod, but \(a\) so
 >     many of our metatables are self\-indexed that there is usually no
 >     difference, and \(b\) if there is a difference and you care, Something Is
 >     Wrong, please don't\. So I'd be fine with just special\-casing that if the
@@ -260,19 +260,19 @@ At that point though I would do:
 No `sendto`, handle that with a nested message like
 `{ property = "foo", message = { method = "bar", n = 1, "baz" } }`\.
 
-Alternatively, have `name` \(a symbol\) and `action` \(one of \{"property",
-"call", "method"\)\. This is convenient for implementation \(we always need to
-retrieve something, it's convenient to alsways store it under the same key\)
+Alternatively, have `name` \(a symbol\) and `action` \(one of \{"property",call", "method"\)\. This is convenient for implementation \(we always need to
+retrieve
+" something, it's convenient to alsways store it under the same key\)
 but yes, it is a little string\-ly typed\.
 
 >
->     That being, replace `sendto` and `message` with something like
->     `callpath` or `sendpath`, which is an array\-table of keys to traverse in
->     order before calling the `method`\. So `{ method = "baz", path = { would ultimately result in
->
->     "foo", "bar" }}`     `receiver.foo.bar.baz(...)`\. But also, per my first paragraph, I would
+>     That being, replace =sendto= and =message= with something like
+>     =callpath= or =sendpath=, which is an array\-table of keys to traverse in
+>     order before calling the =method=\. So ==\{ method = "baz", path = \{
+>     "foo", "bar" \}\}== would ultimately result in
+>     =receiver\.foo\.bar\.baz\(\.\.\.\)=\. But also, per my first paragraph, I would
 >     tend to leave this out until we actually need it\-\-indeed until we need
->     it **more than once**, the first time I would just write a forwarder
+>     it \*more than once\*, the first time I would just write a forwarder
 >     function on the receiver itself\.
 
 I considered and rejected that architecture\.
@@ -409,7 +409,7 @@ Actor who sent the first Message\.
 >     without adding any new fields\.
 >
 >     All that said, also see below about how this interacts with the
->     coroutine loop, which suddenly **isn't** asynchronous\.
+>     coroutine loop, which suddenly \*isn't\* asynchronous\.
 
 @atman:
 
@@ -464,7 +464,7 @@ time\.
 >     asynchronously, by putting them on a Deque somewhere probably\. There
 >     might be a logical "reply" to these, but if so, IMO it should just come
 >     as another message directed back at us, with no special affordance for
->     "being a reply"\. Likely we won't even need the ability to specify **that**
+>     "being a reply"\. Likely we won't even need the ability to specify \*that\*
 >     there should be a reply, or where it should go, because this will be
 >     obvious, though we can add those if needed\.
 
@@ -488,9 +488,9 @@ But we can't do so in a general way without additional information\.
 >     return value is going, and the return value isn't a `Message` at all, it
 >     will become the return value of the `yield`\.
 >
->     It's good and correct to have a unified reification of a `Message`, and
->     to use that for both queued and `yield`ed messages, but I don't actually
->     think we need **any** of the reply\-related machinery \(except `sender`, but
+>     It's good and correct to have a unified reification of a =Message=, and
+>     to use that for both queued and =yield=ed messages, but I don't actually
+>     think we need \*any\* of the reply\-related machinery \(except =sender=, but
 >     that mostly because why the hell not and it might be helpful for
 >     debugging\)\. Synchronous messages just\.\.\.can have return values\.\.\.while
 >     async messages rely on the receiver to respond if needed \(for now, and
@@ -545,7 +545,7 @@ but that's a bad reason to eschew it\.
 >     like it's not that different from indirecting through modeS, in that Maestro
 >     is never going to be in another process from the Agents or anything like
 >     that\-\-right? \(Neither is modeS, really, but some of the other Actors might
->     be, like if we're running Python code instead of Lua, `eval` might be\.\) If
+>     be, like if we're running Python code instead of Lua, =eval= might be\.\) If
 >     there's a reason this seems bad, I'd like to hear it, it might help clarify
 >     how you want the whole thing to work\.
 
@@ -574,10 +574,10 @@ consistently, this lets us rely on it in various ways\.
 >     parameters for the next guy in line\. The whole dispatch mechanism is
 >     basically an outer loop here\.
 >
->     When aaaaalll is finally said and done, `Maestro` returns and the coroutine
+>     When aaaaalll is finally said and done, =Maestro= returns and the coroutine
 >     dies\-\-but it dies without returning any values, because at this point it's
 >     too late, if Maestro/the Agent wanted something that needed to be done with
->     a `yield` earlier so there'd be somewhere to `resume` the return value\. I
+>     a =yield= earlier so there'd be somewhere to =resume= the return value\. I
 >     suppose it could return a "just one more thing" message which modeS would
 >     process and throw away the return value, that's really neither here nor
 >     there\.

@@ -1,0 +1,20 @@
+* Helm character language
+
+
+  Certain characters typed at the first line of helm are special.
+
+None of these are valid leading characters in Lun, Clu, or Lua, and will
+retain their special flavor in vril mode as well.
+
+
+** /
+
+- [X]:  Initiates history search
+
+
+** ?
+
+-[ ]:  fuzzy search help (Ctrl-? for popup help sheet)
+
+
+** >
