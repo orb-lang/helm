@@ -899,6 +899,18 @@ historian_sql.insert_project = [[
 INSERT INTO project (directory) VALUES (?);
 ]]
 
+historian_sql.insert_run_start = [[
+INSERT INTO run (project) VALUES (:project);
+]]
+
+historian_sql.insert_run_finish = [[
+UPDATE run SET finish = strftime('%Y-%m-%dT%H:%M:%f', 'now')
+WHERE run.run_id == :run
+;
+]]
+
+
+
 
 
 historian_sql.get_recent = [[

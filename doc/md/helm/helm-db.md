@@ -899,6 +899,18 @@ INSERT INTO repr (hash, repr) VALUES (:hash, :repr);
 INSERT INTO project (directory) VALUES (?);
 ```
 
+```sql
+INSERT INTO run (project) VALUES (:project);
+```
+
+```sql
+UPDATE run SET finish = strftime('%Y-%m-%dT%H:%M:%f', 'now')
+WHERE run.run_id == :run
+;
+```
+
+
+
 ##### Selections
 
 ```sql
