@@ -88,6 +88,16 @@ function Historian.load(historian)
    end
    local project_id = proj_val[1][1]
    historian.project_id = project_id
+
+   -- start the latest run
+   stmts.insert_run_start :bind(project_id) :step()
+   historian.run_id = stmts.lastRowId()
+   if historian.restarting then
+      -- do restart stuff, ending with
+
+      -- historian.restarting = true
+   end
+
    -- Retrieve history
    local number_of_lines = stmts.get_number_of_lines
                              :bind(project_id):step()[1]
@@ -367,6 +377,11 @@ local function new(helm_db)
    historian.cursor_start = 0
    historian.n = 0
    historian:createPreparedStatements(helm_db)
+   if _Bridge.args.restart then
+      -- this flag is reset by historian:load()
+      -- eventually the responsibility of the Runner
+      historian.restarting = true
+   end
    historian:load()
    local session_cfg = {}
    local session_title = _Bridge.args.macro or
@@ -376,6 +391,7 @@ local function new(helm_db)
       session_cfg.accepted = true
       session_cfg.mode = "macro"
    end
+
    local sesh = Session(helm_db,
                         historian.project_id,
                         session_title,
