@@ -939,6 +939,15 @@ WHERE result.line_id = :line_id
 ORDER BY result.result_id;
 ]]
 
+historian_sql.get_lines_of_run = [[
+SELECT line
+FROM run
+INNER JOIN input on input.project == run.project
+WHERE  run.run_id = :run
+   AND input.time >= run.start_time
+   AND input.time <= run.finish_time
+ORDER BY input.time;
+]]
 
 
 
