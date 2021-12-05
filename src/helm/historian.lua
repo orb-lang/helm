@@ -94,8 +94,12 @@ function Historian.load(historian)
    historian.run_id = stmts.lastRowId()
    if historian.restarting then
       -- do restart stuff, ending with
-
-      -- historian.restarting = true
+      local deque = require "deque:deque" ()
+      for _, line in stmts.get_latest_run_lines :bind(project_id) :cols() do
+         deque:push(line)
+      end
+      historian.reloads = deque
+      historian.restarting = nil
    end
 
    -- Retrieve history

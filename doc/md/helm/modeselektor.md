@@ -477,6 +477,29 @@ function ModeS.restart(modeS)
 end
 ```
 
+
+### ModeS:reRun\(deque\)
+
+Minimum viable restart\.
+
+```lua
+function ModeS.rerun(modeS, deque)
+   for line in deque:popAll() do
+      -- push it to the edit agent
+      modeS:agent'edit':insert(line)
+      local success, results = modeS.eval(line)
+      -- we don't worry about 'advance' since the lines are from
+      -- the database
+      modeS.hist:append(line, results, success)
+      modeS.hist.cursor = modeS.hist.n + 1
+      modeS:setResults(results)
+      modeS:agent'edit':clear()
+   end
+end
+```
+
+
+
 ### ModeS:openHelp\(\)
 
 Opens a simple help screen\.
@@ -491,9 +514,9 @@ end
 
 ### ModeS:showModal\(text, button\_style\)
 
-Shows a modal dialog with the given text and button style
-\(see [https://gitlab.com/special-circumstance/helm/-/blob/trunk/doc/md/agent/modal.md](https://gitlab.com/special-circumstance/helm/-/blob/trunk/doc/md/agent/modal.md) for valid button styles\)\.
+Shows a modal dialog with the given text and button stylesee [https://gitlab.com/special-circumstance/helm/-/blob/trunk/doc/md/agent/modal.md](https://gitlab.com/special-circumstance/helm/-/blob/trunk/doc/md/agent/modal.md) for valid button styles\)\.
 
+\(
 \#todo
 which point we won't need this method\.
 
@@ -618,6 +641,14 @@ local function new(max_extent, writer, db)
 
    -- initial state
    modeS:shiftMode(modeS.raga_default)
+
+   -- hackish: we check the historian for a deque of lines to load and if
+   -- we have it, we just eval them into existence.
+   if modeS.hist.reloads then
+      modeS:rerun(modeS.hist.reloads)
+      --modeS.hist.reloads = nil
+   end
+
    modeS.action_complete = true
    return modeS
 end

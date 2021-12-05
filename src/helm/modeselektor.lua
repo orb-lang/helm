@@ -482,6 +482,29 @@ end
 
 
 
+
+function ModeS.rerun(modeS, deque)
+   for line in deque:popAll() do
+      -- push it to the edit agent
+      modeS:agent'edit':insert(line)
+      local success, results = modeS.eval(line)
+      -- we don't worry about 'advance' since the lines are from
+      -- the database
+      modeS.hist:append(line, results, success)
+      modeS.hist.cursor = modeS.hist.n + 1
+      modeS:setResults(results)
+      modeS:agent'edit':clear()
+   end
+end
+
+
+
+
+
+
+
+
+
 local rep = assert(string.rep)
 function ModeS.openHelp(modeS)
    modeS:agent'pager':update(("abcde "):rep(1000))
@@ -618,6 +641,14 @@ local function new(max_extent, writer, db)
 
    -- initial state
    modeS:shiftMode(modeS.raga_default)
+
+   -- hackish: we check the historian for a deque of lines to load and if
+   -- we have it, we just eval them into existence.
+   if modeS.hist.reloads then
+      modeS:rerun(modeS.hist.reloads)
+      --modeS.hist.reloads = nil
+   end
+
    modeS.action_complete = true
    return modeS
 end
