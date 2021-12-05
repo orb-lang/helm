@@ -949,6 +949,24 @@ WHERE  run.run_id = :run
 ORDER BY input.time;
 #/sql
 
+#!sql @historian_sql.get_latest_run_lines #asLua
+SELECT input.line AS line
+FROM run
+INNER JOIN input ON input.project == run.project
+
+WHERE run.project = :project
+   AND run.run_id IN
+   ( SELECT run.run_id
+     FROM run
+     WHERE finish_time IS NOT NULL
+     ORDER BY run.start_time DESC limit 1)
+   AND run.start_time <= input.time
+   AND input.time <= run.finish_time
+ORDER BY input.time;
+#/sql
+
+
+
 **** helm_db.historian(conn?)
 
   Returns a table of the necessary prepared statements, and closures, for
