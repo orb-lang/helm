@@ -353,6 +353,19 @@ end
 ```
 
 
+### Historian:close\(\)
+
+This should do everything an Historian wants to do when helm quits\.
+
+Currently, it just saves the end of the run\.
+
+```lua
+function Historian.close(historian)
+   historian.stmts.insert_run_finish :bind(historian.run_id) :step()
+end
+```
+
+
 ### Historian\(helm\_db\)
 
 Creates a new `historian`\.

@@ -422,6 +422,9 @@ in the outer event\-loop code in helm\.orb\)
 ```lua
 function ModeS.quit(modeS)
    -- #todo handle this better--as an event of sorts, maybe?
+   -- @atman: wait, I have an idea!
+   modeS.hist:close()
+   -- this is just to commit the end of the run, right now
    local session = modeS.hist.session
    if session.mode == "macro" and #session > 0 then
       session:save()
@@ -488,9 +491,9 @@ end
 
 ### ModeS:showModal\(text, button\_style\)
 
-Shows a modal dialog with the given text and button stylesee [https://gitlab.com/special-circumstance/helm/-/blob/trunk/doc/md/agent/modal.md](https://gitlab.com/special-circumstance/helm/-/blob/trunk/doc/md/agent/modal.md) for valid button styles\)\.
+Shows a modal dialog with the given text and button style
+\(see [https://gitlab.com/special-circumstance/helm/-/blob/trunk/doc/md/agent/modal.md](https://gitlab.com/special-circumstance/helm/-/blob/trunk/doc/md/agent/modal.md) for valid button styles\)\.
 
-\(
 \#todo
 which point we won't need this method\.
 

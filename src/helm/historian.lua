@@ -359,6 +359,19 @@ end
 
 
 
+function Historian.close(historian)
+   historian.stmts.insert_run_finish :bind(historian.run_id) :step()
+end
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -904,7 +904,7 @@ INSERT INTO run (project) VALUES (:project);
 ```
 
 ```sql
-UPDATE run SET finish = strftime('%Y-%m-%dT%H:%M:%f', 'now')
+UPDATE run SET finish_time = strftime('%Y-%m-%dT%H:%M:%f', 'now')
 WHERE run.run_id == :run
 ;
 ```

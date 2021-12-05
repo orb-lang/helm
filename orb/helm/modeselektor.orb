@@ -422,6 +422,9 @@ in the outer event-loop code in helm.orb)
 #!lua
 function ModeS.quit(modeS)
    -- #todo handle this better--as an event of sorts, maybe?
+   -- @atman: wait, I have an idea!
+   modeS.hist:close()
+   -- this is just to commit the end of the run, right now
    local session = modeS.hist.session
    if session.mode == "macro" and #session > 0 then
       session:save()
