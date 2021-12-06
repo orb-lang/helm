@@ -112,7 +112,7 @@ local function _candidates_from(complete_against)
    repeat
       -- Do not invoke any __pairs metamethod the table may have
       for k, _ in next, complete_against do
-         if isidentifier(k) then
+         if type(k) == 'string' and isidentifier(k) then
             count = count + 1
             candidate_symbols[k] = true
          if count > 500 then
