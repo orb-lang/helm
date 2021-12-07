@@ -44,22 +44,6 @@ EditBase.default_keymaps = {
 
 
 
-local function _insert(modeS, category, value)
-   if modeS:agent'edit':contents() == "" then
-      modeS:agent'results':clear()
-   end
-   modeS:agent'edit':insert(value)
-end
-
-EditBase.ASCII = _insert
-EditBase.UTF8 = _insert
-
-
-
-
-
-
-
 
 function EditBase.getCursorPosition(modeS)
    return modeS.zones.command.bounds:origin() + modeS:agent'edit'.cursor - 1

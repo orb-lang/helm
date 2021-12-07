@@ -211,12 +211,9 @@ end
 #!lua
 ModalAgent.keymap_actions = {
    ESC = "cancel",
-   RETURN = "acceptDefault"
+   RETURN = "acceptDefault",
+   ["[CHARACTER]"] = { method = "letterShortcut", n = 1 }
 }
-for i = 1, 26 do
-   local key = ("abcdefghijklmnopqrstuvwxyz"):sub(i,i)
-   ModalAgent.keymap_actions[key] = { method = "letterShortcut", n = 1 }
-end
 #/lua
 
 

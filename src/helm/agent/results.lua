@@ -52,7 +52,7 @@ end
 
 
 ResultsAgent.keymap_reset = {
-   -- #todo bind to any normal key
+   ["[CHARACTER]"] = "clearOnFirstKey",
    PASTE = "clearOnFirstKey"
 }
 

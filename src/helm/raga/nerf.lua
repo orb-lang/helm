@@ -37,65 +37,41 @@ Nerf.prompt_char = "👉"
 
 
 
-local function _insert(modeS, category, value)
-   if modeS:agent'edit':contents() == "" then
-      modeS:agent'results':clear()
-      if value == "/" then
-         Nerf.shiftMode("search")
-         return
-      end
-      if value == "?" then
-         modeS:openHelp()
-         return
-      end
-   end
-   modeS:agent'edit':insert(value)
-end
-
-Nerf.ASCII = _insert
-Nerf.UTF8 = _insert
-
-
-
-
-
-
-
-local NAV = Nerf.NAV
-
-function _eval(modeS)
-   local line = modeS:agent'edit':contents()
-   local success, results = modeS.eval(line)
+function Nerf.eval(modeS)
+   local line = Nerf.agentMessage("edit", "contents")
+   local success, results = yield{ call = "eval", n = 1, line }
    if not success and results == 'advance' then
-      modeS:agent'edit':endOfText()
-      modeS:agent'edit':nl()
+      Nerf.agentMessage("edit", "endOfText")
+      return false -- Fall through to EditAgent nl binding
    else
-      modeS.hist:append(line, results, success)
-      modeS.hist.cursor = modeS.hist.n + 1
-      modeS:agent'results':update(results)
-      modeS:agent'edit':clear()
+      yield{ sendto = "hist",
+             method = "append",
+             n = 3,
+             line,
+             results,
+             success }
+      yield{ sendto = "hist", method = "toEnd" }
+      Nerf.agentMessage("results", "update", results)
+      Nerf.agentMessage("edit", "clear")
    end
 end
 
-function NAV.RETURN(modeS, category, value)
-   if modeS:agent'edit':shouldEvaluate() then
-      _eval(modeS)
+function Nerf.conditionalEval(modeS, category, value)
+   if Nerf.agentMessage("edit", "shouldEvaluate") then
+      return Nerf.eval(modeS)
    else
-      modeS:agent'edit':nl()
+      return false -- Fall through to EditAgent nl binding
    end
 end
 
-function NAV.CTRL_RETURN(modeS, category, value)
-   _eval(modeS)
-end
-
-function NAV.SHIFT_RETURN(modeS, category, value)
-   modeS:agent'edit':nl()
-end
-
--- Add aliases for terminals not in CSI u mode
-Nerf.CTRL["^\\"] = NAV.CTRL_RETURN
-NAV.ALT_RETURN = NAV.SHIFT_RETURN
+Nerf.keymap_evaluation = {
+   RETURN = "conditionalEval",
+   ["C-RETURN"] = "eval",
+   ["S-RETURN"] = { sendto = "agents.edit", method = "nl" },
+   -- Add aliases for terminals not in CSI u mode
+   ["C-\\"] = "eval",
+   ["M-RETURN"] = { sendto = "agents.edit", method = "nl" }
+}
 
 
 
@@ -127,6 +103,30 @@ function Nerf.historyForward()
    Nerf.agentMessage("results", "update", next_result)
 end
 
+Nerf.keymap_history_navigation = {
+   UP = "historyBack",
+   DOWN = "historyForward"
+}
+
+
+
+
+
+
+function Nerf.openHelpOnFirstKey()
+   if Nerf.agentMessage("edit", "isEmpty") then
+      yield{ method = "openHelp" }
+      return true
+   else
+      return false
+   end
+end
+
+Nerf.keymap_open_help = {
+   ["?"] = "openHelpOnFirstKey"
+}
+
+
 
 
 
@@ -137,7 +137,15 @@ end
 Nerf.default_keymaps = {
    { source = "agents.search", name = "keymap_try_activate" },
    { source = "agents.suggest", name = "keymap_try_activate" },
+   { source = "modeS.raga", name = "keymap_open_help" },
    { source = "agents.results", name = "keymap_reset" },
+
+
+
+
+
+
+   { source = "modeS.raga", name = "keymap_evaluation" },
    { source = "agents.edit", name = "keymap_readline_nav" }
 }
 
@@ -153,12 +161,8 @@ end
 
 
 
-Nerf.keymap_history_navigation = {
-   UP = "historyBack",
-   DOWN = "historyForward"
-}
 insert(Nerf.default_keymaps,
-       { source = "modeS.raga", name = "keymap_history_navigation"})
+       { source = "modeS.raga", name = "keymap_history_navigation" })
 
 
 

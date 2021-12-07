@@ -125,7 +125,7 @@ SearchAgent.keymap_try_activate = {
 
 SearchAgent.keymap_actions = clone(ResultListAgent.keymap_actions)
 for i = 1, 9 do
-   SearchAgent.keymap_actions["M-" .. tostring(i)] = "acceptFromNumberKey"
+   SearchAgent.keymap_actions["M-" .. tostring(i)] = { method = "acceptFromNumberKey", n = 1 }
 end
 SearchAgent.keymap_actions.BACKSPACE = "quitIfNoSearchTerm"
 SearchAgent.keymap_actions.DELETE = "quitIfNoSearchTerm"
