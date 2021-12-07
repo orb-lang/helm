@@ -102,35 +102,29 @@ NAV.ALT_RETURN = NAV.SHIFT_RETURN
 
 
 
--- #todo ugh put this somewhere common and fix the args
-local _agentMessage = assert(require "helm:agent/agent" . agentMessage)
-local function agentMessage(...)
-   return _agentMessage(nil, ...)
-end
-
 function Nerf.historyBack()
    -- If we're at the end of the history (the user was typing a new
    -- expression), save it before moving
    if yield{ sendto = "hist", method = "atEnd" } then
-      local linestash = agentMessage("edit", "contents")
+      local linestash = Nerf.agentMessage("edit", "contents")
       yield{ sendto = "hist", method = "append", n = 1, linestash }
    end
    local prev_line, prev_result = modeS.hist:prev()
-   agentMessage("edit", "update", prev_line)
-   agentMessage("results", "update", prev_result)
+   Nerf.agentMessage("edit", "update", prev_line)
+   Nerf.agentMessage("results", "update", prev_result)
 end
 
 function Nerf.historyForward()
    local new_line, next_result = yield{ sendto = "hist", method = "next" }
    if not new_line then
-      local old_line = agentMessage("edit", "contents")
+      local old_line = Nerf.agentMessage("edit", "contents")
       local added = yield{ sendto = "hist", method = "append", n = 1, old_line }
       if added then
          yield{ sendto = "hist", method = "toEnd" }
       end
    end
-   agentMessage("edit", "update", new_line)
-   agentMessage("results", "update", next_result)
+   Nerf.agentMessage("edit", "update", new_line)
+   Nerf.agentMessage("results", "update", next_result)
 end
 
 
