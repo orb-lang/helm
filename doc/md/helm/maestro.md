@@ -39,32 +39,8 @@ local Maestro = meta {}
 
 ### Maestro:activeKeymap\(\)
 
-Builds a composed keymap from the active keymaps as provided by the raga\.
-A non\-composed keymap looks like:
+Builds a composed keymap from the active keymap references provided by the raga\.
 
-```lua
-{
-   source = "agents.edit",
-   name = "basic_editing_keymap",
-   bindings = {
-      "BACKSPACE" = "deleteBackward"
-      ...
-   }
-}
-```
-
-`bindings` is optional at this stage; if absent, it will be retrieved by
-traversing to the actual `source` \(which is a dotted path starting at
-`maestro`\) and retrieving the property at `name`\.
-
-The composed keymap is similar, except that the values in `bindings` are lists
-of Messages \(whose `sendto` directs them to the `source` of the keymap they
-came from\) representing possible handlers\.
-
-\#todo
-into path\-traversal Messages—like `:agent'edit'` could parse into `{ method =\.
-
-"agent", n = 1, 'edit' }`
 \#todo
 with a \`yield\`ed message? Sticking with the backlink for now because anything
 else is suuuuuuper ugly\.

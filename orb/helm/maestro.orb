@@ -39,31 +39,7 @@ local Maestro = meta {}
 
 *** Maestro:activeKeymap()
 
-Builds a composed keymap from the active keymaps as provided by the raga.
-A non-composed keymap looks like:
-
-#!lua #noKnit
-{
-   source = "agents.edit",
-   name = "basic_editing_keymap",
-   bindings = {
-      "BACKSPACE" = "deleteBackward"
-      ...
-   }
-}
-#/lua
-
-=bindings= is optional at this stage; if absent, it will be retrieved by
-traversing to the actual =source= (which is a dotted path starting at
-=maestro=) and retrieving the property at =name=.
-
-The composed keymap is similar, except that the values in =bindings= are lists
-of Messages (whose =sendto= directs them to the =source= of the keymap they
-came from) representing possible handlers.
-
-#todo It might be nice to have a parser that turns a subset of Lua expressions
-into path-traversal Messages—like =:agent'edit'= could parse into =={ method =
-"agent", n = 1, 'edit' }==.
+Builds a composed keymap from the active keymap references provided by the raga.
 
 #todo Should the raga be a property on =maestro=, or should we retrieve it
 with a `yield`ed message? Sticking with the backlink for now because anything
