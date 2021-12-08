@@ -36,12 +36,11 @@ EditBase.keymap_extra_commands = {
 }
 addall(EditBase.keymap_extra_commands, RagaBase.keymap_extra_commands)
 
-EditBase.default_keymaps = {
-   { source = "agents.edit", name = "keymap_basic_editing" },
-}
-for _, map in ipairs(RagaBase.default_keymaps) do
-   insert(EditBase.default_keymaps, map)
-end
+EditBase.default_keymaps = clone(RagaBase.default_keymaps)
+-- Allow extra commands to preempt basic-editing, e.g. a RETURN binding
+-- should preempt insertion of a newline
+insert(EditBase.default_keymaps,
+   { source = "agents.edit", name = "keymap_basic_editing" })
 
 
 
