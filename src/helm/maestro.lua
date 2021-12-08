@@ -128,10 +128,6 @@ end
 
 
 
-
-
-
-
 local concat = assert(table.concat)
 
 local function is_wildcard_match(wc_evt, evt)
@@ -151,20 +147,10 @@ local function is_wildcard_match(wc_evt, evt)
    return false
 end
 
-local function _dispatchOnly(maestro, event, old_cat_val)
+local function _dispatchOnly(maestro, event)
    local keymap = maestro:activeKeymap()
    local event_string = input_event.serialize(event)
-   -- Handle legacy event first because some legacy cases do multiple things
-   -- and may not be fully migrated even if there is a handler for that event
-   if old_cat_val and maestro.modeS.raga(maestro.modeS, unpack(old_cat_val)) then
-      return 'LEGACY'
-   end
-   local handlers = keymap.bindings[event_string]
-   if handlers then
-      handlers = clone(handlers)
-   else
-      handlers = {}
-   end
+   local handlers = clone(keymap.bindings[event_string] or {})
    for _, wc_dict in ipairs(keymap.wildcards) do
       if is_wildcard_match(wc_dict.pattern, event) then
          insert(handlers, wc_dict.action)
@@ -192,8 +178,8 @@ local function _dispatchOnly(maestro, event, old_cat_val)
    end
 end
 
-function Maestro.dispatch(maestro, event, old_cat_val)
-   local command = _dispatchOnly(maestro, event, old_cat_val)
+function Maestro.dispatch(maestro, event)
+   local command = _dispatchOnly(maestro, event)
    if maestro.agents.edit.contents_changed then
       maestro.modeS.raga.onTxtbufChanged(modeS)
     -- Treat contents_changed as implying cursor_changed

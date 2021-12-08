@@ -121,34 +121,6 @@ RagaBase.keymap_extra_commands = {
 
 
 
-
-
-local hasfield, iscallable = import("core/table", "hasfield", "iscallable")
-
-function RagaBase_meta.__call(raga, modeS, category, value)
-   -- Dispatch on value if possible
-   if hasfield(raga[category], value) then
-      raga[category][value](modeS, category, value)
-   -- Or on category if the whole category is callable
-   elseif iscallable(raga[category]) then
-      raga[category](modeS, category, value)
-   -- Otherwise indicate that we didn't know what to do with the input
-   else
-      return false
-   end
-   return true
-end
-
-
-
-
-
-
-
-
-
-
-
 function RagaBase.getCursorPosition(modeS)
    return nil
 end

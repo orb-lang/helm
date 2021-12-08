@@ -90,7 +90,7 @@ end
 ```
 
 
-### Maestro:dispatch\(event, old\_cat\_val\)
+### Maestro:dispatch\(event\)
 
 Dispatches `event` to the handler\(s\) specified in the active keymaps\. Each
 handler may answer a boolean indicating whether the event should be considered
@@ -110,10 +110,6 @@ commands from executing at all\)\. Partly this makes things easier to implement,
 since a composed keymap can just throw all the wildcards in one pile and not
 worry about where they came from, but it also seems reasonable that they are
 of a lower logical priority than specific bindings\.
-
-For now, we also accept the old \{category, value\} style of event, dispatching
-it to a special LEGACY handler on the raga if no match is found for the
-new\-style event\.
 
 \#todo
 processed to determine arguments to pass to the actual handler\. Not sure
@@ -151,20 +147,10 @@ local function is_wildcard_match(wc_evt, evt)
    return false
 end
 
-local function _dispatchOnly(maestro, event, old_cat_val)
+local function _dispatchOnly(maestro, event)
    local keymap = maestro:activeKeymap()
    local event_string = input_event.serialize(event)
-   -- Handle legacy event first because some legacy cases do multiple things
-   -- and may not be fully migrated even if there is a handler for that event
-   if old_cat_val and maestro.modeS.raga(maestro.modeS, unpack(old_cat_val)) then
-      return 'LEGACY'
-   end
-   local handlers = keymap.bindings[event_string]
-   if handlers then
-      handlers = clone(handlers)
-   else
-      handlers = {}
-   end
+   local handlers = clone(keymap.bindings[event_string] or {})
    for _, wc_dict in ipairs(keymap.wildcards) do
       if is_wildcard_match(wc_dict.pattern, event) then
          insert(handlers, wc_dict.action)
@@ -192,8 +178,8 @@ local function _dispatchOnly(maestro, event, old_cat_val)
    end
 end
 
-function Maestro.dispatch(maestro, event, old_cat_val)
-   local command = _dispatchOnly(maestro, event, old_cat_val)
+function Maestro.dispatch(maestro, event)
+   local command = _dispatchOnly(maestro, event)
    if maestro.agents.edit.contents_changed then
       maestro.modeS.raga.onTxtbufChanged(modeS)
     -- Treat contents_changed as implying cursor_changed
