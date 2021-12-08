@@ -34,31 +34,39 @@ Nerf.prompt_char = "👉"
 #/lua
 
 
+*** Nerf.historianMessage(method_name, args...)
+
+We communicate so much with the Historian that it seems worth a helper similar to `agentMessage`.
+
+#!lua
+function Nerf.historianMessage(method_name, ...)
+   local msg = pack(...)
+   msg.sendto = "hist"
+   msg.method = method_name
+   return yield(msg)
+end
+#/lua
+
 *** Evaluation
 
 #!lua
-function Nerf.eval(modeS)
+function Nerf.eval()
    local line = Nerf.agentMessage("edit", "contents")
    local success, results = yield{ call = "eval", n = 1, line }
    if not success and results == 'advance' then
       Nerf.agentMessage("edit", "endOfText")
       return false -- Fall through to EditAgent nl binding
    else
-      yield{ sendto = "hist",
-             method = "append",
-             n = 3,
-             line,
-             results,
-             success }
-      yield{ sendto = "hist", method = "toEnd" }
+      Nerf.historianMessage("append", line, results, success)
+      Nerf.historianMessage("toEnd")
       Nerf.agentMessage("results", "update", results)
       Nerf.agentMessage("edit", "clear")
    end
 end
 
-function Nerf.conditionalEval(modeS, category, value)
+function Nerf.conditionalEval()
    if Nerf.agentMessage("edit", "shouldEvaluate") then
-      return Nerf.eval(modeS)
+      return Nerf.eval()
    else
       return false -- Fall through to EditAgent nl binding
    end
@@ -81,22 +89,22 @@ Nerf.keymap_evaluation = {
 function Nerf.historyBack()
    -- If we're at the end of the history (the user was typing a new
    -- expression), save it before moving
-   if yield{ sendto = "hist", method = "atEnd" } then
+   if Nerf.historianMessage("atEnd") then
       local linestash = Nerf.agentMessage("edit", "contents")
-      yield{ sendto = "hist", method = "append", n = 1, linestash }
+      Nerf.historianMessage("append", linestash)
    end
-   local prev_line, prev_result = modeS.hist:prev()
+   local prev_line, prev_result = Nerf.historianMessage("prev")
    Nerf.agentMessage("edit", "update", prev_line)
    Nerf.agentMessage("results", "update", prev_result)
 end
 
 function Nerf.historyForward()
-   local new_line, next_result = yield{ sendto = "hist", method = "next" }
+   local new_line, next_result = Nerf.historianMessage("next")
    if not new_line then
       local old_line = Nerf.agentMessage("edit", "contents")
-      local added = yield{ sendto = "hist", method = "append", n = 1, old_line }
+      local added = Nerf.historianMessage("append", old_line)
       if added then
-         yield{ sendto = "hist", method = "toEnd" }
+         Nerf.historianMessage("toEnd")
       end
    end
    Nerf.agentMessage("edit", "update", new_line)
