@@ -26,7 +26,8 @@ local yield = assert(coroutine.yield)
 ## Nerf
 
 ```lua
-local clone    = import("core/table", "clone")
+local core_table = require "core:table"
+local addall, clone = assert(core_table.addall), assert(core_table.clone)
 local EditBase = require "helm:helm/raga/edit"
 
 local Nerf = clone(EditBase, 2)
@@ -119,6 +120,23 @@ Nerf.keymap_history_navigation = {
 ```
 
 
+### Eval\-from\-cursor
+
+```lua
+function Nerf.evalFromCursor()
+   local top = yield{ sendto = "hist", property = "n" }
+   local cursor = yield{ sendto = "hist", property = "cursor" }
+   for i = cursor, top do
+      -- Discard the second return value from :index
+      -- or it will confuse the Txtbuf constructor rather badly
+      local line = Nerf.historianMessage("index", i)
+      Nerf.agentMessage("edit", "update", line)
+      Nerf.eval()
+   end
+end
+```
+
+
 ### Help screen
 
 ```lua
@@ -131,9 +149,11 @@ function Nerf.openHelpOnFirstKey()
    end
 end
 
-Nerf.keymap_open_help = {
-   ["?"] = "openHelpOnFirstKey"
+Nerf.keymap_extra_commands = {
+   ["?"] = "openHelpOnFirstKey",
+   ["M-e"] = "evalFromCursor"
 }
+addall(Nerf.keymap_extra_commands, EditBase.keymap_extra_commands)
 ```
 
 
@@ -146,7 +166,6 @@ certain circumstances, but often allow processing to continue\.
 Nerf.default_keymaps = {
    { source = "agents.search", name = "keymap_try_activate" },
    { source = "agents.suggest", name = "keymap_try_activate" },
-   { source = "modeS.raga", name = "keymap_open_help" },
    { source = "agents.results", name = "keymap_reset" },
 ```
 
@@ -181,29 +200,6 @@ insert(Nerf.default_keymaps,
       { source = "agents.results", name = "keymap_scrolling" })
 ```
 
-
-### ALT
-
-```lua
-local ALT = Nerf.ALT
-```
-
-
-#### M\-e
-
-```lua
-ALT ["M-e"] = function(modeS, category, value)
-   local top = modeS.hist.n
-   local cursor = modeS.hist.cursor
-   for i = cursor, top do
-      -- Discard the second return value from :index
-      -- or it will confuse the Txtbuf constructor rather badly
-      local line = modeS.hist:index(i)
-      modeS:agent'edit':update(line)
-      _eval(modeS)
-   end
-end
-```
 
 ### Nerf\.onCursorChanged\(modeS\), Nerf\.onTxtbufChanged\(modeS\)
 
