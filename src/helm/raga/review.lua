@@ -63,6 +63,8 @@ function Review.onShift(modeS)
    -- think that'll come naturally once we have a raga stack.
    modeS.zones.suggest:hide()
 
+   modeS:setStatusLine("review", session.session_title)
+
    local modal_answer = Review.agentMessage("modal", "answer")
    if modal_answer then
       if modal_answer == "yes" then
@@ -78,6 +80,10 @@ function Review.onShift(modeS)
       modeS:bindZone("results", "session", Sessionbuf, {scrollable = true})
    end
    local premise = modeS:agent'session':selectedPremise()
+   if not premise then
+      modeS:agent'session':selectIndex(1)
+      premise = modeS:agent'session':selectedPremise()
+   end
    modeS:agent'edit':update(premise and premise.title)
 end
 

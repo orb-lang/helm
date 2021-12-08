@@ -577,12 +577,9 @@ local function new(max_extent, writer, db)
    -- If we are loading an existing session, start in review mode
    if session.session_id then
       modeS.raga_default = "review"
-      -- #todo we should probably do this in raga/review.onShift, but...
-      modeS:setStatusLine("review", session.session_title)
    elseif session.session_title then
-      -- ...only if we can move this too, and it's less clear where it
-      -- should go--raga/nerf.onShift is a possibility, but doesn't feel
-      -- like a very good one?
+      -- #todo should probably do this somewhere else--maybe raga/nerf.onShift,
+      -- but it's certainly not Nerf-specific...
       modeS:setStatusLine(
          session.mode == "macro" and "macro" or "new_session",
          session.session_title)
