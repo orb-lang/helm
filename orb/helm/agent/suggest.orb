@@ -248,14 +248,13 @@ function SuggestAgent.acceptOnNonWordChar(agent, event)
    return false
 end
 
+local addall = assert(require "core:table" . addall)
 SuggestAgent.keymap_actions = {
    LEFT            = "acceptAndFallthrough",
    PASTE           = "quitAndFallthrough",
    ["[CHARACTER]"] = { method = "acceptOnNonWordChar", n = 1 }
 }
-for _, binding in ipairs(ResultListAgent.keymap_actions) do
-   insert(SuggestAgent.keymap_actions, binding)
-end
+addall(SuggestAgent.keymap_actions, ResultListAgent.keymap_actions)
 #/lua
 
 

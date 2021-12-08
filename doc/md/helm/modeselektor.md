@@ -324,6 +324,21 @@ end
 ```
 
 
+#### ModeS:setDefaultMode\(raga\_name\)
+
+\#todo
+raga stack session review needs to in order for Modal to work right\. This
+method is here because Messages can't set properties\-\-which, should they be
+able to? It's kinda the odd one out when they can already mimic lots of other
+Lua syntax, but actual use of it is questionable\.\.\.
+
+```lua
+function ModeS.setDefaultMode(modeS, raga_name)
+   modeS.raga_default = raga_name
+end
+```
+
+
 ## act
 
 `act` dispatches a single seq \(which has already been parsed into \(category, value\)
@@ -376,6 +391,21 @@ To keep `act` itself replaceable, we look it up on each call:
 ```lua
 function ModeS.__call(modeS, category, value)
    return modeS:act(category, value)
+end
+```
+
+
+### ModeS:tryAgain\(\)
+
+Causes re\-dispatch of the input event currently being processed by setting
+\`action\_complete = false\`\.
+
+\#todo
+Maestro\.
+
+```lua
+function ModeS.tryAgain(modeS)
+   modeS.action_complete = false
 end
 ```
 

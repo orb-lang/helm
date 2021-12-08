@@ -333,6 +333,21 @@ end
 
 
 
+function ModeS.setDefaultMode(modeS, raga_name)
+   modeS.raga_default = raga_name
+end
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -376,6 +391,21 @@ end
 
 function ModeS.__call(modeS, category, value)
    return modeS:act(category, value)
+end
+
+
+
+
+
+
+
+
+
+
+
+
+function ModeS.tryAgain(modeS)
+   modeS.action_complete = false
 end
 
 

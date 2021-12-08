@@ -5,6 +5,7 @@
 
 
 local clone = assert(require "core:table" . clone)
+local insert = assert(table.insert)
 local yield = assert(coroutine.yield)
 local RagaBase = require "helm:helm/raga/base"
 local Txtbuf = require "helm:buf/txtbuf"
@@ -28,15 +29,19 @@ function EditBase.restartSession()
    yield{ method = "restart" }
 end
 
+local addall = assert(require "core:table" . addall)
 EditBase.keymap_extra_commands = {
    ["C-l"] = "clearTxtbuf",
    ["C-r"] = "restartSession"
 }
+addall(EditBase.keymap_extra_commands, RagaBase.keymap_extra_commands)
 
 EditBase.default_keymaps = {
    { source = "agents.edit", name = "keymap_basic_editing" },
-   { source = "modeS.raga", name = "keymap_extra_commands" }
 }
+for _, map in ipairs(RagaBase.default_keymaps) do
+   insert(EditBase.default_keymaps, map)
+end
 
 
 

@@ -6,7 +6,8 @@ proper raga stack it's the best we can do\.
 
 
 ```lua
-local clone    = import("core/table", "clone")
+local core_table = require "core:table"
+local addall, clone = assert(core_table.addall), assert(core_table.clone)
 local EditBase = require "helm:helm/raga/edit"
 
 local EditTitle = clone(EditBase, 2)
@@ -27,22 +28,23 @@ end
 function EditTitle.quit()
    EditTitle.shiftMode("review")
 end
-```
 
-
-### Keymaps
-
-```lua
 EditTitle.keymap_extra_commands = {
    RETURN = "accept",
    TAB = "accept",
-   ESC = "cancel"
+   ESC = "quit"
 }
-for key, msg in pairs(EditBase.keymap_extra_commands) do
-   EditTitle.keymap_extra_commands[key] = msg
-end
+addall(EditTitle.keymap_extra_commands, EditBase.keymap_extra_commands)
 ```
 
+"Restart" doesn't make sense for us, so remove it from the keymap\.
+
+\#todo
+shared between Vril and Nerf, but those could have an intermediate parent\.
+
+```lua
+EditTitle.keymap_extra_commands["C-r"] = nil
+```
 
 
 ## Quit handler
@@ -51,19 +53,11 @@ Quitting while editing a title still needs to prompt to save the session,
 which we can handle by returning to review mode and retrying\.
 
 ```lua
-EditTitle.CTRL["^Q"] = function(modeS, category, value)
-   _accept(modeS)
-   modeS.action_complete = false
+local yield = assert(coroutine.yield)
+function EditTitle.quitHelm()
+   EditTitle.accept()
+   yield{ method = "tryAgain" }
 end
-```
-
-
-## Ignored commands
-
-"Restart" doesn't make sense for us
-
-```lua
-EditTitle.CTRL["^R"] = nil
 ```
 
 

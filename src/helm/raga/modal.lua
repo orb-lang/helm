@@ -22,6 +22,10 @@ Modal.prompt_char = " "
 Modal.default_keymaps = {
    { source = "agents.modal", name = "keymap_actions" }
 }
+local insert = assert(table.insert)
+for _, map in ipairs(RagaBase.default_keymaps) do
+   insert(Modal.default_keymaps, map)
+end
 
 
 

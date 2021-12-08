@@ -22,8 +22,8 @@ Review.prompt_char = "💬"
 We intercept ^Q to prompt the user whether to save the session before quitting\.
 
 ```lua
-Review.CTRL["^Q"] = function(modeS, category, value)
-   local sesh_title = modeS.hist.session.session_title
+function Review.quitHelm()
+   local sesh_title = yield{ sendto = "hist.session", property = "session_title" }
    Review.agentMessage("modal", "show",
       'Save changes to the session "' .. sesh_title .. '"?',
       "yes_no_cancel")
