@@ -9,7 +9,6 @@
 local SelectionList = require "helm:selection_list"
 local names = require "repr:names"
 local insert, sort = assert(table.insert), assert(table.sort)
-local clone = assert(require "core:table" . clone)
 ```
 
 
@@ -230,10 +229,9 @@ end
 ```lua
 SuggestAgent.keymap_try_activate = {
    TAB = "activateCompletion",
-   SHIFT_TAB = "activateCompletion",
+   ["S-TAB"] = "activateCompletion",
 }
 
-SuggestAgent.keymap_actions = clone(ResultListAgent.keymap_actions)
 function SuggestAgent.acceptAndFallthrough(agent)
    agent:acceptSelected()
    return false
@@ -242,8 +240,21 @@ function SuggestAgent.quitAndFallthrough(agent)
    agent:quit()
    return false
 end
-SuggestAgent.keymap_actions["LEFT"] = "acceptAndFallthrough"
-SuggestAgent.keymap_actions["PASTE"] = "quitAndFallthrough"
+local find = assert(string.find)
+function SuggestAgent.acceptOnNonWordChar(agent, event)
+   if find(event.key, "[^a-zA-Z0-9_]") then
+      agent:acceptSelected()
+   end
+   return false
+end
+
+local addall = assert(require "core:table" . addall)
+SuggestAgent.keymap_actions = {
+   LEFT            = "acceptAndFallthrough",
+   PASTE           = "quitAndFallthrough",
+   ["[CHARACTER]"] = { method = "acceptOnNonWordChar", n = 1 }
+}
+addall(SuggestAgent.keymap_actions, ResultListAgent.keymap_actions)
 ```
 
 

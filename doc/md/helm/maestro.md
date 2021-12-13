@@ -39,32 +39,8 @@ local Maestro = meta {}
 
 ### Maestro:activeKeymap\(\)
 
-Builds a composed keymap from the active keymaps as provided by the raga\.
-A non\-composed keymap looks like:
+Builds a composed keymap from the active keymap references provided by the raga\.
 
-```lua
-{
-   source = "agents.edit",
-   name = "basic_editing_keymap",
-   bindings = {
-      "BACKSPACE" = "deleteBackward"
-      ...
-   }
-}
-```
-
-`bindings` is optional at this stage; if absent, it will be retrieved by
-traversing to the actual `source` \(which is a dotted path starting at
-`maestro`\) and retrieving the property at `name`\.
-
-The composed keymap is similar, except that the values in `bindings` are lists
-of Messages \(whose `sendto` directs them to the `source` of the keymap they
-came from\) representing possible handlers\.
-
-\#todo
-into path\-traversal Messages—like `:agent'edit'` could parse into `{ method =\.
-
-"agent", n = 1, 'edit' }`
 \#todo
 with a \`yield\`ed message? Sticking with the backlink for now because anything
 else is suuuuuuper ugly\.
@@ -80,19 +56,16 @@ local insert = assert(table.insert)
 local clone = assert(require "core:table" . clone)
 local dispatchmessage = assert(require "core:cluster/actor" . dispatchmessage)
 function Maestro.activeKeymap(maestro)
-   local composed_keymap = {}
+   local composed_keymap = { bindings = {}, wildcards = {} }
    local keymap_list = maestro.modeS.raga.default_keymaps
    for _, keymap in ipairs(keymap_list) do
-      if not keymap.bindings then
-         keymap = clone(keymap)
-         keymap.bindings = dispatchmessage(maestro, {
-            sendto = keymap.source,
-            property = keymap.name
-         })
-         assert(keymap.bindings, "Failed to retrieve bindings for " ..
-                  keymap.source .. "." .. keymap.name)
-      end
-      for key, action in pairs(keymap.bindings) do
+      local bindings = dispatchmessage(maestro, {
+         sendto = keymap.source,
+         property = keymap.name
+      })
+      assert(bindings, "Failed to retrieve bindings for " ..
+               keymap.source .. "." .. keymap.name)
+      for key, action in pairs(bindings) do
          -- #todo assert that this is either a string or Message?
          if type(action) == "string" then
             -- See :dispatch()--by leaving out .n, we cause the command to be
@@ -101,9 +74,15 @@ function Maestro.activeKeymap(maestro)
          else
             action = clone(action)
          end
-         action.sendto = keymap.source
-         composed_keymap[key] = composed_keymap[key] or {}
-         insert(composed_keymap[key], action)
+         action.sendto = action.sendto or keymap.source
+         local key_evt = input_event.marshal(key)
+         assert(key_evt, "Failed to parse event string: '" .. key .. "'")
+         if key_evt.type == "wildcard" then
+            insert(composed_keymap.wildcards, { pattern = key_evt, action = action })
+         else
+            composed_keymap.bindings[key] = composed_keymap.bindings[key] or {}
+            insert(composed_keymap.bindings[key], action)
+         end
       end
    end
    return composed_keymap
@@ -111,7 +90,7 @@ end
 ```
 
 
-### Maestro:dispatch\(event, old\_cat\_val\)
+### Maestro:dispatch\(event\)
 
 Dispatches `event` to the handler\(s\) specified in the active keymaps\. Each
 handler may answer a boolean indicating whether the event should be considered
@@ -119,9 +98,18 @@ handled, or whether execution should continue\. Note that we look only for an
 explicit `false` return value to fall through to the next handler\. Any other
 value, specifically including `nil`, stops execution\.
 
-For now, we also accept the old \{category, value\} style of event, dispatching
-it to a special LEGACY handler on the raga if no match is found for the
-new\-style event\.
+\#todo
+they "did something"\-\-successfully moved the cursor or deleted something\. In
+their case we don't always want to fall through\.
+
+Wildcard bindings are checked after all specific bindings, no matter which
+keymap they each come from\. In other words, if we have keymaps A and B, and A
+contains a matching wildcard binding, but B contains a matching specific
+binding, the binding from B wil be executed first \(and may stop subsequent
+commands from executing at all\)\. Partly this makes things easier to implement,
+since a composed keymap can just throw all the wildcards in one pile and not
+worry about where they came from, but it also seems reasonable that they are
+of a lower logical priority than specific bindings\.
 
 \#todo
 processed to determine arguments to pass to the actual handler\. Not sure
@@ -131,35 +119,67 @@ buffering for `vril` this is where we would deal with that\.
 
 \#todo
 active keymaps\) changes during command execution, and the handler wants to
-fall through\. I guess for now, we just retry from the start of the new list,
-relying on the handler to ensure that it is no longer **in** that list and won't
-be executed again? Hard to say what the right thing to do here is\.\.\.
+fall through\. Right now we have the \`modeS\.action\_complete\` mechanism, but I'd
+like to unify and remove that\. The question then is how to manipulate the list
+of remaining handlers\. The only obvious thing is to rebuild the composed
+keymap, redo the lookup, and start over from the beginning of the new list of
+bindings \(which is equivalent to the action\_complete behavior\), relying on the
+handler to ensure that it is no longer **in** that list and won't be executed
+again\. Hard to say what the right thing to do here is\.\.\.
 
 ```lua
-function Maestro.dispatch(maestro, event, old_cat_val)
-   local keymap = maestro:activeKeymap()
-   local event_string = input_event.serialize(event)
-   local command
-   -- Handle legacy event first because some legacy cases do multiple things
-   -- and may not be fully migrated even if there is a handler for that event
-   if old_cat_val and maestro.modeS.raga(maestro.modeS, unpack(old_cat_val)) then
-      command = 'LEGACY'
-   elseif keymap[event_string] then
-      for _, handler in ipairs(keymap[event_string]) do
-         -- #todo ugh, some way to dump a Message to a representative string?
-         -- #todo also, this is assuming that all traversal is done in `sendto`,
-         -- without nested messages--bad assumption, in general
-         command = handler.method or handler.call
-         handler = clone(handler)
-         -- #todo make this waaaaay more flexible
-         if handler.n and handler.n > 0 then
-            handler[handler.n] = event
-         end
-         if dispatchmessage(maestro, handler) ~= false then
-            break
-         end
+local concat = assert(table.concat)
+
+local function is_wildcard_match(wc_evt, evt)
+   if wc_evt.modifiers ~= evt.modifiers then
+      return false
+   end
+   if evt.type == "keypress" then
+      local special = input_event.is_special_key(evt.key)
+      if wc_evt.key == "[CHARACTER]" and not special
+      or wc_evt.key == "[SPECIAL]" and special then
+         return true
       end
    end
+   if wc_evt.key == "[MOUSE]" and evt.type == "mouse" then
+      return true
+   end
+   return false
+end
+
+local function _dispatchOnly(maestro, event)
+   local keymap = maestro:activeKeymap()
+   local event_string = input_event.serialize(event)
+   local handlers = clone(keymap.bindings[event_string] or {})
+   for _, wc_dict in ipairs(keymap.wildcards) do
+      if is_wildcard_match(wc_dict.pattern, event) then
+         insert(handlers, wc_dict.action)
+      end
+   end
+   local tried = {}
+   for _, handler in ipairs(handlers) do
+      handler = clone(handler)
+      -- #todo make this waaaaay more flexible
+      if handler.n and handler.n > 0 then
+         handler[handler.n] = event
+      end
+      -- #todo ugh, some way to dump a Message to a representative string?
+      -- #todo also, this is assuming that all traversal is done in `sendto`,
+      -- without nested messages--bad assumption, in general
+      insert(tried, handler.method or handler.call)
+      if dispatchmessage(maestro, handler) ~= false then
+         break
+      end
+   end
+   if #tried == 0 then
+      return nil
+   else
+      return concat(tried, ", ")
+   end
+end
+
+function Maestro.dispatch(maestro, event)
+   local command = _dispatchOnly(maestro, event)
    if maestro.agents.edit.contents_changed then
       maestro.modeS.raga.onTxtbufChanged(modeS)
     -- Treat contents_changed as implying cursor_changed

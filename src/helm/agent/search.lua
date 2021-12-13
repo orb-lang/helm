@@ -119,16 +119,19 @@ end
 
 
 
+local addall = assert(require "core:table" . addall)
 SearchAgent.keymap_try_activate = {
    ["/"] = "activateOnFirstKey"
 }
 
-SearchAgent.keymap_actions = clone(ResultListAgent.keymap_actions)
+SearchAgent.keymap_actions = {
+   BACKSPACE = "quitIfNoSearchTerm",
+   DELETE = "quitIfNoSearchTerm"
+}
 for i = 1, 9 do
-   SearchAgent.keymap_actions["M-" .. tostring(i)] = "acceptFromNumberKey"
+   SearchAgent.keymap_actions["M-" .. tostring(i)] = { method = "acceptFromNumberKey", n = 1 }
 end
-SearchAgent.keymap_actions.BACKSPACE = "quitIfNoSearchTerm"
-SearchAgent.keymap_actions.DELETE = "quitIfNoSearchTerm"
+addall(SearchAgent.keymap_actions, ResultListAgent.keymap_actions)
 
 
 

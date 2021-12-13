@@ -333,6 +333,9 @@ end
 
 
 
+function ModeS.setDefaultMode(modeS, raga_name)
+   modeS.raga_default = raga_name
+end
 
 
 
@@ -340,14 +343,26 @@ end
 
 
 
-function ModeS.act(modeS, event, old_cat_val)
+
+
+
+
+
+
+
+
+
+
+
+
+function ModeS.act(modeS, event)
    local command
    repeat
       modeS.action_complete = true
       -- The raga may set action_complete to false to cause the command
       -- to be re-processed, most likely after a mode-switch
       local commandThisTime = modeS:processMessagesWhile(function()
-         return modeS.maestro:dispatch(event, old_cat_val)
+         return modeS.maestro:dispatch(event)
       end)
       command = command or commandThisTime
    until modeS.action_complete == true
@@ -355,7 +370,7 @@ function ModeS.act(modeS, event, old_cat_val)
       command = 'NYI'
    end
    -- Inform the input-echo agent of what just happened
-   -- #todo Maestro can do this once legacy commands go away
+   -- #todo Maestro can do this once action_complete goes away
    modeS:agent'input_echo':update(event, command)
    -- Reflow in case command height has changed. Includes a paint.
    -- Don't allow errors encountered here to break this entire
@@ -376,6 +391,21 @@ end
 
 function ModeS.__call(modeS, category, value)
    return modeS:act(category, value)
+end
+
+
+
+
+
+
+
+
+
+
+
+
+function ModeS.tryAgain(modeS)
+   modeS.action_complete = false
 end
 
 
@@ -454,7 +484,8 @@ function ModeS.restart(modeS)
    modeS:paint()
    uv.timer_start(uv.new_timer(), 1500, 0,
                   function()
-                     modeS :setStatusLine 'default' :paint()
+                     modeS:setStatusLine 'default'
+                     modeS:paint()
                   end)
    local restart_idle = uv.new_idle()
    restart_idle:start(function()
@@ -546,12 +577,9 @@ local function new(max_extent, writer, db)
    -- If we are loading an existing session, start in review mode
    if session.session_id then
       modeS.raga_default = "review"
-      -- #todo we should probably do this in raga/review.onShift, but...
-      modeS:setStatusLine("review", session.session_title)
    elseif session.session_title then
-      -- ...only if we can move this too, and it's less clear where it
-      -- should go--raga/nerf.onShift is a possibility, but doesn't feel
-      -- like a very good one?
+      -- #todo should probably do this somewhere else--maybe raga/nerf.onShift,
+      -- but it's certainly not Nerf-specific...
       modeS:setStatusLine(
          session.mode == "macro" and "macro" or "new_session",
          session.session_title)

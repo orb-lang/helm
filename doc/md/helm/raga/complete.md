@@ -13,26 +13,6 @@ Complete.prompt_char = "💬"
 ```
 
 
-## Inserts
-
-```lua
-local find = assert(string.find)
-local function _insert(modeS, category, value)
-   -- Non-symbol character accepts the completion
-   -- #todo should be consistent with lex.orb definition
-   if find(value, "[^a-zA-Z0-9_]") then
-      modeS:agent'suggest':acceptSelected()
-      modeS.action_complete = false
-   else
-      EditBase(modeS, category, value)
-   end
-end
-
-Complete.ASCII = _insert
-Complete.UTF8 = _insert
-```
-
-
 ### Keymaps
 
 ```lua

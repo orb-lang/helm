@@ -324,7 +324,6 @@ function EditAgent.nl(agent)
    insert(agent, cur_row + 1, second)
    agent:contentsChanged()
    agent:setCursor(cur_row + 1, 1)
-   return false
 end
 ```
 
@@ -417,14 +416,16 @@ thus proceeds through :killSelection\(\)
 
 #### EditAgent:killSelection\(\)
 
-Deletes the selected text, if any\. Returns whether anything was deleted
-\(i\.e\. whether anything was initially selected\)\.
+Deletes the selected text, if any\. Returns whether anything was deletedi\.e\. whether anything was initially selected\)\.
 
+\(
 ```lua
 local deleterange = import("core/table", "deleterange")
 function EditAgent.killSelection(agent)
    if not agent:hasSelection() then
-      return false
+      -- #todo communicate that there was nothing to do somehow,
+      -- without falling through to the next command in the keymap
+      return
    end
    agent:contentsChanged()
    local start_col, start_row = agent:selectionStart()
@@ -1005,6 +1006,7 @@ The basic editing commands that are applicable no matter what we're editing\.
 
 ```lua
 EditAgent.keymap_basic_editing = {
+   -- Motions
    UP              = "up",
    DOWN            = "down",
    LEFT            = "left",
@@ -1017,6 +1019,7 @@ EditAgent.keymap_basic_editing = {
    ["C-a"]         = "startOfLine",
    END             = "endOfLine",
    ["C-e"]         = "endOfLine",
+   -- Kills
    BACKSPACE       = "killBackward",
    DELETE          = "killForward",
    ["M-BACKSPACE"] = "killToBeginningOfWord",
@@ -1024,11 +1027,14 @@ EditAgent.keymap_basic_editing = {
    ["M-d"]         = "killToEndOfWord",
    ["C-k"]         = "killToEndOfLine",
    ["C-u"]         = "killToBeginningOfLine",
+   -- Misc editing commands
    ["C-t"]         = "transposeLetter",
+   -- Insertion commands
+   ["[CHARACTER]"] = { method = "selfInsert", n = 1 },
    TAB             = "tab",
+   RETURN          = "nl",
    PASTE           = { method = "evtPaste", n = 1 }
 }
-
 ```
 
 

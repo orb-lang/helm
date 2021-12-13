@@ -25,7 +25,8 @@ local yield = assert(coroutine.yield)
 
 
 
-local clone    = import("core/table", "clone")
+local core_table = require "core:table"
+local addall, clone = assert(core_table.addall), assert(core_table.clone)
 local EditBase = require "helm:helm/raga/edit"
 
 local Nerf = clone(EditBase, 2)
@@ -37,101 +38,122 @@ Nerf.prompt_char = "👉"
 
 
 
-local function _insert(modeS, category, value)
-   if modeS:agent'edit':contents() == "" then
-      modeS:agent'results':clear()
-      if value == "/" then
-         Nerf.shiftMode("search")
-         return
-      end
-      if value == "?" then
-         modeS:openHelp()
-         return
-      end
-   end
-   modeS:agent'edit':insert(value)
+
+
+function Nerf.historianMessage(method_name, ...)
+   local msg = pack(...)
+   msg.sendto = "hist"
+   msg.method = method_name
+   return yield(msg)
 end
 
-Nerf.ASCII = _insert
-Nerf.UTF8 = _insert
 
 
 
 
-
-
-
-local NAV = Nerf.NAV
-
-function _eval(modeS)
-   local line = modeS:agent'edit':contents()
-   local success, results = modeS.eval(line)
+function Nerf.eval()
+   local line = Nerf.agentMessage("edit", "contents")
+   local success, results = yield{ call = "eval", n = 1, line }
    if not success and results == 'advance' then
-      modeS:agent'edit':endOfText()
-      modeS:agent'edit':nl()
+      Nerf.agentMessage("edit", "endOfText")
+      return false -- Fall through to EditAgent nl binding
    else
-      modeS.hist:append(line, results, success)
-      modeS.hist.cursor = modeS.hist.n + 1
-      modeS:agent'results':update(results)
-      modeS:agent'edit':clear()
+      Nerf.historianMessage("append", line, results, success)
+      Nerf.historianMessage("toEnd")
+      Nerf.agentMessage("results", "update", results)
+      Nerf.agentMessage("edit", "clear")
    end
 end
 
-function NAV.RETURN(modeS, category, value)
-   if modeS:agent'edit':shouldEvaluate() then
-      _eval(modeS)
+function Nerf.conditionalEval()
+   if Nerf.agentMessage("edit", "shouldEvaluate") then
+      return Nerf.eval()
    else
-      modeS:agent'edit':nl()
+      return false -- Fall through to EditAgent nl binding
    end
 end
 
-function NAV.CTRL_RETURN(modeS, category, value)
-   _eval(modeS)
-end
-
-function NAV.SHIFT_RETURN(modeS, category, value)
-   modeS:agent'edit':nl()
-end
-
--- Add aliases for terminals not in CSI u mode
-Nerf.CTRL["^\\"] = NAV.CTRL_RETURN
-NAV.ALT_RETURN = NAV.SHIFT_RETURN
+Nerf.keymap_evaluation = {
+   RETURN = "conditionalEval",
+   ["C-RETURN"] = "eval",
+   ["S-RETURN"] = { sendto = "agents.edit", method = "nl" },
+   -- Add aliases for terminals not in CSI u mode
+   ["C-\\"] = "eval",
+   ["M-RETURN"] = { sendto = "agents.edit", method = "nl" }
+}
 
 
 
 
 
-
--- #todo ugh put this somewhere common and fix the args
-local _agentMessage = assert(require "helm:agent/agent" . agentMessage)
-local function agentMessage(...)
-   return _agentMessage(nil, ...)
-end
 
 function Nerf.historyBack()
    -- If we're at the end of the history (the user was typing a new
    -- expression), save it before moving
-   if yield{ sendto = "hist", method = "atEnd" } then
-      local linestash = agentMessage("edit", "contents")
-      yield{ sendto = "hist", method = "append", n = 1, linestash }
+   if Nerf.historianMessage("atEnd") then
+      local linestash = Nerf.agentMessage("edit", "contents")
+      Nerf.historianMessage("append", linestash)
    end
-   local prev_line, prev_result = modeS.hist:prev()
-   agentMessage("edit", "update", prev_line)
-   agentMessage("results", "update", prev_result)
+   local prev_line, prev_result = Nerf.historianMessage("prev")
+   Nerf.agentMessage("edit", "update", prev_line)
+   Nerf.agentMessage("results", "update", prev_result)
 end
 
 function Nerf.historyForward()
-   local new_line, next_result = yield{ sendto = "hist", method = "next" }
+   local new_line, next_result = Nerf.historianMessage("next")
    if not new_line then
-      local old_line = agentMessage("edit", "contents")
-      local added = yield{ sendto = "hist", method = "append", n = 1, old_line }
+      local old_line = Nerf.agentMessage("edit", "contents")
+      local added = Nerf.historianMessage("append", old_line)
       if added then
-         yield{ sendto = "hist", method = "toEnd" }
+         Nerf.historianMessage("toEnd")
       end
    end
-   agentMessage("edit", "update", new_line)
-   agentMessage("results", "update", next_result)
+   Nerf.agentMessage("edit", "update", new_line)
+   Nerf.agentMessage("results", "update", next_result)
 end
+
+Nerf.keymap_history_navigation = {
+   UP = "historyBack",
+   DOWN = "historyForward"
+}
+
+
+
+
+
+
+function Nerf.evalFromCursor()
+   local top = yield{ sendto = "hist", property = "n" }
+   local cursor = yield{ sendto = "hist", property = "cursor" }
+   for i = cursor, top do
+      -- Discard the second return value from :index
+      -- or it will confuse the Txtbuf constructor rather badly
+      local line = Nerf.historianMessage("index", i)
+      Nerf.agentMessage("edit", "update", line)
+      Nerf.eval()
+   end
+end
+
+
+
+
+
+
+function Nerf.openHelpOnFirstKey()
+   if Nerf.agentMessage("edit", "isEmpty") then
+      yield{ method = "openHelp" }
+      return true
+   else
+      return false
+   end
+end
+
+Nerf.keymap_extra_commands = {
+   ["?"] = "openHelpOnFirstKey",
+   ["M-e"] = "evalFromCursor"
+}
+addall(Nerf.keymap_extra_commands, EditBase.keymap_extra_commands)
+
 
 
 
@@ -144,6 +166,13 @@ Nerf.default_keymaps = {
    { source = "agents.search", name = "keymap_try_activate" },
    { source = "agents.suggest", name = "keymap_try_activate" },
    { source = "agents.results", name = "keymap_reset" },
+
+
+
+
+
+
+   { source = "modeS.raga", name = "keymap_evaluation" },
    { source = "agents.edit", name = "keymap_readline_nav" }
 }
 
@@ -159,12 +188,8 @@ end
 
 
 
-Nerf.keymap_history_navigation = {
-   UP = "historyBack",
-   DOWN = "historyForward"
-}
 insert(Nerf.default_keymaps,
-       { source = "modeS.raga", name = "keymap_history_navigation"})
+       { source = "modeS.raga", name = "keymap_history_navigation" })
 
 
 
@@ -173,29 +198,6 @@ insert(Nerf.default_keymaps,
 insert(Nerf.default_keymaps,
       { source = "agents.results", name = "keymap_scrolling" })
 
-
-
-
-
-
-local ALT = Nerf.ALT
-
-
-
-
-
-
-ALT ["M-e"] = function(modeS, category, value)
-   local top = modeS.hist.n
-   local cursor = modeS.hist.cursor
-   for i = cursor, top do
-      -- Discard the second return value from :index
-      -- or it will confuse the Txtbuf constructor rather badly
-      local line = modeS.hist:index(i)
-      modeS:agent'edit':update(line)
-      _eval(modeS)
-   end
-end
 
 
 
