@@ -27,7 +27,9 @@ local yield = assert(coroutine.yield)
 
 ```lua
 local core_table = require "core:table"
-local addall, clone = assert(core_table.addall), assert(core_table.clone)
+local addall, clone, splice = assert(core_table.addall),
+                              assert(core_table.clone),
+                              assert(core_table.splice)
 local EditBase = require "helm:helm/raga/edit"
 
 local Nerf = clone(EditBase, 2)
@@ -178,12 +180,10 @@ Readline\-compatible navigation\.
 }
 ```
 
-Then the inherited basic editing commands\.
+Then the inherited basic editing commands etc\.
 
 ```lua
-for _, map in ipairs(EditBase.default_keymaps) do
-   insert(Nerf.default_keymaps, map)
-end
+splice(Nerf.default_keymaps, EditBase.default_keymaps)
 ```
 
 History navigation is a fallback from cursor movement\.

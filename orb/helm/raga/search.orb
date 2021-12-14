@@ -2,7 +2,8 @@
 
 
 #!lua
-local clone = import("core/table", "clone")
+local core_table = require "core:table"
+local clone, splice = assert(core_table.clone), assert(core_table.splice)
 local EditBase = require "helm/raga/edit"
 local Resbuf = require "helm:buf/resbuf"
 
@@ -20,10 +21,7 @@ Search.default_keymaps = {
    { source = "agents.search", name = "keymap_selection" },
    { source = "agents.search", name = "keymap_actions" }
 }
-local insert = assert(table.insert)
-for _, v in ipairs(EditBase.default_keymaps) do
-   insert(Search.default_keymaps, v)
-end
+splice(Search.default_keymaps, EditBase.default_keymaps)
 #/lua
 
 

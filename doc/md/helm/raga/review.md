@@ -3,8 +3,8 @@
 Raga for reviewing a previously\-saved session\.
 
 ```lua
-local clone = assert(require "core:table" . clone)
-local insert = assert(table.insert)
+local core_table = require "core:table"
+local clone, splice = assert(core_table.clone), assert(core_table.splice)
 local yield = assert(coroutine.yield)
 local RagaBase = require "helm:raga/base"
 local Sessionbuf = require "helm:buf/sessionbuf"
@@ -38,9 +38,7 @@ Review.default_keymaps = {
    { source = "agents.session", name = "keymap_default"},
    { source = "agents.session.results_agent", name = "keymap_scrolling"}
 }
-for _, map in ipairs(RagaBase.default_keymaps) do
-   insert(Review.default_keymaps, map)
-end
+splice(Review.default_keymaps, RagaBase.default_keymaps)
 ```
 
 
