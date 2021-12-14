@@ -3,8 +3,8 @@
 
 
 
-local insert = assert(table.insert)
-local clone = import("core/table", "clone")
+local core_table = require "core:table"
+local clone, splice = assert(core_table.clone), assert(core_table.splice)
 local RagaBase = require "helm:helm/raga/base"
 
 
@@ -23,9 +23,7 @@ Page.default_keymaps = {
    { source = "agents.pager", name = "keymap_actions" },
    { source = "agents.pager", name = "keymap_scrolling" }
 }
-for _, map in ipairs(RagaBase.default_keymaps) do
-   insert(Page.default_keymaps, map)
-end
+splice(Page.default_keymaps, RagaBase.default_keymaps)
 
 
 

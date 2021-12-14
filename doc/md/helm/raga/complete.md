@@ -3,7 +3,8 @@
 Handles choosing and accepting a suggestion from `suggest`\.
 
 ```lua
-local clone = import("core/table", "clone")
+local core_table = require "core:table"
+local clone, splice = assert(core_table.clone), assert(core_table.splice)
 local EditBase = require "helm/raga/edit"
 
 local Complete = clone(EditBase, 2)
@@ -20,10 +21,7 @@ Complete.default_keymaps = {
    { source = "agents.suggest", name = "keymap_selection" },
    { source = "agents.suggest", name = "keymap_actions"}
 }
-local insert = assert(table.insert)
-for _, v in ipairs(EditBase.default_keymaps) do
-   insert(Complete.default_keymaps, v)
-end
+splice(Complete.default_keymaps, EditBase.default_keymaps)
 ```
 
 
