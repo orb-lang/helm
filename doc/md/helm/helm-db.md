@@ -10,6 +10,25 @@ database\.
 ```lua
 local uv  = require "luv"
 local sql = assert(sql, "sql must be in bridge _G")
+local insert = assert(table.insert)
+```
+
+
+##### Arcivist
+
+  Helm has the second database design in the bridge deck, after
+`bridge.modules`\.  Unlike the latter, we've performed several migrations, and
+built two distinct collections of prepared statements for interacting with the
+database\.
+
+The machinery for doing this in a disciplined and reproducible fashion has
+moved to 
+
+\{†\}:  This project is called [sqlun](https://gitlab.com/special-circumstance/helm/-/blob/trunk/doc/md/sqlun/arcivist.md) at the moment, but
+      I'm not especially fond of that name\.
+
+```lua
+local Arcivist = require "sqlun:arcivist"
 ```
 
 
@@ -17,68 +36,18 @@ local sql = assert(sql, "sql must be in bridge _G")
 
 ```lua
 local helm_db = {}
+-- this replaces helm_db
+local helm_arc = Arcivist("/helm/helm.sqlite", "helm", 'HELM_HOME')
 ```
 
 
-#### helm\_db\_home
+### Schema
+
+The layout of this code owes more to the history of this module than it does
+the intended best practice for constructing SQLite databases using Arcivist\.
 
 ```lua
-local helm_db_home =  os.getenv 'HELM_HOME'
-                      or _Bridge.bridge_home .. "/helm/helm.sqlite"
-helm_db.helm_db_home = helm_db_home
-```
-
-
-#### \_conns
-
-A weak table to hold conns, keyed by string path\.
-
-This does mean we can only have one in\-memory database `""` at a time, which
-should be okay\.
-
-```lua
-local _conns = setmetatable({}, { __mode = 'v' })
-```
-
-
-#### \_resolveConn\(conn\)
-
-A helper function to retrieve a conn if we already have one\.
-
-Doesn't build a conn if it can't find one, and presumes that non\-string
-parameters are already conns\.
-
-```lua
-local function _resolveConn(conn)
-   if conn then
-      if type(conn) == 'string' then
-         return _conns[conn]
-      else
-         return conn
-      end
-   end
-   return nil
-end
-```
-
-
-#### \_openConn\(conn\_handle?\)
-
-Returns an open conn, defaults to `helm_db_home`, will reuse existing conns if
-it has them\.
-
-```lua
-local function _openConn(conn_handle)
-   if not conn_handle then
-      conn_handle = helm_db_home
-   end
-   local conn = _resolveConn(conn_handle)
-   if not conn then
-      conn = helm_db.boot(conn_handle)
-   end
-   assert(conn, "no conn! " .. conn_handle)
-   return conn
-end
+local helm_schema = Arcivist.schema()
 ```
 
 
@@ -220,56 +189,32 @@ CREATE TABLE IF NOT EXISTS repl (
 
 ### Migrations
 
-  We follow a simple format for migrations, incrementing the `user_version`
-pragma by 1 for each alteration of the schema\.
-
-We write a single function, which receives the database conn, for each change,
-such that we should be able to take a database at any schema and bring it up
-to the standard needed for this version of `helm`\.
-
-We store these migrations in an array, such that `migration[i]` creates
-`user_version` `i`\.
-
-We skip `1` because a pragma equal to 1 is translated to the boolean `true`\.
-
-Migrations return `true`, in case we find a migration that needs a check to
-pass\.  Unless that happens, we won't bother to check the return value\.
-
 ```lua
-helm_db.HELM_DB_VERSION = 3
-
-local migrations = {function() return true end}
-helm_db.migrations = migrations
+local migration = Arcivist.migration
 ```
 
 
 #### Version 2: Creates tables\.
 
 ```lua
-local insert = assert(table.insert)
-
-local migration_2 = {
-   create_project_table,
-   create_result_table,
-   create_repl_table,
-   create_session_table
-}
-
-insert(migrations, migration_2)
+helm_schema :addMigration(migration(create_project_table,
+                                    create_result_table,
+                                    create_repl_table,
+                                    create_session_table))
 ```
 
 
 #### Version 3: Millisecond\-resolution timestamps\.
 
   We want to accomplish two things here: change the format of all existing
-timestamps, and change the default to have millisecond resolution and useT" instead of " " as the separator\.
+timestamps, and change the default to have millisecond resolution and use
+"T" instead of " " as the separator\.
 
-"
 SQLite being what it is, the latter requires us to copy everything to a new
 table\.  This must be done for the `project` and `repl` tables\.
 
 ```lua
-local migration_3 = {}
+local migration_3 = migration()
 ```
 
 ```sql
@@ -321,7 +266,7 @@ RENAME to repl;
 ```
 
 ```lua
-insert(migrations, migration_3)
+helm_schema:addMigration(migration_3)
 ```
 
 
@@ -349,7 +294,7 @@ We'll want to add additional affordances for easy testing, which will be
 documented elsewhere\.
 
 ```lua
-local migration_4 = {}
+local migration_4 = migration()
 ```
 
 ```sql
@@ -359,8 +304,10 @@ DROP TABLE session;
 ```lua
 insert(migration_4, create_session_table_4)
 insert(migration_4, create_premise_table)
+```
 
-insert(migrations, migration_4)
+```lua
+helm_schema:addMigration(migration_4)
 ```
 
 
@@ -369,8 +316,7 @@ insert(migrations, migration_4)
 The primary change in this migration is to store results uniquely by hash\.
 
 ```lua
-local migration_5 = {}
-insert(migrations, migration_5)
+local migration_5 = migration()
 ```
 
 
@@ -627,13 +573,15 @@ But I must have a few hundred copies of `uv` alone in there, and this halved
 the number of results in my database\.  We'll see\.  The motive here is less
 optimization, and more good architecture\.
 
+```lua
+helm_schema:addMigration(migration_5)
+```
+
 
 #### Version 6: run table
 
 ```lua
-local migration_6 = {}
-
-insert(migrations, migration_6)
+local migration_6 = migration()
 ```
 
 It has become clear that we need a concept of a 'run', distinct from sessions\.
@@ -803,8 +751,11 @@ insert(migration_6, create_error_string_table)
 insert(migration_6, create_error_string_idx)
 ```
 
+```lua
+helm_schema:addMigration(migration_6)
+```
 
-### Future Migrations
+##### Future Migrations
 
 Right now, `helm` is omokase: you get some readline commands, and you get the
 colors we give you, and that's that\.
@@ -838,34 +789,6 @@ I dunno\. I've been waffling on this for months\. Ah well\.
   We retain the conns within the `helm_db` singleton, returning a proxy table
 to consumers, which can be indexed to obtain fresh prepared statements\.
 
-These tables will also be equipped with functions which close over the conn to
-execute operations, particularly transactions, which require the use of
-`conn:exec`\.
-
-```lua
-local function _prepareStatements(conn, stmts)
-   return function(_, key)
-      if stmts[key] then
-         return conn:prepare(stmts[key])
-      else
-         error("Don't have a statement " .. key .. " to prepare.")
-      end
-   end
-end
-
-local function _readOnly(_, key, value)
-   error ("can't assign to prepared statements table, key: " .. key
-          .. " value: " .. value)
-end
-
-local lastRowId = assert(sql.lastRowId)
-function _makeProxy(conn, stmts)
-   return setmetatable({ lastRowId = function() return lastRowId(conn) end },
-                       { __index = _prepareStatements(conn, stmts),
-                         __newindex = _readOnly })
-end
-```
-
 
 ### Historian
 
@@ -877,7 +800,6 @@ savepoints to operate [historian](https://gitlab.com/special-circumstance/helm/-
 
 ```lua
 local historian_sql = {}
-helm_db.historian_sql = historian_sql
 ```
 
 
@@ -928,16 +850,26 @@ ORDER BY result.result_id;
 ```
 
 
-#### helm\_db\.historian\(conn?\)
-
-  Returns a table of the necessary prepared statements, and closures, for
-`historian` to conduct database operations\.  `conn` defaults to the system
-helm\_db\.
+### helm\_schema:addStatements\("historian", historian\_sql\)
 
 ```lua
-function helm_db.historian(conn_handle)
-   local conn = _openConn(conn_handle)
-   local hist_proxy = _makeProxy(conn, historian_sql)
+helm_schema:addStatements("historian", historian_sql)
+```
+
+
+#### helm\_arc\.historian\(\)
+
+This is a wrapper around the now\-correct way to do it, which is to ask for
+`helm_arc:proxy "historian"`\.  Doing this properly is a later step\.
+
+These can all be prepared statements which don't have any bindings, that's
+literally all that `conn:exec` does, is call `resultset` on a prepared
+statement without using `bind`\.
+
+```lua
+function helm_arc.historian()
+   local hist_proxy = helm_arc:proxy "historian"
+   local conn = helm_arc.conn
    rawset(hist_proxy, "savepoint_persist",
           function()
             conn:exec "SAVEPOINT save_persist"
@@ -1182,10 +1114,21 @@ AND
 ;
 ```
 
+#### helm\_schema:addStatements\("session", session\_sql\)
+
 ```lua
-function helm_db.session(conn_handle)
-   local conn = _openConn(conn_handle)
-   local stmts =  _makeProxy(conn, session_sql)
+helm_schema:addStatements("session", session_sql)
+```
+
+
+#### helm\_arc\.session
+
+Same basic shim as for `historian`\.
+
+```lua
+function helm_arc.session()
+   local stmts =  helm_arc:proxy "session"
+   local conn = helm_arc.conn
    rawset(stmts, "get_project_info",
           function()
              return conn:exec(session_get_project_info)
@@ -1203,87 +1146,15 @@ end
 ```
 
 
-### boot\(conn\_handle?\)
+## Apply Schema
 
-`boot` takes an open `historian.conn`, or a file path, and brings it up to
-speed\.
-
-Returns the conn, or errors and exits the program\.
+This brings up the database\.
 
 ```lua
-local assertfmt = require "core:core/string" . assertfmt
-local format = assert(string.format)
-local boot = assert(sql.boot)
-
-
-function helm_db.boot(conn_handle)
-   local conn = _resolveConn(conn_handle)
-   if not conn then
-      conn_handle = helm_db_home
-      conn = boot(conn_handle, migrations)
-      _conns[conn_handle] = conn
-   end
-
-   return conn
-end
-```
-
-
-### close\(conn\_handle?\)
-
-Closes the given conn or conn\-string, defaulting to the helm\_db\_home conn\.
-
-```lua
-function helm_db.close(conn_handle)
-   local conn = _resolveConn(conn_handle)
-   if not conn then
-      conn = _conns[helm_db_home]
-      conn_handle = helm_db_home
-   end
-   if not conn then return end
-   pcall(conn.pragma.wal_checkpoint, "0") -- 0 == SQLITE_CHECKPOINT_PASSIVE
-   -- set up an idler to close the conn, so that e.g. busy
-   -- exceptions don't blow up the hook
-   local close_idler = uv.new_idle()
-   close_idler:start(function()
-      local success = pcall(conn.close, conn)
-      if not success then
-         return nil
-      else
-         -- we don't want to rely on GC to prevent closing a conn twice
-         _conns[conn_handle] = nil
-         close_idler:stop()
-      end
-   end)
-end
-```
-
-
-### conn\(conn\_handle?\)
-
-Retrieve a conn, defaulting as usual to `helm_db_home`, if one already exists\.
-
-Primarily for use at the REPL\.
-
-```lua
-function helm_db.conn(conn_handle)
-   conn_handle = conn_handle or helm_db_home
-   return _conns[conn_handle]
-end
-```
-
-
-#### protect helm\_db
-
-As a singleton, it should be read only\.
-
-```lua
-setmetatable(helm_db, { __newindex = function()
-                                        error "cannnot assign to helm_db"
-                                     end })
+helm_arc:apply(helm_schema)
 ```
 
 
 ```lua
-return helm_db
+return helm_arc
 ```

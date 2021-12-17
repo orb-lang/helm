@@ -373,7 +373,7 @@ local retcode =  uv.run('default')
 
 -- Shut down the database conn:
 local helm_db = require "helm:helm/helm-db"
-helm_db.close()
+helm_db:close()
 
 
 retcode = uv.run 'default'

@@ -10,6 +10,25 @@
 
 local uv  = require "luv"
 local sql = assert(sql, "sql must be in bridge _G")
+local insert = assert(table.insert)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local Arcivist = require "sqlun:arcivist"
 
 
 
@@ -17,15 +36,8 @@ local sql = assert(sql, "sql must be in bridge _G")
 
 
 local helm_db = {}
-
-
-
-
-
-
-local helm_db_home =  os.getenv 'HELM_HOME'
-                      or _Bridge.bridge_home .. "/helm/helm.sqlite"
-helm_db.helm_db_home = helm_db_home
+-- this replaces helm_db
+local helm_arc = Arcivist("/helm/helm.sqlite", "helm", 'HELM_HOME')
 
 
 
@@ -35,50 +47,7 @@ helm_db.helm_db_home = helm_db_home
 
 
 
-
-
-local _conns = setmetatable({}, { __mode = 'v' })
-
-
-
-
-
-
-
-
-
-
-
-local function _resolveConn(conn)
-   if conn then
-      if type(conn) == 'string' then
-         return _conns[conn]
-      else
-         return conn
-      end
-   end
-   return nil
-end
-
-
-
-
-
-
-
-
-
-local function _openConn(conn_handle)
-   if not conn_handle then
-      conn_handle = helm_db_home
-   end
-   local conn = _resolveConn(conn_handle)
-   if not conn then
-      conn = helm_db.boot(conn_handle)
-   end
-   assert(conn, "no conn! " .. conn_handle)
-   return conn
-end
+local helm_schema = Arcivist.schema()
 
 
 
@@ -221,6 +190,17 @@ CREATE TABLE IF NOT EXISTS repl (
 
 
 
+local migration = Arcivist.migration
+
+
+
+
+
+
+helm_schema :addMigration(migration(create_project_table,
+                                    create_result_table,
+                                    create_repl_table,
+                                    create_session_table))
 
 
 
@@ -234,42 +214,7 @@ CREATE TABLE IF NOT EXISTS repl (
 
 
 
-
-
-helm_db.HELM_DB_VERSION = 3
-
-local migrations = {function() return true end}
-helm_db.migrations = migrations
-
-
-
-
-
-
-local insert = assert(table.insert)
-
-local migration_2 = {
-   create_project_table,
-   create_result_table,
-   create_repl_table,
-   create_session_table
-}
-
-insert(migrations, migration_2)
-
-
-
-
-
-
-
-
-
-
-
-
-
-local migration_3 = {}
+local migration_3 = migration()
 
 
 migration_3[1] = [[
@@ -321,7 +266,7 @@ RENAME to repl;
 ]]
 
 
-insert(migrations, migration_3)
+helm_schema:addMigration(migration_3)
 
 
 
@@ -349,7 +294,7 @@ insert(migrations, migration_3)
 
 
 
-local migration_4 = {}
+local migration_4 = migration()
 
 
 migration_4[1] = [[
@@ -360,7 +305,9 @@ DROP TABLE session;
 insert(migration_4, create_session_table_4)
 insert(migration_4, create_premise_table)
 
-insert(migrations, migration_4)
+
+
+helm_schema:addMigration(migration_4)
 
 
 
@@ -369,8 +316,7 @@ insert(migrations, migration_4)
 
 
 
-local migration_5 = {}
-insert(migrations, migration_5)
+local migration_5 = migration()
 
 
 
@@ -628,12 +574,14 @@ end
 
 
 
+helm_schema:addMigration(migration_5)
 
 
 
-local migration_6 = {}
 
-insert(migrations, migration_6)
+
+
+local migration_6 = migration()
 
 
 
@@ -804,6 +752,7 @@ insert(migration_6, create_error_string_idx)
 
 
 
+helm_schema:addMigration(migration_6)
 
 
 
@@ -838,32 +787,6 @@ insert(migration_6, create_error_string_idx)
 
 
 
-
-
-
-
-
-local function _prepareStatements(conn, stmts)
-   return function(_, key)
-      if stmts[key] then
-         return conn:prepare(stmts[key])
-      else
-         error("Don't have a statement " .. key .. " to prepare.")
-      end
-   end
-end
-
-local function _readOnly(_, key, value)
-   error ("can't assign to prepared statements table, key: " .. key
-          .. " value: " .. value)
-end
-
-local lastRowId = assert(sql.lastRowId)
-function _makeProxy(conn, stmts)
-   return setmetatable({ lastRowId = function() return lastRowId(conn) end },
-                       { __index = _prepareStatements(conn, stmts),
-                         __newindex = _readOnly })
-end
 
 
 
@@ -877,7 +800,6 @@ end
 
 
 local historian_sql = {}
-helm_db.historian_sql = historian_sql
 
 
 
@@ -931,13 +853,23 @@ ORDER BY result.result_id;
 
 
 
+helm_schema:addStatements("historian", historian_sql)
 
 
 
 
-function helm_db.historian(conn_handle)
-   local conn = _openConn(conn_handle)
-   local hist_proxy = _makeProxy(conn, historian_sql)
+
+
+
+
+
+
+
+
+
+function helm_arc.historian()
+   local hist_proxy = helm_arc:proxy "historian"
+   local conn = helm_arc.conn
    rawset(hist_proxy, "savepoint_persist",
           function()
             conn:exec "SAVEPOINT save_persist"
@@ -1183,9 +1115,20 @@ AND
 ]]
 
 
-function helm_db.session(conn_handle)
-   local conn = _openConn(conn_handle)
-   local stmts =  _makeProxy(conn, session_sql)
+
+
+helm_schema:addStatements("session", session_sql)
+
+
+
+
+
+
+
+
+function helm_arc.session()
+   local stmts =  helm_arc:proxy "session"
+   local conn = helm_arc.conn
    rawset(stmts, "get_project_info",
           function()
              return conn:exec(session_get_project_info)
@@ -1208,82 +1151,10 @@ end
 
 
 
-
-
-
-local assertfmt = require "core:core/string" . assertfmt
-local format = assert(string.format)
-local boot = assert(sql.boot)
-
-
-function helm_db.boot(conn_handle)
-   local conn = _resolveConn(conn_handle)
-   if not conn then
-      conn_handle = helm_db_home
-      conn = boot(conn_handle, migrations)
-      _conns[conn_handle] = conn
-   end
-
-   return conn
-end
+helm_arc:apply(helm_schema)
 
 
 
 
-
-
-
-
-function helm_db.close(conn_handle)
-   local conn = _resolveConn(conn_handle)
-   if not conn then
-      conn = _conns[helm_db_home]
-      conn_handle = helm_db_home
-   end
-   if not conn then return end
-   pcall(conn.pragma.wal_checkpoint, "0") -- 0 == SQLITE_CHECKPOINT_PASSIVE
-   -- set up an idler to close the conn, so that e.g. busy
-   -- exceptions don't blow up the hook
-   local close_idler = uv.new_idle()
-   close_idler:start(function()
-      local success = pcall(conn.close, conn)
-      if not success then
-         return nil
-      else
-         -- we don't want to rely on GC to prevent closing a conn twice
-         _conns[conn_handle] = nil
-         close_idler:stop()
-      end
-   end)
-end
-
-
-
-
-
-
-
-
-
-
-function helm_db.conn(conn_handle)
-   conn_handle = conn_handle or helm_db_home
-   return _conns[conn_handle]
-end
-
-
-
-
-
-
-
-
-setmetatable(helm_db, { __newindex = function()
-                                        error "cannnot assign to helm_db"
-                                     end })
-
-
-
-
-return helm_db
+return helm_arc
 
