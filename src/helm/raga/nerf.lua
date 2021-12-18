@@ -70,7 +70,9 @@ function Nerf.eval()
    local line = yieldMessage {'edit',
                                method = 'agent',
                                message = { method = 'contents'} }
-   local success, results = yield{ call = "eval", n = 1, line }
+
+   local success, results = yieldMessage { call = "eval", line }
+
    if not success and results == 'advance' then
       yieldMessage {'edit',
                     method = 'agent',
@@ -81,12 +83,12 @@ function Nerf.eval()
                      method = 'append',
                      line, results, success }
 
-      Nerf.historianMessage("toEnd")
+      yieldMessage { sendto = 'hist', method = 'toEnd' }
 
       yieldMessage {'results',
                     method = 'agent',
-                    message = { method = 'update',
-                                results} }
+                    message = { method = 'update', results} }
+
       yieldMessage {'edit',
                      method = 'agent',
                      message = { method = 'clear'} }
@@ -94,7 +96,9 @@ function Nerf.eval()
 end
 
 function Nerf.conditionalEval()
-   if Nerf.agentMessage("edit", "shouldEvaluate") then
+   if yieldMessage {'edit',
+                     method = 'agent',
+                     message = { method = 'shouldEvaluate'} } then
       return Nerf.eval()
    else
       return false -- Fall through to EditAgent nl binding
