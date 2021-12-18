@@ -46,7 +46,7 @@ Turns `tab` into a message and `yield` s it\.
 
 ```lua
 local function yieldMessage(tab)
-   yield(Message(tab))
+   return yield(Message(tab))
 end
 ```
 
@@ -68,20 +68,25 @@ end
 
 ```lua
 function Nerf.eval()
-   local line = Nerf.agentMessage("edit", "contents")
+   local line = yieldMessage {'edit',
+                               method = 'agent',
+                               message = { method = 'contents'} }
    local success, results = yield{ call = "eval", n = 1, line }
    if not success and results == 'advance' then
-      Nerf.agentMessage("edit", "endOfText")
+      yieldMessage {'edit',
+                    method = 'agent',
+                    message = { method = 'endOfText'} }
       return false -- Fall through to EditAgent nl binding
    else
-      Nerf.historianMessage("append", line, results, success)
+      yieldMessage { sendto = 'hist',
+                     method = 'append',
+                     line, results, success }
+
       Nerf.historianMessage("toEnd")
 
       yieldMessage {'results',
                     method = 'agent',
-                    n = 1,
                     message = { method = 'update',
-                                n = 1,
                                 results} }
       yieldMessage {'edit',
                      method = 'agent',

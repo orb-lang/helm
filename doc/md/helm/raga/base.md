@@ -43,6 +43,7 @@ central location\.
 ```lua
 local agent_message = {}
 _Bridge.agent_message = agent_message
+
 function RagaBase.agentMessage(agent_name, method_name, ...)
    local msg = pack(...)
    msg.method = method_name
