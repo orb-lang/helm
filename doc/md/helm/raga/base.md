@@ -42,9 +42,15 @@ central location\.
 
 ```lua
 function RagaBase.agentMessage(agent_name, method_name, ...)
+   local messages = _Bridge.messages
+   if not messages then
+      messages = {}
+      _Bridge.messages = messages
+   end
    local msg = pack(...)
    msg.method = method_name
    msg = { method = 'agent', n = 1, agent_name, message = msg }
+   messages[#messages + 1] = msg
    return yield(msg)
 end
 ```

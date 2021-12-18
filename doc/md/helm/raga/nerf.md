@@ -30,6 +30,9 @@ local core_table = require "core:table"
 local addall, clone, splice = assert(core_table.addall),
                               assert(core_table.clone),
                               assert(core_table.splice)
+local Message = require "actor:message"
+
+
 local EditBase = require "helm:helm/raga/edit"
 
 local Nerf = clone(EditBase, 2)
@@ -63,7 +66,17 @@ function Nerf.eval()
    else
       Nerf.historianMessage("append", line, results, success)
       Nerf.historianMessage("toEnd")
-      Nerf.agentMessage("results", "update", results)
+      results.huh = "?"
+      --Nerf.agentMessage("results", "update", results)
+      -- { method = 'agent', n = 1, agent_name, message = msg }
+      -- agentMessage(agent_name, method_name, ...
+      ---[[
+      local to_yield = {"results",
+              method = 'agent',
+              n = 1,
+              message = { method = "update", n = 1, results} }
+      yield (Message(to_yield))
+      --]]
       Nerf.agentMessage("edit", "clear")
    end
 end
