@@ -83,7 +83,9 @@ function Nerf.eval()
                     message = { method = 'update',
                                 n = 1,
                                 results} }
-      Nerf.agentMessage("edit", "clear")
+      yieldMessage {'edit',
+                     method = 'agent',
+                     message = { method = 'clear'} }
    end
 end
 

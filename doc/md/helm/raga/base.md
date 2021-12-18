@@ -41,16 +41,13 @@ it's worth having helper functions for them\.
 central location\.
 
 ```lua
+local agent_message = {}
+_Bridge.agent_message = agent_message
 function RagaBase.agentMessage(agent_name, method_name, ...)
-   local messages = _Bridge.messages
-   if not messages then
-      messages = {}
-      _Bridge.messages = messages
-   end
    local msg = pack(...)
    msg.method = method_name
    msg = { method = 'agent', n = 1, agent_name, message = msg }
-   messages[#messages + 1] = msg
+   table.insert(agent_message, msg)
    return yield(msg)
 end
 ```
