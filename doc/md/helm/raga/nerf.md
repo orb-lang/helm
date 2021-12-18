@@ -40,12 +40,12 @@ Nerf.name = "nerf"
 Nerf.prompt_char = "👉"
 ```
 
-### yieldMessage\(tab\)
+### send\(tab\)
 
 Turns `tab` into a message and `yield` s it\.
 
 ```lua
-local function yieldMessage(tab)
+local function send(tab)
    return yield(Message(tab))
 end
 ```
@@ -68,33 +68,33 @@ end
 
 ```lua
 function Nerf.eval()
-   local line = yieldMessage { sendto = "maestro.agents.edit",
-                               method = 'contents' }
+   local line = send { sendto = "maestro.agents.edit",
+                       method = 'contents' }
 
-   local success, results = yieldMessage { call = "eval", line }
+   local success, results = send { call = "eval", line }
 
    if not success and results == 'advance' then
-      yieldMessage { sendto = "maestro.agents.edit",
+      send { sendto = "maestro.agents.edit",
                      method = 'endOfText'}
       return false -- Fall through to EditAgent nl binding
    else
-      yieldMessage { sendto = 'hist',
-                     method = 'append',
-                     line, results, success }
+      send { sendto = 'hist',
+             method = 'append',
+             line, results, success }
 
-      yieldMessage { sendto = 'hist', method = 'toEnd' }
+      send { sendto = 'hist', method = 'toEnd' }
 
-      yieldMessage { sendto = "maestro.agents.results",
+      send { sendto = "maestro.agents.results",
                      method = 'update', results }
 
-      yieldMessage { sendto = "maestro.agents.edit",
+      send { sendto = "maestro.agents.edit",
                              method = 'clear' }
    end
 end
 
 function Nerf.conditionalEval()
-   if yieldMessage { sendto = "maestro.agents.edit",
-                     method = 'shouldEvaluate'} then
+   if send { sendto = "maestro.agents.edit",
+             method = 'shouldEvaluate'} then
       return Nerf.eval()
    else
       return false -- Fall through to EditAgent nl binding
@@ -118,7 +118,7 @@ Nerf.keymap_evaluation = {
 function Nerf.historyBack()
    -- If we're at the end of the history (the user was typing a new
    -- expression), save it before moving
-   if Nerf.historianMessage("atEnd") then
+   if send { sendto = 'hist', method = 'atEnd' } then
       local linestash = Nerf.agentMessage("edit", "contents")
       Nerf.historianMessage("append", linestash)
    end
