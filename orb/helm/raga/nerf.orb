@@ -67,16 +67,14 @@ end
 
 #!lua
 function Nerf.eval()
-   local line = yieldMessage {'edit',
-                               method = 'agent',
-                               message = { method = 'contents'} }
+   local line = yieldMessage { sendto = "maestro.agents.edit",
+                               method = 'contents' }
 
    local success, results = yieldMessage { call = "eval", line }
 
    if not success and results == 'advance' then
-      yieldMessage {'edit',
-                    method = 'agent',
-                    message = { method = 'endOfText'} }
+      yieldMessage { sendto = "maestro.agents.edit",
+                     method = 'endOfText'}
       return false -- Fall through to EditAgent nl binding
    else
       yieldMessage { sendto = 'hist',
@@ -85,20 +83,17 @@ function Nerf.eval()
 
       yieldMessage { sendto = 'hist', method = 'toEnd' }
 
-      yieldMessage {'results',
-                    method = 'agent',
-                    message = { method = 'update', results} }
+      yieldMessage { sendto = "maestro.agents.results",
+                     method = 'update', results }
 
-      yieldMessage {'edit',
-                     method = 'agent',
-                     message = { method = 'clear'} }
+      yieldMessage { sendto = "maestro.agents.edit",
+                             method = 'clear' }
    end
 end
 
 function Nerf.conditionalEval()
-   if yieldMessage {'edit',
-                     method = 'agent',
-                     message = { method = 'shouldEvaluate'} } then
+   if yieldMessage { sendto = "maestro.agents.edit",
+                     method = 'shouldEvaluate'} then
       return Nerf.eval()
    else
       return false -- Fall through to EditAgent nl binding
@@ -169,6 +164,8 @@ end
 
 
 *** Help screen
+
+
 
 #!lua
 function Nerf.openHelpOnFirstKey()

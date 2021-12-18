@@ -202,7 +202,7 @@ local create, resume, status = assert(coroutine.create),
                                assert(coroutine.resume),
                                assert(coroutine.status)
 
-local dispatchmessage = assert(require "core:cluster/actor" . dispatchmessage)
+local dispatchmessage = assert(require "actor:actor" . dispatchmessage)
 function ModeS.processMessagesWhile(modeS, fn)
    local coro = create(fn)
    local msg_ret = { n = 0 }
