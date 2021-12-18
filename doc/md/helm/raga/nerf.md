@@ -75,7 +75,7 @@ function Nerf.eval()
 
    if not success and results == 'advance' then
       send { sendto = "maestro.agents.edit",
-                     method = 'endOfText'}
+             method = 'endOfText'}
       return false -- Fall through to EditAgent nl binding
    else
       send { sendto = 'hist',
