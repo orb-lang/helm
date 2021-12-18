@@ -40,6 +40,16 @@ Nerf.name = "nerf"
 Nerf.prompt_char = "👉"
 ```
 
+### yieldMessage\(tab\)
+
+Turns `tab` into a message and `yield` s it\.
+
+```lua
+local function yieldMessage(tab)
+   yield(Message(tab))
+end
+```
+
 
 ### Nerf\.historianMessage\(method\_name, args\.\.\.\)
 
@@ -66,17 +76,13 @@ function Nerf.eval()
    else
       Nerf.historianMessage("append", line, results, success)
       Nerf.historianMessage("toEnd")
-      results.huh = "?"
-      --Nerf.agentMessage("results", "update", results)
-      -- { method = 'agent', n = 1, agent_name, message = msg }
-      -- agentMessage(agent_name, method_name, ...
-      ---[[
-      local to_yield = {"results",
-              method = 'agent',
-              n = 1,
-              message = { method = "update", n = 1, results} }
-      yield (Message(to_yield))
-      --]]
+
+      yieldMessage {'results',
+                    method = 'agent',
+                    n = 1,
+                    message = { method = 'update',
+                                n = 1,
+                                results} }
       Nerf.agentMessage("edit", "clear")
    end
 end
