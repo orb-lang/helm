@@ -151,11 +151,9 @@ Nerf.keymap_history_navigation = {
 
 ```lua
 function Nerf.evalFromCursor()
-   local top = yield{ sendto = "hist", property = "n" }
-   local cursor = yield{ sendto = "hist", property = "cursor" }
+   local top = send { sendto = "hist", property = "n" }
+   local cursor = send { sendto = "hist", property = "cursor" }
    for i = cursor, top do
-      -- Discard the second return value from :index
-      -- or it will confuse the Txtbuf constructor rather badly
       local line = Nerf.historianMessage("index", i)
       Nerf.agentMessage("edit", "update", line)
       Nerf.eval()
