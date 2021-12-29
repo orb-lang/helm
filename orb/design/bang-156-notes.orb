@@ -24,10 +24,10 @@ For an example, I was able to produce this diff:
 
 #!txt
 > local line = send { sendto = "maestro.agents.edit",
->                         method = 'contents' }
-<     local line = yieldMessage {'edit',
-<                                 method = 'agent',
-<                                 message = { method = 'contents'} }
+>                     method = 'contents' }
+> local line = yieldMessage {'edit',
+>                             method = 'agent',
+>                             message = { method = 'contents'} }
 #/txt
 
 Just unrolling the agentMessage, because the method "agent" itself is an
@@ -158,6 +158,20 @@ action("this", "also", "makes", "an array")
 The former would be ="page-down"=, note that is one (1) string and nothing
 else, the latter would be something like ={"self-insert", "a"}=.
 
+We probably have a special action such as ="await"=, which =vril= would return
+after something like =d= and then =3=, such that a =w= would yield
+={"delete-word", 3}=.  Again, the keymap resolver can have as much
+intelligence as it needs to have to turn a sequence of inputs into an action,
+but it can't hand back functions.
+
+I'm thinking of Actions as kind of the 'down closure' correlate to a Message.
+I mean by this that Actions are handled at the top, by having a known order in
+which various handlers for a given action are checked, starting (always) with
+the Target, and defaulting ultimately to Modeselektor.
+
+So we don't need as much information as a full Message, but we do need to be
+able to send an Action as a Message.
+
 
 *** Target
 
@@ -170,11 +184,13 @@ they can't live in a keymap.
 So once Maestro has the action, it looks this up against its current state,
 which has a library.  Maestro also knows the most important thing to know,
 which is the *target*.  Canonically this is the EditAgent, but if it's the
-PagerAgent, then we need to both retrieve different /actions/ from keystrokes,
-and potentially select different /functions/ to realize those actions.
+PagerAgent, then we need to both retrieve different Actions from keystrokes,
+and will find that the Agent responds differently to the same Action in some
+cases.
 
-If the target doesn't want the action, Maestro looks for a *handler* for that
-action, which can be any of the Actors.
+If the Target doesn't want the action, Maestro looks for a *handler* for that
+action, which can be any of the Actors: Maestro will call on any subordinate,
+and throw as a Message for anything upstream.
 
 Maestro is responsible for composing all of this into the current state, and
 as a minimal move in that direction, all mode shifting should move into
@@ -217,15 +233,17 @@ I'm imagining after sufficient factoring, it looks more like this:
 
 #!lua #noKnit
 lib['evaluate-target'] = function(target)
-   local line = action 'get-target-subject-as-string'
-   -- or just:
-   --  target:subjectAsString()
+   local success, results = action 'evaluate-target-subject-as-lua'
+   -- valiant sends a message for the target subject, evalutes, returns
    --
-   local success, results = action('evaluate-lua-chunk', line)
    if not success then
+      -- target handler for advance, otherwise "sends" 'after-evaluation',
+      -- Maestro would register the 'bottom' handler here
       action('error-on-evaluation', results, success)
    else
-      action('success-on-evaluation', results, success)
+      -- historian handler sends for the line, appends, calls 'toEnd',
+      -- results handler updates, edit (target) handler clears
+      action('after-evaluation', results, success)
    end
 end
 #/lua
@@ -268,15 +286,15 @@ having a =subjectAsString= method to respond to.
 Furthermore, there may not be a =hist=, or a =maestro.agents.results= to
 boss around.
 
-The actual call API is a work in progress, let's consider this compatible but
-more explicit version:
+Actions which flow downward don't need to be turned into a Message, anything
+which is yielded has to be a Message, and the translation is simple:
 
 #!lua #noKnit
   yield(Message { action = 'after-successful-evaluation', results, success})
 #/lua
 
-And I'll continue to work with all Messages landing on =modeS=, even though
-we'll probably want to do better than that.
+Messages should on Maestro first, with a fall-through throw to modeS, but we
+don't /need/ that at the moment, so I'll mostly ignore that.
 
 Modeselektor would immediately pass any action to Maestro anyway, because
 Agents get first shot at everything.
