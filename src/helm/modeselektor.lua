@@ -208,6 +208,12 @@ function ModeS.processMessagesWhile(modeS, fn)
    local msg_ret = { n = 0 }
    local ok, msg
    local function _dispatchCurrentMessage()
+      -- #todo ugly hack to shorten the 'sendto' value in the common case of
+      -- inter-agent messaging. We should be able to handle this with a custom
+      -- dispatchmessage implementation instead
+      if msg.sendto and msg.sendto:find("^agents%.") then
+         msg.sendto = "maestro." .. msg.sendto
+      end
       return pack(dispatchmessage(modeS, msg))
    end
    while true do
@@ -551,7 +557,7 @@ end
 
 
 
-local actor = require "core:cluster/actor"
+local actor = require "actor:actor"
 local borrowmethod, getter = assert(actor.borrowmethod, actor.getter)
 
 local function new(max_extent, writer, db)

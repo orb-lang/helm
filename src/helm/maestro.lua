@@ -55,6 +55,8 @@ local gmatch = assert(string.gmatch)
 local insert = assert(table.insert)
 local clone = assert(require "core:table" . clone)
 local dispatchmessage = assert(require "actor:actor" . dispatchmessage)
+local Message = require "actor:message"
+local assert = assert(require "core/fn" . assertfmt)
 
 function Maestro.activeKeymap(maestro)
    local composed_keymap = { bindings = {}, wildcards = {} }
@@ -76,8 +78,13 @@ function Maestro.activeKeymap(maestro)
             action = clone(action)
          end
          action.sendto = action.sendto or keymap.source
+         -- Right now modeS ends up mutating these to route stuff to agents
+         -- properly, and Message is read-only. Once we have a proper
+         -- polymorphic dispatchmessage, or just a reasonable workaround,
+         -- we should start converting these
+         -- action = Message(action)
          local key_evt = input_event.marshal(key)
-         assert(key_evt, "Failed to parse event string: '" .. key .. "'")
+         assert(key_evt, "Failed to parse event string: '%s'", key)
          if key_evt.type == "wildcard" then
             insert(composed_keymap.wildcards, { pattern = key_evt, action = action })
          else

@@ -218,12 +218,9 @@ I'm imagining after sufficient factoring, it looks more like this:
 
 ```lua
 lib['evaluate-target'] = function(target)
-   local line = action 'get-target-contents-as-string'
+   local line = action 'get-target-subject-as-string'
    -- or just:
    --  target:subjectAsString()
-   --
-   -- =action= can be variadic or just take string-or-table, all three being
-   -- the right kind of flexible
    --
    local success, results = action('evaluate-lua-chunk', line)
    if not success then
@@ -235,10 +232,7 @@ end
 ```
 
 
-
-
-
-#### Event messages and handler registry
+#### Action messages and handler registry
 
 We need to move away from agents telling each other things as much as
 possible\.  This is going to call for additional Message fields, probably\.
@@ -266,8 +260,7 @@ With this
 ```
 
 Which is basically that the name for the current `Nerf.eval()` wouldn't be
-`evaluate-target`, but rather `evaluate-edit-contents-check-for-more-data` \.\.
-`-append-historian-update-results-clear-edit-contents`\.
+`evaluate-target`, but rather `evaluate-edit-contents-check-for-more-data-append-historian-update-results-clear-edit-contents`\.
 
 It's not just that the current function does too much, it's that
 `evaluate-target` is genially ignorant of what else the target is, besides
@@ -293,6 +286,31 @@ Agents need a concept of being active, and a way to register a borrowmethod
 as a response to a given action\.  This will need to be done carefully, because
 order is frequently important\.
 
+This is sort of like an "event", and maybe these are in fact separate
+concepts, but I don't think so\.  Actions are handled by calling registered
+handlers in a specific order, they don't reify "something happening"\.
+
+Let's look at this:
+
+```lua
+function Nerf.onCursorChanged(modeS)
+   modeS:agent'suggest':update()
+   EditBase.onCursorChanged(modeS)
+end
+```
+
+For one thing Nerf can't know how to do this, and it isn't the right place for
+the logic to live\. So the EditAgent yields an `edit-cursor-changed` action\.
+SuggestAgent has registered a handler for the first line\.
+
+The second line passes the message, the hard way, to EditBase, which silently
+inherits it from RagaBase, which then does nothing\.  This is\.\.\. bad\.  All of
+that logic needs to be responsive, any of those steps could break silently or
+could be forgotten in refactoring or changing things\.
+
+The handler registry might turn out to be something which shifts when Maestro
+shifts, that's unclear right now\.
+
 
 #### more about the target
 
@@ -308,7 +326,7 @@ up in subsidiary projects\.
 This is what's driving the firewalls between various component systems: Edit
 actions have to stop knowing about the historian, period\.
 
-An example: an up\-arrow should turn into the action `cursor-up`, which vril c
+An example: an up\-arrow should turn into the action `cursor-up`, which vril
 can map to `k`, but the EditAgent shouldn't handle the case where we need to
 swap out its `.subject` \(more about that in a moment\), certainly not by
 sending a message to the Historian\.
@@ -333,3 +351,123 @@ So for EditAgent, `agent[1]` is `agent.subject[1]`, `agent.cursor` is
 
 The difference is this lets us move subjects between agents, because the
 subject itself has an identity table\.
+
+
+## comments on the coroutine loop
+
+Let's look at it:
+
+```lua
+local dispatchmessage = assert(require "actor:actor" . dispatchmessage)
+function ModeS.processMessagesWhile(modeS, fn)
+   local coro = create(fn)
+   local msg_ret = { n = 0 }
+   local ok, msg
+   local function _dispatchCurrentMessage()
+      return pack(dispatchmessage(modeS, msg))
+   end
+   while true do
+      ok, msg = resume(coro, unpack(msg_ret))
+      if not ok then
+         error(msg .. "\nIn coro:\n" .. debug.traceback(coro))
+      elseif status(coro) == "dead" then
+         -- End of body function, pass through the return value
+         -- #todo returning the command that was executed like this is likely
+         -- to be insufficient very soon, work out something else
+         return msg
+      end
+      msg_ret = modeS:processMessagesWhile(_dispatchCurrentMessage)
+   end
+end
+```
+
+First problem is this creates a fresh coroutine for every call, and I can't
+see a good reason for that, it could probably just be
+`ok, msg_ret = resume(coro, pack(dispatchmessage(modeS, msg)))`\.
+
+The second problem is that the actual activity relies on a function which
+isn't defined here, and you have to hunt that function down in two places,
+the big one:
+
+```lua
+function ModeS.shiftMode(modeS, raga_name)
+   modeS:processMessagesWhile(function()
+      if raga_name == "default" then
+         raga_name = modeS.raga_default
+      end
+      -- Stash the current lexer associated with the current raga
+      -- Currently we never change the lexer separate from the raga,
+      -- but this will change when we start supporting multiple languages
+      -- Guard against nil raga or lexer during startup
+      if modeS.raga then
+         modeS.raga.onUnshift(modeS)
+         modeS.closet[modeS.raga.name].lex = modeS:agent'edit'.lex
+      end
+      -- Switch in the new raga and associated lexer
+      modeS.raga = modeS.closet[raga_name].raga
+      modeS:agent'edit':setLexer(modeS.closet[raga_name].lex)
+      modeS.raga.onShift(modeS)
+      -- #todo feels wrong to do this here, like it's something the raga
+      -- should handle, but onShift feels kinda like it "doesn't inherit",
+      -- like it's not something you should actually super-send, so there's
+      -- not one good place to do this.
+      modeS:agent'prompt':update(modeS.raga.prompt_char)
+   end)
+   return modeS
+end
+```
+
+and this one, tucked away inside of `:act`
+
+```lua
+function ModeS.act(modeS, event)
+   local command
+   repeat
+      modeS.action_complete = true
+      -- The raga may set action_complete to false to cause the command
+      -- to be re-processed, most likely after a mode-switch
+      local commandThisTime = modeS:processMessagesWhile(function()
+         return modeS.maestro:dispatch(event)
+      end)
+      command = command or commandThisTime
+   until modeS.action_complete == true
+   if not command then
+      command = 'NYI'
+   end
+   -- Inform the input-echo agent of what just happened
+   -- #todo Maestro can do this once action_complete goes away
+   modeS:agent'input_echo':update(event, command)
+   -- Reflow in case command height has changed. Includes a paint.
+   -- Don't allow errors encountered here to break this entire
+   -- event-loop iteration, otherwise we become unable to quit if
+   -- there's a paint error.
+   local success, err = xpcall(modeS.reflow, debug.traceback, modeS)
+   if not success then
+      io.stderr:write(err, "\n")
+      io.stderr:flush()
+   end
+   collectgarbage()
+   return modeS
+end
+```
+
+It's too hard to follow, methods shouldn't be taking functions which define
+all the important things which they do\.
+
+What would fix this I'm thinking, is to make all of `:act` into the message
+processing coroutine function at build time \(we only need the one coroutine\)
+and wrap/curry it into `:act`\. That way anything else, `:shiftMode` in
+particular, can yield and resume messages at any point\.
+
+We almost certainly want Maestro to have an inner coroutine, which throws to
+the outer one, but we can work around that for awhile\.
+
+
+### Conclusion
+
+This is a sort of unfocused brain dump and it will take some doing to get the
+pieces to really gel\.
+
+The early actions are clear, at least to me, and we should do a phone call
+that results in issues out of this document, revisit anything which doesn't
+make a direct action once those are out of the way\.

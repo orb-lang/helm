@@ -53,7 +53,7 @@ end
 
 function ResultListAgent.quit(agent)
    agent:selectNone()
-   agent:shiftMode("default")
+   send { method = "shiftMode", "default" }
 end
 
 

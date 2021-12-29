@@ -20,13 +20,13 @@ EditTitle.prompt_char = "👉"
 
 
 function EditTitle.accept()
-   local title = EditTitle.agentMessage("edit", "contents")
-   EditTitle.agentMessage("session", "titleUpdated", title)
+   local title = send { sendto = "agents.edit", method = "contents" }
+   send { sendto = "agents.session", method = "titleUpdated", title }
    EditTitle.quit()
 end
 
 function EditTitle.quit()
-   EditTitle.shiftMode("review")
+   send { method = "shiftMode", "review" }
 end
 
 EditTitle.keymap_extra_commands = {
@@ -53,10 +53,9 @@ EditTitle.keymap_extra_commands["C-r"] = nil
 
 
 
-local yield = assert(coroutine.yield)
 function EditTitle.quitHelm()
    EditTitle.accept()
-   yield{ method = "tryAgain" }
+   send { method = "tryAgain" }
 end
 
 

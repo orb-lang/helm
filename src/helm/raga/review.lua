@@ -5,7 +5,6 @@
 
 local core_table = require "core:table"
 local clone, splice = assert(core_table.clone), assert(core_table.splice)
-local yield = assert(coroutine.yield)
 local RagaBase = require "helm:raga/base"
 local Sessionbuf = require "helm:buf/sessionbuf"
 
@@ -23,10 +22,10 @@ Review.prompt_char = "💬"
 
 
 function Review.quitHelm()
-   local sesh_title = yield{ sendto = "hist.session", property = "session_title" }
-   Review.agentMessage("modal", "show",
+   local sesh_title = send { sendto = "hist.session", property = "session_title" }
+   send { sendto = "agents.modal", method = "show",
       'Save changes to the session "' .. sesh_title .. '"?',
-      "yes_no_cancel")
+      "yes_no_cancel" }
 end
 
 
@@ -63,7 +62,7 @@ function Review.onShift(modeS)
 
    modeS:setStatusLine("review", modeS.hist.session.session_title)
 
-   local modal_answer = Review.agentMessage("modal", "answer")
+   local modal_answer = send { sendto = "agents.modal", method = "answer" }
    if modal_answer then
       if modal_answer == "yes" then
          modeS.hist.session:save()

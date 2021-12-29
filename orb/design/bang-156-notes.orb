@@ -22,7 +22,7 @@ codebase and we want to be able to see the messages where they're sent.
 
 For an example, I was able to produce this diff:
 
-#!txt
+#!txt #noKnit
 > local line = send { sendto = "maestro.agents.edit",
 >                         method = 'contents' }
 <     local line = yieldMessage {'edit',
@@ -356,7 +356,7 @@ subject itself has an identity table.
 
 Let's look at it:
 
-#!lua
+#!lua #noKnit
 local dispatchmessage = assert(require "actor:actor" . dispatchmessage)
 function ModeS.processMessagesWhile(modeS, fn)
    local coro = create(fn)
@@ -388,7 +388,7 @@ The second problem is that the actual activity relies on a function which
 isn't defined here, and you have to hunt that function down in two places,
 the big one:
 
-#!lua
+#!lua #noKnit
 function ModeS.shiftMode(modeS, raga_name)
    modeS:processMessagesWhile(function()
       if raga_name == "default" then
@@ -418,7 +418,7 @@ end
 
 and this one, tucked away inside of =:act=
 
-#!lua
+#!lua #noKnit
 function ModeS.act(modeS, event)
    local command
    repeat

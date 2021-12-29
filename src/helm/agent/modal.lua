@@ -132,7 +132,7 @@ end
 
 function ModalAgent.show(agent, ...)
    agent:update(...)
-   agent:shiftMode("modal")
+   send { method = "shiftMode", "modal" }
 end
 
 
@@ -145,7 +145,7 @@ end
 function ModalAgent.close(agent, value)
    agent.model.value = value
    -- #todo shift back to the previous raga--modeS needs to maintain a stack
-   agent:shiftMode("default")
+   send { method = "shiftMode", "default" }
 end
 
 

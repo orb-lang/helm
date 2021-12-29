@@ -11,7 +11,6 @@ providing a [Window](https://gitlab.com/special-circumstance/helm/-/blob/trunk/d
 ```lua
 local Window = require "window:window"
 local Deque = require "deque:deque"
-local yield = assert(coroutine.yield)
 ```
 
 
@@ -43,38 +42,6 @@ function Agent.bufferCommand(agent, name, ...)
    local msg = pack(...)
    msg.method = name
    agent.buffer_commands:push(msg)
-end
-```
-
-
-### Agent:agentMessage\(other\_agent\_name, method\_name, args\.\.\.\)
-
-Dispatches a message \(via a `yield` to modeS\) to one of our fellow Agents and
-answers the return value\.
-
-\#todo
-Agent\. Where should it go?
-
-```lua
-function Agent.agentMessage(agent, other_agent_name, method_name, ...)
-   local msg = pack(...)
-   msg.method = method_name
-   msg = { method = 'agent', n = 1, other_agent_name, message = msg }
-   return yield(msg)
-end
-```
-
-
-### Agent:shiftMode\(raga\_name\)
-
-Shorthand to ask ModeS to switch ragas\.
-
-\#todo
-as well\-\-should be in a central location\.
-
-```lua
-function Agent.shiftMode(agent, raga_name)
-   return yield{ method = "shiftMode", n = 1, raga_name }
 end
 ```
 
@@ -163,9 +130,9 @@ Agent.keymap_scrolling = {
 The `Window`s of `Agent`s need to implement some common behavior in order to
 interact correctly with `Rainbuf`s and change detection, so we start with a
 basic config\. Subclasses may override `:windowConfiguration()` to add their
-own details, using `.mergeWindowConfig()` to include the superclass' config\.
-\(Note that this is not a method, just a function\.\)
+own details, using `.mergeWindowConfig()` to include the superclass' config\.Note that this is not a method, just a function\.\)
 
+\(
 ```lua
 local addall = assert(require "core:table" . addall)
 function Agent.mergeWindowConfig(cfg_a, cfg_b)

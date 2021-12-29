@@ -80,7 +80,7 @@ function SessionAgent.selectIndex(agent, index)
       agent:contentsChanged()
       agent:bufferCommand("ensureSelectedVisible")
       local premise = agent:selectedPremise()
-      agent:agentMessage("edit", "update", premise and premise.title)
+      send { sendto = "agents.edit", method = "update", premise and premise.title }
    end
 end
 
@@ -203,7 +203,7 @@ end
 
 
 function SessionAgent.editSelectedTitle(agent)
-   agent:shiftMode("edit_title")
+   send { method = "shiftMode", "edit_title" }
 end
 
 

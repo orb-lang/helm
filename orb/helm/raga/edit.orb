@@ -6,7 +6,6 @@ directing it to the Txtbuf
 #!lua
 local clone = assert(require "core:table" . clone)
 local insert = assert(table.insert)
-local yield = assert(coroutine.yield)
 local RagaBase = require "helm:helm/raga/base"
 local Txtbuf = require "helm:buf/txtbuf"
 #/lua
@@ -20,13 +19,13 @@ local EditBase = clone(RagaBase, 2)
 
 #!lua
 function EditBase.clearTxtbuf(maestro, event)
-   EditBase.agentMessage("edit", "clear")
-   EditBase.agentMessage("results", "clear")
-   yield{ sendto = "hist", method = "toEnd" }
+   send { sendto = "agents.edit", method = "clear" }
+   send { sendto = "agents.results", method = "clear" }
+   send { sendto = "hist", method = "toEnd" }
 end
 
 function EditBase.restartSession()
-   yield{ method = "restart" }
+   send { method = "restart" }
 end
 
 local addall = assert(require "core:table" . addall)

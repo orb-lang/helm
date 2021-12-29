@@ -14,23 +14,21 @@
 **** includes
 
 #!lua
-local concat, insert = assert(table.concat), assert(table.insert)
 local sub, gsub, rep = assert(string.sub),
                        assert(string.gsub),
                        assert(string.rep)
-local yield = assert(coroutine.yield)
+local table = require "core:table"
+local addall, clone, concat, insert, splice = assert(table.addall),
+                                              assert(table.clone),
+                                              assert(table.concat),
+                                              assert(table.insert),
+                                              assert(table.splice)
 #/lua
 
 
 ** Nerf
 
 #!lua
-local core_table = require "core:table"
-local addall, clone, splice = assert(core_table.addall),
-                              assert(core_table.clone),
-                              assert(core_table.splice)
-local Message = require "actor:message"
-
 
 local EditBase = require "helm:helm/raga/edit"
 
@@ -39,41 +37,18 @@ Nerf.name = "nerf"
 Nerf.prompt_char = "👉"
 #/lua
 
-*** send(tab)
-
-Turns =tab= into a message and =yield= s it.
-
-#!lua
-local function send(tab)
-   return yield(Message(tab))
-end
-#/lua
-
-
-*** Nerf.historianMessage(method_name, args...)
-
-We communicate so much with the Historian that it seems worth a helper similar to `agentMessage`.
-
-#!lua
-function Nerf.historianMessage(method_name, ...)
-   local msg = pack(...)
-   msg.sendto = "hist"
-   msg.method = method_name
-   return yield(msg)
-end
-#/lua
 
 *** Evaluation
 
 #!lua
 function Nerf.eval()
-   local line = send { sendto = "maestro.agents.edit",
+   local line = send { sendto = "agents.edit",
                        method = 'contents' }
 
    local success, results = send { call = "eval", line }
 
    if not success and results == 'advance' then
-      send { sendto = "maestro.agents.edit",
+      send { sendto = "agents.edit",
              method = 'endOfText'}
       return false -- Fall through to EditAgent nl binding
    else
@@ -83,16 +58,16 @@ function Nerf.eval()
 
       send { sendto = 'hist', method = 'toEnd' }
 
-      send { sendto = "maestro.agents.results",
+      send { sendto = "agents.results",
                      method = 'update', results }
 
-      send { sendto = "maestro.agents.edit",
+      send { sendto = "agents.edit",
                              method = 'clear' }
    end
 end
 
 function Nerf.conditionalEval()
-   if send { sendto = "maestro.agents.edit",
+   if send { sendto = "agents.edit",
              method = 'shouldEvaluate'} then
       return Nerf.eval()
    else
@@ -118,25 +93,25 @@ function Nerf.historyBack()
    -- If we're at the end of the history (the user was typing a new
    -- expression), save it before moving
    if send { sendto = 'hist', method = 'atEnd' } then
-      local linestash = Nerf.agentMessage("edit", "contents")
-      Nerf.historianMessage("append", linestash)
+      local linestash = send { sendto = "agents.edit", method = "contents" }
+      send { sendto = "hist", method = "append", linestash }
    end
-   local prev_line, prev_result = Nerf.historianMessage("prev")
-   Nerf.agentMessage("edit", "update", prev_line)
-   Nerf.agentMessage("results", "update", prev_result)
+   local prev_line, prev_result = send { sendto = "hist", method = "prev" }
+   send { sendto = "agents.edit", method = "update", prev_line }
+   send { sendto = "agents.results", method = "update", prev_result }
 end
 
 function Nerf.historyForward()
-   local new_line, next_result = Nerf.historianMessage("next")
+   local new_line, next_result = send { sendto = "hist", method = "next" }
    if not new_line then
-      local old_line = Nerf.agentMessage("edit", "contents")
-      local added = Nerf.historianMessage("append", old_line)
+      local old_line = send { sendto = "agents.edit", method = "contents" }
+      local added = send { sendto = "hist", method = "append", old_line }
       if added then
-         Nerf.historianMessage("toEnd")
+         send { sendto = "hist", method = "toEnd" }
       end
    end
-   Nerf.agentMessage("edit", "update", new_line)
-   Nerf.agentMessage("results", "update", next_result)
+   send { sendto = "agents.edit", method = "update", new_line }
+   send { sendto = "agents.results", method = "update", next_result }
 end
 
 Nerf.keymap_history_navigation = {
@@ -153,8 +128,8 @@ function Nerf.evalFromCursor()
    local top = send { sendto = "hist", property = "n" }
    local cursor = send { sendto = "hist", property = "cursor" }
    for i = cursor, top do
-      local line = Nerf.historianMessage("index", i)
-      Nerf.agentMessage("edit", "update", line)
+      local line = send { sendto = "hist", method = "index", i }
+      send { sendto = "agents.edit", method = "update", line }
       Nerf.eval()
    end
 end
@@ -167,8 +142,8 @@ end
 
 #!lua
 function Nerf.openHelpOnFirstKey()
-   if Nerf.agentMessage("edit", "isEmpty") then
-      yield{ method = "openHelp" }
+   if send { sendto = "agents.edit", method = "isEmpty" } then
+      send { method = "openHelp" }
       return true
    else
       return false
