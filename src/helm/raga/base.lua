@@ -13,6 +13,8 @@ local sub, gsub, rep = assert(string.sub),
                        assert(string.gsub),
                        assert(string.rep)
 
+local yield = assert(coroutine.yield)
+
 
 
 local RagaBase_meta = {}
@@ -24,22 +26,6 @@ local RagaBase = setmetatable({}, RagaBase_meta)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-local yield = assert(coroutine.yield)
-local Message = require "actor:message"
-function __G.send(tab)
-   return yield(Message(tab))
-end
 
 
 

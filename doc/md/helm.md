@@ -44,7 +44,6 @@ local __G = setmetatable({}, {__index = _G})
 __G.__G = __G
 ```
 
-
 ### \_helm
 
 The entire module is setup as a function, to allow our new fenv
@@ -66,6 +65,23 @@ kit = require "valiant:replkit"
 jit.vmdef = require "helm:helm/vmdef"
 jit.p = require "helm:helm/ljprof"
 sql = assert(sql, "sql must be in _G")
+```
+
+
+## send\(tab\)
+
+Turns `tab` into a message and `yield` s it\.
+
+We do a lot of message passing in `helm`, and we'll be doing more, so this is
+a useful global to have\.
+
+```lua
+local yield = assert(coroutine.yield)
+local Message = require "actor:message"
+
+function send(tab)
+   return yield(Message(tab))
+end
 ```
 
 ## Boot sequence

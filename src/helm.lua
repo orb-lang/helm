@@ -50,7 +50,6 @@ __G.__G = __G
 
 
 
-
 local function _helm(_ENV)
 
 
@@ -66,6 +65,23 @@ kit = require "valiant:replkit"
 jit.vmdef = require "helm:helm/vmdef"
 jit.p = require "helm:helm/ljprof"
 sql = assert(sql, "sql must be in _G")
+
+
+
+
+
+
+
+
+
+
+
+local yield = assert(coroutine.yield)
+local Message = require "actor:message"
+
+function send(tab)
+   return yield(Message(tab))
+end
 
 
 

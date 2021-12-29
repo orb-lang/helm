@@ -12,6 +12,8 @@ local concat         = assert(table.concat)
 local sub, gsub, rep = assert(string.sub),
                        assert(string.gsub),
                        assert(string.rep)
+
+local yield = assert(coroutine.yield)
 ```
 
 ```lua
@@ -24,22 +26,6 @@ When creating a new raga, remember to set:
 ```lua-example
 RagaBase.name = "raga_base"
 RagaBase.prompt_char = "$"
-```
-
-
-## send\(tab\)
-
-Turns `tab` into a message and `yield` s it\.
-
-\#todo
-**place** to do this at least though\.\.\.
-
-```lua
-local yield = assert(coroutine.yield)
-local Message = require "actor:message"
-function __G.send(tab)
-   return yield(Message(tab))
-end
 ```
 
 
