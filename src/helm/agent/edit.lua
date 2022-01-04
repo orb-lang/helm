@@ -856,8 +856,14 @@ end
 
 
 
+
+
+
+
 function EditAgent.clear(agent)
    agent:update("")
+   send{ sendto = "agents.results", method = "clear" }
+   send{ sendto = "hist", method = "toEnd" }
 end
 
 

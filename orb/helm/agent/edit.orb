@@ -853,11 +853,17 @@ end
 
 *** EditAgent:clear()
 
-#todo should this be :reset() instead? Or something else?
+Clears the txtbuf, resetting the REPL to be ready to accept new input.
+
+#todo should this be communicating with results and history, or should someone
+else be responsible for this logical operation and send us a message that just
+clears our contents?
 
 #!lua
 function EditAgent.clear(agent)
    agent:update("")
+   send{ sendto = "agents.results", method = "clear" }
+   send{ sendto = "hist", method = "toEnd" }
 end
 #/lua
 

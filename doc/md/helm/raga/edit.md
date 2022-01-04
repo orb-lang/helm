@@ -18,26 +18,9 @@ local EditBase = clone(RagaBase, 2)
 ## Keymap
 
 ```lua
-function EditBase.clearTxtbuf(maestro, event)
-   send { sendto = "agents.edit", method = "clear" }
-   send { sendto = "agents.results", method = "clear" }
-   send { sendto = "hist", method = "toEnd" }
-end
-
-function EditBase.restartSession()
-   send { method = "restart" }
-end
-
-local addall = assert(require "core:table" . addall)
-EditBase.keymap_extra_commands = {
-   ["C-l"] = "clearTxtbuf",
-   ["C-r"] = "restartSession"
-}
-addall(EditBase.keymap_extra_commands, RagaBase.keymap_extra_commands)
-
-EditBase.default_keymaps = clone(RagaBase.default_keymaps)
 -- Allow extra commands to preempt basic-editing, e.g. a RETURN binding
 -- should preempt insertion of a newline
+EditBase.default_keymaps = clone(RagaBase.default_keymaps)
 insert(EditBase.default_keymaps,
    { source = "agents.edit", name = "keymap_basic_editing" })
 ```

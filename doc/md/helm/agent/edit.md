@@ -862,11 +862,17 @@ end
 
 ### EditAgent:clear\(\)
 
+Clears the txtbuf, resetting the REPL to be ready to accept new input\.
+
 \#todo
+else be responsible for this logical operation and send us a message that just
+clears our contents?
 
 ```lua
 function EditAgent.clear(agent)
    agent:update("")
+   send{ sendto = "agents.results", method = "clear" }
+   send{ sendto = "hist", method = "toEnd" }
 end
 ```
 

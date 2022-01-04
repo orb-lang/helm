@@ -109,6 +109,24 @@ relies on that.  Everything else will just be a series of messages, because
 they won't be receiving any instance tables to call methods on.
 
 
+**** Remaining chunks of keymap'd functions to move out of ragas:
+1. Eval (nerf)
+2. History navigation (nerf)
+3. Quit-helm handlers (mostly inherited, review is different)
+4. Restart session (this is on modeS, but that still seems wrong),
+   eval-from-cursor (which should clearly go in the same place and that may
+   *not* be the same as eval-in-general)
+5. Open help, derp
+
+
+**** Plus the non-keymap'd, event-y functions:
+1. on[Un]Shift
+2. onTxtbufChanged, onCursorChanged
+3. getCursorPosition, which is really the odd man out and should probably move
+   to *Rainbuf* in conjunction with a concept of focus (so we know which
+   Rainbuf to ask)
+
+
 *** Turn Messages into Actions where possible
 
 Right now, the biggest difference between just calling a method, and sending a

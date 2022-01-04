@@ -202,10 +202,15 @@ end
 
 
 
+
+
 function SessionAgent.editSelectedTitle(agent)
    send { method = "shiftMode", "edit_title" }
 end
 
+function SessionAgent.cancelTitleEditing(agent)
+   send { method = "shiftMode", "review" }
+end
 
 
 
@@ -213,10 +218,28 @@ end
 
 
 
-function SessionAgent.titleUpdated(agent, new_title)
+
+function SessionAgent.acceptTitleUpdate(agent)
+   local new_title = send { sendto = "agents.edit", method = "contents" }
    agent:selectedPremise().title = new_title
    agent:selectNextWrap()
+   agent:cancelTitleEditing()
 end
+
+
+
+
+
+
+SessionAgent.keymap_edit_title = {
+   RETURN = "acceptTitleUpdate",
+   TAB = "acceptTitleUpdate",
+   ESC = "cancelTitleEditing",
+   ["C-q"] = "acceptTitleUpdate"
+}
+
+
+
 
 
 
