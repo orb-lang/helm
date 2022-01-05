@@ -316,9 +316,19 @@ function EditAgent.nl(agent)
    insert(agent, cur_row + 1, second)
    agent:contentsChanged()
    agent:setCursor(cur_row + 1, 1)
-   return false
 end
 
+
+
+
+
+
+
+
+
+function EditAgent.tab(agent)
+   agent:paste("   ")
+end
 
 
 
@@ -405,7 +415,9 @@ end
 local deleterange = import("core/table", "deleterange")
 function EditAgent.killSelection(agent)
    if not agent:hasSelection() then
-      return false
+      -- #todo communicate that there was nothing to do somehow,
+      -- without falling through to the next command in the keymap
+      return
    end
    agent:contentsChanged()
    local start_col, start_row = agent:selectionStart()
@@ -544,21 +556,32 @@ end
 
 
 function EditAgent.up(agent)
-   if not agent:openRow(agent.cursor.row - 1) then
+   if agent:openRow(agent.cursor.row - 1) then
+      agent:setCursor(agent.cursor.row - 1, nil)
+      return true
+   -- Move to beginning
+   elseif agent.cursor.col > 1 then
       agent:setCursor(nil, 1)
-      return false
+      return true
    end
-   agent:setCursor(agent.cursor.row - 1, nil)
-   return true
+   -- Can't move at all
+   return false
 end
 
 function EditAgent.down(agent)
-   if not agent:openRow(agent.cursor.row + 1) then
-      agent:setCursor(nil, #agent[agent.cursor.row] + 1)
-      return false
+   if agent:openRow(agent.cursor.row + 1) then
+      agent:setCursor(agent.cursor.row + 1, nil)
+      return true
+   else
+      local row_len = #agent[agent.cursor.row]
+      -- Move to end
+      if agent.cursor.col <= row_len then
+         agent:setCursor(nil, row_len + 1)
+         return true
+      end
    end
-   agent:setCursor(agent.cursor.row + 1, nil)
-   return true
+   -- Can't move at all
+   return false
 end
 
 
@@ -833,8 +856,14 @@ end
 
 
 
+
+
+
+
 function EditAgent.clear(agent)
    agent:update("")
+   send{ sendto = "agents.results", method = "clear" }
+   send{ sendto = "hist", method = "toEnd" }
 end
 
 
@@ -863,6 +892,21 @@ function EditAgent.contents(agent)
    end
    return concat(closed_lines, "\n")
 end
+
+
+
+
+
+
+
+
+
+function EditAgent.isEmpty(agent)
+   return #agent == 1 and #agent[1] == 0
+end
+
+
+
 
 
 
@@ -924,6 +968,86 @@ function EditAgent.windowConfiguration(agent)
                   tokens = true }
    })
 end
+
+
+
+
+
+
+
+
+
+
+
+
+function EditAgent.selfInsert(agent, evt)
+   return agent:insert(evt.key)
+end
+
+
+
+
+
+
+
+
+function EditAgent.evtPaste(agent, evt)
+   agent:paste(evt.text)
+end
+
+
+
+
+
+
+
+
+EditAgent.keymap_basic_editing = {
+   -- Motions
+   UP              = "up",
+   DOWN            = "down",
+   LEFT            = "left",
+   RIGHT           = "right",
+   ["M-LEFT"]      = "leftWordAlpha",
+   ["M-b"]         = "leftWordAlpha",
+   ["M-RIGHT"]     = "rightWordAlpha",
+   ["M-w"]         = "rightWordAlpha",
+   HOME            = "startOfLine",
+   ["C-a"]         = "startOfLine",
+   END             = "endOfLine",
+   ["C-e"]         = "endOfLine",
+   -- Kills
+   BACKSPACE       = "killBackward",
+   DELETE          = "killForward",
+   ["M-BACKSPACE"] = "killToBeginningOfWord",
+   ["M-DELETE"]    = "killToEndOfWord",
+   ["M-d"]         = "killToEndOfWord",
+   ["C-k"]         = "killToEndOfLine",
+   ["C-u"]         = "killToBeginningOfLine",
+   -- Misc editing commands
+   ["C-t"]         = "transposeLetter",
+   -- Insertion commands
+   ["[CHARACTER]"] = { method = "selfInsert", n = 1 },
+   TAB             = "tab",
+   RETURN          = "nl",
+   PASTE           = { method = "evtPaste", n = 1 }
+}
+
+
+
+
+
+
+
+
+
+
+EditAgent.keymap_readline_nav = {
+   ["C-b"] = "left",
+   ["C-f"] = "right",
+   ["C-n"] = "down",
+   ["C-p"] = "up"
+}
 
 
 

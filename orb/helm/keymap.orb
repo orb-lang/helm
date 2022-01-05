@@ -1,0 +1,79 @@
+* Keymap
+
+A keymap provides the binding from input events to the actions they trigger.
+
+
+** Structure
+
+Keymaps exist in three forms:
+
+
+*** Keymap declaration (or binding declaration)
+
+For the sake of convenience, and to avoid repeat-declaring the source of a
+keymap, we declare a keymap as a plain-old-table containing only its bindings.
+The keys are event strings as produced/consumed by [[@anterm:input-event]],
+and the values are partial =Message=s (with missing argument(s) which will be
+filled in when the command is executed), or in the simple case of a
+method-call with no arguments, just the method name.
+
+#todo It might be nice to have a parser that turns a subset of Lua expressions
+into path-traversal Messages—like =:agent'edit'= could parse into =={ method =
+"agent", n = 1, 'edit' }==.
+
+#!lua #noKnit
+{
+   UP = "scrollUp",
+   SCROLL_DOWN = { method = "evtScrollDown", n = 1 },
+   ["[CHARACTER]"] = { method = "selfInsert", n = 1 }
+}
+#/lua
+
+
+*** Keymap reference
+
+Ragas provide a list of the keymaps they wish to be active in
+=<Raga>.default_keymaps=, but of course these *don't* contain any bindings,
+only the information needed to retrieve the bindings--a =source= dotted-path
+starting at =maestro=, and a =name= which is a property of the =source= object
+containing a binding declaration.
+
+#!lua #noKnit
+Nerf.default_keymaps = {
+   ...
+   { source = "agents.results", name = "keymap_scrolling" },
+   ...
+}
+#/lua
+
+
+*** Composed keymap
+
+The structure actually used by =Maestro= when dispatching commands needs to
+incorporate bindings from many keymap declarations, preserving multiple
+bindings to the same event in-order so they can be tried until one consumes
+the event and stops the process. The =source= of the input keymaps is
+transformed into the =sendto= of the commands in the composed keymap. We also
+extract wildcards to a separate list, as they will not match exactly against
+the input event as must be checked manually.
+
+#!lua #noKnit
+{
+   bindings = {
+      UP = {
+         { sendto = "agents.edit", method = "up" },
+         { sendto = "modeS.raga", method = "historyBack" },
+         { sendto = "agents.results", method = "scrollUp" }
+      },
+      RETURN = {
+         { sendto = "modeS.raga", method = "conditionalEval" },
+         { sendto = "agents.edit", method = "nl" }
+      }
+   },
+   wildcards = {
+      { "[NORMAL]", { sendto = "agents.edit", method = "selfInsert", n = 1 } },
+      -- Not at the same time, of course
+      { "M-[NORMAL]",
+         { sendto = "agents.modal", method = "letterShortcut", n = 1 } }
+   }
+}

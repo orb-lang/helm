@@ -31,7 +31,7 @@ local SuggestAgent = meta(getmetatable(ResultListAgent))
 function SuggestAgent.cursorContext(suggest)
    local lex_tokens = {}
    -- Ignore whitespace and comments
-   for _, token in ipairs(suggest.tokens()) do
+   for _, token in ipairs(send { sendto = "agents.edit", method = "tokens" }) do
       if token.color ~= "no_color" and token.color ~= "comment" then
          insert(lex_tokens, token)
       end
@@ -180,10 +180,81 @@ end
 
 
 
-function SuggestAgent.accept(suggest)
-   local suggestion = suggest.last_collection:selectedItem()
-   suggest.replaceToken(suggestion)
+
+
+
+
+function SuggestAgent.acceptSelected(agent)
+   local suggestion = agent:selectedItem()
+   agent:quit()
+   if suggestion then
+      send { sendto = "agents.edit", method = "replaceToken", suggestion }
+      return true
+   else
+      return false
+   end
 end
+
+
+
+
+
+
+
+
+SuggestAgent.userCancel = SuggestAgent.quit
+
+
+
+
+
+
+
+
+
+function SuggestAgent.activateCompletion(agent)
+   if agent.last_collection then
+      agent:selectFirst()
+      send { method = "shiftMode", "complete" }
+      return true
+   else
+      return false
+   end
+end
+
+
+
+
+
+
+SuggestAgent.keymap_try_activate = {
+   TAB = "activateCompletion",
+   ["S-TAB"] = "activateCompletion",
+}
+
+function SuggestAgent.acceptAndFallthrough(agent)
+   agent:acceptSelected()
+   return false
+end
+function SuggestAgent.quitAndFallthrough(agent)
+   agent:quit()
+   return false
+end
+local find = assert(string.find)
+function SuggestAgent.acceptOnNonWordChar(agent, event)
+   if find(event.key, "[^a-zA-Z0-9_]") then
+      agent:acceptSelected()
+   end
+   return false
+end
+
+local addall = assert(require "core:table" . addall)
+SuggestAgent.keymap_actions = {
+   LEFT            = "acceptAndFallthrough",
+   PASTE           = "quitAndFallthrough",
+   ["[CHARACTER]"] = { method = "acceptOnNonWordChar", n = 1 }
+}
+addall(SuggestAgent.keymap_actions, ResultListAgent.keymap_actions)
 
 
 
