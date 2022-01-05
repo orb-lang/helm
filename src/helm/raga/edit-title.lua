@@ -6,7 +6,8 @@
 
 
 
-local clone    = import("core/table", "clone")
+local core_table = require "core:table"
+local clone, splice = assert(core_table.clone), assert(core_table.splice)
 local EditBase = require "helm:helm/raga/edit"
 
 local EditTitle = clone(EditBase, 2)
@@ -18,43 +19,10 @@ EditTitle.prompt_char = "👉"
 
 
 
-local function _accept(modeS)
-   local agents = modeS.maestro.agents
-   agents.session:selectedPremise().title = agents.edit:contents()
-   agents.session:selectNextWrap()
-   modeS:shiftMode "review"
-end
-
-EditTitle.NAV.RETURN = _accept
-EditTitle.NAV.TAB = _accept
-
-function EditTitle.NAV.ESC(modeS, category, value)
-   local agents = modeS.maestro.agents
-   agents.edit:update(agents.session:selectedPremise().title)
-   modeS:shiftMode "review"
-end
-
-
-
-
-
-
-
-
-
-EditTitle.CTRL["^Q"] = function(modeS, category, value)
-   _accept(modeS)
-   modeS.action_complete = false
-end
-
-
-
-
-
-
-
-
-EditTitle.CTRL["^R"] = nil
+EditTitle.default_keymaps = {
+   { source = "agents.session", name = "keymap_title_editing" }
+}
+splice(EditTitle.default_keymaps, EditBase.default_keymaps)
 
 
 

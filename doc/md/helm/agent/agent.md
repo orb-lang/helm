@@ -88,14 +88,51 @@ end
 ```
 
 
+#### Agent:evtScrollUp\(evt\), :evtScrollDown\(evt\)
+
+Translate the num\_lines property on a merged scroll event, or scrolls by one
+line for key events\.
+
+```lua
+function Agent.evtScrollUp(agent, evt)
+   agent:scrollUp(evt.num_lines)
+end
+function Agent.evtScrollDown(agent, evt)
+   agent:scrollDown(evt.num_lines)
+end
+```
+
+
+### Keymaps
+
+Provide basic scrolling commands at this level, if the raga chooses to include
+this keymap\. Note that higher\-priority keymaps may override some of this, e\.g\.
+up/down move the cursor when editing text even though the ResultsAgent would
+happily process them\.
+
+```lua
+Agent.keymap_scrolling = {
+   SCROLL_UP   = { method = "evtScrollUp",   n = 1 },
+   SCROLL_DOWN = { method = "evtScrollDown", n = 1 },
+   UP          = "scrollUp",
+   ["S-UP"]    = "scrollUp",
+   DOWN        = "scrollDown",
+   ["S-DOWN"]  = "scrollDown",
+   PAGE_UP     = "pageUp",
+   PAGE_DOWN   = "pageDown",
+   HOME        = "scrollToTop",
+   END         = "scrollToBottom"
+}
+```
+
 ### Agent:window\(\), :windowConfiguration\(\)
 
 The `Window`s of `Agent`s need to implement some common behavior in order to
 interact correctly with `Rainbuf`s and change detection, so we start with a
 basic config\. Subclasses may override `:windowConfiguration()` to add their
-own details, using `.mergeWindowConfig()` to include the superclass' config\.
-\(Note that this is not a method, just a function\.\)
+own details, using `.mergeWindowConfig()` to include the superclass' config\.Note that this is not a method, just a function\.\)
 
+\(
 ```lua
 local addall = assert(require "core:table" . addall)
 function Agent.mergeWindowConfig(cfg_a, cfg_b)

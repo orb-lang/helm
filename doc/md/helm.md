@@ -44,7 +44,6 @@ local __G = setmetatable({}, {__index = _G})
 __G.__G = __G
 ```
 
-
 ### \_helm
 
 The entire module is setup as a function, to allow our new fenv
@@ -66,6 +65,23 @@ kit = require "valiant:replkit"
 jit.vmdef = require "helm:helm/vmdef"
 jit.p = require "helm:helm/ljprof"
 sql = assert(sql, "sql must be in _G")
+```
+
+
+## send\(tab\)
+
+Turns `tab` into a message and `yield` s it\.
+
+We do a lot of message passing in `helm`, and we'll be doing more, so this is
+a useful global to have\.
+
+```lua
+local yield = assert(coroutine.yield)
+local Message = require "actor:message"
+
+function send(tab)
+   return yield(Message(tab))
+end
 ```
 
 ## Boot sequence
@@ -219,68 +235,6 @@ The reader takes a stream of data from `stdin`, asynchronously, and
 processes it into tokens, which stream to the `modeselektor`\.
 
 
-### process\_escapes\(seq\)
-
-```lua
-local Codepoints = require "singletons/codepoints"
-local byte, sub, char = assert(string.byte),
-                        assert(string.sub),
-                        assert(string.char)
-local m_parse, is_mouse = a.mouse.parse_fast, a.mouse.ismousemove
-local navigation = a.navigation
-
-local function process_escapes(seq)
-   if is_mouse(seq) then
-      return {"MOUSE", m_parse(seq)}
-   elseif #seq == 2 and byte(seq, 2) < 128 then
-      -- Meta
-      local key = "M-" .. sub(seq,2,2)
-      return {"ALT", key}
-   elseif a.is_paste(seq) then
-      return {"PASTE", a.parse_paste(seq)}
-   else
-      return {"NYI", seq}
-   end
-end
-```
-
-
-### old\_parse\_input
-
-Extract this logic to a function to keep `onseq` itself clean\.
-
-```lua
-local function old_parse_input(seq)
-   local events = {}
-   local head = byte(seq)
-   -- Special "navigation" sequences--this includes some escape sequences
-   if navigation[seq] then
-      events[1] = {"NAV", navigation[seq]}
-   -- Other escape sequences
-   elseif head == 27 then
-      events[1] = process_escapes(seq)
-   -- Control sequences
-   elseif head <= 31 then
-      local ctrl = "^" .. char(head + 64)
-      events[1] = {"CTRL", ctrl}
-   -- Printables--break into codepoints in case of multi-char input sequence
-   -- But first, optimize common case of single ascii printable
-   -- Note that bytes <= 31 and 127 (DEL) will have been taken care of earlier
-   elseif #seq == 1 and head < 128 then
-      events[1] = {"ASCII", seq}
-   else
-      local points = Codepoints(seq)
-      for i, pt in ipairs(points) do
-         -- #todo handle decode errors here--right now we'll just insert an
-         -- actual Unicode "replacement character"
-         events[i] = {byte(pt) < 128 and "ASCII" or "UTF8", pt}
-      end
-   end
-   return events
-end
-```
-
-
 ### onseq
 
 Our `uv` read handler\. Parses an input sequence into events and dispatches
@@ -346,8 +300,7 @@ local function dispatch_input(seq, dispatch_all)
    input_timer:stop()
    -- Try parsing, letting the parser know whether it should definitely consume
    -- everything it can or hold off on possible incomplete escape sequences
-   local new_events, pos = parse_input(seq, dispatch_all)
-   local old_events = old_parse_input(seq)
+   local events, pos = parse_input(seq, dispatch_all)
    input_buffer = seq:sub(pos)
    if #input_buffer > 0 then
       if dispatch_all then
@@ -365,9 +318,9 @@ local function dispatch_input(seq, dispatch_all)
          input_timer:start(5, 0, function() should_dispatch_all = true end)
       end
    end
-   consolidate_scroll_events(new_events)
-   for i = 1, #new_events do
-      modeS(new_events[i], old_events[i])
+   consolidate_scroll_events(events)
+   for _, event in ipairs(events) do
+      modeS(event)
       -- Okay, if the action resulted in a quit, break out of the event loop
       if modeS.has_quit then
          _ditch = true

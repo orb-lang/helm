@@ -14,30 +14,23 @@
 
 #### includes
 
-This is copypasta from Modeselektor, but yeah, we'll need most of this\.
-
 ```lua
-assert(meta, "must have meta in _G")
-```
-
-```lua
-local a         = require "anterm:anterm"
-local Txtbuf    = require "helm:buf/txtbuf"
-local Rainbuf   = require "helm:buf/rainbuf"
-local Historian = require "helm/historian"
-local Lex       = require "helm/lex"
-
-local concat, insert = assert(table.concat), assert(table.insert)
 local sub, gsub, rep = assert(string.sub),
                        assert(string.gsub),
                        assert(string.rep)
+local table = require "core:table"
+local addall, clone, concat, insert, splice = assert(table.addall),
+                                              assert(table.clone),
+                                              assert(table.concat),
+                                              assert(table.insert),
+                                              assert(table.splice)
 ```
 
 
 ## Nerf
 
 ```lua
-local clone    = import("core/table", "clone")
+
 local EditBase = require "helm:helm/raga/edit"
 
 local Nerf = clone(EditBase, 2)
@@ -45,215 +38,172 @@ Nerf.name = "nerf"
 Nerf.prompt_char = "👉"
 ```
 
-### Insertion
+
+### Evaluation
 
 ```lua
+function Nerf.eval()
+   local line = send { sendto = "agents.edit",
+                       method = 'contents' }
 
-local function _insert(modeS, category, value)
-   if modeS:agent'edit':contents() == "" then
-      modeS:clearResults()
-      if value == "/" then
-         modeS:shiftMode "search"
-         return
-      end
-      if value == "?" then
-         modeS:openHelp()
-         return
-      end
-   end
-   modeS:agent'edit':insert(value)
-end
+   local success, results = send { call = "eval", line }
 
-Nerf.ASCII = _insert
-Nerf.UTF8 = _insert
-
-```
-
-### NAV
-
-```lua
-
-local NAV = Nerf.NAV
-
-local function _prev(modeS)
-   -- Save what the user is currently typing...
-   local linestash = modeS:agent'edit':contents()
-   -- ...but only if they're at the end of the history,
-   -- and obviously only if there's anything there
-   if linestash == "" or modeS.hist.cursor <= modeS.hist.n then
-      linestash = nil
-   end
-   local prev_line, prev_result = modeS.hist:prev()
-   if linestash then
-      modeS.hist:append(linestash)
-   end
-   modeS:agent'edit':update(prev_line)
-   modeS:setResults(prev_result)
-   return modeS
-end
-
-function NAV.UP(modeS, category, value)
-   local inline = modeS:agent'edit':up()
-   if not inline then
-      _prev(modeS)
-   end
-   return modeS
-end
-
-local function _advance(modeS)
-   local new_line, next_result = modeS.hist:next()
-   if not new_line then
-      local added = modeS.hist:append(modeS:agent'edit':contents())
-      if added then
-         modeS.hist.cursor = modeS.hist.n + 1
-      end
-   end
-   modeS:agent'edit':update(new_line)
-   modeS:setResults(next_result)
-   return modeS
-end
-
-function NAV.DOWN(modeS, category, value)
-   local inline = modeS:agent'edit':down()
-   if not inline then
-      _advance(modeS)
-   end
-
-   return modeS
-end
-```
-
-```lua
-function _eval(modeS)
-   local line = modeS:agent'edit':contents()
-   local success, results = modeS.eval(line)
    if not success and results == 'advance' then
-      modeS:agent'edit':endOfText()
-      modeS:agent'edit':nl()
+      send { sendto = "agents.edit",
+             method = 'endOfText'}
+      return false -- Fall through to EditAgent nl binding
    else
-      modeS.hist:append(line, results, success)
-      modeS.hist.cursor = modeS.hist.n + 1
-      modeS:setResults(results)
-      modeS:agent'edit':clear()
+      send { sendto = 'hist',
+             method = 'append',
+             line, results, success }
+
+      send { sendto = 'hist', method = 'toEnd' }
+
+      send { sendto = "agents.results",
+                     method = 'update', results }
+
+      send { sendto = "agents.edit",
+                             method = 'clear' }
    end
 end
 
-function NAV.RETURN(modeS, category, value)
-   if modeS:agent'edit':shouldEvaluate() then
-      _eval(modeS)
+function Nerf.conditionalEval()
+   if send { sendto = "agents.edit",
+             method = 'shouldEvaluate'} then
+      return Nerf.eval()
    else
-      modeS:agent'edit':nl()
+      return false -- Fall through to EditAgent nl binding
    end
 end
 
-function NAV.CTRL_RETURN(modeS, category, value)
-   _eval(modeS)
+Nerf.keymap_evaluation = {
+   RETURN = "conditionalEval",
+   ["C-RETURN"] = "eval",
+   ["S-RETURN"] = { sendto = "agents.edit", method = "nl" },
+   -- Add aliases for terminals not in CSI u mode
+   ["C-\\"] = "eval",
+   ["M-RETURN"] = { sendto = "agents.edit", method = "nl" }
+}
+```
+
+
+### History navigation
+
+```lua
+function Nerf.historyBack()
+   -- If we're at the end of the history (the user was typing a new
+   -- expression), save it before moving
+   if send { sendto = 'hist', method = 'atEnd' } then
+      local linestash = send { sendto = "agents.edit", method = "contents" }
+      send { sendto = "hist", method = "append", linestash }
+   end
+   local prev_line, prev_result = send { sendto = "hist", method = "prev" }
+   send { sendto = "agents.edit", method = "update", prev_line }
+   send { sendto = "agents.results", method = "update", prev_result }
 end
 
-function NAV.SHIFT_RETURN(modeS, category, value)
-   modeS:agent'edit':nl()
+function Nerf.historyForward()
+   local new_line, next_result = send { sendto = "hist", method = "next" }
+   if not new_line then
+      local old_line = send { sendto = "agents.edit", method = "contents" }
+      local added = send { sendto = "hist", method = "append", old_line }
+      if added then
+         send { sendto = "hist", method = "toEnd" }
+      end
+   end
+   send { sendto = "agents.edit", method = "update", new_line }
+   send { sendto = "agents.results", method = "update", next_result }
 end
 
--- Add aliases for terminals not in CSI u mode
-Nerf.CTRL["^\\"] = NAV.CTRL_RETURN
-NAV.ALT_RETURN = NAV.SHIFT_RETURN
+Nerf.keymap_history_navigation = {
+   UP = "historyBack",
+   DOWN = "historyForward"
+}
+```
 
-local function _activateCompletion(modeS)
-   if modeS:agent'suggest'.last_collection then
-      modeS:shiftMode "complete"
+
+### Eval\-from\-cursor
+
+```lua
+function Nerf.evalFromCursor()
+   local top = send { sendto = "hist", property = "n" }
+   local cursor = send { sendto = "hist", property = "cursor" }
+   for i = cursor, top do
+      local line = send { sendto = "hist", method = "index", i }
+      send { sendto = "agents.edit", method = "update", line }
+      Nerf.eval()
+   end
+end
+```
+
+
+### Help screen
+
+
+
+```lua
+function Nerf.openHelpOnFirstKey()
+   if send { sendto = "agents.edit", method = "isEmpty" } then
+      send { method = "openHelp" }
       return true
    else
       return false
    end
 end
 
-function NAV.SHIFT_DOWN(modeS, category, value)
-   if not _activateCompletion(modeS) then
-      modeS:agent'results':scrollDown()
-   end
-end
-
-function NAV.SHIFT_UP(modeS, category, value)
-   if not _activateCompletion(modeS) then
-      modeS:agent'results':scrollUp()
-   end
-end
-
-function NAV.TAB(modeS, category, value)
-   if not _activateCompletion(modeS) then
-      modeS:agent'edit':paste("   ")
-   end
-end
-
-function NAV.SHIFT_TAB(modeS, category, value)
-   -- If we can't activate completion, nothing to do really
-   _activateCompletion(modeS)
-end
+Nerf.keymap_extra_commands = {
+   ["C-l"] = { sendto = "agents.edit", method = "clear" },
+   -- Hack with empty sendto to force delivery directly to modeS
+   -- This method should move somewhere else anyway
+   ["C-r"] = { sendto = "", method = "restart" },
+   ["?"] = "openHelpOnFirstKey",
+   ["M-e"] = "evalFromCursor"
+}
+addall(Nerf.keymap_extra_commands, EditBase.keymap_extra_commands)
 ```
 
 
-## Keymap
+### Keymaps
+
+First a section of commands that need to react to certain keypresses under
+certain circumstances, but often allow processing to continue\.
 
 ```lua
-Nerf.default_keymaps = clone(EditBase.default_keymaps)
+Nerf.default_keymaps = {
+   { source = "agents.search", name = "keymap_try_activate" },
+   { source = "agents.suggest", name = "keymap_try_activate" },
+   { source = "agents.results", name = "keymap_reset" },
 ```
 
-### Readline\-style NAV
-
-Provides equivalent commands for diehard Emacsians\.
-
-In case RMS ever takes bridge for a spin\.\.\.
+Then some additional commands\-\-evaluation mainly, and we include
+Readline\-compatible navigation\.
 
 ```lua
-insert(Nerf.default_keymaps, {
-   ["C-b"] = "left",
-   ["C-f"] = "right",
-   ["C-n"] = "down",
-   ["C-p"] = "up"
-})
+   { source = "modeS.raga", name = "keymap_evaluation" },
+   { source = "agents.edit", name = "keymap_readline_nav" }
+}
 ```
 
-
-### Scroll handling
+Then the inherited basic editing commands etc\.
 
 ```lua
-function Nerf.scrollResultsUp(maestro, event)
-   maestro.agents.results:scrollUp(event.num_lines)
-end
-
-function Nerf.scrollResultsDown(maestro, event)
-   maestro.agents.results:scrollDown(event.num_lines)
-end
-
-insert(Nerf.default_keymaps, {
-   SCROLL_UP = "scrollResultsUp",
-   SCROLL_DOWN = "scrollResultsDown"
-})
+splice(Nerf.default_keymaps, EditBase.default_keymaps)
 ```
 
-
-### ALT
+History navigation is a fallback from cursor movement\.
 
 ```lua
-local ALT = Nerf.ALT
+insert(Nerf.default_keymaps,
+       { source = "modeS.raga", name = "keymap_history_navigation" })
 ```
 
-
-#### M\-e
+And results\-area scrolling binds several shortcuts that are already taken, so we need to make sure those others get there first\.
 
 ```lua
-ALT ["M-e"] = function(modeS, category, value)
-   local top = modeS.hist.n
-   local cursor = modeS.hist.cursor
-   for i = cursor, top do
-      -- Discard the second return value from :index
-      -- or it will confuse the Txtbuf constructor rather badly
-      local line = modeS.hist:index(i)
-      modeS:agent'edit':update(line)
-      _eval(modeS)
-   end
-end
+insert(Nerf.default_keymaps,
+      { source = "agents.results", name = "keymap_scrolling" })
 ```
+
 
 ### Nerf\.onCursorChanged\(modeS\), Nerf\.onTxtbufChanged\(modeS\)
 
