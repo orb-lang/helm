@@ -91,9 +91,9 @@ end
 ```lua
 local clone = assert(require "core:table" . clone)
 function InputEchoAgent.update(echo, event, command)
-   echo.last_event = clone(event)
-   echo.last_event.command = command
-   setmetatable(echo.last_event, echo_M)
+   echo.subject = clone(event)
+   echo.subject.command = command
+   setmetatable(echo.subject, echo_M)
    echo:contentsChanged()
 end
 ```
@@ -103,7 +103,7 @@ end
 
 ```lua
 function InputEchoAgent.bufferValue(echo)
-   return echo.last_event and { n = 1, echo.last_event } or { n = 0 }
+   return echo.subject and { n = 1, echo.subject } or { n = 0 }
 end
 ```
 

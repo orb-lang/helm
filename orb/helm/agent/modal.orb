@@ -119,7 +119,7 @@ function ModalAgent.update(agent, text, button_style)
       button_style = button_styles[button_style]
    end
    model.buttons = button_style
-   agent.model = model
+   agent.subject = model
    agent:contentsChanged()
 end
 #/lua
@@ -143,7 +143,7 @@ Closes the modal, storing the provided =answer= in the model.
 
 #!lua
 function ModalAgent.close(agent, value)
-   agent.model.value = value
+   agent.subject.value = value
    -- #todo shift back to the previous raga--modeS needs to maintain a stack
    send { method = "shiftMode", "default" }
 end
@@ -156,7 +156,7 @@ Retrieves the value answered by the current/most-recent modal dialog.
 
 #!lua
 function ModalAgent.answer(agent)
-   return agent.model and agent.model.value
+   return agent.subject and agent.subject.value
 end
 #/lua
 
@@ -165,7 +165,7 @@ end
 
 #!lua
 function ModalAgent.bufferValue(agent)
-   return agent.model and { n = 1, agent.model } or { n = 0 }
+   return agent.subject and { n = 1, agent.subject } or { n = 0 }
 end
 #/lua
 
@@ -182,7 +182,7 @@ local function _shortcutFrom(button)
 end
 
 local function _acceptButtonWhere(agent, fn)
-   for _, button in ipairs(agent.model.buttons) do
+   for _, button in ipairs(agent.subject.buttons) do
       if fn(button) then
          return agent:close(button.value)
       end
