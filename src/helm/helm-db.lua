@@ -905,10 +905,13 @@ INSERT INTO run (project) VALUES (:project);
 
 historian_sql.insert_run_finish = [[
 UPDATE run SET finish_time = strftime('%Y-%m-%dT%H:%M:%f', 'now')
-WHERE run.run_id == :run
-;
+WHERE run.run_id == :run;
 ]]
 
+historian_sql.insert_run_input = [[
+INSERT INTO run_action (run, ordinal, input)
+VALUES (:run_id, :ordinal, :input);
+]]
 
 
 
@@ -932,39 +935,27 @@ SELECT project_id FROM project
 ]]
 
 historian_sql.get_results = [[
-SELECT repr
-FROM result
+SELECT repr FROM result
 INNER JOIN repr ON repr.hash == result.hash
 WHERE result.line_id = :line_id
 ORDER BY result.result_id;
 ]]
 
 historian_sql.get_lines_of_run = [[
-SELECT line
-FROM run
-INNER JOIN input on input.project == run.project
-WHERE  run.run_id = :run
-   AND input.time >= run.start_time
-   AND input.time <= run.finish_time
-ORDER BY input.time;
+SELECT input.line FROM run
+INNER JOIN run_action on run_action.run = run.run_id
+INNER JOIN input on input.line_id = run_action.input
+WHERE run.run_id = :run_id
+ORDER BY run_action.ordinal;
 ]]
 
-historian_sql.get_latest_run_lines = [[
-SELECT input.line AS line
-FROM run
-INNER JOIN input ON input.project == run.project
-
-WHERE run.project = :project
-   AND run.run_id IN
-   ( SELECT run.run_id
-     FROM run
-     WHERE finish_time IS NOT NULL
-     ORDER BY run.start_time DESC limit 1)
-   AND run.start_time <= input.time
-   AND input.time <= run.finish_time
-ORDER BY input.time;
+historian_sql.get_latest_finished_run = [[
+SELECT run_id FROM run
+WHERE project = :project_id
+   AND finish_time IS NOT NULL
+ORDER BY run.start_time DESC
+LIMIT 1;
 ]]
-
 
 
 

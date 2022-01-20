@@ -468,42 +468,31 @@ end
 
 
 
+local Deque = require "deque:deque"
 function ModeS.restart(modeS)
    modeS :setStatusLine 'restart'
    -- remove existing result
    modeS:agent'results':clear()
    modeS:paint()
-   -- perform rerun
-   -- Replace results:
+   -- Gather lines to rerun
    local hist = modeS.hist
    local top = hist.n
    hist.n = hist.cursor_start - 1
-   -- put instrumented require in restart mode
-   modeS.eval:restart()
-   hist.stmts.savepoint_restart_session()
+   local lines = Deque()
    for i = hist.cursor_start, top do
-      local success, results = modeS.eval(tostring(hist[i]))
-      assert(results ~= "advance", "Incomplete line when restarting session")
-      hist:append(hist[i], results, success, modeS.session)
+      lines:push(hist[i])
    end
+   -- Put instrumented require in restart mode and perform rerun
+   modeS.eval:restart()
+   modeS:rerun(lines)
    modeS.eval:reset()
    assert(hist.n == #hist, "History length mismatch after restart: n = "
          .. tostring(hist.n) .. ", # = " , tostring(#hist))
-   modeS:agent'results':update(hist.result_buffer[hist.cursor])
-   modeS:paint()
    uv.timer_start(uv.new_timer(), 1500, 0,
                   function()
                      modeS:setStatusLine 'default'
                      modeS:paint()
                   end)
-   local restart_idle = uv.new_idle()
-   restart_idle:start(function()
-      if #hist.idlers > 0 then
-         return nil
-      end
-      hist.stmts.release_restart_session()
-      restart_idle:stop()
-   end)
    return modeS
 end
 
@@ -514,18 +503,32 @@ end
 
 
 
+
+
 function ModeS.rerun(modeS, deque)
-   for line in deque:popAll() do
-      -- push it to the edit agent
-      modeS:agent'edit':insert(line)
-      local success, results = modeS.eval(line)
-      -- we don't worry about 'advance' since the lines are from
-      -- the database
-      modeS.hist:append(line, results, success)
-      modeS.hist.cursor = modeS.hist.n + 1
-      modeS:setResults(results)
+   -- #todo this should probably be on a RunAgent/Runner and invoked
+   -- via some queued-Message mechanism, which would also take care of
+   -- putting it in a coroutine. Until then, we do this.
+   modeS:processMessagesWhile(function()
       modeS:agent'edit':clear()
-   end
+      modeS.hist.stmts.savepoint_restart_session()
+      local success, results
+      for line in deque:popAll() do
+         success, results = modeS.eval(line)
+         assert(results ~= "advance", "Incomplete line when restarting session")
+         modeS.hist:append(line, results, success)
+      end
+      modeS.hist:toEnd()
+      modeS:agent'results':update(results)
+   end)
+   local restart_idle = uv.new_idle()
+   restart_idle:start(function()
+      if #modeS.hist.idlers > 0 then
+         return nil
+      end
+      modeS.hist.stmts.release_restart_session()
+      restart_idle:stop()
+   end)
 end
 
 

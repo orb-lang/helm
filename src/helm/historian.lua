@@ -58,6 +58,25 @@ end
 
 
 
+local function sql_insert_errcheck(stmt)
+   local err = stmt:step()
+   if err then
+      error(err)
+   else
+      stmt:clearbind():reset()
+   end
+end
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -91,16 +110,7 @@ function Historian.load(historian)
 
    -- start the latest run
    stmts.insert_run_start :bind(project_id) :step()
-   historian.run_id = stmts.lastRowId()
-   if historian.restarting then
-      -- do restart stuff, ending with
-      local deque = require "deque:deque" ()
-      for _, line in stmts.get_latest_run_lines :bind(project_id) :cols() do
-         deque:push(line)
-      end
-      historian.reloads = deque
-      historian.restarting = nil
-   end
+   historian.run = { run_id = stmts.lastRowId(), actions = {} }
 
    -- Retrieve history
    local number_of_lines = stmts.get_number_of_lines
@@ -154,18 +164,23 @@ function Historian.persist(historian, line, results)
       return false
    end
    historian.stmts.savepoint_persist()
-   historian.insert_line:bindkv { project = historian.project_id,
-                                  line    = blob(line) }
-   local err = historian.insert_line:step()
-   if not err then
-      historian.insert_line:clearbind():reset()
-   else
-      error(err)
-   end
+
+   -- Persist the line of input itself
+   sql_insert_errcheck(
+      historian.insert_line:bindkv { project = historian.project_id,
+                                     line    = blob(line) })
    local line_id = historian.stmts.lastRowId()
    insert(historian.line_ids, line_id)
-   -- If there's nothing to persist, release our savepoint
-   -- and don't bother starting the idler
+
+   -- Then the run action indicating it was just evaluated
+   local run_action = { run_id  = historian.run.run_id,
+                        ordinal = #historian.run.actions + 1,
+                        input   = line_id }
+   insert(historian.run.actions, run_action)
+   sql_insert_errcheck(historian.stmts.insert_run_input:bindkv(run_action))
+
+   -- If there are no results, nothing more to persist,
+   -- release our savepoint and don't bother starting the idler
    if not results then
       historian.stmts.release_persist()
       return line_id
@@ -182,20 +197,8 @@ function Historian.persist(historian, line, results)
       -- now persist
       for i = 1, results.n do
          local hash = sha(results_tostring[i])
-         historian.insert_repr:bind(hash, results_tostring[i])
-         err = historian.insert_repr:step()
-         if not err then
-            historian.insert_repr :clearbind() :reset()
-         else
-            error(err)
-         end
-         historian.insert_result_hash:bind(line_id, hash)
-         err = historian.insert_result_hash:step()
-         if not err then
-            historian.insert_result_hash :clearbind() :reset()
-         else
-            error(err)
-         end
+         sql_insert_errcheck(historian.insert_repr:bind(hash, results_tostring[i]))
+         sql_insert_errcheck(historian.insert_result_hash:bind(line_id, hash))
       end
       historian.stmts.release_persist()
       persist_idler:stop()
@@ -380,7 +383,7 @@ end
 
 
 function Historian.close(historian)
-   historian.stmts.insert_run_finish :bind(historian.run_id) :step()
+   historian.stmts.insert_run_finish :bind(historian.run.run_id) :step()
 end
 
 
@@ -410,12 +413,18 @@ local function new(helm_db)
    historian.cursor_start = 0
    historian.n = 0
    historian:createPreparedStatements(helm_db)
-   if _Bridge.args.restart then
-      -- this flag is reset by historian:load()
-      -- eventually the responsibility of the Runner
-      historian.restarting = true
-   end
    historian:load()
+   if _Bridge.args.restart then
+      local deque = require "deque:deque" ()
+      local prev_run = historian.stmts.get_latest_finished_run
+                                          :bind(historian.project_id)
+                                          :value()
+      for _, line in historian.stmts.get_lines_of_run:bind(prev_run):cols() do
+         deque:push(line)
+      end
+      historian.reloads = deque
+   end
+
    local session_cfg = {}
    local session_title = _Bridge.args.macro or
                          _Bridge.args.new_session or
