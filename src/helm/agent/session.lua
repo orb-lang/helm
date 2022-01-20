@@ -79,8 +79,8 @@ function SessionAgent.selectIndex(agent, index)
       _update_results_agent(agent)
       agent:contentsChanged()
       agent:bufferCommand("ensureSelectedVisible")
-      -- #todo can/should we be the ones to update the EditAgent
-      -- for the title somehow? Send it a message...
+      local premise = agent:selectedPremise()
+      send { sendto = "agents.edit", method = "update", premise and premise.title }
    end
 end
 
@@ -112,21 +112,6 @@ end
 
 function SessionAgent.selectedPremise(agent)
    return agent.session[agent.selected_index]
-end
-
-
-
-
-
-
-
-
-function SessionAgent.scrollResultsDown(agent)
-   agent.results_agent:scrollDown()
-end
-
-function SessionAgent.scrollResultsUp(agent)
-   agent.results_agent:scrollUp()
 end
 
 
@@ -215,6 +200,52 @@ end
 
 
 
+
+
+
+
+function SessionAgent.editSelectedTitle(agent)
+   send { method = "shiftMode", "edit_title" }
+end
+
+function SessionAgent.cancelTitleEditing(agent)
+   send { method = "shiftMode", "review" }
+end
+
+
+
+
+
+
+
+
+function SessionAgent.acceptTitleUpdate(agent)
+   local new_title = send { sendto = "agents.edit", method = "contents" }
+   agent:selectedPremise().title = new_title
+   agent:selectNextWrap()
+   agent:cancelTitleEditing()
+end
+
+
+
+
+
+
+SessionAgent.keymap_edit_title = {
+   RETURN = "acceptTitleUpdate",
+   TAB = "acceptTitleUpdate",
+   ESC = "cancelTitleEditing",
+   ["C-q"] = "acceptTitleUpdate"
+}
+
+
+
+
+
+
+
+
+
 function SessionAgent.bufferValue(agent)
    return agent.session
 end
@@ -265,12 +296,29 @@ end
 
 
 function SessionAgent.resultsWindow(agent)
-   if not agent.results_agent then
-      agent.results_agent = ResultsAgent()
-      _update_results_agent(agent)
-   end
    return agent.results_agent:window()
 end
+
+
+
+
+
+
+
+
+
+
+
+
+SessionAgent.keymap_default = {
+   UP = "selectPreviousWrap",
+   DOWN = "selectNextWrap",
+   TAB = "toggleSelectedState",
+   ["S-TAB"] = "reverseToggleSelectedState",
+   ["M-UP"] = "movePremiseUp",
+   ["M-DOWN"] = "movePremiseDown",
+   RETURN = "editSelectedTitle"
+}
 
 
 
@@ -281,6 +329,7 @@ function SessionAgent._init(agent)
    Agent._init(agent)
    agent.selected_index = 0
    agent.edit_agents = {}
+   agent.results_agent = ResultsAgent()
 end
 
 

@@ -1,8 +1,6 @@
 # PagerAgent
 
-Agent for results display\. For now this turns out to be the simplest of the
-lot, basically just a dumb value holder\. It may get some more responsibility
-later, not sure\.
+Agent for displaying simple content \(e\.g\. help files\)\.
 
 ```lua
 local meta = assert(require "core:cluster" . Meta)
@@ -25,6 +23,20 @@ end
 ```
 
 
+### PagerAgent:activate\(\), :quit\(\)
+
+Activate/dismiss the pager \(showing/hiding the popup Zone in the process\)\.
+
+```lua
+function PagerAgent.activate(agent)
+   send { method = "shiftMode", "page" }
+end
+function PagerAgent.quit(agent)
+   send { method = "shiftMode", "default" }
+end
+```
+
+
 ### PagerAgent:bufferValue\(\)
 
 ```lua
@@ -32,6 +44,33 @@ function PagerAgent.bufferValue(agent)
    -- #todo we should work with a Rainbuf that does word-aware wrapping
    -- and accepts a string directly, rather than abusing Resbuf
    return { n = 1, agent.str }
+end
+```
+
+
+### Keymaps
+
+```lua
+PagerAgent.keymap_actions = {
+   ESC = "quit",
+   q = "quit"
+}
+
+local clone = assert(require "core:table" . clone)
+PagerAgent.keymap_scrolling = clone(Agent.keymap_scrolling)
+for cmd, shortcuts in pairs{
+   scrollDown     = { "RETURN", "e", "j", "C-n", "C-e", "C-j" },
+   scrollUp       = { "S-RETURN", "y", "k", "C-y", "C-p", "C-l" },
+   pageDown       = { " ", "f", "C-v", "C-f" },
+   pageUp         = { "b", "C-b" },
+   halfPageDown   = { "d", "C-d" },
+   halfPageUp     = { "u", "C-u" },
+   scrollToBottom = { "G", ">" },
+   scrollToTop    = { "g", "<" }
+} do
+   for _, shortcut in ipairs(shortcuts) do
+      PagerAgent.keymap_scrolling[shortcut] = cmd
+   end
 end
 ```
 

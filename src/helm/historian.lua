@@ -362,6 +362,22 @@ end
 
 
 
+function Historian.atEnd(historian)
+   return historian.cursor > historian.n
+end
+
+function Historian.toEnd(historian)
+   historian.cursor = historian.n + 1
+end
+
+
+
+
+
+
+
+
+
 
 function Historian.close(historian)
    historian.stmts.insert_run_finish :bind(historian.run_id) :step()

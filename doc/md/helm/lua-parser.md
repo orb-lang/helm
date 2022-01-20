@@ -155,6 +155,10 @@ function Lua.__tostring(lua)
    return lua:span()
 end
 
+function Lua.toLua(lua)
+   return lua:span()
+end
+
 local lua_metas = { lua = Lua }
 ```
 
