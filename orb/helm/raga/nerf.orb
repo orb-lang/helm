@@ -57,12 +57,13 @@ function Nerf.eval()
              line, results, success }
 
       send { sendto = 'hist', method = 'toEnd' }
+      -- Do this first because it clears the results area
+      -- #todo this clearly means edit:clear() is doing too much, decouple
+      send { sendto = "agents.edit",
+                             method = 'clear' }
 
       send { sendto = "agents.results",
                      method = 'update', results }
-
-      send { sendto = "agents.edit",
-                             method = 'clear' }
    end
 end
 
