@@ -60,10 +60,9 @@ end
 
 local function sql_insert_errcheck(stmt)
    local err = stmt:step()
+   stmt:clearbind():reset()
    if err then
       error(err)
-   else
-      stmt:clearbind():reset()
    end
 end
 

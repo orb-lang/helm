@@ -1,4 +1,4 @@
-#\* Lua Parser
+# Lua Parser
 
 
   The primary purpose of this module is to enable metavariables, for easier

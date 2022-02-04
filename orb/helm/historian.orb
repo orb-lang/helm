@@ -55,15 +55,14 @@ end
 
 Execute the (already-bound) prepared statement, =stmt=, which is assumed to be
 an insert such that it returns a value only if it fails. We convert that into
-a Lua error, or reset the statement if it succeeds.
+a Lua error, and in any case reset the statement so it can be reused.
 
 #!lua
 local function sql_insert_errcheck(stmt)
    local err = stmt:step()
+   stmt:clearbind():reset()
    if err then
       error(err)
-   else
-      stmt:clearbind():reset()
    end
 end
 #/lua
