@@ -1,4 +1,4 @@
-# Nerf mode
+#\* Nerf mode
 
 
 `nerf` is the default mode for the repl\.

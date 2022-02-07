@@ -201,22 +201,22 @@ Executes =fn= as a coroutine, processing any =Message=s it yields.
 local create, resume, status = assert(coroutine.create),
                                assert(coroutine.resume),
                                assert(coroutine.status)
+local yield, wrap = assert(coroutine.yield), assert(coroutine.wrap)
 
 local dispatchmessage = assert(require "actor:actor" . dispatchmessage)
 function ModeS.processMessagesWhile(modeS, fn)
    local coro = create(fn)
    local msg_ret = { n = 0 }
    local ok, msg
-   local function _dispatchCurrentMessage()
-      -- #todo ugly hack to shorten the 'sendto' value in the common case of
-      -- inter-agent messaging. We should be able to handle this with a custom
-      -- dispatchmessage implementation instead
-      if msg.sendto and msg.sendto:find("^agents%.") then
-         msg.sendto = "maestro." .. msg.sendto
+   local _dispatchCurrentMessage = coroutine.wrap(function(msg)
+      while true do
+         if msg.sendto and msg.sendto:find("^agents%.") then
+            msg.sendto = "maestro." .. msg.sendto
+         end
+         msg = yield(pack(dispatchmessage(modeS, msg)))
       end
-      return pack(dispatchmessage(modeS, msg))
-   end
-   while true do
+   end)
+   while msg_ret do
       ok, msg = resume(coro, unpack(msg_ret))
       if not ok then
          error(msg .. "\nIn coro:\n" .. debug.traceback(coro))
@@ -226,7 +226,7 @@ function ModeS.processMessagesWhile(modeS, fn)
          -- to be insufficient very soon, work out something else
          return msg
       end
-      msg_ret = modeS:processMessagesWhile(_dispatchCurrentMessage)
+      msg_ret = _dispatchCurrentMessage(msg)
    end
 end
 #/lua
