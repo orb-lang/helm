@@ -411,6 +411,11 @@ First problem is this creates a fresh coroutine for every call, and I can't
 see a good reason for that, it could probably just be
 `ok, msg_ret = resume(coro, pack(dispatchmessage(modeS, msg)))`\.
 
+D\.S\. no, that's actually important, because sometimes the message being
+processed wants to send more messages, so the processing of it needs to be in
+a coroutine or those yields will blow up\. I do find this distasteful, but I
+haven't thought of a way around it so far\.
+
 The second problem is that the actual activity relies on a function which
 isn't defined here, and you have to hunt that function down in two places,
 the big one:
@@ -484,6 +489,18 @@ What would fix this I'm thinking, is to make all of `:act` into the message
 processing coroutine function at build time \(we only need the one coroutine\)
 and wrap/curry it into `:act`\. That way anything else, `:shiftMode` in
 particular, can yield and resume messages at any point\.
+
+D\.S\. I\.\.\.don't think I get what you have a problem with\. See my note above, I
+don't think one coroutine is enough, though I share your distate for creating
+so many of them\. That said, it 
+would
+ be possible to replace the separate
+handling in :shiftMode with expanding the scope in :act so it wraps
+everything, and that's probably smart\-\-who knows, maybe someday
+`InputEchoAgent:update` will want to message somebody, which right now would
+break but obviously 
+should
+ work\.
 
 We almost certainly want Maestro to have an inner coroutine, which throws to
 the outer one, but we can work around that for awhile\.

@@ -450,6 +450,9 @@ end
 
 function ModeS.quit(modeS)
    -- #todo handle this better--as an event of sorts, maybe?
+   -- @atman: wait, I have an idea!
+   modeS.hist:close()
+   -- this is just to commit the end of the run, right now
    local session = modeS.hist.session
    if session.mode == "macro" and #session > 0 then
       session:save()
@@ -465,44 +468,69 @@ end
 
 
 
+local Deque = require "deque:deque"
 function ModeS.restart(modeS)
    modeS :setStatusLine 'restart'
    -- remove existing result
    modeS:agent'results':clear()
    modeS:paint()
-   -- perform rerun
-   -- Replace results:
+   -- Gather lines to rerun
    local hist = modeS.hist
    local top = hist.n
    hist.n = hist.cursor_start - 1
-   -- put instrumented require in restart mode
-   modeS.eval:restart()
-   hist.stmts.savepoint_restart_session()
+   local lines = Deque()
    for i = hist.cursor_start, top do
-      local success, results = modeS.eval(tostring(hist[i]))
-      assert(results ~= "advance", "Incomplete line when restarting session")
-      hist:append(hist[i], results, success, modeS.session)
+      lines:push(hist[i])
    end
+   -- Put instrumented require in restart mode and perform rerun
+   modeS.eval:restart()
+   modeS:rerun(lines)
    modeS.eval:reset()
    assert(hist.n == #hist, "History length mismatch after restart: n = "
          .. tostring(hist.n) .. ", # = " , tostring(#hist))
-   modeS:agent'results':update(hist.result_buffer[hist.cursor])
-   modeS:paint()
    uv.timer_start(uv.new_timer(), 1500, 0,
                   function()
                      modeS:setStatusLine 'default'
                      modeS:paint()
                   end)
-   local restart_idle = uv.new_idle()
-   restart_idle:start(function()
-      if #hist.idlers > 0 then
-         return nil
-      end
-      hist.stmts.release_restart_session()
-      restart_idle:stop()
-   end)
    return modeS
 end
+
+
+
+
+
+
+
+
+
+
+function ModeS.rerun(modeS, deque)
+   -- #todo this should probably be on a RunAgent/Runner and invoked
+   -- via some queued-Message mechanism, which would also take care of
+   -- putting it in a coroutine. Until then, we do this.
+   modeS:processMessagesWhile(function()
+      modeS:agent'edit':clear()
+      modeS.hist.stmts.savepoint_restart_session()
+      local success, results
+      for line in deque:popAll() do
+         success, results = modeS.eval(line)
+         assert(results ~= "advance", "Incomplete line when restarting session")
+         modeS.hist:append(line, results, success)
+      end
+      modeS.hist:toEnd()
+      modeS:agent'results':update(results)
+   end)
+   local restart_idle = uv.new_idle()
+   restart_idle:start(function()
+      if #modeS.hist.idlers > 0 then
+         return nil
+      end
+      modeS.hist.stmts.release_restart_session()
+      restart_idle:stop()
+   end)
+end
+
 
 
 
@@ -614,6 +642,14 @@ local function new(max_extent, writer, db)
 
    -- initial state
    modeS:shiftMode(modeS.raga_default)
+
+   -- hackish: we check the historian for a deque of lines to load and if
+   -- we have it, we just eval them into existence.
+   if modeS.hist.reloads then
+      modeS:rerun(modeS.hist.reloads)
+      --modeS.hist.reloads = nil
+   end
+
    modeS.action_complete = true
    return modeS
 end

@@ -900,6 +900,21 @@ INSERT INTO repr (hash, repr) VALUES (:hash, :repr);
 INSERT INTO project (directory) VALUES (?);
 ```
 
+```sql
+INSERT INTO run (project) VALUES (:project);
+```
+
+```sql
+UPDATE run SET finish_time = strftime('%Y-%m-%dT%H:%M:%f', 'now')
+WHERE run.run_id == :run;
+```
+
+```sql
+INSERT INTO run_action (run, ordinal, input)
+VALUES (:run_id, :ordinal, :input);
+```
+
+
 ##### Selections
 
 ```sql
@@ -921,11 +936,26 @@ SELECT project_id FROM project
 ```
 
 ```sql
-SELECT repr
-FROM result
+SELECT repr FROM result
 INNER JOIN repr ON repr.hash == result.hash
 WHERE result.line_id = :line_id
 ORDER BY result.result_id;
+```
+
+```sql
+SELECT input.line FROM run
+INNER JOIN run_action on run_action.run = run.run_id
+INNER JOIN input on input.line_id = run_action.input
+WHERE run.run_id = :run_id
+ORDER BY run_action.ordinal;
+```
+
+```sql
+SELECT run_id FROM run
+WHERE project = :project_id
+   AND finish_time IS NOT NULL
+ORDER BY run.start_time DESC
+LIMIT 1;
 ```
 
 
