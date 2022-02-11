@@ -113,6 +113,52 @@ end
 
 
 
+local create, resume, status, yield = assert(coroutine.create),
+                                      assert(coroutine.resume),
+                                      assert(coroutine.status),
+                                      assert(coroutine.yield)
+
+local dispatchmessage = assert(require "actor:actor" . dispatchmessage)
+
+function Maestro.processMessagesWhile(maestro, fn)
+   local coro = create(fn)
+   local msg_ret = { n = 0 }
+   local ok, msg
+   while true do
+      ok, msg = resume(coro, unpack(msg_ret))
+      if not ok then
+         error(msg .. "\nIn coro:\n" .. debug.traceback(coro))
+      elseif status(coro) == "dead" then
+         -- End of body function, pass through the return value
+         return msg
+      end
+      if msg.sendto and msg.sendto:find("^agents%.") then
+         msg_ret = maestro:processMessagesWhile(function()
+            return pack(dispatchmessage(maestro, msg))
+         end)
+      else
+         msg_ret = pack(yield(msg))
+      end
+   end
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -187,17 +233,19 @@ local function _dispatchOnly(maestro, event)
 end
 
 function Maestro.dispatch(maestro, event)
-   local command = _dispatchOnly(maestro, event)
-   if maestro.agents.edit.contents_changed then
-      maestro.modeS.raga.onTxtbufChanged(modeS)
-    -- Treat contents_changed as implying cursor_changed
-    -- only ever fire one of the two events
-   elseif maestro.agents.edit.cursor_changed then
-      maestro.modeS.raga.onCursorChanged(modeS)
-   end
-   maestro.agents.edit.contents_changed = false
-   maestro.agents.edit.cursor_changed = false
-   return command
+   return maestro:processMessagesWhile(function()
+      local command = _dispatchOnly(maestro, event)
+      if maestro.agents.edit.contents_changed then
+         maestro.modeS.raga.onTxtbufChanged(modeS)
+       -- Treat contents_changed as implying cursor_changed
+       -- only ever fire one of the two events
+      elseif maestro.agents.edit.cursor_changed then
+         maestro.modeS.raga.onCursorChanged(modeS)
+      end
+      maestro.agents.edit.contents_changed = false
+      maestro.agents.edit.cursor_changed = false
+      return command
+   end)
 end
 
 

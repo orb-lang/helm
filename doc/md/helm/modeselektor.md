@@ -203,17 +203,12 @@ local create, resume, status = assert(coroutine.create),
                                assert(coroutine.status)
 
 local dispatchmessage = assert(require "actor:actor" . dispatchmessage)
+
 function ModeS.processMessagesWhile(modeS, fn)
    local coro = create(fn)
    local msg_ret = { n = 0 }
    local ok, msg
    local function _dispatchCurrentMessage()
-      -- #todo ugly hack to shorten the 'sendto' value in the common case of
-      -- inter-agent messaging. We should be able to handle this with a custom
-      -- dispatchmessage implementation instead
-      if msg.sendto and msg.sendto:find("^agents%.") then
-         msg.sendto = "maestro." .. msg.sendto
-      end
       return pack(dispatchmessage(modeS, msg))
    end
    while true do
@@ -222,11 +217,24 @@ function ModeS.processMessagesWhile(modeS, fn)
          error(msg .. "\nIn coro:\n" .. debug.traceback(coro))
       elseif status(coro) == "dead" then
          -- End of body function, pass through the return value
-         -- #todo returning the command that was executed like this is likely
-         -- to be insufficient very soon, work out something else
          return msg
       end
-      msg_ret = modeS:processMessagesWhile(_dispatchCurrentMessage)
+      -- #todo I don't really understand how these coroutines are supposed to mesh.
+      -- If we want all messages sent to Agents to be handled by Maestro, the best
+      -- I can come up with is the following ugly-as-hell solution.
+      -- It could probably be a *little* better-factored--this is a clear
+      -- Law of Demeter violation in how we're reaching into Maestro in
+      -- the inner function--but it sounds like `:processMessagesWhile()`
+      -- wants to go away anyway, so I don't know where we'll end up.
+      msg_ret = modeS:processMessagesWhile(function()
+         if msg.sendto and msg.sendto:find("^agents%.") then
+            return modeS.maestro:processMessagesWhile(function()
+               return pack(dispatchmessage(modeS.maestro, msg))
+            end)
+         else
+            return pack(dispatchmessage(modeS, msg))
+         end
+      end)
    end
 end
 ```
