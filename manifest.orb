@@ -1,0 +1,16 @@
+* Helm Manifest
+
+
+  Every nontrivial codex will need a manifest file eventually, now it's helm's
+turn.
+
+The motive is to try out various flags relating to overriding link resolution
+toward local files rather than remotes.
+
+
+*** Local links
+
+
+#!toml #manifest
+local_links = true
+#/toml
