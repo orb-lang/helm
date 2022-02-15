@@ -153,7 +153,8 @@ of the target.  This is canonically the EditAgent, although Pagers and Modals
 are just as likely, but in any case, there is always a primary Agent which gets
 first crack at responding to the action-string resolved from the keypress.
 
-
+There's a whole exegesis about *mouse* events but let's not drown in detail
+just yet.
 
 
 **** Modal Stack With Cycle Elision
