@@ -254,8 +254,8 @@ end
 
 
 
-
 local _ditch = false
+
 local parse_input = require "anterm:input-parser"
 
 local should_dispatch_all = false
@@ -268,6 +268,7 @@ local function is_scroll(event)
 end
 
 local compact = assert(require "core:table" . compact)
+
 local function consolidate_scroll_events(events)
    -- We're going to nil-and-compact, so convert to ntable
    events.n = #events
@@ -287,6 +288,48 @@ local function consolidate_scroll_events(events)
       i = j
    end
    compact(events)
+end
+
+
+
+
+
+
+
+local Set = require "set:set"
+
+local stoppable = Set { 'idle',
+                        'check',
+                        'prepare',
+                        'timer',
+                        'poll',
+                        'signal',
+                        'fs_event',
+                        'fs_poll' }
+
+local function shutDown(modeS)
+   _ditch = true
+   uv.read_stop(stdin)
+   bounds_watch:stop()
+   input_timer:stop()
+   input_check:stop()
+   if restart_watch then
+      restart_watch:stop()
+      lume.server:stop()
+   end
+   local idlers = modeS.hist.idlers
+   uv.walk(function(handle)
+      -- break down anything that isn't a historian idler or stdour
+      if (not idlers(handle)) then
+         local h_type = uv.handle_get_type(handle)
+         if stoppable(h_type) then
+            handle:stop()
+         end
+         if not handle:is_closing() then
+            handle:close()
+         end
+      end
+   end)
 end
 
 local function dispatch_input(seq, dispatch_all)
@@ -323,15 +366,7 @@ local function dispatch_input(seq, dispatch_all)
       modeS(event)
       -- Okay, if the action resulted in a quit, break out of the event loop
       if modeS.has_quit then
-         _ditch = true
-         uv.read_stop(stdin)
-         bounds_watch:stop()
-         input_timer:stop()
-         input_check:stop()
-         if restart_watch then
-            restart_watch:stop()
-            lume.server:stop()
-         end
+         shutDown(modeS)
          break
       end
    end
@@ -399,11 +434,11 @@ helm_db.close()
 retcode = uv.run 'default'
 
 -- Teardown: Mouse tracking off, restore main screen and cursor
-write(a.mouse.track(false),
-      a.paste_bracketing(false),
-      a.alternate_screen(false),
-      a.cursor.pop(),
-      a.cursor.show())
+io.stdout:write(a.mouse.track(false),
+                a.paste_bracketing(false),
+                a.alternate_screen(false),
+                a.cursor.pop(),
+                a.cursor.show())
 
 -- Back to normal mode and finish tearing down uv
 uv.tty_reset_mode()
