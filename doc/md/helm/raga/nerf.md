@@ -154,9 +154,6 @@ end
 
 Nerf.keymap_extra_commands = {
    ["C-l"] = { sendto = "agents.edit", method = "clear" },
-   -- Hack with empty sendto to force delivery directly to modeS
-   -- This method should move somewhere else anyway
-   ["C-r"] = { sendto = "", method = "restart" },
    ["?"] = "openHelpOnFirstKey",
    ["M-e"] = "evalFromCursor"
 }

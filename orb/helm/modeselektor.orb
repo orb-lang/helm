@@ -469,41 +469,6 @@ end
 #/lua
 
 
-*** ModeS:restart()
-
-This resets =_G= and runs all commands in the current session.
-
-#!lua
-local Deque = require "deque:deque"
-function ModeS.restart(modeS)
-   modeS :setStatusLine 'restart'
-   -- remove existing result
-   modeS:agent'results':clear()
-   modeS:paint()
-   -- Gather lines to rerun
-   local hist = modeS.hist
-   local top = hist.n
-   hist.n = hist.cursor_start - 1
-   local lines = Deque()
-   for i = hist.cursor_start, top do
-      lines:push(hist[i])
-   end
-   -- Put instrumented require in restart mode and perform rerun
-   modeS.eval:restart()
-   modeS:rerun(lines)
-   modeS.eval:reset()
-   assert(hist.n == #hist, "History length mismatch after restart: n = "
-         .. tostring(hist.n) .. ", # = " , tostring(#hist))
-   uv.timer_start(uv.new_timer(), 1500, 0,
-                  function()
-                     modeS:setStatusLine 'default'
-                     modeS:paint()
-                  end)
-   return modeS
-end
-#/lua
-
-
 *** ModeS:rerun(deque)
 
 Re-run the statements in the provided =deque=, displaying the results of the
