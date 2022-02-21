@@ -203,17 +203,12 @@ local create, resume, status = assert(coroutine.create),
                                assert(coroutine.status)
 
 local dispatchmessage = assert(require "actor:actor" . dispatchmessage)
+
 function ModeS.processMessagesWhile(modeS, fn)
    local coro = create(fn)
    local msg_ret = { n = 0 }
    local ok, msg
    local function _dispatchCurrentMessage()
-      -- #todo ugly hack to shorten the 'sendto' value in the common case of
-      -- inter-agent messaging. We should be able to handle this with a custom
-      -- dispatchmessage implementation instead
-      if msg.sendto and msg.sendto:find("^agents%.") then
-         msg.sendto = "maestro." .. msg.sendto
-      end
       return pack(dispatchmessage(modeS, msg))
    end
    while true do
@@ -222,11 +217,24 @@ function ModeS.processMessagesWhile(modeS, fn)
          error(msg .. "\nIn coro:\n" .. debug.traceback(coro))
       elseif status(coro) == "dead" then
          -- End of body function, pass through the return value
-         -- #todo returning the command that was executed like this is likely
-         -- to be insufficient very soon, work out something else
          return msg
       end
-      msg_ret = modeS:processMessagesWhile(_dispatchCurrentMessage)
+      -- #todo I don't really understand how these coroutines are supposed to mesh.
+      -- If we want all messages sent to Agents to be handled by Maestro, the best
+      -- I can come up with is the following ugly-as-hell solution.
+      -- It could probably be a *little* better-factored--this is a clear
+      -- Law of Demeter violation in how we're reaching into Maestro in
+      -- the inner function--but it sounds like `:processMessagesWhile()`
+      -- wants to go away anyway, so I don't know where we'll end up.
+      msg_ret = modeS:processMessagesWhile(function()
+         if msg.sendto and msg.sendto:find("^agents%.") then
+            return modeS.maestro:processMessagesWhile(function()
+               return pack(dispatchmessage(modeS.maestro, msg))
+            end)
+         else
+            return pack(dispatchmessage(modeS, msg))
+         end
+      end)
    end
 end
 ```
@@ -303,28 +311,26 @@ ModeS.closet = { nerf =       { raga = Nerf,
                                 lex  = Lex.null } }
 
 function ModeS.shiftMode(modeS, raga_name)
-   modeS:processMessagesWhile(function()
-      if raga_name == "default" then
-         raga_name = modeS.raga_default
-      end
-      -- Stash the current lexer associated with the current raga
-      -- Currently we never change the lexer separate from the raga,
-      -- but this will change when we start supporting multiple languages
-      -- Guard against nil raga or lexer during startup
-      if modeS.raga then
-         modeS.raga.onUnshift(modeS)
-         modeS.closet[modeS.raga.name].lex = modeS:agent'edit'.lex
-      end
-      -- Switch in the new raga and associated lexer
-      modeS.raga = modeS.closet[raga_name].raga
-      modeS:agent'edit':setLexer(modeS.closet[raga_name].lex)
-      modeS.raga.onShift(modeS)
-      -- #todo feels wrong to do this here, like it's something the raga
-      -- should handle, but onShift feels kinda like it "doesn't inherit",
-      -- like it's not something you should actually super-send, so there's
-      -- not one good place to do this.
-      modeS:agent'prompt':update(modeS.raga.prompt_char)
-   end)
+   if raga_name == "default" then
+      raga_name = modeS.raga_default
+   end
+   -- Stash the current lexer associated with the current raga
+   -- Currently we never change the lexer separate from the raga,
+   -- but this will change when we start supporting multiple languages
+   -- Guard against nil raga or lexer during startup
+   if modeS.raga then
+      modeS.raga.onUnshift(modeS)
+      modeS.closet[modeS.raga.name].lex = modeS:agent'edit'.lex
+   end
+   -- Switch in the new raga and associated lexer
+   modeS.raga = modeS.closet[raga_name].raga
+   modeS:agent'edit':setLexer(modeS.closet[raga_name].lex)
+   modeS.raga.onShift(modeS)
+   -- #todo feels wrong to do this here, like it's something the raga
+   -- should handle, but onShift feels kinda like it "doesn't inherit",
+   -- like it's not something you should actually super-send, so there's
+   -- not one good place to do this.
+   modeS:agent'prompt':update(modeS.raga.prompt_char)
    return modeS
 end
 ```
@@ -362,32 +368,32 @@ log anything unexpected\.
 
 ```lua
 function ModeS.act(modeS, event)
-   local command
-   repeat
-      modeS.action_complete = true
-      -- The raga may set action_complete to false to cause the command
-      -- to be re-processed, most likely after a mode-switch
-      local commandThisTime = modeS:processMessagesWhile(function()
-         return modeS.maestro:dispatch(event)
-      end)
-      command = command or commandThisTime
-   until modeS.action_complete == true
-   if not command then
-      command = 'NYI'
-   end
-   -- Inform the input-echo agent of what just happened
-   -- #todo Maestro can do this once action_complete goes away
-   modeS:agent'input_echo':update(event, command)
-   -- Reflow in case command height has changed. Includes a paint.
-   -- Don't allow errors encountered here to break this entire
-   -- event-loop iteration, otherwise we become unable to quit if
-   -- there's a paint error.
-   local success, err = xpcall(modeS.reflow, debug.traceback, modeS)
-   if not success then
-      io.stderr:write(err, "\n")
-      io.stderr:flush()
-   end
-   collectgarbage()
+   modeS:processMessagesWhile(function()
+      local command
+      repeat
+         modeS.action_complete = true
+         -- The raga may set action_complete to false to cause the command
+         -- to be re-processed, most likely after a mode-switch
+         local commandThisTime = modeS.maestro:dispatch(event)
+         command = command or commandThisTime
+      until modeS.action_complete == true
+      if not command then
+         command = 'NYI'
+      end
+      -- Inform the input-echo agent of what just happened
+      -- #todo Maestro can do this once action_complete goes away
+      modeS:agent'input_echo':update(event, command)
+      -- Reflow in case command height has changed. Includes a paint.
+      -- Don't allow errors encountered here to break this entire
+      -- event-loop iteration, otherwise we become unable to quit if
+      -- there's a paint error.
+      local success, err = xpcall(modeS.reflow, debug.traceback, modeS)
+      if not success then
+         io.stderr:write(err, "\n")
+         io.stderr:flush()
+      end
+      collectgarbage()
+   end)
    return modeS
 end
 ```
@@ -640,8 +646,10 @@ local function new(max_extent, writer, db)
    modeS:bindZone("stat_col", "input_echo", Resbuf)
    modeS:bindZone("suggest",  "suggest",    Resbuf)
 
-   -- initial state
-   modeS:shiftMode(modeS.raga_default)
+   -- Load initial raga. Need to process yielded messages from `onShift`
+   modeS:processMessagesWhile(function()
+      modeS:shiftMode(modeS.raga_default)
+   end)
 
    -- hackish: we check the historian for a deque of lines to load and if
    -- we have it, we just eval them into existence.

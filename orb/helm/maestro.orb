@@ -42,7 +42,7 @@ local Maestro = meta {}
 Builds a composed keymap from the active keymap references provided by the raga.
 
 #todo Should the raga be a property on =maestro=, or should we retrieve it
-with a `yield`ed message? Sticking with the backlink for now because anything
+with a =yield=ed message? Sticking with the backlink for now because anything
 else is suuuuuuper ugly.
 
 #todo Cache the keymap alongside the raga so we don't have to rebuild it for
@@ -98,6 +98,52 @@ end
 #/lua
 
 
+*** Maestro:processMessagesWhile(fn)
+
+Executes =fn= as a coroutine, processing any =Message=s it yields whose target
+is our responsibility, otherwise re-yields them to =modeS=.
+
+#todo Implementation copied from =Modeselektor= and can't be simply reused
+because the details differ. A custom =dispatchmessage= implementation might
+make it possible to simplify this, but this implementation is going away
+anyway.
+
+#todo Right now the only targets we handle messages for are the various
+=Agent=s--maybe this is correct, but a more principled approach to determining
+who the message is for would be nice.
+
+#!lua
+local create, resume, status, yield = assert(coroutine.create),
+                                      assert(coroutine.resume),
+                                      assert(coroutine.status),
+                                      assert(coroutine.yield)
+
+local dispatchmessage = assert(require "actor:actor" . dispatchmessage)
+
+function Maestro.processMessagesWhile(maestro, fn)
+   local coro = create(fn)
+   local msg_ret = { n = 0 }
+   local ok, msg
+   while true do
+      ok, msg = resume(coro, unpack(msg_ret))
+      if not ok then
+         error(msg .. "\nIn coro:\n" .. debug.traceback(coro))
+      elseif status(coro) == "dead" then
+         -- End of body function, pass through the return value
+         return msg
+      end
+      if msg.sendto and msg.sendto:find("^agents%.") then
+         msg_ret = maestro:processMessagesWhile(function()
+            return pack(dispatchmessage(maestro, msg))
+         end)
+      else
+         msg_ret = pack(yield(msg))
+      end
+   end
+end
+#/lua
+
+
 *** Maestro:dispatch(event)
 
 Dispatches =event= to the handler(s) specified in the active keymaps. Each
@@ -127,7 +173,7 @@ buffering for =vril= this is where we would deal with that.
 
 #todo Need to handle the case where the active raga (and thus the list of
 active keymaps) changes during command execution, and the handler wants to
-fall through. Right now we have the `modeS.action_complete` mechanism, but I'd
+fall through. Right now we have the =modeS.action_complete= mechanism, but I'd
 like to unify and remove that. The question then is how to manipulate the list
 of remaining handlers. The only obvious thing is to rebuild the composed
 keymap, redo the lookup, and start over from the beginning of the new list of
@@ -187,17 +233,19 @@ local function _dispatchOnly(maestro, event)
 end
 
 function Maestro.dispatch(maestro, event)
-   local command = _dispatchOnly(maestro, event)
-   if maestro.agents.edit.contents_changed then
-      maestro.modeS.raga.onTxtbufChanged(modeS)
-    -- Treat contents_changed as implying cursor_changed
-    -- only ever fire one of the two events
-   elseif maestro.agents.edit.cursor_changed then
-      maestro.modeS.raga.onCursorChanged(modeS)
-   end
-   maestro.agents.edit.contents_changed = false
-   maestro.agents.edit.cursor_changed = false
-   return command
+   return maestro:processMessagesWhile(function()
+      local command = _dispatchOnly(maestro, event)
+      if maestro.agents.edit.contents_changed then
+         maestro.modeS.raga.onTxtbufChanged(modeS)
+       -- Treat contents_changed as implying cursor_changed
+       -- only ever fire one of the two events
+      elseif maestro.agents.edit.cursor_changed then
+         maestro.modeS.raga.onCursorChanged(modeS)
+      end
+      maestro.agents.edit.contents_changed = false
+      maestro.agents.edit.cursor_changed = false
+      return command
+   end)
 end
 #/lua
 

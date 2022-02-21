@@ -254,8 +254,8 @@ end
 
 
 
-
 local _ditch = false
+
 local parse_input = require "anterm:input-parser"
 
 local should_dispatch_all = false
@@ -268,6 +268,7 @@ local function is_scroll(event)
 end
 
 local compact = assert(require "core:table" . compact)
+
 local function consolidate_scroll_events(events)
    -- We're going to nil-and-compact, so convert to ntable
    events.n = #events
@@ -288,6 +289,73 @@ local function consolidate_scroll_events(events)
    end
    compact(events)
 end
+
+
+
+
+
+
+
+
+local Set = require "set:set"
+
+local stoppable = Set { 'idle',
+                        'check',
+                        'prepare',
+                        'timer',
+                        'poll',
+                        'signal',
+                        'fs_event',
+                        'fs_poll' }
+
+local function shutDown(modeS)
+   _ditch = true
+   uv.read_stop(stdin)
+   bounds_watch:stop()
+   bounds_watch:close()
+   input_timer:stop()
+   input_timer:close()
+   input_check:stop()
+   input_check:close()
+   if restart_watch then
+      restart_watch:stop()
+      restart_watch:close()
+      lume.server:stop()
+   end
+   local idlers = modeS.hist.idlers
+   uv.walk(function(handle)
+      -- break down anything that isn't a historian idler or our stdio
+      if not (idlers(handle) or handle == stdin or handle == stdout) then
+         local h_type = uv.handle_get_type(handle)
+         if stoppable(h_type) then
+            io.stderr:write("Stopping a leftover ", h_type, " ", tostring(handle), "\n")
+            handle:stop()
+         end
+         if not handle:is_closing() then
+            io.stderr:write("Closing a leftover ", h_type, " ", tostring(handle), "\n")
+            handle:close()
+         end
+      end
+   end)
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 local function dispatch_input(seq, dispatch_all)
    -- Clear the flag and timer indicating whether we should clear down the
@@ -323,15 +391,7 @@ local function dispatch_input(seq, dispatch_all)
       modeS(event)
       -- Okay, if the action resulted in a quit, break out of the event loop
       if modeS.has_quit then
-         _ditch = true
-         uv.read_stop(stdin)
-         bounds_watch:stop()
-         input_timer:stop()
-         input_check:stop()
-         if restart_watch then
-            restart_watch:stop()
-            lume.server:stop()
-         end
+         shutDown(modeS)
          break
       end
    end
@@ -343,10 +403,30 @@ input_check:start(function()
    end
 end)
 
-local function onseq(err,seq)
+
+
+
+
+
+
+
+
+
+
+
+
+local onseq_err
+
+local function onseq(err, seq)
    if _ditch then return nil end
-   if err then error(err) end
-   dispatch_input(input_buffer .. seq, false)
+   local success, err_trace = xpcall(function()
+      if err then error(err) end
+      dispatch_input(input_buffer .. seq, false)
+   end, debug.traceback)
+   if not success then
+      shutDown(modeS)
+      onseq_err = err_trace
+   end
 end
 
 
@@ -389,30 +469,37 @@ profile.stop()
 --]]
 
 -- main loop
-local retcode =  uv.run('default')
-
--- Shut down the database conn:
-local helm_db = require "helm:helm/helm-db"
-helm_db.close()
-
-
-retcode = uv.run 'default'
+uv.run()
 
 -- Teardown: Mouse tracking off, restore main screen and cursor
-write(a.mouse.track(false),
-      a.paste_bracketing(false),
-      a.alternate_screen(false),
-      a.cursor.pop(),
-      a.cursor.show())
+io.stdout:write(a.mouse.track(false),
+                a.paste_bracketing(false),
+                a.alternate_screen(false),
+                a.cursor.pop(),
+                a.cursor.show())
 
--- Back to normal mode and finish tearing down uv
+-- Back to normal mode
 uv.tty_reset_mode()
-uv.stop()
+
+-- Done with uv TTY handles. Note that closing these does not close
+-- the underlying FDs, we still need those.
+stdin:close()
+stdout:close()
 
 -- Make sure the terminal processes all of the above,
 -- then remove any spurious mouse inputs or other stdin stuff
 io.stdout:flush()
 io.stdin:read "*a"
+
+-- Shut down the database conn:
+local helm_db = require "helm:helm/helm-db"
+helm_db.close()
+
+-- If helm is shutting down due to an error, print the stacktrace
+-- now that the terminal is in a known-good state
+if (onseq_err) then
+   io.stderr:write(onseq_err)
+end
 
 -- Restore the global environment
 setfenv(0, _G)

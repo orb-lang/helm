@@ -68,7 +68,7 @@ function RagaBase.quitHelm()
          -- the only way to make Modal work properly. A proper raga stack
          -- would *definitely* fix this
          yield{ method = "setDefaultMode", n = 1, "review" }
-         RagaBase.shiftMode "review"
+         yield{ method = "shiftMode", n = 1, "review" }
          return
       end
    end
