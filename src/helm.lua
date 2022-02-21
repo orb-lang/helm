@@ -339,6 +339,24 @@ local function shutDown(modeS)
    end)
 end
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local function dispatch_input(seq, dispatch_all)
    -- Clear the flag and timer indicating whether we should clear down the
    -- input buffer this cycle. We explicitly stop the timer in case another
@@ -385,10 +403,30 @@ input_check:start(function()
    end
 end)
 
-local function onseq(err,seq)
+
+
+
+
+
+
+
+
+
+
+
+
+local onseq_err
+
+local function onseq(err, seq)
    if _ditch then return nil end
-   if err then error(err) end
-   dispatch_input(input_buffer .. seq, false)
+   local success, err_trace = xpcall(function()
+      if err then error(err) end
+      dispatch_input(input_buffer .. seq, false)
+   end, debug.traceback)
+   if not success then
+      shutDown(modeS)
+      onseq_err = err_trace
+   end
 end
 
 
@@ -431,14 +469,7 @@ profile.stop()
 --]]
 
 -- main loop
-local retcode =  uv.run('default')
-
--- Shut down the database conn:
-local helm_db = require "helm:helm/helm-db"
-helm_db.close()
-
-
-retcode = uv.run 'default'
+uv.run()
 
 -- Teardown: Mouse tracking off, restore main screen and cursor
 io.stdout:write(a.mouse.track(false),
@@ -459,6 +490,16 @@ stdout:close()
 -- then remove any spurious mouse inputs or other stdin stuff
 io.stdout:flush()
 io.stdin:read "*a"
+
+-- Shut down the database conn:
+local helm_db = require "helm:helm/helm-db"
+helm_db.close()
+
+-- If helm is shutting down due to an error, print the stacktrace
+-- now that the terminal is in a known-good state
+if (onseq_err) then
+   io.stderr:write(onseq_err)
+end
 
 -- Restore the global environment
 setfenv(0, _G)

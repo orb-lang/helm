@@ -338,7 +338,25 @@ local function shutDown(modeS)
       end
    end)
 end
+#/lua
 
+
+**** dispatch_input(seq, dispatch_all)
+
+Parses =seq= into input events and dispatches them to =modeS=.
+
+If =dispatch_all= is false, leaves any potentially incomplete or ambiguous
+input in the buffer to be retried on the next tick. This includes trailing
+ESC and CSI sequences and unparseable input (such as a paste event whose
+closing sequence has not yet arrived.)
+
+If there is incomplete or ambiguous input, we also set a timer to ensure that
+it is parsed as soon as no input has arrived for 5ms.
+
+If =dispatch_all= is true, trailing ESC and CSI are dispatched immediately,
+and remaining unparseable input raises an error.
+
+#!lua
 local function dispatch_input(seq, dispatch_all)
    -- Clear the flag and timer indicating whether we should clear down the
    -- input buffer this cycle. We explicitly stop the timer in case another
@@ -384,11 +402,31 @@ input_check:start(function()
       dispatch_input(input_buffer, true)
    end
 end)
+#/lua
 
-local function onseq(err,seq)
+
+**** onseq itself
+
+Add a layer of error handling around dispatch_input so that errors in
+event handling can at least crash helm gracefully, restoring the terminal
+to a sane state.
+
+If an error is encountered, we store it so it can be printed after the
+terminal state has been restored.
+
+#!lua
+local onseq_err
+
+local function onseq(err, seq)
    if _ditch then return nil end
-   if err then error(err) end
-   dispatch_input(input_buffer .. seq, false)
+   local success, err_trace = xpcall(function()
+      if err then error(err) end
+      dispatch_input(input_buffer .. seq, false)
+   end, debug.traceback)
+   if not success then
+      shutDown(modeS)
+      onseq_err = err_trace
+   end
 end
 #/lua
 
@@ -431,14 +469,7 @@ profile.stop()
 --]]
 
 -- main loop
-local retcode =  uv.run('default')
-
--- Shut down the database conn:
-local helm_db = require "helm:helm/helm-db"
-helm_db.close()
-
-
-retcode = uv.run 'default'
+uv.run()
 
 -- Teardown: Mouse tracking off, restore main screen and cursor
 io.stdout:write(a.mouse.track(false),
@@ -459,6 +490,16 @@ stdout:close()
 -- then remove any spurious mouse inputs or other stdin stuff
 io.stdout:flush()
 io.stdin:read "*a"
+
+-- Shut down the database conn:
+local helm_db = require "helm:helm/helm-db"
+helm_db.close()
+
+-- If helm is shutting down due to an error, print the stacktrace
+-- now that the terminal is in a known-good state
+if (onseq_err) then
+   io.stderr:write(onseq_err)
+end
 
 -- Restore the global environment
 setfenv(0, _G)
