@@ -200,35 +200,6 @@ end)
 ```
 
 
-### Orb listener
-
-  If we start with the `--listen` flag, we open up a [lume](https://gitlab.com/special-circumstance/orb/-/blob/trunk/doc/md/lume/lume.md),
-and set an `uv` watcher on the project directory\.
-
-We then add a timer to check the lume for a flag indicating it has processed a
-file, and restart the modeselektor if it has\.
-
-
-```lua
-local restart_watch, lume = nil, nil
-
-if _Bridge.args.listen then
-   uv.new_timer():start(0, 0, function()
-      local orb = require "orb:orb"
-      lume = orb.lume(uv.cwd())
-      lume :run() :serve(true)
-      restart_watch = uv.new_timer()
-      uv.timer_start(restart_watch, 500, 500, function()
-         if lume.has_file_change then
-            modeS:restart()
-            lume.has_file_change = nil
-         end
-      end)
-   end)
-end
-```
-
-
 ## Reader
 
 The reader takes a stream of data from `stdin`, asynchronously, and
@@ -317,11 +288,6 @@ local function shutDown(modeS)
    input_timer:close()
    input_check:stop()
    input_check:close()
-   if restart_watch then
-      restart_watch:stop()
-      restart_watch:close()
-      lume.server:stop()
-   end
    local idlers = modeS.hist.idlers
    uv.walk(function(handle)
       -- break down anything that isn't a historian idler or our stdio
