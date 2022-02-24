@@ -325,7 +325,7 @@ local function _setCursor(historian, cursor)
    end
    stmt:reset()
    -- may as well memoize the database call, while we're here
-   historian.result_buffer[line_id] = results
+   historian.result_buffer[cursor] = results
    return line, results
 end
 ```
