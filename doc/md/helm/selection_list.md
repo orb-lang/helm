@@ -39,7 +39,9 @@ already at the end/beginning of the list\)
 ```lua
 local clamp = assert(require "core:math" . clamp)
 function SelectionList.selectIndex(list, index)
-   index = clamp(index, 1, #list)
+   -- Handle empty-list case separately as `clamp`
+   -- does not tolerate upper < lower
+   index = #list == 0 and 0 or clamp(index, 1, #list)
    if index ~= list.selected_index then
       list.selected_index = index
       return true
