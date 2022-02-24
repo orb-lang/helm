@@ -271,6 +271,11 @@ function Historian.search(historian, frag)
       local dup = {}
       for i = historian.n, 1, -1 do
          local item_str = tostring(historian[i])
+         if not dup[item_str] and patt:match(item_str) then
+            dup[item_str] = true
+            insert(result, item_str)
+            insert(result.cursors, i)
+         end
       end
    end
    try_search()
