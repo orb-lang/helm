@@ -20,7 +20,7 @@ EditTitle.prompt_char = "👉"
 
 ```lua
 EditTitle.default_keymaps = {
-   { source = "agents.session", name = "keymap_title_editing" }
+   { source = "agents.session", name = "keymap_edit_title" }
 }
 splice(EditTitle.default_keymaps, EditBase.default_keymaps)
 ```
