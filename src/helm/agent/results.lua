@@ -5,7 +5,6 @@
 
 
 
-local meta = assert(require "core:cluster" . Meta)
 local Agent = require "helm:agent/agent"
 local ResultsAgent = meta(getmetatable(Agent))
 

@@ -10,7 +10,6 @@
 
 
 
-local meta = assert(require "core:cluster" . Meta)
 local Rainbuf = require "helm:buf/rainbuf"
 local Stringbuf = meta(getmetatable(Rainbuf))
 

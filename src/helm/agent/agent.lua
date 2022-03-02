@@ -15,7 +15,6 @@ local Deque = require "deque:deque"
 
 
 
-local meta = assert(require "core:cluster" . Meta)
 local Agent = meta {}
 
 

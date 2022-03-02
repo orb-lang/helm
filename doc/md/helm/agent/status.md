@@ -4,7 +4,6 @@ A simple Agent providing a status\-bar display with standard and custom messages
 
 
 ```lua
-local meta = assert(require "core:cluster" . Meta)
 local Agent = require "helm:agent/agent"
 local StatusAgent = meta(getmetatable(Agent))
 ```

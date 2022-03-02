@@ -200,7 +200,7 @@ Creates a new, empty SelectionList\. If `frag` is provided it is used as the sea
 
 ```lua
 new = function(frag, cfg)
-   local list = meta(SelectionList)
+   local list = setmetatable({}, SelectionList)
    if frag then
       list.frag = frag
       list.lit_frag = frag

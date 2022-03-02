@@ -11,7 +11,6 @@ local input_event = require "anterm:input-event"
 
 
 
-local meta = assert(require "core:cluster" . Meta)
 local Agent = require "helm:agent/agent"
 local InputEchoAgent = meta(getmetatable(Agent))
 

@@ -20,7 +20,6 @@ local persist_tabulate = require "repr:persist-tabulate"
 local helm_db = require "helm:helm-db"
 
 local insert = assert(table.insert)
-local meta = require "core/meta" . meta
 
 local Set = require "set:set"
 ```
@@ -412,7 +411,7 @@ function __result_buffer_M.__repr(buf, window, c)
 end
 
 local function new(helm_db)
-   local historian = meta(Historian)
+   local historian = setmetatable({}, Historian)
    historian.line_ids = {}
    historian.cursor = 0
    historian.cursor_start = 0

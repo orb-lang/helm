@@ -3,7 +3,6 @@
 Agent that powers our modal dialog\.
 
 ```lua
-local meta = assert(require "core:cluster" . Meta)
 local Agent = require "helm:agent/agent"
 local ModalAgent = meta(getmetatable(Agent))
 ```

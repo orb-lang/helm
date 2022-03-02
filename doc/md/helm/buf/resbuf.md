@@ -14,7 +14,6 @@ local cluster = require "core:cluster"
 #### Resbuf metatable
 
 ```lua
-local meta = assert(require "core:cluster" . Meta)
 local Rainbuf = require "helm:buf/rainbuf"
 local Resbuf = meta(getmetatable(Rainbuf))
 ```

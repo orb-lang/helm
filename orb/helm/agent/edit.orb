@@ -7,7 +7,6 @@ Text is stored as an array of lines, which start out as strings. When the
 cursor enters a line, it is "opened" into an array of codepoints.
 
 #!lua
-local meta = assert(require "core:cluster" . Meta)
 local Agent = require "helm:agent/agent"
 local EditAgent = meta(getmetatable(Agent))
 #/lua

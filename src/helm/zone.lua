@@ -337,7 +337,7 @@ end
 
 
 local function newZone(name, z, debug_mark)
-   local zone = meta(Zone)
+   local zone = setmetatable({}, Zone)
    zone.name = name
    zone.debug_mark = debug_mark
    zone.z = z
@@ -462,7 +462,7 @@ end
 
 
 local function new(modeS, writer)
-   local zoneherd = meta(Zoneherd)
+   local zoneherd = setmetatable({}, Zoneherd)
    zoneherd.write = writer
    -- make Zones
    -- correct values are provided by reflow

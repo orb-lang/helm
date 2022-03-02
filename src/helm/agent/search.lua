@@ -6,7 +6,6 @@
 
 
 
-local meta = assert(require "core:cluster" . Meta)
 local clone = assert(require "core:table" . clone)
 
 
