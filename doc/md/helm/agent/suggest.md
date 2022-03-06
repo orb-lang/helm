@@ -95,6 +95,28 @@ local function _suggest_sort(a, b)
    end
 end
 
+local getinfo, getupvalue = assert(debug.getinfo), assert(debug.getupvalue)
+
+
+local function _lookForTable(idx)
+   if type(idx) ~= 'function' then return nil end
+      -- reasonable chance that the nearest upvalue of the function is the
+   -- table, or rather, that the nearest table-containing upvalue is the
+   -- closed-over table.
+   local info = getinfo(idx, 'u')
+   -- what we care about is nups, 'number of upvalues'
+   if info and info.nups > 0 then
+      for i = info.nups, 1, -1 do
+         local name, upval = getupvalue(idx, i)
+         if type(upval) == 'table' then
+            return upval
+         end
+      end
+   end
+
+   return nil
+end
+
 local isidentifier = import("core:string", "isidentifier")
 local hasmetamethod = import("core:meta", "hasmetamethod")
 local safeget = import("core:table", "safeget")
@@ -122,7 +144,8 @@ local function _candidates_from(complete_against)
       end
       local index_table = hasmetamethod("__index", complete_against)
       -- Ignore __index functions, no way to know what they might handle
-      complete_against = type(index_table) == "table" and index_table or nil
+      complete_against = type(index_table) == "table" and index_table
+                         or _lookForTable(index_table)
    until complete_against == nil
    return candidate_symbols
 end
