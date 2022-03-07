@@ -151,7 +151,6 @@ Primitives for terminal manipulation.
 #!lua
 a = require "anterm:anterm"
 local Point = require "anterm:point"
---watch = require "watcher"
 #/lua
 
 ** Modeselektor
@@ -159,20 +158,12 @@ local Point = require "anterm:point"
 
 #!lua
 
--- Get window size and set up an idler to keep it refreshed
+-- Get window size and set up a SIGWINCH handler to keep it refreshed
+-- Also check every 500ms in a timer in case the SIGWINCH handler doesn't
+-- trigger immediately for whatever reason.
 
-local MOUSE_MAX = 223
-
-local function bind_pane(dim1, dim2)
-   dim1 = dim1 > MOUSE_MAX and MOUSE_MAX or dim1
-   dim2 = dim2 > MOUSE_MAX and MOUSE_MAX or dim2
-   return dim1, dim2
-end
-
-local max_col, max_row = bind_pane(uv.tty_get_winsize(stdin))
+local max_col, max_row = stdin:get_winsize()
 local max_extent = Point(max_row, max_col)
-
-
 
 modeS = require "helm/modeselektor" (max_extent, write)
 local insert = assert(table.insert)
@@ -183,11 +174,11 @@ end
 -- make a new 'status' instance
 local s = require "status:status" (s_out)
 
-local bounds_watch = uv.new_timer()
-uv.timer_start(bounds_watch, 500, 500, function()
-   max_col, max_row = uv.tty_get_winsize(stdin)
-   if Point(max_row, max_col) ~= modeS.max_extent then
-      modeS.max_extent = Point(bind_pane(max_row, max_col))
+local function check_winsize()
+   max_col, max_row = stdin:get_winsize()
+   max_extent = Point(max_row, max_col)
+   if max_extent ~= modeS.max_extent then
+      modeS.max_extent = max_extent
       -- Mark all zones as touched since we don't know the state of the screen
       -- (some terminals, iTerm for sure, will attempt to reflow the screen
       -- themselves and fail miserably)
@@ -196,7 +187,12 @@ uv.timer_start(bounds_watch, 500, 500, function()
       end
       modeS:reflow()
    end
-end)
+end
+
+local winsize_watch = uv.new_timer()
+winsize_watch:start(500, 500, check_winsize)
+local winsize_signal = uv.new_signal()
+winsize_signal:start("sigwinch", check_winsize)
 #/lua
 
 
@@ -282,8 +278,10 @@ local stoppable = Set { 'idle',
 local function shutDown(modeS)
    _ditch = true
    uv.read_stop(stdin)
-   bounds_watch:stop()
-   bounds_watch:close()
+   winsize_watch:stop()
+   winsize_watch:close()
+   winsize_signal:stop()
+   winsize_signal:close()
    input_timer:stop()
    input_timer:close()
    input_check:stop()
@@ -423,7 +421,8 @@ write(a.cursor.stash(),
       a.erase.all(),
       a.jump(1, 1),
       a.paste_bracketing(true),
-      a.mouse.track(true)
+      a.mouse.track(true),
+      a.mouse.sgr_mode(true)
 )
 uv.read_start(stdin, onseq)
 
@@ -438,7 +437,8 @@ profile.stop()
 uv.run()
 
 -- Teardown: Mouse tracking off, restore main screen and cursor
-io.stdout:write(a.mouse.track(false),
+io.stdout:write(a.mouse.sgr_mode(false),
+                a.mouse.track(false),
                 a.paste_bracketing(false),
                 a.alternate_screen(false),
                 a.cursor.pop(),
