@@ -20,7 +20,6 @@ syntax highlighting\.
 ## Methods
 
 ```lua
-local meta = assert(require "core:cluster" . Meta)
 local Rainbuf = require "helm:buf/rainbuf"
 local Txtbuf = meta(getmetatable(Rainbuf))
 ```

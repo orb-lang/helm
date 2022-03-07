@@ -6,7 +6,6 @@
 
 
 
-local meta = assert(require "core:cluster" . Meta)
 local EditAgent = require "helm:agent/edit"
 local ResultsAgent = require "helm:agent/results"
 

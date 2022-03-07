@@ -37,7 +37,6 @@ A session will load the session lines into the history buffer, but only once,
 no matter how many times the session is reset or run\.
 
 ```lua
-local meta = assert(require "core:meta" . meta)
 local helm_db = require "helm:helm-db"
 local Session = meta {}
 local new
@@ -270,7 +269,7 @@ this case\. \(Note that this is assured by the command\-line argument parser\.\)
 local collect = assert(require 'core:table' . collect)
 
 new = function(db, project_id, title_or_index, cfg)
-   local session = meta(Session)
+   local session = setmetatable({}, Session)
    session.stmts = helm_db.session(db)
    session.project_id = project_id
    session.n = 0

@@ -254,7 +254,7 @@ end
 
 
 local function new(modeS)
-   local maestro = meta(Maestro)
+   local maestro = setmetatable({}, Maestro)
    -- #todo this is temporary until we sort out communication properly
    maestro.modeS = modeS
    maestro.agents = {

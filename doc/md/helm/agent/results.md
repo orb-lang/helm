@@ -5,7 +5,6 @@ lot, basically just a dumb value holder\. It may get some more responsibility
 later, not sure\.
 
 ```lua
-local meta = assert(require "core:cluster" . Meta)
 local Agent = require "helm:agent/agent"
 local ResultsAgent = meta(getmetatable(Agent))
 ```

@@ -15,7 +15,6 @@ This is a type of `Rainbuf` specialized to display and edit a `Session`\.
 -  selected\_index: The index of the line that is selected for editing
 
 ```lua
-local meta = assert(require "core:cluster" . Meta)
 local Rainbuf = require "helm:buf/rainbuf"
 local Resbuf  = require "helm:buf/resbuf"
 local Txtbuf  = require "helm:buf/txtbuf"

@@ -109,7 +109,7 @@ local Txtbuf    = require "helm:buf/txtbuf"
 
 
 
-local ModeS = meta()
+local ModeS = meta {}
 
 
 
@@ -560,7 +560,7 @@ local actor = require "actor:actor"
 local borrowmethod, getter = assert(actor.borrowmethod, actor.getter)
 
 local function new(max_extent, writer, db)
-   local modeS = meta(ModeS)
+   local modeS = setmetatable({}, ModeS)
 
    -- Some miscellany to copy and initialize
    modeS.max_extent = max_extent

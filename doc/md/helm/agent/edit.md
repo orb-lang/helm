@@ -7,7 +7,6 @@ Text is stored as an array of lines, which start out as strings\. When the
 cursor enters a line, it is "opened" into an array of codepoints\.
 
 ```lua
-local meta = assert(require "core:cluster" . Meta)
 local Agent = require "helm:agent/agent"
 local EditAgent = meta(getmetatable(Agent))
 ```
@@ -416,9 +415,9 @@ thus proceeds through :killSelection\(\)
 
 #### EditAgent:killSelection\(\)
 
-Deletes the selected text, if any\. Returns whether anything was deletedi\.e\. whether anything was initially selected\)\.
+Deletes the selected text, if any\. Returns whether anything was deleted
+\(i\.e\. whether anything was initially selected\)\.
 
-\(
 ```lua
 local deleterange = import("core/table", "deleterange")
 function EditAgent.killSelection(agent)

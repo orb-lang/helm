@@ -12,7 +12,6 @@ local SelectionList = require "helm:selection_list"
 
 
 
-local meta = assert(require "core:cluster" . Meta)
 local Agent = require "helm:agent/agent"
 local ResultListAgent = meta(getmetatable(Agent))
 

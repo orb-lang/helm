@@ -10,7 +10,6 @@ word\-boundary\-aware wrapping? We'll do that if and when we need it\.\.\.
 #### Stringbuf metatable
 
 ```lua
-local meta = assert(require "core:cluster" . Meta)
 local Rainbuf = require "helm:buf/rainbuf"
 local Stringbuf = meta(getmetatable(Rainbuf))
 ```

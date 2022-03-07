@@ -6,7 +6,6 @@ Agent responsible for editing/reviewing a session\.
 #### imports
 
 ```lua
-local meta = assert(require "core:cluster" . Meta)
 local EditAgent = require "helm:agent/edit"
 local ResultsAgent = require "helm:agent/results"
 ```
@@ -121,9 +120,9 @@ end
 
 #### SessionAgent:\[reverse\]toggleSelectedState\(\)
 
-Toggles the state of the selected line, cycling through "accept", "reject",
-"ignore", "skip"\.
+Toggles the state of the selected line, cycling through "accept", "reject",ignore", "skip"\.
 
+"
 ```lua
 local status_cycle_map = {
    ignore = "accept",

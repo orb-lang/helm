@@ -5,7 +5,6 @@ we're just a dumb value holder for that, but we do retrieve the number of
 continuation lines from a reference to the EditAgent's Window\.
 
 ```lua
-local meta = assert(require "core:cluster" . Meta)
 local Agent = require "helm:agent/agent"
 local PromptAgent = meta(getmetatable(Agent))
 ```

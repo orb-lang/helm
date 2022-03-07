@@ -59,7 +59,7 @@ local function _helm(_ENV)
 setfenv(0, __G)
 
 import = assert(require "core/module" . import)
-meta = import("core/meta", "meta")
+meta = assert(require "core:cluster" . Meta)
 core = require "core:core"
 kit = require "valiant:replkit"
 jit.vmdef = require "helm:helm/vmdef"

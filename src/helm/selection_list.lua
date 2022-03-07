@@ -194,7 +194,7 @@ end
 
 
 new = function(frag, cfg)
-   local list = meta(SelectionList)
+   local list = setmetatable({}, SelectionList)
    if frag then
       list.frag = frag
       list.lit_frag = frag

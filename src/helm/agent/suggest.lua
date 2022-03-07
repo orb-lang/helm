@@ -13,7 +13,6 @@ local insert, sort = assert(table.insert), assert(table.sort)
 
 
 
-local meta = assert(require "core:cluster" . Meta)
 local ResultListAgent = require "helm:agent/result-list"
 local SuggestAgent = meta(getmetatable(ResultListAgent))
 
