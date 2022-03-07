@@ -38,18 +38,17 @@ end
 
 function SearchAgent.acceptAtIndex(agent, selected_index)
    local search_result = agent.last_collection
-   local line, result
    if search_result and #search_result > 0 then
       selected_index = selected_index or search_result.selected_index
       if selected_index == 0 then selected_index = 1 end
-      line, result = send { sendto = "hist",
+      local line, result = send { sendto = "hist",
                             method = "index",
                             n = 1,
                             search_result.cursors[selected_index] }
+      send { sendto = "agents.edit", method = "update", line }
+      send { sendto = "agents.results", method = "update", result }
    end
    agent:quit()
-   send { sendto = "agents.edit", method = "update", line }
-   send { sendto = "agents.results", method = "update", result }
 end
 -- If no argument is passed this happily falls through
 SearchAgent.acceptSelected = SearchAgent.acceptAtIndex
