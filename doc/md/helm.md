@@ -392,9 +392,20 @@ local function onseq(err, seq)
 end
 ```
 
+
+#### SIGHUP handler
+
+Might as well perform a graceful shutdown when the user closes the terminal\.
+
 ```lua
+local sighup_handler = uv.new_signal()
+sighup_handler:start("sighup", function()
+   shutDown(modeS)
+end)
+```
 
 
+```lua
 -- Get names for as many values as possible
 -- into the colorizer
 -- Treat package names as existing in the global namespace

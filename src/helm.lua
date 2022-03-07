@@ -395,6 +395,17 @@ end
 
 
 
+
+
+
+local sighup_handler = uv.new_signal()
+sighup_handler:start("sighup", function()
+   shutDown(modeS)
+end)
+
+
+
+
 -- Get names for as many values as possible
 -- into the colorizer
 -- Treat package names as existing in the global namespace
