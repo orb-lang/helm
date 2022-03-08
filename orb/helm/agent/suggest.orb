@@ -100,7 +100,7 @@ local getinfo, getupvalue = assert(debug.getinfo), assert(debug.getupvalue)
 
 local function _lookForTable(idx)
    if type(idx) ~= 'function' then return nil end
-      -- reasonable chance that the nearest upvalue of the function is the
+   -- reasonable chance that the nearest upvalue of the function is the
    -- table, or rather, that the nearest table-containing upvalue is the
    -- closed-over table.
    local info = getinfo(idx, 'u')
