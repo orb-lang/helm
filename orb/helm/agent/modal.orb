@@ -199,7 +199,7 @@ function ModalAgent.cancel(agent)
    return _acceptButtonWhere(agent, function(button) return button.cancel end)
 end
 
-function ModalAgent.acceptDefault(maestro, event)
+function ModalAgent.acceptDefault(agent, event)
    return _acceptButtonWhere(agent, function(button) return button.default end)
 end
 #/lua
