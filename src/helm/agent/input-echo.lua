@@ -7,6 +7,7 @@
 
 local c = assert(require "singletons:color" . color)
 local input_event = require "anterm:input-event"
+local table = core.table
 
 
 
@@ -88,7 +89,7 @@ end
 
 
 
-local clone = assert(require "core:table" . clone)
+local clone = assert(table.clone)
 function InputEchoAgent.update(echo, event, command)
    echo.subject = clone(event)
    echo.subject.command = command
@@ -108,6 +109,5 @@ end
 
 
 
-local constructor = assert(require "core:cluster" . constructor)
-return constructor(InputEchoAgent)
+return core.cluster.constructor(InputEchoAgent)
 

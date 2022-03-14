@@ -27,6 +27,9 @@ local SessionAgent   = require "helm:agent/session"
 local StatusAgent    = require "helm:agent/status"
 local SuggestAgent   = require "helm:agent/suggest"
 
+local assert = assert(core.fn.assertfmt)
+local table = core.table
+
 
 
 
@@ -52,11 +55,9 @@ local Maestro = meta {}
 
 
 local gmatch = assert(string.gmatch)
-local insert = assert(table.insert)
-local clone = assert(require "core:table" . clone)
+local clone, insert = assert(table.clone), assert(table.insert)
 local dispatchmessage = assert(require "actor:actor" . dispatchmessage)
 local Message = require "actor:message"
-local assert = assert(require "core/fn" . assertfmt)
 
 function Maestro.activeKeymap(maestro)
    local composed_keymap = { bindings = {}, wildcards = {} }
@@ -117,8 +118,6 @@ local create, resume, status, yield = assert(coroutine.create),
                                       assert(coroutine.resume),
                                       assert(coroutine.status),
                                       assert(coroutine.yield)
-
-local dispatchmessage = assert(require "actor:actor" . dispatchmessage)
 
 function Maestro.processMessagesWhile(maestro, fn)
    local coro = create(fn)

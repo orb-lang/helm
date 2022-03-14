@@ -9,6 +9,9 @@
 local EditAgent = require "helm:agent/edit"
 local ResultsAgent = require "helm:agent/results"
 
+local math = core.math
+local table = core.table
+
 
 
 
@@ -68,7 +71,7 @@ end
 
 
 
-local clamp = assert(require "core:math" . clamp)
+local clamp = assert(math.clamp)
 function SessionAgent.selectIndex(agent, index)
    index = #agent.session == 0
       and 0
@@ -138,7 +141,7 @@ function SessionAgent.toggleSelectedState(agent)
    return true
 end
 
-local inverse = assert(require "core:table" . inverse)
+local inverse = assert(table.inverse)
 local status_reverse_map = inverse(status_cycle_map)
 
 function SessionAgent.reverseToggleSelectedState(agent)
@@ -273,7 +276,7 @@ end
 
 
 
-local inbounds = assert(require "core:math" . inbounds)
+local inbounds = assert(math.inbounds)
 local lua_thor = assert(require "helm:lex" . lua_thor)
 function SessionAgent.editWindow(agent, index)
    assert(inbounds(index, 1, #agent.session))
@@ -334,6 +337,5 @@ end
 
 
 
-local constructor = assert(require "core:cluster" . constructor)
-return constructor(SessionAgent)
+return core.cluster.constructor(SessionAgent)
 

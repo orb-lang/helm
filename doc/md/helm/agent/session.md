@@ -8,6 +8,9 @@ Agent responsible for editing/reviewing a session\.
 ```lua
 local EditAgent = require "helm:agent/edit"
 local ResultsAgent = require "helm:agent/results"
+
+local math = core.math
+local table = core.table
 ```
 
 
@@ -68,7 +71,7 @@ end
 Select the line at `index` in the session for possible editing\.
 
 ```lua
-local clamp = assert(require "core:math" . clamp)
+local clamp = assert(math.clamp)
 function SessionAgent.selectIndex(agent, index)
    index = #agent.session == 0
       and 0
@@ -120,9 +123,9 @@ end
 
 #### SessionAgent:\[reverse\]toggleSelectedState\(\)
 
-Toggles the state of the selected line, cycling through "accept", "reject",ignore", "skip"\.
+Toggles the state of the selected line, cycling through "accept", "reject",
+"ignore", "skip"\.
 
-"
 ```lua
 local status_cycle_map = {
    ignore = "accept",
@@ -138,7 +141,7 @@ function SessionAgent.toggleSelectedState(agent)
    return true
 end
 
-local inverse = assert(require "core:table" . inverse)
+local inverse = assert(table.inverse)
 local status_reverse_map = inverse(status_cycle_map)
 
 function SessionAgent.reverseToggleSelectedState(agent)
@@ -273,7 +276,7 @@ end
 Retrieve the window for the EditAgent for the `index`th premise\.
 
 ```lua
-local inbounds = assert(require "core:math" . inbounds)
+local inbounds = assert(math.inbounds)
 local lua_thor = assert(require "helm:lex" . lua_thor)
 function SessionAgent.editWindow(agent, index)
    assert(inbounds(index, 1, #agent.session))
@@ -334,6 +337,5 @@ end
 
 
 ```lua
-local constructor = assert(require "core:cluster" . constructor)
-return constructor(SessionAgent)
+return core.cluster.constructor(SessionAgent)
 ```

@@ -6,8 +6,8 @@
 
 
 
-local lineGen = import("repr:repr", "lineGen")
-local cluster = require "core:cluster"
+local string = core.string
+local lineGen = assert(require "repr:repr" . lineGen)
 
 
 
@@ -42,7 +42,7 @@ end
 
 
 
-local lines = import("core/string", "lines")
+local lines = assert(string.lines)
 function Resbuf.initComposition(resbuf)
    if not resbuf.reprs then
       resbuf.reprs = {}
@@ -96,6 +96,5 @@ end
 
 
 
-local constructor = assert(require "core:cluster" . constructor)
-return constructor(Resbuf)
+return core.cluster.constructor(Resbuf)
 

@@ -9,6 +9,8 @@ We're going to do this will straight el peg, and fold in =espalier= ASAP.
 local L = require "lpeg"
 local P, R, S, match = L.P, L.R, L.S, L.match
 local Lex = {}
+
+local math = core.math
 local sub, gsub = assert(string.sub), assert(string.gsub)
 local concat, insert = assert(table.concat), assert(table.insert)
 #/lua
@@ -120,8 +122,8 @@ local function chomp_token(lb, start_pos)
 end
 
 local Token = require "repr:token"
-local inbounds = assert(require "core:math" . inbounds)
-local instanceof = assert(require "core:meta" . instanceof)
+local inbounds = assert(math.inbounds)
+local instanceof = assert(core.meta.instanceof)
 local Txtbuf = require "helm:buf/txtbuf"
 
 function Lex.lua_thor(code, cursor_index)

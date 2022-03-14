@@ -6,7 +6,7 @@
 **** imports
 
 #!lua
-local clone = assert(require "core:table" . clone)
+local table = core.table
 #/lua
 
 
@@ -117,7 +117,7 @@ end
 **** Keymaps
 
 #!lua
-local addall = assert(require "core:table" . addall)
+local addall = assert(table.addall)
 SearchAgent.keymap_try_activate = {
    ["/"] = "activateOnFirstKey"
 }
@@ -133,6 +133,5 @@ addall(SearchAgent.keymap_actions, ResultListAgent.keymap_actions)
 #/lua
 
 #!lua
-local constructor = assert(require "core:cluster" . constructor)
-return constructor(SearchAgent)
+return core.cluster.constructor(SearchAgent)
 #/lua

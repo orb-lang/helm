@@ -11,6 +11,8 @@ providing a [Window](https://gitlab.com/special-circumstance/helm/-/blob/trunk/d
 ```lua
 local Window = require "window:window"
 local Deque = require "deque:deque"
+
+local table = core.table
 ```
 
 
@@ -133,7 +135,7 @@ own details, using `.mergeWindowConfig()` to include the superclass' config\.
 \(Note that this is not a method, just a function\.\)
 
 ```lua
-local addall = assert(require "core:table" . addall)
+local addall = assert(table.addall)
 function Agent.mergeWindowConfig(cfg_a, cfg_b)
    for cat, props in pairs(cfg_b) do
       cfg_a[cat] = cfg_a[cat] or {}
@@ -185,6 +187,5 @@ end
 
 
 ```lua
-local constructor = assert(require "core:cluster" . constructor)
-return constructor(Agent)
+return core.cluster.constructor(Agent)
 ```

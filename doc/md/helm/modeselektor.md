@@ -91,7 +91,7 @@ assert(meta, "must have meta in _G")
 ```
 
 
-#### includes
+#### imports
 
 The easiest way to go mad in concurrent environments is to share memory\.
 

@@ -6,7 +6,7 @@
 
 
 
-local clone = assert(require "core:table" . clone)
+local table = core.table
 
 
 
@@ -117,7 +117,7 @@ end
 
 
 
-local addall = assert(require "core:table" . addall)
+local addall = assert(table.addall)
 SearchAgent.keymap_try_activate = {
    ["/"] = "activateOnFirstKey"
 }
@@ -133,6 +133,5 @@ addall(SearchAgent.keymap_actions, ResultListAgent.keymap_actions)
 
 
 
-local constructor = assert(require "core:cluster" . constructor)
-return constructor(SearchAgent)
+return core.cluster.constructor(SearchAgent)
 

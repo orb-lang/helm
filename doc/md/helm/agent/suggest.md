@@ -8,6 +8,8 @@
 ```lua
 local SelectionList = require "helm:selection_list"
 local names = require "repr:names"
+local table = core.table
+local string = core.string
 local insert, sort = assert(table.insert), assert(table.sort)
 ```
 
@@ -94,9 +96,9 @@ local function _suggest_sort(a, b)
    end
 end
 
-local isidentifier = import("core:string", "isidentifier")
-local hasmetamethod = import("core:meta", "hasmetamethod")
-local safeget = import("core:table", "safeget")
+local isidentifier = assert(string.isidentifier)
+local hasmetamethod = assert(core.meta.hasmetamethod)
+local safeget = assert(table.safeget)
 local fuzz_patt = require "helm:fuzz_patt"
 local Set = require "set:set"
 
@@ -247,7 +249,7 @@ function SuggestAgent.acceptOnNonWordChar(agent, event)
    return false
 end
 
-local addall = assert(require "core:table" . addall)
+local addall = assert(table.addall)
 SuggestAgent.keymap_actions = {
    LEFT            = "acceptAndFallthrough",
    PASTE           = "quitAndFallthrough",
@@ -258,6 +260,5 @@ addall(SuggestAgent.keymap_actions, ResultListAgent.keymap_actions)
 
 
 ```lua
-local constructor = assert(require "core:cluster" . constructor)
-return constructor(SuggestAgent)
+return core.cluster.constructor(SuggestAgent)
 ```

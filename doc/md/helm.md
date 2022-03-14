@@ -58,9 +58,11 @@ No sense wasting a level of indent on a wrapper imho
 ```lua
 setfenv(0, __G)
 
-import = assert(require "core/module" . import)
 meta = assert(require "core:cluster" . Meta)
 core = require "core:core"
+-- Keep this local, other modules will do the same as-needed
+-- We need it below for `compact`
+local table = core.table
 kit = require "valiant:replkit"
 jit.vmdef = require "helm:helm/vmdef"
 jit.p = require "helm:helm/ljprof"
@@ -159,6 +161,8 @@ local Point = require "anterm:point"
 ```lua
 
 -- Get window size and set up a SIGWINCH handler to keep it refreshed
+-- Also check every 500ms in a timer in case the SIGWINCH handler doesn't
+-- trigger immediately for whatever reason.
 
 local max_col, max_row = stdin:get_winsize()
 local max_extent = Point(max_row, max_col)
@@ -232,7 +236,7 @@ local function is_scroll(event)
    return event.type == "mouse" and event.scrolling
 end
 
-local compact = assert(require "core:table" . compact)
+local compact = assert(table.compact)
 
 local function consolidate_scroll_events(events)
    -- We're going to nil-and-compact, so convert to ntable

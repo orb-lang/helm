@@ -3,8 +3,8 @@
 =page= is our equivalent of =less=, used for displaying help files and the like.
 
 #!lua
-local core_table = require "core:table"
-local clone, splice = assert(core_table.clone), assert(core_table.splice)
+local table = core.table
+local clone, splice = assert(table.clone), assert(table.splice)
 local RagaBase = require "helm:helm/raga/base"
 #/lua
 

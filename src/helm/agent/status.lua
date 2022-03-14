@@ -57,6 +57,5 @@ end
 
 
 
-local constructor = assert(require "core:cluster" . constructor)
-return constructor(StatusAgent)
+return core.cluster.constructor(StatusAgent)
 

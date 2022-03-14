@@ -3,6 +3,8 @@
 
 
 
+local table = core.table
+
 local Agent = require "helm:agent/agent"
 local PagerAgent = meta(getmetatable(Agent))
 
@@ -55,7 +57,7 @@ PagerAgent.keymap_actions = {
    q = "quit"
 }
 
-local clone = assert(require "core:table" . clone)
+local clone = assert(table.clone)
 PagerAgent.keymap_scrolling = clone(Agent.keymap_scrolling)
 for cmd, shortcuts in pairs{
    scrollDown     = { "RETURN", "e", "j", "C-n", "C-e", "C-j" },
@@ -75,6 +77,5 @@ end
 
 
 
-local constructor = assert(require "core:cluster" . constructor)
-return constructor(PagerAgent)
+return core.cluster.constructor(PagerAgent)
 
