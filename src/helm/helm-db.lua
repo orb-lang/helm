@@ -1243,10 +1243,7 @@ end
 
 
 
-local assertfmt = require "core:core/string" . assertfmt
-local format = assert(string.format)
 local boot = assert(sql.boot)
-
 
 function helm_db.boot(conn_handle)
    local conn = _resolveConn(conn_handle)

@@ -4,8 +4,8 @@
 
 
 
-local core_table = require "core:table"
-local clone, splice = assert(core_table.clone), assert(core_table.splice)
+local table = core.table
+local clone, splice = assert(table.clone), assert(table.splice)
 local a = require "anterm:anterm"
 local RagaBase = require "helm:raga/base"
 

@@ -115,6 +115,5 @@ ResultListAgent.keymap_actions = {
 
 
 
-local constructor = assert(require "core:cluster" . constructor)
-return constructor(ResultListAgent)
+return core.cluster.constructor(ResultListAgent)
 

@@ -58,6 +58,5 @@ ResultsAgent.keymap_reset = {
 
 
 
-local constructor = assert(require "core:cluster" . constructor)
-return constructor(ResultsAgent)
+return core.cluster.constructor(ResultsAgent)
 

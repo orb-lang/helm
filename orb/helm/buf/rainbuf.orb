@@ -55,10 +55,12 @@ We also have =offset=, a number, and =more=, which is =true= if the buffer
 continues past the edge of the zone and otherwise falsy.
 
 
-**** includes
+**** imports
 
 #!lua
-local lineGen = import("repr:repr", "lineGen")
+local string = core.string
+local math = core.math
+local lineGen = assert(require "repr:repr" . lineGen)
 #/lua
 
 
@@ -78,7 +80,7 @@ Sets the extent of the area the Rainbuf output will be painted in, adjusting
 scroll position and clearing caches as needed.
 
 #!lua
-local lines = import("core/string", "lines")
+local lines = assert(string.lines)
 function Rainbuf.setExtent(rainbuf, rows, cols)
    rows = rows or 20
    cols = cols or 80
@@ -127,7 +129,7 @@ line of content is the *first* line on the screen.
 Returns a boolean indicating whether any scrolling occurred.
 
 #!lua
-local clamp = import("core/math", "clamp")
+local clamp = assert(math.clamp)
 function Rainbuf.scrollTo(rainbuf, offset, allow_overscroll)
    if offset < 0 then
       offset = 0
@@ -492,6 +494,5 @@ Rainbuf.is_rainbuf = true
 
 
 #!lua
-local constructor = assert(require "core:cluster" . constructor)
-return constructor(Rainbuf)
+return core.cluster.constructor(Rainbuf)
 #/lua

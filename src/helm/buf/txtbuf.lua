@@ -87,6 +87,5 @@ end
 
 
 
-local constructor = assert(require "core:cluster" . constructor)
-return constructor(Txtbuf)
+return core.cluster.constructor(Txtbuf)
 

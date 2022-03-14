@@ -13,6 +13,8 @@ local Window = require "window:window"
 local Deque = require "deque:deque"
 local Message = require "actor:message"
 
+local table = core.table
+
 
 
 
@@ -148,7 +150,7 @@ Agent.keymap_scrolling = {
 
 
 
-local addall = assert(require "core:table" . addall)
+local addall = assert(table.addall)
 function Agent.mergeWindowConfig(cfg_a, cfg_b)
    for cat, props in pairs(cfg_b) do
       cfg_a[cat] = cfg_a[cat] or {}
@@ -200,6 +202,5 @@ end
 
 
 
-local constructor = assert(require "core:cluster" . constructor)
-return constructor(Agent)
+return core.cluster.constructor(Agent)
 

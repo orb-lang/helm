@@ -46,6 +46,5 @@ end
 
 
 
-local constructor = assert(require "core:cluster" . constructor)
-return constructor(PromptAgent)
+return core.cluster.constructor(PromptAgent)
 

@@ -15,14 +15,12 @@ local EditAgent = meta(getmetatable(Agent))
 
 
 
-local Codepoints = require "singletons/codepoints"
-local lines = import("core/string", "lines")
-local clone, collect, slice, splice =
-   import("core/table", "clone", "collect", "slice", "splice")
-
-local concat, insert, remove = assert(table.concat),
-                               assert(table.insert),
-                               assert(table.remove)
+local math = core.math
+local string = core.string
+local table = core.table
+local lines = assert(string.lines)
+local concat, insert = assert(table.concat), assert(table.insert)
+local Codepoints = require "singletons:codepoints"
 
 
 
@@ -150,10 +148,8 @@ end
 
 
 
-local core_math = require "core/math"
-local clamp, inbounds = assert(core_math.clamp), assert(core_math.inbounds)
-local Point = require "anterm/point"
-
+local clamp, inbounds = assert(math.clamp), assert(math.inbounds)
+local Point = require "anterm:point"
 function EditAgent.setCursor(agent, rowOrTable, col)
    local row
    if type(rowOrTable) == "table" then
@@ -202,6 +198,7 @@ end
 
 
 
+local clone = assert(table.clone)
 function EditAgent.beginSelection(agent)
    agent.mark = clone(agent.cursor)
 end
@@ -306,6 +303,7 @@ end
 
 
 
+local slice = assert(table.slice)
 function EditAgent.nl(agent)
    line, cur_col, cur_row = agent:currentPosition()
    -- split the line
@@ -337,7 +335,7 @@ end
 
 
 
-local inverse = assert(require "core:table" . inverse)
+local inverse = assert(table.inverse)
 local _openers = { ["("] = ")",
                    ['"'] = '"',
                    ["'"] = "'",
@@ -383,6 +381,7 @@ end
 
 
 
+local collect, splice = assert(table.collect), assert(table.splice)
 function EditAgent.paste(agent, frag)
    frag = frag:gsub("\t", "   ")
    local frag_lines = collect(lines, frag)
@@ -411,7 +410,7 @@ end
 
 
 
-local deleterange = import("core/table", "deleterange")
+local deleterange = assert(table.deleterange)
 function EditAgent.killSelection(agent)
    if not agent:hasSelection() then
       -- #todo communicate that there was nothing to do somehow,
@@ -1064,6 +1063,5 @@ end
 
 
 
-local constructor = assert(require "core:cluster" . constructor)
-return constructor(EditAgent)
+return core.cluster.constructor(EditAgent)
 

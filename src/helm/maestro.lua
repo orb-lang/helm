@@ -27,6 +27,9 @@ local SessionAgent   = require "helm:agent/session"
 local StatusAgent    = require "helm:agent/status"
 local SuggestAgent   = require "helm:agent/suggest"
 
+local assert = assert(core.fn.assertfmt)
+local table = core.table
+
 
 
 
@@ -58,10 +61,8 @@ local new, Maestro, Maestro_M = cluster.genus(Actor)
 
 
 local gmatch = assert(string.gmatch)
-local insert = assert(table.insert)
-local clone = assert(require "core:table" . clone)
+local clone, insert = assert(table.clone), assert(table.insert)
 local Message = require "actor:message"
-local assert = assert(require "core/fn" . assertfmt)
 local _yield  = assert(require "qor:core".thread.nest "actor" .yield)
 
 function Maestro.activeKeymap(maestro)

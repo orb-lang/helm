@@ -20,6 +20,8 @@ local Resbuf  = require "helm:buf/resbuf"
 local Txtbuf  = require "helm:buf/txtbuf"
 
 local Sessionbuf = meta(getmetatable(Rainbuf))
+
+local math = core.math
 ```
 
 
@@ -139,7 +141,7 @@ selected premise\. This will never be greater than ROWS\_PER\_RESULT\.
 The Sessionbuf must have had :initComposition\(\) already called\.
 
 ```lua
-local clamp = assert(require "core:math" . clamp)
+local clamp = assert(math.clamp)
 function Sessionbuf.rowsForSelectedResult(buf)
    _resbuf(buf):composeUpTo(buf.ROWS_PER_RESULT)
    return clamp(#_resbuf(buf).lines, 0, buf.ROWS_PER_RESULT)
@@ -314,6 +316,5 @@ end
 
 
 ```lua
-local constructor = assert(require "core:cluster" . constructor)
-return constructor(Sessionbuf)
+return core.cluster.constructor(Sessionbuf)
 ```

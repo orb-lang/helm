@@ -67,11 +67,12 @@
 
 
 
+local string = core.string
+local instanceof = assert(core.meta.instanceof)
+
 local Txtbuf = require "helm:buf/txtbuf"
 local Rainbuf = require "helm:buf/rainbuf"
 local a = require "anterm:anterm"
-
-local instanceof = import("core/meta", "instanceof")
 
 
 
@@ -253,8 +254,7 @@ local function _nl(zone)
    return a.jump.col(zone:clientBounds().left) .. a.jump.down(1)
 end
 
-local lines = import("core/string", "lines")
-
+local lines = assert(string.lines)
 local function _writeLines(write, zone)
    local nl = _nl(zone)
    local pr_row = zone.bounds.top

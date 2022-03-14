@@ -85,9 +85,8 @@ the results never get used\.
 As much of the work as possible is offloaded to a uv idler process\.
 
 ```lua
-local clamp, inbounds = import("core:core/math", "clamp", "inbounds")
-local assertfmt = import("core:core/string", "assertfmt")
-local format = assert(string.format)
+local math = core.math
+local clamp, inbounds = assert(math.clamp), assert(math.inbounds)
 
 function Historian.load(historian)
    local stmts = historian.stmts
