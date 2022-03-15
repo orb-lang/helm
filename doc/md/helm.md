@@ -159,6 +159,8 @@ local Point = require "anterm:point"
 ```lua
 
 -- Get window size and set up a SIGWINCH handler to keep it refreshed
+-- Also check every 500ms in a timer in case the SIGWINCH handler doesn't
+-- trigger immediately for whatever reason.
 
 local max_col, max_row = stdin:get_winsize()
 local max_extent = Point(max_row, max_col)
