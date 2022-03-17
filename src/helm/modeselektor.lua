@@ -365,32 +365,30 @@ end
 
 
 function ModeS.act(modeS, event)
-   modeS:processMessagesWhile(function()
-      local command
-      repeat
-         modeS.action_complete = true
-         -- The raga may set action_complete to false to cause the command
-         -- to be re-processed, most likely after a mode-switch
-         local commandThisTime = modeS.maestro:dispatch(event)
-         command = command or commandThisTime
-      until modeS.action_complete == true
-      if not command then
-         command = 'NYI'
-      end
-      -- Inform the input-echo agent of what just happened
-      -- #todo Maestro can do this once action_complete goes away
-      modeS:agent'input_echo':update(event, command)
-      -- Reflow in case command height has changed. Includes a paint.
-      -- Don't allow errors encountered here to break this entire
-      -- event-loop iteration, otherwise we become unable to quit if
-      -- there's a paint error.
-      local success, err = xpcall(modeS.reflow, debug.traceback, modeS)
-      if not success then
-         io.stderr:write(err, "\n")
-         io.stderr:flush()
-      end
-      collectgarbage()
-   end)
+   local command;
+   repeat
+      modeS.action_complete = true
+      -- The raga may set action_complete to false to cause the command
+      -- to be re-processed, most likely after a mode-switch
+      local commandThisTime = modeS.maestro:dispatch(event)
+      command = command or commandThisTime
+   until modeS.action_complete == true
+   if not command then
+      command = 'NYI'
+   end
+   -- Inform the input-echo agent of what just happened
+   -- #todo Maestro can do this once action_complete goes away
+   modeS:agent'input_echo':update(event, command)
+   -- Reflow in case command height has changed. Includes a paint.
+   -- Don't allow errors encountered here to break this entire
+   -- event-loop iteration, otherwise we become unable to quit if
+   -- there's a paint error.
+   local success, err = xpcall(modeS.reflow, debug.traceback, modeS)
+   if not success then
+      io.stderr:write(err, "\n")
+      io.stderr:flush()
+   end
+   collectgarbage()
    return modeS
 end
 
@@ -399,7 +397,30 @@ end
 
 
 function ModeS.__call(modeS, category, value)
-   return modeS:act(category, value)
+   local co = create(function()
+                          return modeS:act(category, value)
+                       end)
+   local msg_ret = { n = 0 }
+   local ok, msg
+   while true do
+      ok, msg = resume(co, unpack(msg_ret))
+      if not ok then
+         error(msg .. "\nIn coro:\n" .. debug.traceback(coro))
+      elseif status(co) == "dead" then
+         -- End of body function, pass through the return value
+         return msg
+      end
+
+      msg_ret = modeS:processMessagesWhile(function()
+         if msg.sendto and msg.sendto:find("^agents%.") then
+            return modeS.maestro:processMessagesWhile(function()
+               return pack(dispatchmessage(modeS.maestro, msg))
+            end)
+         else
+            return pack(dispatchmessage(modeS, msg))
+         end
+      end)
+   end
 end
 
 
