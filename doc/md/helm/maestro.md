@@ -98,46 +98,24 @@ end
 ```
 
 
-### Maestro:processMessagesWhile\(fn\)
-
-Executes `fn` as a coroutine, processing any `Message`s it yields whose target
-is our responsibility, otherwise re\-yields them to `modeS`\.
-
-\#todo
-because the details differ\. A custom `dispatchmessage` implementation might
-make it possible to simplify this, but this implementation is going away
-anyway\.
-
-\#todo
-`Agent`s\-\-maybe this is correct, but a more principled approach to determining
-who the message is for would be nice\.
-
 ```lua
 local create, resume, status, yield = assert(coroutine.create),
                                       assert(coroutine.resume),
                                       assert(coroutine.status),
                                       assert(coroutine.yield)
 
-local dispatchmessage = assert(require "actor:actor" . dispatchmessage)
+local _actor = require "actor:actor"
+
+local dispatchmessage = assert(_actor.dispatchmessage)
+
+local dotask = assert(_actor.dotask)
 
 local function response(maestro, msg)
    return pack(dispatchmessage(maestro, msg))
 end
 
 function Maestro.__call(maestro, msg)
-   local msg_ret = pack(maestro, msg)
-   local ok
-   local coro = create(response)
-   while true do
-      ok, msg = resume(coro, unpack(msg_ret))
-      if not ok then
-         error(msg .. "\nIn coro:\n" .. debug.traceback(coro))
-      elseif status(coro) == 'dead' then
-         -- End of body function, pass through the return value
-         return msg
-      end
-      msg_ret = maestro:delegate(msg)
-   end
+   return dotask(maestro, response, msg)
 end
 ```
 
@@ -261,19 +239,7 @@ local function response(maestro, event)
 end
 
 function Maestro.dispatch(maestro, event)
-   local msg_ret = pack(maestro, event)
-   local ok
-   local coro = create(response)
-   while true do
-      ok, msg = resume(coro, unpack(msg_ret))
-      if not ok then
-         error(msg .. "\nIn coro:\n" .. debug.traceback(coro))
-      elseif status(coro) == "dead" then
-         -- End of body function, pass through the return value
-         return msg
-      end
-      msg_ret = maestro:delegate(msg)
-   end
+   return dotask(maestro, response, event)
 end
 ```
 

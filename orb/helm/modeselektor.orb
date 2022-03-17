@@ -98,6 +98,9 @@ The easiest way to go mad in concurrent environments is to share memory.
 =modeselektor= will own txtbuf, historian, and the entire screen.
 
 #!lua
+local actor = require "actor:actor"
+local dotask = assert(actor.dotask)
+
 local Historian  = require "helm:historian"
 local Maestro    = require "helm:maestro"
 local Valiant = require "valiant:valiant"
@@ -192,34 +195,12 @@ function ModeS.reflow(modeS)
 end
 #/lua
 
-
-*** ModeS:processMessagesWhile(fn)
-
-Executes =fn= as a coroutine, processing any =Message=s it yields.
-
 #!lua
 local create, resume, status = assert(coroutine.create),
                                assert(coroutine.resume),
                                assert(coroutine.status)
 
 local dispatchmessage = assert(require "actor:actor" . dispatchmessage)
-
-function ModeS.processMessagesWhile(modeS, fn)
-   local coro = create(fn)
-   local msg_ret = { n = 0 }
-   local ok, msg
-   while true do
-      ok, msg = resume(coro, unpack(msg_ret))
-      if not ok then
-         error(msg .. "\nIn coro:\n" .. debug.traceback(coro))
-      elseif status(coro) == "dead" then
-         -- End of body function, pass through the return value
-         return msg
-      end
-
-      msg_ret = modeS:delegate(msg)
-   end
-end
 #/lua
 
 #!lua
@@ -232,19 +213,7 @@ local function _delegate(modeS, msg)
 end
 
 function ModeS.delegate(modeS, msg)
-   local coro = create(_delegate)
-   local msg_ret = pack(modeS, msg)
-   local ok
-   while true do
-      ok, msg = resume(coro, unpack(msg_ret))
-         if not ok then
-         error(msg .. "\nIn coro:\n" .. debug.traceback(coro))
-      elseif status(coro) == "dead" then
-         -- End of body function, pass through the return value
-         return msg
-      end
-      msg_ret = modeS:delegate(msg)
-   end
+   return dotask(modeS, _delegate, msg)
 end
 #/lua
 
@@ -410,20 +379,7 @@ To keep =act= itself replaceable, we look it up on each call:
 #!lua
 
 function ModeS.__call(modeS, event)
-   local co = create(modeS.act)
-   local msg_ret = pack(modeS, event)
-   local ok, msg
-   while true do
-      ok, msg = resume(co, unpack(msg_ret))
-      if not ok then
-         error(msg .. "\nIn coro:\n" .. debug.traceback(co))
-      elseif status(co) == "dead" then
-         -- End of body function, pass through the return value
-         return msg
-      end
-
-      msg_ret = modeS:delegate(msg)
-   end
+   return dotask(modeS, 'act', event)
 end
 #/lua
 
@@ -501,7 +457,7 @@ function ModeS.rerun(modeS, deque)
    -- #todo this should probably be on a RunAgent/Runner and invoked
    -- via some queued-Message mechanism, which would also take care of
    -- putting it in a coroutine. Until then, we do this.
-   modeS:processMessagesWhile(function()
+   dotask(modeS, function()
       modeS:agent'edit':clear()
       modeS.hist.stmts.savepoint_restart_session()
       local success, results
@@ -577,7 +533,6 @@ end
 ** new
 
 #!lua
-local actor = require "actor:actor"
 local borrowmethod, getter = assert(actor.borrowmethod, actor.getter)
 
 local function new(max_extent, writer, db)
@@ -633,7 +588,7 @@ local function new(max_extent, writer, db)
    modeS:bindZone("suggest",  "suggest",    Resbuf)
 
    -- Load initial raga. Need to process yielded messages from `onShift`
-   modeS:processMessagesWhile(function()
+   dotask(modeS, function()
       modeS:shiftMode(modeS.raga_default)
    end)
 
