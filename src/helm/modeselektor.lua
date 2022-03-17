@@ -225,9 +225,7 @@ function ModeS.processMessagesWhile(modeS, fn)
       -- wants to go away anyway, so I don't know where we'll end up.
       msg_ret = modeS:processMessagesWhile(function()
          if msg.sendto and msg.sendto:find("^agents%.") then
-            return modeS.maestro:processMessagesWhile(function()
-               return pack(dispatchmessage(modeS.maestro, msg))
-            end)
+            return modeS.maestro(msg)
          else
             return pack(dispatchmessage(modeS, msg))
          end
@@ -405,7 +403,7 @@ function ModeS.__call(modeS, category, value)
    while true do
       ok, msg = resume(co, unpack(msg_ret))
       if not ok then
-         error(msg .. "\nIn coro:\n" .. debug.traceback(coro))
+         error(msg .. "\nIn coro:\n" .. debug.traceback(co))
       elseif status(co) == "dead" then
          -- End of body function, pass through the return value
          return msg
@@ -413,9 +411,7 @@ function ModeS.__call(modeS, category, value)
 
       msg_ret = modeS:processMessagesWhile(function()
          if msg.sendto and msg.sendto:find("^agents%.") then
-            return modeS.maestro:processMessagesWhile(function()
-               return pack(dispatchmessage(modeS.maestro, msg))
-            end)
+            return modeS.maestro(msg)
          else
             return pack(dispatchmessage(modeS, msg))
          end

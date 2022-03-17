@@ -120,10 +120,13 @@ local create, resume, status, yield = assert(coroutine.create),
 
 local dispatchmessage = assert(require "actor:actor" . dispatchmessage)
 
-function Maestro.processMessagesWhile(maestro, fn)
-   local coro = create(fn)
+function Maestro.__call(maestro, msg)
    local msg_ret = { n = 0 }
-   local ok, msg
+   local ok
+   local response = function()
+            return pack(dispatchmessage(maestro, msg))
+         end
+   local coro = create(response)
    while true do
       ok, msg = resume(coro, unpack(msg_ret))
       if not ok then
@@ -133,9 +136,7 @@ function Maestro.processMessagesWhile(maestro, fn)
          return msg
       end
       if msg.sendto and msg.sendto:find("^agents%.") then
-         msg_ret = maestro:processMessagesWhile(function()
-            return pack(dispatchmessage(maestro, msg))
-         end)
+         msg_ret = maestro(msg)
       else
          msg_ret = pack(yield(msg))
       end
@@ -233,7 +234,9 @@ local function _dispatchOnly(maestro, event)
 end
 
 function Maestro.dispatch(maestro, event)
-   return maestro:processMessagesWhile(function()
+   local msg_ret = { n = 0 }
+   local ok
+   local function response()
       local command = _dispatchOnly(maestro, event)
       if maestro.agents.edit.contents_changed then
          maestro.modeS.raga.onTxtbufChanged(modeS)
@@ -245,7 +248,22 @@ function Maestro.dispatch(maestro, event)
       maestro.agents.edit.contents_changed = false
       maestro.agents.edit.cursor_changed = false
       return command
-   end)
+   end
+   local coro = create(response)
+   while true do
+      ok, msg = resume(coro, unpack(msg_ret))
+      if not ok then
+         error(msg .. "\nIn coro:\n" .. debug.traceback(coro))
+      elseif status(coro) == "dead" then
+         -- End of body function, pass through the return value
+         return msg
+      end
+      if msg.sendto and msg.sendto:find("^agents%.") then
+         msg_ret = maestro(msg)
+      else
+         msg_ret = pack(yield(msg))
+      end
+   end
 end
 ```
 
