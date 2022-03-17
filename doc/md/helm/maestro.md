@@ -136,11 +136,23 @@ function Maestro.__call(maestro, msg)
          -- End of body function, pass through the return value
          return msg
       end
-      if msg.sendto and msg.sendto:find("^agents%.") then
-         msg_ret = maestro(msg)
-      else
-         msg_ret = pack(yield(msg))
-      end
+      msg_ret = maestro:delegate(msg)
+   end
+end
+```
+
+
+### Maestro:delegate\(msg\)
+
+This is going to be an actor invariant, I'm pretty sure\. It's working for
+modeS\.
+
+```lua
+function Maestro.delegate(maestro, msg)
+   if msg.sendto and msg.sendto:find("^agents%.") then
+      return maestro(msg)
+   else
+      return pack(yield(msg))
    end
 end
 ```
@@ -260,11 +272,7 @@ function Maestro.dispatch(maestro, event)
          -- End of body function, pass through the return value
          return msg
       end
-      if msg.sendto and msg.sendto:find("^agents%.") then
-         msg_ret = maestro(msg)
-      else
-         msg_ret = pack(yield(msg))
-      end
+      msg_ret = maestro:delegate(msg)
    end
 end
 ```
