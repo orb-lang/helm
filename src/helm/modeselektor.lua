@@ -217,13 +217,13 @@ function ModeS.processMessagesWhile(modeS, fn)
          return msg
       end
 
-      msg_ret = modeS:defer(msg)
+      msg_ret = modeS:delegate(msg)
    end
 end
 
 
 
-local function _defer(modeS, msg)
+local function _delegate(modeS, msg)
    if msg.sendto and msg.sendto:find("^agents%.") then
       return modeS.maestro(msg)
    else
@@ -231,8 +231,8 @@ local function _defer(modeS, msg)
    end
 end
 
-function ModeS.defer(modeS, msg)
-   local coro = create(_defer)
+function ModeS.delegate(modeS, msg)
+   local coro = create(_delegate)
    local msg_ret = pack(modeS, msg)
    local ok
    while true do
@@ -243,7 +243,7 @@ function ModeS.defer(modeS, msg)
          -- End of body function, pass through the return value
          return msg
       end
-      msg_ret = modeS:defer(msg)
+      msg_ret = modeS:delegate(msg)
    end
 end
 
@@ -422,7 +422,7 @@ function ModeS.__call(modeS, event)
          return msg
       end
 
-      msg_ret = modeS:defer(msg)
+      msg_ret = modeS:delegate(msg)
    end
 end
 
