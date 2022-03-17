@@ -223,16 +223,17 @@ end
 ```
 
 ```lua
-function ModeS.defer(modeS, msg)
-   local function defer()
-      if msg.sendto and msg.sendto:find("^agents%.") then
-         return modeS.maestro(msg)
-      else
-         return pack(dispatchmessage(modeS, msg))
-      end
+local function _defer(modeS, msg)
+   if msg.sendto and msg.sendto:find("^agents%.") then
+      return modeS.maestro(msg)
+   else
+      return pack(dispatchmessage(modeS, msg))
    end
-   local coro = create(defer)
-   local msg_ret = { n = 0 }
+end
+
+function ModeS.defer(modeS, msg)
+   local coro = create(_defer)
+   local msg_ret = { n = 2, modeS, msg }
    local ok
    while true do
       ok, msg = resume(coro, unpack(msg_ret))
@@ -366,9 +367,9 @@ by `onseq`\)\. It may try the dispatch multiple times if the raga indicates
 that reprocessing is needed by setting `modeS.action_complete` to =false\.
 
 Note that our common interface is `method(modeS, category, value)`,
-we need to distinguish betwen the tuple `("INSERT", "SHIFT-LEFT")`
-\(which could arrive from copy\-paste\) and `("NAV", "SHIFT-LEFT")`
-and preserve information for our fall\-through method\.
+we need to distinguish betwen the tuple `("INSERT", "SHIFT-LEFT")`which could arrive from copy\-paste\) and `("NAV", "SHIFT-LEFT")`
+and
+\( preserve information for our fall\-through method\.
 
 `act` always succeeds, meaning we need some metatable action to absorb and
 log anything unexpected\.
@@ -407,11 +408,10 @@ end
 To keep `act` itself replaceable, we look it up on each call:
 
 ```lua
-function ModeS.__call(modeS, category, value)
-   local co = create(function()
-                          return modeS:act(category, value)
-                       end)
-   local msg_ret = { n = 0 }
+
+function ModeS.__call(modeS, event)
+   local co = create(modeS.act)
+   local msg_ret = { n = 2, modeS, event }
    local ok, msg
    while true do
       ok, msg = resume(co, unpack(msg_ret))
