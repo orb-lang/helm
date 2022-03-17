@@ -120,18 +120,19 @@ local create, resume, status, yield = assert(coroutine.create),
 
 local dispatchmessage = assert(require "actor:actor" . dispatchmessage)
 
+local function response(maestro, msg)
+   return pack(dispatchmessage(maestro, msg))
+end
+
 function Maestro.__call(maestro, msg)
-   local msg_ret = { n = 0 }
+   local msg_ret = pack(maestro, msg)
    local ok
-   local response = function()
-            return pack(dispatchmessage(maestro, msg))
-         end
    local coro = create(response)
    while true do
       ok, msg = resume(coro, unpack(msg_ret))
       if not ok then
          error(msg .. "\nIn coro:\n" .. debug.traceback(coro))
-      elseif status(coro) == "dead" then
+      elseif status(coro) == 'dead' then
          -- End of body function, pass through the return value
          return msg
       end

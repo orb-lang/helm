@@ -233,7 +233,7 @@ end
 
 function ModeS.defer(modeS, msg)
    local coro = create(_defer)
-   local msg_ret = { n = 2, modeS, msg }
+   local msg_ret = pack(modeS, msg)
    local ok
    while true do
       ok, msg = resume(coro, unpack(msg_ret))
@@ -411,7 +411,7 @@ To keep =act= itself replaceable, we look it up on each call:
 
 function ModeS.__call(modeS, event)
    local co = create(modeS.act)
-   local msg_ret = { n = 2, modeS, event }
+   local msg_ret = pack(modeS, event)
    local ok, msg
    while true do
       ok, msg = resume(co, unpack(msg_ret))
