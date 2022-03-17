@@ -204,7 +204,19 @@ local dispatchmessage = assert(require "actor:actor" . dispatchmessage)
 
 
 
-local function _delegate(modeS, msg)
+function ModeS.task(modeS)
+   local function __idx(_, key)
+      return function(_, ...)
+         return dotask(modeS, key, ...)
+      end
+   end
+   return setmetatable({}, {__index = __idx})
+end
+
+
+
+
+function ModeS.delegator(modeS, msg)
    if msg.sendto and msg.sendto:find("^agents%.") then
       return modeS.maestro(msg)
    else
@@ -213,7 +225,7 @@ local function _delegate(modeS, msg)
 end
 
 function ModeS.delegate(modeS, msg)
-   return dotask(modeS, _delegate, msg)
+   return modeS :task() :delegator(msg)
 end
 
 
@@ -379,7 +391,7 @@ end
 
 
 function ModeS.__call(modeS, event)
-   return dotask(modeS, 'act', event)
+   return modeS :task() :act(event)
 end
 
 
@@ -453,28 +465,31 @@ end
 
 
 
-function ModeS.rerun(modeS, deque)
+function ModeS.rerunner(modeS, deque)
    -- #todo this should probably be on a RunAgent/Runner and invoked
    -- via some queued-Message mechanism, which would also take care of
    -- putting it in a coroutine. Until then, we do this.
-   dotask(modeS, function()
-      modeS:agent'edit':clear()
-      modeS.hist.stmts.savepoint_restart_session()
-      local success, results
-      for line in deque:popAll() do
-         success, results = modeS.eval(line)
-         assert(results ~= "advance", "Incomplete line when restarting session")
-         modeS.hist:append(line, results, success)
-      end
-      modeS.hist:toEnd()
-      modeS:agent'results':update(results)
-   end)
+   modeS:agent'edit':clear()
+   modeS.hist.stmts.savepoint_restart_session()
+   local success, results
+   for line in deque:popAll() do
+      success, results = modeS.eval(line)
+      assert(results ~= "advance", "Incomplete line when restarting session")
+      modeS.hist:append(line, results, success)
+   end
+   modeS.hist:toEnd()
+   modeS:agent'results':update(results)
+end
+
+
+function ModeS.rerun(modeS, deque)
+   modeS :task() :rerunner(deque)
    local restart_idle = uv.new_idle()
    restart_idle:start(function()
-      if #modeS.hist.idlers > 0 then
-         return nil
-      end
-      modeS.hist.stmts.release_restart_session()
+   if #modeS.hist.idlers > 0 then
+      return nil
+   end
+   modeS.hist.stmts.release_restart_session()
       restart_idle:stop()
    end)
 end
@@ -588,9 +603,7 @@ local function new(max_extent, writer, db)
    modeS:bindZone("suggest",  "suggest",    Resbuf)
 
    -- Load initial raga. Need to process yielded messages from `onShift`
-   dotask(modeS, function()
-      modeS:shiftMode(modeS.raga_default)
-   end)
+   modeS :task() :shiftMode(modeS.raga_default)
 
    -- hackish: we check the historian for a deque of lines to load and if
    -- we have it, we just eval them into existence.
