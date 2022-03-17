@@ -234,22 +234,23 @@ local function _dispatchOnly(maestro, event)
    end
 end
 
-function Maestro.dispatch(maestro, event)
-   local msg_ret = { n = 0 }
-   local ok
-   local function response()
-      local command = _dispatchOnly(maestro, event)
-      if maestro.agents.edit.contents_changed then
-         maestro.modeS.raga.onTxtbufChanged(modeS)
-       -- Treat contents_changed as implying cursor_changed
-       -- only ever fire one of the two events
-      elseif maestro.agents.edit.cursor_changed then
-         maestro.modeS.raga.onCursorChanged(modeS)
-      end
-      maestro.agents.edit.contents_changed = false
-      maestro.agents.edit.cursor_changed = false
-      return command
+local function response(maestro, event)
+   local command = _dispatchOnly(maestro, event)
+   if maestro.agents.edit.contents_changed then
+      maestro.modeS.raga.onTxtbufChanged(modeS)
+    -- Treat contents_changed as implying cursor_changed
+    -- only ever fire one of the two events
+   elseif maestro.agents.edit.cursor_changed then
+      maestro.modeS.raga.onCursorChanged(modeS)
    end
+   maestro.agents.edit.contents_changed = false
+   maestro.agents.edit.cursor_changed = false
+   return command
+end
+
+function Maestro.dispatch(maestro, event)
+   local msg_ret = pack(maestro, event)
+   local ok
    local coro = create(response)
    while true do
       ok, msg = resume(coro, unpack(msg_ret))
