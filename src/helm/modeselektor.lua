@@ -208,9 +208,6 @@ function ModeS.processMessagesWhile(modeS, fn)
    local coro = create(fn)
    local msg_ret = { n = 0 }
    local ok, msg
-   local function _dispatchCurrentMessage()
-      return pack(dispatchmessage(modeS, msg))
-   end
    while true do
       ok, msg = resume(coro, unpack(msg_ret))
       if not ok then
