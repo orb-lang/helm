@@ -44,7 +44,6 @@ local new, Maestro, Maestro_M = cluster.genus(Actor)
 
 
 local act = require "actor:lib"
-local dotask = assert(act.dotask)
 local dispatchmessage = assert(act.dispatchmessage)
 
 
@@ -232,7 +231,7 @@ local function _dispatchOnly(maestro, event)
    end
 end
 
-function Maestro.dispatcher(maestro, event)
+function Maestro.eventDispatcher(maestro, event)
    local command = _dispatchOnly(maestro, event)
    if maestro.agents.edit.contents_changed then
       maestro.modeS.raga.onTxtbufChanged(modeS)
@@ -246,8 +245,8 @@ function Maestro.dispatcher(maestro, event)
    return command
 end
 
-function Maestro.dispatch(maestro, event)
-   return maestro :task() :dispatcher(event)
+function Maestro.dispatchEvent(maestro, event)
+   return maestro :task() :eventDispatcher(event)
 end
 
 

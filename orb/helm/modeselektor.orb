@@ -354,7 +354,7 @@ function ModeS.act(modeS, event)
       modeS.action_complete = true
       -- The raga may set action_complete to false to cause the command
       -- to be re-processed, most likely after a mode-switch
-      local commandThisTime = modeS.maestro:dispatch(event)
+      local commandThisTime = modeS.maestro:dispatchEvent(event)
       command = command or commandThisTime
    until modeS.action_complete == true
    if not command then
