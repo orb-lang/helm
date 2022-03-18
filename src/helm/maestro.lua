@@ -132,8 +132,12 @@ end
 
 
 
+
+
+
 function Maestro.delegate(maestro, msg)
-   if msg.sendto and msg.sendto:find("^agents%.") then
+   local to = msg.sendto or msg.to
+   if to and to:find("^agents%.") then
       return maestro:act(msg)
    else
       return pack(yield(msg))

@@ -128,12 +128,16 @@ end
 
 *** Maestro:delegate(msg)
 
-This is going to be an actor invariant, I'm pretty sure. It's working for
-modeS.
+  This is called on any messages yielded by a task, and provides the packed
+arguments which are to be returned to that coroutine.
+
+For Maestro, the current behavior is to dispatch anything sent to agents, and
+throw anything else to Modeselektor.
 
 #!lua
 function Maestro.delegate(maestro, msg)
-   if msg.sendto and msg.sendto:find("^agents%.") then
+   local to = msg.sendto or msg.to
+   if to and to:find("^agents%.") then
       return maestro:act(msg)
    else
       return pack(yield(msg))
