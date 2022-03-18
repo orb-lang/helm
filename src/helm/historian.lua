@@ -15,6 +15,10 @@
 
 local uv      = require "luv"
 
+local bridge = require "bridge"
+
+local s = require "status:status" ()
+
 local Session = require "helm:session"
 local persist_tabulate = require "repr:persist-tabulate"
 local helm_db = require "helm:helm-db"
@@ -117,6 +121,7 @@ function Historian.load(historian)
       return nil
    end
    number_of_lines = clamp(number_of_lines, nil, historian.HISTORY_LIMIT)
+   historian.lines_available = number_of_lines
    local pop_stmt = stmts.get_recent
                       : bindkv { project = project_id,
                                  num_lines = number_of_lines }
@@ -203,6 +208,21 @@ function Historian.persist(historian, line, results)
       assert(historian.idlers:remove(persist_idler) == true)
    end)
    return line_id
+end
+
+
+
+
+
+
+
+
+function Historian.idling(hist)
+   if #hist.idlers > 0 then
+      return true
+   else
+      return false
+   end
 end
 
 
@@ -410,14 +430,16 @@ function __result_buffer_M.__repr(buf, window, c)
 end
 
 local function new(helm_db)
+   s.verbose = true
    local historian = setmetatable({}, Historian)
    historian.line_ids = {}
    historian.cursor = 0
    historian.cursor_start = 0
    historian.n = 0
+   historian.lines_available = 0
    historian:createPreparedStatements(helm_db)
    historian:load()
-   if _Bridge.args.restart then
+   if bridge.args.restart then
       local deque = require "deque:deque" ()
       local prev_run = historian.stmts.get_latest_finished_run
                                           :bind(historian.project_id)
@@ -426,13 +448,30 @@ local function new(helm_db)
          deque:push(line)
       end
       historian.reloads = deque
+   elseif bridge.args.back then
+      local deque = require "deque:deque" ()
+      -- we just block and fetch again, the right thing do to is use another
+      -- idler and wait until we have enough lines loaded, but the nice
+      -- thing about blocking is that it works...
+      local num_back = clamp(bridge.args.back,  nil, historian.lines_retrieved)
+      if num_back < bridge.args.back then
+         s:warn("Requested %d lines to rerun, only %d lines available")
+      end
+      local get_lines = historian.stmts.get_recent
+                   : bindkv { project = historian.project_id,
+                              num_lines = num_back }
+      for _, __, line in get_lines:cols() do
+         deque:push(line)
+      end
+      deque:reverse()
+      historian.reloads = deque
    end
 
    local session_cfg = {}
-   local session_title = _Bridge.args.macro or
-                         _Bridge.args.new_session or
-                         _Bridge.args.session
-   if _Bridge.args.macro then
+   local session_title = bridge.args.macro or
+                         bridge.args.new_session or
+                         bridge.args.session
+   if bridge.args.macro then
       session_cfg.accepted = true
       session_cfg.mode = "macro"
    end
@@ -442,11 +481,11 @@ local function new(helm_db)
                         session_title,
                         session_cfg)
    -- Asked to create a session that already exists
-   if (_Bridge.args.new_session or _Bridge.args.macro) and sesh.session_id then
+   if (bridge.args.new_session or bridge.args.macro) and sesh.session_id then
       error('A session named "' .. session_title ..
             '" already exists. You can review it with br helm -s.')
    end
-   if _Bridge.args.session then
+   if bridge.args.session then
       if sesh.session_id then
          sesh:loadPremises()
       else
@@ -458,6 +497,7 @@ local function new(helm_db)
    historian.session = sesh
    historian.result_buffer = setmetatable({}, __result_buffer_M)
    historian.idlers = Set()
+   s.verbose = false
    return historian
 end
 

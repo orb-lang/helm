@@ -478,7 +478,7 @@ function ModeS.rerun(modeS, deque)
    modeS :task() :rerunner(deque)
    local restart_idle = uv.new_idle()
    restart_idle:start(function()
-   if #modeS.hist.idlers > 0 then
+   if modeS.hist:idling() then
       return nil
    end
    modeS.hist.stmts.release_restart_session()

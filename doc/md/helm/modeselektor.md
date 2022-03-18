@@ -478,7 +478,7 @@ function ModeS.rerun(modeS, deque)
    modeS :task() :rerunner(deque)
    local restart_idle = uv.new_idle()
    restart_idle:start(function()
-   if #modeS.hist.idlers > 0 then
+   if modeS.hist:idling() then
       return nil
    end
    modeS.hist.stmts.release_restart_session()
@@ -608,9 +608,7 @@ local function new(max_extent, writer, db)
                                         __call = task__call })
 
    -- Load initial raga. Need to process yielded messages from `onShift`
-   modeS :task()
-
-   :shiftMode(modeS.raga_default)
+   modeS :task() :shiftMode(modeS.raga_default)
 
    -- hackish: we check the historian for a deque of lines to load and if
    -- we have it, we just eval them into existence.
