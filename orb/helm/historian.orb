@@ -26,6 +26,7 @@ local helm_db = require "helm:helm-db"
 local insert = assert(table.insert)
 
 local Set = require "set:set"
+local Deque = require "deque:deque"
 #/lua
 
 
@@ -166,7 +167,6 @@ function Historian.persist(historian, line, results)
       -- A blank line can have no results and is uninteresting.
       return false
    end
-   historian.stmts.savepoint_persist()
 
    -- Persist the line of input itself
    sql_insert_errcheck(
@@ -185,28 +185,33 @@ function Historian.persist(historian, line, results)
    -- If there are no results, nothing more to persist,
    -- release our savepoint and don't bother starting the idler
    if not results then
-      historian.stmts.release_persist()
       return line_id
    end
 
+   local queue = historian.result_queue
    local persist_cb = tabulate_some(results)
-   local persist_idler = uv.new_idle()
-   historian.idlers:insert(persist_idler)
-   persist_idler:start(function()
-      local done, results_tostring = persist_cb()
-      if not done then return nil end
-      -- inform the Session that persisted results are available
-      historian.session:resultsAvailable(line_id, results_tostring)
-      -- now persist
-      for i = 1, results.n do
-         local hash = sha(results_tostring[i])
-         sql_insert_errcheck(historian.insert_repr:bind(hash, results_tostring[i]))
-         sql_insert_errcheck(historian.insert_result_hash:bind(line_id, hash))
-      end
-      historian.stmts.release_persist()
-      persist_idler:stop()
-      assert(historian.idlers:remove(persist_idler) == true)
-   end)
+   historian.idler = historian.idler or uv.new_idle()
+   local empty = #queue == 0
+   queue:push(pack(persist_cb, line_id, results.n))
+   if empty then
+      historian.idler:start(function()
+         local cb, line_id, n = unpack(queue:peek())
+         local done, results_tostring = cb()
+         if not done then return nil end
+         queue:pop()
+         -- inform the Session that persisted results are available
+         historian.session:resultsAvailable(line_id, results_tostring)
+         -- now persist
+         for i = 1, n do
+            local hash = sha(results_tostring[i])
+            sql_insert_errcheck(historian.insert_repr:bind(hash, results_tostring[i]))
+            sql_insert_errcheck(historian.insert_result_hash:bind(line_id, hash))
+         end
+         if #queue == 0 then
+            historian.idler:stop()
+         end
+      end)
+   end
    return line_id
 end
 #/lua
@@ -437,6 +442,8 @@ local function new(helm_db)
    historian.cursor_start = 0
    historian.n = 0
    historian.lines_available = 0
+   historian.result_queue = Deque()
+
    historian:createPreparedStatements(helm_db)
    historian:load()
    if bridge.args.restart then

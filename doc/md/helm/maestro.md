@@ -75,17 +75,16 @@ function Maestro.activeKeymap(maestro)
    local composed_keymap = { bindings = {}, wildcards = {} }
    local keymap_list = maestro.modeS.raga.default_keymaps
    for _, keymap in ipairs(keymap_list) do
-      local bindings = dispatchmessage(maestro, {
-         sendto = keymap.source,
-         property = keymap.name
-      })
+      local bindings = maestro:dispatch(Message { sendto = keymap.source,
+                                                  property = keymap.name })
       assert(bindings, "Failed to retrieve bindings for " ..
                keymap.source .. "." .. keymap.name)
       for key, action in pairs(bindings) do
          -- #todo assert that this is either a string or Message?
          if type(action) == "string" then
-            -- See :dispatch()--by leaving out .n, we cause the command to be
-            -- executed with no arguments
+            -- See :dispatchEvent()--by leaving out .n, we cause the command
+            -- to be executed with no arguments
+            -- @sam: is this a sensible use of .n?
             action = { method = action }
          else
             action = clone(action)
@@ -121,7 +120,7 @@ local create, resume, status, yield = assert(coroutine.create),
                                       assert(coroutine.yield)
 
 function Maestro.act(maestro, msg)
-   return pack(dispatchmessage(maestro, msg))
+   return pack(maestro:dispatch(msg))
 end
 
 ```
@@ -143,7 +142,7 @@ end
 ```
 
 
-### Maestro:dispatch\(event\)
+### Maestro:dispatchEvent\(event\)
 
 Dispatches `event` to the handler\(s\) specified in the active keymaps\. Each
 handler may answer a boolean indicating whether the event should be considered
@@ -220,7 +219,7 @@ local function _dispatchOnly(maestro, event)
       -- #todo also, this is assuming that all traversal is done in `sendto`,
       -- without nested messages--bad assumption, in general
       insert(tried, handler.method or handler.call)
-      if dispatchmessage(maestro, handler) ~= false then
+      if maestro:dispatch(handler) ~= false then
          break
       end
    end
