@@ -109,10 +109,6 @@ local create, resume, status, yield = assert(coroutine.create),
                                       assert(coroutine.status),
                                       assert(coroutine.yield)
 
-local act = require "actor:lib"
-
-local dispatchmessage = assert(act.dispatchmessage)
-
 local dotask = assert(act.dotask)
 
 local function response(maestro, msg)
