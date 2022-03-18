@@ -75,8 +75,8 @@ function Maestro.activeKeymap(maestro)
    local composed_keymap = { bindings = {}, wildcards = {} }
    local keymap_list = maestro.modeS.raga.default_keymaps
    for _, keymap in ipairs(keymap_list) do
-      local bindings = maestro:dispatch(Message { sendto = keymap.source,
-                                                  property = keymap.name })
+      local bindings = maestro:dispatch({ to = keymap.source,
+                                          field  = keymap.name })
       assert(bindings, "Failed to retrieve bindings for " ..
                keymap.source .. "." .. keymap.name)
       for key, action in pairs(bindings) do
