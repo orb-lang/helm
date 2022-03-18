@@ -98,8 +98,9 @@ The easiest way to go mad in concurrent environments is to share memory.
 =modeselektor= will own txtbuf, historian, and the entire screen.
 
 #!lua
-local actor = require "actor:actor"
-local dotask = assert(actor.dotask)
+local act = require "actor:lib"
+local dotask = assert(act.dotask)
+local dispatchmessage = assert(act.dispatchmessage)
 
 local Historian  = require "helm:historian"
 local Maestro    = require "helm:maestro"
@@ -199,8 +200,6 @@ end
 local create, resume, status = assert(coroutine.create),
                                assert(coroutine.resume),
                                assert(coroutine.status)
-
-local dispatchmessage = assert(require "actor:actor" . dispatchmessage)
 #/lua
 
 
@@ -540,7 +539,7 @@ end
 ** new
 
 #!lua
-local borrowmethod, getter = assert(actor.borrowmethod, actor.getter)
+local borrowmethod, getter = assert(act.borrowmethod, act.getter)
 
 local function new(max_extent, writer, db)
    local modeS = setmetatable({}, ModeS)
@@ -578,6 +577,8 @@ local function new(max_extent, writer, db)
    -- #todo this interaction is messy, would be nice to be able to use yielded
    -- messages but it happens at render time, outside a coroutine.
    local agents = modeS.maestro.agents
+   --  #Todo  This appears to be the only use of borrowmethod,
+   --         if we can replace it with a message, we should
    agents.prompt.continuationLines = borrowmethod(agents.edit,
                                                   "continuationLines")
    agents.prompt.editTouched = getter(agents.edit, "touched")

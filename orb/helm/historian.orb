@@ -450,9 +450,12 @@ local function new(helm_db)
       historian.reloads = deque
    elseif bridge.args.back then
       local deque = require "deque:deque" ()
-      -- we just block and fetch again, the right thing do to is use another
-      -- idler and wait until we have enough lines loaded, but the nice
-      -- thing about blocking is that it works...
+      -- we could duplicate this information off the historian array, if we
+      -- had the patience to wait around for it to populate.
+      --
+      -- We probably should do it that way, actually, but there's too much
+      -- handwaving about how runs interact with history already, and this
+      -- works, as blocking code tends to, with minimum fuss.
       local num_back = clamp(bridge.args.back,  nil, historian.lines_retrieved)
       if num_back < bridge.args.back then
          s:warn("Requested %d lines to rerun, only %d lines available")
