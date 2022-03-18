@@ -204,13 +204,16 @@ local dispatchmessage = assert(require "actor:actor" . dispatchmessage)
 
 
 
+
+
+
+
+
+
+
+
 function ModeS.task(modeS)
-   local function __idx(_, key)
-      return function(_, ...)
-         return dotask(modeS, key, ...)
-      end
-   end
-   return setmetatable({}, {__index = __idx})
+   return modeS.__tasker
 end
 
 
@@ -338,17 +341,6 @@ end
 function ModeS.setDefaultMode(modeS, raga_name)
    modeS.raga_default = raga_name
 end
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -602,8 +594,23 @@ local function new(max_extent, writer, db)
    modeS:bindZone("stat_col", "input_echo", Resbuf)
    modeS:bindZone("suggest",  "suggest",    Resbuf)
 
+   -- make a 'tasker' for launching tasks
+   local function task__index(tab, key)
+      tab[1] = key
+      return tab
+   end
+
+   local function task__call(tab, _, ...)
+      return dotask(modeS, tab[1], ...)
+   end
+
+   modeS.__tasker = setmetatable({}, { __index = task__index,
+                                        __call = task__call })
+
    -- Load initial raga. Need to process yielded messages from `onShift`
-   modeS :task() :shiftMode(modeS.raga_default)
+   modeS :task()
+
+   :shiftMode(modeS.raga_default)
 
    -- hackish: we check the historian for a deque of lines to load and if
    -- we have it, we just eval them into existence.

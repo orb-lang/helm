@@ -203,14 +203,17 @@ local create, resume, status = assert(coroutine.create),
 local dispatchmessage = assert(require "actor:actor" . dispatchmessage)
 ```
 
+
+### ModeS:task\(\) :method\(\.\.\.\)
+
+Calls a Modeselektor method in 'task' mode, where it will catch and dispatch
+any messages which are yielded by anything up the call stack\.
+
+The tasker is reusable, and built during construction\.
+
 ```lua
 function ModeS.task(modeS)
-   local function __idx(_, key)
-      return function(_, ...)
-         return dotask(modeS, key, ...)
-      end
-   end
-   return setmetatable({}, {__index = __idx})
+   return modeS.__tasker
 end
 ```
 
@@ -343,18 +346,7 @@ end
 
 ## act
 
-`act` dispatches a single seq \(which has already been parsed into \(category, value\)
-by `onseq`\)\. It may try the dispatch multiple times if the raga indicates
-that reprocessing is needed by setting `modeS.action_complete` to =false\.
-
-Note that our common interface is `method(modeS, category, value)`,
-we need to distinguish betwen the tuple `("INSERT", "SHIFT-LEFT")`
-\(which could arrive from copy\-paste\) and `("NAV", "SHIFT-LEFT")`
-and preserve information for our fall\-through method\.
-
-`act` always succeeds, meaning we need some metatable action to absorb and
-log anything unexpected\.
-
+`act` dispatches a single event\.
 
 ```lua
 function ModeS.act(modeS, event)
@@ -602,8 +594,23 @@ local function new(max_extent, writer, db)
    modeS:bindZone("stat_col", "input_echo", Resbuf)
    modeS:bindZone("suggest",  "suggest",    Resbuf)
 
+   -- make a 'tasker' for launching tasks
+   local function task__index(tab, key)
+      tab[1] = key
+      return tab
+   end
+
+   local function task__call(tab, _, ...)
+      return dotask(modeS, tab[1], ...)
+   end
+
+   modeS.__tasker = setmetatable({}, { __index = task__index,
+                                        __call = task__call })
+
    -- Load initial raga. Need to process yielded messages from `onShift`
-   modeS :task() :shiftMode(modeS.raga_default)
+   modeS :task()
+
+   :shiftMode(modeS.raga_default)
 
    -- hackish: we check the historian for a deque of lines to load and if
    -- we have it, we just eval them into existence.
