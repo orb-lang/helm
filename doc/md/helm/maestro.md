@@ -112,7 +112,7 @@ end
 ```
 
 
-Actor defines a `__call` which expects a `.call` slot bearing an ordinary
+Actor defines a `__call` which expects an `.act` slot bearing an ordinary
 method, which is called as a task\.
 
 ```lua
@@ -121,9 +121,10 @@ local create, resume, status, yield = assert(coroutine.create),
                                       assert(coroutine.status),
                                       assert(coroutine.yield)
 
-function Maestro.call(maestro, msg)
+function Maestro.act(maestro, msg)
    return pack(dispatchmessage(maestro, msg))
 end
+
 ```
 
 
