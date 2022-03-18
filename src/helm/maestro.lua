@@ -34,6 +34,12 @@ local Maestro = meta {}
 
 
 
+local act = require "actor:lib"
+local dotask = assert(act.dotask)
+local dispatchmessage = assert(act.dispatchmessage)
+
+
+
 
 
 

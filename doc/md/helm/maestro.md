@@ -33,6 +33,12 @@ local SuggestAgent   = require "helm:agent/suggest"
 local Maestro = meta {}
 ```
 
+```lua
+local act = require "actor:lib"
+local dotask = assert(act.dotask)
+local dispatchmessage = assert(act.dispatchmessage)
+```
+
 
 ## Keymap resolution
 
