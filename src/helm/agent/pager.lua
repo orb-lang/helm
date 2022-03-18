@@ -28,10 +28,10 @@ end
 
 
 function PagerAgent.activate(agent)
-   send { method = "shiftMode", "page" }
+   agent :send { method = "shiftMode", "page" }
 end
 function PagerAgent.quit(agent)
-   send { method = "shiftMode", "default" }
+   agent :send { method = "shiftMode", "default" }
 end
 
 
