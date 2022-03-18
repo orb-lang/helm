@@ -41,8 +41,10 @@ local new, Maestro, Maestro_M = cluster.genus(Actor)
 
 Shouldn't need these for long:
 
+
 ```lua
 local act = require "actor:lib"
+local dotask = assert(act.dotask)
 local dispatchmessage = assert(act.dispatchmessage)
 ```
 
@@ -118,10 +120,6 @@ local create, resume, status, yield = assert(coroutine.create),
                                       assert(coroutine.resume),
                                       assert(coroutine.status),
                                       assert(coroutine.yield)
-
-local act = require "actor:lib"
-
-local dispatchmessage = assert(act.dispatchmessage)
 
 function Maestro.call(maestro, msg)
    return pack(dispatchmessage(maestro, msg))
