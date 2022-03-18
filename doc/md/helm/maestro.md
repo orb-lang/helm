@@ -54,7 +54,6 @@ every command\.
 local gmatch = assert(string.gmatch)
 local insert = assert(table.insert)
 local clone = assert(require "core:table" . clone)
-local dispatchmessage = assert(require "actor:actor" . dispatchmessage)
 local Message = require "actor:message"
 local assert = assert(require "core/fn" . assertfmt)
 
