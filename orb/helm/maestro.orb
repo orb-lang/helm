@@ -134,7 +134,7 @@ modeS.
 #!lua
 function Maestro.delegate(maestro, msg)
    if msg.sendto and msg.sendto:find("^agents%.") then
-      return maestro(msg)
+      return maestro:act(msg)
    else
       return pack(yield(msg))
    end
