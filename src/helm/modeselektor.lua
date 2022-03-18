@@ -102,6 +102,9 @@ local act = require "actor:lib"
 local dotask = assert(act.dotask)
 local dispatchmessage = assert(act.dispatchmessage)
 
+local Actor = require "actor:actor"
+
+
 local Historian  = require "helm:historian"
 local Maestro    = require "helm:maestro"
 local Valiant = require "valiant:valiant"
@@ -113,7 +116,11 @@ local Txtbuf    = require "helm:buf/txtbuf"
 
 
 
-local ModeS = meta {}
+local cluster = require "cluster:cluster"
+
+
+
+local new, ModeS, ModeS_M = cluster.genus(Actor)
 
 
 
@@ -541,9 +548,7 @@ end
 
 local borrowmethod, getter = assert(act.borrowmethod, act.getter)
 
-local function new(max_extent, writer, db)
-   local modeS = setmetatable({}, ModeS)
-
+cluster.extendbuilder(new, function(_new, modeS, max_extent, writer, db)
    -- Some miscellany to copy and initialize
    modeS.max_extent = max_extent
    modeS.write = writer
@@ -557,6 +562,12 @@ local function new(max_extent, writer, db)
    modeS.zones = Zoneherd(modeS, writer)
    modeS.maestro = Maestro(modeS)
 
+   return modeS
+end)
+
+
+
+function ModeS.setup(modeS)
    -- Session-related setup
    -- #todo ugh this is clearly the wrong place/way to do this
    local session = modeS.hist.session
@@ -588,25 +599,13 @@ local function new(max_extent, writer, db)
    -- The Txtbuf also needs a source of "suggestions" (which might be
    -- history-search results instead), but that too is raga-dependent
    modeS:bindZone("command",  "edit",       Txtbuf)
-   modeS:bindZone("popup",    "pager",      Resbuf,    { scrollable = true })
+   modeS:bindZone("popup",    "pager",      Resbuf,
+                  { scrollable = true })
    modeS:bindZone("prompt",   "prompt",     Stringbuf)
    modeS:bindZone("modal",    "modal",      Resbuf)
    modeS:bindZone("status",   "status",     Stringbuf)
    modeS:bindZone("stat_col", "input_echo", Resbuf)
    modeS:bindZone("suggest",  "suggest",    Resbuf)
-
-   -- make a 'tasker' for launching tasks
-   local function task__index(tab, key)
-      tab[1] = key
-      return tab
-   end
-
-   local function task__call(tab, _, ...)
-      return dotask(modeS, tab[1], ...)
-   end
-
-   modeS.__tasker = setmetatable({}, { __index = task__index,
-                                        __call = task__call })
 
    -- Load initial raga. Need to process yielded messages from `onShift`
    modeS :task() :shiftMode(modeS.raga_default)
