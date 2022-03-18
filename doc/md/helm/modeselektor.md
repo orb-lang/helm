@@ -1,154 +1,173 @@
 # Modeselektor
 
-`helm` will hold all state for an terminal session, including setup of io,
-the main event loop, teardown and exuent\.  Soon, we will encapsulate that,
-making the library re\-entrant\.
+  `helm` itself sets up and launches Modeselektor, which is the master and
+commander of `helm`\.
 
-`modeselektor` is the modal interpreter for the repl language, which becomes
-the core of `ed`\.  This is a glorified lookup table with a state switch and
-a pointer to the `helm`cell we're operating on\.
-
+Modeselektor is an Actor, the point of entry for input, and ultimate
+coordinator of the responses to those actions\.
 
 ## Design
 
-  `helm` passes keystrokes as messages to `modeselektor`\.  It does no writes
-to stdout at all\.  It is smart enough to categorize and parse various device
-reports, but has no knowledge of why those reports were requested\.
+`helm` parses keystrokes into events, and provides them to `modeselektor`\.
 
-`helm` runs the event loop, so all other members are pulled in as modules\.
-
-`modeselektor` takes care of system\-level housekeeping: opening files
-and sockets, keeping command history, fuzzy completion, and has its own eval
-loop off the main track\.  For evaluating lines, it will call a small executor,
-so that in a little while we can put the user program in its own `LuaL_state`\.
-
-This is both good practice, and absolutely necessary if we are to REPL other
-`bridge` programs, each of which has its own event loop\.
-
-The implementation is essentially a VM\.  Category and value are
-successively looked up in jump tables and the method applied with the `modeS`
-instance as the first argument\.
-
-The state machine has to represent two sorts of state: the mode we're
-operating in, and a buffer of commands\.  Our mode engine is modeled after
-emacs: rather than have some kind of flag that can be set to "insert",
-"navigate", "command", or "visual", these will be modeled as swiching the
-pointer to jump tables\.  If a command needs to know which mode it's in, this
-can be done with pointer comparison\.
-
-We're starting with `vi` mode and `nerf` mode, which is a lightweight
-`readline` implementation that won't use the command buffer\.  Issuing a
-command like `d3w` requires a simple command buffer\.
-
-The syntax can't be tied to the semantics in any tighly\-coupled way\. I intend
-to support `kakoune` syntax as soon as possible; there you would say `w3d`\.
-
-This implies that the commands can't be aware of the buffer; because `d3w`
-and `w3d` are two ways of saying the same thing, they should end in an
-identical method call\.
-
-This means when the time comes we handle it with a secondary dispatch layer\.
-
-There really are effectively arbitrary levels of indirection possible in an
-editor\.  This is why we must be absolutely consistent about everything
-receiving the same tuple \(modeS, category, value\)\.
-
-They must also have the same return type, with is either `true` or
-`false, err`  where `err` is an error object which may be a primitive string\.
-
-`modeselektor` passes any edit or movement commands to an internally\-owned
-`txtbuf`, which keeps all modeling of the line\.  `modeselektor` decides when
-to repaint the screen, calling `rainbuf` \(currently just `lex`\) with a region
-of `txtbuf` and instructions as to how to paint it\.
-
-There is one `deck` instance member per screen, which tiles the available
-space\.  `modeselektor` is the writer, and `rainbuf` holds a pointer to the
-table for read access\.
-
-When we have our fancy parse engine and quipu structure, txtbuf will call
-`comb` to redecorate the syntax tree before passing it to `rainbuf` for
-markup\.  At the moment I'm just going to write some crude lexers, which
-will be more than enough for Clu and Lua, which have straightforward syntax\.
-
-An intermediate step could just squeeze the txtbuf into a string, parse it
-with `espalier` and emit a `rainbuf` through the usual recursive method
-lookup\.  The problem isn't speed, not for a REPL, it's not having error
-recovery parsing available\.
-
-I will likely content myself with a grammar that kicks in when the user
-presses return\.  I'll want that to perform rewrites \(such as removing
-outer\-level `local`s to facilicate copy\-pasting\) and keep the readline
-grammar from becoming too ad\-hoc\.
+It then runs the event loop, and upon exit will tear down the raw terminal
+environment it set up\.  Everything between happens from Modeselektor\.
 
 
-#### asserts
-
-  There is little sense running `modeselektor` outside of the `bridge`
-environment\.
-
-```lua
-assert(meta, "must have meta in _G")
-```
+#### imports
 
 
-#### includes
+##### actor library
 
-The easiest way to go mad in concurrent environments is to share memory\.
-
-`modeselektor` will own txtbuf, historian, and the entire screen\.
+I'd like to stop using the two remaining idioms here:
 
 ```lua
 local act = require "actor:lib"
-local dotask = assert(act.dotask)
-local dispatchmessage = assert(act.dispatchmessage)
+local borrowmethod = assert(act.borrowmethod)
+local getter = assert(act.getter)
+```
 
-local Actor = require "actor:actor"
-
-
+```lua
 local Historian  = require "helm:historian"
 local Maestro    = require "helm:maestro"
-local Valiant = require "valiant:valiant"
 local Zoneherd   = require "helm:zone"
 
 local Resbuf    = require "helm:buf/resbuf"
 local Stringbuf = require "helm:buf/stringbuf"
 local Txtbuf    = require "helm:buf/txtbuf"
+
+local Actor = require "actor:actor"
+local Valiant = require "valiant:valiant"
 ```
 
 ```lua
 local cluster = require "cluster:cluster"
+local core    = require "qor:core"
 ```
+
+
+### Modeselektor
 
 ```lua
 local new, ModeS, ModeS_M = cluster.genus(Actor)
 ```
 
+## builder
 
-Color schemes are supposed to be one\-and\-done, and I strongly suspect we
-have a `__concat` dominated workflow, although I have yet to turn on the
-profiler\.
+Currently, we split the constructor between `new`, which we extend with
+cluster, and the subsequent `:setup` method, which relies on the instance
+having its metatable\.
 
-Therefore we use reference equality for the `color` and `hints` tables\.
-Switching themes is a matter of repopulating those tables\.  I intend to
-isolate this within an instance so that multiple terminals can each run their
-own theme, through a simple 'fat inheritance' method\.
+A mechanism for doing this natively in cluster will exist, but currently
+does not\.
 
-`modeselektor` is what you might call hypermodal\. Everything is isolated in
-its own lookup, that is, we use *value* equality\.  This lets us pass strings
-as messages and use jump tables to resolve most things\.
+```lua
+local _stat_M; -- we shouldn't need this anyway #todo remove
 
-It typically runs at the speed of human fingers and can afford to be much less
-efficient than it will be, even before the JIT gets involved\.
+cluster.extendbuilder(new, function(_new, modeS, max_extent, writer, db)
+   -- Some miscellany to copy and initialize
+   modeS.max_extent = max_extent
+   modeS.write = writer
+   modeS.repl_top = ModeS.REPL_LINE
 
-Note also that everything is a method, our dispatch pattern will always
-include the `modeS` instance as the first argument\.
+   -- Create Actors (status isn't, but should be)
+   modeS.eval = Valiant(__G)
+   modeS.hist  = Historian(db)
+   ---[[ This isn't how we should handle status,
+   modeS.status = setmetatable({}, _stat_M)
+   rawset(__G, "stat", modeS.status)
+   -- so lets make this easy to knock out ]]
+   modeS.zones = Zoneherd(modeS, writer)
+   modeS.maestro = Maestro(modeS)
 
-With some semi\-constants:
+   return modeS
+end)
+```
+
+
+### ModeS:setup\(modeS\)
+
+  Properly this should be a post\-metatable extension function through a
+cluster protocol, because it's not valid to create a Modeselektor without
+calling `:setup` immediately after\.
+
+There's only the one, and we don't currently mock it or extend it, although we
+should mock it\.
+
+```lua
+function ModeS.setup(modeS)
+   -- Session-related setup
+   -- #todo ugh this is clearly the wrong place/way to do this
+   local session = modeS.hist.session
+   modeS:_agent'session':update(session)
+   -- If we are loading an existing session, start in review mode
+   if session.session_id then
+      modeS.raga_default = "review"
+   elseif session.session_title then
+      -- #todo should probably do this somewhere else--maybe raga/nerf.onShift,
+      -- but it's certainly not Nerf-specific...
+      modeS:setStatusLine(
+         session.mode == "macro" and "macro" or "new_session",
+         session.session_title)
+   else
+      modeS:setStatusLine("default")
+   end
+
+   -- #todo this interaction is messy, would be nice to be able to use yielded
+   -- messages but it happens at render time, outside a coroutine.
+   local agents = modeS.maestro.agents
+   --  #Todo  This appears to be the only use of borrowmethod,
+   --         if we can replace it with a message, we should
+   agents.prompt.continuationLines = borrowmethod(agents.edit,
+                                                  "continuationLines")
+   agents.prompt.editTouched = getter(agents.edit, "touched")
+
+   -- Set up common Agent -> Zone bindings
+   -- Note we don't do results here because that varies from raga to raga
+   -- The Txtbuf also needs a source of "suggestions" (which might be
+   -- history-search results instead), but that too is raga-dependent
+   modeS:bindZone("command",  "edit",       Txtbuf)
+   modeS:bindZone("popup",    "pager",      Resbuf,
+                  { scrollable = true })
+   modeS:bindZone("prompt",   "prompt",     Stringbuf)
+   modeS:bindZone("modal",    "modal",      Resbuf)
+   modeS:bindZone("status",   "status",     Stringbuf)
+   modeS:bindZone("stat_col", "input_echo", Resbuf)
+   modeS:bindZone("suggest",  "suggest",    Resbuf)
+
+   -- Load initial raga. Need to process yielded messages from `onShift`
+   modeS :task() :shiftMode(modeS.raga_default)
+
+   -- hackish: we check the historian for a deque of lines to load and if
+   -- we have it, we just eval them into existence.
+   if modeS.hist.reloads then
+      modeS:rerun(modeS.hist.reloads)
+      --modeS.hist.reloads = nil
+   end
+
+   modeS.action_complete = true
+   return modeS
+end
+```
+
+
+### idEst \#Todo remove
+
+`new` is a new\-style cluster constructor, so it will work with `idest()`, but
+since we don't use that juuust yet, here we go:
+
+```lua
+ModeS.idEst = new
+```
+
+
+#### Line and Prompt Width Defaults
 
 ```lua
 ModeS.REPL_LINE = 2
 ModeS.PROMPT_WIDTH = 3
 ```
+
 
 ### ModeS:errPrint\(modeS, category, value\)
 
@@ -229,7 +248,7 @@ function ModeS.delegator(modeS, msg)
    if msg.sendto and msg.sendto:find("^agents%.") then
       return modeS.maestro(msg)
    else
-      return pack(dispatchmessage(modeS, msg))
+      return pack(modeS:dispatch(msg))
    end
 end
 
@@ -319,17 +338,17 @@ function ModeS.shiftMode(modeS, raga_name)
    -- Guard against nil raga or lexer during startup
    if modeS.raga then
       modeS.raga.onUnshift(modeS)
-      modeS.closet[modeS.raga.name].lex = modeS:agent'edit'.lex
+      modeS.closet[modeS.raga.name].lex = modeS:_agent'edit'.lex
    end
    -- Switch in the new raga and associated lexer
    modeS.raga = modeS.closet[raga_name].raga
-   modeS:agent'edit':setLexer(modeS.closet[raga_name].lex)
+   modeS:_agent'edit':setLexer(modeS.closet[raga_name].lex)
    modeS.raga.onShift(modeS)
    -- #todo feels wrong to do this here, like it's something the raga
    -- should handle, but onShift feels kinda like it "doesn't inherit",
    -- like it's not something you should actually super-send, so there's
    -- not one good place to do this.
-   modeS:agent'prompt':update(modeS.raga.prompt_char)
+   modeS:_agent'prompt':update(modeS.raga.prompt_char)
    return modeS
 end
 ```
@@ -369,7 +388,7 @@ function ModeS.act(modeS, event)
    end
    -- Inform the input-echo agent of what just happened
    -- #todo Maestro can do this once action_complete goes away
-   modeS:agent'input_echo':update(event, command)
+   modeS:_agent'input_echo':update(event, command)
    -- Reflow in case command height has changed. Includes a paint.
    -- Don't allow errors encountered here to break this entire
    -- event-loop iteration, otherwise we become unable to quit if
@@ -415,9 +434,11 @@ Shorthand for referring to `Agent`s, which are stored on `Maestro`, but which
 we often talk to directly\.
 
 ```lua
-function ModeS.agent(modeS, agent_name)
+function ModeS._agent(modeS, agent_name)
    return modeS.maestro.agents[agent_name]
 end
+
+ModeS.agent = ModeS._agent -- not finishing this right now
 ```
 
 
@@ -430,7 +451,7 @@ Sets the status line at the top of the screen by updating the StatusAgent\.
 ```lua
 
 function ModeS.setStatusLine(modeS, status_name, ...)
-   modeS:agent'status':update(status_name, ...)
+   modeS:_agent'status':update(status_name, ...)
 end
 ```
 
@@ -467,7 +488,7 @@ function ModeS.rerunner(modeS, deque)
    -- #todo this should probably be on a RunAgent/Runner and invoked
    -- via some queued-Message mechanism, which would also take care of
    -- putting it in a coroutine. Until then, we do this.
-   modeS:agent'edit':clear()
+   modeS:_agent'edit':clear()
    modeS.hist.stmts.savepoint_restart_session()
    local success, results
    for line in deque:popAll() do
@@ -476,7 +497,7 @@ function ModeS.rerunner(modeS, deque)
       modeS.hist:append(line, results, success)
    end
    modeS.hist:toEnd()
-   modeS:agent'results':update(results)
+   modeS:_agent'results':update(results)
 end
 
 
@@ -502,7 +523,7 @@ Opens a simple help screen\.
 ```lua
 local rep = assert(string.rep)
 function ModeS.openHelp(modeS)
-   modeS:agent'pager':update(("abcde "):rep(1000))
+   modeS:_agent'pager':update(("abcde "):rep(1000))
    modeS:shiftMode "page"
 end
 ```
@@ -512,10 +533,13 @@ end
 
 A way to jack into `status`\.
 
+I'd remove it if I were more confident it wasn't being used\.
+
 ```lua
 local concat = assert(table.concat)
 
-local _stat_M = meta {}
+-- we forward declared this
+_stat_M = meta {}
 
 function _stat_M.__repr(status_table)
    return concat(status_table)
@@ -537,91 +561,9 @@ as arguments is probably not the best choice\.
 ```lua
 function ModeS.bindZone(modeS, zone_name, agent_name, buf_class, cfg)
    local zone = modeS.zones[zone_name]
-   local agent = modeS:agent(agent_name)
+   local agent = modeS:_agent(agent_name)
    zone:replace(buf_class(agent:window(), cfg))
 end
-```
-
-
-## new
-
-```lua
-local borrowmethod, getter = assert(act.borrowmethod, act.getter)
-
-cluster.extendbuilder(new, function(_new, modeS, max_extent, writer, db)
-   -- Some miscellany to copy and initialize
-   modeS.max_extent = max_extent
-   modeS.write = writer
-   modeS.repl_top = ModeS.REPL_LINE
-
-   -- Create Actors (status isn't, but should be)
-   modeS.eval = Valiant(__G)
-   modeS.hist  = Historian(db)
-   modeS.status = setmetatable({}, _stat_M)
-   rawset(__G, "stat", modeS.status)
-   modeS.zones = Zoneherd(modeS, writer)
-   modeS.maestro = Maestro(modeS)
-
-   return modeS
-end)
-```
-
-```lua
-function ModeS.setup(modeS)
-   -- Session-related setup
-   -- #todo ugh this is clearly the wrong place/way to do this
-   local session = modeS.hist.session
-   modeS:agent'session':update(session)
-   -- If we are loading an existing session, start in review mode
-   if session.session_id then
-      modeS.raga_default = "review"
-   elseif session.session_title then
-      -- #todo should probably do this somewhere else--maybe raga/nerf.onShift,
-      -- but it's certainly not Nerf-specific...
-      modeS:setStatusLine(
-         session.mode == "macro" and "macro" or "new_session",
-         session.session_title)
-   else
-      modeS:setStatusLine("default")
-   end
-
-   -- #todo this interaction is messy, would be nice to be able to use yielded
-   -- messages but it happens at render time, outside a coroutine.
-   local agents = modeS.maestro.agents
-   --  #Todo  This appears to be the only use of borrowmethod,
-   --         if we can replace it with a message, we should
-   agents.prompt.continuationLines = borrowmethod(agents.edit,
-                                                  "continuationLines")
-   agents.prompt.editTouched = getter(agents.edit, "touched")
-
-   -- Set up common Agent -> Zone bindings
-   -- Note we don't do results here because that varies from raga to raga
-   -- The Txtbuf also needs a source of "suggestions" (which might be
-   -- history-search results instead), but that too is raga-dependent
-   modeS:bindZone("command",  "edit",       Txtbuf)
-   modeS:bindZone("popup",    "pager",      Resbuf,
-                  { scrollable = true })
-   modeS:bindZone("prompt",   "prompt",     Stringbuf)
-   modeS:bindZone("modal",    "modal",      Resbuf)
-   modeS:bindZone("status",   "status",     Stringbuf)
-   modeS:bindZone("stat_col", "input_echo", Resbuf)
-   modeS:bindZone("suggest",  "suggest",    Resbuf)
-
-   -- Load initial raga. Need to process yielded messages from `onShift`
-   modeS :task() :shiftMode(modeS.raga_default)
-
-   -- hackish: we check the historian for a deque of lines to load and if
-   -- we have it, we just eval them into existence.
-   if modeS.hist.reloads then
-      modeS:rerun(modeS.hist.reloads)
-      --modeS.hist.reloads = nil
-   end
-
-   modeS.action_complete = true
-   return modeS
-end
-
-ModeS.idEst = new
 ```
 
 ```lua
