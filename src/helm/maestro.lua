@@ -30,7 +30,20 @@ local SuggestAgent   = require "helm:agent/suggest"
 
 
 
-local Maestro = meta {}
+
+
+local cluster = require "cluster:cluster"
+
+local Actor = require "actor:actor"
+
+local new, Maestro, Maestro_M = cluster.genus(Actor)
+
+
+
+
+
+local act = require "actor:lib"
+local dispatchmessage = assert(act.dispatchmessage)
 
 
 
@@ -98,6 +111,9 @@ end
 
 
 
+
+
+
 local create, resume, status, yield = assert(coroutine.create),
                                       assert(coroutine.resume),
                                       assert(coroutine.status),
@@ -107,14 +123,8 @@ local act = require "actor:lib"
 
 local dispatchmessage = assert(act.dispatchmessage)
 
-local dotask = assert(act.dotask)
-
-local function response(maestro, msg)
+function Maestro.call(maestro, msg)
    return pack(dispatchmessage(maestro, msg))
-end
-
-function Maestro.__call(maestro, msg)
-   return dotask(maestro, response, msg)
 end
 
 
@@ -223,7 +233,7 @@ local function _dispatchOnly(maestro, event)
    end
 end
 
-local function response(maestro, event)
+function Maestro.dispatcher(maestro, event)
    local command = _dispatchOnly(maestro, event)
    if maestro.agents.edit.contents_changed then
       maestro.modeS.raga.onTxtbufChanged(modeS)
@@ -238,7 +248,7 @@ local function response(maestro, event)
 end
 
 function Maestro.dispatch(maestro, event)
-   return dotask(maestro, response, event)
+   return maestro :task() :dispatcher(event)
 end
 
 
@@ -246,8 +256,7 @@ end
 
 
 
-local function new(modeS)
-   local maestro = setmetatable({}, Maestro)
+cluster.extendbuilder(new, function(_new, maestro, modeS)
    -- #todo this is temporary until we sort out communication properly
    maestro.modeS = modeS
    maestro.agents = {
@@ -263,7 +272,7 @@ local function new(modeS)
       suggest    = SuggestAgent()
    }
    return maestro
-end
+end)
 
 
 
