@@ -110,8 +110,11 @@ end
 #/lua
 
 
+*** Maestro(msg), Maestro:act(msg)
+
 Actor defines a =__call= which expects an =.act= slot bearing an ordinary
-method, which is called as a task.
+method, which is called as a task.  It can also be called directly if there
+is no need to create a coroutine, as in =:delegate= below.
 
 #!lua
 local create, resume, status, yield = assert(coroutine.create),

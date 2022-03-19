@@ -36,7 +36,7 @@ local Resbuf    = require "helm:buf/resbuf"
 local Stringbuf = require "helm:buf/stringbuf"
 local Txtbuf    = require "helm:buf/txtbuf"
 
-local Actor = require "actor:actor"
+local Actor   = require "actor:actor"
 local Valiant = require "valiant:valiant"
 
 
@@ -50,6 +50,7 @@ local core    = require "qor:core"
 
 
 local new, ModeS, ModeS_M = cluster.genus(Actor)
+
 
 
 
@@ -268,8 +269,6 @@ end
 
 
 ModeS.raga_default = "nerf"
-
-
 
 
 

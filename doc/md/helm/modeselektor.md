@@ -36,7 +36,7 @@ local Resbuf    = require "helm:buf/resbuf"
 local Stringbuf = require "helm:buf/stringbuf"
 local Txtbuf    = require "helm:buf/txtbuf"
 
-local Actor = require "actor:actor"
+local Actor   = require "actor:actor"
 local Valiant = require "valiant:valiant"
 ```
 
@@ -52,9 +52,10 @@ local core    = require "qor:core"
 local new, ModeS, ModeS_M = cluster.genus(Actor)
 ```
 
+
 ## builder
 
-Currently, we split the constructor between `new`, which we extend with
+Currently, we split construction between `new`, which we extend with
 cluster, and the subsequent `:setup` method, which relies on the instance
 having its metatable\.
 
@@ -293,8 +294,6 @@ The `modeselektor`, as described in the prelude, is a stateful and hypermodal
 
 `shiftMode` is the gear stick which drives the state\. It encapsulates the
 state changes needed to switch between them\.
-
-I'm going to go ahead and weld on `search` before I start waxing eloquent\.
 
 
 #### ModeS\.closet
