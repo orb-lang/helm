@@ -43,14 +43,6 @@ local new, Maestro, Maestro_M = cluster.genus(Actor)
 
 
 
-local act = require "actor:lib"
-local dispatchmessage = assert(act.dispatchmessage)
-
-
-
-
-
-
 
 
 

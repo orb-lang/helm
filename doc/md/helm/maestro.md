@@ -39,14 +39,6 @@ local Actor = require "actor:actor"
 local new, Maestro, Maestro_M = cluster.genus(Actor)
 ```
 
-Shouldn't need these for long:
-
-
-```lua
-local act = require "actor:lib"
-local dispatchmessage = assert(act.dispatchmessage)
-```
-
 
 ## Keymap resolution
 
