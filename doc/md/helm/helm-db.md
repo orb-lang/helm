@@ -10,6 +10,7 @@ database\.
 ```lua
 local uv  = require "luv"
 local sql = assert(sql, "sql must be in bridge _G")
+local bridge = require "bridge"
 local Arcivist = require "sqlun:arcivist"
 ```
 
@@ -25,7 +26,7 @@ local helm_db = {}
 
 ```lua
 local helm_db_home =  (os.getenv 'HELM_HOME'
-                      or _Bridge.bridge_home) .. "/helm/helm.sqlite"
+                      or bridge.bridge_home) .. "/helm/helm.sqlite"
 helm_db.helm_db_home = helm_db_home
 ```
 
@@ -263,9 +264,9 @@ insert(migrations, migration_2)
 #### Version 3: Millisecond\-resolution timestamps\.
 
   We want to accomplish two things here: change the format of all existing
-timestamps, and change the default to have millisecond resolution and use
-"T" instead of " " as the separator\.
+timestamps, and change the default to have millisecond resolution and useT" instead of " " as the separator\.
 
+"
 SQLite being what it is, the latter requires us to copy everything to a new
 table\.  This must be done for the `project` and `repl` tables\.
 
