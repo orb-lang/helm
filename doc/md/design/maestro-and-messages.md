@@ -66,7 +66,7 @@ There are also occasions, resizing the terminal being the big one, where
 everything needs repainting\.
 
 In any case, we need a queue between the Maestro and the Zoneherd, to send
-messages pertaining to \(at least\) visibility\.  We have the [Mailman](https://gitlab.com/special-circumstance/helm/-/blob/trunk/doc/md/mailman/.md), a simple collection of two [Deques](https://gitlab.com/special-circumstance/helm/-/blob/trunk/doc/md/deque/.md)\.
+messages pertaining to \(at least\) visibility\.  We have the [Mailman](NO default.domain IN MANIFESThelm/MISSING_POST_PROJECTdoc/md/mailman/.md), a simple collection of two [Deques](NO default.domain IN MANIFESThelm/MISSING_POST_PROJECTdoc/md/deque/.md)\.
 
 We'll need bidirectional communication here, once we get to mouse clicks\.
 Resolving the target of a mouse action needs to be performed by a Zone,
