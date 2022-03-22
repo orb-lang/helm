@@ -223,7 +223,7 @@ Replies `true` if we have a running idler
 
 ```lua
 function Historian.idling(hist)
-   if #hist.idlers > 0 then
+   if #hist.result_queue > 0 then
       return true
    else
       return false
@@ -413,6 +413,9 @@ Currently, it just saves the end of the run\.
 ```lua
 function Historian.close(historian)
    historian.stmts.insert_run_finish :bind(historian.run.run_id) :step()
+   if historian.idler then
+      historian.idler:close()
+   end
 end
 ```
 
@@ -507,7 +510,6 @@ local function new(helm_db)
    end
    historian.session = sesh
    historian.result_buffer = setmetatable({}, __result_buffer_M)
-   historian.idlers = Set()
    s.verbose = false
    return historian
 end

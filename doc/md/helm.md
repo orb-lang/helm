@@ -286,10 +286,7 @@ local function shutDown(modeS)
    input_timer:close()
    input_check:stop()
    input_check:close()
-   local idlers = modeS.hist.idlers
    uv.walk(function(handle)
-      -- break down anything that isn't a historian idler or our stdio
-      if not (idlers(handle) or handle == stdin or handle == stdout) then
          local h_type = uv.handle_get_type(handle)
          if stoppable(h_type) then
             io.stderr:write("Stopping a leftover ", h_type, " ", tostring(handle), "\n")
@@ -299,8 +296,7 @@ local function shutDown(modeS)
             io.stderr:write("Closing a leftover ", h_type, " ", tostring(handle), "\n")
             handle:close()
          end
-      end
-   end)
+      end)
 end
 ```
 
@@ -457,11 +453,6 @@ io.stdout:write(a.mouse.sgr_mode(false),
 
 -- Back to normal mode
 uv.tty_reset_mode()
-
--- Done with uv TTY handles. Note that closing these does not close
--- the underlying FDs, we still need those.
-stdin:close()
-stdout:close()
 
 -- Make sure the terminal processes all of the above,
 -- then remove any spurious mouse inputs or other stdin stuff

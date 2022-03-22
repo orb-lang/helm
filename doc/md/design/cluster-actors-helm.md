@@ -33,13 +33,12 @@ by talking it into inlining SVGs from the `/etc` directory\.
 To continue with helm, I've made it so that any `send` from an Agent is
 invoked through an Agent base method `:send`\.
 
-It's clear that `I :send {msg, packed?}` \(more on `packed` later\) is going to
-be one of the universal Actor interfaces, since they should understand, in
-detail, how to communicate with other Actors *actively* rather
-than *responsively*\.  `:send` and `:dispatch` are dual, although we apply
-Postel's law to `:dispatch` and \(aspirationally\!\) don't crash on any sort of
-input, because `:dispatch` is a `yield` boundary and anything can end up on
-it\.
+It's clear that `I :send {msg}` is going to be one of the universal Actor
+interfaces, since they should understand, in detail, how to communicate with
+other Actors *actively* rather than *responsively*\.  `:send` and `:dispatch`
+are dual, although we apply Postel's law to `:dispatch` andaspirationally\!\) don't crash on any sort of input, because `:dispatch` is a
+`yield`
+\( boundary and anything can end up on it\.
 
 The other changes are modest, what comes to mind is that I was experiencing
 event loop exhaustion with the one\-idler\-per\-result architecture in Historian,
@@ -76,7 +75,7 @@ helm\.
       see a need for one on the horizon\.  Rifle is fine\.
 
 
-### Keymaps, Ragas, and "mode"
+## Keymaps, Ragas, and "mode"
 
 We need clarity here, so I'll summarize the intended architecture rather than
 basing on what we have now\.
@@ -104,7 +103,7 @@ This is a yieldable and eventually returns a reply when the Agent has no
 further action to take on the Task \(which Maestro creates\)\.
 
 
-#### Keymaps
+### Keymaps
 
 The sentence "user can completely rearrange the keymap with an appropriate
 manifest file" is a goal, but not the immediate one\.
@@ -127,3 +126,37 @@ borrow Modeselektor anymore\.
 Since readline is stateless, this is simple in the whole and tricky on the
 margin\. If we can just say what a key press does, great, make that into a
 string\.
+
+
+### Ragas: helm:maestro/ragas
+
+
+Ragas are a runtime construct, state machines containing, at least, keymaps,
+the 'target' Agent, action handlers, and necessary bookkeeping methods, like
+`:onPush`, `:onShadow`, and `:onShow`\.
+
+The keymaps associated with a raga should go in a new `keymaps` folder where
+we whittle them down relentlessly to a declarative form, and all the
+associated ragas are constructed in one raga module, for now\.
+
+
+#### Maestro raag\-shift algorithm
+
+This should be good enough and offers ways to elaborate\.
+
+We build something I'll call a directed stack\.  It has two operations, `:push`
+and `:pop`, and the stack take care of removing any cycles, and never pops
+empty, we'll have a method to replace the base of the stack but it won't be by
+ever underflowing the stack\.  We'll call the base of the stack the `base`, it
+is `nerf` for our normal mode\.
+
+So if we push the sequence `premise-edit, title-edit` twice, the stack is
+`[base, premise-edit, title-edit]`\.  There is a canonical way to un\-cycle when
+we need that behavior, but for what we have now, we won't need to do
+excursions, just cycle elimination\.
+
+A Raga gets `:onPush` when it's pushed, `:onShadow` when something goes
+over it, and `:onShow` when a shadow is popped off of it\.
+
+
+
