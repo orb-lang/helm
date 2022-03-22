@@ -67,12 +67,12 @@ function RagaBase.quitHelm()
          -- Also, it's horribly hacky to change the "default" raga, but it's
          -- the only way to make Modal work properly. A proper raga stack
          -- would *definitely* fix this
-         yield{ method = "setDefaultMode", n = 1, "review" }
-         yield{ method = "shiftMode", n = 1, "review" }
+         send { method = "setDefaultMode", n = 1, "review" }
+         send { method = "shiftMode", n = 1, "review" }
          return
       end
    end
-   yield{ method = "quit" }
+   send { method = "quit" }
 end
 
 RagaBase.keymap_extra_commands = {
