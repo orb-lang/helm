@@ -59,7 +59,7 @@ function RagaBase.quitHelm()
    -- to actually quit, so it's not quite that simple...
    -- Anyway. Also, don't bother saving the session if it has no premises...
    if _Bridge.args.new_session then
-      local session = yield{ sendto = "hist", property = "session" }
+      local session = send { to = "hist", property = "session" }
       if #session > 0 then
          -- #todo Add the ability to change accepted status of
          -- the whole session to the review interface
