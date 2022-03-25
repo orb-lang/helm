@@ -317,6 +317,8 @@ end
 
 
 
+local wrap = assert(coroutine.wrap)
+
 local function dispatch_input(seq, dispatch_all)
    -- Clear the flag and timer indicating whether we should clear down the
    -- input buffer this cycle. We explicitly stop the timer in case another
@@ -376,7 +378,6 @@ end)
 
 
 local onseq_err
-local wrap = assert(coroutine.wrap)
 
 local function onseq(err, seq)
    if _ditch then return nil end
