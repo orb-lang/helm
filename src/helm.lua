@@ -359,7 +359,7 @@ end
 
 input_check:start(function()
    if should_dispatch_all and #input_buffer > 0 then
-      dispatch_input(input_buffer, true)
+      wrap(dispatch_input)(input_buffer, true)
    end
 end)
 
@@ -376,12 +376,13 @@ end)
 
 
 local onseq_err
+local wrap = assert(coroutine.wrap)
 
 local function onseq(err, seq)
    if _ditch then return nil end
    local success, err_trace = xpcall(function()
       if err then error(err) end
-      dispatch_input(input_buffer .. seq, false)
+      wrap(dispatch_input)(input_buffer .. seq, false)
    end, debug.traceback)
    if not success then
       shutDown(modeS)
