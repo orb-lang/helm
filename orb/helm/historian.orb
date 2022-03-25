@@ -25,7 +25,6 @@ local helm_db = require "helm:helm-db"
 
 local insert = assert(table.insert)
 
-local Set = require "set:set"
 local Deque = require "deque:deque"
 #/lua
 

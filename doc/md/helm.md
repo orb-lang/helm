@@ -264,7 +264,7 @@ end
 Handles shutdown of the `uv` event loop in a hopefully graceful fashion\.
 
 ```lua
-local Set = require "set:set"
+local Set = require "qor:core" . set
 
 local stoppable = Set { 'idle',
                         'check',
@@ -288,7 +288,7 @@ local function shutDown(modeS)
    input_check:close()
    uv.walk(function(handle)
          local h_type = uv.handle_get_type(handle)
-         if stoppable(h_type) then
+         if stoppable[h_type] then
             io.stderr:write("Stopping a leftover ", h_type, " ", tostring(handle), "\n")
             handle:stop()
          end
