@@ -76,11 +76,19 @@ sql = assert(sql, "sql must be in _G")
 
 
 
-local yield = assert(coroutine.yield)
-local Message = require "actor:message"
 
-function send(tab)
-   return yield(Message(tab))
+
+
+send = nil;
+do
+   local Message = require "actor:message"
+   local thread = require "qor:core" . thread
+   local nest = thread.nest(Message)
+   local yield = assert(nest.yield)
+
+   send = function (tab)
+      return yield(Message(tab))
+   end
 end
 
 

@@ -75,12 +75,20 @@ Turns `tab` into a message and `yield` s it\.
 We do a lot of message passing in `helm`, and we'll be doing more, so this is
 a useful global to have\.
 
-```lua
-local yield = assert(coroutine.yield)
-local Message = require "actor:message"
+Putting all the weird stuff in an import block so that `yield` is only
+redefined here\.
 
-function send(tab)
-   return yield(Message(tab))
+```lua
+send = nil;
+do
+   local Message = require "actor:message"
+   local thread = require "qor:core" . thread
+   local nest = thread.nest(Message)
+   local yield = assert(nest.yield)
+
+   send = function (tab)
+      return yield(Message(tab))
+   end
 end
 ```
 

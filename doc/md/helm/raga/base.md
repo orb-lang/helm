@@ -12,8 +12,6 @@ local concat         = assert(table.concat)
 local sub, gsub, rep = assert(string.sub),
                        assert(string.gsub),
                        assert(string.rep)
-
-local yield = assert(coroutine.yield)
 ```
 
 ```lua

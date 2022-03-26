@@ -62,6 +62,7 @@ local insert = assert(table.insert)
 local clone = assert(require "core:table" . clone)
 local Message = require "actor:message"
 local assert = assert(require "core/fn" . assertfmt)
+local _yield  = assert(require "qor:core".thread.nest(Message).yield)
 
 function Maestro.activeKeymap(maestro)
    local composed_keymap = { bindings = {}, wildcards = {} }
@@ -135,7 +136,7 @@ function Maestro.delegate(maestro, msg)
    if to and to:find("^agents%.") then
       return maestro:act(msg)
    else
-      return pack(yield(msg))
+      return pack(_yield(msg))
    end
 end
 
