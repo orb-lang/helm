@@ -25,7 +25,8 @@ local Agent = meta {}
 Sends a message to the Agent's boss\.
 
 ```lua
-local yield = assert(require "qor:core" . thread.nest(Message). yield)
+local coro = assert(require "qor:core" . thread.nest 'actor')
+local yield = assert(coro.yield)
 
 function Agent.send(agent, msg)
    return yield(Message(msg))
@@ -143,9 +144,9 @@ Agent.keymap_scrolling = {
 The `Window`s of `Agent`s need to implement some common behavior in order to
 interact correctly with `Rainbuf`s and change detection, so we start with a
 basic config\. Subclasses may override `:windowConfiguration()` to add their
-own details, using `.mergeWindowConfig()` to include the superclass' config\.
-\(Note that this is not a method, just a function\.\)
+own details, using `.mergeWindowConfig()` to include the superclass' config\.Note that this is not a method, just a function\.\)
 
+\(
 ```lua
 local addall = assert(require "core:table" . addall)
 function Agent.mergeWindowConfig(cfg_a, cfg_b)

@@ -83,7 +83,7 @@ send = nil;
 do
    local Message = require "actor:message"
    local thread = require "qor:core" . thread
-   local nest = thread.nest(Message)
+   local nest = thread.nest "actor"
    local yield = assert(nest.yield)
 
    send = function (tab)
@@ -161,26 +161,25 @@ a = require "anterm:anterm"
 local Point = require "anterm:point"
 #/lua
 
+
 ** Modeselektor
 
+Lives in the global namespace for convenient repl access.
 
 #!lua
-
--- Get window size and set up a SIGWINCH handler to keep it refreshed
--- Also check every 500ms in a timer in case the SIGWINCH handler doesn't
--- trigger immediately for whatever reason.
-
 local max_col, max_row = stdin:get_winsize()
 local max_extent = Point(max_row, max_col)
-
 modeS = require "helm/modeselektor" (max_extent, write) :setup()
-local insert = assert(table.insert)
-local function s_out(msg)
-   insert(modeS.status, msg)
-end
+#/lua
 
--- make a new 'status' instance
-local s = require "status:status" (s_out)
+Here we set up a SIGWINCH handler to reflow the helm window when the
+dimensions change.
+
+We also check every 500ms in a timer, mostly because that's how we used to do
+it.
+
+#!lua
+local insert = assert(table.insert)
 
 local function check_winsize()
    max_col, max_row = stdin:get_winsize()

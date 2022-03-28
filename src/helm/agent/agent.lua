@@ -25,7 +25,8 @@ local Agent = meta {}
 
 
 
-local yield = assert(require "qor:core" . thread.nest(Message). yield)
+local coro = assert(require "qor:core" . thread.nest 'actor')
+local yield = assert(coro.yield)
 
 function Agent.send(agent, msg)
    return yield(Message(msg))

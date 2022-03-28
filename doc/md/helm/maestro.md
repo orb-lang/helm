@@ -62,7 +62,7 @@ local insert = assert(table.insert)
 local clone = assert(require "core:table" . clone)
 local Message = require "actor:message"
 local assert = assert(require "core/fn" . assertfmt)
-local _yield  = assert(require "qor:core".thread.nest(Message).yield)
+local _yield  = assert(require "qor:core".thread.nest "actor" .yield)
 
 function Maestro.activeKeymap(maestro)
    local composed_keymap = { bindings = {}, wildcards = {} }
