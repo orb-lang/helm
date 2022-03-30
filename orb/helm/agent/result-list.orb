@@ -52,7 +52,7 @@ Quits the raga associated with the agent, returning to the default.
 #!lua
 function ResultListAgent.quit(agent)
    agent:selectNone()
-   send { method = "shiftMode", "default" }
+   agent :send { method = "shiftMode", "default" }
 end
 #/lua
 

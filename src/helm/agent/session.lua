@@ -79,7 +79,9 @@ function SessionAgent.selectIndex(agent, index)
       agent:contentsChanged()
       agent:bufferCommand("ensureSelectedVisible")
       local premise = agent:selectedPremise()
-      send { sendto = "agents.edit", method = "update", premise and premise.title }
+      agent :send { sendto = "agents.edit",
+                    method = "update",
+                    premise and premise.title }
    end
 end
 
@@ -204,11 +206,11 @@ end
 
 
 function SessionAgent.editSelectedTitle(agent)
-   send { method = "shiftMode", "edit_title" }
+   agent :send { method = "shiftMode", "edit_title" }
 end
 
 function SessionAgent.cancelTitleEditing(agent)
-   send { method = "shiftMode", "review" }
+   agent :send { method = "shiftMode", "review" }
 end
 
 
@@ -219,7 +221,7 @@ end
 
 
 function SessionAgent.acceptTitleUpdate(agent)
-   local new_title = send { sendto = "agents.edit", method = "contents" }
+   local new_title = agent :send { sendto = "agents.edit", method = "contents" }
    agent:selectedPremise().title = new_title
    agent:selectNextWrap()
    agent:cancelTitleEditing()

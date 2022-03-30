@@ -11,11 +11,25 @@
 
 local Window = require "window:window"
 local Deque = require "deque:deque"
+local Message = require "actor:message"
 
 
 
 
 local Agent = meta {}
+
+
+
+
+
+
+
+
+local yield = assert(coroutine.yield)
+
+function Agent.send(agent, msg)
+   return yield(Message(msg))
+end
 
 
 

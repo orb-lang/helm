@@ -30,7 +30,9 @@ local SuggestAgent = meta(getmetatable(ResultListAgent))
 function SuggestAgent.cursorContext(suggest)
    local lex_tokens = {}
    -- Ignore whitespace and comments
-   for _, token in ipairs(send { sendto = "agents.edit", method = "tokens" }) do
+   local tokens_from_edit = suggest :send { sendto = "agents.edit",
+                                            method = "tokens" }
+   for _, token in ipairs(tokens_from_edit) do
       if token.color ~= "no_color" and token.color ~= "comment" then
          insert(lex_tokens, token)
       end
@@ -187,7 +189,9 @@ function SuggestAgent.acceptSelected(agent)
    local suggestion = agent:selectedItem()
    agent:quit()
    if suggestion then
-      send { sendto = "agents.edit", method = "replaceToken", suggestion }
+      agent :send { suggestion,
+                    sendto = "agents.edit",
+                    method = "replaceToken" }
       return true
    else
       return false
@@ -214,7 +218,7 @@ SuggestAgent.userCancel = SuggestAgent.quit
 function SuggestAgent.activateCompletion(agent)
    if agent.last_collection then
       agent:selectFirst()
-      send { method = "shiftMode", "complete" }
+      agent :send { method = "shiftMode", "complete" }
       return true
    else
       return false
