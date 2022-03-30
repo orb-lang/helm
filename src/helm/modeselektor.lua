@@ -538,18 +538,6 @@ end
 
 
 
-
-
-
-
-
-local nest = assert(core.thread.nest) 'valiant'
-
-
-
-local Wrap = assert(nest.wrap)
-
-
 function ModeS.eval(modeS, line)
    return modeS.valiant(line)
 end

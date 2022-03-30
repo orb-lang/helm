@@ -345,11 +345,10 @@ local function _guardian(_dispatch, seq, dispatch_all)
    elseif not ok then
       error(co)
    end
-   s:verb("guardian caught %s: %s", co, debug.traceback(co))
-   s:verb("work thread is %s", status(work))
-   s:verb("coroutine status is %s", status(co))
+   ---[=[
    local cheka = uv.new_check()
    local count = 0
+   -- not using the below, this branch is a snarl right now
    local function defer() -- worse :/
       cheka:stop()
          s:chat("resuming the work next tick")
@@ -372,7 +371,7 @@ local function _guardian(_dispatch, seq, dispatch_all)
          --]
       end
    end)
-   --]]
+   --]] --]=]
 end
 ```
 
