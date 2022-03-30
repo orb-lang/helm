@@ -29,8 +29,14 @@ local SuggestAgent   = require "helm:agent/suggest"
 ```
 
 
+## Maestro
+
 ```lua
-local Maestro = meta {}
+local cluster = require "cluster:cluster"
+
+local Actor = require "actor:actor"
+
+local new, Maestro, Maestro_M = cluster.genus(Actor)
 ```
 
 
@@ -54,7 +60,6 @@ every command\.
 local gmatch = assert(string.gmatch)
 local insert = assert(table.insert)
 local clone = assert(require "core:table" . clone)
-local dispatchmessage = assert(require "actor:actor" . dispatchmessage)
 local Message = require "actor:message"
 local assert = assert(require "core/fn" . assertfmt)
 
@@ -62,17 +67,16 @@ function Maestro.activeKeymap(maestro)
    local composed_keymap = { bindings = {}, wildcards = {} }
    local keymap_list = maestro.modeS.raga.default_keymaps
    for _, keymap in ipairs(keymap_list) do
-      local bindings = dispatchmessage(maestro, {
-         sendto = keymap.source,
-         property = keymap.name
-      })
+      local bindings = maestro:dispatch { to = keymap.source,
+                                          field  = keymap.name }
       assert(bindings, "Failed to retrieve bindings for " ..
                keymap.source .. "." .. keymap.name)
       for key, action in pairs(bindings) do
          -- #todo assert that this is either a string or Message?
          if type(action) == "string" then
-            -- See :dispatch()--by leaving out .n, we cause the command to be
-            -- executed with no arguments
+            -- See :dispatchEvent()--by leaving out .n, we cause the command
+            -- to be executed with no arguments
+            -- @sam: is this a sensible use of .n?
             action = { method = action }
          else
             action = clone(action)
@@ -98,37 +102,38 @@ end
 ```
 
 
+### Maestro\(msg\), Maestro:act\(msg\)
+
+Actor defines a `__call` which expects an `.act` slot bearing an ordinary
+method, which is called as a task\.  It can also be called directly if there
+is no need to create a coroutine, as in `:delegate` below\.
+
 ```lua
 local create, resume, status, yield = assert(coroutine.create),
                                       assert(coroutine.resume),
                                       assert(coroutine.status),
                                       assert(coroutine.yield)
 
-local _actor = require "actor:actor"
-
-local dispatchmessage = assert(_actor.dispatchmessage)
-
-local dotask = assert(_actor.dotask)
-
-local function response(maestro, msg)
-   return pack(dispatchmessage(maestro, msg))
+function Maestro.act(maestro, msg)
+   return pack(maestro:dispatch(msg))
 end
 
-function Maestro.__call(maestro, msg)
-   return dotask(maestro, response, msg)
-end
 ```
 
 
 ### Maestro:delegate\(msg\)
 
-This is going to be an actor invariant, I'm pretty sure\. It's working for
-modeS\.
+  This is called on any messages yielded by a task, and provides the packed
+arguments which are to be returned to that coroutine\.
+
+For Maestro, the current behavior is to dispatch anything sent to agents, and
+throw anything else to Modeselektor\.
 
 ```lua
 function Maestro.delegate(maestro, msg)
-   if msg.sendto and msg.sendto:find("^agents%.") then
-      return maestro(msg)
+   local to = msg.sendto or msg.to
+   if to and to:find("^agents%.") then
+      return maestro:act(msg)
    else
       return pack(yield(msg))
    end
@@ -136,7 +141,7 @@ end
 ```
 
 
-### Maestro:dispatch\(event\)
+### Maestro:dispatchEvent\(event\)
 
 Dispatches `event` to the handler\(s\) specified in the active keymaps\. Each
 handler may answer a boolean indicating whether the event should be considered
@@ -213,7 +218,7 @@ local function _dispatchOnly(maestro, event)
       -- #todo also, this is assuming that all traversal is done in `sendto`,
       -- without nested messages--bad assumption, in general
       insert(tried, handler.method or handler.call)
-      if dispatchmessage(maestro, handler) ~= false then
+      if maestro:dispatch(handler) ~= false then
          break
       end
    end
@@ -224,7 +229,7 @@ local function _dispatchOnly(maestro, event)
    end
 end
 
-local function response(maestro, event)
+function Maestro.eventDispatcher(maestro, event)
    local command = _dispatchOnly(maestro, event)
    if maestro.agents.edit.contents_changed then
       maestro.modeS.raga.onTxtbufChanged(modeS)
@@ -238,8 +243,8 @@ local function response(maestro, event)
    return command
 end
 
-function Maestro.dispatch(maestro, event)
-   return dotask(maestro, response, event)
+function Maestro.dispatchEvent(maestro, event)
+   return maestro :task() :eventDispatcher(event)
 end
 ```
 
@@ -247,8 +252,7 @@ end
 ### new\(modeS\)
 
 ```lua
-local function new(modeS)
-   local maestro = setmetatable({}, Maestro)
+cluster.extendbuilder(new, function(_new, maestro, modeS)
    -- #todo this is temporary until we sort out communication properly
    maestro.modeS = modeS
    maestro.agents = {
@@ -261,10 +265,10 @@ local function new(modeS)
       search     = SearchAgent(),
       session    = SessionAgent(),
       status     = StatusAgent(),
-      suggest    = SuggestAgent()
+      suggest    = SuggestAgent(),
    }
    return maestro
-end
+end)
 ```
 
 

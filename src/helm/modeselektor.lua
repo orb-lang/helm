@@ -22,116 +22,143 @@
 
 
 
+local act = require "actor:lib"
+local borrowmethod = assert(act.borrowmethod)
+local getter = assert(act.getter)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-assert(meta, "must have meta in _G")
-
-
-
-
-
-
-
-
-
-
-local actor = require "actor:actor"
-local dotask = assert(actor.dotask)
 
 local Historian  = require "helm:historian"
 local Maestro    = require "helm:maestro"
-local Valiant = require "valiant:valiant"
 local Zoneherd   = require "helm:zone"
 
 local Resbuf    = require "helm:buf/resbuf"
 local Stringbuf = require "helm:buf/stringbuf"
 local Txtbuf    = require "helm:buf/txtbuf"
 
-
-
-local ModeS = meta {}
-
-
+local Actor   = require "actor:actor"
+local Valiant = require "valiant:valiant"
 
 
 
-
-
+local cluster = require "cluster:cluster"
+local core    = require "qor:core"
 
 
 
 
 
 
+local new, ModeS, ModeS_M = cluster.genus(Actor)
 
 
 
 
 
 
+
+
+
+
+
+
+
+local _stat_M; -- we shouldn't need this anyway #todo remove
+
+cluster.extendbuilder(new, function(_new, modeS, max_extent, writer, db)
+   -- Some miscellany to copy and initialize
+   modeS.max_extent = max_extent
+   modeS.write = writer
+   modeS.repl_top = ModeS.REPL_LINE
+
+   -- Create Actors (status isn't, but should be)
+   modeS.eval = Valiant(__G)
+   modeS.hist  = Historian(db)
+   ---[[ This isn't how we should handle status,
+   modeS.status = setmetatable({}, _stat_M)
+   rawset(__G, "stat", modeS.status)
+   -- so lets make this easy to knock out ]]
+   modeS.zones = Zoneherd(modeS, writer)
+   modeS.maestro = Maestro(modeS)
+
+   return modeS
+end)
+
+
+
+
+
+
+
+
+
+
+
+
+
+function ModeS.setup(modeS)
+   -- Session-related setup
+   -- #todo ugh this is clearly the wrong place/way to do this
+   local session = modeS.hist.session
+   modeS:_agent'session':update(session)
+   -- If we are loading an existing session, start in review mode
+   if session.session_id then
+      modeS.raga_default = "review"
+   elseif session.session_title then
+      -- #todo should probably do this somewhere else--maybe raga/nerf.onShift,
+      -- but it's certainly not Nerf-specific...
+      modeS:setStatusLine(
+         session.mode == "macro" and "macro" or "new_session",
+         session.session_title)
+   else
+      modeS:setStatusLine("default")
+   end
+
+   -- #todo this interaction is messy, would be nice to be able to use yielded
+   -- messages but it happens at render time, outside a coroutine.
+   local agents = modeS.maestro.agents
+   --  #Todo  This appears to be the only use of borrowmethod,
+   --         if we can replace it with a message, we should
+   agents.prompt.continuationLines = borrowmethod(agents.edit,
+                                                  "continuationLines")
+   agents.prompt.editTouched = getter(agents.edit, "touched")
+
+   -- Set up common Agent -> Zone bindings
+   -- Note we don't do results here because that varies from raga to raga
+   -- The Txtbuf also needs a source of "suggestions" (which might be
+   -- history-search results instead), but that too is raga-dependent
+   modeS:bindZone("command",  "edit",       Txtbuf)
+   modeS:bindZone("popup",    "pager",      Resbuf,
+                  { scrollable = true })
+   modeS:bindZone("prompt",   "prompt",     Stringbuf)
+   modeS:bindZone("modal",    "modal",      Resbuf)
+   modeS:bindZone("status",   "status",     Stringbuf)
+   modeS:bindZone("stat_col", "input_echo", Resbuf)
+   modeS:bindZone("suggest",  "suggest",    Resbuf)
+
+   -- Load initial raga. Need to process yielded messages from `onShift`
+   modeS :task() :shiftMode(modeS.raga_default)
+
+   -- hackish: we check the historian for a deque of lines to load and if
+   -- we have it, we just eval them into existence.
+   if modeS.hist.reloads then
+      modeS:rerun(modeS.hist.reloads)
+      --modeS.hist.reloads = nil
+   end
+
+   modeS.action_complete = true
+   return modeS
+end
+
+
+
+
+
+
+
+
+
+ModeS.idEst = new
 
 
 
@@ -140,6 +167,7 @@ local ModeS = meta {}
 
 ModeS.REPL_LINE = 2
 ModeS.PROMPT_WIDTH = 3
+
 
 
 
@@ -200,20 +228,33 @@ local create, resume, status = assert(coroutine.create),
                                assert(coroutine.resume),
                                assert(coroutine.status)
 
-local dispatchmessage = assert(require "actor:actor" . dispatchmessage)
 
 
 
-local function _delegate(modeS, msg)
+
+
+
+
+
+
+
+function ModeS.task(modeS)
+   return modeS.__tasker
+end
+
+
+
+
+function ModeS.delegator(modeS, msg)
    if msg.sendto and msg.sendto:find("^agents%.") then
       return modeS.maestro(msg)
    else
-      return pack(dispatchmessage(modeS, msg))
+      return pack(modeS:dispatch(msg))
    end
 end
 
 function ModeS.delegate(modeS, msg)
-   return dotask(modeS, _delegate, msg)
+   return modeS :task() :delegator(msg)
 end
 
 
@@ -228,8 +269,6 @@ end
 
 
 ModeS.raga_default = "nerf"
-
-
 
 
 
@@ -298,17 +337,17 @@ function ModeS.shiftMode(modeS, raga_name)
    -- Guard against nil raga or lexer during startup
    if modeS.raga then
       modeS.raga.onUnshift(modeS)
-      modeS.closet[modeS.raga.name].lex = modeS:agent'edit'.lex
+      modeS.closet[modeS.raga.name].lex = modeS:_agent'edit'.lex
    end
    -- Switch in the new raga and associated lexer
    modeS.raga = modeS.closet[raga_name].raga
-   modeS:agent'edit':setLexer(modeS.closet[raga_name].lex)
+   modeS:_agent'edit':setLexer(modeS.closet[raga_name].lex)
    modeS.raga.onShift(modeS)
    -- #todo feels wrong to do this here, like it's something the raga
    -- should handle, but onShift feels kinda like it "doesn't inherit",
    -- like it's not something you should actually super-send, so there's
    -- not one good place to do this.
-   modeS:agent'prompt':update(modeS.raga.prompt_char)
+   modeS:_agent'prompt':update(modeS.raga.prompt_char)
    return modeS
 end
 
@@ -334,24 +373,13 @@ end
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 function ModeS.act(modeS, event)
    local command;
    repeat
       modeS.action_complete = true
       -- The raga may set action_complete to false to cause the command
       -- to be re-processed, most likely after a mode-switch
-      local commandThisTime = modeS.maestro:dispatch(event)
+      local commandThisTime = modeS.maestro:dispatchEvent(event)
       command = command or commandThisTime
    until modeS.action_complete == true
    if not command then
@@ -359,7 +387,7 @@ function ModeS.act(modeS, event)
    end
    -- Inform the input-echo agent of what just happened
    -- #todo Maestro can do this once action_complete goes away
-   modeS:agent'input_echo':update(event, command)
+   modeS:_agent'input_echo':update(event, command)
    -- Reflow in case command height has changed. Includes a paint.
    -- Don't allow errors encountered here to break this entire
    -- event-loop iteration, otherwise we become unable to quit if
@@ -379,7 +407,7 @@ end
 
 
 function ModeS.__call(modeS, event)
-   return dotask(modeS, 'act', event)
+   return modeS :task() :act(event)
 end
 
 
@@ -405,9 +433,11 @@ end
 
 
 
-function ModeS.agent(modeS, agent_name)
+function ModeS._agent(modeS, agent_name)
    return modeS.maestro.agents[agent_name]
 end
+
+ModeS.agent = ModeS._agent -- not finishing this right now
 
 
 
@@ -420,7 +450,7 @@ end
 
 
 function ModeS.setStatusLine(modeS, status_name, ...)
-   modeS:agent'status':update(status_name, ...)
+   modeS:_agent'status':update(status_name, ...)
 end
 
 
@@ -453,28 +483,31 @@ end
 
 
 
-function ModeS.rerun(modeS, deque)
+function ModeS.rerunner(modeS, deque)
    -- #todo this should probably be on a RunAgent/Runner and invoked
    -- via some queued-Message mechanism, which would also take care of
    -- putting it in a coroutine. Until then, we do this.
-   dotask(modeS, function()
-      modeS:agent'edit':clear()
-      modeS.hist.stmts.savepoint_restart_session()
-      local success, results
-      for line in deque:popAll() do
-         success, results = modeS.eval(line)
-         assert(results ~= "advance", "Incomplete line when restarting session")
-         modeS.hist:append(line, results, success)
-      end
-      modeS.hist:toEnd()
-      modeS:agent'results':update(results)
-   end)
+   modeS:_agent'edit':clear()
+   modeS.hist.stmts.savepoint_restart_session()
+   local success, results
+   for line in deque:popAll() do
+      success, results = modeS.eval(line)
+      assert(results ~= "advance", "Incomplete line when restarting session")
+      modeS.hist:append(line, results, success)
+   end
+   modeS.hist:toEnd()
+   modeS:_agent'results':update(results)
+end
+
+
+function ModeS.rerun(modeS, deque)
+   modeS :task() :rerunner(deque)
    local restart_idle = uv.new_idle()
    restart_idle:start(function()
-      if #modeS.hist.idlers > 0 then
-         return nil
-      end
-      modeS.hist.stmts.release_restart_session()
+   if modeS.hist:idling() then
+      return nil
+   end
+   modeS.hist.stmts.release_restart_session()
       restart_idle:stop()
    end)
 end
@@ -489,7 +522,7 @@ end
 
 local rep = assert(string.rep)
 function ModeS.openHelp(modeS)
-   modeS:agent'pager':update(("abcde "):rep(1000))
+   modeS:_agent'pager':update(("abcde "):rep(1000))
    modeS:shiftMode "page"
 end
 
@@ -500,9 +533,12 @@ end
 
 
 
+
+
 local concat = assert(table.concat)
 
-local _stat_M = meta {}
+-- we forward declared this
+_stat_M = meta {}
 
 function _stat_M.__repr(status_table)
    return concat(status_table)
@@ -524,86 +560,9 @@ end
 
 function ModeS.bindZone(modeS, zone_name, agent_name, buf_class, cfg)
    local zone = modeS.zones[zone_name]
-   local agent = modeS:agent(agent_name)
+   local agent = modeS:_agent(agent_name)
    zone:replace(buf_class(agent:window(), cfg))
 end
-
-
-
-
-
-
-local borrowmethod, getter = assert(actor.borrowmethod, actor.getter)
-
-local function new(max_extent, writer, db)
-   local modeS = setmetatable({}, ModeS)
-
-   -- Some miscellany to copy and initialize
-   modeS.max_extent = max_extent
-   modeS.write = writer
-   modeS.repl_top = ModeS.REPL_LINE
-
-   -- Create Actors (status isn't, but should be)
-   modeS.eval = Valiant(__G)
-   modeS.hist  = Historian(db)
-   modeS.status = setmetatable({}, _stat_M)
-   rawset(__G, "stat", modeS.status)
-   modeS.zones = Zoneherd(modeS, writer)
-   modeS.maestro = Maestro(modeS)
-
-   -- Session-related setup
-   -- #todo ugh this is clearly the wrong place/way to do this
-   local session = modeS.hist.session
-   modeS:agent'session':update(session)
-   -- If we are loading an existing session, start in review mode
-   if session.session_id then
-      modeS.raga_default = "review"
-   elseif session.session_title then
-      -- #todo should probably do this somewhere else--maybe raga/nerf.onShift,
-      -- but it's certainly not Nerf-specific...
-      modeS:setStatusLine(
-         session.mode == "macro" and "macro" or "new_session",
-         session.session_title)
-   else
-      modeS:setStatusLine("default")
-   end
-
-   -- #todo this interaction is messy, would be nice to be able to use yielded
-   -- messages but it happens at render time, outside a coroutine.
-   local agents = modeS.maestro.agents
-   agents.prompt.continuationLines = borrowmethod(agents.edit,
-                                                  "continuationLines")
-   agents.prompt.editTouched = getter(agents.edit, "touched")
-
-   -- Set up common Agent -> Zone bindings
-   -- Note we don't do results here because that varies from raga to raga
-   -- The Txtbuf also needs a source of "suggestions" (which might be
-   -- history-search results instead), but that too is raga-dependent
-   modeS:bindZone("command",  "edit",       Txtbuf)
-   modeS:bindZone("popup",    "pager",      Resbuf,    { scrollable = true })
-   modeS:bindZone("prompt",   "prompt",     Stringbuf)
-   modeS:bindZone("modal",    "modal",      Resbuf)
-   modeS:bindZone("status",   "status",     Stringbuf)
-   modeS:bindZone("stat_col", "input_echo", Resbuf)
-   modeS:bindZone("suggest",  "suggest",    Resbuf)
-
-   -- Load initial raga. Need to process yielded messages from `onShift`
-   dotask(modeS, function()
-      modeS:shiftMode(modeS.raga_default)
-   end)
-
-   -- hackish: we check the historian for a deque of lines to load and if
-   -- we have it, we just eval them into existence.
-   if modeS.hist.reloads then
-      modeS:rerun(modeS.hist.reloads)
-      --modeS.hist.reloads = nil
-   end
-
-   modeS.action_complete = true
-   return modeS
-end
-
-ModeS.idEst = new
 
 
 
