@@ -11,11 +11,25 @@ providing a [[Window][@window]] that is the =source= for a
 #!lua
 local Window = require "window:window"
 local Deque = require "deque:deque"
+local Message = require "actor:message"
 #/lua
 
 
 #!lua
 local Agent = meta {}
+#/lua
+
+
+**** Agent:send(msg)
+
+Sends a message to the Agent's boss.
+
+#!lua
+local yield = assert(coroutine.yield)
+
+function Agent.send(agent, msg)
+   return yield(Message(msg))
+end
 #/lua
 
 

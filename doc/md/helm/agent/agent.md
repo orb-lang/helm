@@ -11,11 +11,25 @@ providing a [Window](https://gitlab.com/special-circumstance/helm/-/blob/trunk/d
 ```lua
 local Window = require "window:window"
 local Deque = require "deque:deque"
+local Message = require "actor:message"
 ```
 
 
 ```lua
 local Agent = meta {}
+```
+
+
+#### Agent:send\(msg\)
+
+Sends a message to the Agent's boss\.
+
+```lua
+local yield = assert(coroutine.yield)
+
+function Agent.send(agent, msg)
+   return yield(Message(msg))
+end
 ```
 
 

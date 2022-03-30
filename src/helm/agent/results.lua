@@ -40,7 +40,7 @@ end
 
 
 function ResultsAgent.clearOnFirstKey(agent)
-   if send { sendto = "agents.edit", method = "isEmpty" } then
+   if agent :send { sendto = "agents.edit", method = "isEmpty" } then
       agent:clear()
    end
    return false
