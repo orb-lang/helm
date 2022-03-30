@@ -536,14 +536,22 @@ end
 
 
 
-function ModeS.evaluate(modeS, line)
-   return modeS.valiant(line)
-end
+
+
+
+
+
+
+
+local nest = assert(core.thread.nest) 'valiant'
+
+
+
+local Wrap = assert(nest.wrap)
+
 
 function ModeS.eval(modeS, line)
-   return modeS
-          -- :task()
-             :evaluate(line)
+   return Wrap(modeS.valiant)(line)
 end
 
 

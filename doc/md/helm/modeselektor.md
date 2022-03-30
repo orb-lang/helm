@@ -535,15 +535,23 @@ end
 
 ### ModeS:eval\(line\)
 
+  I'm going to build something by hand, if it works we'll move it to the Actor
+base\.
+
+The intention is simply to generate an extra coroutine with a transparent
+pass\-through for messages, so that yields in Valiant don't capture the task
+thread\.
+
 ```lua
-function ModeS.evaluate(modeS, line)
-   return modeS.valiant(line)
-end
+local nest = assert(core.thread.nest) 'valiant'
+```
+
+```lua
+local Wrap = assert(nest.wrap)
+
 
 function ModeS.eval(modeS, line)
-   return modeS
-          -- :task()
-             :evaluate(line)
+   return Wrap(modeS.valiant)(line)
 end
 ```
 
