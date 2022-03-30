@@ -551,7 +551,7 @@ local Wrap = assert(nest.wrap)
 
 
 function ModeS.eval(modeS, line)
-   return Wrap(modeS.valiant)(line)
+   return modeS.valiant(line)
 end
 
 

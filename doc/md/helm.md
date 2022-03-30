@@ -350,6 +350,14 @@ local function _guardian(_dispatch, seq, dispatch_all)
    s:verb("coroutine status is %s", status(co))
    local cheka = uv.new_check()
    local count = 0
+   local function defer() -- worse :/
+      cheka:stop()
+         s:chat("resuming the work next tick")
+         ok, co = resume(work)
+         s:chat("saw these after resuming: %s, %s", ok, co)
+   end
+   -- cheka:start(defer)
+   ---[[
    cheka:start(function()
       count = count + 1
       local stat = status(co)
@@ -364,6 +372,7 @@ local function _guardian(_dispatch, seq, dispatch_all)
          --]
       end
    end)
+   --]]
 end
 ```
 
