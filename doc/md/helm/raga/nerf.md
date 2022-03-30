@@ -12,13 +12,13 @@
   - [?]  There should probably be a metatable for Mode objects\.
 
 
-#### includes
+#### imports
 
 ```lua
 local sub, gsub, rep = assert(string.sub),
                        assert(string.gsub),
                        assert(string.rep)
-local table = require "core:table"
+local table = core.table
 local addall, clone, concat, insert, splice = assert(table.addall),
                                               assert(table.clone),
                                               assert(table.concat),

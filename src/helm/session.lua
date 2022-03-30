@@ -37,6 +37,14 @@
 
 
 
+
+
+
+local table = core.table
+
+
+
+
 local helm_db = require "helm:helm-db"
 local Session = meta {}
 local new
@@ -226,7 +234,7 @@ end
 
 
 
-local compact = assert(require "core:table" . compact)
+local compact = assert(table.compact)
 function Session.save(session)
    session.stmts.beginTransaction()
    -- If the session itself hasn't been stored yet, do so and retrieve its id
@@ -266,8 +274,7 @@ end
 
 
 
-local collect = assert(require 'core:table' . collect)
-
+local collect = assert(table.collect)
 new = function(db, project_id, title_or_index, cfg)
    local session = setmetatable({}, Session)
    session.stmts = helm_db.session(db)

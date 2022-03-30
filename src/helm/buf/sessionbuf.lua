@@ -17,6 +17,8 @@ local Txtbuf  = require "helm:buf/txtbuf"
 
 local Sessionbuf = meta(getmetatable(Rainbuf))
 
+local math = core.math
+
 
 
 
@@ -135,7 +137,7 @@ end
 
 
 
-local clamp = assert(require "core:math" . clamp)
+local clamp = assert(math.clamp)
 function Sessionbuf.rowsForSelectedResult(buf)
    _resbuf(buf):composeUpTo(buf.ROWS_PER_RESULT)
    return clamp(#_resbuf(buf).lines, 0, buf.ROWS_PER_RESULT)
@@ -310,6 +312,5 @@ end
 
 
 
-local constructor = assert(require "core:cluster" . constructor)
-return constructor(Sessionbuf)
+return core.cluster.constructor(Sessionbuf)
 

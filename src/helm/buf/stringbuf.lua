@@ -13,6 +13,8 @@
 local Rainbuf = require "helm:buf/rainbuf"
 local Stringbuf = meta(getmetatable(Rainbuf))
 
+local string = core.string
+
 
 
 
@@ -29,7 +31,7 @@ function Stringbuf.clearCaches(buf)
    buf._composeOneLine = nil
 end
 
-local lines = assert(require "core:string" . lines)
+local lines = assert(string.lines)
 function Stringbuf.initComposition(buf)
    buf._composeOneLine = buf._composeOneLine or lines(buf:value())
 end
@@ -37,6 +39,5 @@ end
 
 
 
-local constructor = assert(require "core:cluster" . constructor)
-return constructor(Stringbuf)
+return core.cluster.constructor(Stringbuf)
 

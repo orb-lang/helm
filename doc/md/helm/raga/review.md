@@ -3,8 +3,8 @@
 Raga for reviewing a previously\-saved session\.
 
 ```lua
-local core_table = require "core:table"
-local clone, splice = assert(core_table.clone), assert(core_table.splice)
+local table = core.table
+local clone, splice = assert(table.clone), assert(table.splice)
 local RagaBase = require "helm:raga/base"
 local Sessionbuf = require "helm:buf/sessionbuf"
 ```

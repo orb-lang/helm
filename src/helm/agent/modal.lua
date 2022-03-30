@@ -217,6 +217,5 @@ ModalAgent.keymap_actions = {
 
 
 
-local constructor = assert(require "core:cluster" . constructor)
-return constructor(ModalAgent)
+return core.cluster.constructor(ModalAgent)
 

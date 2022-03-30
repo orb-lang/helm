@@ -58,7 +58,9 @@
 
 
 
-local lineGen = import("repr:repr", "lineGen")
+local string = core.string
+local math = core.math
+local lineGen = assert(require "repr:repr" . lineGen)
 
 
 
@@ -78,7 +80,7 @@ local Rainbuf = meta {}
 
 
 
-local lines = import("core/string", "lines")
+local lines = assert(string.lines)
 function Rainbuf.setExtent(rainbuf, rows, cols)
    rows = rows or 20
    cols = cols or 80
@@ -127,7 +129,7 @@ end
 
 
 
-local clamp = import("core/math", "clamp")
+local clamp = assert(math.clamp)
 function Rainbuf.scrollTo(rainbuf, offset, allow_overscroll)
    if offset < 0 then
       offset = 0
@@ -492,6 +494,5 @@ Rainbuf.is_rainbuf = true
 
 
 
-local constructor = assert(require "core:cluster" . constructor)
-return constructor(Rainbuf)
+return core.cluster.constructor(Rainbuf)
 

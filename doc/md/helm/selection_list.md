@@ -3,6 +3,14 @@
 A list with a concept of an item being "selected"\. Currently used by and
 specialized for search results, from either an actual search or `suggest`\.
 
+
+#### imports
+
+```lua
+local math = core.math
+```
+
+
 ## Interface
 
 ### Instance Fields
@@ -37,7 +45,7 @@ Answers whether the highlight was able to be moved \(false if we're
 already at the end/beginning of the list\)
 
 ```lua
-local clamp = assert(require "core:math" . clamp)
+local clamp = assert(math.clamp)
 function SelectionList.selectIndex(list, index)
    -- Handle empty-list case separately as `clamp`
    -- does not tolerate upper < lower

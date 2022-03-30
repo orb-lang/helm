@@ -2,8 +2,8 @@
 
 An Agent is a particular kind of [Actor](httk://) which is responsible for
 implementing responses to input events, and drives a region of the screen by
-providing a [Window](https://gitlab.com/special-circumstance/helm/-/blob/trunk/doc/md/window.md) that is the `source` for a
-[Rainbuf](https://gitlab.com/special-circumstance/helm/-/blob/trunk/doc/md/buf/rainbuf.md)\.
+providing a [Window](NO default.domain IN MANIFESThelm/MISSING_POST_PROJECTdoc/md/window.md) that is the `source` for a
+[Rainbuf](NO default.domain IN MANIFESThelm/MISSING_POST_PROJECTdoc/md/buf/rainbuf.md)\.
 
 
 #### imports
@@ -12,6 +12,8 @@ providing a [Window](https://gitlab.com/special-circumstance/helm/-/blob/trunk/d
 local Window = require "window:window"
 local Deque = require "deque:deque"
 local Message = require "actor:message"
+
+local table = core.table
 ```
 
 
@@ -147,7 +149,7 @@ own details, using `.mergeWindowConfig()` to include the superclass' config\.
 \(Note that this is not a method, just a function\.\)
 
 ```lua
-local addall = assert(require "core:table" . addall)
+local addall = assert(table.addall)
 function Agent.mergeWindowConfig(cfg_a, cfg_b)
    for cat, props in pairs(cfg_b) do
       cfg_a[cat] = cfg_a[cat] or {}
@@ -199,6 +201,5 @@ end
 
 
 ```lua
-local constructor = assert(require "core:cluster" . constructor)
-return constructor(Agent)
+return core.cluster.constructor(Agent)
 ```
