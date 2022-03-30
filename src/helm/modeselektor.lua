@@ -74,7 +74,7 @@ cluster.extendbuilder(new, function(_new, modeS, max_extent, writer, db)
    modeS.repl_top = ModeS.REPL_LINE
 
    -- Create Actors (status isn't, but should be)
-   modeS.eval = Valiant(__G)
+   modeS.valiant = Valiant(__G)
    modeS.hist  = Historian(db)
    ---[[ This isn't how we should handle status,
    modeS.status = setmetatable({}, _stat_M)
@@ -536,21 +536,14 @@ end
 
 
 
-
-
-
-
-local concat = assert(table.concat)
-
--- we forward declared this
-_stat_M = meta {}
-
-function _stat_M.__repr(status_table)
-   return concat(status_table)
+function ModeS.evaluate(modeS, line)
+   return modeS.valiant(line)
 end
 
-function _stat_M.clear(status_table)
-   return setmetatable({}, getmetatable(status_table))
+function ModeS.eval(modeS, line)
+   return modeS
+          -- :task()
+             :evaluate(line)
 end
 
 

@@ -47,7 +47,7 @@ function Nerf.eval()
    local line = send { sendto = "agents.edit",
                        method = 'contents' }
 
-   local success, results = send { call = "eval", line }
+   local success, results = send { method = "eval", line }
    s:chat("we return from evaluation, success: %s", success)
    if not success and results == 'advance' then
       send { sendto = "agents.edit",
