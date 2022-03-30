@@ -76,6 +76,7 @@ local s = require "status:status" ()
 s.chatty = true
 s.verbose = true
 s.boring = false
+ts = require "repr:repr" . ts_color
 ```
 
 
@@ -344,7 +345,7 @@ local function _guardian(_dispatch, seq, dispatch_all)
    elseif not ok then
       error(co)
    end
-   s:verb("guardian caught %s and %s", co, handle)
+   s:verb("guardian caught %s: %s", co, debug.traceback(co))
    s:verb("work thread is %s", status(work))
    s:verb("coroutine status is %s", status(co))
    local cheka = uv.new_check()
@@ -356,12 +357,11 @@ local function _guardian(_dispatch, seq, dispatch_all)
       s:chat("work status is now %s", status(work))
       if stat == 'dead' then
          cheka:stop()
-         cheka:start(function()
-            cheka:stop()
-            s:chat("resuming the work, tick %d", count + 1)
-            ok, co = resume(work)
-            s:chat("saw these after resuming: %s, %s", ok, co)
-         end)
+         ---[[
+         s:chat("resuming the work, tick %d", count + 1)
+         ok, co = resume(work)
+         s:chat("saw these after resuming: %s, %s", ok, co)
+         --]
       end
    end)
 end

@@ -43,6 +43,8 @@ local Valiant = require "valiant:valiant"
 
 local cluster = require "cluster:cluster"
 local core    = require "qor:core"
+local s = require "status:status"
+s.chatty = true
 
 
 
@@ -247,6 +249,7 @@ end
 
 function ModeS.delegator(modeS, msg)
    if msg.sendto and msg.sendto:find("^agents%.") then
+      s:chat("sending a message to maestro: %s", ts(msg))
       return modeS.maestro(msg)
    else
       return pack(modeS:dispatch(msg))
