@@ -67,6 +67,17 @@ jit.p = require "helm:helm/ljprof"
 sql = assert(sql, "sql must be in _G")
 ```
 
+Happily, status now prints to log files in its data directory, so we can
+use it without doing weird things \(and without the planned integrations into
+helm being complete\)\.
+
+```lua
+local s = require "status:status" ()
+s.chatty = true
+s.verbose = true
+s.boring = false
+```
+
 
 ## send\(tab\)
 
@@ -197,7 +208,7 @@ local function check_winsize()
 end
 
 local winsize_watch = uv.new_timer()
-winsize_watch:start(500, 500, check_winsize)
+-- winsize_watch:start(500, 500, check_winsize)
 local winsize_signal = uv.new_signal()
 winsize_signal:start("sigwinch", check_winsize)
 ```
@@ -224,7 +235,7 @@ that no more input is expected and it should parse ESC and CSI immediately
 rather than holding on to them in case they begin an escape sequence\.
 
 `uv`, being an event loop, seems to sometimes keep reading after we expect it
-to stop\. We use a `_ditch` flag to prevents modeS from being reloaded in such
+to stop\. We use a `_ditch` flag to prevent modeS from being reloaded in such
 circumstances\.
 
 ```lua
@@ -308,6 +319,55 @@ end
 ```
 
 
+#### yield guardian
+
+Our coroutine nests will pass yields which are \(hopefully\) intended to be
+resumed on a later tick\.
+
+I'm going to pass in `dispatch_input` rather than forward reference it, this
+isn't the final form of this I'm fairly sure\.
+
+```lua
+local create, resume, status = assert(coroutine.create),
+                               assert(coroutine.resume),
+                               assert(coroutine.status)
+
+local Resume = require "qor:core" . thread . nest "actor" . resume
+
+local function _guardian(_dispatch, seq, dispatch_all)
+   local work = create(_dispatch)
+   local ok, co, handle;
+   ok, co, handle = resume(work, seq, dispatch_all)
+   if ok and status(work) == 'dead' then
+      s:bore("exited guardian with return (not yield)")
+      return
+   elseif not ok then
+      error(co)
+   end
+   s:verb("guardian caught %s and %s", co, handle)
+   s:verb("work thread is %s", status(work))
+   s:verb("coroutine status is %s", status(co))
+   local cheka = uv.new_check()
+   local count = 0
+   cheka:start(function()
+      count = count + 1
+      local stat = status(co)
+      s:chat("tick %d: coro status is now %s", count, stat)
+      s:chat("work status is now %s", status(work))
+      if stat == 'dead' then
+         cheka:stop()
+         cheka:start(function()
+            cheka:stop()
+            s:chat("resuming the work, tick %d", count + 1)
+            ok, co = resume(work)
+            s:chat("saw these after resuming: %s, %s", ok, co)
+         end)
+      end
+   end)
+end
+```
+
+
 #### dispatch\_input\(seq, dispatch\_all\)
 
 Parses `seq` into input events and dispatches them to `modeS`\.
@@ -352,23 +412,40 @@ local function dispatch_input(seq, dispatch_all)
          -- timeout, it will be processed immediately and the timer reset.
          -- This is (hopefully) an upper bound on how long it will take the
          -- next chunk of a large paste to arrive.
-         input_timer:start(5, 0, function() should_dispatch_all = true end)
+         local should_dispatch_all = false
+         input_timer:start(5, 1, function()
+            if not should_dispatch_all then
+               should_dispatch_all = true
+               return
+            end
+            input_timer:stop()
+            if #input_buffer > 0 then
+               _guardian(dispatch_input, input_buffer, true)
+            end
+         end)
       end
    end
    consolidate_scroll_events(events)
    for _, event in ipairs(events) do
       modeS(event)
+      s:bore "handled an event"
       -- Okay, if the action resulted in a quit, break out of the event loop
       if modeS.has_quit then
          shutDown(modeS)
          break
       end
    end
+   s:bore "escaped dispatch_input"
 end
+```
 
+
+```lua
+local counter = 0
 input_check:start(function()
+      counter = counter + 1
    if should_dispatch_all and #input_buffer > 0 then
-      wrap(dispatch_input)(input_buffer, true)
+      _guardian(dispatch_input, input_buffer, true)
    end
 end)
 ```
@@ -390,8 +467,9 @@ local function onseq(err, seq)
    if _ditch then return nil end
    local success, err_trace = xpcall(function()
       if err then error(err) end
-      wrap(dispatch_input)(input_buffer .. seq, false)
+      _guardian(dispatch_input, input_buffer .. seq, false)
    end, debug.traceback)
+   s:bore "escaped onseq"
    if not success then
       shutDown(modeS)
       onseq_err = err_trace

@@ -24,6 +24,7 @@ local addall, clone, concat, insert, splice = assert(table.addall),
                                               assert(table.concat),
                                               assert(table.insert),
                                               assert(table.splice)
+local s = require "status:status" ()
 ```
 
 
@@ -47,7 +48,7 @@ function Nerf.eval()
                        method = 'contents' }
 
    local success, results = send { call = "eval", line }
-
+   s:chat("we return from evaluation, success: %s", success)
    if not success and results == 'advance' then
       send { sendto = "agents.edit",
              method = 'endOfText'}
