@@ -332,46 +332,42 @@ isn't the final form of this I'm fairly sure.
 local create, resume, status = assert(coroutine.create),
                                assert(coroutine.resume),
                                assert(coroutine.status)
+local Response = require "cluster:response"
 
-local Resume = require "qor:core" . thread . nest "actor" . resume
 
 local function _guardian(_dispatch, seq, dispatch_all)
    local work = create(_dispatch)
-   local ok, co, handle;
-   ok, co, handle = resume(work, seq, dispatch_all)
+   local ok, response;
+   ok, response = resume(work, seq, dispatch_all)
    if ok and status(work) == 'dead' then
       s:bore("exited guardian with return (not yield)")
       return
    elseif not ok then
-      error(co)
+      error(response)
    end
-   ---[=[
    local cheka = uv.new_check()
    local count = 0
-   -- not using the below, this branch is a snarl right now
-   local function defer() -- worse :/
-      cheka:stop()
-         s:chat("resuming the work next tick")
-         ok, co = resume(work)
-         s:chat("saw these after resuming: %s, %s", ok, co)
-   end
-   -- cheka:start(defer)
    ---[[
-   cheka:start(function()
-      count = count + 1
-      local stat = status(co)
-      s:chat("tick %d: coro status is now %s", count, stat)
-      s:chat("work status is now %s", status(work))
-      if stat == 'dead' then
-         cheka:stop()
-         ---[[
-         s:chat("resuming the work, tick %d", count + 1)
-         ok, co = resume(work)
-         s:chat("saw these after resuming: %s, %s", ok, co)
-         --]
-      end
-   end)
-   --]] --]=]
+   -- the wrong way fix this post haste
+   if type(response) == 'table' and response.idEst == Response then
+      cheka:start(function()
+         count = count + 1
+         local is_ready = response:ready()
+         s:chat("tick %d: response is ready: %s", count, tostring(is_ready))
+         s:chat("work status is now %s", status(work))
+         if is_ready then
+            cheka:stop()
+            ---[[
+            s:chat("resuming the work, tick %d", count + 1)
+            ok, response = resume(work, response:unpack())
+            s:chat("saw these after resuming: %s, %s", ok, response)
+            --]
+         end
+      end)
+   else -- else what? we don't want to just fall off the map here
+      s:warn("modeS yielded a non response")
+   end
+   --]]
 end
 #/lua
 
