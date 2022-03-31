@@ -349,19 +349,13 @@ local function _guardian(_dispatch, seq, dispatch_all)
    local count = 0
    -- the wrong way fix this post haste
    if type(response) == 'table' and response.idEst == Response then
-      cheka:start(function()
-         count = count + 1
-         local is_ready = response:ready()
-         s:chat("tick %d: response is ready: %s", count, tostring(is_ready))
-         s:chat("work status is now %s", status(work))
-         if is_ready then
-            cheka:stop()
-            s:chat("resuming the work, tick %d, responses %d",
-                    count, #response)
-            ok, response = resume(work, response:unpack())
-            s:chat("saw these after resuming: %s, %s", ok, response)
-         end
-      end)
+      response.co = work
+      --[[ That's... the whole thing we need to do here.
+           The rest of it is about building something which keeps an eye on
+           these processes in case they don't work out.
+
+           Long week!
+      --]]
    else -- else what? we don't want to just fall off the map here
       s:warn("modeS yielded a non response")
    end
