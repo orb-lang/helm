@@ -518,8 +518,6 @@ function ModeS.rerun(modeS, deque)
 end
 #/lua
 
-
-
 *** ModeS:openHelp()
 
 Opens a simple help screen.
@@ -535,11 +533,21 @@ end
 
 *** ModeS:eval(line)
 
-Passes through to eval for now.
+Creates a coroutine and runs it manual transmission.
 
 #!lua
+local ev_nest = core.thread.nest 'evaluate'
+
 function ModeS.eval(modeS, line)
-   return modeS.valiant(line)
+   local co = ev_nest.create(function()
+      return modeS.valiant(line)
+   end)
+   s:chat "beginning coroutinized evaluation protocol"
+   local ok, success, results = ev_nest.resume(co)
+   -- never gets here??
+   s:chat("success %s, results %s", tostring(success), tostring(results))
+   -- handle not ok, now we just pass through
+   return success, results
 end
 #/lua
 

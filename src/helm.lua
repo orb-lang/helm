@@ -347,7 +347,6 @@ local function _guardian(_dispatch, seq, dispatch_all)
    end
    local cheka = uv.new_check()
    local count = 0
-   ---[[
    -- the wrong way fix this post haste
    if type(response) == 'table' and response.idEst == Response then
       cheka:start(function()
@@ -357,11 +356,9 @@ local function _guardian(_dispatch, seq, dispatch_all)
          s:chat("work status is now %s", status(work))
          if is_ready then
             cheka:stop()
-            ---[[
             s:chat("resuming the work, tick %d", count + 1)
             ok, response = resume(work, response:unpack())
             s:chat("saw these after resuming: %s, %s", ok, response)
-            --]
          end
       end)
    else -- else what? we don't want to just fall off the map here

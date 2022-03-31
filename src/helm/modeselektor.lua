@@ -523,8 +523,6 @@ end
 
 
 
-
-
 local rep = assert(string.rep)
 function ModeS.openHelp(modeS)
    modeS:_agent'pager':update(("abcde "):rep(1000))
@@ -538,8 +536,17 @@ end
 
 
 
+local ev_nest = core.thread.nest 'evaluate'
+
 function ModeS.eval(modeS, line)
-   return modeS.valiant(line)
+   local co = ev_nest.create(function()
+      return modeS.valiant(line)
+   end)
+   s:chat "beginning coroutinized evaluation protocol"
+   local ok, success, results = ev_nest.resume(co)
+   s:chat("success %s, results %s", tostring(success), tostring(results))
+   -- handle not ok, now we just pass through
+   return success, results
 end
 
 
