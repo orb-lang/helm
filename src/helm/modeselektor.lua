@@ -544,6 +544,7 @@ function ModeS.eval(modeS, line)
    end)
    s:chat "beginning coroutinized evaluation protocol"
    local ok, success, results = ev_nest.resume(co)
+   -- never gets here??
    s:chat("success %s, results %s", tostring(success), tostring(results))
    -- handle not ok, now we just pass through
    return success, results

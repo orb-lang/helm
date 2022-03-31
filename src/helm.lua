@@ -356,7 +356,8 @@ local function _guardian(_dispatch, seq, dispatch_all)
          s:chat("work status is now %s", status(work))
          if is_ready then
             cheka:stop()
-            s:chat("resuming the work, tick %d", count + 1)
+            s:chat("resuming the work, tick %d, responses %d",
+                    count, #response)
             ok, response = resume(work, response:unpack())
             s:chat("saw these after resuming: %s, %s", ok, response)
          end
