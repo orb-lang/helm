@@ -45,7 +45,8 @@ Nerf.prompt_char = "👉"
 function Nerf.eval()
    local line = send { sendto = "agents.edit",
                        method = 'contents' }
-
+   -- test yield as defer
+   --coroutine.yield(nil)
    local success, results = send { method = "eval", line }
    s:chat("we return from evaluation, success: %s", success)
    if not success and results == 'advance' then

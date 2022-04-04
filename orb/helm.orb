@@ -306,60 +306,73 @@ local function shutDown(modeS)
    input_check:stop()
    input_check:close()
    uv.walk(function(handle)
-         local h_type = uv.handle_get_type(handle)
-         if stoppable[h_type] then
-            io.stderr:write("Stopping a leftover ", h_type, " ", tostring(handle), "\n")
-            handle:stop()
-         end
-         if not handle:is_closing() then
-            io.stderr:write("Closing a leftover ", h_type, " ", tostring(handle), "\n")
-            handle:close()
-         end
-      end)
+      local h_type = uv.handle_get_type(handle)
+      if stoppable[h_type] then
+         io.stderr:write("Stopping a leftover ", h_type, " ", tostring(handle), "\n")
+         handle:stop()
+      end
+      if not handle:is_closing() then
+         io.stderr:write("Closing a leftover ", h_type, " ", tostring(handle), "\n")
+         handle:close()
+      end
+   end)
 end
 #/lua
 
 
-**** yield guardian
+*** Guardian
 
-Our coroutine nests will pass yields which are (hopefully) intended to be
-resumed on a later tick.
+  Runs a coroutine to catch any yields which aren't handled by the actor
+coroutine nest.
 
-I'm going to pass in =dispatch_input= rather than forward reference it, this
-isn't the final form of this I'm fairly sure.
+Currently, we simply thread any Response we see with the work thread, so the
+callback can resume execution.
 
 #!lua
 local create, resume, status = assert(coroutine.create),
                                assert(coroutine.resume),
                                assert(coroutine.status)
-local Response = require "cluster:response"
 
+local core = require "qor:core"
+
+local complete = assert(core.thread.complete)
+
+local table = assert(core.table)
+
+local once = assert(core.uv.once)
 
 local function _guardian(_dispatch, seq, dispatch_all)
    local work = create(_dispatch)
    local ok, response;
+   ::dispatching::
    ok, response = resume(work, seq, dispatch_all)
-   if ok and status(work) == 'dead' then
-      s:bore("exited guardian with return (not yield)")
+   if complete(ok, work) then
       return
    elseif not ok then
       error(response)
    end
-   local cheka = uv.new_check()
-   local count = 0
-   -- the wrong way fix this post haste
-   if type(response) == 'table' and response.idEst == Response then
-      response.co = work
-      --[[ That's... the whole thing we need to do here.
-           The rest of it is about building something which keeps an eye on
-           these processes in case they don't work out.
 
-           Long week!
-      --]]
+   if table(response) and response.isResponse then
+      -- provide the work thread
+      response.co = work
+      --  we will almost surely want to do more with a response than
+      --  just wire it up with the correct coroutine, this gets us
+      --  correct behavior along the happy path and that will do for now.
+   elseif response == nil then
+      -- resume the work on the next tick
+      -- this does not work, quite
+      s:chat "deferring a nil yield"
+      once(work)
+      goto dispatching
    else -- else what? we don't want to just fall off the map here
-      s:warn("modeS yielded a non response")
+      s:warn("unexpected yield from modeS %s", debug.traceback(work))
+      -- Something has probably gone wrong, but we can resume and hope
+      -- for the best.
+      -- using a goto because this is an attempt at error recovery
+      seq, dispatch_all = nil, nil
+      -- so as not to pass them when we resume
+      goto dispatching
    end
-   --]]
 end
 #/lua
 

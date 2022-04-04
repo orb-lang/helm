@@ -496,7 +496,7 @@ function ModeS.rerunner(modeS, deque)
    modeS.hist.stmts.savepoint_restart_session()
    local success, results
    for line in deque:popAll() do
-      success, results = modeS.eval(line)
+      success, results = modeS:eval(line)
       assert(results ~= "advance", "Incomplete line when restarting session")
       modeS.hist:append(line, results, success)
    end
@@ -536,18 +536,10 @@ end
 
 
 
-local ev_nest = core.thread.nest 'evaluate'
+
 
 function ModeS.eval(modeS, line)
-   local co = ev_nest.create(function()
-      return modeS.valiant(line)
-   end)
-   s:chat "beginning coroutinized evaluation protocol"
-   local ok, success, results = ev_nest.resume(co)
-   -- never gets here??
-   s:chat("success %s, results %s", tostring(success), tostring(results))
-   -- handle not ok, now we just pass through
-   return success, results
+   return modeS.valiant(line)
 end
 
 
