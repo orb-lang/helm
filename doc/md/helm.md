@@ -341,37 +341,45 @@ local table = assert(core.table)
 
 local once = assert(core.uv.once)
 
+s.verbose = true -- #todo remove
+local ts = assert(require "repr:repr" .ts_color)
+
 local function _guardian(_dispatch, seq, dispatch_all)
    local work = create(_dispatch)
    local ok, response;
-   ::dispatching::
-   ok, response = resume(work, seq, dispatch_all)
-   if complete(ok, work) then
-      return
-   elseif not ok then
-      error(response)
-   end
-
-   if table(response) and response.isResponse then
-      -- provide the work thread
-      response.co = work
-      --  we will almost surely want to do more with a response than
-      --  just wire it up with the correct coroutine, this gets us
-      --  correct behavior along the happy path and that will do for now.
-   elseif response == nil then
-      -- resume the work on the next tick
-      s:chat "deferring a nil yield"
-      once(work)
-      goto dispatching
-   else -- else what? we don't want to just fall off the map here
-      s:warn("unexpected yield from modeS %s", debug.traceback(work))
-      -- Something has probably gone wrong, but we can resume and hope
-      -- for the best.
-      -- using a goto because this is an attempt at error recovery
-      seq, dispatch_all = nil, nil
-      -- so as not to pass them when we resume
-      goto dispatching
-   end
+   local done = false
+   repeat
+      ok, response = resume(work, seq, dispatch_all)
+      if complete(ok, work) then
+         s:bore("ordinary return")
+         done = true
+      elseif not ok then
+         error(response)
+      elseif table(response) and response.isResponse then
+         s:verb("saw a response, autothreading")
+         -- provide the work thread
+         response.co = work
+         --  we will almost surely want to do more with a response than
+         --  just wire it up with the correct coroutine, this gets us
+         --  correct behavior along the happy path and that will do for now.
+      --[[ Knock out non-working code path
+      -- This should be a proper coroutine-draining response loop, the goto
+      -- dispatch is some QBasic nonsense really
+      elseif response == nil then
+         -- resume the work on the next tick
+         -- this does not work, quite
+         s:chat "deferring a nil yield"
+         once(work)
+      --]]
+      else -- else what? we don't want to just fall off the map here
+         s:warn("unexpected yield from modeS %s", ts(response))
+         -- Something has probably gone wrong, but we can resume and hope
+         -- for the best.
+         -- if it's an escaped message we can thread it maybe?
+         seq, dispatch_all = response, nil
+      end
+   until done
+   return
 end
 ```
 
