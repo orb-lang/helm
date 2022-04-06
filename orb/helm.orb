@@ -319,6 +319,12 @@ local function shutDown(modeS)
 end
 #/lua
 
+
+*** autothread
+
+This is necessary to allow asynchronous Responses to re-thread the coroutine
+nest which Actors use for message passing.
+
 #!lua
 local autothread = require "cluster:autothread"
 #/lua
