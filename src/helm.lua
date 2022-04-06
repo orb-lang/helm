@@ -179,9 +179,21 @@ local Point = require "anterm:point"
 
 
 
+
+local autothread = require "cluster:autothread"
+
+
+
+
+
+
+
+
 local max_col, max_row = stdin:get_winsize()
 local max_extent = Point(max_row, max_col)
-modeS = require "helm/modeselektor" (max_extent, write) :setup()
+modeS = require "helm/modeselektor" (max_extent, write)
+
+autothread(modeS.setup, modeS)
 
 
 
@@ -317,16 +329,6 @@ local function shutDown(modeS)
       end
    end)
 end
-
-
-
-
-
-
-
-
-
-local autothread = require "cluster:autothread"
 
 
 

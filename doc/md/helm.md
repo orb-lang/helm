@@ -174,6 +174,16 @@ local Point = require "anterm:point"
 ```
 
 
+### autothread
+
+This is necessary to allow asynchronous Responses to re\-thread the coroutine
+nest which Actors use for message passing\.
+
+```lua
+local autothread = require "cluster:autothread"
+```
+
+
 ## Modeselektor
 
 Lives in the global namespace for convenient repl access\.
@@ -181,7 +191,9 @@ Lives in the global namespace for convenient repl access\.
 ```lua
 local max_col, max_row = stdin:get_winsize()
 local max_extent = Point(max_row, max_col)
-modeS = require "helm/modeselektor" (max_extent, write) :setup()
+modeS = require "helm/modeselektor" (max_extent, write)
+
+autothread(modeS.setup, modeS)
 ```
 
 Here we set up a SIGWINCH handler to reflow the helm window when the
@@ -317,16 +329,6 @@ local function shutDown(modeS)
       end
    end)
 end
-```
-
-
-### autothread
-
-This is necessary to allow asynchronous Responses to re\-thread the coroutine
-nest which Actors use for message passing\.
-
-```lua
-local autothread = require "cluster:autothread"
 ```
 
 
