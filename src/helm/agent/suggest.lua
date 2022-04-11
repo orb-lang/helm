@@ -102,7 +102,7 @@ local isidentifier = assert(string.isidentifier)
 local hasmetamethod = assert(core.meta.hasmetamethod)
 local safeget = assert(table.safeget)
 local fuzz_patt = require "helm:fuzz_patt"
-local Set = require "qor:core" . set
+local Set = core.set
 
 local function _candidates_from(complete_against)
    -- Either no path was provided, or some part of it doesn't

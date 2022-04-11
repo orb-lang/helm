@@ -42,7 +42,6 @@ local Valiant = require "valiant:valiant"
 
 ```lua
 local cluster = require "cluster:cluster"
-local core    = require "qor:core"
 local s = require "status:status"
 s.chatty = true
 ```

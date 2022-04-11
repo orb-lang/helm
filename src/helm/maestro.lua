@@ -63,7 +63,8 @@ local new, Maestro, Maestro_M = cluster.genus(Actor)
 local gmatch = assert(string.gmatch)
 local clone, insert = assert(table.clone), assert(table.insert)
 local Message = require "actor:message"
-local _yield  = assert(require "qor:core".thread.nest "actor" .yield)
+local assert = assert(core.fn.assertfmt)
+local _yield  = assert(core.thread.nest "actor" .yield)
 
 function Maestro.activeKeymap(maestro)
    local composed_keymap = { bindings = {}, wildcards = {} }

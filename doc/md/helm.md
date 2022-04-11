@@ -96,8 +96,7 @@ redefined here\.
 send = nil;
 do
    local Message = require "actor:message"
-   local thread = require "qor:core" . thread
-   local nest = thread.nest "actor"
+   local nest = core.thread.nest "actor"
    local yield = assert(nest.yield)
 
    send = function (tab)
@@ -297,7 +296,7 @@ end
 Handles shutdown of the `uv` event loop in a hopefully graceful fashion\.
 
 ```lua
-local Set = require "qor:core" . set
+local Set = core.set
 
 local stoppable = Set { 'idle',
                         'check',
