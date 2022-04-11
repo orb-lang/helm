@@ -32,7 +32,7 @@ if the path cannot be determined\.
 function SuggestAgent.cursorContext(suggest)
    local lex_tokens = {}
    -- Ignore whitespace and comments
-   local tokens_from_edit = suggest :send { sendto = "agents.edit",
+   local tokens_from_edit = suggest :send { to = "agents.edit",
                                             method = "tokens" }
    for _, token in ipairs(tokens_from_edit) do
       if token.color ~= "no_color" and token.color ~= "comment" then
@@ -202,7 +202,7 @@ function SuggestAgent.acceptSelected(agent)
    agent:quit()
    if suggestion then
       agent :send { suggestion,
-                    sendto = "agents.edit",
+                    to = "agents.edit",
                     method = "replaceToken" }
       return true
    else

@@ -22,8 +22,8 @@ Review.prompt_char = "💬"
 
 
 function Review.quitHelm()
-   local sesh_title = send { sendto = "hist.session", property = "session_title" }
-   send { sendto = "agents.modal", method = "show",
+   local sesh_title = send { to = "hist.session", property = "session_title" }
+   send { to = "agents.modal", method = "show",
       'Save changes to the session "' .. sesh_title .. '"?',
       "yes_no_cancel" }
 end
@@ -62,7 +62,7 @@ function Review.onShift(modeS)
 
    modeS:setStatusLine("review", modeS.hist.session.session_title)
 
-   local modal_answer = send { sendto = "agents.modal", method = "answer" }
+   local modal_answer = send { to = "agents.modal", method = "answer" }
    if modal_answer then
       if modal_answer == "yes" then
          modeS.hist.session:save()

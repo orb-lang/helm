@@ -247,7 +247,8 @@ end
 
 
 function ModeS.delegator(modeS, msg)
-   if msg.sendto and msg.sendto:find("^agents%.") then
+   local to = msg.to or msg.sendto
+   if to and to:find("^agents%.") then
       s:chat("sending a message to maestro: %s", ts(msg))
       return modeS.maestro(msg)
    else

@@ -82,7 +82,7 @@ function SessionAgent.selectIndex(agent, index)
       agent:contentsChanged()
       agent:bufferCommand("ensureSelectedVisible")
       local premise = agent:selectedPremise()
-      agent :send { sendto = "agents.edit",
+      agent :send { to = "agents.edit",
                     method = "update",
                     premise and premise.title }
    end
@@ -224,7 +224,7 @@ User is done editing a premise title, update it in the session data structure.
 
 #!lua
 function SessionAgent.acceptTitleUpdate(agent)
-   local new_title = agent :send { sendto = "agents.edit", method = "contents" }
+   local new_title = agent :send { to = "agents.edit", method = "contents" }
    agent:selectedPremise().title = new_title
    agent:selectNextWrap()
    agent:cancelTitleEditing()

@@ -40,7 +40,7 @@ processed will be the first character in the buffer\.
 
 ```lua
 function ResultsAgent.clearOnFirstKey(agent)
-   if agent :send { sendto = "agents.edit", method = "isEmpty" } then
+   if agent :send { to = "agents.edit", method = "isEmpty" } then
       agent:clear()
    end
    return false

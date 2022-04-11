@@ -44,32 +44,32 @@ Nerf.prompt_char = "👉"
 
 ```lua
 function Nerf.eval()
-   local line = send { sendto = "agents.edit",
+   local line = send { to = "agents.edit",
                        method = 'contents' }
    local success, results = send { method = "eval", line }
    s:chat("we return from evaluation, success: %s", success)
    if not success and results == 'advance' then
-      send { sendto = "agents.edit",
+      send { to = "agents.edit",
              method = 'endOfText'}
       return false -- Fall through to EditAgent nl binding
    else
-      send { sendto = 'hist',
+      send { to = 'hist',
              method = 'append',
              line, results, success }
 
-      send { sendto = 'hist', method = 'toEnd' }
+      send { to = 'hist', method = 'toEnd' }
       -- Do this first because it clears the results area
       -- #todo this clearly means edit:clear() is doing too much, decouple
-      send { sendto = "agents.edit",
+      send { to = "agents.edit",
                              method = 'clear' }
 
-      send { sendto = "agents.results",
+      send { to = "agents.results",
                      method = 'update', results }
    end
 end
 
 function Nerf.conditionalEval()
-   if send { sendto = "agents.edit",
+   if send { to = "agents.edit",
              method = 'shouldEvaluate'} then
       return Nerf.eval()
    else
@@ -80,10 +80,10 @@ end
 Nerf.keymap_evaluation = {
    RETURN = "conditionalEval",
    ["C-RETURN"] = "eval",
-   ["S-RETURN"] = { sendto = "agents.edit", method = "nl" },
+   ["S-RETURN"] = { to = "agents.edit", method = "nl" },
    -- Add aliases for terminals not in CSI u mode
    ["C-\\"] = "eval",
-   ["M-RETURN"] = { sendto = "agents.edit", method = "nl" }
+   ["M-RETURN"] = { to = "agents.edit", method = "nl" }
 }
 ```
 
@@ -94,26 +94,26 @@ Nerf.keymap_evaluation = {
 function Nerf.historyBack()
    -- If we're at the end of the history (the user was typing a new
    -- expression), save it before moving
-   if send { sendto = 'hist', method = 'atEnd' } then
-      local linestash = send { sendto = "agents.edit", method = "contents" }
-      send { sendto = "hist", method = "append", linestash }
+   if send { to = 'hist', method = 'atEnd' } then
+      local linestash = send { to = "agents.edit", method = "contents" }
+      send { to = "hist", method = "append", linestash }
    end
-   local prev_line, prev_result = send { sendto = "hist", method = "prev" }
-   send { sendto = "agents.edit", method = "update", prev_line }
-   send { sendto = "agents.results", method = "update", prev_result }
+   local prev_line, prev_result = send { to = "hist", method = "prev" }
+   send { to = "agents.edit", method = "update", prev_line }
+   send { to = "agents.results", method = "update", prev_result }
 end
 
 function Nerf.historyForward()
-   local new_line, next_result = send { sendto = "hist", method = "next" }
+   local new_line, next_result = send { to = "hist", method = "next" }
    if not new_line then
-      local old_line = send { sendto = "agents.edit", method = "contents" }
-      local added = send { sendto = "hist", method = "append", old_line }
+      local old_line = send { to = "agents.edit", method = "contents" }
+      local added = send { to = "hist", method = "append", old_line }
       if added then
-         send { sendto = "hist", method = "toEnd" }
+         send { to = "hist", method = "toEnd" }
       end
    end
-   send { sendto = "agents.edit", method = "update", new_line }
-   send { sendto = "agents.results", method = "update", next_result }
+   send { to = "agents.edit", method = "update", new_line }
+   send { to = "agents.results", method = "update", next_result }
 end
 
 Nerf.keymap_history_navigation = {
@@ -127,11 +127,11 @@ Nerf.keymap_history_navigation = {
 
 ```lua
 function Nerf.evalFromCursor()
-   local top = send { sendto = "hist", property = "n" }
-   local cursor = send { sendto = "hist", property = "cursor" }
+   local top = send { to = "hist", property = "n" }
+   local cursor = send { to = "hist", property = "cursor" }
    for i = cursor, top do
-      local line = send { sendto = "hist", method = "index", i }
-      send { sendto = "agents.edit", method = "update", line }
+      local line = send { to = "hist", method = "index", i }
+      send { to = "agents.edit", method = "update", line }
       Nerf.eval()
    end
 end
@@ -144,7 +144,7 @@ end
 
 ```lua
 function Nerf.openHelpOnFirstKey()
-   if send { sendto = "agents.edit", method = "isEmpty" } then
+   if send { to = "agents.edit", method = "isEmpty" } then
       send { method = "openHelp" }
       return true
    else
@@ -153,7 +153,7 @@ function Nerf.openHelpOnFirstKey()
 end
 
 Nerf.keymap_extra_commands = {
-   ["C-l"] = { sendto = "agents.edit", method = "clear" },
+   ["C-l"] = { to = "agents.edit", method = "clear" },
    ["?"] = "openHelpOnFirstKey",
    ["M-e"] = "evalFromCursor"
 }
