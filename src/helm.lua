@@ -318,14 +318,16 @@ local function shutDown(modeS)
    input_check:stop()
    input_check:close()
    uv.walk(function(handle)
-      local h_type = uv.handle_get_type(handle)
-      if stoppable[h_type] then
-         io.stderr:write("Stopping a leftover ", h_type, " ", tostring(handle), "\n")
-         handle:stop()
-      end
-      if not handle:is_closing() then
-         io.stderr:write("Closing a leftover ", h_type, " ", tostring(handle), "\n")
-         handle:close()
+      if not (handle == stdin or handle == stdout) then
+         local h_type = uv.handle_get_type(handle)
+         if stoppable[h_type] then
+            io.stderr:write("Stopping a leftover ", h_type, " ", tostring(handle), "\n")
+            handle:stop()
+         end
+         if not handle:is_closing() then
+            io.stderr:write("Closing a leftover ", h_type, " ", tostring(handle), "\n")
+            handle:close()
+         end
       end
    end)
 end
@@ -504,6 +506,9 @@ io.stdout:write(a.mouse.sgr_mode(false),
 
 -- Back to normal mode
 uv.tty_reset_mode()
+
+stdin:close()
+stdout:close()
 
 -- Make sure the terminal processes all of the above,
 -- then remove any spurious mouse inputs or other stdin stuff
