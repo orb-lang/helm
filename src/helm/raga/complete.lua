@@ -33,8 +33,8 @@ splice(Complete.default_keymaps, EditBase.default_keymaps)
 
 
 function Complete.onTxtbufChanged(modeS)
-   modeS:agent'suggest':update()
-   if modeS:agent'suggest'.last_collection then
+   send { to = 'agents.suggest', method = 'update' }
+   if send { to = 'agents.suggest', field = 'last_collection' } then
       modeS:agent'suggest':selectFirst()
    else
       modeS:shiftMode("default")
@@ -67,9 +67,10 @@ end
 local Point = require "anterm:point"
 function Complete.getCursorPosition(modeS)
    local point = EditBase.getCursorPosition(modeS)
-   local suggestion = modeS:agent'suggest'.last_collection:selectedItem()
+   local suggestion = send { to = 'agents.suggest', method = 'selectedItem' }
+   local tokens = send { to = 'agents.edit', method = 'tokens' }
    if suggestion then
-      for _, tok in ipairs(modeS:agent'edit':tokens()) do
+      for _, tok in ipairs(tokens) do
          if tok.cursor_offset then
             point = point + Point(0, #suggestion - tok.cursor_offset)
             break
@@ -87,7 +88,7 @@ end
 
 
 function Complete.onShift(modeS)
-   modeS:agent'suggest':selectFirst()
+   send { to = 'agents.suggest', method = 'selectFirst' }
 end
 
 
@@ -98,7 +99,7 @@ end
 
 
 function Complete.onUnshift(modeS)
-   modeS:agent'suggest':selectNone()
+   send { to = 'agents.suggest', method = 'selectNone' }
 end
 
 
