@@ -29,14 +29,14 @@ Evaluation needs to intercept RETURN prior to normal `nl` binding\.
 
 ```lua
 {
-   target = "modeS.raga",
+   target = "modeS",
    bindings = {
       RETURN = "conditionalEval",
-      ["C-RETURN"] = "eval",
+      ["C-RETURN"] = "userEval",
       ["S-RETURN"] = { to = "agents.edit", method = "nl" },
       ["M-e"] = "evalFromCursor",
       -- Add aliases for terminals not in CSI u mode
-      ["C-\\"] = "eval",
+      ["C-\\"] = "userEval",
       ["M-RETURN"] = { to = "agents.edit", method = "nl" }
    }
 },
@@ -72,7 +72,7 @@ History navigation is a fallback from cursor movement\.
 
 ```lua
 {
-   target = "modeS.raga",
+   target = "modeS",
    bindings = {
       UP = "historyBack",
       DOWN = "historyForward"

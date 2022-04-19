@@ -541,6 +541,7 @@ function ModeS.rerun(modeS, deque)
 end
 ```
 
+
 ### Help screen \-\- ModeS:openHelp\(\), :openHelpOnFirstKey\(\)
 
 Opens a simple help screen\.
@@ -562,8 +563,9 @@ function ModeS.openHelpOnFirstKey(modeS)
 end
 ```
 
+### Evaluation
 
-### ModeS:eval\(line\)
+#### ModeS:eval\(line\)
 
   This is a simple wrapper around valiant\.
 
@@ -572,6 +574,90 @@ It might stay that way, idk\.
 ```lua
 function ModeS.eval(modeS, line)
    return modeS.valiant(line)
+end
+```
+
+
+#### ModeS:userEval\(\), :conditionalEval\(\)
+
+The user triggered an evaluation from the REPL, retrieve the line, evaluate,
+add to history etc\. In the conditional case, do this only if the command zone
+is single\-line or we're at the end of the last line\.
+
+```lua
+function ModeS.userEval(modeS)
+   local line = send { to = "agents.edit",
+                       method = 'contents' }
+   local success, results = modeS:eval(line)
+   s:chat("we return from evaluation, success: %s", success)
+   if not success and results == 'advance' then
+      send { to = "agents.edit", method = 'endOfText'}
+      return false -- Fall through to EditAgent nl binding
+   else
+      send { to = 'hist',
+             method = 'append',
+             line, results, success }
+
+      send { to = 'hist', method = 'toEnd' }
+      -- Do this first because it clears the results area
+      -- #todo this clearly means edit:clear() is doing too much, decouple
+      send { to = "agents.edit", method = 'clear' }
+      send { to = "agents.results", method = 'update', results }
+   end
+end
+
+function ModeS.conditionalEval(modeS)
+   if send { to = "agents.edit",
+             method = 'shouldEvaluate'} then
+      return modeS:userEval()
+   else
+      return false -- Fall through to EditAgent nl binding
+   end
+end
+```
+
+
+#### ModeS:evalFromCursor\(\)
+
+```lua
+function ModeS.evalFromCursor(modeS)
+   local top = modeS.hist.n
+   local cursor = modeS.hist.cursor
+   for i = cursor, top do
+      local line = send { to = "hist", method = "index", i }
+      send { to = "agents.edit", method = "update", line }
+      modeS:userEval()
+   end
+end
+```
+
+
+### History navigation
+
+```lua
+function ModeS.historyBack()
+   -- If we're at the end of the history (the user was typing a new
+   -- expression), save it before moving
+   if send { to = 'hist', method = 'atEnd' } then
+      local linestash = send { to = "agents.edit", method = "contents" }
+      send { to = "hist", method = "append", linestash }
+   end
+   local prev_line, prev_result = send { to = "hist", method = "prev" }
+   send { to = "agents.edit", method = "update", prev_line }
+   send { to = "agents.results", method = "update", prev_result }
+end
+
+function ModeS.historyForward()
+   local new_line, next_result = send { to = "hist", method = "next" }
+   if not new_line then
+      local old_line = send { to = "agents.edit", method = "contents" }
+      local added = send { to = "hist", method = "append", old_line }
+      if added then
+         send { to = "hist", method = "toEnd" }
+      end
+   end
+   send { to = "agents.edit", method = "update", new_line }
+   send { to = "agents.results", method = "update", next_result }
 end
 ```
 
