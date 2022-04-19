@@ -242,11 +242,6 @@ end
 **** Keymaps
 
 #!lua
-SuggestAgent.keymap_try_activate = {
-   TAB = "activateCompletion",
-   ["S-TAB"] = "activateCompletion",
-}
-
 function SuggestAgent.acceptAndFallthrough(agent)
    agent:acceptSelected()
    return false
@@ -262,14 +257,6 @@ function SuggestAgent.acceptOnNonWordChar(agent, event)
    end
    return false
 end
-
-local addall = assert(table.addall)
-SuggestAgent.keymap_actions = {
-   LEFT            = "acceptAndFallthrough",
-   PASTE           = "quitAndFallthrough",
-   ["[CHARACTER]"] = { method = "acceptOnNonWordChar", n = 1 }
-}
-addall(SuggestAgent.keymap_actions, ResultListAgent.keymap_actions)
 #/lua
 
 

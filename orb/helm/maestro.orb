@@ -45,37 +45,6 @@ local new, Maestro, Maestro_M = cluster.genus(Actor)
 ** Keymap resolution
 
 
-*** Maestro:activeKeymap()
-
-Builds a composed keymap from the active keymap references provided by the raga.
-
-#todo Should the raga be a property on =maestro=, or should we retrieve it
-with a =yield=ed message? Sticking with the backlink for now because anything
-else is suuuuuuper ugly.
-
-#todo Cache the keymap alongside the raga so we don't have to rebuild it for
-every command.
-
-#todo We'll want some kind of user customizability at some point.
-
-#!lua
-local clone, insert = assert(table.clone), assert(table.insert)
-local assert = assert(core.fn.assertfmt)
-local _yield  = assert(core.thread.nest "actor" .yield)
-
-function Maestro.activeKeymap(maestro)
-   local keymap_list = maestro.modeS.raga.default_keymaps
-   for _, keymap in ipairs(keymap_list) do
-      keymap.bindings = maestro:dispatch { to = keymap.source,
-                                          field  = keymap.name }
-      assert(keymap.bindings, "Failed to retrieve bindings for " ..
-               keymap.source .. "." .. keymap.name)
-   end
-   return Keymap(unpack(keymap_list))
-end
-#/lua
-
-
 *** Maestro(msg), Maestro:act(msg)
 
 Actor defines a =__call= which expects an =.act= slot bearing an ordinary
@@ -83,15 +52,9 @@ method, which is called as a task.  It can also be called directly if there
 is no need to create a coroutine, as in =:delegate= below.
 
 #!lua
-local create, resume, status, yield = assert(coroutine.create),
-                                      assert(coroutine.resume),
-                                      assert(coroutine.status),
-                                      assert(coroutine.yield)
-
 function Maestro.act(maestro, msg)
    return pack(maestro:dispatch(msg))
 end
-
 #/lua
 
 
@@ -104,6 +67,8 @@ For Maestro, the current behavior is to dispatch anything sent to agents, and
 throw anything else to Modeselektor.
 
 #!lua
+local _yield  = assert(core.thread.nest "actor" .yield)
+
 function Maestro.delegate(maestro, msg)
    local to = msg.sendto or msg.to
    if to and to:find("^agents%.") then
@@ -154,11 +119,12 @@ again. Hard to say what the right thing to do here is...
 
 #!lua
 
-local concat = assert(table.concat)
+local clone, concat, insert = assert(table.clone),
+                              assert(table.concat),
+                              assert(table.insert)
 
 local function _dispatchOnly(maestro, event)
-   local keymap = maestro:activeKeymap()
-   local handlers = keymap(event)
+   local handlers = maestro.modeS.raga.keymap(event)
    local tried = {}
    for _, handler in ipairs(handlers) do
       handler = clone(handler)

@@ -47,15 +47,6 @@ function ResultsAgent.clearOnFirstKey(agent)
 end
 ```
 
-### Keymaps
-
-```lua
-ResultsAgent.keymap_reset = {
-   ["[CHARACTER]"] = "clearOnFirstKey",
-   PASTE = "clearOnFirstKey"
-}
-```
-
 
 ```lua
 return core.cluster.constructor(ResultsAgent)

@@ -116,23 +116,5 @@ end
 
 
 
-
-
-local addall = assert(table.addall)
-SearchAgent.keymap_try_activate = {
-   ["/"] = "activateOnFirstKey"
-}
-
-SearchAgent.keymap_actions = {
-   BACKSPACE = "quitIfNoSearchTerm",
-   DELETE = "quitIfNoSearchTerm"
-}
-for i = 1, 9 do
-   SearchAgent.keymap_actions["M-" .. tostring(i)] = { method = "acceptFromNumberKey", n = 1 }
-end
-addall(SearchAgent.keymap_actions, ResultListAgent.keymap_actions)
-
-
-
 return core.cluster.constructor(SearchAgent)
 

@@ -127,28 +127,6 @@ end
 
 
 
-Agent.keymap_scrolling = {
-   SCROLL_UP   = { method = "evtScrollUp",   n = 1 },
-   SCROLL_DOWN = { method = "evtScrollDown", n = 1 },
-   UP          = "scrollUp",
-   ["S-UP"]    = "scrollUp",
-   DOWN        = "scrollDown",
-   ["S-DOWN"]  = "scrollDown",
-   PAGE_UP     = "pageUp",
-   PAGE_DOWN   = "pageDown",
-   HOME        = "scrollToTop",
-   END         = "scrollToBottom"
-}
-
-
-
-
-
-
-
-
-
-
 
 local addall = assert(table.addall)
 function Agent.mergeWindowConfig(cfg_a, cfg_b)

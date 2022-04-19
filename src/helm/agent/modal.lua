@@ -172,9 +172,6 @@ end
 
 
 
-
-
-
 local function _shortcutFrom(button)
    local shortcut_decl = button.text and button.text:match('&([^&])')
    return shortcut_decl and shortcut_decl:lower()
@@ -202,18 +199,6 @@ end
 function ModalAgent.acceptDefault(agent, event)
    return _acceptButtonWhere(agent, function(button) return button.default end)
 end
-
-
-
-
-
-
-ModalAgent.keymap_actions = {
-   ESC = "cancel",
-   RETURN = "acceptDefault",
-   ["[CHARACTER]"] = { method = "letterShortcut", n = 1 }
-}
-
 
 
 

@@ -235,12 +235,12 @@ end
 
 
 
-SessionAgent.keymap_edit_title = {
-   RETURN = "acceptTitleUpdate",
-   TAB = "acceptTitleUpdate",
-   ESC = "cancelTitleEditing",
-   ["C-q"] = "acceptTitleUpdate"
-}
+function SessionAgent.promptSaveChanges(agent)
+   local sesh_title = agent.subject.session_title
+   send { to = "agents.modal", method = "show",
+      'Save changes to the session "' .. sesh_title .. '"?',
+      "yes_no_cancel" }
+end
 
 
 
@@ -302,27 +302,6 @@ end
 function SessionAgent.resultsWindow(agent)
    return agent.results_agent:window()
 end
-
-
-
-
-
-
-
-
-
-
-
-
-SessionAgent.keymap_default = {
-   UP = "selectPreviousWrap",
-   DOWN = "selectNextWrap",
-   TAB = "toggleSelectedState",
-   ["S-TAB"] = "reverseToggleSelectedState",
-   ["M-UP"] = "movePremiseUp",
-   ["M-DOWN"] = "movePremiseDown",
-   RETURN = "editSelectedTitle"
-}
 
 
 

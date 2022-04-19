@@ -49,14 +49,5 @@ end
 
 
 
-
-ResultsAgent.keymap_reset = {
-   ["[CHARACTER]"] = "clearOnFirstKey",
-   PASTE = "clearOnFirstKey"
-}
-
-
-
-
 return core.cluster.constructor(ResultsAgent)
 

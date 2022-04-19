@@ -11,17 +11,7 @@ local Search = clone(EditBase, 2)
 
 Search.name = "search"
 Search.prompt_char = "⁉️"
-```
-
-
-### Keymaps
-
-```lua
-Search.default_keymaps = {
-   { source = "agents.search", name = "keymap_selection" },
-   { source = "agents.search", name = "keymap_actions" }
-}
-splice(Search.default_keymaps, EditBase.default_keymaps)
+Search.keymap = require "helm:keymap/search"
 ```
 
 

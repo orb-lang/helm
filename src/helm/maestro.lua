@@ -52,42 +52,6 @@ local new, Maestro, Maestro_M = cluster.genus(Actor)
 
 
 
-
-
-
-
-
-
-
-local clone, insert = assert(table.clone), assert(table.insert)
-local assert = assert(core.fn.assertfmt)
-local _yield  = assert(core.thread.nest "actor" .yield)
-
-function Maestro.activeKeymap(maestro)
-   local keymap_list = maestro.modeS.raga.default_keymaps
-   for _, keymap in ipairs(keymap_list) do
-      keymap.bindings = maestro:dispatch { to = keymap.source,
-                                          field  = keymap.name }
-      assert(keymap.bindings, "Failed to retrieve bindings for " ..
-               keymap.source .. "." .. keymap.name)
-   end
-   return Keymap(unpack(keymap_list))
-end
-
-
-
-
-
-
-
-
-
-
-local create, resume, status, yield = assert(coroutine.create),
-                                      assert(coroutine.resume),
-                                      assert(coroutine.status),
-                                      assert(coroutine.yield)
-
 function Maestro.act(maestro, msg)
    return pack(maestro:dispatch(msg))
 end
@@ -103,6 +67,7 @@ end
 
 
 
+local _yield  = assert(core.thread.nest "actor" .yield)
 
 function Maestro.delegate(maestro, msg)
    local to = msg.sendto or msg.to
@@ -154,11 +119,12 @@ end
 
 
 
-local concat = assert(table.concat)
+local clone, concat, insert = assert(table.clone),
+                              assert(table.concat),
+                              assert(table.insert)
 
 local function _dispatchOnly(maestro, event)
-   local keymap = maestro:activeKeymap()
-   local handlers = keymap(event)
+   local handlers = maestro.modeS.raga.keymap(event)
    local tried = {}
    for _, handler in ipairs(handlers) do
       handler = clone(handler)

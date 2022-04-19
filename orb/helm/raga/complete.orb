@@ -11,17 +11,7 @@ local Complete = clone(EditBase, 2)
 
 Complete.name = "complete"
 Complete.prompt_char = "💬"
-#/lua
-
-
-*** Keymaps
-
-#!lua
-Complete.default_keymaps = {
-   { source = "agents.suggest", name = "keymap_selection" },
-   { source = "agents.suggest", name = "keymap_actions"}
-}
-splice(Complete.default_keymaps, EditBase.default_keymaps)
+Complete.keymap = require "helm:keymap/complete"
 #/lua
 
 

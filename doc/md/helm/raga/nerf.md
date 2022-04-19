@@ -37,6 +37,7 @@ local EditBase = require "helm:helm/raga/edit"
 local Nerf = clone(EditBase, 2)
 Nerf.name = "nerf"
 Nerf.prompt_char = "👉"
+Nerf.keymap = require "helm:keymap/nerf"
 ```
 
 
@@ -76,15 +77,6 @@ function Nerf.conditionalEval()
       return false -- Fall through to EditAgent nl binding
    end
 end
-
-Nerf.keymap_evaluation = {
-   RETURN = "conditionalEval",
-   ["C-RETURN"] = "eval",
-   ["S-RETURN"] = { to = "agents.edit", method = "nl" },
-   -- Add aliases for terminals not in CSI u mode
-   ["C-\\"] = "eval",
-   ["M-RETURN"] = { to = "agents.edit", method = "nl" }
-}
 ```
 
 
@@ -115,11 +107,6 @@ function Nerf.historyForward()
    send { to = "agents.edit", method = "update", new_line }
    send { to = "agents.results", method = "update", next_result }
 end
-
-Nerf.keymap_history_navigation = {
-   UP = "historyBack",
-   DOWN = "historyForward"
-}
 ```
 
 
@@ -135,71 +122,6 @@ function Nerf.evalFromCursor()
       Nerf.eval()
    end
 end
-```
-
-
-### Help screen
-
-
-
-```lua
-function Nerf.openHelpOnFirstKey()
-   if send { to = "agents.edit", method = "isEmpty" } then
-      send { method = "openHelp" }
-      return true
-   else
-      return false
-   end
-end
-
-Nerf.keymap_extra_commands = {
-   ["C-l"] = { to = "agents.edit", method = "clear" },
-   ["?"] = "openHelpOnFirstKey",
-   ["M-e"] = "evalFromCursor"
-}
-addall(Nerf.keymap_extra_commands, EditBase.keymap_extra_commands)
-```
-
-
-### Keymaps
-
-First a section of commands that need to react to certain keypresses under
-certain circumstances, but often allow processing to continue\.
-
-```lua
-Nerf.default_keymaps = {
-   { source = "agents.search", name = "keymap_try_activate" },
-   { source = "agents.suggest", name = "keymap_try_activate" },
-   { source = "agents.results", name = "keymap_reset" },
-```
-
-Then some additional commands\-\-evaluation mainly, and we include
-Readline\-compatible navigation\.
-
-```lua
-   { source = "modeS.raga", name = "keymap_evaluation" },
-   { source = "agents.edit", name = "keymap_readline_nav" }
-}
-```
-
-Then the inherited basic editing commands etc\.
-
-```lua
-splice(Nerf.default_keymaps, EditBase.default_keymaps)
-```
-
-History navigation is a fallback from cursor movement\.
-
-```lua
-insert(Nerf.default_keymaps,
-       { source = "modeS.raga", name = "keymap_history_navigation" })
-```
-
-And results\-area scrolling binds several shortcuts that are already taken, so we need to make sure those others get there first\.
-
-```lua
-insert(Nerf.default_keymaps,
-      { source = "agents.results", name = "keymap_scrolling" })
 ```
 
 

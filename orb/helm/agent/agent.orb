@@ -119,28 +119,6 @@ end
 #/lua
 
 
-*** Keymaps
-
-Provide basic scrolling commands at this level, if the raga chooses to include
-this keymap. Note that higher-priority keymaps may override some of this, e.g.
-up/down move the cursor when editing text even though the ResultsAgent would
-happily process them.
-
-#!lua
-Agent.keymap_scrolling = {
-   SCROLL_UP   = { method = "evtScrollUp",   n = 1 },
-   SCROLL_DOWN = { method = "evtScrollDown", n = 1 },
-   UP          = "scrollUp",
-   ["S-UP"]    = "scrollUp",
-   DOWN        = "scrollDown",
-   ["S-DOWN"]  = "scrollDown",
-   PAGE_UP     = "pageUp",
-   PAGE_DOWN   = "pageDown",
-   HOME        = "scrollToTop",
-   END         = "scrollToBottom"
-}
-#/lua
-
 *** Agent:window(), :windowConfiguration()
 
 The =Window=s of =Agent=s need to implement some common behavior in order to

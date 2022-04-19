@@ -13,31 +13,7 @@ local Sessionbuf = require "helm:buf/sessionbuf"
 local Review = clone(RagaBase, 2)
 Review.name = "review"
 Review.prompt_char = "💬"
-#/lua
-
-
-*** Quit handler
-
-We intercept ^Q to prompt the user whether to save the session before quitting.
-
-#!lua
-function Review.quitHelm()
-   local sesh_title = send { to = "hist.session", property = "session_title" }
-   send { to = "agents.modal", method = "show",
-      'Save changes to the session "' .. sesh_title .. '"?',
-      "yes_no_cancel" }
-end
-#/lua
-
-
-*** Keymaps
-
-#!lua
-Review.default_keymaps = {
-   { source = "agents.session", name = "keymap_default"},
-   { source = "agents.session.results_agent", name = "keymap_scrolling"}
-}
-splice(Review.default_keymaps, RagaBase.default_keymaps)
+Review.keymap = require "helm:keymap/review"
 #/lua
 
 

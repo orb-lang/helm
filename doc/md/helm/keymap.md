@@ -8,7 +8,7 @@ A keymap provides the binding from input events to the actions they trigger\.
 Keymaps exist in three forms:
 
 
-### Keymap declaration \(or binding declaration\)
+### Binding declaration
 
 For the sake of convenience, and to avoid repeat\-declaring the source of a
 keymap, we declare a keymap as a plain\-old\-table containing only its bindings\.
@@ -41,7 +41,7 @@ containing a binding declaration\.
 ```lua
 Nerf.default_keymaps = {
    ...
-   { source = "agents.results", name = "keymap_scrolling" },
+   { target = "agents.results", name = "keymap_scrolling" },
    ...
 }
 ```
@@ -159,7 +159,7 @@ cluster.construct(new, function(_, I, ...)
             -- #todo should convert to Message, mold() would do this for us
             action.n = action.n or #action
          end
-         action.to = action.to or decl.source
+         action.to = action.to or decl.target
          -- #todo but the action ends up being mutated as part of dispatching it,
          -- so converting to Message makes it blow up.
          -- action = Message(action)

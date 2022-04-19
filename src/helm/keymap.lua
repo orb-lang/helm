@@ -159,7 +159,7 @@ cluster.construct(new, function(_, I, ...)
             -- #todo should convert to Message, mold() would do this for us
             action.n = action.n or #action
          end
-         action.to = action.to or decl.source
+         action.to = action.to or decl.target
          -- #todo but the action ends up being mutated as part of dispatching it,
          -- so converting to Message makes it blow up.
          -- action = Message(action)

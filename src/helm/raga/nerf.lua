@@ -36,6 +36,7 @@ local EditBase = require "helm:helm/raga/edit"
 local Nerf = clone(EditBase, 2)
 Nerf.name = "nerf"
 Nerf.prompt_char = "👉"
+Nerf.keymap = require "helm:keymap/nerf"
 
 
 
@@ -76,15 +77,6 @@ function Nerf.conditionalEval()
    end
 end
 
-Nerf.keymap_evaluation = {
-   RETURN = "conditionalEval",
-   ["C-RETURN"] = "eval",
-   ["S-RETURN"] = { to = "agents.edit", method = "nl" },
-   -- Add aliases for terminals not in CSI u mode
-   ["C-\\"] = "eval",
-   ["M-RETURN"] = { to = "agents.edit", method = "nl" }
-}
-
 
 
 
@@ -115,11 +107,6 @@ function Nerf.historyForward()
    send { to = "agents.results", method = "update", next_result }
 end
 
-Nerf.keymap_history_navigation = {
-   UP = "historyBack",
-   DOWN = "historyForward"
-}
-
 
 
 
@@ -134,71 +121,6 @@ function Nerf.evalFromCursor()
       Nerf.eval()
    end
 end
-
-
-
-
-
-
-
-
-function Nerf.openHelpOnFirstKey()
-   if send { to = "agents.edit", method = "isEmpty" } then
-      send { method = "openHelp" }
-      return true
-   else
-      return false
-   end
-end
-
-Nerf.keymap_extra_commands = {
-   ["C-l"] = { to = "agents.edit", method = "clear" },
-   ["?"] = "openHelpOnFirstKey",
-   ["M-e"] = "evalFromCursor"
-}
-addall(Nerf.keymap_extra_commands, EditBase.keymap_extra_commands)
-
-
-
-
-
-
-
-
-
-Nerf.default_keymaps = {
-   { source = "agents.search", name = "keymap_try_activate" },
-   { source = "agents.suggest", name = "keymap_try_activate" },
-   { source = "agents.results", name = "keymap_reset" },
-
-
-
-
-
-
-   { source = "modeS.raga", name = "keymap_evaluation" },
-   { source = "agents.edit", name = "keymap_readline_nav" }
-}
-
-
-
-
-
-splice(Nerf.default_keymaps, EditBase.default_keymaps)
-
-
-
-
-
-insert(Nerf.default_keymaps,
-       { source = "modeS.raga", name = "keymap_history_navigation" })
-
-
-
-
-
-insert(Nerf.default_keymaps,
-      { source = "agents.results", name = "keymap_scrolling" })
 
 
 

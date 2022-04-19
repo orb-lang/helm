@@ -232,15 +232,15 @@ end
 ```
 
 
-##### keymap\_edit\_title
+### Prompt to save changes
 
 ```lua
-SessionAgent.keymap_edit_title = {
-   RETURN = "acceptTitleUpdate",
-   TAB = "acceptTitleUpdate",
-   ESC = "cancelTitleEditing",
-   ["C-q"] = "acceptTitleUpdate"
-}
+function SessionAgent.promptSaveChanges(agent)
+   local sesh_title = agent.subject.session_title
+   send { to = "agents.modal", method = "show",
+      'Save changes to the session "' .. sesh_title .. '"?',
+      "yes_no_cancel" }
+end
 ```
 
 
@@ -302,27 +302,6 @@ updated when the selected premise changes\.
 function SessionAgent.resultsWindow(agent)
    return agent.results_agent:window()
 end
-```
-
-
-### Keymaps and event handlers
-
-Results scrolling can actually be implemented by the Raga including that
-Agent's keymap directly\. For now, this includes mouse\-wheel scrolling\. Ideally
-it would be nice to choose between the results area and the entire session
-display based on cursor position, but that'll have to wait for more general
-focus\-tracking\.
-
-```lua
-SessionAgent.keymap_default = {
-   UP = "selectPreviousWrap",
-   DOWN = "selectNextWrap",
-   TAB = "toggleSelectedState",
-   ["S-TAB"] = "reverseToggleSelectedState",
-   ["M-UP"] = "movePremiseUp",
-   ["M-DOWN"] = "movePremiseDown",
-   RETURN = "editSelectedTitle"
-}
 ```
 
 
