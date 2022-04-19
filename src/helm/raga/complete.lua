@@ -24,14 +24,14 @@ Complete.keymap = require "helm:keymap/complete"
 
 
 
-function Complete.onTxtbufChanged(modeS)
+function Complete.onTxtbufChanged()
    send { to = 'agents.suggest', method = 'update' }
    if send { to = 'agents.suggest', field = 'last_collection' } then
-      modeS:agent'suggest':selectFirst()
+      send { to = 'agents.suggest', method = "selectFirst" }
    else
-      modeS:shiftMode("default")
+      send { to = "modeS", method = "shiftMode", "default" }
    end
-   EditBase.onTxtbufChanged(modeS)
+   EditBase.onTxtbufChanged()
 end
 
 
@@ -43,9 +43,9 @@ end
 
 
 
-function Complete.onCursorChanged(modeS)
-   modeS:shiftMode("default")
-   EditBase.onCursorChanged(modeS)
+function Complete.onCursorChanged()
+   send { to = "modeS", method = "shiftMode", "default" }
+   EditBase.onCursorChanged()
 end
 
 

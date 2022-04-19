@@ -15,13 +15,14 @@ Search.keymap = require "helm:keymap/search"
 ```
 
 
-### Search\.onTxtbufChanged\(modeS\)
+### Search\.onTxtbufChanged\(\)
 
 We need to update the search result whenever the contents of the Txtbuf change\.
 
 ```lua
-function Search.onTxtbufChanged(modeS)
-   modeS:agent'search':update(modeS)
+function Search.onTxtbufChanged()
+   send { to = "agents.search", method = "update" }
+   EditBase.onTxtbufChanged()
 end
 ```
 

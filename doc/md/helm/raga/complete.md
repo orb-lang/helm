@@ -15,7 +15,7 @@ Complete.keymap = require "helm:keymap/complete"
 ```
 
 
-### Complete\.onTxtbufChanged\(modeS\)
+### Complete\.onTxtbufChanged\(\)
 
 Update the suggestion list when the user types something\. Note that this won't
 be hit after a paste, or if the character inserted caused an accept, because
@@ -24,28 +24,28 @@ we will have already shifted ragas\.
 \#todo
 
 ```lua
-function Complete.onTxtbufChanged(modeS)
+function Complete.onTxtbufChanged()
    send { to = 'agents.suggest', method = 'update' }
    if send { to = 'agents.suggest', field = 'last_collection' } then
-      modeS:agent'suggest':selectFirst()
+      send { to = 'agents.suggest', method = "selectFirst" }
    else
-      modeS:shiftMode("default")
+      send { to = "modeS", method = "shiftMode", "default" }
    end
-   EditBase.onTxtbufChanged(modeS)
+   EditBase.onTxtbufChanged()
 end
 ```
 
 
-### Complete\.onCursorChanged\(modeS\)
+### Complete\.onCursorChanged\(\)
 
 Any cursor movement drops us out of Complete mode\. Note that
 onCursorChanged and onTxtbufChanged are mutually exclusive\-\-this does not
 fire on a simple insert\.
 
 ```lua
-function Complete.onCursorChanged(modeS)
-   modeS:shiftMode("default")
-   EditBase.onCursorChanged(modeS)
+function Complete.onCursorChanged()
+   send { to = "modeS", method = "shiftMode", "default" }
+   EditBase.onCursorChanged()
 end
 ```
 

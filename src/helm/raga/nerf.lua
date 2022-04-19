@@ -46,14 +46,14 @@ Nerf.keymap = require "helm:keymap/nerf"
 
 
 
-function Nerf.onCursorChanged(modeS)
-   modeS:agent'suggest':update()
-   EditBase.onCursorChanged(modeS)
+function Nerf.onCursorChanged()
+   send { to = "agents.suggest", method = "update" }
+   EditBase.onCursorChanged()
 end
 
-function Nerf.onTxtbufChanged(modeS)
-   modeS:agent'suggest':update()
-   EditBase.onTxtbufChanged(modeS)
+function Nerf.onTxtbufChanged()
+   send { to = "agents.suggest", method = "update" }
+   EditBase.onTxtbufChanged()
 end
 
 

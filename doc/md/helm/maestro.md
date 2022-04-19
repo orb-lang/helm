@@ -150,11 +150,11 @@ end
 function Maestro.eventDispatcher(maestro, event)
    local command = _dispatchOnly(maestro, event)
    if maestro.agents.edit.contents_changed then
-      maestro.modeS.raga.onTxtbufChanged(modeS)
+      maestro.modeS.raga.onTxtbufChanged()
     -- Treat contents_changed as implying cursor_changed
     -- only ever fire one of the two events
    elseif maestro.agents.edit.cursor_changed then
-      maestro.modeS.raga.onCursorChanged(modeS)
+      maestro.modeS.raga.onCursorChanged()
    end
    maestro.agents.edit.contents_changed = false
    maestro.agents.edit.cursor_changed = false

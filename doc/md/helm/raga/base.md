@@ -43,25 +43,25 @@ end
 ## Events
 
 
-### <Raga>\.onTxtbufChanged\(modeS\)
+### <Raga>\.onTxtbufChanged\(\)
 
 Called whenever the txtbuf's contents have changed while processing a seq\.
 
 ```lua
-function RagaBase.onTxtbufChanged(modeS)
+function RagaBase.onTxtbufChanged()
    return
 end
 ```
 
 
-### <Raga>\.onCursorChanged\(modeS\)
+### <Raga>\.onCursorChanged\(\)
 
 Called whenever the cursor has moved while processing a seq\.
 Both onTxtbufChanged and onCursorChanged will be called in the
 common case of a simple insertion\.
 
 ```lua
-function RagaBase.onCursorChanged(modeS)
+function RagaBase.onCursorChanged()
    return
 end
 ```

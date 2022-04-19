@@ -20,8 +20,9 @@ Search.keymap = require "helm:keymap/search"
 
 
 
-function Search.onTxtbufChanged(modeS)
-   modeS:agent'search':update(modeS)
+function Search.onTxtbufChanged()
+   send { to = "agents.search", method = "update" }
+   EditBase.onTxtbufChanged()
 end
 
 
