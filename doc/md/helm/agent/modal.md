@@ -169,9 +169,6 @@ end
 ```
 
 
-### Keymaps and event handlers
-
-
 ### Keyboard input
 
 ```lua
@@ -203,18 +200,6 @@ function ModalAgent.acceptDefault(agent, event)
    return _acceptButtonWhere(agent, function(button) return button.default end)
 end
 ```
-
-
-#### Keymap
-
-```lua
-ModalAgent.keymap_actions = {
-   ESC = "cancel",
-   RETURN = "acceptDefault",
-   ["[CHARACTER]"] = { method = "letterShortcut", n = 1 }
-}
-```
-
 
 ```lua
 return core.cluster.constructor(ModalAgent)

@@ -11,17 +11,7 @@ local Complete = clone(EditBase, 2)
 
 Complete.name = "complete"
 Complete.prompt_char = "💬"
-
-
-
-
-
-
-Complete.default_keymaps = {
-   { source = "agents.suggest", name = "keymap_selection" },
-   { source = "agents.suggest", name = "keymap_actions"}
-}
-splice(Complete.default_keymaps, EditBase.default_keymaps)
+Complete.keymap = require "helm:keymap/complete"
 
 
 
@@ -32,14 +22,16 @@ splice(Complete.default_keymaps, EditBase.default_keymaps)
 
 
 
-function Complete.onTxtbufChanged(modeS)
-   modeS:agent'suggest':update()
-   if modeS:agent'suggest'.last_collection then
-      modeS:agent'suggest':selectFirst()
+
+
+function Complete.onTxtbufChanged()
+   send { to = 'agents.suggest', method = 'update' }
+   if send { to = 'agents.suggest', field = 'last_collection' } then
+      send { to = 'agents.suggest', method = "selectFirst" }
    else
-      modeS:shiftMode("default")
+      send { to = "modeS", method = "shiftMode", "default" }
    end
-   EditBase.onTxtbufChanged(modeS)
+   EditBase.onTxtbufChanged()
 end
 
 
@@ -51,9 +43,9 @@ end
 
 
 
-function Complete.onCursorChanged(modeS)
-   modeS:shiftMode("default")
-   EditBase.onCursorChanged(modeS)
+function Complete.onCursorChanged()
+   send { to = "modeS", method = "shiftMode", "default" }
+   EditBase.onCursorChanged()
 end
 
 
@@ -67,9 +59,10 @@ end
 local Point = require "anterm:point"
 function Complete.getCursorPosition(modeS)
    local point = EditBase.getCursorPosition(modeS)
-   local suggestion = modeS:agent'suggest'.last_collection:selectedItem()
+   local suggestion = send { to = 'agents.suggest', method = 'selectedItem' }
+   local tokens = send { to = 'agents.edit', method = 'tokens' }
    if suggestion then
-      for _, tok in ipairs(modeS:agent'edit':tokens()) do
+      for _, tok in ipairs(tokens) do
          if tok.cursor_offset then
             point = point + Point(0, #suggestion - tok.cursor_offset)
             break
@@ -87,7 +80,7 @@ end
 
 
 function Complete.onShift(modeS)
-   modeS:agent'suggest':selectFirst()
+   send { to = 'agents.suggest', method = 'selectFirst' }
 end
 
 
@@ -98,7 +91,7 @@ end
 
 
 function Complete.onUnshift(modeS)
-   modeS:agent'suggest':selectNone()
+   send { to = 'agents.suggest', method = 'selectNone' }
 end
 
 

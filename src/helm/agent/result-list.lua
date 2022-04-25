@@ -87,33 +87,5 @@ end
 
 
 
-
-
-
-
-
-
-
-
-
-
-ResultListAgent.keymap_selection = {
-   TAB = "selectNextWrap",
-   DOWN = "selectNextWrap",
-   ["S-DOWN"] = "selectNextWrap",
-   ["S-TAB"] = "selectPreviousWrap",
-   UP = "selectPreviousWrap",
-   ["S-UP"] = "selectPreviousWrap"
-}
-
--- These are both abstract methods
-ResultListAgent.keymap_actions = {
-   RETURN = "acceptSelected",
-   ESC = "userCancel"
-}
-
-
-
-
 return core.cluster.constructor(ResultListAgent)
 

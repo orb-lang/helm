@@ -32,7 +32,7 @@ local SuggestAgent = meta(getmetatable(ResultListAgent))
 function SuggestAgent.cursorContext(suggest)
    local lex_tokens = {}
    -- Ignore whitespace and comments
-   local tokens_from_edit = suggest :send { sendto = "agents.edit",
+   local tokens_from_edit = suggest :send { to = "agents.edit",
                                             method = "tokens" }
    for _, token in ipairs(tokens_from_edit) do
       if token.color ~= "no_color" and token.color ~= "comment" then
@@ -202,7 +202,7 @@ function SuggestAgent.acceptSelected(agent)
    agent:quit()
    if suggestion then
       agent :send { suggestion,
-                    sendto = "agents.edit",
+                    to = "agents.edit",
                     method = "replaceToken" }
       return true
    else
@@ -242,11 +242,6 @@ end
 
 
 
-SuggestAgent.keymap_try_activate = {
-   TAB = "activateCompletion",
-   ["S-TAB"] = "activateCompletion",
-}
-
 function SuggestAgent.acceptAndFallthrough(agent)
    agent:acceptSelected()
    return false
@@ -262,14 +257,6 @@ function SuggestAgent.acceptOnNonWordChar(agent, event)
    end
    return false
 end
-
-local addall = assert(table.addall)
-SuggestAgent.keymap_actions = {
-   LEFT            = "acceptAndFallthrough",
-   PASTE           = "quitAndFallthrough",
-   ["[CHARACTER]"] = { method = "acceptOnNonWordChar", n = 1 }
-}
-addall(SuggestAgent.keymap_actions, ResultListAgent.keymap_actions)
 
 
 

@@ -11,27 +11,18 @@ local Search = clone(EditBase, 2)
 
 Search.name = "search"
 Search.prompt_char = "⁉️"
+Search.keymap = require "helm:keymap/search"
 ```
 
 
-### Keymaps
-
-```lua
-Search.default_keymaps = {
-   { source = "agents.search", name = "keymap_selection" },
-   { source = "agents.search", name = "keymap_actions" }
-}
-splice(Search.default_keymaps, EditBase.default_keymaps)
-```
-
-
-### Search\.onTxtbufChanged\(modeS\)
+### Search\.onTxtbufChanged\(\)
 
 We need to update the search result whenever the contents of the Txtbuf change\.
 
 ```lua
-function Search.onTxtbufChanged(modeS)
-   modeS:agent'search':update(modeS)
+function Search.onTxtbufChanged()
+   send { to = "agents.search", method = "update" }
+   EditBase.onTxtbufChanged()
 end
 ```
 

@@ -34,58 +34,6 @@ local RagaBase = setmetatable({}, RagaBase_meta)
 
 
 
-RagaBase.default_keymaps = {
-   { source = "modeS.raga", name = "keymap_extra_commands" }
-}
-
-
-
-
-
-
-
-
-
-function RagaBase.quitHelm()
-   -- #todo it's obviously terrible to have code specific to a particular
-   -- piece of functionality in an abstract class like this.
-   -- To do this right, we probably need a proper raga stack. Then -n could
-   -- push the Review raga onto the bottom of the stack, then Nerf. Quit
-   -- at this point would be the result of the raga stack being empty,
-   -- rather than an explicitly-invoked command, and Ctrl-Q would just pop
-   -- the current raga. Though, a Ctrl-Q from e.g. Search would still want
-   -- to actually quit, so it's not quite that simple...
-   -- Anyway. Also, don't bother saving the session if it has no premises...
-   if _Bridge.args.new_session then
-      local session = send { to = "hist", property = "session" }
-      if #session > 0 then
-         -- #todo Add the ability to change accepted status of
-         -- the whole session to the review interface
-         session.accepted = true
-         -- Also, it's horribly hacky to change the "default" raga, but it's
-         -- the only way to make Modal work properly. A proper raga stack
-         -- would *definitely* fix this
-         send { method = "setDefaultMode", n = 1, "review" }
-         send { method = "shiftMode", n = 1, "review" }
-         return
-      end
-   end
-   send { method = "quit" }
-end
-
-RagaBase.keymap_extra_commands = {
-   ["C-q"] = "quitHelm"
-}
-
-
-
-
-
-
-
-
-
-
 function RagaBase.getCursorPosition(modeS)
    return nil
 end
@@ -100,7 +48,7 @@ end
 
 
 
-function RagaBase.onTxtbufChanged(modeS)
+function RagaBase.onTxtbufChanged()
    return
 end
 
@@ -113,7 +61,7 @@ end
 
 
 
-function RagaBase.onCursorChanged(modeS)
+function RagaBase.onCursorChanged()
    return
 end
 

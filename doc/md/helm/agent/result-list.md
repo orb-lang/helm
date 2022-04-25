@@ -86,35 +86,6 @@ end
 ```
 
 
-### Keymaps
-
-
-- [ ]  \#Todo
-
-  - [ ]  Add NAV\.SHIFT\_ALT\_\(UP|DOWN\), to move a page at a time\.
-      Hook them to PgUp and PgDown while we're at it\.
-
-  - [ ]  Add NAV\.HOME and NAV\.END to snap to the
-      top and bottom\.
-
-```lua
-ResultListAgent.keymap_selection = {
-   TAB = "selectNextWrap",
-   DOWN = "selectNextWrap",
-   ["S-DOWN"] = "selectNextWrap",
-   ["S-TAB"] = "selectPreviousWrap",
-   UP = "selectPreviousWrap",
-   ["S-UP"] = "selectPreviousWrap"
-}
-
--- These are both abstract methods
-ResultListAgent.keymap_actions = {
-   RETURN = "acceptSelected",
-   ESC = "userCancel"
-}
-```
-
-
 ```lua
 return core.cluster.constructor(ResultListAgent)
 ```

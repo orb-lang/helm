@@ -11,17 +11,7 @@ local Search = clone(EditBase, 2)
 
 Search.name = "search"
 Search.prompt_char = "⁉️"
-
-
-
-
-
-
-Search.default_keymaps = {
-   { source = "agents.search", name = "keymap_selection" },
-   { source = "agents.search", name = "keymap_actions" }
-}
-splice(Search.default_keymaps, EditBase.default_keymaps)
+Search.keymap = require "helm:keymap/search"
 
 
 
@@ -30,8 +20,9 @@ splice(Search.default_keymaps, EditBase.default_keymaps)
 
 
 
-function Search.onTxtbufChanged(modeS)
-   modeS:agent'search':update(modeS)
+function Search.onTxtbufChanged()
+   send { to = "agents.search", method = "update" }
+   EditBase.onTxtbufChanged()
 end
 
 
