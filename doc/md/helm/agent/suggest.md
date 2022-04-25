@@ -98,20 +98,9 @@ local function _suggest_sort(a, b)
    end
 end
 
-<<<<<<< HEAD
-local core = require "qor:core"
-local isidentifier = import("core:string", "isidentifier")
-local hasmetamethod = import("core:meta", "hasmetamethod")
-local safeget = core.table.safeget
-||||||| 642aba7
-local isidentifier = import("core:string", "isidentifier")
-local hasmetamethod = import("core:meta", "hasmetamethod")
-local safeget = import("core:table", "safeget")
-=======
+local safeget = assert(table.safeget)
 local isidentifier = assert(string.isidentifier)
 local hasmetamethod = assert(core.meta.hasmetamethod)
-local safeget = assert(table.safeget)
->>>>>>> 716583b30a0cf661c84f44991e65d233b174f312
 local fuzz_patt = require "helm:fuzz_patt"
 local Set = core.set
 
