@@ -9,6 +9,9 @@
 local EditAgent = require "helm:agent/edit"
 local ResultsAgent = require "helm:agent/results"
 
+local math = core.math
+local table = core.table
+
 
 
 
@@ -26,7 +29,7 @@ local SessionAgent = meta(getmetatable(Agent))
 local function _update_edit_agent(agent, index)
    local edit_agent = agent.edit_agents[index]
    if edit_agent then
-      edit_agent:update(agent.session[index].line)
+      edit_agent:update(agent.subject[index].line)
    end
 end
 
@@ -48,7 +51,7 @@ end
 
 
 function SessionAgent.update(agent, sesh)
-   agent.session = sesh
+   agent.subject = sesh
    agent.selected_index = #sesh == 0 and 0 or 1
    _update_results_agent(agent)
    -- Update any EditAgents we have without creating any more
@@ -68,18 +71,18 @@ end
 
 
 
-local clamp = assert(require "core:math" . clamp)
+local clamp = assert(math.clamp)
 function SessionAgent.selectIndex(agent, index)
-   index = #agent.session == 0
+   index = #agent.subject == 0
       and 0
-      or clamp(index, 1, #agent.session)
+      or clamp(index, 1, #agent.subject)
    if index ~= agent.selected_index then
       agent.selected_index = index
       _update_results_agent(agent)
       agent:contentsChanged()
       agent:bufferCommand("ensureSelectedVisible")
       local premise = agent:selectedPremise()
-      agent :send { sendto = "agents.edit",
+      agent :send { to = "agents.edit",
                     method = "update",
                     premise and premise.title }
    end
@@ -94,7 +97,7 @@ end
 
 
 function SessionAgent.selectNextWrap(agent)
-   local new_idx = agent.selected_index < #agent.session
+   local new_idx = agent.selected_index < #agent.subject
       and agent.selected_index + 1
       or 1
    return agent:selectIndex(new_idx)
@@ -102,7 +105,7 @@ end
 function SessionAgent.selectPreviousWrap(agent)
    local new_idx = agent.selected_index > 1
       and agent.selected_index - 1
-      or #agent.session
+      or #agent.subject
    return agent:selectIndex(new_idx)
 end
 
@@ -112,7 +115,7 @@ end
 
 
 function SessionAgent.selectedPremise(agent)
-   return agent.session[agent.selected_index]
+   return agent.subject[agent.selected_index]
 end
 
 
@@ -140,7 +143,7 @@ function SessionAgent.toggleSelectedState(agent)
    return true
 end
 
-local inverse = assert(require "core:table" . inverse)
+local inverse = assert(table.inverse)
 local status_reverse_map = inverse(status_cycle_map)
 
 function SessionAgent.reverseToggleSelectedState(agent)
@@ -162,14 +165,14 @@ end
 
 
 local function _swap_premises(agent, index_a, index_b)
-   local premise_a = agent.session[index_a]
-   local premise_b = agent.session[index_b]
+   local premise_a = agent.subject[index_a]
+   local premise_b = agent.subject[index_b]
 
-   agent.session[index_a] = premise_b
+   agent.subject[index_a] = premise_b
    premise_b.ordinal = index_a
    _update_edit_agent(agent, index_a)
 
-   agent.session[index_b] = premise_a
+   agent.subject[index_b] = premise_a
    premise_a.ordinal = index_b
    _update_edit_agent(agent, index_b)
 
@@ -188,7 +191,7 @@ function SessionAgent.movePremiseUp(agent)
 end
 
 function SessionAgent.movePremiseDown(agent)
-   if agent.selected_index == #agent.session then
+   if agent.selected_index == #agent.subject then
       return false
    end
    _swap_premises(agent, agent.selected_index, agent.selected_index + 1)
@@ -221,7 +224,7 @@ end
 
 
 function SessionAgent.acceptTitleUpdate(agent)
-   local new_title = agent :send { sendto = "agents.edit", method = "contents" }
+   local new_title = agent :send { to = "agents.edit", method = "contents" }
    agent:selectedPremise().title = new_title
    agent:selectNextWrap()
    agent:cancelTitleEditing()
@@ -232,12 +235,12 @@ end
 
 
 
-SessionAgent.keymap_edit_title = {
-   RETURN = "acceptTitleUpdate",
-   TAB = "acceptTitleUpdate",
-   ESC = "cancelTitleEditing",
-   ["C-q"] = "acceptTitleUpdate"
-}
+function SessionAgent.promptSaveChanges(agent)
+   local sesh_title = agent.subject.session_title
+   send { to = "agents.modal", method = "show",
+      'Save changes to the session "' .. sesh_title .. '"?',
+      "yes_no_cancel" }
+end
 
 
 
@@ -248,7 +251,7 @@ SessionAgent.keymap_edit_title = {
 
 
 function SessionAgent.bufferValue(agent)
-   return agent.session
+   return agent.subject
 end
 
 
@@ -275,10 +278,10 @@ end
 
 
 
-local inbounds = assert(require "core:math" . inbounds)
+local inbounds = assert(math.inbounds)
 local lua_thor = assert(require "helm:lex" . lua_thor)
 function SessionAgent.editWindow(agent, index)
-   assert(inbounds(index, 1, #agent.session))
+   assert(inbounds(index, 1, #agent.subject))
    if not agent.edit_agents[index] then
       agent.edit_agents[index] = EditAgent()
       agent.edit_agents[index].lex = lua_thor
@@ -305,27 +308,6 @@ end
 
 
 
-
-
-
-
-
-
-SessionAgent.keymap_default = {
-   UP = "selectPreviousWrap",
-   DOWN = "selectNextWrap",
-   TAB = "toggleSelectedState",
-   ["S-TAB"] = "reverseToggleSelectedState",
-   ["M-UP"] = "movePremiseUp",
-   ["M-DOWN"] = "movePremiseDown",
-   RETURN = "editSelectedTitle"
-}
-
-
-
-
-
-
 function SessionAgent._init(agent)
    Agent._init(agent)
    agent.selected_index = 0
@@ -336,6 +318,5 @@ end
 
 
 
-local constructor = assert(require "core:cluster" . constructor)
-return constructor(SessionAgent)
+return core.cluster.constructor(SessionAgent)
 

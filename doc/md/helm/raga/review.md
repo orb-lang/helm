@@ -3,8 +3,8 @@
 Raga for reviewing a previously\-saved session\.
 
 ```lua
-local core_table = require "core:table"
-local clone, splice = assert(core_table.clone), assert(core_table.splice)
+local table = core.table
+local clone, splice = assert(table.clone), assert(table.splice)
 local RagaBase = require "helm:raga/base"
 local Sessionbuf = require "helm:buf/sessionbuf"
 ```
@@ -13,31 +13,7 @@ local Sessionbuf = require "helm:buf/sessionbuf"
 local Review = clone(RagaBase, 2)
 Review.name = "review"
 Review.prompt_char = "💬"
-```
-
-
-### Quit handler
-
-We intercept ^Q to prompt the user whether to save the session before quitting\.
-
-```lua
-function Review.quitHelm()
-   local sesh_title = send { sendto = "hist.session", property = "session_title" }
-   send { sendto = "agents.modal", method = "show",
-      'Save changes to the session "' .. sesh_title .. '"?',
-      "yes_no_cancel" }
-end
-```
-
-
-### Keymaps
-
-```lua
-Review.default_keymaps = {
-   { source = "agents.session", name = "keymap_default"},
-   { source = "agents.session.results_agent", name = "keymap_scrolling"}
-}
-splice(Review.default_keymaps, RagaBase.default_keymaps)
+Review.keymap = require "helm:keymap/review"
 ```
 
 
@@ -62,7 +38,7 @@ function Review.onShift(modeS)
 
    modeS:setStatusLine("review", modeS.hist.session.session_title)
 
-   local modal_answer = send { sendto = "agents.modal", method = "answer" }
+   local modal_answer = send { to = "agents.modal", method = "answer" }
    if modal_answer then
       if modal_answer == "yes" then
          modeS.hist.session:save()

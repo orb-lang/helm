@@ -172,9 +172,6 @@ end
 
 
 
-
-
-
 local function _shortcutFrom(button)
    local shortcut_decl = button.text and button.text:match('&([^&])')
    return shortcut_decl and shortcut_decl:lower()
@@ -205,18 +202,5 @@ end
 
 
 
-
-
-
-ModalAgent.keymap_actions = {
-   ESC = "cancel",
-   RETURN = "acceptDefault",
-   ["[CHARACTER]"] = { method = "letterShortcut", n = 1 }
-}
-
-
-
-
-local constructor = assert(require "core:cluster" . constructor)
-return constructor(ModalAgent)
+return core.cluster.constructor(ModalAgent)
 

@@ -3,9 +3,9 @@
 
 
 
-local core_table = require "core:table"
-local clone, splice = assert(core_table.clone), assert(core_table.splice)
-local RagaBase = require "helm:helm/raga/base"
+local table = core.table
+local clone = assert(table.clone)
+local RagaBase = require "helm:raga/base"
 
 
 
@@ -13,17 +13,7 @@ local Page = clone(RagaBase, 2)
 
 Page.name = "page"
 Page.prompt_char = "❓"
-
-
-
-
-
-
-Page.default_keymaps = {
-   { source = "agents.pager", name = "keymap_actions" },
-   { source = "agents.pager", name = "keymap_scrolling" }
-}
-splice(Page.default_keymaps, RagaBase.default_keymaps)
+Page.keymap = require "helm:keymap/page"
 
 
 

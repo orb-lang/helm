@@ -58,9 +58,11 @@ local function _helm(_ENV)
 
 setfenv(0, __G)
 
-import = assert(require "core/module" . import)
 meta = assert(require "core:cluster" . Meta)
-core = require "core:core"
+core = require "qor:core"
+-- Keep this local, other modules will do the same as-needed
+-- We need it below for `compact`
+local table = core.table
 kit = require "valiant:replkit"
 jit.vmdef = require "helm:helm/vmdef"
 jit.p = require "helm:helm/ljprof"
@@ -94,8 +96,7 @@ ts = require "repr:repr" . ts_color
 send = nil;
 do
    local Message = require "actor:message"
-   local thread = require "qor:core" . thread
-   local nest = thread.nest "actor"
+   local nest = core.thread.nest "actor"
    local yield = assert(nest.yield)
 
    send = function (tab)
@@ -265,7 +266,7 @@ local function is_scroll(event)
    return event.type == "mouse" and event.scrolling
 end
 
-local compact = assert(require "core:table" . compact)
+local compact = assert(table.compact)
 
 local function consolidate_scroll_events(events)
    -- We're going to nil-and-compact, so convert to ntable
@@ -295,7 +296,7 @@ end
 
 
 
-local Set = require "qor:core" . set
+local Set = core.set
 
 local stoppable = Set { 'idle',
                         'check',
@@ -318,14 +319,16 @@ local function shutDown(modeS)
    input_check:stop()
    input_check:close()
    uv.walk(function(handle)
-      local h_type = uv.handle_get_type(handle)
-      if stoppable[h_type] then
-         io.stderr:write("Stopping a leftover ", h_type, " ", tostring(handle), "\n")
-         handle:stop()
-      end
-      if not handle:is_closing() then
-         io.stderr:write("Closing a leftover ", h_type, " ", tostring(handle), "\n")
-         handle:close()
+      if not (handle == stdin or handle == stdout) then
+         local h_type = uv.handle_get_type(handle)
+         if stoppable[h_type] then
+            io.stderr:write("Stopping a leftover ", h_type, " ", tostring(handle), "\n")
+            handle:stop()
+         end
+         if not handle:is_closing() then
+            io.stderr:write("Closing a leftover ", h_type, " ", tostring(handle), "\n")
+            handle:close()
+         end
       end
    end)
 end
@@ -504,6 +507,9 @@ io.stdout:write(a.mouse.sgr_mode(false),
 
 -- Back to normal mode
 uv.tty_reset_mode()
+
+stdin:close()
+stdout:close()
 
 -- Make sure the terminal processes all of the above,
 -- then remove any spurious mouse inputs or other stdin stuff

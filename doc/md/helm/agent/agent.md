@@ -12,6 +12,8 @@ providing a [Window](https://gitlab.com/special-circumstance/helm/-/blob/trunk/d
 local Window = require "window:window"
 local Deque = require "deque:deque"
 local Message = require "actor:message"
+
+local table = core.table
 ```
 
 
@@ -25,7 +27,7 @@ local Agent = meta {}
 Sends a message to the Agent's boss\.
 
 ```lua
-local coro = assert(require "qor:core" . thread.nest 'actor')
+local coro = assert(core.thread.nest 'actor')
 local yield = assert(coro.yield)
 
 function Agent.send(agent, msg)
@@ -117,28 +119,6 @@ end
 ```
 
 
-### Keymaps
-
-Provide basic scrolling commands at this level, if the raga chooses to include
-this keymap\. Note that higher\-priority keymaps may override some of this, e\.g\.
-up/down move the cursor when editing text even though the ResultsAgent would
-happily process them\.
-
-```lua
-Agent.keymap_scrolling = {
-   SCROLL_UP   = { method = "evtScrollUp",   n = 1 },
-   SCROLL_DOWN = { method = "evtScrollDown", n = 1 },
-   UP          = "scrollUp",
-   ["S-UP"]    = "scrollUp",
-   DOWN        = "scrollDown",
-   ["S-DOWN"]  = "scrollDown",
-   PAGE_UP     = "pageUp",
-   PAGE_DOWN   = "pageDown",
-   HOME        = "scrollToTop",
-   END         = "scrollToBottom"
-}
-```
-
 ### Agent:window\(\), :windowConfiguration\(\)
 
 The `Window`s of `Agent`s need to implement some common behavior in order to
@@ -148,7 +128,7 @@ own details, using `.mergeWindowConfig()` to include the superclass' config\.Not
 
 \(
 ```lua
-local addall = assert(require "core:table" . addall)
+local addall = assert(table.addall)
 function Agent.mergeWindowConfig(cfg_a, cfg_b)
    for cat, props in pairs(cfg_b) do
       cfg_a[cat] = cfg_a[cat] or {}
@@ -200,6 +180,5 @@ end
 
 
 ```lua
-local constructor = assert(require "core:cluster" . constructor)
-return constructor(Agent)
+return core.cluster.constructor(Agent)
 ```

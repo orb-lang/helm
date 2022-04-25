@@ -7,6 +7,14 @@
 
 
 
+local math = core.math
+
+
+
+
+
+
+
 
 
 
@@ -31,7 +39,7 @@ local new
 
 
 
-local clamp = assert(require "core:math" . clamp)
+local clamp = assert(math.clamp)
 function SelectionList.selectIndex(list, index)
    -- Handle empty-list case separately as `clamp`
    -- does not tolerate upper < lower

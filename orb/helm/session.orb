@@ -36,6 +36,14 @@ trigger a session reset.
 A session will load the session lines into the history buffer, but only once,
 no matter how many times the session is reset or run.
 
+
+**** imports
+
+#!lua
+local table = core.table
+#/lua
+
+
 #!lua
 local helm_db = require "helm:helm-db"
 local Session = meta {}
@@ -226,7 +234,7 @@ Save the current state of the session to the database. For simplicity's sake,
 we always just save everything, without checking whether it has changed.
 
 #!lua
-local compact = assert(require "core:table" . compact)
+local compact = assert(table.compact)
 function Session.save(session)
    session.stmts.beginTransaction()
    -- If the session itself hasn't been stored yet, do so and retrieve its id
@@ -266,8 +274,7 @@ new, empty session with the given title, which MUST be a non-integer string in
 this case. (Note that this is assured by the command-line argument parser.)
 
 #!lua
-local collect = assert(require 'core:table' . collect)
-
+local collect = assert(table.collect)
 new = function(db, project_id, title_or_index, cfg)
    local session = setmetatable({}, Session)
    session.stmts = helm_db.session(db)

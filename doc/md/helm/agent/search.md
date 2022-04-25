@@ -6,7 +6,7 @@
 #### imports
 
 ```lua
-local clone = assert(require "core:table" . clone)
+local table = core.table
 ```
 
 
@@ -21,13 +21,16 @@ local SearchAgent = meta(getmetatable(ResultListAgent))
 Updates the history results based on the current contents of the Txtbuf\.
 
 ```lua
-function SearchAgent.update(agent, modeS)
-   local frag = agent :send { sendto = "agents.edit", method = "contents" }
+function SearchAgent.update(agent)
+   local frag = agent :send { to = "agents.edit", method = "contents" }
    if agent.last_collection
       and agent.last_collection.lit_frag == frag then
       return
    end
-   agent.last_collection = modeS.hist:search(frag)
+   -- #todo most people would need to refer to 'modeS.hist' here,
+   -- but this happens to be dispatched *by* modeS directly. Need
+   -- more intelligent cooperation between modeS and Maestro
+   agent.last_collection = send { to = "hist", method = "search", frag }
    agent:contentsChanged()
 end
 ```
@@ -43,11 +46,11 @@ function SearchAgent.acceptAtIndex(agent, selected_index)
       if selected_index == 0 then selected_index = 1 end
       local idx = search_result.cursors[selected_index]
       local line, result = agent :send { idx,
-                                         sendto = "hist",
+                                         to = "hist",
                                          method = "index",
                                          n = 1 }
-      agent :send { sendto = "agents.edit", method = "update", line }
-      agent :send { sendto = "agents.results", method = "update", result }
+      agent :send { to = "agents.edit", method = "update", line }
+      agent :send { to = "agents.results", method = "update", result }
    end
    agent:quit()
 end
@@ -63,7 +66,7 @@ SearchAgent.acceptSelected = SearchAgent.acceptAtIndex
 
 ```lua
 function SearchAgent.activateOnFirstKey(agent)
-   if agent :send { sendto = "agents.edit", method = "isEmpty" } then
+   if agent :send { to = "agents.edit", method = "isEmpty" } then
       agent :send { method = "shiftMode", "search" }
       return true
    else
@@ -105,7 +108,7 @@ command zone is empty\.
 
 ```lua
 function SearchAgent.quitIfNoSearchTerm(agent)
-   if agent :send { sendto = "agents.edit", method = "isEmpty" } then
+   if agent :send { to = "agents.edit", method = "isEmpty" } then
       agent:quit()
       return true
    else
@@ -115,25 +118,6 @@ end
 ```
 
 
-#### Keymaps
-
 ```lua
-local addall = assert(require "core:table" . addall)
-SearchAgent.keymap_try_activate = {
-   ["/"] = "activateOnFirstKey"
-}
-
-SearchAgent.keymap_actions = {
-   BACKSPACE = "quitIfNoSearchTerm",
-   DELETE = "quitIfNoSearchTerm"
-}
-for i = 1, 9 do
-   SearchAgent.keymap_actions["M-" .. tostring(i)] = { method = "acceptFromNumberKey", n = 1 }
-end
-addall(SearchAgent.keymap_actions, ResultListAgent.keymap_actions)
-```
-
-```lua
-local constructor = assert(require "core:cluster" . constructor)
-return constructor(SearchAgent)
+return core.cluster.constructor(SearchAgent)
 ```

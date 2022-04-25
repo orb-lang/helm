@@ -15,14 +15,12 @@ local EditAgent = meta(getmetatable(Agent))
 #### imports
 
 ```lua
-local Codepoints = require "singletons/codepoints"
-local lines = import("core/string", "lines")
-local clone, collect, slice, splice =
-   import("core/table", "clone", "collect", "slice", "splice")
-
-local concat, insert, remove = assert(table.concat),
-                               assert(table.insert),
-                               assert(table.remove)
+local math = core.math
+local string = core.string
+local table = core.table
+local lines = assert(string.lines)
+local concat, insert = assert(table.concat), assert(table.insert)
+local Codepoints = require "singletons:codepoints"
 ```
 
 
@@ -158,10 +156,8 @@ unconstrained value in `agent.desired_col` so we can "remember" the
 horizontal position when moving between lines of differing lengths\.
 
 ```lua
-local core_math = require "core/math"
-local clamp, inbounds = assert(core_math.clamp), assert(core_math.inbounds)
-local Point = require "anterm/point"
-
+local clamp, inbounds = assert(math.clamp), assert(math.inbounds)
+local Point = require "anterm:point"
 function EditAgent.setCursor(agent, rowOrTable, col)
    local row
    if type(rowOrTable) == "table" then
@@ -210,6 +206,7 @@ Note that until the cursor is subsequently moved, this state is not a valid
 selection and will be cleared as soon as someone inquires :hasSelection\(\)
 
 ```lua
+local clone = assert(table.clone)
 function EditAgent.beginSelection(agent)
    agent.mark = clone(agent.cursor)
 end
@@ -314,6 +311,7 @@ Splits the line at the current cursor position, effectively
 inserting a newline\.
 
 ```lua
+local slice = assert(table.slice)
 function EditAgent.nl(agent)
    line, cur_col, cur_row = agent:currentPosition()
    -- split the line
@@ -345,7 +343,7 @@ position\. Intended for when the user has pressed the corresponding key\-\-
 performs automatic brace pairing\.
 
 ```lua
-local inverse = assert(require "core:table" . inverse)
+local inverse = assert(table.inverse)
 local _openers = { ["("] = ")",
                    ['"'] = '"',
                    ["'"] = "'",
@@ -391,6 +389,7 @@ at the current cursor position\. The only translation performed is
 tab to three spaces\.
 
 ```lua
+local collect, splice = assert(table.collect), assert(table.splice)
 function EditAgent.paste(agent, frag)
    frag = frag:gsub("\t", "   ")
    local frag_lines = collect(lines, frag)
@@ -415,11 +414,11 @@ thus proceeds through :killSelection\(\)
 
 #### EditAgent:killSelection\(\)
 
-Deletes the selected text, if any\. Returns whether anything was deleted
-\(i\.e\. whether anything was initially selected\)\.
+Deletes the selected text, if any\. Returns whether anything was deletedi\.e\. whether anything was initially selected\)\.
 
+\(
 ```lua
-local deleterange = import("core/table", "deleterange")
+local deleterange = assert(table.deleterange)
 function EditAgent.killSelection(agent)
    if not agent:hasSelection() then
       -- #todo communicate that there was nothing to do somehow,
@@ -870,8 +869,8 @@ clears our contents?
 ```lua
 function EditAgent.clear(agent)
    agent:update("")
-   send{ sendto = "agents.results", method = "clear" }
-   send{ sendto = "hist", method = "toEnd" }
+   send{ to = "agents.results", method = "clear" }
+   send{ to = "hist", method = "toEnd" }
 end
 ```
 
@@ -1005,60 +1004,6 @@ end
 ```
 
 
-#### Basic editing commands keymap
-
-The basic editing commands that are applicable no matter what we're editing\.
-
-```lua
-EditAgent.keymap_basic_editing = {
-   -- Motions
-   UP              = "up",
-   DOWN            = "down",
-   LEFT            = "left",
-   RIGHT           = "right",
-   ["M-LEFT"]      = "leftWordAlpha",
-   ["M-b"]         = "leftWordAlpha",
-   ["M-RIGHT"]     = "rightWordAlpha",
-   ["M-w"]         = "rightWordAlpha",
-   HOME            = "startOfLine",
-   ["C-a"]         = "startOfLine",
-   END             = "endOfLine",
-   ["C-e"]         = "endOfLine",
-   -- Kills
-   BACKSPACE       = "killBackward",
-   DELETE          = "killForward",
-   ["M-BACKSPACE"] = "killToBeginningOfWord",
-   ["M-DELETE"]    = "killToEndOfWord",
-   ["M-d"]         = "killToEndOfWord",
-   ["C-k"]         = "killToEndOfLine",
-   ["C-u"]         = "killToBeginningOfLine",
-   -- Misc editing commands
-   ["C-t"]         = "transposeLetter",
-   -- Insertion commands
-   ["[CHARACTER]"] = { method = "selfInsert", n = 1 },
-   TAB             = "tab",
-   RETURN          = "nl",
-   PASTE           = { method = "evtPaste", n = 1 }
-}
-```
-
-
-#### Readline\-style navigation
-
-Provides equivalent commands for diehard Emacsians\.
-
-In case RMS ever takes bridge for a spin\.\.\.
-
-```lua
-EditAgent.keymap_readline_nav = {
-   ["C-b"] = "left",
-   ["C-f"] = "right",
-   ["C-n"] = "down",
-   ["C-p"] = "up"
-}
-```
-
-
 ### EditAgent:\_init\(\)
 
 ```lua
@@ -1073,6 +1018,5 @@ end
 
 
 ```lua
-local constructor = assert(require "core:cluster" . constructor)
-return constructor(EditAgent)
+return core.cluster.constructor(EditAgent)
 ```

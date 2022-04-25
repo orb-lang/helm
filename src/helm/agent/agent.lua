@@ -13,6 +13,8 @@ local Window = require "window:window"
 local Deque = require "deque:deque"
 local Message = require "actor:message"
 
+local table = core.table
+
 
 
 
@@ -25,7 +27,7 @@ local Agent = meta {}
 
 
 
-local coro = assert(require "qor:core" . thread.nest 'actor')
+local coro = assert(core.thread.nest 'actor')
 local yield = assert(coro.yield)
 
 function Agent.send(agent, msg)
@@ -125,30 +127,8 @@ end
 
 
 
-Agent.keymap_scrolling = {
-   SCROLL_UP   = { method = "evtScrollUp",   n = 1 },
-   SCROLL_DOWN = { method = "evtScrollDown", n = 1 },
-   UP          = "scrollUp",
-   ["S-UP"]    = "scrollUp",
-   DOWN        = "scrollDown",
-   ["S-DOWN"]  = "scrollDown",
-   PAGE_UP     = "pageUp",
-   PAGE_DOWN   = "pageDown",
-   HOME        = "scrollToTop",
-   END         = "scrollToBottom"
-}
 
-
-
-
-
-
-
-
-
-
-
-local addall = assert(require "core:table" . addall)
+local addall = assert(table.addall)
 function Agent.mergeWindowConfig(cfg_a, cfg_b)
    for cat, props in pairs(cfg_b) do
       cfg_a[cat] = cfg_a[cat] or {}
@@ -200,6 +180,5 @@ end
 
 
 
-local constructor = assert(require "core:cluster" . constructor)
-return constructor(Agent)
+return core.cluster.constructor(Agent)
 
