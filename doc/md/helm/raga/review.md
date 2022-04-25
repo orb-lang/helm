@@ -14,6 +14,7 @@ local Review = clone(RagaBase, 2)
 Review.name = "review"
 Review.prompt_char = "💬"
 Review.keymap = require "helm:keymap/review"
+Review.target = "agents.session"
 ```
 
 

@@ -14,6 +14,7 @@ local Page = clone(RagaBase, 2)
 Page.name = "page"
 Page.prompt_char = "❓"
 Page.keymap = require "helm:keymap/page"
+Page.target = "agents.pager"
 
 
 

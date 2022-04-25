@@ -96,8 +96,38 @@ parts.list_selection = {
 
 
 parts.global_commands = {
-   ["C-q"] = "quit"
+   ["C-q"] = { to = "modeS", method = "quit" }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+local clone = assert(core.table.clone)
+
+function parts.set_targets(target, bindings)
+   bindings = clone(bindings)
+   for key, action in pairs(bindings) do
+      -- #todo duplicating code in Keymap constructor, should ultimately be
+      -- constructing Messages here but need to think about mutability.
+      if type(action) == "string" then
+         action = { method = action, n = 0 }
+      else
+         action = clone(action)
+         action.n = action.n or #action
+      end
+      action.to = action.to or target
+      bindings[key] = action
+   end
+   return bindings
+end
 
 
 

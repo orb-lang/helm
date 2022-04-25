@@ -147,7 +147,7 @@ cluster.construct(new, function(_, I, ...)
    I.wildcards = {}
    local declarations = pack(...)
    for _, decl in ipairs(declarations) do
-      for key, action in pairs(decl.bindings) do
+      for key, action in pairs(decl) do
          -- if idest(action, Message) then
          --    -- #todo be more accomodating here maybe?
          --    assert(action.to, "Messages are immutable, specify your `to` ahead of time if you use them.")
@@ -159,7 +159,6 @@ cluster.construct(new, function(_, I, ...)
             -- #todo should convert to Message, mold() would do this for us
             action.n = action.n or #action
          end
-         action.to = action.to or decl.target
          -- #todo but the action ends up being mutated as part of dispatching it,
          -- so converting to Message makes it blow up.
          -- action = Message(action)

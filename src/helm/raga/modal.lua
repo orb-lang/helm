@@ -15,6 +15,7 @@ local Modal = clone(RagaBase, 2)
 Modal.name = "modal"
 Modal.prompt_char = " "
 Modal.keymap = require "helm:keymap/modal"
+Modal.target = "agents.modal"
 
 
 

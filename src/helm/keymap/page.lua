@@ -6,7 +6,8 @@ local parts = require "helm:keymap/parts"
 
 
 
-local advanced_scrolling = {}
+local clone = assert(core.table.clone)
+local our_bindings = clone(parts.cursor_scrolling)
 for cmd, shortcuts in pairs{
    scrollDown     = { "RETURN", "e", "j", "C-n", "C-e", "C-j" },
    scrollUp       = { "S-RETURN", "y", "k", "C-y", "C-p", "C-l" },
@@ -15,26 +16,15 @@ for cmd, shortcuts in pairs{
    halfPageDown   = { "d", "C-d" },
    halfPageUp     = { "u", "C-u" },
    scrollToBottom = { "G", ">" },
-   scrollToTop    = { "g", "<" }
+   scrollToTop    = { "g", "<" },
+   quit           = { "q", "ESC" }
 } do
    for _, shortcut in ipairs(shortcuts) do
-      advanced_scrolling[shortcut] = cmd
+      our_bindings[shortcut] = cmd
    end
 end
 
 
 
-return Keymap({
-   target = "agents.pager",
-   bindings = {
-      ESC = "quit",
-      q = "quit"
-   }
-}, {
-   target = "agents.pager",
-   bindings = advanced_scrolling
-}, {
-   target = "modeS",
-   bindings = parts.global_commands
-})
+return Keymap(our_bindings, parts.global_commands)
 

@@ -132,6 +132,11 @@ local function _dispatchOnly(maestro, event)
       if handler.n > 0 then
          handler[handler.n] = event
       end
+      -- #todo using empty-string as a non-nil signpost
+      -- should be able to refactor so this is not needed
+      if (not handler.to) or handler.to == '' then
+         handler.to = maestro.modeS.raga.target
+      end
       -- #todo ugh, some way to dump a Message to a representative string?
       -- #todo also, this is assuming that all traversal is done in `sendto`,
       -- without nested messages--bad assumption, in general

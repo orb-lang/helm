@@ -12,6 +12,7 @@ local Complete = clone(EditBase, 2)
 Complete.name = "complete"
 Complete.prompt_char = "💬"
 Complete.keymap = require "helm:keymap/complete"
+Complete.target = "agents.suggest"
 #/lua
 
 
