@@ -7,13 +7,13 @@
 ### Recent Changes to helm
 
   Modeselektor and Maestro \(only\) are full\-fledged Actors, extending from the
-[Actor base](NO default.domain IN MANIFESTbr/MISSING_POST_PROJECTdoc/md/actor/actor.md) using [cluster](NO default.domain IN MANIFESTbr/MISSING_POST_PROJECTdoc/md/cluster.md)\.
+[Actor base](https://gitlab.com/special-circumstance/br/-/blob/trunk/doc/md/actor/actor.md) using [cluster](https://gitlab.com/special-circumstance/br/-/blob/trunk/doc/md/cluster.md)\.
 
 There exists an excess of modules named cluster in various bridge repos, and
 we will winnow this down to only the codex named cluster in short order\.
 
 As promised, the process of launching an Actor within a coroutine which
-receives and dispatches the [Message](NO default.domain IN MANIFESTbr/MISSING_POST_PROJECTdoc/md/actor/message.md) protocol has been
+receives and dispatches the [Message](https://gitlab.com/special-circumstance/br/-/blob/trunk/doc/md/actor/message.md) protocol has been
 put in the base layer where it belongs, and is invoked by calling `:task()`
 before an ordinary method call, or by calling the Actor itself, which uses
 the default method `:dispatch`\.

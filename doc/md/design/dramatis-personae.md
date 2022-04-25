@@ -129,7 +129,7 @@ out of actors if we clear their state and reuse them, rather than throwing
 together a fresh one each time they have something to act upon, because this
 will let us build up more complex relationships with their instance\.
 
-So, to speak of [espalier](NO default.domain IN MANIFESTbr/MISSING_POST_PROJECTdoc/md/espalier.md), neither the Grammar nor the Node
+So, to speak of [espalier](https://gitlab.com/special-circumstance/br/-/blob/trunk/doc/md/espalier.md), neither the Grammar nor the Node
 modules are actors\. Both exist to create instances: Grammar makes grammars and
 grammars parse strings into nodes\.  Are they factories?
 
@@ -140,7 +140,7 @@ they don't do, they are done with\.  PEG grammars are both Nodes and Grammars,
 but again, they have a specific job to do and it isn't controlled by mutable
 state\.
 
-Nor is `br`, the artifact produced by [pylon](NO default.domain IN MANIFESTbr/MISSING_POST_PROJECTdoc/md/pylon.md), an actor\.  It's a
+Nor is `br`, the artifact produced by [pylon](https://gitlab.com/special-circumstance/br/-/blob/trunk/doc/md/pylon.md), an actor\.  It's a
 program\!  You can tell because it has a makefile\.  It has no metatable and is
 created with no instance: it's just bridge\.
 
@@ -206,7 +206,7 @@ We begin with the protagonist, which holds nearly all state in helm\.
 
 #### Modeselektor
 
-The [Modeselektor](NO default.domain IN MANIFESThelm/MISSING_POST_PROJECTdoc/md/helm/modeselektor.md), `modeS` by name, is our star DJ\.
+The [Modeselektor](https://gitlab.com/special-circumstance/helm/-/blob/trunk/doc/md/helm/modeselektor.md), `modeS` by name, is our star DJ\.
 
 All of `helm.orb` is one big function, with an environment, which sets up a
 `uv` event loop, builds the modeselektor, and launches an event loop to run
@@ -268,7 +268,7 @@ begin with what we have\!
 
 #### Historian
 
-  The [Historian](NO default.domain IN MANIFESThelm/MISSING_POST_PROJECTdoc/md/helm/historian.orb.md) is in charge of the history of helm,
+  The [Historian](https://gitlab.com/special-circumstance/helm/-/blob/trunk/doc/md/helm/historian.orb.md) is in charge of the history of helm,
 across all runs, sessions, and projects\.
 
 Helm never forgets\.  Anything you enter into your helm is duly recorded and
@@ -311,7 +311,7 @@ Modeselektor holds what should be the only reference to the historian, at
 
 #### Valiant
 
-  [Valiant](NO default.domain IN MANIFESTbr/MISSING_POST_PROJECTdoc/md/session/valiant.md) is our old friend `eval`\.  He lives in his
+  [Valiant](https://gitlab.com/special-circumstance/br/-/blob/trunk/doc/md/session/valiant.md) is our old friend `eval`\.  He lives in his
 own project, because we need him to run sessions from the command line as
 well\.
 
@@ -428,7 +428,7 @@ but `Suggest` also needs it\.\.\.another case of possibly\-dual ownership?
 
 #### Rainbufs
 
-  Rainbufs, as the [lede](NO default.domain IN MANIFEST~helm/MISSING_POST_PROJECTdoc/md/buf/rainbuf.md) says, encapsulate data to be
+  Rainbufs, as the [lede](https://gitlab.com/special-circumstance/~helm/-/blob/trunk/doc/md/buf/rainbuf.md) says, encapsulate data to be
 written to the screen\.
 
 The thing is, they aren't really actors\.

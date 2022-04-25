@@ -12,7 +12,7 @@ Keymaps exist in three forms:
 
 For the sake of convenience, and to avoid repeat\-declaring the source of a
 keymap, we declare a keymap as a plain\-old\-table containing only its bindings\.
-The keys are event strings as produced/consumed by [NO default.domain IN MANIFESTanterm/MISSING_POST_PROJECTdoc/md/input-event.md](NO default.domain IN MANIFESTanterm/MISSING_POST_PROJECTdoc/md/input-event.md),
+The keys are event strings as produced/consumed by [https://gitlab.com/special-circumstance/anterm/-/blob/trunk/doc/md/input-event.md](https://gitlab.com/special-circumstance/anterm/-/blob/trunk/doc/md/input-event.md),
 and the values are partial `Message`s \(with missing argument\(s\) which will be
 filled in when the command is executed\), or in the simple case of a
 method\-call with no arguments, just the method name\.
