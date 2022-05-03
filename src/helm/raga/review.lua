@@ -29,37 +29,39 @@ Review.target = "agents.session"
 
 
 
-function Review.onShift(modeS)
+function Review.onShift()
    -- Hide the suggestion column so the review interface can occupy
    -- the full width of the terminal.
    -- #todo once we are able to switch between REPLing and review
    -- on the fly, we'll need to put this back as appropriate, but I
    -- think that'll come naturally once we have a raga stack.
-   modeS.zones.suggest:hide()
+   send{ to = "zones.suggest", method = "hide" }
 
-   send{ to = "agents.status", method = "update",
-         "review", modeS.hist.session.session_title }
+   local session_title = send{ to = "hist.session", field = "session_title" }
+   send{ to = "agents.status", method = "update", "review", session_title }
 
-   local modal_answer = send { to = "agents.modal", method = "answer" }
+   local modal_answer = send{ to = "agents.modal", method = "answer" }
    if modal_answer then
       if modal_answer == "yes" then
-         modeS.hist.session:save()
-         modeS:quit()
+         send{ to = "hist.session", method = "save" }
       elseif modal_answer == "no" then
-         modeS:quit()
+         send{ method = "quit" }
       end -- Do nothing on cancel
       return
    end
 
-   if modeS.zones.results.contents.idEst ~= Sessionbuf then
-      modeS:bindZone("results", "session", Sessionbuf, {scrollable = true})
+   -- #todo Replace with detection of if we're being
+   -- created for the first time vs. a pop
+   if send{ to = "zones.results.contents", field = "idEst" } ~= Sessionbuf then
+      send{ method = "bindZone",
+         "results", "session", Sessionbuf, {scrollable = true}}
    end
-   local premise = modeS:agent'session':selectedPremise()
+   local premise = send{ to = "agents.session", method = "selectedPremise" }
    if not premise then
-      modeS:agent'session':selectIndex(1)
-      premise = modeS:agent'session':selectedPremise()
+      send{ to = "agents.session", method = "selectIndex", 1 }
+      premise = send{ to = "agents.session", method = "selectedPremise" }
    end
-   modeS:agent'edit':update(premise and premise.title)
+   send{ to = "agents.edit", method = "update", premise and premise.title}
 end
 
 

@@ -339,13 +339,13 @@ function ModeS.shiftMode(modeS, raga_name)
    -- but this will change when we start supporting multiple languages
    -- Guard against nil raga or lexer during startup
    if modeS.raga then
-      modeS.raga.onUnshift(modeS)
+      modeS.raga.onUnshift()
       modeS.closet[modeS.raga.name].lex = modeS:_agent'edit'.lex
    end
    -- Switch in the new raga and associated lexer
    modeS.raga = modeS.closet[raga_name].raga
    modeS:_agent'edit':setLexer(modeS.closet[raga_name].lex)
-   modeS.raga.onShift(modeS)
+   modeS.raga.onShift()
    -- #todo feels wrong to do this here, like it's something the raga
    -- should handle, but onShift feels kinda like it "doesn't inherit",
    -- like it's not something you should actually super-send, so there's

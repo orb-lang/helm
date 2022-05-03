@@ -80,7 +80,7 @@ end
 
 
 
-function Complete.onShift(modeS)
+function Complete.onShift()
    send { to = 'agents.suggest', method = 'selectFirst' }
 end
 
@@ -91,7 +91,7 @@ end
 
 
 
-function Complete.onUnshift(modeS)
+function Complete.onUnshift()
    send { to = 'agents.suggest', method = 'selectNone' }
 end
 

@@ -24,11 +24,11 @@ We basically ignore the majority of the zones and use the popup zone instead\.
 Show and hide it automatically when we shift/unshift\.
 
 ```lua
-function Page.onShift(modeS)
-   modeS.zones.popup:show()
+function Page.onShift()
+   send { to = "zones.popup", method = "show" }
 end
-function Page.onUnshift(modeS)
-   modeS.zones.popup:hide()
+function Page.onUnshift()
+   send { to = "zones.popup", method = "hide" }
 end
 ```
 

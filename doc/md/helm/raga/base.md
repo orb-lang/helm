@@ -67,24 +67,24 @@ end
 ```
 
 
-### <Raga>\.onShift\(modeS\)
+### <Raga>\.onShift\(\)
 
 Called when first switching to the raga\. Provides an opportunity to
 reconfigure zones or perform other set\-up work\.
 
 ```lua
-function RagaBase.onShift(modeS)
+function RagaBase.onShift()
    return
 end
 ```
 
 
-### <Raga>\.onUnshift\(modeS\)
+### <Raga>\.onUnshift\(\)
 
 Opposite of onShift\-\-called when switching away to another raga\.
 
 ```lua
-function RagaBase.onUnshift(modeS)
+function RagaBase.onUnshift()
    return
 end
 ```

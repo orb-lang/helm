@@ -73,7 +73,7 @@ end
 
 
 
-function RagaBase.onShift(modeS)
+function RagaBase.onShift()
    return
 end
 
@@ -84,7 +84,7 @@ end
 
 
 
-function RagaBase.onUnshift(modeS)
+function RagaBase.onUnshift()
    return
 end
 

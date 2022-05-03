@@ -22,12 +22,12 @@ Modal.target = "agents.modal"
 ### Modal\.onShift, \.onUnshift
 
 ```lua
-function Modal.onShift(modeS)
-   modeS.zones.modal:show()
+function Modal.onShift()
+   send { to = "zones.modal", method = "show" }
 end
 
-function Modal.onUnshift(modeS)
-   modeS.zones.modal:hide()
+function Modal.onUnshift()
+   send { to = "zones.modal", method = "hide" }
 end
 ```
 

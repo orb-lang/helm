@@ -80,7 +80,7 @@ end
 Select the first item in the list when entering complete mode.
 
 #!lua
-function Complete.onShift(modeS)
+function Complete.onShift()
    send { to = 'agents.suggest', method = 'selectFirst' }
 end
 #/lua
@@ -91,7 +91,7 @@ end
 Deselect and prod the Txtbuf on exit.
 
 #!lua
-function Complete.onUnshift(modeS)
+function Complete.onUnshift()
    send { to = 'agents.suggest', method = 'selectNone' }
 end
 #/lua

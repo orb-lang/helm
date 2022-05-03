@@ -24,11 +24,11 @@ Page.target = "agents.pager"
 
 
 
-function Page.onShift(modeS)
-   modeS.zones.popup:show()
+function Page.onShift()
+   send { to = "zones.popup", method = "show" }
 end
-function Page.onUnshift(modeS)
-   modeS.zones.popup:hide()
+function Page.onUnshift()
+   send { to = "zones.popup", method = "hide" }
 end
 
 
