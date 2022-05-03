@@ -18,16 +18,6 @@
 
 
 
-
-
-
-
-local act = require "actor:lib"
-local borrowmethod = assert(act.borrowmethod)
-local getter = assert(act.getter)
-
-
-
 local Historian  = require "helm:historian"
 local Maestro    = require "helm:maestro"
 local Zoneherd   = require "helm:zone"
@@ -114,15 +104,6 @@ function ModeS.setup(modeS)
    else
       modeS:_agent'status':update("default")
    end
-
-   -- #todo this interaction is messy, would be nice to be able to use yielded
-   -- messages but it happens at render time, outside a coroutine.
-   local agents = modeS.maestro.agents
-   --  #Todo  This appears to be the only use of borrowmethod,
-   --         if we can replace it with a message, we should
-   agents.prompt.continuationLines = borrowmethod(agents.edit,
-                                                  "continuationLines")
-   agents.prompt.editTouched = getter(agents.edit, "touched")
 
    -- Set up common Agent -> Zone bindings
    -- Note we don't do results here because that varies from raga to raga
