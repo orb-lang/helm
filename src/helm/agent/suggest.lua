@@ -136,7 +136,7 @@ local function _set_suggestions(suggest, suggestions)
 end
 
 
-function SuggestAgent.update(suggest, env)
+function SuggestAgent.update(suggest)
    local context, path = suggest:cursorContext()
    if context == nil then
       return _set_suggestions(suggest, nil)
@@ -146,17 +146,7 @@ function SuggestAgent.update(suggest, env)
    -- in the current position.
    local complete_against
    if path then
-
-
-
-
-
-
-
-
-
-
-      complete_against = env or modeS.valiant.eval_env
+      complete_against = send{ to = "valiant", field = "eval_env" }
       for _, key in ipairs(path) do
          complete_against = safeget(complete_against, key)
       end

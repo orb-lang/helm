@@ -136,7 +136,7 @@ local function _set_suggestions(suggest, suggestions)
 end
 
 
-function SuggestAgent.update(suggest, env)
+function SuggestAgent.update(suggest)
    local context, path = suggest:cursorContext()
    if context == nil then
       return _set_suggestions(suggest, nil)
@@ -146,17 +146,7 @@ function SuggestAgent.update(suggest, env)
    -- in the current position.
    local complete_against
    if path then
-```
-
-This is using a global reference to Modeselektor, I've added a parameter for
-passing the environment\.
-
-Helm should run without modeS defined in `__G`, we can accomplish this with a
-switch to adding modeS to `eval_env`, where the user can still see it, but
-where this kind of global overreach isn't possible\.
-
-```lua
-      complete_against = env or modeS.valiant.eval_env
+      complete_against = send{ to = "valiant", field = "eval_env" }
       for _, key in ipairs(path) do
          complete_against = safeget(complete_against, key)
       end
