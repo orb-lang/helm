@@ -70,7 +70,7 @@ cluster.extendbuilder(new, function(_new, modeS, max_extent, writer, db)
    rawset(__G, "stat", modeS.status)
    -- so lets make this easy to knock out ]]
    modeS.zones = Zoneherd(modeS, writer)
-   modeS.maestro = Maestro(modeS)
+   modeS.maestro = Maestro()
 
    return modeS
 end)
@@ -325,6 +325,9 @@ function ModeS.shiftMode(modeS, raga_name)
    end
    -- Switch in the new raga and associated lexer
    modeS.raga = modeS.closet[raga_name].raga
+   -- All of this will eventually be on Maestro,
+   -- start being able to rewrite refs
+   modeS.maestro.raga = modeS.raga
    modeS:_agent'edit':setLexer(modeS.closet[raga_name].lex)
    modeS.raga.onShift()
    -- #todo feels wrong to do this here, like it's something the raga

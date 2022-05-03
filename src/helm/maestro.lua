@@ -124,7 +124,7 @@ local clone, concat, insert = assert(table.clone),
                               assert(table.insert)
 
 local function _dispatchOnly(maestro, event)
-   local handlers = maestro.modeS.raga.keymap(event)
+   local handlers = maestro.raga.keymap(event)
    local tried = {}
    for _, handler in ipairs(handlers) do
       handler = clone(handler)
@@ -135,7 +135,7 @@ local function _dispatchOnly(maestro, event)
       -- #todo using empty-string as a non-nil signpost
       -- should be able to refactor so this is not needed
       if (not handler.to) or handler.to == '' then
-         handler.to = maestro.modeS.raga.target
+         handler.to = maestro.raga.target
       end
       -- #todo ugh, some way to dump a Message to a representative string?
       -- #todo also, this is assuming that all traversal is done in `sendto`,
@@ -155,11 +155,11 @@ end
 function Maestro.eventDispatcher(maestro, event)
    local command = _dispatchOnly(maestro, event)
    if maestro.agents.edit.contents_changed then
-      maestro.modeS.raga.onTxtbufChanged()
+      maestro.raga.onTxtbufChanged()
     -- Treat contents_changed as implying cursor_changed
     -- only ever fire one of the two events
    elseif maestro.agents.edit.cursor_changed then
-      maestro.modeS.raga.onCursorChanged()
+      maestro.raga.onCursorChanged()
    end
    maestro.agents.edit.contents_changed = false
    maestro.agents.edit.cursor_changed = false
@@ -175,9 +175,7 @@ end
 
 
 
-cluster.extendbuilder(new, function(_new, maestro, modeS)
-   -- #todo this is temporary until we sort out communication properly
-   maestro.modeS = modeS
+cluster.extendbuilder(new, function(_new, maestro)
    maestro.agents = {
       edit       = EditAgent(),
       input_echo = InputEchoAgent(),
