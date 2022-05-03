@@ -243,6 +243,25 @@ end
 ```
 
 
+### ModeS:inbox\(\)
+
+We allow messages with \`to = "modeS"\` to reach us, rather than complaining \`Actor lacks 'modeS' in modeS\`\.
+
+\#todo
+
+```lua
+local clone = assert(core.table.clone)
+function ModeS.inbox(modeS, msg)
+   if msg.to == "modeS" then
+      msg = clone(msg)
+      msg.to = nil
+      return modeS, msg
+   end
+   return modeS
+end
+```
+
+
 ### Prompts and modes / ragas
 
 Time to add modes to the `modeselektor`\! Yes, I'm calling it `raga`

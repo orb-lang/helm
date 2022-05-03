@@ -250,6 +250,25 @@ end
 
 
 
+local clone = assert(core.table.clone)
+function ModeS.inbox(modeS, msg)
+   if msg.to == "modeS" then
+      msg = clone(msg)
+      msg.to = nil
+      return modeS, msg
+   end
+   return modeS
+end
+
+
+
+
+
+
+
+
+
+
 
 
 ModeS.raga_default = "nerf"

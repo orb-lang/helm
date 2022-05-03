@@ -141,7 +141,7 @@ local function _dispatchOnly(maestro, event)
       -- #todo also, this is assuming that all traversal is done in `sendto`,
       -- without nested messages--bad assumption, in general
       insert(tried, handler.method or handler.call)
-      if maestro:dispatch(handler) ~= false then
+      if send(handler) ~= false then
          break
       end
    end
