@@ -108,11 +108,11 @@ function ModeS.setup(modeS)
    elseif session.session_title then
       -- #todo should probably do this somewhere else--maybe raga/nerf.onShift,
       -- but it's certainly not Nerf-specific...
-      modeS:setStatusLine(
+      modeS:_agent'status':update(
          session.mode == "macro" and "macro" or "new_session",
          session.session_title)
    else
-      modeS:setStatusLine("default")
+      modeS:_agent'status':update("default")
    end
 
    -- #todo this interaction is messy, would be nice to be able to use yielded
@@ -452,20 +452,6 @@ ModeS.agent = ModeS._agent -- not finishing this right now
 
 
 
-
-
-function ModeS.setStatusLine(modeS, status_name, ...)
-   modeS:_agent'status':update(status_name, ...)
-end
-
-
-
-
-
-
-
-
-
 function ModeS.quit(modeS)
    -- #todo it's obviously terrible to have code specific to a particular
    -- piece of functionality in a supervisory class like this.
@@ -498,7 +484,7 @@ function ModeS.quit(modeS)
    if session.mode == "macro" and #session > 0 then
       session:save()
    end
-   modeS:setStatusLine("quit")
+   modeS:_agent'status':update("quit")
    modeS.has_quit = true
 end
 

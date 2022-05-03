@@ -37,7 +37,8 @@ function Review.onShift(modeS)
    -- think that'll come naturally once we have a raga stack.
    modeS.zones.suggest:hide()
 
-   modeS:setStatusLine("review", modeS.hist.session.session_title)
+   send{ to = "agents.status", method = "update",
+         "review", modeS.hist.session.session_title }
 
    local modal_answer = send { to = "agents.modal", method = "answer" }
    if modal_answer then

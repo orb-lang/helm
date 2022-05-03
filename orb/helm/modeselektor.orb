@@ -108,11 +108,11 @@ function ModeS.setup(modeS)
    elseif session.session_title then
       -- #todo should probably do this somewhere else--maybe raga/nerf.onShift,
       -- but it's certainly not Nerf-specific...
-      modeS:setStatusLine(
+      modeS:_agent'status':update(
          session.mode == "macro" and "macro" or "new_session",
          session.session_title)
    else
-      modeS:setStatusLine("default")
+      modeS:_agent'status':update("default")
    end
 
    -- #todo this interaction is messy, would be nice to be able to use yielded
@@ -446,20 +446,6 @@ ModeS.agent = ModeS._agent -- not finishing this right now
 #/lua
 
 
-*** ModeS:setStatusLine(status_name, format_args...)
-
-Sets the status line at the top of the screen by updating the StatusAgent.
-
-#todo may want to just get rid of this but it's easier than inlining for now.
-
-#!lua
-
-function ModeS.setStatusLine(modeS, status_name, ...)
-   modeS:_agent'status':update(status_name, ...)
-end
-#/lua
-
-
 *** ModeS:quit()
 
 Marks the modeselektor as ready to quit (the actual teardown will happen
@@ -498,7 +484,7 @@ function ModeS.quit(modeS)
    if session.mode == "macro" and #session > 0 then
       session:save()
    end
-   modeS:setStatusLine("quit")
+   modeS:_agent'status':update("quit")
    modeS.has_quit = true
 end
 #/lua
