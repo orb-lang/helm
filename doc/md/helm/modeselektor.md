@@ -192,7 +192,7 @@ We delegate determining where this is to the Raga\.
 ```lua
 local Point = require "anterm:point"
 function ModeS.placeCursor(modeS)
-   local point = modeS.raga.getCursorPosition(modeS)
+   local point = modeS.raga.getCursorPosition()
    if point then
       modeS.write(a.jump(point), a.cursor.show())
    end
@@ -208,7 +208,7 @@ but we must also place the cursor\.
 ```lua
 function ModeS.paint(modeS)
    modeS.zones:paint(modeS)
-   modeS:placeCursor(modeS)
+   modeS:placeCursor()
    return modeS
 end
 ```

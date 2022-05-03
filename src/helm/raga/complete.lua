@@ -58,8 +58,8 @@ end
 
 
 local Point = require "anterm:point"
-function Complete.getCursorPosition(modeS)
-   local point = EditBase.getCursorPosition(modeS)
+function Complete.getCursorPosition()
+   local point = EditBase.getCursorPosition()
    local suggestion = send { to = 'agents.suggest', method = 'selectedItem' }
    local tokens = send { to = 'agents.edit', method = 'tokens' }
    if suggestion then

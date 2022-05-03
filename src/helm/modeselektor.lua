@@ -192,7 +192,7 @@ end
 
 local Point = require "anterm:point"
 function ModeS.placeCursor(modeS)
-   local point = modeS.raga.getCursorPosition(modeS)
+   local point = modeS.raga.getCursorPosition()
    if point then
       modeS.write(a.jump(point), a.cursor.show())
    end
@@ -208,7 +208,7 @@ end
 
 function ModeS.paint(modeS)
    modeS.zones:paint(modeS)
-   modeS:placeCursor(modeS)
+   modeS:placeCursor()
    return modeS
 end
 

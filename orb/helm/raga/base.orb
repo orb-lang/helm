@@ -27,14 +27,14 @@ RagaBase.prompt_char = "$"
 #/lua-example
 
 
-** <Raga>.getCursorPosition(modeS)
+** <Raga>.getCursorPosition()
 
 Computes and returns the position for the terminal cursor,
 or nil if it should be hidden. This is a reasonable default
 as not all ragas need the cursor shown.
 
 #!lua
-function RagaBase.getCursorPosition(modeS)
+function RagaBase.getCursorPosition()
    return nil
 end
 #/lua

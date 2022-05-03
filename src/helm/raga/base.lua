@@ -34,7 +34,7 @@ local RagaBase = setmetatable({}, RagaBase_meta)
 
 
 
-function RagaBase.getCursorPosition(modeS)
+function RagaBase.getCursorPosition()
    return nil
 end
 

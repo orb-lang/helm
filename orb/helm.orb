@@ -488,7 +488,7 @@ write(a.cursor.stash(),
 uv.read_start(stdin, onseq)
 
 -- initial layout and paint screen
-modeS:reflow()
+modeS:task():reflow()
 
 --[[ stop profiler if we're using it to measure startup time
 profile.stop()
