@@ -22,7 +22,7 @@ Updates the history results based on the current contents of the Txtbuf\.
 
 ```lua
 function SearchAgent.update(agent)
-   local frag = agent :send { to = "agents.edit", method = "contents" }
+   local frag = agent:send { to = "agents.edit", method = "contents" }
    if agent.last_collection
       and agent.last_collection.lit_frag == frag then
       return
@@ -30,7 +30,7 @@ function SearchAgent.update(agent)
    -- #todo most people would need to refer to 'modeS.hist' here,
    -- but this happens to be dispatched *by* modeS directly. Need
    -- more intelligent cooperation between modeS and Maestro
-   agent.last_collection = send { to = "hist", method = "search", frag }
+   agent.last_collection = agent:send { to = "hist", method = "search", frag }
    agent:contentsChanged()
 end
 ```
