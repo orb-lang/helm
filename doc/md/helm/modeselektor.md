@@ -212,20 +212,6 @@ local create, resume, status = assert(coroutine.create),
 ```
 
 
-### ModeS:task\(\) :method\(\.\.\.\)
-
-Calls a Modeselektor method in 'task' mode, where it will catch and dispatch
-any messages which are yielded by anything up the call stack\.
-
-The tasker is reusable, and built during construction\.
-
-```lua
-function ModeS.task(modeS)
-   return modeS.__tasker
-end
-```
-
-
 ```lua
 function ModeS.delegator(modeS, msg)
    local to = msg.to or msg.sendto

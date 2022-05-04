@@ -213,20 +213,6 @@ local create, resume, status = assert(coroutine.create),
 
 
 
-
-
-
-
-
-
-
-function ModeS.task(modeS)
-   return modeS.__tasker
-end
-
-
-
-
 function ModeS.delegator(modeS, msg)
    local to = msg.to or msg.sendto
    if to and to:find("^agents%.") then
