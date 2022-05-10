@@ -400,15 +400,6 @@ end
 
 
 
-function ModeS.__call(modeS, event)
-   return modeS :task() :act(event)
-end
-
-
-
-
-
-
 
 
 

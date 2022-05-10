@@ -396,15 +396,6 @@ function ModeS.act(modeS, event)
 end
 ```
 
-To keep `act` itself replaceable, we look it up on each call:
-
-```lua
-
-function ModeS.__call(modeS, event)
-   return modeS :task() :act(event)
-end
-```
-
 
 ### ModeS:tryAgain\(\)
 
