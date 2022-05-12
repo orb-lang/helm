@@ -97,7 +97,7 @@ Just quit, for now, but I imagine we'll have at least a couple more\.
 
 ```lua
 parts.global_commands = {
-   ["C-q"] = { to = "modeS", method = "quit" }
+   ["C-q"] = { to = "modeS", method = "quitHelm" }
 }
 ```
 

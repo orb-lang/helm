@@ -13,6 +13,7 @@ Complete.name = "complete"
 Complete.prompt_char = "💬"
 Complete.keymap = require "helm:keymap/complete"
 Complete.target = "agents.suggest"
+Complete.lex = require "helm:lex" . lua_thor
 ```
 
 
@@ -30,7 +31,7 @@ function Complete.onTxtbufChanged()
    if send { to = 'agents.suggest', field = 'last_collection' } then
       send { to = 'agents.suggest', method = "selectFirst" }
    else
-      send { to = "modeS", method = "shiftMode", "default" }
+      send { method = "popMode" }
    end
    EditBase.onTxtbufChanged()
 end
@@ -45,7 +46,7 @@ fire on a simple insert\.
 
 ```lua
 function Complete.onCursorChanged()
-   send { to = "modeS", method = "shiftMode", "default" }
+   send { method = "popMode" }
    EditBase.onCursorChanged()
 end
 ```

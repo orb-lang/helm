@@ -30,10 +30,10 @@ Activate/dismiss the pager \(showing/hiding the popup Zone in the process\)\.
 
 ```lua
 function PagerAgent.activate(agent)
-   agent :send { method = "shiftMode", "page" }
+   agent :send { method = "pushMode", "page" }
 end
 function PagerAgent.quit(agent)
-   agent :send { method = "shiftMode", "default" }
+   agent :send { method = "popMode" }
 end
 ```
 

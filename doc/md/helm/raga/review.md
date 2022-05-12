@@ -44,9 +44,10 @@ function Review.onShift()
    if modal_answer then
       if modal_answer == "yes" then
          send{ to = "hist.session", method = "save" }
-      elseif modal_answer == "no" then
-         send{ method = "quit" }
-      end -- Do nothing on cancel
+      end
+      if modal_answer ~= "cancel" then
+         send{ to = "modeS", method = "quitHelm" }
+      end
       return
    end
 

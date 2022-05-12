@@ -209,11 +209,11 @@ end
 
 
 function SessionAgent.editSelectedTitle(agent)
-   agent :send { method = "shiftMode", "edit_title" }
+   agent :send { method = "pushMode", "edit_title" }
 end
 
 function SessionAgent.cancelTitleEditing(agent)
-   agent :send { method = "shiftMode", "review" }
+   agent :send { method = "popMode" }
 end
 
 

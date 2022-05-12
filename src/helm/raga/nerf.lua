@@ -38,6 +38,7 @@ Nerf.name = "nerf"
 Nerf.prompt_char = "👉"
 Nerf.keymap = require "helm:keymap/nerf"
 Nerf.target = "agents.edit"
+Nerf.lex = require "helm:lex" . lua_thor
 
 
 

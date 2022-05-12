@@ -96,7 +96,7 @@ parts.list_selection = {
 
 
 parts.global_commands = {
-   ["C-q"] = { to = "modeS", method = "quit" }
+   ["C-q"] = { to = "modeS", method = "quitHelm" }
 }
 
 

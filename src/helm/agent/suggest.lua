@@ -146,7 +146,7 @@ function SuggestAgent.update(suggest)
    -- in the current position.
    local complete_against
    if path then
-      complete_against = agent:send{ to = "valiant", field = "eval_env" }
+      complete_against = suggest:send{ to = "valiant", field = "eval_env" }
       for _, key in ipairs(path) do
          complete_against = safeget(complete_against, key)
       end
@@ -220,7 +220,7 @@ SuggestAgent.userCancel = SuggestAgent.quit
 function SuggestAgent.activateCompletion(agent)
    if agent.last_collection then
       agent:selectFirst()
-      agent :send { method = "shiftMode", "complete" }
+      agent :send { method = "pushMode", "complete" }
       return true
    else
       return false

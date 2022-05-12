@@ -67,7 +67,7 @@ SearchAgent.acceptSelected = SearchAgent.acceptAtIndex
 ```lua
 function SearchAgent.activateOnFirstKey(agent)
    if agent :send { to = "agents.edit", method = "isEmpty" } then
-      agent :send { method = "shiftMode", "search" }
+      agent :send { method = "pushMode", "search" }
       return true
    else
       return false

@@ -64,11 +64,11 @@ This is the form implemented by the remainder of this module\.
    bindings = {
       UP = {
          { to = "agents.edit", method = "up" },
-         { to = "modeS.raga", method = "historyBack" },
+         { to = "modeS", method = "historyBack" },
          { to = "agents.results", method = "scrollUp" }
       },
       RETURN = {
-         { to = "modeS.raga", method = "conditionalEval" },
+         { to = "modeS", method = "conditionalEval" },
          { to = "agents.edit", method = "nl" }
       }
    },

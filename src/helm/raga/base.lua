@@ -23,7 +23,11 @@ local RagaBase = setmetatable({}, RagaBase_meta)
 
 
 
-
+RagaBase.name        = nil                       -- e.g. "nerf"
+RagaBase.prompt_char = nil                       -- e.g. "$"
+RagaBase.keymap      = nil                       -- e.g. require "helm:keymap/raga_name"
+RagaBase.target      = nil                       -- `msg.to` path string, e.g. "agents.edit"
+RagaBase.lex         = require "helm:lex" . null -- Lexer to use for the command zone
 
 
 

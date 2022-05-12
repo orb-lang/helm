@@ -19,12 +19,16 @@ local RagaBase_meta = {}
 local RagaBase = setmetatable({}, RagaBase_meta)
 #/lua
 
-When creating a new raga, remember to set:
+Ragas have several properties, some of which have sensible defaults,
+others must be set explicitly for each:
 
-#!lua-example
-RagaBase.name = "raga_base"
-RagaBase.prompt_char = "$"
-#/lua-example
+#!lua
+RagaBase.name        = nil                       -- e.g. "nerf"
+RagaBase.prompt_char = nil                       -- e.g. "$"
+RagaBase.keymap      = nil                       -- e.g. require "helm:keymap/raga_name"
+RagaBase.target      = nil                       -- `msg.to` path string, e.g. "agents.edit"
+RagaBase.lex         = require "helm:lex" . null -- Lexer to use for the command zone
+#/lua
 
 
 ** <Raga>.getCursorPosition()
