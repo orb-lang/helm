@@ -12,6 +12,7 @@ local Search = clone(EditBase, 2)
 Search.name = "search"
 Search.prompt_char = "⁉️"
 Search.keymap = require "helm:keymap/search"
+Search.target = "agents.search"
 
 
 
@@ -33,11 +34,14 @@ end
 
 
 
-function Search.onShift(modeS)
-   EditBase.onShift(modeS)
-   modeS:agent'search':update(modeS)
-   modeS.zones.command.contents.suggestions = modeS:agent'search':window()
-   modeS:bindZone("results", "search", Resbuf, { scrollable = true })
+function Search.onShift()
+   EditBase.onShift()
+   send { to = "agents.search", method = "update" }
+   -- #todo this messing directly with the Txtbuf is bad
+   local txtbuf = send { to = "zones.command", field = "contents" }
+   txtbuf.suggestions = send { to = "agents.search", method = "window" }
+   send { method = "bindZone",
+      "results", "search", Resbuf, { scrollable = true }}
 end
 
 

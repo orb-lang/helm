@@ -18,17 +18,9 @@ end
 ```
 
 ```lua
-return Keymap({
-   target = "agents.search",
-   bindings = parts.list_selection
-}, {
-   target = "agents.search",
-   bindings = action_bindings
-}, {
-   target = "agents.edit",
-   bindings = parts.basic_editing
-}, {
-   target = "modeS",
-   bindings = parts.global_commands
-})
+return Keymap(
+parts.list_selection,
+action_bindings,
+parts.set_targets("agents.edit", parts.basic_editing),
+parts.global_commands)
 ```

@@ -37,6 +37,8 @@ local Nerf = clone(EditBase, 2)
 Nerf.name = "nerf"
 Nerf.prompt_char = "👉"
 Nerf.keymap = require "helm:keymap/nerf"
+Nerf.target = "agents.edit"
+Nerf.lex = require "helm:lex" . lua_thor
 #/lua
 
 
@@ -66,11 +68,14 @@ results zone.
 
 #!lua
 local Resbuf = require "helm:buf/resbuf"
-function Nerf.onShift(modeS)
-   EditBase.onShift(modeS)
-   modeS:bindZone("results", "results", Resbuf, { scrollable = true })
-   local txtbuf = modeS.zones.command.contents
-   txtbuf.suggestions = modeS:agent'suggest':window()
+function Nerf.onShift()
+   EditBase.onShift()
+   -- #todo only if not already a Resbuf?
+   send { method = "bindZone",
+      "results", "results", Resbuf, { scrollable = true }}
+   -- #todo this messing directly with the Txtbuf is bad
+   local txtbuf = send { to = "zones.command", field = "contents" }
+   txtbuf.suggestions = send { to = "agents.suggest", method = "window" }
 end
 #/lua
 

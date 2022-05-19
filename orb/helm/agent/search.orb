@@ -30,7 +30,7 @@ function SearchAgent.update(agent)
    -- #todo most people would need to refer to 'modeS.hist' here,
    -- but this happens to be dispatched *by* modeS directly. Need
    -- more intelligent cooperation between modeS and Maestro
-   agent.last_collection = send { to = "hist", method = "search", frag }
+   agent.last_collection = agent :send { to = "hist", method = "search", frag }
    agent:contentsChanged()
 end
 #/lua
@@ -67,7 +67,7 @@ SearchAgent.acceptSelected = SearchAgent.acceptAtIndex
 #!lua
 function SearchAgent.activateOnFirstKey(agent)
    if agent :send { to = "agents.edit", method = "isEmpty" } then
-      agent :send { method = "shiftMode", "search" }
+      agent :send { method = "pushMode", "search" }
       return true
    else
       return false

@@ -19,22 +19,26 @@ local RagaBase_meta = {}
 local RagaBase = setmetatable({}, RagaBase_meta)
 ```
 
-When creating a new raga, remember to set:
+Ragas have several properties, some of which have sensible defaults,
+others must be set explicitly for each:
 
-```lua-example
-RagaBase.name = "raga_base"
-RagaBase.prompt_char = "$"
+```lua
+RagaBase.name        = nil                       -- e.g. "nerf"
+RagaBase.prompt_char = nil                       -- e.g. "$"
+RagaBase.keymap      = nil                       -- e.g. require "helm:keymap/raga_name"
+RagaBase.target      = nil                       -- `msg.to` path string, e.g. "agents.edit"
+RagaBase.lex         = require "helm:lex" . null -- Lexer to use for the command zone
 ```
 
 
-## <Raga>\.getCursorPosition\(modeS\)
+## <Raga>\.getCursorPosition\(\)
 
 Computes and returns the position for the terminal cursor,
 or nil if it should be hidden\. This is a reasonable default
 as not all ragas need the cursor shown\.
 
 ```lua
-function RagaBase.getCursorPosition(modeS)
+function RagaBase.getCursorPosition()
    return nil
 end
 ```
@@ -67,24 +71,24 @@ end
 ```
 
 
-### <Raga>\.onShift\(modeS\)
+### <Raga>\.onShift\(\)
 
 Called when first switching to the raga\. Provides an opportunity to
 reconfigure zones or perform other set\-up work\.
 
 ```lua
-function RagaBase.onShift(modeS)
+function RagaBase.onShift()
    return
 end
 ```
 
 
-### <Raga>\.onUnshift\(modeS\)
+### <Raga>\.onUnshift\(\)
 
 Opposite of onShift\-\-called when switching away to another raga\.
 
 ```lua
-function RagaBase.onUnshift(modeS)
+function RagaBase.onUnshift()
    return
 end
 ```

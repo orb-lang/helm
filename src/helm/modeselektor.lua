@@ -18,16 +18,6 @@
 
 
 
-
-
-
-
-local act = require "actor:lib"
-local borrowmethod = assert(act.borrowmethod)
-local getter = assert(act.getter)
-
-
-
 local Historian  = require "helm:historian"
 local Maestro    = require "helm:maestro"
 local Zoneherd   = require "helm:zone"
@@ -80,10 +70,23 @@ cluster.extendbuilder(new, function(_new, modeS, max_extent, writer, db)
    rawset(__G, "stat", modeS.status)
    -- so lets make this easy to knock out ]]
    modeS.zones = Zoneherd(modeS, writer)
-   modeS.maestro = Maestro(modeS)
+   modeS.maestro = Maestro()
 
    return modeS
 end)
+
+
+
+
+
+
+
+
+
+
+function ModeS._pushMode(modeS, raga)
+   modeS.maestro:pushMode(raga)
+end
 
 
 
@@ -102,27 +105,19 @@ function ModeS.setup(modeS)
    -- #todo ugh this is clearly the wrong place/way to do this
    local session = modeS.hist.session
    modeS:_agent'session':update(session)
+   local initial_raga = "nerf"
    -- If we are loading an existing session, start in review mode
    if session.session_id then
-      modeS.raga_default = "review"
+      initial_raga = "review"
    elseif session.session_title then
       -- #todo should probably do this somewhere else--maybe raga/nerf.onShift,
       -- but it's certainly not Nerf-specific...
-      modeS:setStatusLine(
+      modeS:_agent'status':update(
          session.mode == "macro" and "macro" or "new_session",
          session.session_title)
    else
-      modeS:setStatusLine("default")
+      modeS:_agent'status':update("default")
    end
-
-   -- #todo this interaction is messy, would be nice to be able to use yielded
-   -- messages but it happens at render time, outside a coroutine.
-   local agents = modeS.maestro.agents
-   --  #Todo  This appears to be the only use of borrowmethod,
-   --         if we can replace it with a message, we should
-   agents.prompt.continuationLines = borrowmethod(agents.edit,
-                                                  "continuationLines")
-   agents.prompt.editTouched = getter(agents.edit, "touched")
 
    -- Set up common Agent -> Zone bindings
    -- Note we don't do results here because that varies from raga to raga
@@ -138,7 +133,7 @@ function ModeS.setup(modeS)
    modeS:bindZone("suggest",  "suggest",    Resbuf)
 
    -- Load initial raga. Need to process yielded messages from `onShift`
-   modeS :task() :shiftMode(modeS.raga_default)
+   modeS :task() :_pushMode(initial_raga)
 
    -- hackish: we check the historian for a deque of lines to load and if
    -- we have it, we just eval them into existence.
@@ -192,7 +187,7 @@ end
 
 local Point = require "anterm:point"
 function ModeS.placeCursor(modeS)
-   local point = modeS.raga.getCursorPosition(modeS)
+   local point = modeS.maestro.raga.getCursorPosition()
    if point then
       modeS.write(a.jump(point), a.cursor.show())
    end
@@ -208,7 +203,7 @@ end
 
 function ModeS.paint(modeS)
    modeS.zones:paint(modeS)
-   modeS:placeCursor(modeS)
+   modeS:placeCursor()
    return modeS
 end
 
@@ -232,26 +227,13 @@ local create, resume, status = assert(coroutine.create),
 
 
 
-
-
-
-
-
-
-
-function ModeS.task(modeS)
-   return modeS.__tasker
-end
-
-
-
-
 function ModeS.delegator(modeS, msg)
-   local to = msg.to or msg.sendto
-   if to and to:find("^agents%.") then
+   if msg.method == "pushMode" or msg.method == "popMode" or
+      (msg.to and msg.to:find("^agents%.")) then
       s:chat("sending a message to maestro: %s", ts(msg))
       return modeS.maestro(msg)
    else
+      -- This is effectively modeS:super'delegate'(msg)
       return pack(modeS:dispatch(msg))
    end
 end
@@ -269,104 +251,14 @@ end
 
 
 
-
-
-ModeS.raga_default = "nerf"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-local Nerf      = require "helm:raga/nerf"
-local Search    = require "helm:raga/search"
-local Complete  = require "helm:raga/complete"
-local Page      = require "helm:raga/page"
-local Modal     = require "helm:raga/modal"
-local Review    = require "helm:raga/review"
-local EditTitle = require "helm:raga/edit-title"
-
-local Lex        = require "helm:lex"
-
-ModeS.closet = { nerf =       { raga = Nerf,
-                                lex  = Lex.lua_thor },
-                 search =     { raga = Search,
-                                lex  = Lex.null },
-                 complete =   { raga = Complete,
-                                lex  = Lex.lua_thor },
-                 page =       { raga = Page,
-                                lex  = Lex.null },
-                 review =     { raga = Review,
-                                lex  = Lex.null },
-                 edit_title = { raga = EditTitle,
-                                lex = Lex.null },
-                 modal =      { raga = Modal,
-                                lex  = Lex.null } }
-
-function ModeS.shiftMode(modeS, raga_name)
-   if raga_name == "default" then
-      raga_name = modeS.raga_default
+local clone = assert(core.table.clone)
+function ModeS.inbox(modeS, msg)
+   if msg.to == "modeS" then
+      msg = clone(msg)
+      msg.to = nil
+      return modeS, msg
    end
-   -- Stash the current lexer associated with the current raga
-   -- Currently we never change the lexer separate from the raga,
-   -- but this will change when we start supporting multiple languages
-   -- Guard against nil raga or lexer during startup
-   if modeS.raga then
-      modeS.raga.onUnshift(modeS)
-      modeS.closet[modeS.raga.name].lex = modeS:_agent'edit'.lex
-   end
-   -- Switch in the new raga and associated lexer
-   modeS.raga = modeS.closet[raga_name].raga
-   modeS:_agent'edit':setLexer(modeS.closet[raga_name].lex)
-   modeS.raga.onShift(modeS)
-   -- #todo feels wrong to do this here, like it's something the raga
-   -- should handle, but onShift feels kinda like it "doesn't inherit",
-   -- like it's not something you should actually super-send, so there's
-   -- not one good place to do this.
-   modeS:_agent'prompt':update(modeS.raga.prompt_char)
    return modeS
-end
-
-
-
-
-
-
-
-
-
-
-
-
-function ModeS.setDefaultMode(modeS, raga_name)
-   modeS.raga_default = raga_name
 end
 
 
@@ -411,15 +303,6 @@ end
 
 
 
-function ModeS.__call(modeS, event)
-   return modeS :task() :act(event)
-end
-
-
-
-
-
-
 
 
 
@@ -452,21 +335,7 @@ ModeS.agent = ModeS._agent -- not finishing this right now
 
 
 
-
-
-function ModeS.setStatusLine(modeS, status_name, ...)
-   modeS:_agent'status':update(status_name, ...)
-end
-
-
-
-
-
-
-
-
-
-function ModeS.quit(modeS)
+function ModeS.quitHelm(modeS)
    -- #todo it's obviously terrible to have code specific to a particular
    -- piece of functionality in a supervisory class like this.
    -- To do this right, we probably need a proper raga stack. Then -n could
@@ -476,17 +345,20 @@ function ModeS.quit(modeS)
    -- the current raga. Though, a Ctrl-Q from e.g. Search would still want
    -- to actually quit, so it's not quite that simple...
    -- Anyway. Also, don't bother saving the session if it has no premises...
-   if _Bridge.args.new_session and modeS.raga_default ~= 'review' then
-      local session = modeS.hist.session
-      if #session > 0 then
+   local session = modeS.hist.session
+   if _Bridge.args.new_session and #session > 0 then
+      local is_reviewing = false
+      for i, raga in modeS.maestro.raga_stack do
+         if raga == "review" then
+            is_reviewing = true
+            break
+         end
+      end
+      if not is_reviewing then
          -- #todo Add the ability to change accepted status of
          -- the whole session to the review interface
          session.accepted = true
-         -- Also, it's horribly hacky to change the "default" raga, but it's
-         -- the only way to make Modal work properly. A proper raga stack
-         -- would *definitely* fix this
-         modeS:setDefaultMode("review")
-         modeS:shiftMode("review")
+         modeS.maestro:pushMode("review")
          return
       end
    end
@@ -498,7 +370,7 @@ function ModeS.quit(modeS)
    if session.mode == "macro" and #session > 0 then
       session:save()
    end
-   modeS:setStatusLine("quit")
+   modeS:_agent'status':update("quit")
    modeS.has_quit = true
 end
 
@@ -550,7 +422,7 @@ end
 local rep = assert(string.rep)
 function ModeS.openHelp(modeS)
    modeS:_agent'pager':update(("abcde "):rep(1000))
-   modeS:shiftMode "page"
+   modeS.maestro:pushMode "page"
 end
 
 function ModeS.openHelpOnFirstKey(modeS)

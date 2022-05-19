@@ -12,6 +12,8 @@ local Complete = clone(EditBase, 2)
 Complete.name = "complete"
 Complete.prompt_char = "💬"
 Complete.keymap = require "helm:keymap/complete"
+Complete.target = "agents.suggest"
+Complete.lex = require "helm:lex" . lua_thor
 
 
 
@@ -29,7 +31,7 @@ function Complete.onTxtbufChanged()
    if send { to = 'agents.suggest', field = 'last_collection' } then
       send { to = 'agents.suggest', method = "selectFirst" }
    else
-      send { to = "modeS", method = "shiftMode", "default" }
+      send { method = "popMode" }
    end
    EditBase.onTxtbufChanged()
 end
@@ -44,7 +46,7 @@ end
 
 
 function Complete.onCursorChanged()
-   send { to = "modeS", method = "shiftMode", "default" }
+   send { method = "popMode" }
    EditBase.onCursorChanged()
 end
 
@@ -57,8 +59,8 @@ end
 
 
 local Point = require "anterm:point"
-function Complete.getCursorPosition(modeS)
-   local point = EditBase.getCursorPosition(modeS)
+function Complete.getCursorPosition()
+   local point = EditBase.getCursorPosition()
    local suggestion = send { to = 'agents.suggest', method = 'selectedItem' }
    local tokens = send { to = 'agents.edit', method = 'tokens' }
    if suggestion then
@@ -79,7 +81,7 @@ end
 
 
 
-function Complete.onShift(modeS)
+function Complete.onShift()
    send { to = 'agents.suggest', method = 'selectFirst' }
 end
 
@@ -90,7 +92,7 @@ end
 
 
 
-function Complete.onUnshift(modeS)
+function Complete.onUnshift()
    send { to = 'agents.suggest', method = 'selectNone' }
 end
 

@@ -209,11 +209,11 @@ end
 
 
 function SessionAgent.editSelectedTitle(agent)
-   agent :send { method = "shiftMode", "edit_title" }
+   agent :send { method = "pushMode", "edit_title" }
 end
 
 function SessionAgent.cancelTitleEditing(agent)
-   agent :send { method = "shiftMode", "review" }
+   agent :send { method = "popMode" }
 end
 
 
@@ -237,7 +237,7 @@ end
 
 function SessionAgent.promptSaveChanges(agent)
    local sesh_title = agent.subject.session_title
-   send { to = "agents.modal", method = "show",
+   agent :send { to = "agents.modal", method = "show",
       'Save changes to the session "' .. sesh_title .. '"?',
       "yes_no_cancel" }
 end

@@ -52,7 +52,7 @@ end
 
 function ResultListAgent.quit(agent)
    agent:selectNone()
-   agent :send { method = "shiftMode", "default" }
+   agent :send { method = "popMode" }
 end
 
 

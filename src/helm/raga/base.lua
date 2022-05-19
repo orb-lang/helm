@@ -23,6 +23,11 @@ local RagaBase = setmetatable({}, RagaBase_meta)
 
 
 
+RagaBase.name        = nil                       -- e.g. "nerf"
+RagaBase.prompt_char = nil                       -- e.g. "$"
+RagaBase.keymap      = nil                       -- e.g. require "helm:keymap/raga_name"
+RagaBase.target      = nil                       -- `msg.to` path string, e.g. "agents.edit"
+RagaBase.lex         = require "helm:lex" . null -- Lexer to use for the command zone
 
 
 
@@ -33,8 +38,7 @@ local RagaBase = setmetatable({}, RagaBase_meta)
 
 
 
-
-function RagaBase.getCursorPosition(modeS)
+function RagaBase.getCursorPosition()
    return nil
 end
 
@@ -73,7 +77,7 @@ end
 
 
 
-function RagaBase.onShift(modeS)
+function RagaBase.onShift()
    return
 end
 
@@ -84,7 +88,7 @@ end
 
 
 
-function RagaBase.onUnshift(modeS)
+function RagaBase.onUnshift()
    return
 end
 

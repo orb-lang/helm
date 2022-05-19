@@ -869,8 +869,8 @@ clears our contents?
 ```lua
 function EditAgent.clear(agent)
    agent:update("")
-   send{ to = "agents.results", method = "clear" }
-   send{ to = "hist", method = "toEnd" }
+   agent :send { to = "agents.results", method = "clear" }
+   agent :send { to = "hist", method = "toEnd" }
 end
 ```
 

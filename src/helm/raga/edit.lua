@@ -20,8 +20,10 @@ local EditBase = clone(RagaBase, 2)
 
 
 
-function EditBase.getCursorPosition(modeS)
-   return modeS.zones.command.bounds:origin() + modeS:agent'edit'.cursor - 1
+function EditBase.getCursorPosition()
+   local command_origin = send { to = "zones.command.bounds", method = "origin" }
+   local edit_cursor = send { to = "agents.edit", field = "cursor" }
+   return command_origin + edit_cursor - 1
 end
 
 

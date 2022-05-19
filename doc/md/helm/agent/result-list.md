@@ -47,12 +47,12 @@ end
 
 ### ResultListAgent:quit\(\)
 
-Quits the raga associated with the agent, returning to the default\.
+Quits the raga associated with the agent, returning to the previous raga\.
 
 ```lua
 function ResultListAgent.quit(agent)
    agent:selectNone()
-   agent :send { method = "shiftMode", "default" }
+   agent :send { method = "popMode" }
 end
 ```
 
