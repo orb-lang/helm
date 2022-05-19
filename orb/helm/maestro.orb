@@ -138,8 +138,8 @@ local function _dispatchOnly(maestro, event)
    for _, handler in ipairs(handlers) do
       handler = clone(handler)
       -- #todo make this waaaaay more flexible
-      if handler.n > 0 then
-         handler[handler.n] = event
+      if handler.n > 0 and not handler[handler.n] then
+        handler[handler.n] = event
       end
       -- #todo using empty-string as a non-nil signpost
       -- should be able to refactor so this is not needed

@@ -11,6 +11,7 @@ local ResultsAgent = require "helm:agent/results"
 
 local math = core.math
 local table = core.table
+local assert = assert(core.fn.assertfmt)
 ```
 
 
@@ -125,9 +126,9 @@ end
 
 #### SessionAgent:\[reverse\]toggleSelectedState\(\)
 
-Toggles the state of the selected line, cycling through "accept", "reject",
-"ignore", "skip"\.
+Toggles the state of the selected line, cycling through "accept", "reject",ignore", "skip"\.
 
+"
 ```lua
 local status_cycle_map = {
    ignore = "accept",
@@ -149,6 +150,21 @@ local status_reverse_map = inverse(status_cycle_map)
 function SessionAgent.reverseToggleSelectedState(agent)
    local premise = agent:selectedPremise()
    premise.status = status_reverse_map[premise.status]
+   agent:contentsChanged()
+   return true
+end
+```
+
+
+#### SessionAgent:setSelectedState\(state\)
+
+Directly set the state of the selected line \(must be one of the valid states\)\.
+
+```lua
+function SessionAgent.setSelectedState(agent, state)
+   local premise = agent:selectedPremise()
+   assert(status_cycle_map[state], "Cannot change to invalid status %s", state)
+   premise.status = state
    agent:contentsChanged()
    return true
 end
