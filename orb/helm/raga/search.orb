@@ -36,11 +36,11 @@ same Window also drives the result zone.
 #!lua
 function Search.onShift()
    EditBase.onShift()
-   send{ to = "agents.search", method = "update" }
+   send { to = "agents.search", method = "update" }
    -- #todo this messing directly with the Txtbuf is bad
-   local txtbuf = send{ to = "zones.command", field = "contents" }
-   txtbuf.suggestions = send{ to = "agents.search", method = "window" }
-   send{ method = "bindZone",
+   local txtbuf = send { to = "zones.command", field = "contents" }
+   txtbuf.suggestions = send { to = "agents.search", method = "window" }
+   send { method = "bindZone",
       "results", "search", Resbuf, { scrollable = true }}
 end
 #/lua

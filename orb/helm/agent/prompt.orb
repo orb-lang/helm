@@ -32,7 +32,7 @@ function PromptAgent.checkTouched(agent)
    -- on the EditAgent because we'll clear stuff prematurely
    -- All of this should be replaced by a handler for an action sent
    -- by the EditAgent (which would replace onTxtbufChanged() as well)
-   agent.touched = agent.touched or agent:send{ to = "agents.edit", field = "touched" }
+   agent.touched = agent.touched or agent :send { to = "agents.edit", field = "touched" }
    return Agent.checkTouched(agent)
 end
 #/lua
@@ -42,7 +42,7 @@ end
 
 #!lua
 function PromptAgent.bufferValue(agent)
-   local continuation_lines = agent:send{ to = "agents.edit",
+   local continuation_lines = agent :send { to = "agents.edit",
                                           method = "continuationLines" }
    return agent.prompt_char .. " " .. ("\n..."):rep(continuation_lines)
 end

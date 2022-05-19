@@ -237,7 +237,7 @@ end
 ```lua
 function SessionAgent.promptSaveChanges(agent)
    local sesh_title = agent.subject.session_title
-   agent:send { to = "agents.modal", method = "show",
+   agent :send { to = "agents.modal", method = "show",
       'Save changes to the session "' .. sesh_title .. '"?',
       "yes_no_cancel" }
 end

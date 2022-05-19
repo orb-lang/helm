@@ -21,8 +21,8 @@ Offset into the `command` zone, based on the Txtbuf's `cursor` property\.
 
 ```lua
 function EditBase.getCursorPosition()
-   local command_origin = send{ to = "zones.command.bounds", method = "origin" }
-   local edit_cursor = send{ to = "agents.edit", field = "cursor" }
+   local command_origin = send { to = "zones.command.bounds", method = "origin" }
+   local edit_cursor = send { to = "agents.edit", field = "cursor" }
    return command_origin + edit_cursor - 1
 end
 ```

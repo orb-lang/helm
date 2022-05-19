@@ -860,8 +860,8 @@ end
 
 function EditAgent.clear(agent)
    agent:update("")
-   agent:send{ to = "agents.results", method = "clear" }
-   agent:send{ to = "hist", method = "toEnd" }
+   agent :send { to = "agents.results", method = "clear" }
+   agent :send { to = "hist", method = "toEnd" }
 end
 
 
