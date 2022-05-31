@@ -348,7 +348,7 @@ function ModeS.quitHelm(modeS)
    local session = modeS.hist.session
    if _Bridge.args.new_session and #session > 0 then
       local is_reviewing = false
-      for i, raga in modeS.maestro.raga_stack do
+      for i, raga in ipairs(modeS.maestro.raga_stack) do
          if raga == "review" then
             is_reviewing = true
             break
