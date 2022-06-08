@@ -37,9 +37,24 @@ end
 
 
 
+function SessionAgent.selectIndex(agent, i)
+   ReviewAgent.selectIndex(agent, i)
+   local premise = agent:selectedPremise()
+   agent :send { to = "agents.edit",
+                 method = "update",
+                 premise and premise.title }
+end
+
+
+
+
+
+
+
+
 
 SessionAgent.valid_statuses = {
-   "ignore", "accept", "reject", "skip" -- #todo make this "trash"
+   "ignore", "accept", "reject", "trash"
 }
 
 

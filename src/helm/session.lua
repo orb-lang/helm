@@ -245,9 +245,9 @@ function Session.save(session)
    else
       session.stmts.update_session:bindkv(session):step()
    end
-   -- First, remove any "skip"ped premises from the session
+   -- First, remove any trashed premises from the session
    for i, premise in ipairs(session) do
-      if premise.status == "skip" then session[i] = nil end
+      if premise.status == "trash" then session[i] = nil end
    end
    compact(session)
    -- And now from the DB (the query picks up session.n directly)

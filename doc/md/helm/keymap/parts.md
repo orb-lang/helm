@@ -91,6 +91,20 @@ parts.list_selection = {
 ```
 
 
+## Run/session review common bindings
+
+```lua
+parts.review_common = {
+   UP = "selectPreviousWrap",
+   DOWN = "selectNextWrap",
+   TAB = "toggleSelectedState",
+   ["S-TAB"] = "reverseToggleSelectedState",
+   ["M-UP"] = "movePremiseUp",
+   ["M-DOWN"] = "movePremiseDown"
+}
+```
+
+
 ## Global commands
 
 Just quit, for now, but I imagine we'll have at least a couple more\.

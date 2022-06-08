@@ -22,7 +22,7 @@ local string = core.string
 
 *** Stringbuf:initComposition(), :clearCaches()
 
-Similar to Sessionbuf we dynamically assign our =_composeOneLine= function,
+Similar to Reviewbuf we dynamically assign our =_composeOneLine= function,
 however ours is vastly simpler.
 
 #!lua

@@ -3,22 +3,13 @@
 
 
 
-local table = core.table
-local clone, splice = assert(table.clone), assert(table.splice)
+local clone = assert(core.table.clone)
 local RagaBase = require "helm:raga/base"
-local Sessionbuf = require "helm:buf/sessionbuf"
+local Reviewbuf = require "helm:buf/reviewbuf"
 
 
 
 local Review = clone(RagaBase, 2)
-Review.name = "review"
-Review.prompt_char = "💬"
-Review.keymap = require "helm:keymap/review"
-Review.target = "agents.session"
-
-
-
-
 
 
 
@@ -37,32 +28,15 @@ function Review.onShift()
    -- think that'll come naturally once we have a raga stack.
    send { to = "zones.suggest", method = "hide" }
 
-   local session_title = send { to = "hist.session", field = "session_title" }
-   send { to = "agents.status", method = "update", "review", session_title }
-
-   local modal_answer = send { to = "agents.modal", method = "answer" }
-   if modal_answer then
-      if modal_answer == "yes" then
-         send { to = "hist.session", method = "save" }
-      end
-      if modal_answer ~= "cancel" then
-         send { to = "modeS", method = "quitHelm" }
-      end
-      return
-   end
+   -- Retrieve the target of the actual concrete raga this is being called for
+   local target = send { to = "raga", field = "target" }
 
    -- #todo Replace with detection of if we're being
    -- created for the first time vs. a pop
-   if send { to = "zones.results.contents", field = "idEst" } ~= Sessionbuf then
+   if send { to = "zones.results.contents", field = "idEst" } ~= Reviewbuf then
       send { method = "bindZone",
-         "results", "session", Sessionbuf, {scrollable = true}}
+         "results", target:gsub("^agents.",""), Reviewbuf, {scrollable = true}}
    end
-   local premise = send { to = "agents.session", method = "selectedPremise" }
-   if not premise then
-      send { to = "agents.session", method = "selectIndex", 1 }
-      premise = send { to = "agents.session", method = "selectedPremise" }
-   end
-   send { to = "agents.edit", method = "update", premise and premise.title}
 end
 
 

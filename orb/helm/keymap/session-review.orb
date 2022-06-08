@@ -1,4 +1,4 @@
-* Review keymap
+* Session-review keymap
 
 #!lua
 local Keymap = require "helm:keymap"
@@ -7,17 +7,12 @@ local parts = require "helm:keymap/parts"
 
 
 #!lua
-return Keymap({
-   UP = "selectPreviousWrap",
-   DOWN = "selectNextWrap",
-   TAB = "toggleSelectedState",
-   ["S-TAB"] = "reverseToggleSelectedState",
+return Keymap(parts.review_common,
+{
    a = { method = "setSelectedState", "accept"},
    r = { method = "setSelectedState", "reject"},
    i = { method = "setSelectedState", "ignore"},
-   s = { method = "setSelectedState", "skip"},
-   ["M-UP"] = "movePremiseUp",
-   ["M-DOWN"] = "movePremiseDown",
+   t = { method = "setSelectedState", "trash"},
    RETURN = "editSelectedTitle",
    ["C-q"] = "promptSaveChanges"
 },

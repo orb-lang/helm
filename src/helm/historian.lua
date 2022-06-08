@@ -447,7 +447,7 @@ local function new(helm_db)
 
    historian:createPreparedStatements(helm_db)
    historian:load()
-   if bridge.args.restart then
+   if bridge.args.restart or bridge.args.interactive_restart then
       local deque = require "deque:deque" ()
       local prev_run = historian.stmts.get_latest_finished_run
                                           :bind(historian.project_id)

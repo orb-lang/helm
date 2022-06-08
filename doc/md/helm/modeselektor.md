@@ -28,6 +28,8 @@ local Txtbuf    = require "helm:buf/txtbuf"
 
 local Actor   = require "actor:actor"
 local Valiant = require "valiant:valiant"
+
+local bridge = require "bridge"
 ```
 
 ```lua
@@ -108,13 +110,16 @@ function ModeS.setup(modeS)
    local initial_raga = "nerf"
    -- If we are loading an existing session, start in review mode
    if session.session_id then
-      initial_raga = "review"
+      initial_raga = "session_review"
    elseif session.session_title then
       -- #todo should probably do this somewhere else--maybe raga/nerf.onShift,
       -- but it's certainly not Nerf-specific...
       modeS:_agent'status':update(
          session.mode == "macro" and "macro" or "new_session",
          session.session_title)
+   elseif bridge.args.interactive_restart then
+      modeS:_agent'run_review':update(modeS.hist.reloads)
+      initial_raga = 'run_review'
    else
       modeS:_agent'status':update("default")
    end
@@ -135,9 +140,11 @@ function ModeS.setup(modeS)
    -- Load initial raga. Need to process yielded messages from `onShift`
    modeS :task() :_pushMode(initial_raga)
 
-   -- hackish: we check the historian for a deque of lines to load and if
-   -- we have it, we just eval them into existence.
-   if modeS.hist.reloads then
+   -- hackish: we seem to be keeping away from checking bridge.args
+   -- directly here, but I can't see how to distinguish interactive and
+   -- non-interactive restart otherwise. In the non-interactive case,
+   -- we just eval them into existence.
+   if bridge.args.restart then
       modeS:rerun(modeS.hist.reloads)
       --modeS.hist.reloads = nil
    end
@@ -229,7 +236,7 @@ local create, resume, status = assert(coroutine.create),
 ```lua
 function ModeS.delegator(modeS, msg)
    if msg.method == "pushMode" or msg.method == "popMode" or
-      (msg.to and msg.to:find("^agents%.")) then
+      (msg.to and (msg.to == "raga" or msg.to:find("^agents%."))) then
       s:chat("sending a message to maestro: %s", ts(msg))
       return modeS.maestro(msg)
    else
@@ -349,7 +356,7 @@ function ModeS.quitHelm(modeS)
    if _Bridge.args.new_session and #session > 0 then
       local is_reviewing = false
       for i, raga in ipairs(modeS.maestro.raga_stack) do
-         if raga == "review" then
+         if raga == "session_review" then
             is_reviewing = true
             break
          end
@@ -358,7 +365,7 @@ function ModeS.quitHelm(modeS)
          -- #todo Add the ability to change accepted status of
          -- the whole session to the review interface
          session.accepted = true
-         modeS.maestro:pushMode("review")
+         modeS.maestro:pushMode("session_review")
          return
       end
    end

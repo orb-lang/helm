@@ -67,9 +67,6 @@ function ReviewAgent.selectIndex(agent, index)
       agent:contentsChanged()
       agent:bufferCommand("ensureSelectedVisible")
       local premise = agent:selectedPremise()
-      agent :send { to = "agents.edit",
-                    method = "update",
-                    premise and premise.title }
    end
 end
 ```
@@ -113,25 +110,6 @@ end
 Concrete implementations must supply a list of possible premise/line statuses,
 in the order they should cycle when pressing "tab"\.
 
-```lua
-local function _build_status_maps(agent)
-   if agent.status_cycle_map then return end
-   agent.status_cycle_map = {}
-   agent.status_reverse_map = {}
-   for i = 1, #agent.valid_statuses do
-      local this_status = agent.valid_statuses[i]
-      local prev_status = i == 1
-         and agent.valid_statuses[#agent.valid_statuses]
-         or agent.valid_statuses[i - 1]
-      local next_status = i == #agent.valid_statuses
-         and agent.valid_statuses[1]
-         or agent.valid_statuses[i + 1]
-      agent.status_cycle_map[this_status] = next_status
-      agent.status_reverse_map[this_status] = prev_status
-   end
-end
-```
-
 
 #### ReviewAgent:\[reverse\]toggleSelectedState\(\)
 
@@ -139,19 +117,13 @@ Toggles the state of the selected line, cycling through the valid statuses\.
 
 ```lua
 function ReviewAgent.toggleSelectedState(agent)
-   _build_status_maps(agent)
-   local premise = agent:selectedPremise()
-   premise.status = agent.status_cycle_map[premise.status]
-   agent:contentsChanged()
-   return true
+   local new_status = agent.status_cycle_map[agent:selectedPremise().status]
+   return agent:setSelectedState(new_status)
 end
 
 function ReviewAgent.reverseToggleSelectedState(agent)
-   _build_status_maps(agent)
-   local premise = agent:selectedPremise()
-   premise.status = agent.status_reverse_map[premise.status]
-   agent:contentsChanged()
-   return true
+   local new_status = agent.status_reverse_map[agent:selectedPremise().status]
+   return agent:setSelectedState(new_status)
 end
 ```
 
@@ -163,7 +135,8 @@ Directly set the state of the selected line \(must be one of the valid states\)\
 ```lua
 function ReviewAgent.setSelectedState(agent, state)
    local premise = agent:selectedPremise()
-   assert(status_cycle_map[state], "Cannot change to invalid status %s", state)
+   if premise.status == state then return end
+   assert(agent.status_cycle_map[state], "Cannot change to invalid status %s", state)
    premise.status = state
    agent:contentsChanged()
    return true
@@ -281,11 +254,24 @@ end
 ### ReviewAgent:\_init\(\)
 
 ```lua
+
 function ReviewAgent._init(agent)
    Agent._init(agent)
    agent.selected_index = 0
    agent.edit_agents = {}
    agent.results_agent = ResultsAgent()
+   agent.status_cycle_map = {}
+   agent.status_reverse_map = {}
+   for i, this_status in ipairs(agent.valid_statuses) do
+      local prev_status = i == 1
+         and agent.valid_statuses[#agent.valid_statuses]
+         or agent.valid_statuses[i - 1]
+      local next_status = i == #agent.valid_statuses
+         and agent.valid_statuses[1]
+         or agent.valid_statuses[i + 1]
+      agent.status_cycle_map[this_status] = next_status
+      agent.status_reverse_map[this_status] = prev_status
+   end
 end
 ```
 
