@@ -43,8 +43,36 @@ end
 
 
 
-RunReviewAgent.valid_statuses = { "keep", "trash", "insert" }
 
+
+
+
+
+
+
+
+
+
+RunReviewAgent.valid_statuses = { "keep", "insert", "trash" }
+RunReviewAgent.was_inserting = false
+
+
+
+
+
+
+
+
+
+
+
+
+function RunReviewAgent.insertLine(agent)
+   insert(agent.subject, agent.selected_index, { line = "", status = "insert" } )
+   for i = agent.selected_index, #agent.subject do
+      agent:_updateEditAgent(i)
+   end
+end
 
 
 
@@ -57,31 +85,59 @@ RunReviewAgent.valid_statuses = { "keep", "trash", "insert" }
 
 
 local remove = assert(table.remove)
+function RunReviewAgent.cancelInsertion(agent)
+   if agent:selectedPremise().status ~= "insert" then return end
+
+   remove(agent.subject, agent.selected_index)
+   -- Remove the *last* EditAgent iff there is one,
+   -- then update the others to preserve bindings
+   agent.edit_agents[#agent.subject + 1] = nil
+   agent:bufferCommand("editAgentRemoved", #agent.subject + 1)
+   for i = agent.selected_index, #agent.subject do
+      agent:_updateEditAgent(i)
+   end
+   agent.was_inserting = true
+end
+
+
+
+
+
+
+
+
+
 function RunReviewAgent.setSelectedState(agent, state)
    local premise = agent:selectedPremise()
    if premise.status == state then return end
-   if premise.status == "insert" then
-      -- Switching out of special "insert" state,
-      -- remove temporary blank line
-      remove(agent.subject, agent.selected_index + 1)
-      -- Remove the *last* EditAgent iff there is one,
-      -- then update the others to preserve bindings
-      agent.edit_agents[#agent.subject + 1] = nil
-      agent:bufferCommand("editAgentRemoved", #agent.subject + 1)
-      for i = agent.selected_index + 1, #agent.subject do
-         agent:_updateEditAgent(i)
+   -- Any status change clears the `was_inserting` flag, *except* canceling
+   -- out of insertion, which sets it instead. Save it locally and clear it
+   -- before deciding what to do, that way it can just be *re*-set in the
+   -- one case that needs it.
+   local was_inserting = agent.was_inserting
+   agent.was_inserting = false
+   if state == "insert" then
+      if was_inserting then
+         -- #todo this is dependent on only having two non-insert statuses,
+         -- if there were more, we would need to know the intended
+         -- cycle direction, so this would need to become an assertion failure
+         -- and we would have to handle this in overrides of
+         -- :[reverse]ToggleSelectedState
+         state = premise.status == "keep" and "trash" or "keep"
+         ReviewAgent.setSelectedState(agent, state)
+      else
+         agent:insertLine()
       end
-   elseif state == "insert" then
-      -- Switching to special "insert" state,
-      -- add a blank line below the selected premise
-      -- Use an otherwise-invalid state--this line should never be selected
-      -- except when editing it, so it cannot receive a Tab keypress
-      insert(agent.subject, agent.selected_index + 1, { line = "", status = "ignore" } )
-      for i = agent.selected_index + 1, #agent.subject do
-         agent:_updateEditAgent(i)
+   else
+      -- Need to explicitly check here because we don't want to change another
+      -- premise's status when canceling out of insertion. Setting the flag
+      -- means the change will occur the *next* time tab is pressed
+      if premise.status == "insert" then
+         agent:cancelInsertion()
+      else
+         ReviewAgent.setSelectedState(agent, state)
       end
    end
-   return ReviewAgent.setSelectedState(agent, state)
 end
 
 
@@ -92,34 +148,37 @@ end
 
 
 
-local clamp = assert(core.math.clamp)
+
+
+function RunReviewAgent.selectionChanged(agent)
+   agent.was_inserting = false
+   ReviewAgent.selectionChanged(agent)
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function RunReviewAgent.selectIndex(agent, index)
-   index = #agent.subject == 0
-      and 0
-      or clamp(index, 1, #agent.subject)
-   if index ~= agent.selected_index
-      and agent:selectedPremise().status == "insert" then
-      agent:setSelectedState("keep")
-   end
+   agent:cancelInsertion()
    ReviewAgent.selectIndex(agent, index)
 end
-
-
-
-
-
-
-
-
-
-
 function RunReviewAgent.selectNextWrap(agent)
-   if agent:selectedPremise().status == "insert"
-      and agent.selected_index + 1 == #agent.subject then
-      return agent:selectIndex(1)
-   else
-      return ReviewAgent.selectNextWrap(agent)
-   end
+   agent:cancelInsertion()
+   ReviewAgent.selectNextWrap(agent)
+end
+function RunReviewAgent.selectPreviousWrap(agent)
+   agent:cancelInsertion()
+   ReviewAgent.selectPreviousWrap(agent)
 end
 
 
@@ -143,8 +202,8 @@ end
 
 
 
-
 function RunReviewAgent.cancelInsertEditing(agent)
+   agent:cancelInsertion()
    agent :send { to = "agents.edit", method = "clear" }
    agent :send { method = "popMode" }
 end
@@ -158,14 +217,17 @@ end
 
 function RunReviewAgent.acceptInsertion(agent)
    local line = agent :send { to = "agents.edit", method = "contents" }
+   if line:find("^%s*$") then
+      agent:cancelInsertEditing()
+      return
+   end
    agent :send { to = "agents.edit", method = "clear" }
-   local new_premise = agent.subject[agent.selected_index + 1]
-   new_premise.line = line
-   new_premise.status = "keep"
-   agent:_updateEditAgent(agent.selected_index + 1)
+   local premise = agent:selectedPremise()
+   premise.line = line
    -- Switch out the status without going through the usual channels
    -- so that we don't remove the newly-added premise in the process
-   agent:selectedPremise().status = "keep"
+   premise.status = "keep"
+   agent:_updateEditAgent(agent.selected_index)
    agent:selectNextWrap()
    send { method = "popMode" }
 end

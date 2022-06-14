@@ -56,6 +56,21 @@ end
 
 
 
+
+
+function ReviewAgent.selectionChanged(agent)
+      agent:_updateResultsAgent()
+      agent:contentsChanged()
+      agent:bufferCommand("ensureSelectedVisible")
+end
+
+
+
+
+
+
+
+
 local clamp = assert(math.clamp)
 function ReviewAgent.selectIndex(agent, index)
    index = #agent.subject == 0
@@ -63,10 +78,7 @@ function ReviewAgent.selectIndex(agent, index)
       or clamp(index, 1, #agent.subject)
    if index ~= agent.selected_index then
       agent.selected_index = index
-      agent:_updateResultsAgent()
-      agent:contentsChanged()
-      agent:bufferCommand("ensureSelectedVisible")
-      local premise = agent:selectedPremise()
+      agent:selectionChanged()
    end
 end
 

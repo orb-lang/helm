@@ -51,6 +51,21 @@ end
 ### Selection, scrolling, etc
 
 
+#### ReviewAgent:selectionChanged\(\)
+
+Notification that the selected item in the list has changed\. Update the
+results display and scroll the selection into view\. Our displayed contents
+change as well because of the selection highlight\.
+
+```lua
+function ReviewAgent.selectionChanged(agent)
+      agent:_updateResultsAgent()
+      agent:contentsChanged()
+      agent:bufferCommand("ensureSelectedVisible")
+end
+```
+
+
 #### ReviewAgent:selectIndex\(index\)
 
 Select the line at `index` in the session for possible editing\.
@@ -63,10 +78,7 @@ function ReviewAgent.selectIndex(agent, index)
       or clamp(index, 1, #agent.subject)
    if index ~= agent.selected_index then
       agent.selected_index = index
-      agent:_updateResultsAgent()
-      agent:contentsChanged()
-      agent:bufferCommand("ensureSelectedVisible")
-      local premise = agent:selectedPremise()
+      agent:selectionChanged()
    end
 end
 ```
