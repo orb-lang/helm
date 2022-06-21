@@ -171,7 +171,7 @@ function Historian.persist(historian, line, results)
       historian.insert_line:bindkv { project = historian.project_id,
                                      line    = blob(line) })
    local line_id = historian.stmts.lastRowId()
-   insert(historian.line_ids, line_id)
+   historian.result_buffer[line_id] = results
 
    -- Then the run action indicating it was just evaluated
    local run_action = { run_id  = historian.run.run_id,
@@ -199,6 +199,9 @@ function Historian.persist(historian, line, results)
          queue:pop()
          -- inform the Session that persisted results are available
          -- #todo this *so badly* needs to be an Action
+         -- Should probably also be called 'resultsPersisted' since the
+         -- live results are available immediately. We might also want to
+         -- cache the stringified/persisted results alongside the live ones
          if historian.session then
             historian.session:resultsAvailable(line_id, results_tostring)
          end
@@ -245,17 +248,50 @@ function Historian.append(historian, line, results, success)
       -- don't bother
       return false
    end
+   if not success then results = nil end
+   local line_id = historian:persist(line, results)
    historian.n = historian.n + 1
    historian[historian.n] = line
-   if not success then results = nil end
-   historian.result_buffer[historian.n] = results
-   local line_id = historian:persist(line, results)
+   historian.line_ids[historian.n] = line_id
    -- #todo this should be an Action--actually we should be in a handler for
    -- one action (e.g. 'evalCompleted') and issue another (e.g. 'lineStored')
    if historian.session then
       historian.session:append(line_id, line, results)
    end
    return true
+end
+
+
+
+
+
+
+
+
+
+
+local db_result_M = assert(persist_tabulate.db_result_M)
+
+function Historian.resultsFor(historian, line_id)
+   if historian.result_buffer[line_id] then
+      return historian.result_buffer[line_id]
+   end
+   local stmt = historian.get_results
+   stmt:bindkv {line_id = line_id}
+   local results = stmt :resultset 'i'
+   if results then
+      results = results[1]
+      results.n = #results
+      for i = 1, results.n do
+         -- stick the result in a table to enable repr-ing
+         results[i] = {results[i]}
+         setmetatable(results[i], db_result_M)
+      end
+   end
+   stmt:reset()
+   -- may as well memoize the database call, while we're here
+   historian.result_buffer[line_id] = results
+   return results
 end
 
 
@@ -327,34 +363,14 @@ end
 
 
 
-local db_result_M = assert(persist_tabulate.db_result_M)
-
 local function _setCursor(historian, cursor)
    historian.cursor = cursor
    local line = historian[cursor]
    if not line then
       return nil, nil
    end
-   if historian.result_buffer[cursor] then
-      return line, historian.result_buffer[cursor]
-   end
    local line_id = historian.line_ids[cursor]
-   local stmt = historian.get_results
-   stmt:bindkv {line_id = line_id}
-   local results = stmt :resultset 'i'
-   if results then
-      results = results[1]
-      results.n = #results
-      for i = 1, results.n do
-         -- stick the result in a table to enable repr-ing
-         results[i] = {results[i]}
-         setmetatable(results[i], db_result_M)
-      end
-   end
-   stmt:reset()
-   -- may as well memoize the database call, while we're here
-   historian.result_buffer[cursor] = results
-   return line, results
+   return line, historian:resultsFor(line_id)
 end
 
 
