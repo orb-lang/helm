@@ -13,6 +13,7 @@ return Keymap(parts.review_common,
    n = { method = "setSelectedState", "insert"},
    t = { method = "setSelectedState", "trash"},
    RETURN = "editInsertedLine",
+   ["C-RETURN"] = "evalAndResume",
    ["M-e"] = "evalAndResume"
 },
 parts.set_targets("agents.run_review.results_agent", parts.cursor_scrolling),

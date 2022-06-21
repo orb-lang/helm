@@ -257,6 +257,7 @@ function RunReviewAgent.evalAndResume(agent)
       end
    end
    agent :send { method = "rerun", to_run }
+   agent :send { to = "agents.status", method = "update", "default" }
    agent :send { method = "pushMode", "nerf" }
 end
 ```
