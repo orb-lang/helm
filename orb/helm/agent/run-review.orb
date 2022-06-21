@@ -26,7 +26,10 @@ function RunReviewAgent.update(agent, lines)
    while not lines:isEmpty() do
       insert(agent.subject, { line = lines:pop(), status = "keep" })
    end
-   agent.selected_index = #agent.subject == 0 and 0 or 1
+   if #agent.subject == 0 then
+      insert(agent.subject, { line = "", status = "insert" })
+   end
+   agent.selected_index = 1
    agent:_updateResultsAgent()
    -- Update any EditAgents we have without creating any more
    for index in pairs(agent.edit_agents) do
@@ -86,7 +89,11 @@ isn't in "insert" state.
 #!lua
 local remove = assert(table.remove)
 function RunReviewAgent.cancelInsertion(agent)
-   if agent:selectedPremise().status ~= "insert" then return end
+   if agent:selectedPremise().status ~= "insert"
+      -- Don't remove an "insert" premise if it's the very last one
+      or #agent.subject == 1 then
+         return
+   end
 
    remove(agent.subject, agent.selected_index)
    -- Remove the *last* EditAgent iff there is one,
@@ -242,9 +249,7 @@ Finishes the review process, evaluating all non-trashed lines.
 local Deque = require "deque:deque"
 function RunReviewAgent.evalAndResume(agent)
    -- Clear out any insertion-in-progress
-   if agent:selectedPremise().status == "insert" then
-      agent:setSelectedState("keep")
-   end
+   agent:cancelInsertion()
    local to_run = Deque()
    for _, premise in ipairs(agent.subject) do
       if premise.status == "keep" then
