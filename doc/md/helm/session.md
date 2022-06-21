@@ -190,14 +190,9 @@ determines whether it is marked as accepted or not\.
 function Session.append(session, line_id, line, results)
    -- Require manual approval of all lines by default,
    -- but do include them in the session, i.e. start with 'ignore' status
-   local status = 'ignore'
-   -- In macro mode we instead accept all lines with results by default
-   if session.mode == "macro" and results then
-      status = 'accept'
-   end
    local premise = {
       title = "",
-      status = status,
+      status = 'ignore',
       line = line,
       old_line_id = nil,
       line_id = line_id,
@@ -305,8 +300,10 @@ new = function(db, project_id, title_or_index, cfg)
          session.accepted = result.accepted ~= 0
       end
    end
-   for k, v in pairs(cfg) do
-      session[k] = v
+   if cfg then
+      for k, v in pairs(cfg) do
+         session[k] = v
+      end
    end
    return session
 end

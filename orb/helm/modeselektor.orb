@@ -103,25 +103,26 @@ should mock it.
 
 #!lua
 function ModeS.setup(modeS)
-   -- Session-related setup
-   -- #todo ugh this is clearly the wrong place/way to do this
-   local session = modeS.hist.session
-   modeS:_agent'session':update(session)
    local initial_raga = "nerf"
-   -- If we are loading an existing session, start in review mode
-   if session.session_id then
-      initial_raga = "session_review"
-   elseif session.session_title then
-      -- #todo should probably do this somewhere else--maybe raga/nerf.onShift,
-      -- but it's certainly not Nerf-specific...
-      modeS:_agent'status':update(
-         session.mode == "macro" and "macro" or "new_session",
-         session.session_title)
-   elseif bridge.args.interactive_restart then
+   modeS:_agent'status':update("default")
+   -- Session-related setup
+   -- #todo I feel like it might be better to do the session load explicitly
+   -- here rather than in the Historian constructor
+   local session = modeS.hist.session
+   if session then
+      modeS:_agent'session':update(session)
+      -- If we are loading an existing session, start in review mode
+      if session.session_id then
+         initial_raga = "session_review"
+      elseif session.session_title then
+         -- #todo should probably do this somewhere else
+         modeS:_agent'status':update("new_session", session.session_title)
+      end
+   end
+
+   if bridge.args.interactive_restart then
       modeS:_agent'run_review':update(modeS.hist.reloads)
       initial_raga = 'run_review'
-   else
-      modeS:_agent'status':update("default")
    end
 
    -- Set up common Agent -> Zone bindings
@@ -351,7 +352,6 @@ function ModeS.quitHelm(modeS)
    -- rather than an explicitly-invoked command, and Ctrl-Q would just pop
    -- the current raga. Though, a Ctrl-Q from e.g. Search would still want
    -- to actually quit, so it's not quite that simple...
-   -- Anyway. Also, don't bother saving the session if it has no premises...
    local session = modeS.hist.session
    if _Bridge.args.new_session and #session > 0 then
       local is_reviewing = false
@@ -372,11 +372,6 @@ function ModeS.quitHelm(modeS)
    -- #todo handle this better--as an event of sorts, maybe?
    -- @atman: wait, I have an idea!
    modeS.hist:close()
-   -- this is just to commit the end of the run, right now
-   local session = modeS.hist.session
-   if session.mode == "macro" and #session > 0 then
-      session:save()
-   end
    modeS:_agent'status':update("quit")
    modeS.has_quit = true
 end

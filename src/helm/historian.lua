@@ -198,7 +198,10 @@ function Historian.persist(historian, line, results)
          if not done then return nil end
          queue:pop()
          -- inform the Session that persisted results are available
-         historian.session:resultsAvailable(line_id, results_tostring)
+         -- #todo this *so badly* needs to be an Action
+         if historian.session then
+            historian.session:resultsAvailable(line_id, results_tostring)
+         end
          -- now persist
          for i = 1, n do
             local hash = sha(results_tostring[i])
@@ -247,7 +250,11 @@ function Historian.append(historian, line, results, success)
    if not success then results = nil end
    historian.result_buffer[historian.n] = results
    local line_id = historian:persist(line, results)
-   historian.session:append(line_id, line, results)
+   -- #todo this should be an Action--actually we should be in a handler for
+   -- one action (e.g. 'evalCompleted') and issue another (e.g. 'lineStored')
+   if historian.session then
+      historian.session:append(line_id, line, results)
+   end
    return true
 end
 
@@ -478,34 +485,29 @@ local function new(helm_db)
       historian.reloads = deque
    end
 
-   local session_cfg = {}
-   local session_title = bridge.args.macro or
-                         bridge.args.new_session or
-                         bridge.args.session
-   if bridge.args.macro then
-      session_cfg.accepted = true
-      session_cfg.mode = "macro"
-   end
 
-   local sesh = Session(helm_db,
-                        historian.project_id,
-                        session_title,
-                        session_cfg)
-   -- Asked to create a session that already exists
-   if (bridge.args.new_session or bridge.args.macro) and sesh.session_id then
-      error('A session named "' .. session_title ..
-            '" already exists. You can review it with br helm -s.')
-   end
-   if bridge.args.session then
-      if sesh.session_id then
-         sesh:loadPremises()
-      else
-         -- Asked to review a session that doesn't exist
-         error('No session named "' .. session_title ..
-               '" found. Use br helm -n to create a new session.')
+   local session_title = bridge.args.new_session or
+                         bridge.args.session
+   if session_title then
+      local sesh = Session(helm_db,
+                           historian.project_id,
+                           session_title)
+      -- Asked to create a session that already exists
+      if bridge.args.new_session and sesh.session_id then
+         error('A session named "' .. session_title ..
+               '" already exists. You can review it with br helm -s.')
       end
+      if bridge.args.session then
+         if sesh.session_id then
+            sesh:loadPremises()
+         else
+            -- Asked to review a session that doesn't exist
+            error('No session named "' .. session_title ..
+                  '" found. Use br helm -n to create a new session.')
+         end
+      end
+      historian.session = sesh
    end
-   historian.session = sesh
    historian.result_buffer = setmetatable({}, __result_buffer_M)
    s.verbose = false
    return historian
