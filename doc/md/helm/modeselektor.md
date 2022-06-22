@@ -1,4 +1,4 @@
-# Modeselektor
+b\* Modeselektor
 
   `helm` itself sets up and launches Modeselektor, which is the master and
 commander of `helm`\.
@@ -120,7 +120,7 @@ function ModeS.setup(modeS)
       end
    end
 
-   if bridge.args.interactive_restart then
+   if bridge.args.run then
       modeS:_agent'run_review':update(modeS.hist.reloads)
       initial_raga = 'run_review'
    end
