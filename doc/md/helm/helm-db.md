@@ -1091,6 +1091,29 @@ ORDER BY premise.ordinal
 ;
 ```
 
+```sql
+SELECT
+   session.title AS session_title,
+   session.accepted AS session_accepted,
+   session.session_id,
+   premise.status,
+   premise.title,
+   premise.ordinal,
+   input.line,
+   input.time,
+   input.line_id
+FROM
+   input
+LEFT JOIN premise ON premise.line = input.line_id
+LEFT JOIN session ON session.session_id =  premise.session
+JOIN project ON project.project_id = session.project
+WHERE project.directory = ?
+GROUP BY
+   session.session_id, premise.ordinal
+;
+
+```
+
 Because the results have a many\-to\-one relationship with the lines, we're
 better off retrieving them separately:
 

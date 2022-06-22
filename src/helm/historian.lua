@@ -264,7 +264,7 @@ end
 
 
 local tabulate_some = assert(persist_tabulate.tabulate_some)
-local sha = assert(require "util:sha" . shorthash)
+local sha = assert(require "util:sha" . hash)
 local blob = assert(assert(sql, "sql must be in bridge _G").blob)
 function Historian.persist(historian, line, results)
    if type(results) ~= "table" or results.n == 0 then
