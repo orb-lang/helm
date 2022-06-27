@@ -13,6 +13,10 @@ parts.set_targets("agents.run_review", {
    ESC = "cancelInsertEditing",
    ["C-q"] = "cancelInsertEditing"
 }),
+parts.set_targets("agents.suggest", {
+   TAB = "activateCompletion",
+   ["S-TAB"] = "activateCompletion"
+}),
 parts.basic_editing,
 parts.global_commands)
 
