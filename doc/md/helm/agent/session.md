@@ -16,18 +16,14 @@ local SessionAgent = meta(getmetatable(ReviewAgent))
 ```
 
 
-### SessionAgent:update\(sesh\)
+### SessionAgent:setInitialSelection\(\)
+
+Sessions may be empty, start with the first premise selected iff there is one\.
 
 ```lua
-function SessionAgent.update(agent, sesh)
-   agent.subject = sesh
-   agent.selected_index = #sesh == 0 and 0 or 1
-   agent:_updateResultsAgent()
-   -- Update any EditAgents we have without creating any more
-   for index in pairs(agent.edit_agents) do
-      agent:_updateEditAgent(index)
-   end
-   agent:contentsChanged()
+local insert = assert(table.insert)
+function SessionAgent.setInitialSelection(agent)
+   agent.selected_index = #agent.subject == 0 and 0 or 1
 end
 ```
 

@@ -21,6 +21,26 @@ local ReviewAgent = meta(getmetatable(Agent))
 ```
 
 
+### ReviewAgent:update\(run\)
+
+Configure the agent to display/edit the premises in `run` \(which may be a Run
+or Session for our respective specialist species\)\. Note we defer to an abstract
+`:setInitialSelection()` as empty\-run behavior differs\.
+
+```lua
+function ReviewAgent.update(agent, run)
+   agent.subject = run
+   agent:setInitialSelection()
+   agent:_updateResultsAgent()
+   -- Update any EditAgents we have without creating any more
+   for index in pairs(agent.edit_agents) do
+      agent:_updateEditAgent(index)
+   end
+   agent:contentsChanged()
+end
+```
+
+
 ### ReviewAgent:\_updateEditAgent\(index\), :\_updateResultsAgent\(\)
 
 Since we lazy\-create our subsidiary agents, it's worth a function wrapper to

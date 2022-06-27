@@ -135,27 +135,6 @@ local function _appendPremise(session, premise)
    session[session.n] = premise
 end
 
--- #todo we should ideally ask the Historian for these results,
--- in case it already has them
-local db_result_M = assert(require "repr:persist-tabulate" . db_result_M)
-local function _wrapResults(results)
-   local wrapped = { n = #results }
-   for i = 1, wrapped.n do
-      wrapped[i] = setmetatable({results[i]}, db_result_M)
-   end
-   return wrapped
-end
-
-local function _loadResults(session, premise)
-   local stmt = session.stmts.get_results
-   local results = stmt:bind(premise.old_line_id):resultset()
-   if results then
-      results = _wrapResults(results.repr)
-   end
-   premise.old_result = results
-   stmt:reset()
-end
-
 function Session.loadPremises(session)
    local stmt = session.stmts.get_session_by_id
                   :bind(session.session_id)
@@ -170,15 +149,15 @@ function Session.loadPremises(session)
             old_line_id = result.line_id,
             line_id = result.line_id, -- These will be filled if/when we re-run
             live_result = nil,
-            old_result = nil, -- Need a separate query to load this
+            old_result = send { to = "hist",
+                                method = "resultsFor",
+                                result.line_id },
             new_result = nil
          }
-         _loadResults(session, premise)
          _appendPremise(session, premise)
       end
    end
 end
-
 
 
 
@@ -215,7 +194,7 @@ end
 function Session.resultsAvailable(session, line_id, results)
    for _, premise in ipairs(session) do
       if premise.line_id == line_id then
-         premise.new_result = _wrapResults(results)
+         premise.new_result = results
          break
       end
    end

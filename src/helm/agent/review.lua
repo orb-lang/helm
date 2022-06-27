@@ -27,6 +27,26 @@ local ReviewAgent = meta(getmetatable(Agent))
 
 
 
+
+function ReviewAgent.update(agent, run)
+   agent.subject = run
+   agent:setInitialSelection()
+   agent:_updateResultsAgent()
+   -- Update any EditAgents we have without creating any more
+   for index in pairs(agent.edit_agents) do
+      agent:_updateEditAgent(index)
+   end
+   agent:contentsChanged()
+end
+
+
+
+
+
+
+
+
+
 function ReviewAgent._updateEditAgent(agent, index)
    local edit_agent = agent.edit_agents[index]
    if edit_agent then

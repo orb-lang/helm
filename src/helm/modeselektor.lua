@@ -106,23 +106,37 @@ function ModeS.setup(modeS)
    local initial_raga = "nerf"
    modeS:_agent'status':update("default")
    -- Session-related setup
-   -- #todo I feel like it might be better to do the session load explicitly
-   -- here rather than in the Historian constructor
-   local session = modeS.hist.session
-   if session then
-      modeS:_agent'session':update(session)
-      -- If we are loading an existing session, start in review mode
-      if session.session_id then
-         initial_raga = "session_review"
-      elseif session.session_title then
-         -- #todo should probably do this somewhere else
-         modeS:_agent'status':update("new_session", session.session_title)
+   local session_title = bridge.args.new_session or
+                         bridge.args.session
+   if session_title then
+      modeS.hist:loadOrCreateSession(session_title)
+      if bridge.args.new_session then
+         -- Asked to create a session that already exists
+         if modeS.hist.session.session_id then
+            error('A session named "' .. session_title ..
+                  '" already exists. You can review it with br helm -s.')
+         end
+         modeS:_agent'status':update("new_session", session_title)
       end
+      if bridge.args.session then
+         -- Asked to review a session that doesn't exist
+         if not modeS.hist.session.session_id then
+            error('No session named "' .. session_title ..
+                  '" found. Use br helm -n to create a new session.')
+         end
+         -- If we are loading an existing session, start in review mode
+         initial_raga = "session_review"
+         modeS.hist.session:loadPremises()
+      end
+      modeS:_agent'session':update(modeS.hist.session)
    end
 
-   if bridge.args.run then
-      modeS:_agent'run_review':update(modeS.hist.reloads)
-      initial_raga = 'run_review'
+   if bridge.args.restart or bridge.args.run then
+      modeS.hist:loadPreviousRun()
+      if bridge.args.run then
+         modeS:_agent'run_review':update(modeS.hist.previous_run)
+         initial_raga = 'run_review'
+      end
    end
 
    -- Set up common Agent -> Zone bindings
@@ -141,13 +155,14 @@ function ModeS.setup(modeS)
    -- Load initial raga. Need to process yielded messages from `onShift`
    modeS :task() :_pushMode(initial_raga)
 
-   -- hackish: we seem to be keeping away from checking bridge.args
-   -- directly here, but I can't see how to distinguish interactive and
-   -- non-interactive restart otherwise. In the non-interactive case,
-   -- we just eval them into existence.
    if bridge.args.restart then
-      modeS:rerun(modeS.hist.reloads)
-      --modeS.hist.reloads = nil
+      local deque = require "deque:deque" ()
+      for _, premise in ipairs(modeS.hist.previous_run) do
+         deque:push(premise.line)
+      end
+      modeS:rerun(deque)
+   elseif bridge.args.back then
+      modeS:rerun(modeS.hist:loadRecentLines(bridge.args.back))
    end
 
    modeS.action_complete = true

@@ -194,7 +194,7 @@ local max_col, max_row = stdin:get_winsize()
 local max_extent = Point(max_row, max_col)
 modeS = require "helm/modeselektor" (max_extent, write)
 
-autothread(modeS.setup, modeS)
+autothread(function() modeS:task():setup() end)
 ```
 
 Here we set up a SIGWINCH handler to reflow the helm window when the

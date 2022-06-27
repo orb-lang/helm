@@ -20,22 +20,15 @@ local RunReviewAgent = meta(getmetatable(ReviewAgent))
 
 
 
+
+
+
 local insert = assert(table.insert)
-function RunReviewAgent.update(agent, lines)
-   agent.subject = {}
-   while not lines:isEmpty() do
-      insert(agent.subject, { line = lines:pop(), status = "keep" })
-   end
+function RunReviewAgent.setInitialSelection(agent)
    if #agent.subject == 0 then
       insert(agent.subject, { line = "", status = "insert" })
    end
    agent.selected_index = 1
-   agent:_updateResultsAgent()
-   -- Update any EditAgents we have without creating any more
-   for index in pairs(agent.edit_agents) do
-      agent:_updateEditAgent(index)
-   end
-   agent:contentsChanged()
 end
 
 
