@@ -217,7 +217,7 @@ local function check_winsize()
       for _, zone in ipairs(modeS.zones) do
          zone.touched = true
       end
-      modeS:reflow()
+      modeS:task():reflow()
    end
 end
 
