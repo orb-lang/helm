@@ -944,7 +944,7 @@ ORDER BY result.result_id;
 ```
 
 ```sql
-SELECT input.line FROM run
+SELECT run_action.input, input.line FROM run
 INNER JOIN run_action on run_action.run = run.run_id
 INNER JOIN input on input.line_id = run_action.input
 WHERE run.run_id = :run_id
