@@ -15,7 +15,6 @@ EditLine.name = "edit_line"
 EditLine.prompt_char = "👉"
 EditLine.keymap = require "helm:keymap/edit-line"
 EditLine.lex = require "helm:lex" . lua_thor
-EditLine.target = "agents.edit"
 ```
 
 

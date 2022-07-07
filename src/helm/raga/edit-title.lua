@@ -14,7 +14,6 @@ local EditTitle = clone(EditBase, 2)
 EditTitle.name = "edit_title"
 EditTitle.prompt_char = "👉"
 EditTitle.keymap = require "helm:keymap/edit-title"
-EditTitle.target = "agents.edit"
 
 return EditTitle
 
