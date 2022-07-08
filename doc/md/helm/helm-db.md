@@ -806,6 +806,19 @@ insert(migration_6, create_error_string_idx)
 ```
 
 
+#### Version 7: consistent hashing
+
+  I used a hybrid of hashing and raw comparison for uniques in various places,
+the tradeoff being less storage \(meh\) and allocation \(that was the one\) for
+an inconsistent representation\.
+
+This becomes a problem when we start wanting to put hashes into Orb documents,
+where we benefit from using only alphanumerics\.  The control sequences and
+space marks are equally annoying in the same way: if we leave the shorthashes
+laying around then we have to turn hashes into strings\.  Not great\.
+
+
+
 ### Future Migrations
 
 Right now, `helm` is omokase: you get some readline commands, and you get the
@@ -1094,14 +1107,13 @@ ORDER BY premise.ordinal
 ```sql
 SELECT
    session.title AS session_title,
-   session.accepted AS session_accepted,
-   session.session_id,
+   session.accepted,
+   --session.session_id,
    premise.status,
    premise.title,
-   premise.ordinal,
    input.line,
-   input.time,
-   input.line_id
+   input.line_id,
+   input.time
 FROM
    input
 LEFT JOIN premise ON premise.line = input.line_id
@@ -1123,6 +1135,16 @@ FROM result
 INNER JOIN repr ON result.hash = repr.hash
 WHERE result.line_id = ?
 ORDER BY result.result_id;
+```
+
+Other times we want the hash:
+
+```sql
+SELECT result.hash
+FROM result
+WHERE result.line_id = ?
+ORDER BY result.result_id
+;
 ```
 
 Sometimes we just want the session data:

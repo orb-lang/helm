@@ -845,6 +845,19 @@ insert(migration_6, create_error_string_idx)
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 local function _prepareStatements(conn, stmts)
    return function(_, key)
       if stmts[key] then
@@ -1094,14 +1107,13 @@ ORDER BY premise.ordinal
 session_sql.all_session_by_directory = [[
 SELECT
    session.title AS session_title,
-   session.accepted AS session_accepted,
-   session.session_id,
+   session.accepted,
+   --session.session_id,
    premise.status,
    premise.title,
-   premise.ordinal,
    input.line,
-   input.time,
-   input.line_id
+   input.line_id,
+   input.time
 FROM
    input
 LEFT JOIN premise ON premise.line = input.line_id
@@ -1123,6 +1135,16 @@ FROM result
 INNER JOIN repr ON result.hash = repr.hash
 WHERE result.line_id = ?
 ORDER BY result.result_id;
+]]
+
+
+
+session_sql.get_result_hash = [[
+SELECT result.hash
+FROM result
+WHERE result.line_id = ?
+ORDER BY result.result_id
+;
 ]]
 
 

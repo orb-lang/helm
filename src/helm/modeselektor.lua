@@ -27,7 +27,7 @@ local Stringbuf = require "helm:buf/stringbuf"
 local Txtbuf    = require "helm:buf/txtbuf"
 
 local Actor   = require "actor:actor"
-local Valiant = require "valiant:valiant"
+local Valiant = require "valiant:valjr"
 
 local bridge = require "bridge"
 
@@ -455,6 +455,10 @@ end
 
 
 function ModeS.eval(modeS, line)
+   if modeS.valiant.fresh then
+      modeS.valiant:clearAndCache()
+      modeS.valiant.fresh = false
+   end
    return modeS.valiant(line)
 end
 
