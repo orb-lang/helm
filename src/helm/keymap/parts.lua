@@ -93,6 +93,20 @@ parts.list_selection = {
 
 
 
+parts.review_common = {
+   UP = "selectPreviousWrap",
+   DOWN = "selectNextWrap",
+   TAB = "toggleSelectedState",
+   ["S-TAB"] = "reverseToggleSelectedState",
+   ["M-UP"] = "movePremiseUp",
+   ["M-DOWN"] = "movePremiseDown"
+}
+
+
+
+
+
+
 
 
 parts.global_commands = {

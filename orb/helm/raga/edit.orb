@@ -12,6 +12,7 @@ local Txtbuf = require "helm:buf/txtbuf"
 
 #!lua
 local EditBase = clone(RagaBase, 2)
+EditBase.target = "agents.edit"
 #/lua
 
 

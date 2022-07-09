@@ -29,6 +29,8 @@ local Txtbuf    = require "helm:buf/txtbuf"
 local Actor   = require "actor:actor"
 local Valiant = require "valiant:valiant"
 
+local bridge = require "bridge"
+
 
 
 local cluster = require "cluster:cluster"
@@ -101,22 +103,40 @@ end
 
 
 function ModeS.setup(modeS)
-   -- Session-related setup
-   -- #todo ugh this is clearly the wrong place/way to do this
-   local session = modeS.hist.session
-   modeS:_agent'session':update(session)
    local initial_raga = "nerf"
-   -- If we are loading an existing session, start in review mode
-   if session.session_id then
-      initial_raga = "review"
-   elseif session.session_title then
-      -- #todo should probably do this somewhere else--maybe raga/nerf.onShift,
-      -- but it's certainly not Nerf-specific...
-      modeS:_agent'status':update(
-         session.mode == "macro" and "macro" or "new_session",
-         session.session_title)
-   else
-      modeS:_agent'status':update("default")
+   modeS:_agent'status':update("default")
+   -- Session-related setup
+   local session_title = bridge.args.new_session or
+                         bridge.args.session
+   if session_title then
+      modeS.hist:loadOrCreateSession(session_title)
+      if bridge.args.new_session then
+         -- Asked to create a session that already exists
+         if modeS.hist.session.session_id then
+            error('A session named "' .. session_title ..
+                  '" already exists. You can review it with br helm -s.')
+         end
+         modeS:_agent'status':update("new_session", session_title)
+      end
+      if bridge.args.session then
+         -- Asked to review a session that doesn't exist
+         if not modeS.hist.session.session_id then
+            error('No session named "' .. session_title ..
+                  '" found. Use br helm -n to create a new session.')
+         end
+         -- If we are loading an existing session, start in review mode
+         initial_raga = "session_review"
+         modeS.hist.session:loadPremises()
+      end
+      modeS:_agent'session':update(modeS.hist.session)
+   end
+
+   if bridge.args.restart or bridge.args.run then
+      modeS.hist:loadPreviousRun()
+      if bridge.args.run then
+         modeS:_agent'run_review':update(modeS.hist.previous_run)
+         initial_raga = 'run_review'
+      end
    end
 
    -- Set up common Agent -> Zone bindings
@@ -135,11 +155,14 @@ function ModeS.setup(modeS)
    -- Load initial raga. Need to process yielded messages from `onShift`
    modeS :task() :_pushMode(initial_raga)
 
-   -- hackish: we check the historian for a deque of lines to load and if
-   -- we have it, we just eval them into existence.
-   if modeS.hist.reloads then
-      modeS:rerun(modeS.hist.reloads)
-      --modeS.hist.reloads = nil
+   if bridge.args.restart then
+      local deque = require "deque:deque" ()
+      for _, premise in ipairs(modeS.hist.previous_run) do
+         deque:push(premise.line)
+      end
+      modeS:rerun(deque)
+   elseif bridge.args.back then
+      modeS:rerun(modeS.hist:loadRecentLines(bridge.args.back))
    end
 
    modeS.action_complete = true
@@ -229,7 +252,7 @@ local create, resume, status = assert(coroutine.create),
 
 function ModeS.delegator(modeS, msg)
    if msg.method == "pushMode" or msg.method == "popMode" or
-      (msg.to and msg.to:find("^agents%.")) then
+      (msg.to and (msg.to == "raga" or msg.to:find("^agents%."))) then
       s:chat("sending a message to maestro: %s", ts(msg))
       return modeS.maestro(msg)
    else
@@ -344,12 +367,11 @@ function ModeS.quitHelm(modeS)
    -- rather than an explicitly-invoked command, and Ctrl-Q would just pop
    -- the current raga. Though, a Ctrl-Q from e.g. Search would still want
    -- to actually quit, so it's not quite that simple...
-   -- Anyway. Also, don't bother saving the session if it has no premises...
    local session = modeS.hist.session
    if _Bridge.args.new_session and #session > 0 then
       local is_reviewing = false
-      for i, raga in modeS.maestro.raga_stack do
-         if raga == "review" then
+      for i, raga in ipairs(modeS.maestro.raga_stack) do
+         if raga == "session_review" then
             is_reviewing = true
             break
          end
@@ -358,18 +380,13 @@ function ModeS.quitHelm(modeS)
          -- #todo Add the ability to change accepted status of
          -- the whole session to the review interface
          session.accepted = true
-         modeS.maestro:pushMode("review")
+         modeS.maestro:pushMode("session_review")
          return
       end
    end
    -- #todo handle this better--as an event of sorts, maybe?
    -- @atman: wait, I have an idea!
    modeS.hist:close()
-   -- this is just to commit the end of the run, right now
-   local session = modeS.hist.session
-   if session.mode == "macro" and #session > 0 then
-      session:save()
-   end
    modeS:_agent'status':update("quit")
    modeS.has_quit = true
 end
@@ -393,8 +410,9 @@ function ModeS.rerunner(modeS, deque)
    for line in deque:popAll() do
       success, results = modeS:eval(line)
       assert(results ~= "advance", "Incomplete line when restarting session")
-      modeS.hist:append(line, results, success)
+      modeS.hist:appendNow(line, results, success)
    end
+   modeS.hist.stmts.release_restart_session()
    modeS.hist:toEnd()
    modeS:_agent'results':update(results)
 end
@@ -402,14 +420,6 @@ end
 
 function ModeS.rerun(modeS, deque)
    modeS :task() :rerunner(deque)
-   local restart_idle = uv.new_idle()
-   restart_idle:start(function()
-   if modeS.hist:idling() then
-      return nil
-   end
-   modeS.hist.stmts.release_restart_session()
-      restart_idle:stop()
-   end)
 end
 
 

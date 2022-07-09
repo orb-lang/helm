@@ -12,11 +12,13 @@ local StatusAgent = meta(getmetatable(Agent))
 ### Available status lines
 
 ```lua
-local status_lines = { default = "an repl, plz reply uwu 👀",
-                       quit    = "exiting repl, owo... 🐲",
-                       restart = "restarting an repl ↩️",
-                       review  = 'reviewing session "%s"' }
-status_lines.macro       = status_lines.default .. ' (macro-recording "%s")'
+local status_lines = {
+   default            = "an repl, plz reply uwu 👀",
+   quit               = "exiting repl, owo... 🐲",
+   restart            = "restarting an repl ↩️",
+   session_review     = 'reviewing session "%s"',
+   run_review_initial = 'Press Return to Evaluate, Tab/Up/Down to Edit',
+   run_review         = 'Press M-e to Evaluate' }
 status_lines.new_session = status_lines.default .. ' (recording "%s")'
 ```
 

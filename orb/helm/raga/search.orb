@@ -12,7 +12,6 @@ local Search = clone(EditBase, 2)
 Search.name = "search"
 Search.prompt_char = "⁉️"
 Search.keymap = require "helm:keymap/search"
-Search.target = "agents.search"
 #/lua
 
 

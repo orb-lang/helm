@@ -154,6 +154,115 @@ end
 
 
 
+
+
+
+function Historian.loadPreviousRun(historian)
+   local prev_run_id = historian.stmts.get_latest_finished_run
+                                       :bind(historian.project_id)
+                                       :value()
+   local run = {}
+   for _, line_id, line in historian.stmts.get_lines_of_run:bind(prev_run_id):cols() do
+      insert(run, {
+         status = "keep",
+         line = line,
+         line_id = line_id,
+         old_result = historian:resultsFor(line_id)
+      })
+   end
+   historian.previous_run = run
+end
+
+
+
+
+
+
+
+
+function Historian.loadRecentLines(historian, num_lines)
+   local deque = require "deque:deque" ()
+   -- we could duplicate this information off the historian array, if we
+   -- had the patience to wait around for it to populate.
+   --
+   -- We probably should do it that way, actually, but there's too much
+   -- handwaving about how runs interact with history already, and this
+   -- works, as blocking code tends to, with minimum fuss.
+   if num_lines > historian.lines_retrieved then
+      s:warn("Requested %d lines to rerun, only %d lines available")
+      num_lines = historian.lines_retrieved
+   end
+   local get_lines = historian.stmts.get_recent
+                : bindkv { project = historian.project_id,
+                           num_lines = num_lines }
+   for _, __, line in get_lines:cols() do
+      deque:push(line)
+   end
+   deque:reverse()
+   return deque
+end
+
+
+
+
+
+
+
+
+
+
+
+
+function Historian.loadOrCreateSession(historian, session_title)
+   historian.session = Session(historian.helm_db_home,
+                        historian.project_id,
+                        session_title)
+end
+
+
+
+
+
+
+
+
+
+
+local db_result_M = assert(persist_tabulate.db_result_M)
+
+local function _wrapResults(results_tostring)
+   local wrapped = { n = #results_tostring }
+   for i = 1, wrapped.n do
+      -- stick the actual string in a table with an __repr that reconstitutes
+      -- the object tree from tokens
+      wrapped[i] = setmetatable({results_tostring[i]}, db_result_M)
+   end
+   return wrapped
+end
+
+function Historian.resultsFor(historian, line_id)
+   if historian.result_buffer[line_id] then
+      return historian.result_buffer[line_id]
+   end
+   local stmt = historian.get_results
+   stmt:bindkv {line_id = line_id}
+   local results = stmt :resultset 'i'
+   if results then
+      results = _wrapResults(results[1])
+   end
+   stmt:reset()
+   -- may as well memoize the database call, while we're here
+   historian.result_buffer[line_id] = results
+   return results
+end
+
+
+
+
+
+
+
+
 local tabulate_some = assert(persist_tabulate.tabulate_some)
 local sha = assert(require "util:sha" . shorthash)
 local blob = assert(assert(sql, "sql must be in bridge _G").blob)
@@ -171,7 +280,7 @@ function Historian.persist(historian, line, results)
       historian.insert_line:bindkv { project = historian.project_id,
                                      line    = blob(line) })
    local line_id = historian.stmts.lastRowId()
-   insert(historian.line_ids, line_id)
+   historian.result_buffer[line_id] = results
 
    -- Then the run action indicating it was just evaluated
    local run_action = { run_id  = historian.run.run_id,
@@ -197,13 +306,20 @@ function Historian.persist(historian, line, results)
          local done, results_tostring = cb()
          if not done then return nil end
          queue:pop()
-         -- inform the Session that persisted results are available
-         historian.session:resultsAvailable(line_id, results_tostring)
          -- now persist
          for i = 1, n do
             local hash = sha(results_tostring[i])
             sql_insert_errcheck(historian.insert_repr:bind(hash, results_tostring[i]))
             sql_insert_errcheck(historian.insert_result_hash:bind(line_id, hash))
+         end
+         -- inform the Session that persisted results are available
+         -- #todo this *so badly* needs to be an Action
+         -- Should probably also be called 'resultsPersisted' since the
+         -- live results are available immediately. We might also want to
+         -- cache the stringified/persisted results alongside the live ones
+         if historian.session then
+            historian.session:resultsAvailable(line_id,
+               _wrapResults(results_tostring))
          end
          if #queue == 0 then
             historian.idler:stop()
@@ -242,13 +358,75 @@ function Historian.append(historian, line, results, success)
       -- don't bother
       return false
    end
+   if not success then results = nil end
+   local line_id = historian:persist(line, results)
    historian.n = historian.n + 1
    historian[historian.n] = line
-   if not success then results = nil end
-   historian.result_buffer[historian.n] = results
-   local line_id = historian:persist(line, results)
-   historian.session:append(line_id, line, results)
+   historian.line_ids[historian.n] = line_id
+   -- #todo this should be an Action--actually we should be in a handler for
+   -- one action (e.g. 'evalCompleted') and issue another (e.g. 'lineStored')
+   if historian.session then
+      historian.session:append(line_id, line, results)
+   end
    return true
+end
+
+
+
+
+
+
+
+
+local tabulate = persist_tabulate.tabulate
+
+function Historian.appendNow(historian, line, results, success)
+   if line == "" then
+      -- don't bother
+      return false
+   end
+   if (not success) or results.n == 0 then
+      -- we /should/ handle errors here
+      results = nil
+   end
+
+   -- Persist the line of input itself
+   sql_insert_errcheck(
+      historian.insert_line:bindkv { project = historian.project_id,
+                                     line    = blob(line) })
+   local line_id = historian.stmts.lastRowId()
+   historian.result_buffer[line_id] = results
+
+   -- Then the run action indicating it was just evaluated
+   local run_action = { run_id  = historian.run.run_id,
+                        ordinal = #historian.run.actions + 1,
+                        input   = line_id }
+   insert(historian.run.actions, run_action)
+   sql_insert_errcheck(historian.stmts.insert_run_input:bindkv(run_action))
+
+   -- If there are no results, nothing more to persist,
+   -- release our savepoint and don't bother starting the idler
+   if not results then
+      return line_id
+   end
+
+   local results_tostring = tabulate(results)
+   for i = 1, results.n do
+      local hash = sha(results_tostring[i])
+      sql_insert_errcheck(historian.insert_repr:bind(hash, results_tostring[i]))
+      sql_insert_errcheck(historian.insert_result_hash:bind(line_id, hash))
+   end
+   -- inform the Session that persisted results are available
+   -- #todo this *so badly* needs to be an Action
+   -- Should probably also be called 'resultsPersisted' since the
+   -- live results are available immediately. We might also want to
+   -- cache the stringified/persisted results alongside the live ones
+   if historian.session then
+      historian.session:resultsAvailable(line_id,
+         _wrapResults(results_tostring))
+   end
+
+   return line_id
 end
 
 
@@ -320,34 +498,14 @@ end
 
 
 
-local db_result_M = assert(persist_tabulate.db_result_M)
-
 local function _setCursor(historian, cursor)
    historian.cursor = cursor
    local line = historian[cursor]
    if not line then
       return nil, nil
    end
-   if historian.result_buffer[cursor] then
-      return line, historian.result_buffer[cursor]
-   end
    local line_id = historian.line_ids[cursor]
-   local stmt = historian.get_results
-   stmt:bindkv {line_id = line_id}
-   local results = stmt :resultset 'i'
-   if results then
-      results = results[1]
-      results.n = #results
-      for i = 1, results.n do
-         -- stick the result in a table to enable repr-ing
-         results[i] = {results[i]}
-         setmetatable(results[i], db_result_M)
-      end
-   end
-   stmt:reset()
-   -- may as well memoize the database call, while we're here
-   historian.result_buffer[cursor] = results
-   return line, results
+   return line, historian:resultsFor(line_id)
 end
 
 
@@ -444,69 +602,10 @@ local function new(helm_db)
    historian.n = 0
    historian.lines_available = 0
    historian.result_queue = Deque()
+   historian.result_buffer = setmetatable({}, __result_buffer_M)
 
    historian:createPreparedStatements(helm_db)
    historian:load()
-   if bridge.args.restart then
-      local deque = require "deque:deque" ()
-      local prev_run = historian.stmts.get_latest_finished_run
-                                          :bind(historian.project_id)
-                                          :value()
-      for _, line in historian.stmts.get_lines_of_run:bind(prev_run):cols() do
-         deque:push(line)
-      end
-      historian.reloads = deque
-   elseif bridge.args.back then
-      local deque = require "deque:deque" ()
-      -- we could duplicate this information off the historian array, if we
-      -- had the patience to wait around for it to populate.
-      --
-      -- We probably should do it that way, actually, but there's too much
-      -- handwaving about how runs interact with history already, and this
-      -- works, as blocking code tends to, with minimum fuss.
-      local num_back = clamp(bridge.args.back,  nil, historian.lines_retrieved)
-      if num_back < bridge.args.back then
-         s:warn("Requested %d lines to rerun, only %d lines available")
-      end
-      local get_lines = historian.stmts.get_recent
-                   : bindkv { project = historian.project_id,
-                              num_lines = num_back }
-      for _, __, line in get_lines:cols() do
-         deque:push(line)
-      end
-      deque:reverse()
-      historian.reloads = deque
-   end
-
-   local session_cfg = {}
-   local session_title = bridge.args.macro or
-                         bridge.args.new_session or
-                         bridge.args.session
-   if bridge.args.macro then
-      session_cfg.accepted = true
-      session_cfg.mode = "macro"
-   end
-
-   local sesh = Session(helm_db,
-                        historian.project_id,
-                        session_title,
-                        session_cfg)
-   -- Asked to create a session that already exists
-   if (bridge.args.new_session or bridge.args.macro) and sesh.session_id then
-      error('A session named "' .. session_title ..
-            '" already exists. You can review it with br helm -s.')
-   end
-   if bridge.args.session then
-      if sesh.session_id then
-         sesh:loadPremises()
-      else
-         -- Asked to review a session that doesn't exist
-         error('No session named "' .. session_title ..
-               '" found. Use br helm -n to create a new session.')
-      end
-   end
-   historian.session = sesh
-   historian.result_buffer = setmetatable({}, __result_buffer_M)
    s.verbose = false
    return historian
 end

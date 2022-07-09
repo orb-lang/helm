@@ -20,19 +20,22 @@ local ModalAgent     = require "helm:agent/modal"
 local PagerAgent     = require "helm:agent/pager"
 local PromptAgent    = require "helm:agent/prompt"
 local ResultsAgent   = require "helm:agent/results"
+local RunReviewAgent = require "helm:agent/run-review"
 local SearchAgent    = require "helm:agent/search"
 local SessionAgent   = require "helm:agent/session"
 local StatusAgent    = require "helm:agent/status"
 local SuggestAgent   = require "helm:agent/suggest"
 
 local available_ragas = {
-   nerf       = require "helm:raga/nerf",
-   search     = require "helm:raga/search",
-   complete   = require "helm:raga/complete",
-   page       = require "helm:raga/page",
-   modal      = require "helm:raga/modal",
-   review     = require "helm:raga/review",
-   edit_title = require "helm:raga/edit-title"
+   nerf           = require "helm:raga/nerf",
+   search         = require "helm:raga/search",
+   complete       = require "helm:raga/complete",
+   page           = require "helm:raga/page",
+   modal          = require "helm:raga/modal",
+   session_review = require "helm:raga/session-review",
+   run_review     = require "helm:raga/run-review",
+   edit_title     = require "helm:raga/edit-title",
+   edit_line      = require "helm:raga/edit-line"
 }
 
 local cluster = require "cluster:cluster"
@@ -76,11 +79,14 @@ end
 
 
 
+
+
+
 local _yield  = assert(core.thread.nest "actor" .yield)
 
 function Maestro.delegate(maestro, msg)
    if msg.method == "pushMode" or msg.method == "popMode" or
-      (msg.to and msg.to:find("^agents%.")) then
+      (msg.to and (msg.to == "raga" or msg.to:find("^agents%."))) then
       return maestro:act(msg)
    else
       return pack(_yield(msg))
@@ -138,8 +144,8 @@ local function _dispatchOnly(maestro, event)
    for _, handler in ipairs(handlers) do
       handler = clone(handler)
       -- #todo make this waaaaay more flexible
-      if handler.n > 0 then
-         handler[handler.n] = event
+      if handler.n > 0 and not handler[handler.n] then
+        handler[handler.n] = event
       end
       -- #todo using empty-string as a non-nil signpost
       -- should be able to refactor so this is not needed
@@ -272,6 +278,7 @@ cluster.extendbuilder(new, function(_new, maestro)
       pager      = PagerAgent(),
       prompt     = PromptAgent(),
       results    = ResultsAgent(),
+      run_review = RunReviewAgent(),
       search     = SearchAgent(),
       session    = SessionAgent(),
       status     = StatusAgent(),

@@ -19,8 +19,8 @@ end
 
 
 return Keymap(
-parts.list_selection,
-action_bindings,
-parts.set_targets("agents.edit", parts.basic_editing),
+parts.set_targets("agents.search", parts.list_selection),
+parts.set_targets("agents.search", action_bindings),
+parts.basic_editing,
 parts.global_commands)
 
