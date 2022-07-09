@@ -410,8 +410,9 @@ function ModeS.rerunner(modeS, deque)
    for line in deque:popAll() do
       success, results = modeS:eval(line)
       assert(results ~= "advance", "Incomplete line when restarting session")
-      modeS.hist:append(line, results, success)
+      modeS.hist:appendNow(line, results, success)
    end
+   modeS.hist.stmts.release_restart_session()
    modeS.hist:toEnd()
    modeS:_agent'results':update(results)
 end
@@ -419,14 +420,6 @@ end
 
 function ModeS.rerun(modeS, deque)
    modeS :task() :rerunner(deque)
-   local restart_idle = uv.new_idle()
-   restart_idle:start(function()
-   if modeS.hist:idling() then
-      return nil
-   end
-   modeS.hist.stmts.release_restart_session()
-      restart_idle:stop()
-   end)
 end
 ```
 
