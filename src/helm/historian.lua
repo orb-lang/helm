@@ -354,7 +354,7 @@ end
 
 
 function Historian.append(historian, line, results, success)
-   if line == "" or line == historian[historian.n] then
+   if line == "" then
       -- don't bother
       return false
    end
