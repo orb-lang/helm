@@ -32,7 +32,7 @@ local SuggestAgent = meta(getmetatable(ResultListAgent))
 function SuggestAgent.cursorContext(suggest)
    local lex_tokens = {}
    -- Ignore whitespace and comments
-   local tokens_from_edit = suggest :send { sendto = "agents.edit",
+   local tokens_from_edit = suggest :send { to = "agents.edit",
                                             method = "tokens" }
    for _, token in ipairs(tokens_from_edit) do
       if token.color ~= "no_color" and token.color ~= "comment" then
@@ -98,11 +98,11 @@ local function _suggest_sort(a, b)
    end
 end
 
+local safeget = assert(table.safeget)
 local isidentifier = assert(string.isidentifier)
 local hasmetamethod = assert(core.meta.hasmetamethod)
-local safeget = assert(table.safeget)
 local fuzz_patt = require "helm:fuzz_patt"
-local Set = require "set:set"
+local Set = core.set
 
 local function _candidates_from(complete_against)
    -- Either no path was provided, or some part of it doesn't
@@ -146,7 +146,7 @@ function SuggestAgent.update(suggest)
    -- in the current position.
    local complete_against
    if path then
-      complete_against = modeS.eval.eval_env
+      complete_against = suggest :send { to = "valiant", field = "eval_env" }
       for _, key in ipairs(path) do
          complete_against = safeget(complete_against, key)
       end
@@ -192,7 +192,7 @@ function SuggestAgent.acceptSelected(agent)
    agent:quit()
    if suggestion then
       agent :send { suggestion,
-                    sendto = "agents.edit",
+                    to = "agents.edit",
                     method = "replaceToken" }
       return true
    else
@@ -220,7 +220,7 @@ SuggestAgent.userCancel = SuggestAgent.quit
 function SuggestAgent.activateCompletion(agent)
    if agent.last_collection then
       agent:selectFirst()
-      agent :send { method = "shiftMode", "complete" }
+      agent :send { method = "pushMode", "complete" }
       return true
    else
       return false
@@ -231,11 +231,6 @@ end
 
 
 
-
-SuggestAgent.keymap_try_activate = {
-   TAB = "activateCompletion",
-   ["S-TAB"] = "activateCompletion",
-}
 
 function SuggestAgent.acceptAndFallthrough(agent)
    agent:acceptSelected()
@@ -252,14 +247,6 @@ function SuggestAgent.acceptOnNonWordChar(agent, event)
    end
    return false
 end
-
-local addall = assert(table.addall)
-SuggestAgent.keymap_actions = {
-   LEFT            = "acceptAndFallthrough",
-   PASTE           = "quitAndFallthrough",
-   ["[CHARACTER]"] = { method = "acceptOnNonWordChar", n = 1 }
-}
-addall(SuggestAgent.keymap_actions, ResultListAgent.keymap_actions)
 
 
 

@@ -14,28 +14,20 @@ local RagaBase = require "helm:raga/base"
 local Modal = clone(RagaBase, 2)
 Modal.name = "modal"
 Modal.prompt_char = " "
+Modal.keymap = require "helm:keymap/modal"
+Modal.target = "agents.modal"
 
 
 
 
 
 
-Modal.default_keymaps = {
-   { source = "agents.modal", name = "keymap_actions" }
-}
-splice(Modal.default_keymaps, RagaBase.default_keymaps)
-
-
-
-
-
-
-function Modal.onShift(modeS)
-   modeS.zones.modal:show()
+function Modal.onShift()
+   send { to = "zones.modal", method = "show" }
 end
 
-function Modal.onUnshift(modeS)
-   modeS.zones.modal:hide()
+function Modal.onUnshift()
+   send { to = "zones.modal", method = "hide" }
 end
 
 

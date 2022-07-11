@@ -12,8 +12,6 @@ local concat         = assert(table.concat)
 local sub, gsub, rep = assert(string.sub),
                        assert(string.gsub),
                        assert(string.rep)
-
-local yield = assert(coroutine.yield)
 ```
 
 ```lua
@@ -21,74 +19,26 @@ local RagaBase_meta = {}
 local RagaBase = setmetatable({}, RagaBase_meta)
 ```
 
-When creating a new raga, remember to set:
-
-```lua-example
-RagaBase.name = "raga_base"
-RagaBase.prompt_char = "$"
-```
-
-
-## Keymaps
-
-We start by including an "extra commands" keymap which other Ragas can simply
-add to rather than creating additional keymaps of their own\. However,
-substantial logical groupings of bindings should still get their own keymap\.
+Ragas have several properties, some of which have sensible defaults,
+others must be set explicitly for each:
 
 ```lua
-RagaBase.default_keymaps = {
-   { source = "modeS.raga", name = "keymap_extra_commands" }
-}
+RagaBase.name        = nil                       -- e.g. "nerf"
+RagaBase.prompt_char = nil                       -- e.g. "$"
+RagaBase.keymap      = nil                       -- e.g. require "helm:keymap/raga_name"
+RagaBase.target      = nil                       -- `msg.to` path string, e.g. "agents.edit"
+RagaBase.lex         = require "helm:lex" . null -- Lexer to use for the command zone
 ```
 
 
-### Default quit handler
-
-We default to having ^Q perform an immediate quit\-\-some ragas may wish to
-prompt to save changes or the like first\.
-
-```lua
-function RagaBase.quitHelm()
-   -- #todo it's obviously terrible to have code specific to a particular
-   -- piece of functionality in an abstract class like this.
-   -- To do this right, we probably need a proper raga stack. Then -n could
-   -- push the Review raga onto the bottom of the stack, then Nerf. Quit
-   -- at this point would be the result of the raga stack being empty,
-   -- rather than an explicitly-invoked command, and Ctrl-Q would just pop
-   -- the current raga. Though, a Ctrl-Q from e.g. Search would still want
-   -- to actually quit, so it's not quite that simple...
-   -- Anyway. Also, don't bother saving the session if it has no premises...
-   if _Bridge.args.new_session then
-      local session = yield{ sendto = "hist", property = "session" }
-      if #session > 0 then
-         -- #todo Add the ability to change accepted status of
-         -- the whole session to the review interface
-         session.accepted = true
-         -- Also, it's horribly hacky to change the "default" raga, but it's
-         -- the only way to make Modal work properly. A proper raga stack
-         -- would *definitely* fix this
-         yield{ method = "setDefaultMode", n = 1, "review" }
-         yield{ method = "shiftMode", n = 1, "review" }
-         return
-      end
-   end
-   yield{ method = "quit" }
-end
-
-RagaBase.keymap_extra_commands = {
-   ["C-q"] = "quitHelm"
-}
-```
-
-
-## <Raga>\.getCursorPosition\(modeS\)
+## <Raga>\.getCursorPosition\(\)
 
 Computes and returns the position for the terminal cursor,
 or nil if it should be hidden\. This is a reasonable default
 as not all ragas need the cursor shown\.
 
 ```lua
-function RagaBase.getCursorPosition(modeS)
+function RagaBase.getCursorPosition()
    return nil
 end
 ```
@@ -97,48 +47,48 @@ end
 ## Events
 
 
-### <Raga>\.onTxtbufChanged\(modeS\)
+### <Raga>\.onTxtbufChanged\(\)
 
 Called whenever the txtbuf's contents have changed while processing a seq\.
 
 ```lua
-function RagaBase.onTxtbufChanged(modeS)
+function RagaBase.onTxtbufChanged()
    return
 end
 ```
 
 
-### <Raga>\.onCursorChanged\(modeS\)
+### <Raga>\.onCursorChanged\(\)
 
 Called whenever the cursor has moved while processing a seq\.
 Both onTxtbufChanged and onCursorChanged will be called in the
 common case of a simple insertion\.
 
 ```lua
-function RagaBase.onCursorChanged(modeS)
+function RagaBase.onCursorChanged()
    return
 end
 ```
 
 
-### <Raga>\.onShift\(modeS\)
+### <Raga>\.onShift\(\)
 
 Called when first switching to the raga\. Provides an opportunity to
 reconfigure zones or perform other set\-up work\.
 
 ```lua
-function RagaBase.onShift(modeS)
+function RagaBase.onShift()
    return
 end
 ```
 
 
-### <Raga>\.onUnshift\(modeS\)
+### <Raga>\.onUnshift\(\)
 
 Opposite of onShift\-\-called when switching away to another raga\.
 
 ```lua
-function RagaBase.onUnshift(modeS)
+function RagaBase.onUnshift()
    return
 end
 ```

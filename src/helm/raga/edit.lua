@@ -12,17 +12,7 @@ local Txtbuf = require "helm:buf/txtbuf"
 
 
 local EditBase = clone(RagaBase, 2)
-
-
-
-
-
-
--- Allow extra commands to preempt basic-editing, e.g. a RETURN binding
--- should preempt insertion of a newline
-EditBase.default_keymaps = clone(RagaBase.default_keymaps)
-insert(EditBase.default_keymaps,
-   { source = "agents.edit", name = "keymap_basic_editing" })
+EditBase.target = "agents.edit"
 
 
 
@@ -31,8 +21,10 @@ insert(EditBase.default_keymaps,
 
 
 
-function EditBase.getCursorPosition(modeS)
-   return modeS.zones.command.bounds:origin() + modeS:agent'edit'.cursor - 1
+function EditBase.getCursorPosition()
+   local command_origin = send { to = "zones.command.bounds", method = "origin" }
+   local edit_cursor = send { to = "agents.edit", field = "cursor" }
+   return command_origin + edit_cursor - 1
 end
 
 

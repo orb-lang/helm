@@ -11,27 +11,18 @@ local Search = clone(EditBase, 2)
 
 Search.name = "search"
 Search.prompt_char = "⁉️"
+Search.keymap = require "helm:keymap/search"
 ```
 
 
-### Keymaps
-
-```lua
-Search.default_keymaps = {
-   { source = "agents.search", name = "keymap_selection" },
-   { source = "agents.search", name = "keymap_actions" }
-}
-splice(Search.default_keymaps, EditBase.default_keymaps)
-```
-
-
-### Search\.onTxtbufChanged\(modeS\)
+### Search\.onTxtbufChanged\(\)
 
 We need to update the search result whenever the contents of the Txtbuf change\.
 
 ```lua
-function Search.onTxtbufChanged(modeS)
-   modeS:agent'search':update(modeS)
+function Search.onTxtbufChanged()
+   send { to = "agents.search", method = "update" }
+   EditBase.onTxtbufChanged()
 end
 ```
 
@@ -42,11 +33,14 @@ Set up Agent connections\-\-Txtbuf uses Historian for "suggestions", and that
 same Window also drives the result zone\.
 
 ```lua
-function Search.onShift(modeS)
-   EditBase.onShift(modeS)
-   modeS:agent'search':update(modeS)
-   modeS.zones.command.contents.suggestions = modeS:agent'search':window()
-   modeS:bindZone("results", "search", Resbuf, { scrollable = true })
+function Search.onShift()
+   EditBase.onShift()
+   send { to = "agents.search", method = "update" }
+   -- #todo this messing directly with the Txtbuf is bad
+   local txtbuf = send { to = "zones.command", field = "contents" }
+   txtbuf.suggestions = send { to = "agents.search", method = "window" }
+   send { method = "bindZone",
+      "results", "search", Resbuf, { scrollable = true }}
 end
 ```
 

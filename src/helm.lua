@@ -59,7 +59,7 @@ local function _helm(_ENV)
 setfenv(0, __G)
 
 meta = assert(require "core:cluster" . Meta)
-core = require "core:core"
+core = require "qor:core"
 -- Keep this local, other modules will do the same as-needed
 -- We need it below for `compact`
 local table = core.table
@@ -74,15 +74,34 @@ sql = assert(sql, "sql must be in _G")
 
 
 
+local s = require "status:status" ()
+s.chatty = true
+s.verbose = true
+s.boring = false
+ts = require "repr:repr" . ts_color
 
 
 
 
-local yield = assert(coroutine.yield)
-local Message = require "actor:message"
 
-function send(tab)
-   return yield(Message(tab))
+
+
+
+
+
+
+
+
+
+send = nil;
+do
+   local Message = require "actor:message"
+   local nest = core.thread.nest "actor"
+   local yield = assert(nest.yield)
+
+   send = function (tab)
+      return yield(Message(tab))
+   end
 end
 
 
@@ -160,21 +179,32 @@ local Point = require "anterm:point"
 
 
 
--- Get window size and set up a SIGWINCH handler to keep it refreshed
--- Also check every 500ms in a timer in case the SIGWINCH handler doesn't
--- trigger immediately for whatever reason.
+
+
+local autothread = require "cluster:autothread"
+
+
+
+
+
+
+
 
 local max_col, max_row = stdin:get_winsize()
 local max_extent = Point(max_row, max_col)
+modeS = require "helm/modeselektor" (max_extent, write)
 
-modeS = require "helm/modeselektor" (max_extent, write) :setup()
+autothread(function() modeS:task():setup() end)
+
+
+
+
+
+
+
+
+
 local insert = assert(table.insert)
-local function s_out(msg)
-   insert(modeS.status, msg)
-end
-
--- make a new 'status' instance
-local s = require "status:status" (s_out)
 
 local function check_winsize()
    max_col, max_row = stdin:get_winsize()
@@ -187,12 +217,12 @@ local function check_winsize()
       for _, zone in ipairs(modeS.zones) do
          zone.touched = true
       end
-      modeS:reflow()
+      modeS:task():reflow()
    end
 end
 
 local winsize_watch = uv.new_timer()
-winsize_watch:start(500, 500, check_winsize)
+-- winsize_watch:start(500, 500, check_winsize)
 local winsize_signal = uv.new_signal()
 winsize_signal:start("sigwinch", check_winsize)
 
@@ -266,7 +296,7 @@ end
 
 
 
-local Set = require "set:set"
+local Set = core.set
 
 local stoppable = Set { 'idle',
                         'check',
@@ -288,12 +318,10 @@ local function shutDown(modeS)
    input_timer:close()
    input_check:stop()
    input_check:close()
-   local idlers = modeS.hist.idlers
    uv.walk(function(handle)
-      -- break down anything that isn't a historian idler or our stdio
-      if not (idlers(handle) or handle == stdin or handle == stdout) then
+      if not (handle == stdin or handle == stdout) then
          local h_type = uv.handle_get_type(handle)
-         if stoppable(h_type) then
+         if stoppable[h_type] then
             io.stderr:write("Stopping a leftover ", h_type, " ", tostring(handle), "\n")
             handle:stop()
          end
@@ -323,6 +351,8 @@ end
 
 
 
+local wrap = assert(coroutine.wrap)
+
 local function dispatch_input(seq, dispatch_all)
    -- Clear the flag and timer indicating whether we should clear down the
    -- input buffer this cycle. We explicitly stop the timer in case another
@@ -349,23 +379,40 @@ local function dispatch_input(seq, dispatch_all)
          -- timeout, it will be processed immediately and the timer reset.
          -- This is (hopefully) an upper bound on how long it will take the
          -- next chunk of a large paste to arrive.
-         input_timer:start(5, 0, function() should_dispatch_all = true end)
+         local should_dispatch_all = false
+         input_timer:start(5, 1, function()
+            if not should_dispatch_all then
+               should_dispatch_all = true
+               return
+            end
+            input_timer:stop()
+            if #input_buffer > 0 then
+               autothread(dispatch_input, input_buffer, true)
+            end
+         end)
       end
    end
    consolidate_scroll_events(events)
    for _, event in ipairs(events) do
       modeS(event)
+      s:bore "handled an event"
       -- Okay, if the action resulted in a quit, break out of the event loop
       if modeS.has_quit then
          shutDown(modeS)
          break
       end
    end
+   s:bore "escaped dispatch_input"
 end
 
+
+
+
+local counter = 0
 input_check:start(function()
+      counter = counter + 1
    if should_dispatch_all and #input_buffer > 0 then
-      dispatch_input(input_buffer, true)
+      autothread(dispatch_input, input_buffer, true)
    end
 end)
 
@@ -387,8 +434,9 @@ local function onseq(err, seq)
    if _ditch then return nil end
    local success, err_trace = xpcall(function()
       if err then error(err) end
-      dispatch_input(input_buffer .. seq, false)
+      autothread(dispatch_input, input_buffer .. seq, false)
    end, debug.traceback)
+   s:bore "escaped onseq"
    if not success then
       shutDown(modeS)
       onseq_err = err_trace
@@ -440,7 +488,7 @@ write(a.cursor.stash(),
 uv.read_start(stdin, onseq)
 
 -- initial layout and paint screen
-modeS:reflow()
+modeS:task():reflow()
 
 --[[ stop profiler if we're using it to measure startup time
 profile.stop()
@@ -460,8 +508,6 @@ io.stdout:write(a.mouse.sgr_mode(false),
 -- Back to normal mode
 uv.tty_reset_mode()
 
--- Done with uv TTY handles. Note that closing these does not close
--- the underlying FDs, we still need those.
 stdin:close()
 stdout:close()
 

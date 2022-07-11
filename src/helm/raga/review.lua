@@ -3,41 +3,13 @@
 
 
 
-local table = core.table
-local clone, splice = assert(table.clone), assert(table.splice)
+local clone = assert(core.table.clone)
 local RagaBase = require "helm:raga/base"
-local Sessionbuf = require "helm:buf/sessionbuf"
+local Reviewbuf = require "helm:buf/reviewbuf"
 
 
 
 local Review = clone(RagaBase, 2)
-Review.name = "review"
-Review.prompt_char = "💬"
-
-
-
-
-
-
-
-
-function Review.quitHelm()
-   local sesh_title = send { sendto = "hist.session", property = "session_title" }
-   send { sendto = "agents.modal", method = "show",
-      'Save changes to the session "' .. sesh_title .. '"?',
-      "yes_no_cancel" }
-end
-
-
-
-
-
-
-Review.default_keymaps = {
-   { source = "agents.session", name = "keymap_default"},
-   { source = "agents.session.results_agent", name = "keymap_scrolling"}
-}
-splice(Review.default_keymaps, RagaBase.default_keymaps)
 
 
 
@@ -48,40 +20,23 @@ splice(Review.default_keymaps, RagaBase.default_keymaps)
 
 
 
-
-
-
-
-function Review.onShift(modeS)
+function Review.onShift()
    -- Hide the suggestion column so the review interface can occupy
    -- the full width of the terminal.
    -- #todo once we are able to switch between REPLing and review
    -- on the fly, we'll need to put this back as appropriate, but I
    -- think that'll come naturally once we have a raga stack.
-   modeS.zones.suggest:hide()
+   send { to = "zones.suggest", method = "hide" }
 
-   modeS:setStatusLine("review", modeS.hist.session.session_title)
+   -- Retrieve the target of the actual concrete raga this is being called for
+   local target = send { to = "raga", field = "target" }
 
-   local modal_answer = send { sendto = "agents.modal", method = "answer" }
-   if modal_answer then
-      if modal_answer == "yes" then
-         modeS.hist.session:save()
-         modeS:quit()
-      elseif modal_answer == "no" then
-         modeS:quit()
-      end -- Do nothing on cancel
-      return
+   -- #todo Replace with detection of if we're being
+   -- created for the first time vs. a pop
+   if send { to = "zones.results.contents", field = "idEst" } ~= Reviewbuf then
+      send { method = "bindZone",
+         "results", target:gsub("^agents.",""), Reviewbuf, {scrollable = true}}
    end
-
-   if modeS.zones.results.contents.idEst ~= Sessionbuf then
-      modeS:bindZone("results", "session", Sessionbuf, {scrollable = true})
-   end
-   local premise = modeS:agent'session':selectedPremise()
-   if not premise then
-      modeS:agent'session':selectIndex(1)
-      premise = modeS:agent'session':selectedPremise()
-   end
-   modeS:agent'edit':update(premise and premise.title)
 end
 
 

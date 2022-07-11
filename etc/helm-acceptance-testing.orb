@@ -1,0 +1,61 @@
+* Helm acceptance testing
+
+We have enough features now that it's easy for fixing one thing to break
+another, and going through everything takes some time and it's easy to miss
+things. This document is a plan/checklist covering all the major features to
+provide at least a reasonable level of confidence that everything works.
+
+
+** Basic operation
+
+- [ ] Evaluate some basic expressions
+- [ ] Evaluate some expressions that depend on stuff not in regular _G
+- [ ] Use scrollback to review results from previous sessions and evaluate some lines
+- [ ] Resize the window
+- [ ] Open the "help" (hah!), scroll around, and close out of it
+
+
+*** Autocomplete
+
+- [ ] Enter autocomplete and cancel out of it
+- [ ] Use autocomplete to build a dotted path
+- [ ] Refine results by typing once something is selected in the suggestions area
+- [ ] Assign a variable and autocomplete against it
+
+
+*** Search
+
+- [ ] Search for something
+- [ ] Cancel out of search with ESC and by deleting the search string
+- [ ] Scroll around with arrow keys, including wrapping around
+- [ ] Accept a result with Return
+- [ ] Accept a result with M-<n>
+
+
+
+** Sessions
+
+- [ ] Record and review a session using =br helm -n=
+   - [ ] Use each premise status at least once
+   - [ ] Give something a title
+   - [ ] Move/reorder a premise
+- [ ] Run the session with =br s= and make sure it passes
+- [ ] Bring up session review again with =br helm -i= and make some changes,
+  verify that they stick
+- [ ] Answer "no" and "cancel" to the save-changes prompt and verify correct
+  behavior
+
+
+** Interactive restart
+
+- [ ] Start helm with =-r= after a previous run
+   - [ ] Verify tab order behavior
+   - [ ] Insert a line--at the beginning, middle, end
+   - [ ] Start to insert a line and cancel out of it
+   - [ ] Trash a line
+   - [ ] Evaluate and verify correct history
+- [ ] Review an empty run (note, this is likely to become a separate option as
+  we will want to ignore empty runs most of the time)
+   - [ ] Starts with an "insert" line
+   - [ ] Enter and cancel out of insertion, line is still there (unlike
+     normally)

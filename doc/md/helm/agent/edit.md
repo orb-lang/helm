@@ -869,8 +869,8 @@ clears our contents?
 ```lua
 function EditAgent.clear(agent)
    agent:update("")
-   send{ sendto = "agents.results", method = "clear" }
-   send{ sendto = "hist", method = "toEnd" }
+   agent :send { to = "agents.results", method = "clear" }
+   agent :send { to = "hist", method = "toEnd" }
 end
 ```
 
@@ -1001,60 +1001,6 @@ Need to extract the pasted text from the event\.
 function EditAgent.evtPaste(agent, evt)
    agent:paste(evt.text)
 end
-```
-
-
-#### Basic editing commands keymap
-
-The basic editing commands that are applicable no matter what we're editing\.
-
-```lua
-EditAgent.keymap_basic_editing = {
-   -- Motions
-   UP              = "up",
-   DOWN            = "down",
-   LEFT            = "left",
-   RIGHT           = "right",
-   ["M-LEFT"]      = "leftWordAlpha",
-   ["M-b"]         = "leftWordAlpha",
-   ["M-RIGHT"]     = "rightWordAlpha",
-   ["M-w"]         = "rightWordAlpha",
-   HOME            = "startOfLine",
-   ["C-a"]         = "startOfLine",
-   END             = "endOfLine",
-   ["C-e"]         = "endOfLine",
-   -- Kills
-   BACKSPACE       = "killBackward",
-   DELETE          = "killForward",
-   ["M-BACKSPACE"] = "killToBeginningOfWord",
-   ["M-DELETE"]    = "killToEndOfWord",
-   ["M-d"]         = "killToEndOfWord",
-   ["C-k"]         = "killToEndOfLine",
-   ["C-u"]         = "killToBeginningOfLine",
-   -- Misc editing commands
-   ["C-t"]         = "transposeLetter",
-   -- Insertion commands
-   ["[CHARACTER]"] = { method = "selfInsert", n = 1 },
-   TAB             = "tab",
-   RETURN          = "nl",
-   PASTE           = { method = "evtPaste", n = 1 }
-}
-```
-
-
-#### Readline\-style navigation
-
-Provides equivalent commands for diehard Emacsians\.
-
-In case RMS ever takes bridge for a spin\.\.\.
-
-```lua
-EditAgent.keymap_readline_nav = {
-   ["C-b"] = "left",
-   ["C-f"] = "right",
-   ["C-n"] = "down",
-   ["C-p"] = "up"
-}
 ```
 
 

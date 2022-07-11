@@ -52,7 +52,7 @@ end
 
 function ResultListAgent.quit(agent)
    agent:selectNone()
-   agent :send { method = "shiftMode", "default" }
+   agent :send { method = "popMode" }
 end
 
 
@@ -83,34 +83,6 @@ function ResultListAgent.windowConfiguration(agent)
       }
    })
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-ResultListAgent.keymap_selection = {
-   TAB = "selectNextWrap",
-   DOWN = "selectNextWrap",
-   ["S-DOWN"] = "selectNextWrap",
-   ["S-TAB"] = "selectPreviousWrap",
-   UP = "selectPreviousWrap",
-   ["S-UP"] = "selectPreviousWrap"
-}
-
--- These are both abstract methods
-ResultListAgent.keymap_actions = {
-   RETURN = "acceptSelected",
-   ESC = "userCancel"
-}
 
 
 

@@ -131,7 +131,7 @@ As :update\(\), but also shows the modal\.
 ```lua
 function ModalAgent.show(agent, ...)
    agent:update(...)
-   agent :send { method = "shiftMode", "modal" }
+   agent :send { method = "pushMode", "modal" }
 end
 ```
 
@@ -143,8 +143,7 @@ Closes the modal, storing the provided `answer` in the model\.
 ```lua
 function ModalAgent.close(agent, value)
    agent.subject.value = value
-   -- #todo shift back to the previous raga--modeS needs to maintain a stack
-   agent :send { method = "shiftMode", "default" }
+   agent :send { method = "popMode" }
 end
 ```
 
@@ -167,9 +166,6 @@ function ModalAgent.bufferValue(agent)
    return agent.subject and { n = 1, agent.subject } or { n = 0 }
 end
 ```
-
-
-### Keymaps and event handlers
 
 
 ### Keyboard input
@@ -203,18 +199,6 @@ function ModalAgent.acceptDefault(agent, event)
    return _acceptButtonWhere(agent, function(button) return button.default end)
 end
 ```
-
-
-#### Keymap
-
-```lua
-ModalAgent.keymap_actions = {
-   ESC = "cancel",
-   RETURN = "acceptDefault",
-   ["[CHARACTER]"] = { method = "letterShortcut", n = 1 }
-}
-```
-
 
 ```lua
 return core.cluster.constructor(ModalAgent)

@@ -10,6 +10,7 @@
 
 local uv  = require "luv"
 local sql = assert(sql, "sql must be in bridge _G")
+local bridge = require "bridge"
 local Arcivist = require "sqlun:arcivist"
 
 
@@ -25,7 +26,7 @@ local helm_db = {}
 
 
 local helm_db_home =  (os.getenv 'HELM_HOME'
-                      or _Bridge.bridge_home) .. "/helm/helm.sqlite"
+                      or bridge.bridge_home) .. "/helm/helm.sqlite"
 helm_db.helm_db_home = helm_db_home
 
 
@@ -943,7 +944,7 @@ ORDER BY result.result_id;
 ]]
 
 historian_sql.get_lines_of_run = [[
-SELECT input.line FROM run
+SELECT run_action.input, input.line FROM run
 INNER JOIN run_action on run_action.run = run.run_id
 INNER JOIN input on input.line_id = run_action.input
 WHERE run.run_id = :run_id

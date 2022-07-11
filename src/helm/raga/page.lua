@@ -4,8 +4,8 @@
 
 
 local table = core.table
-local clone, splice = assert(table.clone), assert(table.splice)
-local RagaBase = require "helm:helm/raga/base"
+local clone = assert(table.clone)
+local RagaBase = require "helm:raga/base"
 
 
 
@@ -13,17 +13,8 @@ local Page = clone(RagaBase, 2)
 
 Page.name = "page"
 Page.prompt_char = "❓"
-
-
-
-
-
-
-Page.default_keymaps = {
-   { source = "agents.pager", name = "keymap_actions" },
-   { source = "agents.pager", name = "keymap_scrolling" }
-}
-splice(Page.default_keymaps, RagaBase.default_keymaps)
+Page.keymap = require "helm:keymap/page"
+Page.target = "agents.pager"
 
 
 
@@ -33,11 +24,11 @@ splice(Page.default_keymaps, RagaBase.default_keymaps)
 
 
 
-function Page.onShift(modeS)
-   modeS.zones.popup:show()
+function Page.onShift()
+   send { to = "zones.popup", method = "show" }
 end
-function Page.onUnshift(modeS)
-   modeS.zones.popup:hide()
+function Page.onUnshift()
+   send { to = "zones.popup", method = "hide" }
 end
 
 

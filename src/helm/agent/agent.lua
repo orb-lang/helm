@@ -27,7 +27,8 @@ local Agent = meta {}
 
 
 
-local yield = assert(coroutine.yield)
+local coro = assert(core.thread.nest 'actor')
+local yield = assert(coro.yield)
 
 function Agent.send(agent, msg)
    return yield(Message(msg))
@@ -116,28 +117,6 @@ function Agent.evtScrollDown(agent, evt)
    agent:scrollDown(evt.num_lines)
 end
 
-
-
-
-
-
-
-
-
-
-
-Agent.keymap_scrolling = {
-   SCROLL_UP   = { method = "evtScrollUp",   n = 1 },
-   SCROLL_DOWN = { method = "evtScrollDown", n = 1 },
-   UP          = "scrollUp",
-   ["S-UP"]    = "scrollUp",
-   DOWN        = "scrollDown",
-   ["S-DOWN"]  = "scrollDown",
-   PAGE_UP     = "pageUp",
-   PAGE_DOWN   = "pageDown",
-   HOME        = "scrollToTop",
-   END         = "scrollToBottom"
-}
 
 
 

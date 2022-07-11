@@ -17,16 +17,6 @@ environment it set up\.  Everything between happens from Modeselektor\.
 #### imports
 
 
-##### actor library
-
-I'd like to stop using the two remaining idioms here:
-
-```lua
-local act = require "actor:lib"
-local borrowmethod = assert(act.borrowmethod)
-local getter = assert(act.getter)
-```
-
 ```lua
 local Historian  = require "helm:historian"
 local Maestro    = require "helm:maestro"
@@ -38,11 +28,14 @@ local Txtbuf    = require "helm:buf/txtbuf"
 
 local Actor   = require "actor:actor"
 local Valiant = require "valiant:valiant"
+
+local bridge = require "bridge"
 ```
 
 ```lua
 local cluster = require "cluster:cluster"
-local core    = require "qor:core"
+local s = require "status:status"
+s.chatty = true
 ```
 
 
@@ -72,17 +65,30 @@ cluster.extendbuilder(new, function(_new, modeS, max_extent, writer, db)
    modeS.repl_top = ModeS.REPL_LINE
 
    -- Create Actors (status isn't, but should be)
-   modeS.eval = Valiant(__G)
+   modeS.valiant = Valiant(__G)
    modeS.hist  = Historian(db)
    ---[[ This isn't how we should handle status,
    modeS.status = setmetatable({}, _stat_M)
    rawset(__G, "stat", modeS.status)
    -- so lets make this easy to knock out ]]
    modeS.zones = Zoneherd(modeS, writer)
-   modeS.maestro = Maestro(modeS)
+   modeS.maestro = Maestro()
 
    return modeS
 end)
+```
+
+
+### ModeS:\_pushMode\(raga\)
+
+\#todo
+it can be turned into a Task\. Using underscore'd name to make sure Messages break
+if they fail to be routed to Maestro\.
+
+```lua
+function ModeS._pushMode(modeS, raga)
+   modeS.maestro:pushMode(raga)
+end
 ```
 
 
@@ -97,31 +103,41 @@ should mock it\.
 
 ```lua
 function ModeS.setup(modeS)
+   local initial_raga = "nerf"
+   modeS:_agent'status':update("default")
    -- Session-related setup
-   -- #todo ugh this is clearly the wrong place/way to do this
-   local session = modeS.hist.session
-   modeS:_agent'session':update(session)
-   -- If we are loading an existing session, start in review mode
-   if session.session_id then
-      modeS.raga_default = "review"
-   elseif session.session_title then
-      -- #todo should probably do this somewhere else--maybe raga/nerf.onShift,
-      -- but it's certainly not Nerf-specific...
-      modeS:setStatusLine(
-         session.mode == "macro" and "macro" or "new_session",
-         session.session_title)
-   else
-      modeS:setStatusLine("default")
+   local session_title = bridge.args.new_session or
+                         bridge.args.session
+   if session_title then
+      modeS.hist:loadOrCreateSession(session_title)
+      if bridge.args.new_session then
+         -- Asked to create a session that already exists
+         if modeS.hist.session.session_id then
+            error('A session named "' .. session_title ..
+                  '" already exists. You can review it with br helm -s.')
+         end
+         modeS:_agent'status':update("new_session", session_title)
+      end
+      if bridge.args.session then
+         -- Asked to review a session that doesn't exist
+         if not modeS.hist.session.session_id then
+            error('No session named "' .. session_title ..
+                  '" found. Use br helm -n to create a new session.')
+         end
+         -- If we are loading an existing session, start in review mode
+         initial_raga = "session_review"
+         modeS.hist.session:loadPremises()
+      end
+      modeS:_agent'session':update(modeS.hist.session)
    end
 
-   -- #todo this interaction is messy, would be nice to be able to use yielded
-   -- messages but it happens at render time, outside a coroutine.
-   local agents = modeS.maestro.agents
-   --  #Todo  This appears to be the only use of borrowmethod,
-   --         if we can replace it with a message, we should
-   agents.prompt.continuationLines = borrowmethod(agents.edit,
-                                                  "continuationLines")
-   agents.prompt.editTouched = getter(agents.edit, "touched")
+   if bridge.args.restart or bridge.args.run then
+      modeS.hist:loadPreviousRun()
+      if bridge.args.run then
+         modeS:_agent'run_review':update(modeS.hist.previous_run)
+         initial_raga = 'run_review'
+      end
+   end
 
    -- Set up common Agent -> Zone bindings
    -- Note we don't do results here because that varies from raga to raga
@@ -137,13 +153,16 @@ function ModeS.setup(modeS)
    modeS:bindZone("suggest",  "suggest",    Resbuf)
 
    -- Load initial raga. Need to process yielded messages from `onShift`
-   modeS :task() :shiftMode(modeS.raga_default)
+   modeS :task() :_pushMode(initial_raga)
 
-   -- hackish: we check the historian for a deque of lines to load and if
-   -- we have it, we just eval them into existence.
-   if modeS.hist.reloads then
-      modeS:rerun(modeS.hist.reloads)
-      --modeS.hist.reloads = nil
+   if bridge.args.restart then
+      local deque = require "deque:deque" ()
+      for _, premise in ipairs(modeS.hist.previous_run) do
+         deque:push(premise.line)
+      end
+      modeS:rerun(deque)
+   elseif bridge.args.back then
+      modeS:rerun(modeS.hist:loadRecentLines(bridge.args.back))
    end
 
    modeS.action_complete = true
@@ -191,7 +210,7 @@ We delegate determining where this is to the Raga\.
 ```lua
 local Point = require "anterm:point"
 function ModeS.placeCursor(modeS)
-   local point = modeS.raga.getCursorPosition(modeS)
+   local point = modeS.maestro.raga.getCursorPosition()
    if point then
       modeS.write(a.jump(point), a.cursor.show())
    end
@@ -207,7 +226,7 @@ but we must also place the cursor\.
 ```lua
 function ModeS.paint(modeS)
    modeS.zones:paint(modeS)
-   modeS:placeCursor(modeS)
+   modeS:placeCursor()
    return modeS
 end
 ```
@@ -230,25 +249,14 @@ local create, resume, status = assert(coroutine.create),
 ```
 
 
-### ModeS:task\(\) :method\(\.\.\.\)
-
-Calls a Modeselektor method in 'task' mode, where it will catch and dispatch
-any messages which are yielded by anything up the call stack\.
-
-The tasker is reusable, and built during construction\.
-
-```lua
-function ModeS.task(modeS)
-   return modeS.__tasker
-end
-```
-
-
 ```lua
 function ModeS.delegator(modeS, msg)
-   if msg.sendto and msg.sendto:find("^agents%.") then
+   if msg.method == "pushMode" or msg.method == "popMode" or
+      (msg.to and (msg.to == "raga" or msg.to:find("^agents%."))) then
+      s:chat("sending a message to maestro: %s", ts(msg))
       return modeS.maestro(msg)
    else
+      -- This is effectively modeS:super'delegate'(msg)
       return pack(modeS:dispatch(msg))
    end
 end
@@ -259,111 +267,21 @@ end
 ```
 
 
-### Prompts and modes / ragas
+### ModeS:inbox\(\)
 
-Time to add modes to the `modeselektor`\! Yes, I'm calling it `raga`
-and that's a bit precious, but it's an important and heavily\-used concept,
-so it's good to have a unique name\.
-
-Right now everything works on the default mode, "nerf":
-
-```lua
-ModeS.raga_default = "nerf"
-```
-
-We'll need several basic modes and some ways to do overlay, and we need a
-single source of truth as to what mode we're in\.
-
-The entrance for that should be a single function, `ModeS:shiftMode(raga)`,
-which takes care of all stateful changes to `modeselektor` needed to enter
-the mode\.  One thing it will do is set the field `raga` to the parameter\.
-
-As a general rule, we want mode changes to work generically, by changing
-the functions attached to `(category, value)` pairs\.
-
-But sometimes we'll want a bit of logic that dispatches on the mode directly,
-repainting is a good example of this\.
-
-The next mode we're going to write is `"search"`\.
-
-
-### ModeS:shiftMode\(raga\)
-
-The `modeselektor`, as described in the prelude, is a stateful and hypermodal
-`repl` environment\.
-
-`shiftMode` is the gear stick which drives the state\. It encapsulates the
-state changes needed to switch between them\.
-
-
-#### ModeS\.closet
-
-A storage table for modes and other things we aren't using and need to
-retrieve\.
-
-```lua
-local Nerf      = require "helm:raga/nerf"
-local Search    = require "helm:raga/search"
-local Complete  = require "helm:raga/complete"
-local Page      = require "helm:raga/page"
-local Modal     = require "helm:raga/modal"
-local Review    = require "helm:raga/review"
-local EditTitle = require "helm:raga/edit-title"
-
-local Lex        = require "helm:lex"
-
-ModeS.closet = { nerf =       { raga = Nerf,
-                                lex  = Lex.lua_thor },
-                 search =     { raga = Search,
-                                lex  = Lex.null },
-                 complete =   { raga = Complete,
-                                lex  = Lex.lua_thor },
-                 page =       { raga = Page,
-                                lex  = Lex.null },
-                 review =     { raga = Review,
-                                lex  = Lex.null },
-                 edit_title = { raga = EditTitle,
-                                lex = Lex.null },
-                 modal =      { raga = Modal,
-                                lex  = Lex.null } }
-
-function ModeS.shiftMode(modeS, raga_name)
-   if raga_name == "default" then
-      raga_name = modeS.raga_default
-   end
-   -- Stash the current lexer associated with the current raga
-   -- Currently we never change the lexer separate from the raga,
-   -- but this will change when we start supporting multiple languages
-   -- Guard against nil raga or lexer during startup
-   if modeS.raga then
-      modeS.raga.onUnshift(modeS)
-      modeS.closet[modeS.raga.name].lex = modeS:_agent'edit'.lex
-   end
-   -- Switch in the new raga and associated lexer
-   modeS.raga = modeS.closet[raga_name].raga
-   modeS:_agent'edit':setLexer(modeS.closet[raga_name].lex)
-   modeS.raga.onShift(modeS)
-   -- #todo feels wrong to do this here, like it's something the raga
-   -- should handle, but onShift feels kinda like it "doesn't inherit",
-   -- like it's not something you should actually super-send, so there's
-   -- not one good place to do this.
-   modeS:_agent'prompt':update(modeS.raga.prompt_char)
-   return modeS
-end
-```
-
-
-#### ModeS:setDefaultMode\(raga\_name\)
+We allow messages with \`to = "modeS"\` to reach us, rather than complaining \`Actor lacks 'modeS' in modeS\`\.
 
 \#todo
-raga stack session review needs to in order for Modal to work right\. This
-method is here because Messages can't set properties\-\-which, should they be
-able to? It's kinda the odd one out when they can already mimic lots of other
-Lua syntax, but actual use of it is questionable\.\.\.
 
 ```lua
-function ModeS.setDefaultMode(modeS, raga_name)
-   modeS.raga_default = raga_name
+local clone = assert(core.table.clone)
+function ModeS.inbox(modeS, msg)
+   if msg.to == "modeS" then
+      msg = clone(msg)
+      msg.to = nil
+      return modeS, msg
+   end
+   return modeS
 end
 ```
 
@@ -379,6 +297,8 @@ function ModeS.act(modeS, event)
       modeS.action_complete = true
       -- The raga may set action_complete to false to cause the command
       -- to be re-processed, most likely after a mode-switch
+      -- @atman: this is where quitting breaks if we forbid non-message
+      -- return values in dispatch, not sure why.
       local commandThisTime = modeS.maestro:dispatchEvent(event)
       command = command or commandThisTime
    until modeS.action_complete == true
@@ -399,15 +319,6 @@ function ModeS.act(modeS, event)
    end
    collectgarbage()
    return modeS
-end
-```
-
-To keep `act` itself replaceable, we look it up on each call:
-
-```lua
-
-function ModeS.__call(modeS, event)
-   return modeS :task() :act(event)
 end
 ```
 
@@ -441,36 +352,42 @@ ModeS.agent = ModeS._agent -- not finishing this right now
 ```
 
 
-### ModeS:setStatusLine\(status\_name, format\_args\.\.\.\)
-
-Sets the status line at the top of the screen by updating the StatusAgent\.
-
-\#todo
-
-```lua
-
-function ModeS.setStatusLine(modeS, status_name, ...)
-   modeS:_agent'status':update(status_name, ...)
-end
-```
-
-
-### ModeS:quit\(\)
+### ModeS:quitHelm\(\)
 
 Marks the modeselektor as ready to quit \(the actual teardown will happen
 in the outer event\-loop code in helm\.orb\)
 
 ```lua
-function ModeS.quit(modeS)
+function ModeS.quitHelm(modeS)
+   -- #todo it's obviously terrible to have code specific to a particular
+   -- piece of functionality in a supervisory class like this.
+   -- To do this right, we probably need a proper raga stack. Then -n could
+   -- push the Review raga onto the bottom of the stack, then Nerf. Quit
+   -- at this point would be the result of the raga stack being empty,
+   -- rather than an explicitly-invoked command, and Ctrl-Q would just pop
+   -- the current raga. Though, a Ctrl-Q from e.g. Search would still want
+   -- to actually quit, so it's not quite that simple...
+   local session = modeS.hist.session
+   if _Bridge.args.new_session and #session > 0 then
+      local is_reviewing = false
+      for i, raga in ipairs(modeS.maestro.raga_stack) do
+         if raga == "session_review" then
+            is_reviewing = true
+            break
+         end
+      end
+      if not is_reviewing then
+         -- #todo Add the ability to change accepted status of
+         -- the whole session to the review interface
+         session.accepted = true
+         modeS.maestro:pushMode("session_review")
+         return
+      end
+   end
    -- #todo handle this better--as an event of sorts, maybe?
    -- @atman: wait, I have an idea!
    modeS.hist:close()
-   -- this is just to commit the end of the run, right now
-   local session = modeS.hist.session
-   if session.mode == "macro" and #session > 0 then
-      session:save()
-   end
-   modeS:setStatusLine("quit")
+   modeS:_agent'status':update("quit")
    modeS.has_quit = true
 end
 ```
@@ -491,10 +408,11 @@ function ModeS.rerunner(modeS, deque)
    modeS.hist.stmts.savepoint_restart_session()
    local success, results
    for line in deque:popAll() do
-      success, results = modeS.eval(line)
+      success, results = modeS:eval(line)
       assert(results ~= "advance", "Incomplete line when restarting session")
-      modeS.hist:append(line, results, success)
+      modeS.hist:appendNow(line, results, success)
    end
+   modeS.hist.stmts.release_restart_session()
    modeS.hist:toEnd()
    modeS:_agent'results':update(results)
 end
@@ -502,20 +420,11 @@ end
 
 function ModeS.rerun(modeS, deque)
    modeS :task() :rerunner(deque)
-   local restart_idle = uv.new_idle()
-   restart_idle:start(function()
-   if modeS.hist:idling() then
-      return nil
-   end
-   modeS.hist.stmts.release_restart_session()
-      restart_idle:stop()
-   end)
 end
 ```
 
 
-
-### ModeS:openHelp\(\)
+### Help screen \-\- ModeS:openHelp\(\), :openHelpOnFirstKey\(\)
 
 Opens a simple help screen\.
 
@@ -523,29 +432,114 @@ Opens a simple help screen\.
 local rep = assert(string.rep)
 function ModeS.openHelp(modeS)
    modeS:_agent'pager':update(("abcde "):rep(1000))
-   modeS:shiftMode "page"
+   modeS.maestro:pushMode "page"
+end
+
+function ModeS.openHelpOnFirstKey(modeS)
+   if modeS:agent'edit':isEmpty() then
+      modeS:openHelp()
+      return true
+   else
+      return false
+   end
+end
+```
+
+### Evaluation
+
+#### ModeS:eval\(line\)
+
+  This is a simple wrapper around valiant\.
+
+It might stay that way, idk\.
+
+```lua
+function ModeS.eval(modeS, line)
+   return modeS.valiant(line)
 end
 ```
 
 
-#### modeS\.status
+#### ModeS:userEval\(\), :conditionalEval\(\)
 
-A way to jack into `status`\.
-
-I'd remove it if I were more confident it wasn't being used\.
+The user triggered an evaluation from the REPL, retrieve the line, evaluate,
+add to history etc\. In the conditional case, do this only if the command zone
+is single\-line or we're at the end of the last line\.
 
 ```lua
-local concat = assert(table.concat)
+function ModeS.userEval(modeS)
+   local line = send { to = "agents.edit",
+                       method = 'contents' }
+   local success, results = modeS:eval(line)
+   s:chat("we return from evaluation, success: %s", success)
+   if not success and results == 'advance' then
+      send { to = "agents.edit", method = 'endOfText'}
+      return false -- Fall through to EditAgent nl binding
+   else
+      send { to = 'hist',
+             method = 'append',
+             line, results, success }
 
--- we forward declared this
-_stat_M = meta {}
-
-function _stat_M.__repr(status_table)
-   return concat(status_table)
+      send { to = 'hist', method = 'toEnd' }
+      -- Do this first because it clears the results area
+      -- #todo this clearly means edit:clear() is doing too much, decouple
+      send { to = "agents.edit", method = 'clear' }
+      send { to = "agents.results", method = 'update', results }
+   end
 end
 
-function _stat_M.clear(status_table)
-   return setmetatable({}, getmetatable(status_table))
+function ModeS.conditionalEval(modeS)
+   if send { to = "agents.edit",
+             method = 'shouldEvaluate'} then
+      return modeS:userEval()
+   else
+      return false -- Fall through to EditAgent nl binding
+   end
+end
+```
+
+
+#### ModeS:evalFromCursor\(\)
+
+```lua
+function ModeS.evalFromCursor(modeS)
+   local top = modeS.hist.n
+   local cursor = modeS.hist.cursor
+   for i = cursor, top do
+      local line = send { to = "hist", method = "index", i }
+      send { to = "agents.edit", method = "update", line }
+      modeS:userEval()
+   end
+end
+```
+
+
+### History navigation
+
+```lua
+function ModeS.historyBack()
+   -- If we're at the end of the history (the user was typing a new
+   -- expression), save it before moving
+   if send { to = 'hist', method = 'atEnd' } then
+      local linestash = send { to = "agents.edit", method = "contents" }
+      send { to = "hist", method = "append", linestash }
+   end
+   local prev_line, prev_result = send { to = "hist", method = "prev" }
+   send { to = "agents.edit", method = "update", prev_line }
+   send { to = "agents.results", method = "update", prev_result }
+end
+
+function ModeS.historyForward()
+   local new_line, next_result = send { to = "hist", method = "next" }
+   if not new_line then
+      local old_line = send { to = "agents.edit", method = "contents" }
+      local added = send { to = "hist", method = "append", old_line }
+      if added then
+         send { to = "hist", method = "toEnd" }
+      end
+   end
+   send { to = "agents.edit", method = "update", new_line }
+   send { to = "agents.results", method = "update", next_result }
 end
 ```
 

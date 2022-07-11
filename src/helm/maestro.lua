@@ -14,18 +14,35 @@
 
 
 
-local input_event = require "anterm:input-event"
-
 local EditAgent      = require "helm:agent/edit"
 local InputEchoAgent = require "helm:agent/input-echo"
 local ModalAgent     = require "helm:agent/modal"
 local PagerAgent     = require "helm:agent/pager"
 local PromptAgent    = require "helm:agent/prompt"
 local ResultsAgent   = require "helm:agent/results"
+local RunReviewAgent = require "helm:agent/run-review"
 local SearchAgent    = require "helm:agent/search"
 local SessionAgent   = require "helm:agent/session"
 local StatusAgent    = require "helm:agent/status"
 local SuggestAgent   = require "helm:agent/suggest"
+
+local assert = assert(core.fn.assertfmt)
+local table = core.table
+
+local available_ragas = {
+   nerf           = require "helm:raga/nerf",
+   search         = require "helm:raga/search",
+   complete       = require "helm:raga/complete",
+   page           = require "helm:raga/page",
+   modal          = require "helm:raga/modal",
+   session_review = require "helm:raga/session-review",
+   run_review     = require "helm:raga/run-review",
+   edit_title     = require "helm:raga/edit-title",
+   edit_line      = require "helm:raga/edit-line"
+}
+
+local cluster = require "cluster:cluster"
+local Actor = require "actor:actor"
 
 local assert = assert(core.fn.assertfmt)
 local table = core.table
@@ -35,9 +52,6 @@ local table = core.table
 
 
 
-local cluster = require "cluster:cluster"
-
-local Actor = require "actor:actor"
 
 local new, Maestro, Maestro_M = cluster.genus(Actor)
 
@@ -52,68 +66,6 @@ local new, Maestro, Maestro_M = cluster.genus(Actor)
 
 
 
-
-
-
-
-
-
-
-
-local gmatch = assert(string.gmatch)
-local clone, insert = assert(table.clone), assert(table.insert)
-local Message = require "actor:message"
-
-function Maestro.activeKeymap(maestro)
-   local composed_keymap = { bindings = {}, wildcards = {} }
-   local keymap_list = maestro.modeS.raga.default_keymaps
-   for _, keymap in ipairs(keymap_list) do
-      local bindings = maestro:dispatch { to = keymap.source,
-                                          field  = keymap.name }
-      assert(bindings, "Failed to retrieve bindings for " ..
-               keymap.source .. "." .. keymap.name)
-      for key, action in pairs(bindings) do
-         -- #todo assert that this is either a string or Message?
-         if type(action) == "string" then
-            -- See :dispatchEvent()--by leaving out .n, we cause the command
-            -- to be executed with no arguments
-            -- @sam: is this a sensible use of .n?
-            action = { method = action }
-         else
-            action = clone(action)
-         end
-         action.sendto = action.sendto or keymap.source
-         -- Right now modeS ends up mutating these to route stuff to agents
-         -- properly, and Message is read-only. Once we have a proper
-         -- polymorphic dispatchmessage, or just a reasonable workaround,
-         -- we should start converting these
-         -- action = Message(action)
-         local key_evt = input_event.marshal(key)
-         assert(key_evt, "Failed to parse event string: '%s'", key)
-         if key_evt.type == "wildcard" then
-            insert(composed_keymap.wildcards, { pattern = key_evt, action = action })
-         else
-            composed_keymap.bindings[key] = composed_keymap.bindings[key] or {}
-            insert(composed_keymap.bindings[key], action)
-         end
-      end
-   end
-   return composed_keymap
-end
-
-
-
-
-
-
-
-
-
-
-local create, resume, status, yield = assert(coroutine.create),
-                                      assert(coroutine.resume),
-                                      assert(coroutine.status),
-                                      assert(coroutine.yield)
 
 function Maestro.act(maestro, msg)
    return pack(maestro:dispatch(msg))
@@ -131,12 +83,16 @@ end
 
 
 
+
+
+local _yield  = assert(core.thread.nest "actor" .yield)
+
 function Maestro.delegate(maestro, msg)
-   local to = msg.sendto or msg.to
-   if to and to:find("^agents%.") then
+   if msg.method == "pushMode" or msg.method == "popMode" or
+      (msg.to and (msg.to == "raga" or msg.to:find("^agents%."))) then
       return maestro:act(msg)
    else
-      return pack(yield(msg))
+      return pack(_yield(msg))
    end
 end
 
@@ -180,46 +136,30 @@ end
 
 
 
-local concat = assert(table.concat)
 
-local function is_wildcard_match(wc_evt, evt)
-   if wc_evt.modifiers ~= evt.modifiers then
-      return false
-   end
-   if evt.type == "keypress" then
-      local special = input_event.is_special_key(evt.key)
-      if wc_evt.key == "[CHARACTER]" and not special
-      or wc_evt.key == "[SPECIAL]" and special then
-         return true
-      end
-   end
-   if wc_evt.key == "[MOUSE]" and evt.type == "mouse" then
-      return true
-   end
-   return false
-end
+local clone, concat, insert = assert(table.clone),
+                              assert(table.concat),
+                              assert(table.insert)
 
 local function _dispatchOnly(maestro, event)
-   local keymap = maestro:activeKeymap()
-   local event_string = input_event.serialize(event)
-   local handlers = clone(keymap.bindings[event_string] or {})
-   for _, wc_dict in ipairs(keymap.wildcards) do
-      if is_wildcard_match(wc_dict.pattern, event) then
-         insert(handlers, wc_dict.action)
-      end
-   end
+   local handlers = maestro.raga.keymap(event)
    local tried = {}
    for _, handler in ipairs(handlers) do
       handler = clone(handler)
       -- #todo make this waaaaay more flexible
-      if handler.n and handler.n > 0 then
-         handler[handler.n] = event
+      if handler.n > 0 and not handler[handler.n] then
+        handler[handler.n] = event
+      end
+      -- #todo using empty-string as a non-nil signpost
+      -- should be able to refactor so this is not needed
+      if (not handler.to) or handler.to == '' then
+         handler.to = maestro.raga.target
       end
       -- #todo ugh, some way to dump a Message to a representative string?
-      -- #todo also, this is assuming that all traversal is done in `sendto`,
+      -- #todo also, this is assuming that all traversal is done in `to`,
       -- without nested messages--bad assumption, in general
       insert(tried, handler.method or handler.call)
-      if maestro:dispatch(handler) ~= false then
+      if send(handler) ~= false then
          break
       end
    end
@@ -233,11 +173,11 @@ end
 function Maestro.eventDispatcher(maestro, event)
    local command = _dispatchOnly(maestro, event)
    if maestro.agents.edit.contents_changed then
-      maestro.modeS.raga.onTxtbufChanged(modeS)
+      maestro.raga.onTxtbufChanged()
     -- Treat contents_changed as implying cursor_changed
     -- only ever fire one of the two events
    elseif maestro.agents.edit.cursor_changed then
-      maestro.modeS.raga.onCursorChanged(modeS)
+      maestro.raga.onCursorChanged()
    end
    maestro.agents.edit.contents_changed = false
    maestro.agents.edit.cursor_changed = false
@@ -253,9 +193,87 @@ end
 
 
 
-cluster.extendbuilder(new, function(_new, maestro, modeS)
-   -- #todo this is temporary until we sort out communication properly
-   maestro.modeS = modeS
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local function _shiftMode(maestro, raga_name)
+   -- Stash the current lexer associated with the current raga
+   -- Currently we never change the lexer separate from the raga,
+   -- but this will change when we start supporting multiple languages
+   -- Guard against nil raga or lexer during startup
+   if maestro.raga then
+      maestro.raga.onUnshift()
+   end
+   -- Switch in the new raga and associated lexer
+   maestro.raga = available_ragas[raga_name]
+   maestro.agents.edit:setLexer(maestro.raga.lex)
+   maestro.raga.onShift()
+   -- #todo feels wrong to do this here, like it's something the raga
+   -- should handle, but onShift feels kinda like it "doesn't inherit",
+   -- like it's not something you should actually super-send, so there's
+   -- not one good place to do this.
+   maestro.agents.prompt:update(maestro.raga.prompt_char)
+   return maestro
+end
+
+
+
+
+
+
+
+
+local remove = assert(table.remove)
+
+function Maestro.pushMode(maestro, raga)
+   -- There will be at most one previous occurrence as long as nobody breaks
+   -- the rules and messes with the stack outside these methods
+   for i, elem in ipairs(maestro.raga_stack) do
+      if elem == raga then
+         remove(maestro.raga_stack, i)
+         break
+      end
+   end
+   insert(maestro.raga_stack, raga)
+   return _shiftMode(maestro, raga)
+end
+
+
+
+
+
+
+
+
+
+
+
+
+function Maestro.popMode(maestro)
+   remove(maestro.raga_stack)
+   return _shiftMode(maestro, maestro.raga_stack[#maestro.raga_stack])
+end
+
+
+
+
+
+
+cluster.extendbuilder(new, function(_new, maestro)
    maestro.agents = {
       edit       = EditAgent(),
       input_echo = InputEchoAgent(),
@@ -263,11 +281,15 @@ cluster.extendbuilder(new, function(_new, maestro, modeS)
       pager      = PagerAgent(),
       prompt     = PromptAgent(),
       results    = ResultsAgent(),
+      run_review = RunReviewAgent(),
       search     = SearchAgent(),
       session    = SessionAgent(),
       status     = StatusAgent(),
       suggest    = SuggestAgent(),
    }
+   -- Raga stack starts out empty, though by first paint we'll have
+   -- pushed an initial raga
+   maestro.raga_stack = {}
    return maestro
 end)
 

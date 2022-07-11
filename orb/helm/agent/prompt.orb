@@ -2,7 +2,7 @@
 
 Agent supplying the prompt. The prompt character is supplied by the raga,
 we're just a dumb value holder for that, but we do retrieve the number of
-continuation lines from a reference to the EditAgent's Window.
+continuation lines by sending a Message to the EditAgent.
 
 #!lua
 local Agent = require "helm:agent/agent"
@@ -30,7 +30,9 @@ prompt is expensive.
 function PromptAgent.checkTouched(agent)
    -- #todo .touched propagation is weird, we can't :checkTouched()
    -- on the EditAgent because we'll clear stuff prematurely
-   agent.touched = agent.touched or agent.editTouched()
+   -- All of this should be replaced by a handler for an action sent
+   -- by the EditAgent (which would replace onTxtbufChanged() as well)
+   agent.touched = agent.touched or agent :send { to = "agents.edit", field = "touched" }
    return Agent.checkTouched(agent)
 end
 #/lua
@@ -40,7 +42,9 @@ end
 
 #!lua
 function PromptAgent.bufferValue(agent)
-   return agent.prompt_char .. " " .. ("\n..."):rep(agent.continuationLines())
+   local continuation_lines = agent :send { to = "agents.edit",
+                                          method = "continuationLines" }
+   return agent.prompt_char .. " " .. ("\n..."):rep(continuation_lines)
 end
 #/lua
 

@@ -54,7 +54,7 @@ foundation already laid.
 
          This will also involve adding appropriate flags in =br= itself.
 
-  - [ ]  Use these sample sessions to build a headless =repl= which runs tests
+  - [X]  Use these sample sessions to build a headless =repl= which runs tests
          and reports the results.
 
   - [ ]  Once we have a sessions framework, we make it shine by adding an

@@ -1,0 +1,76 @@
+@startuml
+autonumber
+'hide footbox
+skinparam sequenceMessageAlign direction
+skinparam backgroundColor black
+
+skinparam arrow {
+   FontColor yellow
+   Color DeepSkyBlue
+}
+
+
+skinparam sequence {
+   DividerBackgroundColor gray
+   LifeLineBackgroundColor red
+   BoxFontColor yellow
+}
+
+box Modeselektor #DarkBlue
+participant Act as modeAct <<(λ,#ADD1B2)>>
+participant CheckRespond as modeResp <<(ε,#FFD700)>>
+participant Dispatch as modeDisp <<(τ, #33FF22)>>
+end box
+
+box Maestro #DarkGreen
+participant Process as maeProc <<(λ,#ADD1B2)>>
+participant DispatchOne as maeDisp1 <<(τ, #33FF22)>>
+participant DispatchTwo as maeDisp2 <<(τ, #33FF22)>>
+end box
+
+=== First Tick ===
+
+activate modeAct
+modeAct -> modeDisp ** : coro()
+modeAct -> modeResp  ** :  uv.new_check()
+[<- modeAct !! : return nil
+
+=== Second Tick ===
+
+modeResp -> modeResp ++ : check callback
+modeResp -> modeDisp ++ : resume(Dispatch)
+activate modeResp #DarkGray
+modeDisp -> maeProc ** : :dispatch()?
+activate modeDisp #DarkGray
+activate maeProc
+maeProc -> maeDisp1 ** : coro()
+maeProc -> maeDisp1 ++ : resume(DispatchOne)
+activate maeProc #DarkGray
+maeDisp1 -> maeDisp1  : callAgents
+maeDisp1 -[#red]>> maeProc -- : yield(msg)
+deactivate maeProc
+maeProc -> maeProc : dispatchmessage(msg)
+maeProc -> maeDisp2 ** : coro()
+maeProc -> maeDisp2 ++ : resume(DispatchTwo)
+activate maeProc #DarkGray
+maeDisp2 -> maeDisp2 : callAgents
+maeDisp2 -[#red]>> maeProc -- : yield(nil)
+deactivate maeProc
+maeProc -> maeDisp1 ++ : resume(DispatchOne)
+activate maeProc #DarkGray
+maeDisp1 -> maeDisp1  : callAgents
+maeDisp1 -[#red]>> maeProc -- : yield(throwable)
+deactivate maeProc
+maeProc -[#red]>> modeDisp -- : yield(throwable, DispatchOne)
+deactivate modeDisp
+modeDisp -> modeDisp : .hist:something(throwable)
+modeDisp -> maeDisp1 ++ : resume(DispatchOne, ...)
+activate modeDisp #DarkGray
+activate maeProc
+activate maeProc #DarkGray
+maeDisp1 -> maeDisp1  : callAgents
+maeDisp1 -> maeProc : return nil
+deactivate maeProc
+destroy maeDisp1
+[<- maeProc !! : return nil
+@enduml
