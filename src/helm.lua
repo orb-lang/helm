@@ -351,8 +351,6 @@ end
 
 
 
-local wrap = assert(coroutine.wrap)
-
 local function dispatch_input(seq, dispatch_all)
    -- Clear the flag and timer indicating whether we should clear down the
    -- input buffer this cycle. We explicitly stop the timer in case another
