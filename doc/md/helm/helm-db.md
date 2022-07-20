@@ -806,6 +806,263 @@ insert(migration_6, create_error_string_idx)
 ```
 
 
+## Migration 7: The Great Normalization\.
+
+We're making a lot of changes here\.
+
+The overarching goal is to have a fully\-normal database\.
+
+We're going to end up with what feels like a lot of tables, because that's the
+price of orthogonality, that and a lot of joins to get data out of the
+database\.
+
+We'll be happy about this\! I'm sure\.
+
+I'm presuming a full copy of every table in the database, which will be fun,
+order wise\.
+
+Meanwhile, let's write that new schema\.
+
+
+### project
+
+Eh, we should store the ino, not just the directory string\.
+
+But it's basically fine\.
+
+
+#### lines
+
+A unique text table\.
+
+```sql
+CREATE TABLE line (
+   line_id INTEGER PRIMARY KEY,
+   string TEXT UNIQUE NOT NULL
+);
+CREATE INDEX line_text_id ON line (string);
+```
+
+Add null line `""`\.
+
+
+#### input
+
+input now looks like this:
+
+```sql
+CREATE TABLE input_copy(
+   input_id INTEGER PRIMARY KEY,
+   project INTEGER,
+   line INTEGER NOT NULL,
+   time DATETIME DEFAULT (strftime('%Y-%m-%dT%H:%M:%f', 'now')),
+   FOREIGN KEY (project)
+      REFERENCES project (project_id)
+      ON DELETE CASCADE -- maybe not ideal?
+   FOREIGN KEY (line)
+      REFERENCES line (line_id)
+)
+-- realistically we should rename this first yeah?
+CREATE INDEX idx_input_time ON input_copy (time) DESC;
+```
+
+
+#### round
+
+This is the pivot table to make all our aggregates agree with one another\.
+
+What should this look like?
+
+```sql
+CREATE TABLE round(
+   round_id INTEGER PRIMARY KEY,
+   line INTEGER NOT NULL,
+   response INTEGER NOT NULL,
+   FOREIGN KEY (line)
+      REFERENCES line (line_id)
+   FOREIGN KEY (response)
+      REFERENCES response (response_id)
+);
+```
+
+The response is just a pointer:
+
+#### response
+
+```sql
+CREATE TABLE response(
+   response_id INTEGER PRIMARY KEY
+);
+```
+
+This lets us have a variadic result table, an error table, and a miscellaneous
+status table such as `"not-executed"`, any of which can constitute a round\.
+
+This lets us have a primitive which runs can store, like this:
+
+
+#### input\_round
+
+```sql
+CREATE TABLE input_round(
+   input_round_id INTEGER PRIMARY KEY,
+   input INTEGER NOT NULL,
+   round INTEGER NOT NULL,
+   FOREIGN KEY (input)
+      REFERENCES input (input_id)
+   FOREIGN KEY (round)
+      REFERENCES round (round_id)
+);
+```
+
+This creates a potential data integrity issue, which we can prevent with a
+trigger\.
+
+
+#### result
+
+We can now decouple results from input, like so:
+
+\#TODO
+
+There's a trick to ensuring ordinality for inserts, and we should use that\.
+
+```sql
+CREATE TABLE IF NOT EXISTS result_copy (
+   result_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   round INTEGER NOT NULL,
+   hash TEXT NOT NULL,
+   FOREIGN KEY (round)
+      REFERENCES round (round_id)
+      ON DELETE CASCADE
+   FOREIGN KEY (hash)
+      REFERENCES repr (hash)
+);
+```
+
+The round itself is stateful, it's possible to have the same line and results
+pointed at by a given round\.\. and we may want to prevent that\.
+
+Regardless, it works the other way around: inputs, riffs, sessions, can all
+look at the same round without interference\.
+
+
+\#TODO
+change structure, as it happens\.
+
+#### riff
+
+A Riff is an ordered collection of Rounds, therefore a pointer\.
+
+```sql
+CREATE TABLE riff (
+   riff_id INTEGER PRIMARY KEY,
+);
+```
+
+
+#### riff\_round
+
+We need to enforce ordinality of `order` for a given riff\.
+
+Using a primary key constraint as the foreign key enforces uniqueness but not
+ordinality, so we will design a trigger here\.
+
+```sql
+CREATE TABLE riff_round(
+   riff_round_id INTEGER PRIMARY KEY,
+   riff INTEGER NOT NULL,
+   order INTEGER NOT NULL CHECK (order > 0),
+   round INTEGER NOT NULL
+   FOREIGN KEY (riff)
+      REFERENCES riff (riff_id)
+   FOREIGN KEY (round)
+      REFERENCES round (round_id)
+);
+```
+
+So the latest riff gets the round lifted off input and bob's your uncle\.
+
+A round enters the database once there's a line\.
+
+
+#### run
+
+A Run is a record of everything which happens in a given run of helm, from
+launch to quit\.
+
+The Run itself holds any singular fact about the run, such as launch time and
+quit time, serving otherwise as a foreign key for run actions\.
+
+```sql
+CREATE TABLE run_copy (
+   run_id INTEGER PRIMARY KEY,
+   project INTEGER NOT NULL,
+   start_time DATETIME DEFAULT (strftime('%Y-%m-%dT%H:%M:%f', 'now')),
+   finish_time DATETIME,
+   -- these are the same unless we are in this run or the run crashed
+   current_riff INTEGER,
+   riff INTEGER,
+   FOREIGN KEY (project)
+      REFERENCES project (project_id)
+      ON DELETE CASCADE
+   FOREIGN KEY (riff)
+      REFERENCES riff (riff_id)
+   FOREIGN KEY (current_riff)
+      REFERENCES riff (riff_id)
+);
+```
+
+
+#### run action
+
+Mostly a copypasta, the primary key strategy here is better than nothing but
+really we should calculate order on inserts, updates are in\-place and that's
+fine\.
+
+```sql
+CREATE TABLE run_action_copy (
+   ordinal INTEGER NOT NULL,
+   class TEXT CHECK (length(class) <= 3),
+   input_round INTEGER,
+   run INTEGER NOT NULL,
+   PRIMARY KEY (run, ordinal) -- ON CONFLICT ABORT?
+   FOREIGN KEY (run)
+      REFERENCES run (run_id)
+      ON DELETE CASCADE
+   FOREIGN KEY (input_round)
+      REFERENCES input_round (input_round_id)
+);
+```
+
+\#Note
+
+It should show the strategy for e\.g\. sessions, premises, so on\.
+
+
+
+
+
+
+
+##### consistent hashing
+
+  I used a hybrid of hashing and raw comparison for uniques in various places,
+the tradeoff being less storage \(meh\) and allocation \(that was the one\) for
+an inconsistent representation\.
+
+This becomes a problem when we start wanting to put hashes into Orb documents,
+where we benefit from using only alphanumerics\.  The control sequences and
+space marks are equally annoying in the same way: if we leave the shorthashes
+laying around then we have to turn hashes into strings\.  Not great\.
+
+\#TODO
+
+
+This has cascading results for many another table\.
+
+
+
 ### Future Migrations
 
 Right now, `helm` is omokase: you get some readline commands, and you get the

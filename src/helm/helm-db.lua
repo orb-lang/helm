@@ -835,6 +835,263 @@ insert(migration_6, create_error_string_idx)
 
 
 
+local create_line_table_7 = [[
+CREATE TABLE line (
+   line_id INTEGER PRIMARY KEY,
+   string TEXT UNIQUE NOT NULL
+);
+CREATE INDEX line_text_id ON line (string);
+]]
+
+
+
+
+
+
+
+
+local create_input_table_7 = [[
+CREATE TABLE input_copy(
+   input_id INTEGER PRIMARY KEY,
+   project INTEGER,
+   line INTEGER NOT NULL,
+   time DATETIME DEFAULT (strftime('%Y-%m-%dT%H:%M:%f', 'now')),
+   FOREIGN KEY (project)
+      REFERENCES project (project_id)
+      ON DELETE CASCADE -- maybe not ideal?
+   FOREIGN KEY (line)
+      REFERENCES line (line_id)
+)
+-- realistically we should rename this first yeah?
+CREATE INDEX idx_input_time ON input_copy (time) DESC;
+]]
+
+
+
+
+
+
+
+
+local create_round_table_7 = [[
+CREATE TABLE round(
+   round_id INTEGER PRIMARY KEY,
+   line INTEGER NOT NULL,
+   response INTEGER NOT NULL,
+   FOREIGN KEY (line)
+      REFERENCES line (line_id)
+   FOREIGN KEY (response)
+      REFERENCES response (response_id)
+);
+]]
+
+
+
+
+
+local create_response_table_7 = [[
+CREATE TABLE response(
+   response_id INTEGER PRIMARY KEY
+);
+]]
+
+
+
+
+
+
+
+
+
+local create_input_round_table_7 = [[
+CREATE TABLE input_round(
+   input_round_id INTEGER PRIMARY KEY,
+   input INTEGER NOT NULL,
+   round INTEGER NOT NULL,
+   FOREIGN KEY (input)
+      REFERENCES input (input_id)
+   FOREIGN KEY (round)
+      REFERENCES round (round_id)
+);
+]]
+
+
+
+
+
+
+
+
+
+
+
+
+
+local create_result_table_7 = [[
+CREATE TABLE IF NOT EXISTS result_copy (
+   result_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   round INTEGER NOT NULL,
+   hash TEXT NOT NULL,
+   FOREIGN KEY (round)
+      REFERENCES round (round_id)
+      ON DELETE CASCADE
+   FOREIGN KEY (hash)
+      REFERENCES repr (hash)
+);
+]]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local create_riff_table_7 = [[
+CREATE TABLE riff (
+   riff_id INTEGER PRIMARY KEY,
+);
+]]
+
+
+
+
+
+
+
+
+
+local create_riff_round_table_7 = [[
+CREATE TABLE riff_round(
+   riff_round_id INTEGER PRIMARY KEY,
+   riff INTEGER NOT NULL,
+   order INTEGER NOT NULL CHECK (order > 0),
+   round INTEGER NOT NULL
+   FOREIGN KEY (riff)
+      REFERENCES riff (riff_id)
+   FOREIGN KEY (round)
+      REFERENCES round (round_id)
+);
+]]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local create_run_table_7 = [[
+CREATE TABLE run_copy (
+   run_id INTEGER PRIMARY KEY,
+   project INTEGER NOT NULL,
+   start_time DATETIME DEFAULT (strftime('%Y-%m-%dT%H:%M:%f', 'now')),
+   finish_time DATETIME,
+   -- these are the same unless we are in this run or the run crashed
+   current_riff INTEGER,
+   riff INTEGER,
+   FOREIGN KEY (project)
+      REFERENCES project (project_id)
+      ON DELETE CASCADE
+   FOREIGN KEY (riff)
+      REFERENCES riff (riff_id)
+   FOREIGN KEY (current_riff)
+      REFERENCES riff (riff_id)
+);
+]]
+
+
+
+
+
+
+
+
+local create_run_action_table_7 = [[
+CREATE TABLE run_action_copy (
+   ordinal INTEGER NOT NULL,
+   class TEXT CHECK (length(class) <= 3),
+   input_round INTEGER,
+   run INTEGER NOT NULL,
+   PRIMARY KEY (run, ordinal) -- ON CONFLICT ABORT?
+   FOREIGN KEY (run)
+      REFERENCES run (run_id)
+      ON DELETE CASCADE
+   FOREIGN KEY (input_round)
+      REFERENCES input_round (input_round_id)
+);
+]]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
