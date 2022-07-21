@@ -833,7 +833,7 @@ But it's basically fine\.
 
 #### lines
 
-A unique text table\.
+A unique text table\. Should probably be strict\.
 
 ```sql
 CREATE TABLE line (
@@ -844,6 +844,18 @@ CREATE INDEX line_text_id ON line (string);
 ```
 
 Add null line `""`\.
+
+
+##### Why not unique lines with hashes
+
+Lines are what we use for anything we might use SQLite text search capability
+for\. "Plain" text\.
+
+Reprs could be searched, but broadly speaking they should be interpreted, and
+we care about the identity often and the details almost always in pairs we
+will have in memory\.
+
+If useful we can store a hash on the line, while sticking with the line\_id\.
 
 
 #### input
@@ -887,7 +899,10 @@ CREATE TABLE round(
 
 The response is just a pointer:
 
+
 #### response
+
+We want to be able to point to a response distinct from the round\.
 
 ```sql
 CREATE TABLE response(
@@ -1013,6 +1028,10 @@ CREATE TABLE run_copy (
 );
 ```
 
+Note that Runs produce riffs, but are composed of run actions, as well as the
+latest riff\.  We track the latest riff twice, to distinguish crashing or
+SIGKILL from clean exits\.
+
 
 #### run action
 
@@ -1020,12 +1039,20 @@ Mostly a copypasta, the primary key strategy here is better than nothing but
 really we should calculate order on inserts, updates are in\-place and that's
 fine\.
 
+Note the `fact` field, which can contain a serpent\-serialized Lua table with
+anything we need to know about a run action\.  `LUATEXT` gives text 'affinity',
+while showing the intention\.
+
+It will be a painless transition to spread these facts out into proper tables,
+as we figure out which facts are relevant\.
+
 ```sql
 CREATE TABLE run_action_copy (
    ordinal INTEGER NOT NULL,
    class TEXT CHECK (length(class) <= 3),
    input_round INTEGER,
    run INTEGER NOT NULL,
+   fact LUATEXT,
    PRIMARY KEY (run, ordinal) -- ON CONFLICT ABORT?
    FOREIGN KEY (run)
       REFERENCES run (run_id)
@@ -1035,14 +1062,79 @@ CREATE TABLE run_action_copy (
 );
 ```
 
-\#Note
-
-It should show the strategy for e\.g\. sessions, premises, so on\.
-
-
+We could also decorate `run` with a `fact` row, I would rather hash out what
+we should always make notice of and add a bucket taxon if it actively looks
+like we need one\.
 
 
+#### premise
 
+This simplifies in the folowing way: we can refer to a round as input or as
+premise, and a title is just another sort of line\.
+
+```sql
+CREATE TABLE premise_copy (
+   premise_id INTEGER PRIMARY KEY,
+   session INTEGER NOT NULL,
+   round INTEGER NOT NULL,
+   -- ordinal is 1-indexed for Lua compatibility
+   -- "ordinal" not "order" because SQL
+   ordinal INTEGER NOT NULL CHECK (ordinal > 0),
+   title INTEGER NOT NULL,
+   status STRING NOT NULL CHECK (
+      status = 'accept' or status = 'reject' or status = 'ignore' ),
+   -- PRIMARY KEY (session, ordinal) ON CONFLICT REPLACE
+   FOREIGN KEY (session)
+      REFERENCES session (session_id)
+      ON DELETE CASCADE
+   FOREIGN KEY (round)
+      REFERENCES round (round_id)
+   FOREIGN KEY (title)
+      REFERENCES line (line_id)
+);
+```
+
+As I've mentioned, the strategy for ensuring ordinality should be different,
+I've added a row\_id and we'll solve this problem later, but once and for all\.
+
+This also gives us, finally, a good form for an error:
+
+#### error
+
+```sql
+CREATE TABLE error(
+   error_id INTEGER PRIMARY KEY,
+   response INTEGER, -- NOT NULL? maybe
+   short TEXT,
+   err INTEGER,
+   FOREIGN KEY response
+      REFERENCES response (response_id)
+   FOREIGN KEY err
+      REFERENCES line (line_id)
+);
+```
+
+Although indeed, `short` could also be a line\.
+
+This leaves the 'other response' table:
+
+#### other\_response
+
+```sql
+CREATE TABLE other_response(
+   other_response_id INTEGER PRIMARY KEY,
+   response INTEGER NOT NULL,
+   category TEXT NOT NULL,
+   FOREIGN KEY response
+      REFERENCES response (response_id)
+);
+```
+
+Which we use for, eg, `'CRASHED'`, which we would need to fill in later from
+inspecting the prior run\.
+
+I think that's all of it, I'm working actively on a tool to add more migration
+options than "YOLO let's Migrate Yo" because we'll need that for this one\.
 
 
 ##### consistent hashing

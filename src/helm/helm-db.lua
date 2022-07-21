@@ -850,6 +850,18 @@ CREATE INDEX line_text_id ON line (string);
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 local create_input_table_7 = [[
 CREATE TABLE input_copy(
    input_id INTEGER PRIMARY KEY,
@@ -884,6 +896,9 @@ CREATE TABLE round(
       REFERENCES response (response_id)
 );
 ]]
+
+
+
 
 
 
@@ -1020,12 +1035,24 @@ CREATE TABLE run_copy (
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 local create_run_action_table_7 = [[
 CREATE TABLE run_action_copy (
    ordinal INTEGER NOT NULL,
    class TEXT CHECK (length(class) <= 3),
    input_round INTEGER,
    run INTEGER NOT NULL,
+   fact LUATEXT,
    PRIMARY KEY (run, ordinal) -- ON CONFLICT ABORT?
    FOREIGN KEY (run)
       REFERENCES run (run_id)
@@ -1037,6 +1064,71 @@ CREATE TABLE run_action_copy (
 
 
 
+
+
+
+
+
+
+
+
+local create_premise_table_7 = [[
+CREATE TABLE premise_copy (
+   premise_id INTEGER PRIMARY KEY,
+   session INTEGER NOT NULL,
+   round INTEGER NOT NULL,
+   -- ordinal is 1-indexed for Lua compatibility
+   -- "ordinal" not "order" because SQL
+   ordinal INTEGER NOT NULL CHECK (ordinal > 0),
+   title INTEGER NOT NULL,
+   status STRING NOT NULL CHECK (
+      status = 'accept' or status = 'reject' or status = 'ignore' ),
+   -- PRIMARY KEY (session, ordinal) ON CONFLICT REPLACE
+   FOREIGN KEY (session)
+      REFERENCES session (session_id)
+      ON DELETE CASCADE
+   FOREIGN KEY (round)
+      REFERENCES round (round_id)
+   FOREIGN KEY (title)
+      REFERENCES line (line_id)
+);
+]]
+
+
+
+
+
+
+
+
+local create_error_table_7 = [[
+CREATE TABLE error(
+   error_id INTEGER PRIMARY KEY,
+   response INTEGER, -- NOT NULL? maybe
+   short TEXT,
+   err INTEGER,
+   FOREIGN KEY response
+      REFERENCES response (response_id)
+   FOREIGN KEY err
+      REFERENCES line (line_id)
+);
+]]
+
+
+
+
+
+
+
+local create_other_response_table_7 = [[
+CREATE TABLE other_response(
+   other_response_id INTEGER PRIMARY KEY,
+   response INTEGER NOT NULL,
+   category TEXT NOT NULL,
+   FOREIGN KEY response
+      REFERENCES response (response_id)
+);
+]]
 
 
 
