@@ -249,9 +249,9 @@ function RunReviewAgent.evalAndResume(agent)
          to_run:push(premise.line)
       end
    end
-   agent :send { method = "rerun", to_run }
    agent :send { to = "agents.status", method = "update", "default" }
    agent :send { method = "pushMode", "nerf" }
+   agent :send { method = "rerun", to_run }
 end
 ```
 
