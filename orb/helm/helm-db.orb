@@ -998,6 +998,20 @@ How many times are there five results? Not often I'm sure.
 We have more response types, but these are less central and work the same way.
 
 
+**** repr
+
+The reprs need to be re-hashed, but retain the same structure.
+
+I think we'll drop blob affinity though.
+
+#!sql @create_repr_table_7 #asLua
+CREATE TABLE repr_copy (
+   hash TEXT PRIMARY KEY ON CONFLICT IGNORE,
+   repr BLOB
+);
+#/sql
+
+
 **** riff
 
 A =riff= is an ordered series of =rounds=, therefore a pointer.
@@ -1166,12 +1180,22 @@ inspecting the prior run.
 
 **** session
 
-The session is split into =session= and =session_round=, like so
+The session is split into =session= and riff. Premises point at the riff_round
+of the riff.
+
+Note the expansion field =doc=, which can be a foreign key across to the
+=orb= database.
+
+The idea is that we will export mature sessions as Orb documents, and the
+session machinery will keep track of the state of the important parts of that
+document, but not using this database.
 
 #!sql @create_session_table_7 #asLua
 CREATE TABLE session_copy (
    session_id INTEGER PRIMARY KEY,
    title TEXT,
+   doc INTEGER,
+   doc_hash TEXT,
    project INTEGER,
    accepted INTEGER NOT NULL DEFAULT 0 CHECK (accepted = 0 or accepted = 1),
    riff INTEGER NOT NULL,
@@ -1214,7 +1238,12 @@ CREATE TABLE premise_copy (
 This is the right level of indirection.
 
 
-***** consistent hashing
+*** Migration 7: the migration.
+
+This will be gnarly, but breaks down into stages.
+
+
+***** consistent hashing: affects repr, result
 
   I used a hybrid of hashing and raw comparison for uniques in various places,
 the tradeoff being less storage (meh) and allocation (that was the one) for
@@ -1226,9 +1255,13 @@ space marks are equally annoying in the same way: if we leave the shorthashes
 laying around then we have to turn hashes into strings.  Not great.
 
 
+***** turn input into input_rounds
 
+This is the bulk of it.
 
-This has cascading results for many another table.
+Schema 6 is mainly keyed off input, which is what we're fixing, but also makes
+it easy to pull everything out, =round= it, and put this in the new tables.
+
 
 
 
