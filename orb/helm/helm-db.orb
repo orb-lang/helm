@@ -875,7 +875,7 @@ when interested in the subset of lines which meet those criteria.
 
 **** round
 
-A line is now an interned string, which can be referred to by key or identity,
+A line is now an interned string, which can be retrieved by key or identity,
 and sometimes by hash.
 
 An *instance* of a line is identified by a round.
@@ -913,7 +913,7 @@ It's okay to leave things up to transactional and application logic, though.
 
 **** input
 
-Input no longer points at a line directly, it is a round enhanched with a
+Input no longer points at a line directly, it is a round enhanced with a
 timestamp and project.
 
 #!sql @create_input_table_7 #asLua
@@ -934,6 +934,7 @@ CREATE INDEX idx_input_time ON input_copy (time) DESC;
 
 I've changed =ON DELETE= to =SET NULL= rather than =CASCADE=, and I want to do
 better, but let's stay focused on the /important/ normalizations for now.
+
 
 **** response
 
@@ -956,6 +957,7 @@ tractable in many cases.
 
 Nor need we care what line compelled the return of =true=, the round takes
 care of that.
+
 
 **** result
 
@@ -1050,9 +1052,10 @@ CREATE TABLE riff_round(
 We use transactions, as you'd imagine, to insure that an input and a riff
 point at the same round.
 
+
 **** run
 
-A Run is a record of everything which happens in a given run of helm, from
+  A Run is a record of everything which happens in a given run of helm, from
 launch to quit.
 
 The Run itself holds any singular fact about the run, such as launch time and
