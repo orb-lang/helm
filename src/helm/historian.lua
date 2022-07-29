@@ -378,64 +378,6 @@ end
 
 
 
-local tabulate = persist_tabulate.tabulate
-
-function Historian.appendNow(historian, line, results, success)
-   if line == "" then
-      -- don't bother
-      return false
-   end
-   if (not success) or results.n == 0 then
-      -- we /should/ handle errors here
-      results = nil
-   end
-
-   -- Persist the line of input itself
-   sql_insert_errcheck(
-      historian.insert_line:bindkv { project = historian.project_id,
-                                     line    = blob(line) })
-   local line_id = historian.stmts.lastRowId()
-   historian.result_buffer[line_id] = results
-
-   -- Then the run action indicating it was just evaluated
-   local run_action = { run_id  = historian.run.run_id,
-                        ordinal = #historian.run.actions + 1,
-                        input   = line_id }
-   insert(historian.run.actions, run_action)
-   sql_insert_errcheck(historian.stmts.insert_run_input:bindkv(run_action))
-
-   -- If there are no results, nothing more to persist,
-   -- release our savepoint and don't bother starting the idler
-   if not results then
-      return line_id
-   end
-
-   local results_tostring = tabulate(results)
-   for i = 1, results.n do
-      local hash = sha(results_tostring[i])
-      sql_insert_errcheck(historian.insert_repr:bind(hash, results_tostring[i]))
-      sql_insert_errcheck(historian.insert_result_hash:bind(line_id, hash))
-   end
-   -- inform the Session that persisted results are available
-   -- #todo this *so badly* needs to be an Action
-   -- Should probably also be called 'resultsPersisted' since the
-   -- live results are available immediately. We might also want to
-   -- cache the stringified/persisted results alongside the live ones
-   if historian.session then
-      historian.session:resultsAvailable(line_id,
-         _wrapResults(results_tostring))
-   end
-
-   return line_id
-end
-
-
-
-
-
-
-
-
 
 
 

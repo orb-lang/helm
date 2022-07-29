@@ -410,7 +410,7 @@ function ModeS.rerunner(modeS, deque)
    for line in deque:popAll() do
       success, results = modeS:eval(line)
       assert(results ~= "advance", "Incomplete line when restarting session")
-      modeS.hist:appendNow(line, results, success)
+      modeS.hist:append(line, results, success)
    end
    modeS.hist.stmts.release_restart_session()
    modeS.hist:toEnd()
