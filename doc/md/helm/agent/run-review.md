@@ -63,11 +63,16 @@ Insert a blank line with "insert" status before the currently\-selected premise,
 thus selecting it\.
 
 ```lua
-function RunReviewAgent.insertLine(agent)
-   insert(agent.subject, agent.selected_index, { line = "", status = "insert" } )
+local function _updateAgentsAfterSelected(agent)
    for i = agent.selected_index, #agent.subject do
       agent:_updateEditAgent(i)
    end
+   agent:_updateResultsAgent()
+end
+
+function RunReviewAgent.insertLine(agent)
+   insert(agent.subject, agent.selected_index, { line = "", status = "insert" } )
+   _updateAgentsAfterSelected(agent)
 end
 ```
 
@@ -93,9 +98,7 @@ function RunReviewAgent.cancelInsertion(agent)
    -- then update the others to preserve bindings
    agent.edit_agents[#agent.subject + 1] = nil
    agent:bufferCommand("editAgentRemoved", #agent.subject + 1)
-   for i = agent.selected_index, #agent.subject do
-      agent:_updateEditAgent(i)
-   end
+   _updateAgentsAfterSelected(agent)
    agent.was_inserting = true
 end
 ```
@@ -161,9 +164,9 @@ end
 
 Cancel/remove any "insert" premise before changing selection\. We guard against
 any selection change, but in practice all selection changes right now go
-through `:select{Next|Previous}Wrap`\-\-which is good, because
-:cancelInsertion\(\) may shift part of the list by one, throwing off the meaning
-of the index if it was computed first\. Thus we separately override
+through `:select{Next|Previous}Wrap`\-\-which is good, becausecancelInsertion\(\) may shift part of the list by one, throwing off the meaning
+of
+: the index if it was computed first\. Thus we separately override
 `:select{Next|Previous}Wrap()` to perform any such shuffling before computing
 what index to select\.
 
