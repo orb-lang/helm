@@ -970,6 +970,7 @@ CREATE TABLE response(
 
 
 
+
 local create_result_table_7 = [[
 CREATE TABLE IF NOT EXISTS result_copy (
    result_id INTEGER PRIMARY KEY AUTOINCREMENT,

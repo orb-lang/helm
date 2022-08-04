@@ -946,6 +946,7 @@ CREATE TABLE response(
 );
 #/sql
 
+
 This gives us referential integrity.  With the right transactional semantics,
 we will always create a round with its line, responses, and whatever points to
 it (canonically input), and if this changes, we transactionally update the
