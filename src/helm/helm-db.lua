@@ -838,9 +838,12 @@ insert(migration_6, create_error_string_idx)
 local create_line_table_7 = [[
 CREATE TABLE line (
    line_id INTEGER PRIMARY KEY,
-   string TEXT UNIQUE NOT NULL
+   string TEXT UNIQUE NOT NULL,
+   hash TEXT,
 );
+
 CREATE INDEX line_text_id ON line (string);
+CREATE INDEX line_hash_id ON line (hash);
 ]]
 
 
@@ -862,21 +865,17 @@ CREATE INDEX line_text_id ON line (string);
 
 
 
-local create_input_table_7 = [[
-CREATE TABLE input_copy(
-   input_id INTEGER PRIMARY KEY,
-   project INTEGER,
-   line INTEGER NOT NULL,
-   time DATETIME DEFAULT (strftime('%Y-%m-%dT%H:%M:%f', 'now')),
-   FOREIGN KEY (project)
-      REFERENCES project (project_id)
-      ON DELETE CASCADE -- maybe not ideal?
-   FOREIGN KEY (line)
-      REFERENCES line (line_id)
-)
--- realistically we should rename this first yeah?
-CREATE INDEX idx_input_time ON input_copy (time) DESC;
-]]
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -904,6 +903,43 @@ CREATE TABLE round(
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+local create_input_table_7 = [[
+CREATE TABLE input_copy(
+   input_id INTEGER PRIMARY KEY,
+   project INTEGER,
+   round INTEGER NOT NULL,
+   time DATETIME DEFAULT (strftime('%Y-%m-%dT%H:%M:%f', 'now')),
+   FOREIGN KEY (project)
+      REFERENCES project (project_id)
+      ON DELETE SET NULL
+   FOREIGN KEY (round)
+      REFERENCES round (round_id)
+)
+-- realistically we should rename this first yeah?
+CREATE INDEX idx_input_time ON input_copy (time) DESC;
+]]
+
+
+
+
+
+
+
+
+
 local create_response_table_7 = [[
 CREATE TABLE response(
    response_id INTEGER PRIMARY KEY
@@ -918,17 +954,9 @@ CREATE TABLE response(
 
 
 
-local create_input_round_table_7 = [[
-CREATE TABLE input_round(
-   input_round_id INTEGER PRIMARY KEY,
-   input INTEGER NOT NULL,
-   round INTEGER NOT NULL,
-   FOREIGN KEY (input)
-      REFERENCES input (input_id)
-   FOREIGN KEY (round)
-      REFERENCES round (round_id)
-);
-]]
+
+
+
 
 
 
@@ -945,10 +973,10 @@ CREATE TABLE input_round(
 local create_result_table_7 = [[
 CREATE TABLE IF NOT EXISTS result_copy (
    result_id INTEGER PRIMARY KEY AUTOINCREMENT,
-   round INTEGER NOT NULL,
+   response INTEGER NOT NULL,
    hash TEXT NOT NULL,
-   FOREIGN KEY (round)
-      REFERENCES round (round_id)
+   FOREIGN KEY (response)
+      REFERENCES response (response_id)
       ON DELETE CASCADE
    FOREIGN KEY (hash)
       REFERENCES repr (hash)
@@ -969,11 +997,36 @@ CREATE TABLE IF NOT EXISTS result_copy (
 
 
 
+
+
+
+
+
+
+
+
+
+local create_repr_table_7 = [[
+CREATE TABLE repr_copy (
+   hash TEXT PRIMARY KEY ON CONFLICT IGNORE,
+   repr BLOB
+);
+]]
+
+
+
+
+
+
 local create_riff_table_7 = [[
 CREATE TABLE riff (
    riff_id INTEGER PRIMARY KEY,
 );
 ]]
+
+
+
+
 
 
 
@@ -995,7 +1048,6 @@ CREATE TABLE riff_round(
       REFERENCES round (round_id)
 );
 ]]
-
 
 
 
@@ -1050,7 +1102,7 @@ local create_run_action_table_7 = [[
 CREATE TABLE run_action_copy (
    ordinal INTEGER NOT NULL,
    class TEXT CHECK (length(class) <= 3),
-   input_round INTEGER,
+   input INTEGER,
    run INTEGER NOT NULL,
    fact LUATEXT,
    PRIMARY KEY (run, ordinal) -- ON CONFLICT ABORT?
@@ -1072,47 +1124,42 @@ CREATE TABLE run_action_copy (
 
 
 
-local create_premise_table_7 = [[
-CREATE TABLE premise_copy (
-   premise_id INTEGER PRIMARY KEY,
-   session INTEGER NOT NULL,
-   round INTEGER NOT NULL,
-   -- ordinal is 1-indexed for Lua compatibility
-   -- "ordinal" not "order" because SQL
-   ordinal INTEGER NOT NULL CHECK (ordinal > 0),
-   title INTEGER NOT NULL,
-   status STRING NOT NULL CHECK (
-      status = 'accept' or status = 'reject' or status = 'ignore' ),
-   -- PRIMARY KEY (session, ordinal) ON CONFLICT REPLACE
-   FOREIGN KEY (session)
-      REFERENCES session (session_id)
-      ON DELETE CASCADE
-   FOREIGN KEY (round)
-      REFERENCES round (round_id)
-   FOREIGN KEY (title)
-      REFERENCES line (line_id)
-);
+
+
+
+
+local create_error_text_table_7 = [[
+CREATE TABLE error_text (
+   error_line_id INTEGER PRIMARY KEY,
+   error TEXT UNIQUE NOT NULL,
+   hash TEXT NOT NULL -- trust me, SQLite: it's UNIQUE
+); -- index me
 ]]
-
-
-
-
-
-
-
 
 local create_error_table_7 = [[
 CREATE TABLE error(
    error_id INTEGER PRIMARY KEY,
    response INTEGER, -- NOT NULL? maybe
-   short TEXT,
-   err INTEGER,
+   short INTEGER,
+   error INTEGER NOT NULL,
    FOREIGN KEY response
       REFERENCES response (response_id)
-   FOREIGN KEY err
-      REFERENCES line (line_id)
+   FOREIGN KEY error_text
+      REFERENCES error_text (error_text_id)
+   FOREIGN KEY short
+      REFERENCES error_text(error_text_id)
 );
 ]]
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1129,6 +1176,72 @@ CREATE TABLE other_response(
       REFERENCES response (response_id)
 );
 ]]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local create_session_table_7 = [[
+CREATE TABLE session_copy (
+   session_id INTEGER PRIMARY KEY,
+   title TEXT,
+   doc INTEGER,
+   doc_hash TEXT,
+   project INTEGER,
+   accepted INTEGER NOT NULL DEFAULT 0 CHECK (accepted = 0 or accepted = 1),
+   riff INTEGER NOT NULL,
+   FOREIGN KEY (project)
+      REFERENCES project (project_id)
+   FOREIGN KEY (riff)
+      REFERENCES riff (riff_id)
+);
+]]
+
+
+
+
+
+
+
+
+
+
+
+
+
+local create_premise_table_7 = [[
+CREATE TABLE premise_copy (
+   session_round_id INTEGER PRIMARY KEY,
+   session INTEGER NOT NULL,
+   riff_round INTEGER NOT NULL,
+   premise INTEGER NOT NULL,
+   status STRING NOT NULL CHECK (
+      status = 'accept' or status = 'reject' or status = 'ignore' ),
+   FOREIGN KEY (session)
+      REFERENCES session (session_id)
+   FOREIGN KEY (riff_round)
+      REFERENCES riff_round (riff_round_id)
+   FOREIGN KEY (premise)
+      REFERENCES line (line_id)
+);
+]]
+
+
+
+
+
 
 
 

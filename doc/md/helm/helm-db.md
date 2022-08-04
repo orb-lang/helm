@@ -838,48 +838,47 @@ A unique text table\. Should probably be strict\.
 ```sql
 CREATE TABLE line (
    line_id INTEGER PRIMARY KEY,
-   string TEXT UNIQUE NOT NULL
+   string TEXT UNIQUE NOT NULL,
+   hash TEXT,
 );
+
 CREATE INDEX line_text_id ON line (string);
+CREATE INDEX line_hash_id ON line (hash);
 ```
 
-Add null line `""`\.
+Add null line `""` with hash\.
 
 
-##### Why not unique lines with hashes
+##### A Note on the Hash Field
 
-Lines are what we use for anything we might use SQLite text search capability
-for\. "Plain" text\.
+The shape of our data is such that most lines will be short, while some could
+be very, very long, simply because we compose no constraints on what a line
+can be\.
 
-Reprs could be searched, but broadly speaking they should be interpreted, and
-we care about the identity often and the details almost always in pairs we
-will have in memory\.
+SQLite can handle this data shape fairly expediently, but we should make a
+habit of including the hash, so that we can query with it above some empirical
+threshold \(4K?\)\.
 
-If useful we can store a hash on the line, while sticking with the line\_id\.
+But we needn't populate it in most cases, because the hash is a pure function
+of a line, and we can treat it as a cache which gives consistent performance
+for certain classes of query\.
 
+We'll have `line_id` foreign keys all over the place, and row\_id encoding and
+query planning is as good as it gets\.
 
-#### input
+There's a whole attestation engine coming for signing data, and that will only
+ever use hash digests, another good reason to have a slot for a hash\.
 
-input now looks like this:
-
-```sql
-CREATE TABLE input_copy(
-   input_id INTEGER PRIMARY KEY,
-   project INTEGER,
-   line INTEGER NOT NULL,
-   time DATETIME DEFAULT (strftime('%Y-%m-%dT%H:%M:%f', 'now')),
-   FOREIGN KEY (project)
-      REFERENCES project (project_id)
-      ON DELETE CASCADE -- maybe not ideal?
-   FOREIGN KEY (line)
-      REFERENCES line (line_id)
-)
--- realistically we should rename this first yeah?
-CREATE INDEX idx_input_time ON input_copy (time) DESC;
-```
+Generally, so long as we cache the hash for consistent reasons, we can use it
+when interested in the subset of lines which meet those criteria\.
 
 
 #### round
+
+A line is now an interned string, which can be retrieved by key or identity,
+and sometimes by hash\.
+
+An **instance** of a line is identified by a round\.
 
 This is the pivot table to make all our aggregates agree with one another\.
 
@@ -897,12 +896,49 @@ CREATE TABLE round(
 );
 ```
 
-The response is just a pointer:
+It would be possible for `round` to just point to `line`, and let `response`
+point to `round`, but this gives us non\-to\-many responses, and in the database,
+we have but one canonical response\.
+
+Instead we insist that the line exist, and the response is created, before we
+can commit a round\.
+
+Many things can point at a response, things which are logically mutually
+exclusive\.  It should be possible to engineer the database to prohibit more
+than one of these from existing, so that we don't have a round with both an
+error and a result, which is also `'pending'`\.
+
+It's okay to leave things up to transactional and application logic, though\.
+
+
+#### input
+
+Input no longer points at a line directly, it is a round enhanced with a
+timestamp and project\.
+
+```sql
+CREATE TABLE input_copy(
+   input_id INTEGER PRIMARY KEY,
+   project INTEGER,
+   round INTEGER NOT NULL,
+   time DATETIME DEFAULT (strftime('%Y-%m-%dT%H:%M:%f', 'now')),
+   FOREIGN KEY (project)
+      REFERENCES project (project_id)
+      ON DELETE SET NULL
+   FOREIGN KEY (round)
+      REFERENCES round (round_id)
+)
+-- realistically we should rename this first yeah?
+CREATE INDEX idx_input_time ON input_copy (time) DESC;
+```
+
+I've changed `ON DELETE` to `SET NULL` rather than `CASCADE`, and I want to do
+better, but let's stay focused on the *important* normalizations for now\.
 
 
 #### response
 
-We want to be able to point to a response distinct from the round\.
+Response is a degenerate table, a pure identity\.
 
 ```sql
 CREATE TABLE response(
@@ -910,64 +946,77 @@ CREATE TABLE response(
 );
 ```
 
-This lets us have a variadic result table, an error table, and a miscellaneous
-status table such as `"not-executed"`, any of which can constitute a round\.
+This gives us referential integrity\.  With the right transactional semantics,
+we will always create a round with its line, responses, and whatever points to
+it \(canonically input\), and if this changes, we transactionally update the
+state\.
 
-This lets us have a primitive which runs can store, like this:
+This will also allow deduplication of responses, because responses are
+stateless, though not unique\.  As we'll see this is not fully automatic but
+tractable in many cases\.
 
-
-#### input\_round
-
-```sql
-CREATE TABLE input_round(
-   input_round_id INTEGER PRIMARY KEY,
-   input INTEGER NOT NULL,
-   round INTEGER NOT NULL,
-   FOREIGN KEY (input)
-      REFERENCES input (input_id)
-   FOREIGN KEY (round)
-      REFERENCES round (round_id)
-);
-```
-
-This creates a potential data integrity issue, which we can prevent with a
-trigger\.
+Nor need we care what line compelled the return of `true`, the round takes
+care of that\.
 
 
 #### result
 
-We can now decouple results from input, like so:
+`result` now points to a `response`\.
 
 \#TODO
+
+\#TODO
+change structure, as it happens\.
 
 There's a trick to ensuring ordinality for inserts, and we should use that\.
 
 ```sql
 CREATE TABLE IF NOT EXISTS result_copy (
    result_id INTEGER PRIMARY KEY AUTOINCREMENT,
-   round INTEGER NOT NULL,
+   response INTEGER NOT NULL,
    hash TEXT NOT NULL,
-   FOREIGN KEY (round)
-      REFERENCES round (round_id)
+   FOREIGN KEY (response)
+      REFERENCES response (response_id)
       ON DELETE CASCADE
    FOREIGN KEY (hash)
       REFERENCES repr (hash)
 );
 ```
 
-The round itself is stateful, it's possible to have the same line and results
-pointed at by a given round\.\. and we may want to prevent that\.
+Here's how we can deduplicate results:
 
-Regardless, it works the other way around: inputs, riffs, sessions, can all
-look at the same round without interference\.
+I will head deep into the SQL mines, and return with a query\.
+
+We take the last ordinal, and retrieve all responses which have the hash\.
+
+In the case of one result, this deduplicates our query, for other cases we
+must compare the other ordinals and reject matches\.
+
+That's the long case, we can provide custom queries for, say, up to four
+results\.
+
+How many times are there five results? Not often I'm sure\.
+
+We have more response types, but these are less central and work the same way\.
 
 
-\#TODO
-change structure, as it happens\.
+#### repr
+
+The reprs need to be re\-hashed, but retain the same structure\.
+
+I think we'll drop blob affinity though\.
+
+```sql
+CREATE TABLE repr_copy (
+   hash TEXT PRIMARY KEY ON CONFLICT IGNORE,
+   repr BLOB
+);
+```
+
 
 #### riff
 
-A Riff is an ordered collection of Rounds, therefore a pointer\.
+A `riff` is an ordered series of `rounds`, therefore a pointer\.
 
 ```sql
 CREATE TABLE riff (
@@ -975,8 +1024,12 @@ CREATE TABLE riff (
 );
 ```
 
+This one is tricky but the key is: riffs are pointed to by riff\_rounds, the
+riff\_round points at a round\.
 
 #### riff\_round
+
+Among the pointers to a riff\_round are premises\.
 
 We need to enforce ordinality of `order` for a given riff\.
 
@@ -996,14 +1049,13 @@ CREATE TABLE riff_round(
 );
 ```
 
-So the latest riff gets the round lifted off input and bob's your uncle\.
-
-A round enters the database once there's a line\.
+We use transactions, as you'd imagine, to insure that an input and a riff
+point at the same round\.
 
 
 #### run
 
-A Run is a record of everything which happens in a given run of helm, from
+  A Run is a record of everything which happens in a given run of helm, from
 launch to quit\.
 
 The Run itself holds any singular fact about the run, such as launch time and
@@ -1050,7 +1102,7 @@ as we figure out which facts are relevant\.
 CREATE TABLE run_action_copy (
    ordinal INTEGER NOT NULL,
    class TEXT CHECK (length(class) <= 3),
-   input_round INTEGER,
+   input INTEGER,
    run INTEGER NOT NULL,
    fact LUATEXT,
    PRIMARY KEY (run, ordinal) -- ON CONFLICT ABORT?
@@ -1066,57 +1118,52 @@ We could also decorate `run` with a `fact` row, I would rather hash out what
 we should always make notice of and add a bucket taxon if it actively looks
 like we need one\.
 
-
-#### premise
-
-This simplifies in the folowing way: we can refer to a round as input or as
-premise, and a title is just another sort of line\.
-
-```sql
-CREATE TABLE premise_copy (
-   premise_id INTEGER PRIMARY KEY,
-   session INTEGER NOT NULL,
-   round INTEGER NOT NULL,
-   -- ordinal is 1-indexed for Lua compatibility
-   -- "ordinal" not "order" because SQL
-   ordinal INTEGER NOT NULL CHECK (ordinal > 0),
-   title INTEGER NOT NULL,
-   status STRING NOT NULL CHECK (
-      status = 'accept' or status = 'reject' or status = 'ignore' ),
-   -- PRIMARY KEY (session, ordinal) ON CONFLICT REPLACE
-   FOREIGN KEY (session)
-      REFERENCES session (session_id)
-      ON DELETE CASCADE
-   FOREIGN KEY (round)
-      REFERENCES round (round_id)
-   FOREIGN KEY (title)
-      REFERENCES line (line_id)
-);
-```
-
 As I've mentioned, the strategy for ensuring ordinality should be different,
 I've added a row\_id and we'll solve this problem later, but once and for all\.
 
-This also gives us, finally, a good form for an error:
+This is a good time to mention other responses, such as
+
 
 #### error
+
+Which we split into `error` and `error_text`
+
+```sql
+CREATE TABLE error_text (
+   error_line_id INTEGER PRIMARY KEY,
+   error TEXT UNIQUE NOT NULL,
+   hash TEXT NOT NULL -- trust me, SQLite: it's UNIQUE
+); -- index me
+```
 
 ```sql
 CREATE TABLE error(
    error_id INTEGER PRIMARY KEY,
    response INTEGER, -- NOT NULL? maybe
-   short TEXT,
-   err INTEGER,
+   short INTEGER,
+   error INTEGER NOT NULL,
    FOREIGN KEY response
       REFERENCES response (response_id)
-   FOREIGN KEY err
-      REFERENCES line (line_id)
+   FOREIGN KEY error_text
+      REFERENCES error_text (error_text_id)
+   FOREIGN KEY short
+      REFERENCES error_text(error_text_id)
 );
 ```
 
-Although indeed, `short` could also be a line\.
+The `short` form for errors will be a work in progress, so I think it's best
+to have it as an optional second pointer: we might want to go through and
+rewrite all the short forms to use a better algorithm, so that any sessions
+based on primitive short\-form equality \(which is much of the point of having
+it\) will have a fighting chance of updating correctly\.
 
-This leaves the 'other response' table:
+Given how error reporting works, if a short form happens to be the identical
+string to a full error text, then yeah, those are the same thing\. It's valid
+that they both point to the same table\.
+
+My first draft had this pointing at line, but that's structural rather than
+nominal equality, and we don't want that\.
+
 
 #### other\_response
 
@@ -1133,11 +1180,73 @@ CREATE TABLE other_response(
 Which we use for, eg, `'CRASHED'`, which we would need to fill in later from
 inspecting the prior run\.
 
-I think that's all of it, I'm working actively on a tool to add more migration
-options than "YOLO let's Migrate Yo" because we'll need that for this one\.
+
+#### session
+
+The session is split into `session` and riff\. Premises point at the riff\_round
+of the riff\.
+
+Note the expansion field `doc`, which can be a foreign key across to the
+`orb` database\.
+
+The idea is that we will export mature sessions as Orb documents, and the
+session machinery will keep track of the state of the important parts of that
+document, but not using this database\.
+
+```sql
+CREATE TABLE session_copy (
+   session_id INTEGER PRIMARY KEY,
+   title TEXT,
+   doc INTEGER,
+   doc_hash TEXT,
+   project INTEGER,
+   accepted INTEGER NOT NULL DEFAULT 0 CHECK (accepted = 0 or accepted = 1),
+   riff INTEGER NOT NULL,
+   FOREIGN KEY (project)
+      REFERENCES project (project_id)
+   FOREIGN KEY (riff)
+      REFERENCES riff (riff_id)
+);
+```
 
 
-##### consistent hashing
+#### premise
+
+This is now a pointer into a riff round with additional metadata\.
+
+The riff must be kept ordered, but riffs are append\-only: we build new riffs
+from old riffs, sometimes, but that's a whole new riff\.
+
+So we have no need to confirm ordering of any view into a riff, notably that
+of a premise\.
+
+
+```sql
+CREATE TABLE premise_copy (
+   session_round_id INTEGER PRIMARY KEY,
+   session INTEGER NOT NULL,
+   riff_round INTEGER NOT NULL,
+   premise INTEGER NOT NULL,
+   status STRING NOT NULL CHECK (
+      status = 'accept' or status = 'reject' or status = 'ignore' ),
+   FOREIGN KEY (session)
+      REFERENCES session (session_id)
+   FOREIGN KEY (riff_round)
+      REFERENCES riff_round (riff_round_id)
+   FOREIGN KEY (premise)
+      REFERENCES line (line_id)
+);
+```
+
+This is the right level of indirection\.
+
+
+### Migration 7: the migration\.
+
+This will be gnarly, but breaks down into stages\.
+
+
+##### consistent hashing: affects repr, result
 
   I used a hybrid of hashing and raw comparison for uniques in various places,
 the tradeoff being less storage \(meh\) and allocation \(that was the one\) for
@@ -1148,10 +1257,14 @@ where we benefit from using only alphanumerics\.  The control sequences and
 space marks are equally annoying in the same way: if we leave the shorthashes
 laying around then we have to turn hashes into strings\.  Not great\.
 
-\#TODO
 
+##### turn input into input\_rounds
 
-This has cascading results for many another table\.
+This is the bulk of it\.
+
+Schema 6 is mainly keyed off input, which is what we're fixing, but also makes
+it easy to pull everything out, `round` it, and put this in the new tables\.
+
 
 
 
