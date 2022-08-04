@@ -63,11 +63,16 @@ RunReviewAgent.was_inserting = false
 
 
 
-function RunReviewAgent.insertLine(agent)
-   insert(agent.subject, agent.selected_index, { line = "", status = "insert" } )
+local function _updateAgentsAfterSelected(agent)
    for i = agent.selected_index, #agent.subject do
       agent:_updateEditAgent(i)
    end
+   agent:_updateResultsAgent()
+end
+
+function RunReviewAgent.insertLine(agent)
+   insert(agent.subject, agent.selected_index, { line = "", status = "insert" } )
+   _updateAgentsAfterSelected(agent)
 end
 
 
@@ -93,9 +98,7 @@ function RunReviewAgent.cancelInsertion(agent)
    -- then update the others to preserve bindings
    agent.edit_agents[#agent.subject + 1] = nil
    agent:bufferCommand("editAgentRemoved", #agent.subject + 1)
-   for i = agent.selected_index, #agent.subject do
-      agent:_updateEditAgent(i)
-   end
+   _updateAgentsAfterSelected(agent)
    agent.was_inserting = true
 end
 
