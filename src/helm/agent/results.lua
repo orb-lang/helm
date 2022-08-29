@@ -16,6 +16,7 @@ local ResultsAgent = meta(getmetatable(Agent))
 function ResultsAgent.update(agent, result)
    agent.result = result
    agent:contentsChanged()
+   agent:scrollToTop()
 end
 
 function ResultsAgent.clear(agent)
