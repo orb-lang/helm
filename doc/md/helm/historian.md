@@ -91,22 +91,19 @@ local clamp, inbounds = assert(math.clamp), assert(math.inbounds)
 function Historian.load(historian)
    local stmts = historian.stmts
    -- Retrieve project id
-   local proj_val, proj_row = stmts.get_project
-                                      : bind(historian.project)
-                                      : resultset 'i'
-   if not proj_val then
-      proj_val, proj_row = stmts.insert_project
+   local project_id = stmts.get_project
                              : bind(historian.project)
+                                      : value()
+   if not project_id then
+      stmts.insert_project : bind(historian.project)
                              : step()
       -- retry
-      proj_val, proj_row = stmts.get_project
-                                      : bind(historian.project)
-                                      : resultset 'i'
-      if not proj_val then
+      project_id = stmts.get_project  : bind(historian.project)
+                                    : value()
+      if not project_id then
          error "Could not create project in .bridge"
       end
    end
-   local project_id = proj_val[1][1]
    historian.project_id = project_id
 
    -- start the latest run
