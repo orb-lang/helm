@@ -8,6 +8,8 @@ before restarting it\.
 
 ```lua
 local table = core.table
+
+local Round = require "helm:round"
 ```
 
 
@@ -71,7 +73,7 @@ local function _updateAgentsAfterSelected(agent)
 end
 
 function RunReviewAgent.insertLine(agent)
-   insert(agent.subject, agent.selected_index, { line = "", status = "insert" } )
+   insert(agent.subject, agent.selected_index, { status = "insert", round = Round() } )
    _updateAgentsAfterSelected(agent)
 end
 ```
@@ -226,7 +228,7 @@ function RunReviewAgent.acceptInsertion(agent)
    end
    agent :send { to = "agents.edit", method = "clear" }
    local premise = agent:selectedPremise()
-   premise.line = line
+   premise.round.line = line
    -- Switch out the status without going through the usual channels
    -- so that we don't remove the newly-added premise in the process
    premise.status = "keep"
@@ -249,7 +251,7 @@ function RunReviewAgent.evalAndResume(agent)
    local to_run = Deque()
    for _, premise in ipairs(agent.subject) do
       if premise.status == "keep" then
-         to_run:push(premise.line)
+         to_run:push(premise.round)
       end
    end
    agent :send { to = "agents.status", method = "update", "default" }

@@ -857,7 +857,6 @@ end
 
 
 
-
 function EditAgent.clear(agent)
    agent:update("")
    agent :send { to = "agents.results", method = "clear" }

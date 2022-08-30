@@ -863,8 +863,7 @@ end
 Clears the txtbuf, resetting the REPL to be ready to accept new input\.
 
 \#todo
-else be responsible for this logical operation and send us a message that just
-clears our contents?
+between us, results, and what will be the deck\.
 
 ```lua
 function EditAgent.clear(agent)

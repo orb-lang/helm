@@ -40,7 +40,11 @@ no matter how many times the session is reset or run\.
 #### imports
 
 ```lua
+local Round = require "helm:round"
+
 local table = core.table
+
+local s = require "status:status" ()
 ```
 
 
@@ -104,17 +108,12 @@ function Session.loadPremises(session)
       -- Left join may produce (exactly one) row with no status value,
       -- indicating that we have no premises
       if result.status then
+         local round = Round(result)
+         send { to = 'hist', method = 'loadResultsFor', round }
          local premise = {
             title = result.title,
             status = result.status,
-            line = result.line,
-            old_line_id = result.line_id,
-            line_id = result.line_id, -- These will be filled if/when we re-run
-            live_result = nil,
-            old_result = send { to = "hist",
-                                method = "resultsFor",
-                                result.line_id },
-            new_result = nil
+            round = round
          }
          _appendPremise(session, premise)
       end
@@ -128,38 +127,15 @@ end
 Appends the line with the given id as a new premise\.
 
 ```lua
-function Session.append(session, line_id, line, results)
+function Session.append(session, round)
    -- Require manual approval of all lines by default,
    -- but do include them in the session, i.e. start with 'ignore' status
    local premise = {
       title = "",
       status = 'ignore',
-      line = line,
-      old_line_id = nil,
-      line_id = line_id,
-      live_result = results,
-      old_result = nil, -- These will be filled in later once generated
-      new_result = nil
+      round = round,
    }
    _appendPremise(session, premise)
-end
-```
-
-
-### Session:resultsAvailable\(line\_id, results\)
-
-Notification from the Historian that an idler has finished stringifying results
-for a particular line\_id\. If that line\_id is part of this session, attach
-the results to the appropriate premise\.
-
-```lua
-function Session.resultsAvailable(session, line_id, results)
-   for _, premise in ipairs(session) do
-      if premise.line_id == line_id then
-         premise.new_result = results
-         break
-      end
-   end
 end
 ```
 
@@ -191,9 +167,11 @@ function Session.save(session)
    -- Now insert all of our premises--anything that is already there
    -- will be replaced thanks to ON CONFLICT REPLACE
    for i, premise in ipairs(session) do
+      s:chat(require "repr:repr" . ts(premise.round))
       session.stmts.insert_premise
             :bindkv{ session_id = session.session_id, ordinal = i }
-            :bindkv(premise)
+            :bindkv(premise) -- Pick up title and status
+            :bindkv(premise.round) -- Pick up line_id
             :step()
    end
    session.stmts.commit()

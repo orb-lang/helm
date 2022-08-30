@@ -13,6 +13,8 @@ local ResultsAgent = require "helm:agent/results"
 local math = core.math
 local assert = assert(core.fn.assertfmt)
 
+local s = require "status:status" ()
+
 
 
 
@@ -50,7 +52,7 @@ end
 function ReviewAgent._updateEditAgent(agent, index)
    local edit_agent = agent.edit_agents[index]
    if edit_agent then
-      edit_agent:update(agent.subject[index].line)
+      edit_agent:update(agent.subject[index].round.line)
    end
 end
 
@@ -58,8 +60,8 @@ function ReviewAgent._updateResultsAgent(agent)
    local results_agent = agent.results_agent
    if results_agent then
       local premise = agent:selectedPremise()
-      local result = premise and (premise.new_result or premise.old_result)
-      results_agent:update(result)
+      local results = premise and premise.round:results()
+      results_agent:update(results)
       -- #todo scroll offset of the Resbuf needs to be reset at this point
       -- we have some serious thinking to do about how changes are
       -- communicated to the buffer

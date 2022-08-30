@@ -177,7 +177,8 @@ local gsub = assert(string.gsub)
 function Reviewbuf.positionOf(buf, index)
    local position = 1
    for i = 1, index - 1 do
-      local num_lines = select(2, gsub(buf:value()[i].line, '\n', '\n')) + 1
+      local line = buf:value()[i].round.line
+      local num_lines = select(2, gsub(line, '\n', '\n')) + 1
       num_lines = clamp(num_lines, 1, buf.ROWS_PER_LINE)
       position = position + num_lines + 1
       if i == buf.source.selected_index then
