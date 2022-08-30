@@ -84,44 +84,6 @@ function Session.passCount(session)
 end
 ```
 
-### Session:evaluate\(isolated, historian\)
-
-\(Re\-\)Evaluates the session and determines pass/fail state for all its premises\.
-If `isolated` is set, avoids mutating \_G by creating a temporary wrapper environment\.
-
-If a Historian is provided, appends the results of the re\-evaluation to it\.
-
-```lua
-local tabulate = assert(require "repr:persist-tabulate" . tabulate)
-function Session.evaluate(session, valiant, historian)
-   for _, premise in ipairs(session) do
-      local ok, result = valiant(premise.line)
-      -- #todo handle errors here
-
-      -- Avoid empty results
-      if result and result.n > 0 then
-         premise.live_result = result
-         -- #todo have the Historian handle this!
-         premise.new_result = tabulate(result, aG)
-      end
-      if premise.old_result and premise.new_result
-         and #premise.old_result == #premise.new_result then
-         premise.same = true
-         for i = 1, #premise.old_result do
-            if premise.old_result[i] ~= premise.new_result[i] then
-               premise.same = false
-               break
-            end
-         end
-      elseif (not premise.old_result) and (not premise.new_result) then
-         premise.same = true
-      else
-         premise.same = false
-      end
-   end
-end
-```
-
 
 ### Session:loadPremises\(\)
 
