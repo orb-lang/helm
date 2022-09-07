@@ -44,6 +44,15 @@ local new, Round = cluster.order()
 ```
 
 
+### Round:isBlank\(\)
+
+```lua
+function Round.isBlank(round)
+  return round.line == ""
+end
+```
+
+
 ### Round:results\(\)
 
 Retrieves the results \(of evaluation\) for the round, preferring live results if available

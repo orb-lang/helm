@@ -43,8 +43,6 @@ no matter how many times the session is reset or run\.
 local Round = require "helm:round"
 
 local table = core.table
-
-local s = require "status:status" ()
 ```
 
 
@@ -167,7 +165,6 @@ function Session.save(session)
    -- Now insert all of our premises--anything that is already there
    -- will be replaced thanks to ON CONFLICT REPLACE
    for i, premise in ipairs(session) do
-      s:chat(require "repr:repr" . ts(premise.round))
       session.stmts.insert_premise
             :bindkv{ session_id = session.session_id, ordinal = i }
             :bindkv(premise) -- Pick up title and status

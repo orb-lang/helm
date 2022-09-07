@@ -265,7 +265,7 @@ local blob = assert(assert(sql, "sql must be in bridge _G").blob)
 
 
 function Historian.persist(historian, round)
-   if round.line == "" then
+   if round:isBlank() then
       -- A blank line can have no results and is uninteresting.
       return false
    end
@@ -344,7 +344,7 @@ end
 
 
 function Historian.append(historian, round)
-   if round.line == "" then
+   if round:isBlank() then
       return false
    end
    historian:persist(round)

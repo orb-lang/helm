@@ -42,6 +42,15 @@ local new, Round = cluster.order()
 
 
 
+function Round.isBlank(round)
+  return round.line == ""
+end
+
+
+
+
+
+
 
 
 
