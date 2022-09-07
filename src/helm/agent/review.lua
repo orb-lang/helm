@@ -13,8 +13,6 @@ local ResultsAgent = require "helm:agent/results"
 local math = core.math
 local assert = assert(core.fn.assertfmt)
 
-local s = require "status:status" ()
-
 
 
 
@@ -60,7 +58,7 @@ function ReviewAgent._updateResultsAgent(agent)
    local results_agent = agent.results_agent
    if results_agent then
       local premise = agent:selectedPremise()
-      local results = premise and premise.round:results()
+      local results = premise and premise.round:result()
       results_agent:update(results)
       -- #todo scroll offset of the Resbuf needs to be reset at this point
       -- we have some serious thinking to do about how changes are

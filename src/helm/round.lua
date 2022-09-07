@@ -24,6 +24,8 @@
 
 
 
+
+
 local cluster = require "cluster:cluster"
 local helm_db = require "helm:helm-db"
 
@@ -57,19 +59,36 @@ end
 
 
 
-function Round.results(round)
+
+
+
+
+
+function Round.result(round)
+  local response
   if type(round.response[1]) == "table" then
-    if round.response[1].error then
-      -- Error is not a proper result
-      return nil
-    else
-      return round.response[1]
-    end
-  elseif round.db_result then
-    return round.db_result
-  else
-    return nil
+    response = round.response[1]
+  elseif round.db_response then
+    response = round.db_response
   end
+  if response and response.error then
+    -- Error is not a result
+    return nil
+  else
+    return response
+  end
+end
+
+
+
+
+
+
+
+
+
+function Round.hasResults(round)
+  return round:result() and round:result().n > 0
 end
 
 

@@ -527,7 +527,7 @@ function ModeS.historyBack()
    local prev_round = send { to = "hist", method = "prev" }
    if prev_round then
       send { to = "agents.edit", method = "update", prev_round.line }
-      send { to = "agents.results", method = "update", prev_round:results() }
+      send { to = "agents.results", method = "update", prev_round:result() }
    end
 end
 
@@ -537,7 +537,7 @@ function ModeS.historyForward()
    local next_round = send { to = "hist", method = "next" }
    if next_round then
       send { to = "agents.edit", method = "update", next_round.line }
-      send { to = "agents.results", method = "update", next_round:results() }
+      send { to = "agents.results", method = "update", next_round:result() }
    end
 end
 

@@ -161,7 +161,7 @@ function Historian.loadPreviousRun(historian)
    local run = {}
    for row in historian.stmts.get_lines_of_run:bind(prev_run_id):rows() do
       local round = Round(row)
-      historian:loadResultsFor(round)
+      historian:loadResponseFor(round)
       local premise = {
          status = "keep",
          round = round
@@ -219,7 +219,7 @@ end
 ```
 
 
-### Historian:loadResultsFor\(round\)
+### Historian:loadResponseFor\(round\)
 
 Ensures that results are available for the provided `round`, retrieving them
 from the database if needed and preferring "live" results over persisted ones
@@ -238,8 +238,8 @@ local function _wrapResults(results_tostring)
    return wrapped
 end
 
-function Historian.loadResultsFor(historian, round)
-   if round:results() or not round.line_id then
+function Historian.loadResponseFor(historian, round)
+   if round:result() or not round.line_id then
       return
    end
    local stmt = historian.get_results
@@ -248,7 +248,7 @@ function Historian.loadResultsFor(historian, round)
    if results then
       results = _wrapResults(results[1])
    end
-   round.db_result = results
+   round.db_response = results
    stmt:reset()
 end
 ```
@@ -285,12 +285,12 @@ function Historian.persist(historian, round)
 
    -- If there are no results, nothing more to persist,
    -- release our savepoint and don't bother starting the idler
-   if not round:results() or round:results().n == 0 then
+   if not round:hasResults() then
       return
    end
 
    local queue = historian.result_queue
-   local persist_cb = tabulate_some(round:results())
+   local persist_cb = tabulate_some(round:result())
    historian.idler = historian.idler or uv.new_idle()
    local empty = #queue == 0
    queue:push(pack(round, persist_cb))
@@ -301,12 +301,12 @@ function Historian.persist(historian, round)
          if not done then return nil end
          queue:pop()
          -- now persist
-         for i = 1, round:results().n do
+         for i = 1, round:result().n do
             local hash = sha(results_tostring[i])
             sql_insert_errcheck(historian.insert_repr:bind(hash, results_tostring[i]))
             sql_insert_errcheck(historian.insert_result_hash:bind(round.line_id, hash))
          end
-         round.db_result = _wrapResults(results_tostring)
+         round.db_response = _wrapResults(results_tostring)
          if #queue == 0 then
             historian.idler:stop()
          end
@@ -475,7 +475,7 @@ function Historian.index(historian, cursor)
       return historian.desk
    else
       local round = historian[cursor]
-      historian:loadResultsFor(round)
+      historian:loadResponseFor(round)
       return round
    end
 end

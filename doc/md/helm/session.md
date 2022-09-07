@@ -107,7 +107,7 @@ function Session.loadPremises(session)
       -- indicating that we have no premises
       if result.status then
          local round = Round(result)
-         send { to = 'hist', method = 'loadResultsFor', round }
+         send { to = 'hist', method = 'loadResponseFor', round }
          local premise = {
             title = result.title,
             status = result.status,

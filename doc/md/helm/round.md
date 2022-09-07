@@ -8,7 +8,7 @@ Eventually a round's evaluation may be paused due to coroutine yield as well\.
 ## Instance fields
 
 
-- input\_id \(currently line\_id\), if the round has been persisted
+- input\_id \(currently line\_id\), if the round has been persisted\.
 
 - line\_id \(once distinct from input\_id\)\. Lazily retrieved\.
 
@@ -20,10 +20,12 @@ Eventually a round's evaluation may be paused due to coroutine yield as well\.
   "yielded these things, waiting for resume"\)\. The external interface to this
   will unwrap the table, but we need to allow \`valiant\` to update it in place\.
 
-- db\_result: The result as it was persisted to the database\. Note this is not
-  meant as the "old result" with response containing something different\-\-
-  session re\-evaluation/diff will use two rounds per premise\-\-just that some
-  places may need the result\-as\-frozen instead of the live table\.
+- db\_response: The response as it was persisted to the database\. Note this is
+  not meant as the "old response" with `response` containing something
+  different\-\- session re\-evaluation/diff will use two rounds per premise\-\-just
+  that some places may need the result\-as\-frozen instead of the live table\.
+  When a Round is rehydrated from the DB, this will be the only response
+  available\.
 
 
 #### imports
@@ -53,28 +55,45 @@ end
 ```
 
 
-### Round:results\(\)
+### Round:result\(\)
 
-Retrieves the results \(of evaluation\) for the round, preferring live results if available
+Retrieves the result \(of evaluation\) for the round, preferring live results if available
 but falling back to database results if not\.
+
+A result is a list of zero\-or\-more return values from successful evaluation\.
+We refer to it as a unit with the singular, "result"\. "Results", plural,
+refers to the individual values, and as such, a round can "have a result", but
+also "not have results", in the case of `n = 0`\.
 
 \#todo
 separate responsibility with Historian and/or the Deck\.
 
 ```lua
-function Round.results(round)
+function Round.result(round)
+  local response
   if type(round.response[1]) == "table" then
-    if round.response[1].error then
-      -- Error is not a proper result
-      return nil
-    else
-      return round.response[1]
-    end
-  elseif round.db_result then
-    return round.db_result
-  else
-    return nil
+    response = round.response[1]
+  elseif round.db_response then
+    response = round.db_response
   end
+  if response and response.error then
+    -- Error is not a result
+    return nil
+  else
+    return response
+  end
+end
+```
+
+
+### Round:hasResults\(\)
+
+Answer whether the round has **at least one** result\. See `:result()`
+above\-\-this is an additional condition beyond just `:result() ~= nil`\.
+
+```lua
+function Round.hasResults(round)
+  return round:result() and round:result().n > 0
 end
 ```
 
