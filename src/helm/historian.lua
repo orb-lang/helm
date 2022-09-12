@@ -154,6 +154,7 @@ end
 
 
 
+local Premise = require "helm:premise"
 function Historian.loadPreviousRun(historian)
    local prev_run_id = historian.stmts.get_latest_finished_run
                                        :bind(historian.project_id)
@@ -162,10 +163,7 @@ function Historian.loadPreviousRun(historian)
    for row in historian.stmts.get_lines_of_run:bind(prev_run_id):rows() do
       local round = Round(row)
       historian:loadResponseFor(round)
-      local premise = {
-         status = "keep",
-         round = round
-      }
+      local premise = Premise(round, { status = "keep" })
       insert(run, premise)
    end
    historian.previous_run = run

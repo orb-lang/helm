@@ -176,7 +176,7 @@ end
 function Reviewbuf.positionOf(buf, index)
    local position = 1
    for i = 1, index - 1 do
-      local num_lines = buf:value()[i].round:lineCount()
+      local num_lines = buf:value()[i]:lineCount()
       num_lines = clamp(num_lines, 1, buf.ROWS_PER_LINE)
       position = position + num_lines + 1
       if i == buf.source.selected_index then

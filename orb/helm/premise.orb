@@ -1,0 +1,79 @@
+* Premise
+
+A Premise is a view over a round, with the addition of a status (accept,
+reject, ignore, etc, exact valid values vary by context) and possibly a title.
+It may be worth separating run-review premises (with one set of valid status
+values and no title) from session premises (with a different set of statuses
+and a title), but we'll start with leaving that behavior in the relevant
+Agent.
+
+This means that the premise behaves as though it has the round itself in
+`__index`, in addition to its own cassette of methods. Assignments to fields
+of the premise shadow the values from the round rather than modifying them,
+but we provide methods to modify the round if needed. This is related to
+=Self=-style prototype inheritance, though the analogy is probably not exact.
+
+**** imports
+
+#!lua
+local cluster = require "cluster:cluster"
+#/lua
+
+#!lua
+local new, Premise, Premise_M = cluster.order()
+#/lua
+
+
+*** Premise(round, cfg)
+
+Constructs a premise wrapping =round=, with additional properties from =cfg=.
+
+#todo This may be essentially private, with the public API being
+Premise:asRound(cfg). Not sure if that's actually better though.
+
+#!lua
+cluster.construct(new, function(_new, premise, round, cfg)
+   -- Store the round in this special slot to keep it out of the way
+   -- of any possible string-keyed fields
+   premise[premise] = round
+   for k, v in pairs(cfg) do
+      premise[k] = v
+   end
+   return premise
+end)
+#/lua
+
+
+*** Premise:asRound()
+
+Basically just a getter, but let's have a single source of truth for which
+round we're viewing (not that it should change). Round itself also supports
+this (as a no-op/self-return, of course), so it can be used to ensure you have
+the type you want.
+
+#!lua
+function Premise.asRound(premise)
+   return premise[premise]
+end
+#/lua
+
+
+*** Premise.__index
+
+We search our own cassette before the round, and in any case to search both,
+we need a function.
+
+#!lua
+function Premise_M.__index(premise, key)
+   if Premise[key] ~= nil then
+      return Premise[key]
+   else
+      return premise[premise][key]
+   end
+end
+#/lua
+
+
+#!lua
+return new
+#/lua

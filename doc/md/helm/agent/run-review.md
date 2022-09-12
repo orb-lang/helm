@@ -10,6 +10,7 @@ before restarting it\.
 local table = core.table
 
 local Round = require "helm:round"
+local Premise = require "helm:premise"
 ```
 
 
@@ -21,9 +22,9 @@ local RunReviewAgent = meta(getmetatable(ReviewAgent))
 
 ### RunReviewAgent:setInitialSelection\(\)
 
-We never operate on an empty subject\-\-if we don't have anything, add a blank
-"insert" premise so we have somewhere to start\.
+We never operate on an empty subject\-\-if we don't have anything, add a blankinsert" premise so we have somewhere to start\.
 
+"
 ```lua
 local insert = assert(table.insert)
 function RunReviewAgent.setInitialSelection(agent)
@@ -73,7 +74,7 @@ local function _updateAgentsAfterSelected(agent)
 end
 
 function RunReviewAgent.insertLine(agent)
-   insert(agent.subject, agent.selected_index, { status = "insert", round = Round() } )
+   insert(agent.subject, agent.selected_index, Premise(Round(), { status = "insert"}))
    _updateAgentsAfterSelected(agent)
 end
 ```
@@ -228,7 +229,12 @@ function RunReviewAgent.acceptInsertion(agent)
    end
    agent :send { to = "agents.edit", method = "clear" }
    local premise = agent:selectedPremise()
-   premise.round.line = line
+   -- #todo IMPORTANT, figure out the proper semantics here.
+   -- #todo For now, just end-run around the private implementation of Premise
+   -- and talk to the Round directly. Could use :asRound() but it seems wrong
+   -- to rely on that actually returning THE one underlying round
+   -- (even though it *does*)
+   premise[premise].line = line
    -- Switch out the status without going through the usual channels
    -- so that we don't remove the newly-added premise in the process
    premise.status = "keep"
@@ -251,7 +257,10 @@ function RunReviewAgent.evalAndResume(agent)
    local to_run = Deque()
    for _, premise in ipairs(agent.subject) do
       if premise.status == "keep" then
-         to_run:push(premise.round)
+         -- #todo Should we do this conversion, should :rerun() do it,
+         -- or somebody else altogether? Related to question of how we assign
+         -- the =line= in =acceptInsertion= above.
+         to_run:push(premise:asRound())
       end
    end
    agent :send { to = "agents.status", method = "update", "default" }

@@ -41,6 +41,7 @@ no matter how many times the session is reset or run\.
 
 ```lua
 local Round = require "helm:round"
+local Premise = require "helm:premise"
 
 local table = core.table
 ```
@@ -108,11 +109,10 @@ function Session.loadPremises(session)
       if result.status then
          local round = Round(result)
          send { to = 'hist', method = 'loadResponseFor', round }
-         local premise = {
+         local premise = Premise(round, {
             title = result.title,
             status = result.status,
-            round = round
-         }
+         })
          _appendPremise(session, premise)
       end
    end
@@ -128,11 +128,10 @@ Appends the line with the given id as a new premise\.
 function Session.append(session, round)
    -- Require manual approval of all lines by default,
    -- but do include them in the session, i.e. start with 'ignore' status
-   local premise = {
+   local premise = Premise(round, {
       title = "",
       status = 'ignore',
-      round = round,
-   }
+   })
    _appendPremise(session, premise)
 end
 ```
@@ -167,8 +166,8 @@ function Session.save(session)
    for i, premise in ipairs(session) do
       session.stmts.insert_premise
             :bindkv{ session_id = session.session_id, ordinal = i }
-            :bindkv(premise) -- Pick up title and status
-            :bindkv(premise.round) -- Pick up line_id
+            -- Pick up title and status, and line_id (from the round)
+            :bindkv(premise)
             :step()
    end
    session.stmts.commit()
