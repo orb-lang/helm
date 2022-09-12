@@ -57,6 +57,20 @@ end
 
 
 
+local count = assert(core.string.count)
+function Round.lineCount(round)
+  return count(round.line, '\n') + 1
+end
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -55,6 +55,20 @@ end
 ```
 
 
+### Round:lineCount\(\)
+
+Answer the number of actual lines in the round's `line`\. We treat newlines as
+separators, i\.e\. a trailing newline means a trailing blank line, so this is
+the number of newlines plus one\.
+
+```lua
+local count = assert(core.string.count)
+function Round.lineCount(round)
+  return count(round.line, '\n') + 1
+end
+```
+
+
 ### Round:result\(\)
 
 Retrieves the result \(of evaluation\) for the round, preferring live results if available
