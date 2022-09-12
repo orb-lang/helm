@@ -409,8 +409,8 @@ function ModeS.rerunner(modeS, deque)
    modeS.hist.stmts.savepoint_restart_session()
    local success, results
    for old_round in deque:popAll() do
-      local new_round = Round(old_round.line)
-      success, results = modeS:eval(old_round.line)
+      local new_round = old_round:newFromLine()
+      success, results = modeS:eval(new_round.line)
       assert(results ~= "advance", "Incomplete line when restarting session")
       new_round.response[1] = results
       modeS.hist:append(new_round)

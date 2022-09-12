@@ -112,6 +112,18 @@ end
 ```
 
 
+### Round:newFromLine\(\)
+
+Makes a new Round with the same `line`, but no response yet, no connection to
+the DB, etc\.
+
+```lua
+function Round.newFromLine(round)
+  return new(round.line)
+end
+```
+
+
 ### Round\(\[line\[, response\]\), Round\(data\)
 
 Construct a Round from the provided line and optional response; or from a

@@ -113,6 +113,18 @@ end
 
 
 
+function Round.newFromLine(round)
+  return new(round.line)
+end
+
+
+
+
+
+
+
+
+
 
 
 
