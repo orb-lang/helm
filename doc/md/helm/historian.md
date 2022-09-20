@@ -163,7 +163,7 @@ function Historian.loadPreviousRun(historian)
    for row in historian.stmts.get_lines_of_run:bind(prev_run_id):rows() do
       local round = Round(row)
       historian:loadResponseFor(round)
-      local premise = Premise(round, { status = "keep" })
+      local premise = round:asPremise{ status = "keep" }
       insert(run, premise)
    end
    historian.previous_run = run

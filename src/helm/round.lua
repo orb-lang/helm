@@ -27,7 +27,6 @@
 
 
 local cluster = require "cluster:cluster"
-local helm_db = require "helm:helm-db"
 
 local core = require "qor:core"
 local table = core.table
@@ -125,10 +124,23 @@ end
 
 
 
+local Premise
+function Round.asPremise(round, data)
+  Premise = Premise or require "helm:premise"
+  return Premise(round, data)
+end
 
 
 
-local clone = assert(table.clone)
+
+
+
+
+
+
+
+
+
 cluster.construct(new, function(_new, round, line_or_data, response)
   if type(line_or_data) == "table" then
     assert(response == nil,

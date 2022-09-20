@@ -24,21 +24,20 @@ local new, Premise, Premise_M = cluster.order()
 #/lua
 
 
-*** Premise(round, cfg)
+*** Premise(round, data)
 
-Constructs a premise wrapping =round=, with additional properties from =cfg=.
+Constructs a premise wrapping =round=, with title and status from =data=.
 
-#todo This may be essentially private, with the public API being
-Premise:asRound(cfg). Not sure if that's actually better though.
+This is essentially private, with the public API being
+=Premise:asRound(data)=.
 
 #!lua
-cluster.construct(new, function(_new, premise, round, cfg)
+cluster.construct(new, function(_new, premise, round, data)
    -- Store the round in this special slot to keep it out of the way
    -- of any possible string-keyed fields
    premise[premise] = round
-   for k, v in pairs(cfg) do
-      premise[k] = v
-   end
+   premise.status = data.status
+   premise.title = data.title
    return premise
 end)
 #/lua
@@ -46,14 +45,16 @@ end)
 
 *** Premise:asRound()
 
-Basically just a getter, but let's have a single source of truth for which
-round we're viewing (not that it should change). Round itself also supports
-this (as a no-op/self-return, of course), so it can be used to ensure you have
-the type you want.
+Convert the premise back to a round, which shares no state with the premise or
+the round it is viewing/wrapping. In practice this means starting from scratch
+with just the line, but note that we copy the line from ourselves, not our
+underlying round, in case it has been shadowed.
 
 #!lua
+local Round
 function Premise.asRound(premise)
-   return premise[premise]
+   Round = Round or require "helm:round"
+   return Round(premise.line)
 end
 #/lua
 

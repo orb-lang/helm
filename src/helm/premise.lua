@@ -32,13 +32,12 @@ local new, Premise, Premise_M = cluster.order()
 
 
 
-cluster.construct(new, function(_new, premise, round, cfg)
+cluster.construct(new, function(_new, premise, round, data)
    -- Store the round in this special slot to keep it out of the way
    -- of any possible string-keyed fields
    premise[premise] = round
-   for k, v in pairs(cfg) do
-      premise[k] = v
-   end
+   premise.status = data.status
+   premise.title = data.title
    return premise
 end)
 
@@ -52,8 +51,10 @@ end)
 
 
 
+local Round
 function Premise.asRound(premise)
-   return premise[premise]
+   Round = Round or require "helm:round"
+   return Round(premise.line)
 end
 
 

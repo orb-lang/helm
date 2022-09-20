@@ -109,10 +109,7 @@ function Session.loadPremises(session)
       if result.status then
          local round = Round(result)
          send { to = 'hist', method = 'loadResponseFor', round }
-         local premise = Premise(round, {
-            title = result.title,
-            status = result.status,
-         })
+         local premise = round:asPremise(result)
          _appendPremise(session, premise)
       end
    end
@@ -128,10 +125,10 @@ end
 function Session.append(session, round)
    -- Require manual approval of all lines by default,
    -- but do include them in the session, i.e. start with 'ignore' status
-   local premise = Premise(round, {
+   local premise = round:asPremise{
       title = "",
       status = 'ignore',
-   })
+   }
    _appendPremise(session, premise)
 end
 

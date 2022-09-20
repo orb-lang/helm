@@ -74,7 +74,7 @@ local function _updateAgentsAfterSelected(agent)
 end
 
 function RunReviewAgent.insertLine(agent)
-   insert(agent.subject, agent.selected_index, Premise(Round(), { status = "insert"}))
+   insert(agent.subject, agent.selected_index, Round():asPremise{ status = "insert"})
    _updateAgentsAfterSelected(agent)
 end
 
@@ -229,12 +229,7 @@ function RunReviewAgent.acceptInsertion(agent)
    end
    agent :send { to = "agents.edit", method = "clear" }
    local premise = agent:selectedPremise()
-   -- #todo IMPORTANT, figure out the proper semantics here.
-   -- #todo For now, just end-run around the private implementation of Premise
-   -- and talk to the Round directly. Could use :asRound() but it seems wrong
-   -- to rely on that actually returning THE one underlying round
-   -- (even though it *does*)
-   premise[premise].line = line
+   premise.line = line
    -- Switch out the status without going through the usual channels
    -- so that we don't remove the newly-added premise in the process
    premise.status = "keep"
@@ -257,9 +252,6 @@ function RunReviewAgent.evalAndResume(agent)
    local to_run = Deque()
    for _, premise in ipairs(agent.subject) do
       if premise.status == "keep" then
-         -- #todo Should we do this conversion, should :rerun() do it,
-         -- or somebody else altogether? Related to question of how we assign
-         -- the =line= in =acceptInsertion= above.
          to_run:push(premise:asRound())
       end
    end

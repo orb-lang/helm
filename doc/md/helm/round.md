@@ -32,7 +32,6 @@ Eventually a round's evaluation may be paused due to coroutine yield as well\.
 
 ```lua
 local cluster = require "cluster:cluster"
-local helm_db = require "helm:helm-db"
 
 local core = require "qor:core"
 local table = core.table
@@ -124,6 +123,20 @@ end
 ```
 
 
+### Round:asPremise\(data\)
+
+Answer a premise wrapping/viewing this round, with optional additional parameters
+specified in `data` \(see Premise constructor\)\.
+
+```lua
+local Premise
+function Round.asPremise(round, data)
+  Premise = Premise or require "helm:premise"
+  return Premise(round, data)
+end
+```
+
+
 ### Round\(\[line\[, response\]\), Round\(data\)
 
 Construct a Round from the provided line and optional response; or from a
@@ -133,7 +146,6 @@ table case, we copy only those fields that are valid for a Round \(currently
 just `line` and `line_id`, but this will become more complex as of schema 7\)\.
 
 ```lua
-local clone = assert(table.clone)
 cluster.construct(new, function(_new, round, line_or_data, response)
   if type(line_or_data) == "table" then
     assert(response == nil,
