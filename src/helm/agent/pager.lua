@@ -3,10 +3,18 @@
 
 
 
-local table = core.table
 
+
+local cluster = require "cluster:cluster"
 local Agent = require "helm:agent/agent"
-local PagerAgent = meta(getmetatable(Agent))
+
+
+
+
+
+
+local new, PagerAgent = cluster.genus(Agent)
+cluster.extendbuilder(new, true)
 
 
 
@@ -50,5 +58,5 @@ end
 
 
 
-return core.cluster.constructor(PagerAgent)
+return new
 

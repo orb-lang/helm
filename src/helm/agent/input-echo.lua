@@ -5,6 +5,9 @@
 
 
 
+local cluster = require "cluster:cluster"
+local Agent = require "helm:agent/agent"
+
 local c = assert(require "singletons:color" . color)
 local input_event = require "anterm:input-event"
 local table = core.table
@@ -12,8 +15,10 @@ local table = core.table
 
 
 
-local Agent = require "helm:agent/agent"
-local InputEchoAgent = meta(getmetatable(Agent))
+
+
+local new, InputEchoAgent = cluster.genus(Agent)
+cluster.extendbuilder(new, true)
 
 
 
@@ -109,5 +114,5 @@ end
 
 
 
-return core.cluster.constructor(InputEchoAgent)
+return new
 

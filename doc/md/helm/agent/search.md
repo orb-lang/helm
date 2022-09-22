@@ -6,13 +6,18 @@
 #### imports
 
 ```lua
+local cluster = require "cluster:cluster"
+local ResultListAgent = require "helm:agent/result-list"
+
 local table = core.table
 ```
 
 
+### SearchAgent\(\)
+
 ```lua
-local ResultListAgent = require "helm:agent/result-list"
-local SearchAgent = meta(getmetatable(ResultListAgent))
+local new, SearchAgent = cluster.genus(ResultListAgent)
+cluster.extendbuilder(new, true)
 ```
 
 
@@ -119,5 +124,5 @@ end
 
 
 ```lua
-return core.cluster.constructor(SearchAgent)
+return new
 ```

@@ -3,10 +3,28 @@
 A simple Agent providing a status\-bar display with standard and custom messages\.
 
 
+#### imports
+
 ```lua
+local cluster = require "cluster:cluster"
 local Agent = require "helm:agent/agent"
-local StatusAgent = meta(getmetatable(Agent))
 ```
+
+
+### StatusAgent\(\)
+
+```lua
+local new, StatusAgent = cluster.genus(Agent)
+
+cluster.extendbuilder(new, function(_new, agent)
+   agent.status_name = 'default'
+   agent.format_args = { n = 0 }
+   return agent
+end)
+```
+
+
+\#/lua
 
 
 ### Available status lines
@@ -47,17 +65,6 @@ end
 ```
 
 
-### StatusAgent:\_init\(\)
-
 ```lua
-function StatusAgent._init(agent)
-   Agent._init(agent)
-   agent.status_name = 'default'
-   agent.format_args = { n = 0 }
-end
-```
-
-
-```lua
-return core.cluster.constructor(StatusAgent)
+return new
 ```

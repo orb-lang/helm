@@ -2,11 +2,19 @@
 
 Agent for displaying simple content (e.g. help files).
 
-#!lua
-local table = core.table
+**** imports
 
+#!lua
+local cluster = require "cluster:cluster"
 local Agent = require "helm:agent/agent"
-local PagerAgent = meta(getmetatable(Agent))
+#/lua
+
+
+*** PagerAgent()
+
+#!lua
+local new, PagerAgent = cluster.genus(Agent)
+cluster.extendbuilder(new, true)
 #/lua
 
 
@@ -50,5 +58,5 @@ end
 
 
 #!lua
-return core.cluster.constructor(PagerAgent)
+return new
 #/lua#/lua

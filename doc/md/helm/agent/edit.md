@@ -6,21 +6,20 @@ but also premise titles and other things as needed\.
 Text is stored as an array of lines, which start out as strings\. When the
 cursor enters a line, it is "opened" into an array of codepoints\.
 
-```lua
-local Agent = require "helm:agent/agent"
-local EditAgent = meta(getmetatable(Agent))
-```
-
 
 #### imports
 
 ```lua
+local cluster = require "cluster:cluster"
+local Agent = require "helm:agent/agent"
+
 local math = core.math
 local string = core.string
 local table = core.table
 local lines = assert(string.lines)
 local concat, insert = assert(table.concat), assert(table.insert)
 local Codepoints = require "singletons:codepoints"
+local Point = require "anterm:point"
 ```
 
 
@@ -91,6 +90,24 @@ cleaner that transition can be\.
     to \#lines\[n\] as one codepoint \!= one column\.
 
 
+### EditAgent\(\)
+
+```lua
+local new, EditAgent = cluster.genus(Agent)
+
+cluster.extendbuilder(new, function(_new, agent)
+   -- Too early to use :setCursor(), so we need to make sure the row is "opened".
+   -- We can't just borrow the function from _new because it in turn calls
+   -- :openRow(), but we don't need all its safeguards anyway.
+   agent[1] = Codepoints("")
+   agent.cursor = Point(1, 1)
+   agent.contents_changed = false
+   agent.cursor_changed = false
+   return agent
+end)
+```
+
+
 ## Methods
 
 
@@ -157,7 +174,6 @@ horizontal position when moving between lines of differing lengths\.
 
 ```lua
 local clamp, inbounds = assert(math.clamp), assert(math.inbounds)
-local Point = require "anterm:point"
 function EditAgent.setCursor(agent, rowOrTable, col)
    local row
    if type(rowOrTable) == "table" then
@@ -1003,19 +1019,6 @@ end
 ```
 
 
-### EditAgent:\_init\(\)
-
 ```lua
-function EditAgent._init(agent)
-   Agent._init(agent)
-   agent[1] = ""
-   agent:setCursor(1, 1)
-   agent.contents_changed = false
-   agent.cursor_changed = false
-end
-```
-
-
-```lua
-return core.cluster.constructor(EditAgent)
+return new
 ```

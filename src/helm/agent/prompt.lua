@@ -5,8 +5,18 @@
 
 
 
+
+
+local cluster = require "cluster:cluster"
 local Agent = require "helm:agent/agent"
-local PromptAgent = meta(getmetatable(Agent))
+
+
+
+
+
+
+local new, PromptAgent = cluster.genus(Agent)
+cluster.extendbuilder(new, true)
 
 
 
@@ -50,5 +60,5 @@ end
 
 
 
-return core.cluster.constructor(PromptAgent)
+return new
 

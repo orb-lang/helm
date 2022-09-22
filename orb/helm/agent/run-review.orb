@@ -7,6 +7,9 @@ before restarting it.
 **** imports
 
 #!lua
+local cluster = require "cluster:cluster"
+local ReviewAgent = require "helm:agent/review"
+
 local table = core.table
 
 local Round = require "helm:round"
@@ -14,9 +17,11 @@ local Premise = require "helm:premise"
 #/lua
 
 
+*** RunReviewAgent()
+
 #!lua
-local ReviewAgent = require "helm:agent/review"
-local RunReviewAgent = meta(getmetatable(ReviewAgent))
+local new, RunReviewAgent = cluster.genus(ReviewAgent)
+cluster.extendbuilder(new, true)
 #/lua
 
 
@@ -263,5 +268,5 @@ end
 
 
 #!lua
-return core.cluster.constructor(RunReviewAgent)
+return new
 #/lua

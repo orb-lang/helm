@@ -9,6 +9,9 @@
 
 
 
+local cluster = require "cluster:cluster"
+local Actor = require "actor:actor"
+
 local Window = require "window:window"
 local Deque = require "deque:deque"
 local Message = require "actor:message"
@@ -18,21 +21,17 @@ local table = core.table
 
 
 
-local Agent = meta {}
 
 
 
 
 
+local new, Agent, Agent_M = cluster.genus(Actor)
 
-
-
-local coro = assert(core.thread.nest 'actor')
-local yield = assert(coro.yield)
-
-function Agent.send(agent, msg)
-   return yield(Message(msg))
-end
+cluster.extendbuilder(new, function(_new, agent)
+   agent.buffer_commands = Deque()
+   return agent
+end)
 
 
 
@@ -159,26 +158,5 @@ end
 
 
 
-
-
-
-
-
-
-
-function Agent._init(agent)
-   agent.buffer_commands = Deque()
-end
-
-function Agent.__call(agent_class)
-   local agent_M = getmetatable(agent_class)
-   local agent = setmetatable({}, agent_M)
-   agent:_init()
-   return agent
-end
-
-
-
-
-return core.cluster.constructor(Agent)
+return new
 

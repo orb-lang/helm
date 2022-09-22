@@ -12,11 +12,16 @@ local table = core.table
 local string = core.string
 local insert, sort = assert(table.insert), assert(table.sort)
 
-
-
-
+local cluster = require "cluster:cluster"
 local ResultListAgent = require "helm:agent/result-list"
-local SuggestAgent = meta(getmetatable(ResultListAgent))
+
+
+
+
+
+
+local new, SuggestAgent = cluster.genus(ResultListAgent)
+cluster.extendbuilder(new, true)
 
 
 
@@ -251,5 +256,5 @@ end
 
 
 
-return core.cluster.constructor(SuggestAgent)
+return new
 
