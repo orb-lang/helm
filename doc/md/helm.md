@@ -143,13 +143,6 @@ end
 local stdin = uv.new_tty(0, true)
 ```
 
-Primitives for terminal manipulation\.
-
-```lua
-a = require "anterm:anterm"
-local Point = require "anterm:point"
-```
-
 
 ### autothread
 
@@ -166,6 +159,8 @@ local autothread = require "cluster:autothread"
 Lives in the global namespace for convenient repl access\.
 
 ```lua
+local Point = require "anterm:point"
+
 local max_col, max_row = stdin:get_winsize()
 local max_extent = Point(max_row, max_col)
 modeS = require "helm/modeselektor" (max_extent, write)
@@ -440,9 +435,16 @@ local names = require "repr:repr/names"
 names.loadNames(package.loaded)
 names.loadNames(_G)
 names.loadNames(__G)
+```
 
--- assuming we survived that, set up our repling environment:
 
+## Main event loop
+
+With everything set up, we can configure the terminal, kick off the event
+loop, then reset the terminal when it's done\.
+
+```lua
+local a = require "anterm:anterm"
 -- raw mode
 uv.tty_set_mode(stdin, 2)
 

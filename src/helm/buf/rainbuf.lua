@@ -314,6 +314,8 @@ end
 
 
 
+local a = require "anterm:anterm"
+
 function Rainbuf.lineGen(rainbuf)
    rainbuf:initComposition()
    -- state for iterator

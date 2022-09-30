@@ -146,13 +146,6 @@ local stdin = uv.new_tty(0, true)
 
 
 
-a = require "anterm:anterm"
-local Point = require "anterm:point"
-
-
-
-
-
 
 
 
@@ -165,6 +158,8 @@ local autothread = require "cluster:autothread"
 
 
 
+
+local Point = require "anterm:point"
 
 local max_col, max_row = stdin:get_winsize()
 local max_extent = Point(max_row, max_col)
@@ -441,8 +436,15 @@ names.loadNames(package.loaded)
 names.loadNames(_G)
 names.loadNames(__G)
 
--- assuming we survived that, set up our repling environment:
 
+
+
+
+
+
+
+
+local a = require "anterm:anterm"
 -- raw mode
 uv.tty_set_mode(stdin, 2)
 

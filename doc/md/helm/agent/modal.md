@@ -7,6 +7,8 @@ Agent that powers our modal dialog\.
 
 ```lua
 local core = require "qor:core"
+local a = require "anterm:anterm"
+
 local cluster = require "cluster:cluster"
 local Agent = require "helm:agent/agent"
 ```

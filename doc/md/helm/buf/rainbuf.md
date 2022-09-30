@@ -314,6 +314,8 @@ a line at a time \(and it only took, oh, six months\), we're finally able to
 generate these on the fly\.
 
 ```lua
+local a = require "anterm:anterm"
+
 function Rainbuf.lineGen(rainbuf)
    rainbuf:initComposition()
    -- state for iterator
