@@ -36,27 +36,11 @@ end
 
 
 
-
-
-
-
-local __G = setmetatable({}, {__index = _G})
-__G.__G = __G
-
-
-
-
-
-
-
-
 local function _helm(_ENV)
 
 
 
 
-
-setfenv(0, __G)
 
 local core = require "qor:core"
 -- Keep this local, other modules will do the same as-needed
@@ -422,7 +406,6 @@ end)
 local names = require "repr:repr/names"
 names.loadNames(package.loaded)
 names.loadNames(_G)
-names.loadNames(__G)
 
 
 
@@ -490,9 +473,7 @@ if (onseq_err) then
    io.stderr:write(onseq_err)
 end
 
--- Restore the global environment
-setfenv(0, _G)
 end -- of _helm
 
-return setfenv(_helm, __G)
+return _helm
 

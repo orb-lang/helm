@@ -30,24 +30,10 @@ end
 ```
 
 
-#### Intercept \_G
-
-We don't want to put `helm` into the environment of the codebase under
-examination, so we replace the global environment with a table which falls
-back to `_G`\. We make it available as a global anywhere in \`helm\`, without
-exposing it to others who are still using the normal \_G global environment\.
-
-Man\.  I really like having first\-class environments\.
-
-```lua
-local __G = setmetatable({}, {__index = _G})
-__G.__G = __G
-```
-
 ### \_helm
 
-The entire module is setup as a function, to allow our new fenv
-to be passed in\.
+The entire module is setup as a function, which seems like a good pattern for
+modules providing a bridge verb\.
 
 ```lua
 local function _helm(_ENV)
@@ -56,8 +42,6 @@ local function _helm(_ENV)
 No sense wasting a level of indent on a wrapper imho
 
 ```lua
-setfenv(0, __G)
-
 local core = require "qor:core"
 -- Keep this local, other modules will do the same as-needed
 -- We need it below for `compact`
@@ -422,7 +406,6 @@ names should probably be done by valiant anyway\.
 local names = require "repr:repr/names"
 names.loadNames(package.loaded)
 names.loadNames(_G)
-names.loadNames(__G)
 ```
 
 
@@ -490,9 +473,7 @@ if (onseq_err) then
    io.stderr:write(onseq_err)
 end
 
--- Restore the global environment
-setfenv(0, _G)
 end -- of _helm
 
-return setfenv(_helm, __G)
+return _helm
 ```
