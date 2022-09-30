@@ -18,7 +18,7 @@ Basically just a holder for the text, button style, and result,
 with an \_\_repr to generate the contents of the dialog\.
 
 ```lua
-local DialogModel = meta {}
+local DialogModel = core.cluster.meta {}
 
 local concat, insert = assert(table.concat), assert(table.insert)
 local ceil = assert(math.ceil)

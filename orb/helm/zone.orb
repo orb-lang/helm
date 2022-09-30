@@ -77,8 +77,8 @@ local a = require "anterm:anterm"
 #/lua
 
 #!lua
-local Zone = meta {}
-local Zoneherd = meta {}
+local Zone = core.cluster.meta {}
+local Zoneherd = core.cluster.meta {}
 #/lua
 
 

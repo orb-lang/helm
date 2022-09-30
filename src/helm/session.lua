@@ -50,7 +50,7 @@ local Premise = require "helm:premise"
 
 
 local helm_db = require "helm:helm-db"
-local Session = meta {}
+local Session = core.cluster.meta {}
 local new
 
 

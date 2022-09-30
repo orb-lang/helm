@@ -34,7 +34,7 @@ Search\-specific fields:
 -  best:       Whether a match was found without employing any fuzzy matching
 
 ```lua
-local SelectionList = meta {}
+local SelectionList = core.cluster.meta {}
 local new
 ```
 

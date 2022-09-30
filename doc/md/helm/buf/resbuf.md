@@ -16,7 +16,7 @@ local lineGen = assert(require "repr:repr" . lineGen)
 
 ```lua
 local Rainbuf = require "helm:buf/rainbuf"
-local Resbuf = meta(getmetatable(Rainbuf))
+local Resbuf = core.cluster.meta(getmetatable(Rainbuf))
 ```
 
 

@@ -68,7 +68,7 @@ local lineGen = assert(require "repr:repr" . lineGen)
 #### Rainbuf metatable
 
 ```lua
-local Rainbuf = meta {}
+local Rainbuf = core.cluster.meta {}
 ```
 
 

@@ -18,7 +18,7 @@ local Agent = require "helm:agent/agent"
 
 
 
-local DialogModel = meta {}
+local DialogModel = core.cluster.meta {}
 
 local concat, insert = assert(table.concat), assert(table.insert)
 local ceil = assert(math.ceil)

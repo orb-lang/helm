@@ -68,7 +68,7 @@ local lineGen = assert(require "repr:repr" . lineGen)
 
 
 
-local Rainbuf = meta {}
+local Rainbuf = core.cluster.meta {}
 
 
 

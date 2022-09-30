@@ -35,7 +35,7 @@ local Round = require "helm:round"
 *** Historian metatable
 
 #!lua
-local Historian = meta {}
+local Historian = core.cluster.meta {}
 Historian.HISTORY_LIMIT = 2000
 Historian.helm_db_home = helm_db.helm_db_home
 Historian.project = uv.cwd()
