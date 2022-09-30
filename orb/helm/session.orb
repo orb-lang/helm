@@ -94,7 +94,13 @@ end
 Loads the session from the database, retrieving its lines and results.
 Does not re-run the lines.
 
+#todo There seems to be some mixup of responsibility here, as evidenced by
+needing to send() a message in just this one place. We aren't an actor, but
+for now we can pretend to be, just this once.
+
 #!lua
+
+local send = assert(require "actor:actor" . send)
 
 local function _appendPremise(session, premise)
    session.n = session.n + 1
@@ -109,7 +115,7 @@ function Session.loadPremises(session)
       -- indicating that we have no premises
       if result.status then
          local round = Round(result)
-         send { to = 'hist', method = 'loadResponseFor', round }
+         send(session, { to = 'hist', method = 'loadResponseFor', round })
          local premise = round:asPremise(result)
          _appendPremise(session, premise)
       end

@@ -86,29 +86,6 @@ ts = require "repr:repr" . ts_color
 
 
 
-
-
-
-
-
-
-send = nil;
-do
-   local Message = require "actor:message"
-   local nest = core.thread.nest "actor"
-   local yield = assert(nest.yield)
-
-   send = function (tab)
-      return yield(Message(tab))
-   end
-end
-
-
-
-
-
-
-
 uv = require "luv"
 local usecolors
 stdout = ""

@@ -11,6 +11,7 @@ local Reviewbuf = require "helm:buf/reviewbuf"
 
 
 local Review = clone(RagaBase, 2)
+local send = Review.send
 
 
 

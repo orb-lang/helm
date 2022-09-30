@@ -11,6 +11,8 @@ local clone = assert(core.table.clone)
 local EditBase = require "helm:helm/raga/edit"
 
 local EditLine = clone(EditBase, 2)
+local send = EditLine.send
+
 EditLine.name = "edit_line"
 EditLine.prompt_char = "👉"
 EditLine.keymap = require "helm:keymap/edit-line"

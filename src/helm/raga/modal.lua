@@ -13,6 +13,8 @@ local RagaBase = require "helm:raga/base"
 
 
 local Modal = clone(RagaBase, 2)
+local send = Modal.send
+
 Modal.name = "modal"
 Modal.prompt_char = " "
 Modal.keymap = require "helm:keymap/modal"

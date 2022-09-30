@@ -11,6 +11,8 @@ local RagaBase = require "helm:helm/raga/base"
 
 
 local EditBase = clone(RagaBase, 2)
+local send = EditBase.send
+
 EditBase.target = "agents.edit"
 
 

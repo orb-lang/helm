@@ -8,6 +8,7 @@ local clone = assert(core.table.clone)
 local EditBase = require "helm/raga/edit"
 
 local Complete = clone(EditBase, 2)
+local send = Complete.send
 
 Complete.name = "complete"
 Complete.prompt_char = "💬"

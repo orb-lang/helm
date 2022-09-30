@@ -35,6 +35,8 @@ local sub, gsub, rep = assert(string.sub),
 local EditBase = require "helm:helm/raga/edit"
 
 local Nerf = clone(EditBase, 2)
+local send = Nerf.send
+
 Nerf.name = "nerf"
 Nerf.prompt_char = "👉"
 Nerf.keymap = require "helm:keymap/nerf"

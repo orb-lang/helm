@@ -241,7 +241,7 @@ function RunReviewAgent.acceptInsertion(agent)
    premise.status = "keep"
    agent:_updateEditAgent(agent.selected_index)
    agent:selectNextWrap()
-   send { method = "popMode" }
+   agent :send { method = "popMode" }
 end
 #/lua
 

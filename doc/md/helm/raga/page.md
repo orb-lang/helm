@@ -10,6 +10,7 @@ local RagaBase = require "helm:raga/base"
 
 ```lua
 local Page = clone(RagaBase, 2)
+local send = Page.send
 
 Page.name = "page"
 Page.prompt_char = "❓"

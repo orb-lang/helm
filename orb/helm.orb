@@ -81,29 +81,6 @@ ts = require "repr:repr" . ts_color
 #/lua
 
 
-** send(tab)
-
-Turns =tab= into a message and =yield= s it.
-
-We do a lot of message passing in =helm=, and we'll be doing more, so this is
-a useful global to have.
-
-Putting all the weird stuff in an import block so that =yield= is only
-redefined here.
-
-#!lua
-send = nil;
-do
-   local Message = require "actor:message"
-   local nest = core.thread.nest "actor"
-   local yield = assert(nest.yield)
-
-   send = function (tab)
-      return yield(Message(tab))
-   end
-end
-#/lua
-
 ** Boot sequence
 
 This boot sequence builds on Tim Caswell and the Luvit Author's repl example.

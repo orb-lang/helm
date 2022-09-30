@@ -8,6 +8,7 @@ local EditBase = require "helm/raga/edit"
 local Resbuf = require "helm:buf/resbuf"
 
 local Search = clone(EditBase, 2)
+local send = Search.send
 
 Search.name = "search"
 Search.prompt_char = "⁉️"

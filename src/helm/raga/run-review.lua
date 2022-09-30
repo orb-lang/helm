@@ -10,6 +10,8 @@ local Review = require "helm:raga/review"
 
 
 local RunReview = clone(Review, 2)
+local send = RunReview.send
+
 RunReview.name = "run_review"
 RunReview.prompt_char = "🟡"
 RunReview.keymap = require "helm:keymap/run-review"

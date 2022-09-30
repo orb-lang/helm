@@ -473,28 +473,28 @@ is single\-line or we're at the end of the last line\.
 
 ```lua
 function ModeS.userEval(modeS)
-   local line = send { to = "agents.edit",
+   local line = modeS:send { to = "agents.edit",
                        method = 'contents' }
    local round = modeS.hist.desk
    round.line = line
    local success, results = modeS:eval(line)
    s:chat("we return from evaluation, success: %s", success)
    if not success and results == 'advance' then
-      send { to = "agents.edit", method = 'endOfText'}
+      modeS:send { to = "agents.edit", method = 'endOfText'}
       round.response[1] = 'advance'
       return false -- Fall through to EditAgent nl binding
    else
       round.response[1] = results
-      send { to = 'hist', method = 'append', round }
+      modeS:send { to = 'hist', method = 'append', round }
       -- Do this first because it clears the results area
       -- #todo this clearly means edit:clear() is doing too much, decouple
-      send { to = "agents.edit", method = 'clear' }
-      send { to = "agents.results", method = 'update', results }
+      modeS:send { to = "agents.edit", method = 'clear' }
+      modeS:send { to = "agents.results", method = 'update', results }
    end
 end
 
 function ModeS.conditionalEval(modeS)
-   if send { to = "agents.edit",
+   if modeS:send { to = "agents.edit",
              method = 'shouldEvaluate'} then
       return modeS:userEval()
    else
@@ -510,7 +510,7 @@ end
 function ModeS.evalFromCursor(modeS)
    local to_run = Deque()
    for i = modeS.hist.cursor, modeS.hist.n do
-      local round = send { to = "hist", method = "index", i }
+      local round = modeS:send { to = "hist", method = "index", i }
       to_run:push(round)
    end
    modeS:rerun(to_run)
@@ -524,22 +524,22 @@ end
 function ModeS.historyBack()
    -- Stash the edit-in-progress.
    -- #todo all of this will basically get rewritten with Card mode
-   local linestash = send { to = "agents.edit", method = "contents" }
-   send { to = 'hist', method = 'stashLine', linestash }
-   local prev_round = send { to = "hist", method = "prev" }
+   local linestash = modeS:send { to = "agents.edit", method = "contents" }
+   modeS:send { to = 'hist', method = 'stashLine', linestash }
+   local prev_round = modeS:send { to = "hist", method = "prev" }
    if prev_round then
-      send { to = "agents.edit", method = "update", prev_round.line }
-      send { to = "agents.results", method = "update", prev_round:result() }
+      modeS:send { to = "agents.edit", method = "update", prev_round.line }
+      modeS:send { to = "agents.results", method = "update", prev_round:result() }
    end
 end
 
 function ModeS.historyForward()
-   local linestash = send { to = "agents.edit", method = "contents" }
-   send { to = 'hist', method = 'stashLine', linestash }
-   local next_round = send { to = "hist", method = "next" }
+   local linestash = modeS:send { to = "agents.edit", method = "contents" }
+   modeS:send { to = 'hist', method = 'stashLine', linestash }
+   local next_round = modeS:send { to = "hist", method = "next" }
    if next_round then
-      send { to = "agents.edit", method = "update", next_round.line }
-      send { to = "agents.results", method = "update", next_round:result() }
+      modeS:send { to = "agents.edit", method = "update", next_round.line }
+      modeS:send { to = "agents.results", method = "update", next_round:result() }
    end
 end
 ```

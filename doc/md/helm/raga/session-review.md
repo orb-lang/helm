@@ -10,6 +10,8 @@ local Review = require "helm:raga/review"
 
 ```lua
 local SessionReview = clone(Review, 2)
+local send = SessionReview.send
+
 SessionReview.name = "session_review"
 SessionReview.prompt_char = "💬"
 SessionReview.keymap = require "helm:keymap/session-review"
