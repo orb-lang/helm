@@ -58,6 +58,7 @@ continues past the edge of the zone and otherwise falsy\.
 #### imports
 
 ```lua
+local core = require "qor:core"
 local string = core.string
 local math = core.math
 local lineGen = assert(require "repr:repr" . lineGen)
@@ -103,9 +104,9 @@ end
 
 ### Rainbuf:contentCols\(\)
 
-The number of columns available to the Rainbuf's content, less any gutter
-\(used for the scroll indicator, for now\)\.
+The number of columns available to the Rainbuf's content, less any gutterused for the scroll indicator, for now\)\.
 
+\(
 ```lua
 function Rainbuf.contentCols(rainbuf)
    return rainbuf.scrollable and rainbuf.cols - 3 or rainbuf.cols

@@ -6,6 +6,7 @@
 
 
 
+local core = require "qor:core"
 local cluster = require "cluster:cluster"
 local Agent = require "helm:agent/agent"
 

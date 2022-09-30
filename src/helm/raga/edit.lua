@@ -4,8 +4,8 @@
 
 
 
-local table = core.table
-local clone, insert = assert(table.clone), assert(table.insert)
+local core = require "qor:core"
+local clone = assert(core.table.clone)
 local RagaBase = require "helm:helm/raga/base"
 
 

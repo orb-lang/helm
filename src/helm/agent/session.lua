@@ -6,6 +6,7 @@
 
 
 
+local core = require "qor:core"
 local math = core.math
 local table = core.table
 

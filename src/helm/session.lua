@@ -40,10 +40,11 @@
 
 
 
+local core = require "qor:core"
+local table = core.table
+
 local Round = require "helm:round"
 local Premise = require "helm:premise"
-
-local table = core.table
 
 
 

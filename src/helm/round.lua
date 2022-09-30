@@ -26,12 +26,10 @@
 
 
 
-local cluster = require "cluster:cluster"
-
 local core = require "qor:core"
 local table = core.table
 
-local s = require "status:status" ()
+local cluster = require "cluster:cluster"
 
 
 

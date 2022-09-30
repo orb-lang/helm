@@ -18,6 +18,8 @@
 
 
 
+local core = require "qor:core"
+
 local Historian  = require "helm:historian"
 local Maestro    = require "helm:maestro"
 local Zoneherd   = require "helm:zone"

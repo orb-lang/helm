@@ -6,6 +6,7 @@
 
 
 
+local core = require "qor:core"
 local string = core.string
 local lineGen = assert(require "repr:repr" . lineGen)
 

@@ -14,16 +14,16 @@
 
 
 
-local sub, gsub, rep = assert(string.sub),
-                       assert(string.gsub),
-                       assert(string.rep)
+local core = require "qor:core"
 local table = core.table
 local addall, clone, concat, insert, splice = assert(table.addall),
                                               assert(table.clone),
                                               assert(table.concat),
                                               assert(table.insert),
                                               assert(table.splice)
-local s = require "status:status" ()
+local sub, gsub, rep = assert(string.sub),
+                       assert(string.gsub),
+                       assert(string.rep)
 
 
 

@@ -6,8 +6,8 @@ the raga stack to do this\.\.\.
 
 
 ```lua
-local table = core.table
-local clone, splice = assert(table.clone), assert(table.splice)
+local core = require "qor:core"
+local clone = assert(core.table.clone)
 local EditBase = require "helm:helm/raga/edit"
 
 local EditLine = clone(EditBase, 2)

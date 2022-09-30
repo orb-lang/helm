@@ -7,6 +7,7 @@ specialized for search results, from either an actual search or `suggest`\.
 #### imports
 
 ```lua
+local core = require "qor:core"
 local math = core.math
 ```
 

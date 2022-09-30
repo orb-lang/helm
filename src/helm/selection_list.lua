@@ -7,6 +7,7 @@
 
 
 
+local core = require "qor:core"
 local math = core.math
 
 

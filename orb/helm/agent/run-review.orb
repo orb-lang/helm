@@ -7,10 +7,11 @@ before restarting it.
 **** imports
 
 #!lua
+local core = require "qor:core"
+local table = core.table
+
 local cluster = require "cluster:cluster"
 local ReviewAgent = require "helm:agent/review"
-
-local table = core.table
 
 local Round = require "helm:round"
 local Premise = require "helm:premise"

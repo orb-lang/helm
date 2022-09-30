@@ -18,6 +18,8 @@
 
 
 
+local core = require "qor:core"
+
 local Rainbuf = require "helm:buf/rainbuf"
 local Txtbuf = meta(getmetatable(Rainbuf))
 

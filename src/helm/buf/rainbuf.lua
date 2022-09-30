@@ -58,6 +58,7 @@
 
 
 
+local core = require "qor:core"
 local string = core.string
 local math = core.math
 local lineGen = assert(require "repr:repr" . lineGen)

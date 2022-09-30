@@ -6,13 +6,14 @@
 
 
 
-local L = require "lpeg"
-local P, R, S, match = L.P, L.R, L.S, L.match
-local Lex = {}
-
+local core = require "qor:core"
 local math = core.math
 local sub, gsub = assert(string.sub), assert(string.gsub)
 local concat, insert = assert(table.concat), assert(table.insert)
+
+local L = require "lpeg"
+local P, R, S, match = L.P, L.R, L.S, L.match
+local Lex = {}
 
 
 

@@ -7,14 +7,15 @@ Abstract base for agents that handle editing of something like a Run
 **** imports
 
 #!lua
+local core = require "qor:core"
+local math = core.math
+local assert = assert(core.fn.assertfmt)
+
 local cluster = require "cluster:cluster"
 local Agent = require "helm:agent/agent"
 
 local EditAgent = require "helm:agent/edit"
 local ResultsAgent = require "helm:agent/results"
-
-local math = core.math
-local assert = assert(core.fn.assertfmt)
 #/lua
 
 

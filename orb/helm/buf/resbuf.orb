@@ -6,6 +6,7 @@ A =Resbuf= is a =Rainbuf= specialized to displaying REPL results using =repr=.
 **** imports
 
 #!lua
+local core = require "qor:core"
 local string = core.string
 local lineGen = assert(require "repr:repr" . lineGen)
 #/lua

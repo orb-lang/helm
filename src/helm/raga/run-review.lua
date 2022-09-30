@@ -3,6 +3,7 @@
 
 
 
+local core = require "qor:core"
 local clone = assert(core.table.clone)
 local Review = require "helm:raga/review"
 

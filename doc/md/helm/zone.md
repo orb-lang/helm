@@ -67,6 +67,7 @@ switch the REPL to a 'reflow mode' that just draws characters to a screen,
 then add a popup\.
 
 ```lua
+local core = require "qor:core"
 local string = core.string
 local instanceof = assert(core.meta.instanceof)
 

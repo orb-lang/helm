@@ -67,6 +67,7 @@
 
 
 
+local core = require "qor:core"
 local string = core.string
 local instanceof = assert(core.meta.instanceof)
 

@@ -59,7 +59,7 @@ local function _helm(_ENV)
 setfenv(0, __G)
 
 meta = assert(require "core:cluster" . Meta)
-core = require "qor:core"
+local core = require "qor:core"
 -- Keep this local, other modules will do the same as-needed
 -- We need it below for `compact`
 local table = core.table

@@ -3,8 +3,8 @@
 
 
 
-local table = core.table
-local clone = assert(table.clone)
+local core = require "qor:core"
+local clone = assert(core.table.clone)
 local RagaBase = require "helm:raga/base"
 
 

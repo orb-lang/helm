@@ -3,6 +3,7 @@
 Common functionality for reviewing a `Run` or `Session`\.
 
 ```lua
+local core = require "qor:core"
 local clone = assert(core.table.clone)
 local RagaBase = require "helm:raga/base"
 local Reviewbuf = require "helm:buf/reviewbuf"
