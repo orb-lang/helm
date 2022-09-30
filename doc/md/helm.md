@@ -62,10 +62,9 @@ local core = require "qor:core"
 -- Keep this local, other modules will do the same as-needed
 -- We need it below for `compact`
 local table = core.table
-kit = require "valiant:replkit"
 jit.vmdef = require "helm:helm/vmdef"
 jit.p = require "helm:helm/ljprof"
-sql = assert(sql, "sql must be in _G")
+assert(sql, "sql must be in _G")
 ```
 
 Happily, status now prints to log files in its data directory, so we can
@@ -77,7 +76,6 @@ local s = require "status:status" ()
 s.chatty = true
 s.verbose = true
 s.boring = false
-ts = require "repr:repr" . ts_color
 ```
 
 
@@ -86,9 +84,8 @@ ts = require "repr:repr" . ts_color
 This boot sequence builds on Tim Caswell and the Luvit Author's repl example\.
 
 ```lua
-uv = require "luv"
-local usecolors
-stdout = ""
+local uv = require "luv"
+local usecolors, stdout
 ```
 
 
@@ -109,27 +106,13 @@ else
 end
 ```
 
-Not\-blocking `write` and `print`:
+Non\-blocking `write`:
 
 ```lua
 local function write(...)
    uv.write(stdout, {...})
 end
 ```
-
-```lua
-local concat = assert(table.concat)
-
-function print(...)
-   local n = select('#', ...)
-   local arguments = {...}
-   for i = 1, n do
-      arguments[i] = tostring(arguments[i])
-   end
-   uv.write(stdout, concat(arguments, "\t") .. "\n")
-end
-```
-
 
 ### tty setup
 
@@ -163,7 +146,7 @@ local Point = require "anterm:point"
 
 local max_col, max_row = stdin:get_winsize()
 local max_extent = Point(max_row, max_col)
-modeS = require "helm/modeselektor" (max_extent, write)
+local modeS = require "helm/modeselektor" (max_extent, write)
 
 autothread(function() modeS:task():setup() end)
 ```
@@ -426,11 +409,16 @@ end)
 ```
 
 
+#### Preload names
+
+Get names for as many values as possible into the colorizer\. Treat package
+names as existing in the global namespace rather than having apackage\.loaded\." prefix\.
+
+"
+\#todo
+names should probably be done by valiant anyway\.
+
 ```lua
--- Get names for as many values as possible
--- into the colorizer
--- Treat package names as existing in the global namespace
--- rather than having a "package.loaded." prefix
 local names = require "repr:repr/names"
 names.loadNames(package.loaded)
 names.loadNames(_G)
@@ -505,10 +493,6 @@ end
 -- Restore the global environment
 setfenv(0, _G)
 end -- of _helm
-```
 
-#### Call helm
-
-```lua
 return setfenv(_helm, __G)
 ```

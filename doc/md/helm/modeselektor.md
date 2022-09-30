@@ -61,7 +61,9 @@ A mechanism for doing this natively in cluster will exist, but currently
 does not\.
 
 ```lua
-local _stat_M; -- we shouldn't need this anyway #todo remove
+-- Only needed by eval_env
+local uv = require "luv"
+local kit = require "valiant:replkit"
 
 cluster.extendbuilder(new, function(_new, modeS, max_extent, writer, db)
    -- Some miscellany to copy and initialize
@@ -69,13 +71,16 @@ cluster.extendbuilder(new, function(_new, modeS, max_extent, writer, db)
    modeS.write = writer
    modeS.repl_top = ModeS.REPL_LINE
 
-   -- Create Actors (status isn't, but should be)
-   modeS.valiant = Valiant(__G)
+   -- Create Actors
+   local eval_env = setmetatable({
+      core = core,
+      kit = kit,
+      a = a,
+      uv = uv,
+      modeS = modeS
+   }, { __index = _G })
+   modeS.valiant = Valiant(eval_env)
    modeS.hist  = Historian(db)
-   ---[[ This isn't how we should handle status,
-   modeS.status = setmetatable({}, _stat_M)
-   rawset(__G, "stat", modeS.status)
-   -- so lets make this easy to knock out ]]
    modeS.zones = Zoneherd(modeS, writer)
    modeS.maestro = Maestro()
 
