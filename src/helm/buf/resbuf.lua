@@ -6,6 +6,7 @@
 
 
 
+local core = require "qor:core"
 local string = core.string
 local lineGen = assert(require "repr:repr" . lineGen)
 
@@ -15,7 +16,7 @@ local lineGen = assert(require "repr:repr" . lineGen)
 
 
 local Rainbuf = require "helm:buf/rainbuf"
-local Resbuf = meta(getmetatable(Rainbuf))
+local Resbuf = core.cluster.meta(getmetatable(Rainbuf))
 
 
 

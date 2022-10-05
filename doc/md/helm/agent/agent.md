@@ -9,14 +9,15 @@ providing a [Window](https://gitlab.com/special-circumstance/helm/-/blob/trunk/d
 #### imports
 
 ```lua
+local core = require "qor:core"
+local table = core.table
+
 local cluster = require "cluster:cluster"
 local Actor = require "actor:actor"
 
 local Window = require "window:window"
 local Deque = require "deque:deque"
 local Message = require "actor:message"
-
-local table = core.table
 ```
 
 
@@ -123,9 +124,9 @@ end
 The `Window`s of `Agent`s need to implement some common behavior in order to
 interact correctly with `Rainbuf`s and change detection, so we start with a
 basic config\. Subclasses may override `:windowConfiguration()` to add their
-own details, using `.mergeWindowConfig()` to include the superclass' config\.
-\(Note that this is not a method, just a function\.\)
+own details, using `.mergeWindowConfig()` to include the superclass' config\.Note that this is not a method, just a function\.\)
 
+\(
 ```lua
 local addall = assert(table.addall)
 function Agent.mergeWindowConfig(cfg_a, cfg_b)

@@ -6,7 +6,7 @@ Some common functionality for ragas.
 **** imports
 
 #!lua
-local a         = require "anterm:anterm"
+local core = require "qor:core"
 
 local concat         = assert(table.concat)
 local sub, gsub, rep = assert(string.sub),
@@ -28,6 +28,29 @@ RagaBase.prompt_char = nil                       -- e.g. "$"
 RagaBase.keymap      = nil                       -- e.g. require "helm:keymap/raga_name"
 RagaBase.target      = nil                       -- `msg.to` path string, e.g. "agents.edit"
 RagaBase.lex         = require "helm:lex" . null -- Lexer to use for the command zone
+#/lua
+
+
+** <Raga>.send(tab)
+
+#todo Cribbed from Actor. We aren't an Actor, and shouldn't be, but we also
+shouldn't be send()ing.
+
+Turns =tab= into a message and =yield= s it.
+
+Putting all the weird stuff in an import block so that =yield= is only
+redefined here.
+
+#!lua
+do
+   local Message = require "actor:message"
+   local nest = core.thread.nest "actor"
+   local yield = assert(nest.yield)
+
+   function RagaBase.send(tab)
+      return yield(Message(tab))
+   end
+end
 #/lua
 
 

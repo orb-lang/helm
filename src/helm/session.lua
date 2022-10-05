@@ -40,16 +40,17 @@
 
 
 
+local core = require "qor:core"
+local table = core.table
+
 local Round = require "helm:round"
 local Premise = require "helm:premise"
-
-local table = core.table
 
 
 
 
 local helm_db = require "helm:helm-db"
-local Session = meta {}
+local Session = core.cluster.meta {}
 local new
 
 
@@ -95,6 +96,12 @@ end
 
 
 
+
+
+
+
+local send = assert(require "actor:actor" . send)
+
 local function _appendPremise(session, premise)
    session.n = session.n + 1
    session[session.n] = premise
@@ -108,7 +115,7 @@ function Session.loadPremises(session)
       -- indicating that we have no premises
       if result.status then
          local round = Round(result)
-         send { to = 'hist', method = 'loadResponseFor', round }
+         send(session, { to = 'hist', method = 'loadResponseFor', round })
          local premise = round:asPremise(result)
          _appendPremise(session, premise)
       end

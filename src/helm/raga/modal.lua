@@ -4,14 +4,17 @@
 
 
 
-local table = core.table
-local clone, splice = assert(table.clone), assert(table.splice)
-local a = require "anterm:anterm"
+
+
+local core = require "qor:core"
+local clone = assert(core.table.clone)
 local RagaBase = require "helm:raga/base"
 
 
 
 local Modal = clone(RagaBase, 2)
+local send = Modal.send
+
 Modal.name = "modal"
 Modal.prompt_char = " "
 Modal.keymap = require "helm:keymap/modal"

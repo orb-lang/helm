@@ -10,16 +10,18 @@ cursor enters a line, it is "opened" into an array of codepoints.
 **** imports
 
 #!lua
-local cluster = require "cluster:cluster"
-local Agent = require "helm:agent/agent"
-
+local core = require "qor:core"
 local math = core.math
 local string = core.string
 local table = core.table
 local lines = assert(string.lines)
 local concat, insert = assert(table.concat), assert(table.insert)
+
 local Codepoints = require "singletons:codepoints"
 local Point = require "anterm:point"
+
+local cluster = require "cluster:cluster"
+local Agent = require "helm:agent/agent"
 #/lua
 
 

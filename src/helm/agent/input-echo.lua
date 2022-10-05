@@ -5,12 +5,15 @@
 
 
 
-local cluster = require "cluster:cluster"
-local Agent = require "helm:agent/agent"
+local core = require "qor:core"
+local table = core.table
 
 local c = assert(require "singletons:color" . color)
+local a = require "anterm:anterm"
 local input_event = require "anterm:input-event"
-local table = core.table
+
+local cluster = require "cluster:cluster"
+local Agent = require "helm:agent/agent"
 
 
 

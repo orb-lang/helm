@@ -13,6 +13,10 @@
 
 
 
+local core = require "qor:core"
+local math = core.math
+local insert = assert(table.insert)
+
 local uv      = require "luv"
 
 local bridge = require "bridge"
@@ -23,8 +27,6 @@ local Session = require "helm:session"
 local persist_tabulate = require "repr:persist-tabulate"
 local helm_db = require "helm:helm-db"
 
-local insert = assert(table.insert)
-
 local Deque = require "deque:deque"
 local Round = require "helm:round"
 
@@ -33,7 +35,7 @@ local Round = require "helm:round"
 
 
 
-local Historian = meta {}
+local Historian = core.cluster.meta {}
 Historian.HISTORY_LIMIT = 2000
 Historian.helm_db_home = helm_db.helm_db_home
 Historian.project = uv.cwd()
@@ -86,7 +88,6 @@ end
 
 
 
-local math = core.math
 local clamp, inbounds = assert(math.clamp), assert(math.inbounds)
 
 function Historian.load(historian)

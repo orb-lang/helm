@@ -7,10 +7,11 @@ before restarting it\.
 #### imports
 
 ```lua
+local core = require "qor:core"
+local table = core.table
+
 local cluster = require "cluster:cluster"
 local ReviewAgent = require "helm:agent/review"
-
-local table = core.table
 
 local Round = require "helm:round"
 local Premise = require "helm:premise"
@@ -27,9 +28,9 @@ cluster.extendbuilder(new, true)
 
 ### RunReviewAgent:setInitialSelection\(\)
 
-We never operate on an empty subject\-\-if we don't have anything, add a blank
-"insert" premise so we have somewhere to start\.
+We never operate on an empty subject\-\-if we don't have anything, add a blankinsert" premise so we have somewhere to start\.
 
+"
 ```lua
 local insert = assert(table.insert)
 function RunReviewAgent.setInitialSelection(agent)
@@ -240,7 +241,7 @@ function RunReviewAgent.acceptInsertion(agent)
    premise.status = "keep"
    agent:_updateEditAgent(agent.selected_index)
    agent:selectNextWrap()
-   send { method = "popMode" }
+   agent :send { method = "popMode" }
 end
 ```
 

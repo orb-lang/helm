@@ -6,6 +6,9 @@
 
 
 
+local core = require "qor:core"
+local a = require "anterm:anterm"
+
 local cluster = require "cluster:cluster"
 local Agent = require "helm:agent/agent"
 
@@ -17,7 +20,7 @@ local Agent = require "helm:agent/agent"
 
 
 
-local DialogModel = meta {}
+local DialogModel = core.cluster.meta {}
 
 local concat, insert = assert(table.concat), assert(table.insert)
 local ceil = assert(math.ceil)

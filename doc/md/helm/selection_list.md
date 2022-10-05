@@ -7,6 +7,7 @@ specialized for search results, from either an actual search or `suggest`\.
 #### imports
 
 ```lua
+local core = require "qor:core"
 local math = core.math
 ```
 
@@ -33,7 +34,7 @@ Search\-specific fields:
 -  best:       Whether a match was found without employing any fuzzy matching
 
 ```lua
-local SelectionList = meta {}
+local SelectionList = core.cluster.meta {}
 local new
 ```
 

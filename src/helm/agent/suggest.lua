@@ -6,11 +6,13 @@
 
 
 
-local SelectionList = require "helm:selection_list"
-local names = require "repr:names"
+local core = require "qor:core"
 local table = core.table
 local string = core.string
 local insert, sort = assert(table.insert), assert(table.sort)
+
+local SelectionList = require "helm:selection_list"
+local names = require "repr:names"
 
 local cluster = require "cluster:cluster"
 local ResultListAgent = require "helm:agent/result-list"

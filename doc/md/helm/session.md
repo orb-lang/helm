@@ -40,16 +40,17 @@ no matter how many times the session is reset or run\.
 #### imports
 
 ```lua
+local core = require "qor:core"
+local table = core.table
+
 local Round = require "helm:round"
 local Premise = require "helm:premise"
-
-local table = core.table
 ```
 
 
 ```lua
 local helm_db = require "helm:helm-db"
-local Session = meta {}
+local Session = core.cluster.meta {}
 local new
 ```
 
@@ -93,7 +94,13 @@ end
 Loads the session from the database, retrieving its lines and results\.
 Does not re\-run the lines\.
 
+\#todo
+needing to send\(\) a message in just this one place\. We aren't an actor, but
+for now we can pretend to be, just this once\.
+
 ```lua
+
+local send = assert(require "actor:actor" . send)
 
 local function _appendPremise(session, premise)
    session.n = session.n + 1
@@ -108,7 +115,7 @@ function Session.loadPremises(session)
       -- indicating that we have no premises
       if result.status then
          local round = Round(result)
-         send { to = 'hist', method = 'loadResponseFor', round }
+         send(session, { to = 'hist', method = 'loadResponseFor', round })
          local premise = round:asPremise(result)
          _appendPremise(session, premise)
       end

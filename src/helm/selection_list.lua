@@ -7,6 +7,7 @@
 
 
 
+local core = require "qor:core"
 local math = core.math
 
 
@@ -27,7 +28,7 @@ local math = core.math
 
 
 
-local SelectionList = meta {}
+local SelectionList = core.cluster.meta {}
 local new
 
 

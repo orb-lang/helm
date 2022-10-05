@@ -22,13 +22,14 @@
 
 
 
+local core = require "qor:core"
+local math = core.math
+
 local Rainbuf = require "helm:buf/rainbuf"
 local Resbuf  = require "helm:buf/resbuf"
 local Txtbuf  = require "helm:buf/txtbuf"
 
-local Reviewbuf = meta(getmetatable(Rainbuf))
-
-local math = core.math
+local Reviewbuf = core.cluster.meta(getmetatable(Rainbuf))
 
 
 

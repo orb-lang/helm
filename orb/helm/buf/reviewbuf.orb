@@ -22,13 +22,14 @@ our use of sub-buffers. In addition to the usual .bufferValue(), we need:
                        displaying the results of the selected premise.
 
 #!lua
+local core = require "qor:core"
+local math = core.math
+
 local Rainbuf = require "helm:buf/rainbuf"
 local Resbuf  = require "helm:buf/resbuf"
 local Txtbuf  = require "helm:buf/txtbuf"
 
-local Reviewbuf = meta(getmetatable(Rainbuf))
-
-local math = core.math
+local Reviewbuf = core.cluster.meta(getmetatable(Rainbuf))
 #/lua
 
 

@@ -7,10 +7,11 @@
 
 
 
+local core = require "qor:core"
+local table = core.table
+
 local cluster = require "cluster:cluster"
 local ReviewAgent = require "helm:agent/review"
-
-local table = core.table
 
 local Round = require "helm:round"
 local Premise = require "helm:premise"
@@ -240,7 +241,7 @@ function RunReviewAgent.acceptInsertion(agent)
    premise.status = "keep"
    agent:_updateEditAgent(agent.selected_index)
    agent:selectNextWrap()
-   send { method = "popMode" }
+   agent :send { method = "popMode" }
 end
 
 

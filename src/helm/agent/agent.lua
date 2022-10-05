@@ -9,14 +9,15 @@
 
 
 
+local core = require "qor:core"
+local table = core.table
+
 local cluster = require "cluster:cluster"
 local Actor = require "actor:actor"
 
 local Window = require "window:window"
 local Deque = require "deque:deque"
 local Message = require "actor:message"
-
-local table = core.table
 
 
 

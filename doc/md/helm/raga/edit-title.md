@@ -6,8 +6,8 @@ proper raga stack it's the best we can do\.
 
 
 ```lua
-local table = core.table
-local clone, splice = assert(table.clone), assert(table.splice)
+local core = require "qor:core"
+local clone = assert(core.table.clone)
 local EditBase = require "helm:helm/raga/edit"
 
 local EditTitle = clone(EditBase, 2)
