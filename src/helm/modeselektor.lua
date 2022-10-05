@@ -71,7 +71,8 @@ cluster.extendbuilder(new, function(_new, modeS, max_extent, writer, db)
    modeS.write = writer
    modeS.repl_top = ModeS.REPL_LINE
 
-   -- Create Actors
+   -- Eval environment. Provide easy access to libraries and
+   -- helm internals without polluting the actual global namespace.
    local eval_env = setmetatable({
       core = core,
       kit = kit,
@@ -79,6 +80,9 @@ cluster.extendbuilder(new, function(_new, modeS, max_extent, writer, db)
       uv = uv,
       modeS = modeS
    }, { __index = _G })
+   -- Unroll `core`, replacing `string`, `table` etc.
+   core(eval_env)
+   -- Create Actors
    modeS.valiant = Valiant(eval_env)
    modeS.hist  = Historian(db)
    modeS.zones = Zoneherd(modeS, writer)
@@ -527,7 +531,7 @@ end
 
 
 
-function ModeS.historyBack()
+function ModeS.historyBack(modeS)
    -- Stash the edit-in-progress.
    -- #todo all of this will basically get rewritten with Card mode
    local linestash = modeS:send { to = "agents.edit", method = "contents" }
@@ -539,7 +543,7 @@ function ModeS.historyBack()
    end
 end
 
-function ModeS.historyForward()
+function ModeS.historyForward(modeS)
    local linestash = modeS:send { to = "agents.edit", method = "contents" }
    modeS:send { to = 'hist', method = 'stashLine', linestash }
    local next_round = modeS:send { to = "hist", method = "next" }
