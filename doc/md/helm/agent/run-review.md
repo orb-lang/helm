@@ -7,21 +7,30 @@ before restarting it\.
 #### imports
 
 ```lua
+local core = require "qor:core"
 local table = core.table
+
+local cluster = require "cluster:cluster"
+local ReviewAgent = require "helm:agent/review"
+
+local Round = require "helm:round"
+local Premise = require "helm:premise"
 ```
 
 
+### RunReviewAgent\(\)
+
 ```lua
-local ReviewAgent = require "helm:agent/review"
-local RunReviewAgent = meta(getmetatable(ReviewAgent))
+local new, RunReviewAgent = cluster.genus(ReviewAgent)
+cluster.extendbuilder(new, true)
 ```
 
 
 ### RunReviewAgent:setInitialSelection\(\)
 
-We never operate on an empty subject\-\-if we don't have anything, add a blank
-"insert" premise so we have somewhere to start\.
+We never operate on an empty subject\-\-if we don't have anything, add a blankinsert" premise so we have somewhere to start\.
 
+"
 ```lua
 local insert = assert(table.insert)
 function RunReviewAgent.setInitialSelection(agent)
@@ -71,7 +80,7 @@ local function _updateAgentsAfterSelected(agent)
 end
 
 function RunReviewAgent.insertLine(agent)
-   insert(agent.subject, agent.selected_index, { line = "", status = "insert" } )
+   insert(agent.subject, agent.selected_index, Round():asPremise{ status = "insert"})
    _updateAgentsAfterSelected(agent)
 end
 ```
@@ -232,7 +241,7 @@ function RunReviewAgent.acceptInsertion(agent)
    premise.status = "keep"
    agent:_updateEditAgent(agent.selected_index)
    agent:selectNextWrap()
-   send { method = "popMode" }
+   agent :send { method = "popMode" }
 end
 ```
 
@@ -249,7 +258,7 @@ function RunReviewAgent.evalAndResume(agent)
    local to_run = Deque()
    for _, premise in ipairs(agent.subject) do
       if premise.status == "keep" then
-         to_run:push(premise.line)
+         to_run:push(premise:asRound())
       end
    end
    agent :send { to = "agents.status", method = "update", "default" }
@@ -260,5 +269,5 @@ end
 
 
 ```lua
-return core.cluster.constructor(RunReviewAgent)
+return new
 ```

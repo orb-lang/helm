@@ -10,10 +10,11 @@ word\-boundary\-aware wrapping? We'll do that if and when we need it\.\.\.
 #### Stringbuf metatable
 
 ```lua
-local Rainbuf = require "helm:buf/rainbuf"
-local Stringbuf = meta(getmetatable(Rainbuf))
-
+local core = require "qor:core"
 local string = core.string
+
+local Rainbuf = require "helm:buf/rainbuf"
+local Stringbuf = core.cluster.meta(getmetatable(Rainbuf))
 ```
 
 

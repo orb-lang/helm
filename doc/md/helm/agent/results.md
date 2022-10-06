@@ -4,9 +4,19 @@ Agent for results display\. For now this turns out to be the simplest of the
 lot, basically just a dumb value holder\. It may get some more responsibility
 later, not sure\.
 
+#### imports
+
 ```lua
+local cluster = require "cluster:cluster"
 local Agent = require "helm:agent/agent"
-local ResultsAgent = meta(getmetatable(Agent))
+```
+
+
+### ResultsAgent\(\)
+
+```lua
+local new, ResultsAgent = cluster.genus(Agent)
+cluster.extendbuilder(new, true)
 ```
 
 
@@ -16,6 +26,7 @@ local ResultsAgent = meta(getmetatable(Agent))
 function ResultsAgent.update(agent, result)
    agent.result = result
    agent:contentsChanged()
+   agent:scrollToTop()
 end
 
 function ResultsAgent.clear(agent)
@@ -49,5 +60,5 @@ end
 
 
 ```lua
-return core.cluster.constructor(ResultsAgent)
+return new
 ```

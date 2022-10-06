@@ -67,6 +67,7 @@
 
 
 
+local core = require "qor:core"
 local string = core.string
 local instanceof = assert(core.meta.instanceof)
 
@@ -76,8 +77,8 @@ local a = require "anterm:anterm"
 
 
 
-local Zone = meta {}
-local Zoneherd = meta {}
+local Zone = core.cluster.meta {}
+local Zoneherd = core.cluster.meta {}
 
 
 

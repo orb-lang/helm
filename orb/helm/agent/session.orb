@@ -6,16 +6,20 @@ Agent responsible for editing/reviewing a session.
 **** imports
 
 #!lua
-local table = core.table
-
+local core = require "qor:core"
 local math = core.math
 local table = core.table
+
+local cluster = require "cluster:cluster"
+local ReviewAgent = require "helm:agent/review"
 #/lua
 
 
+*** SessionAgent()
+
 #!lua
-local ReviewAgent = require "helm:agent/review"
-local SessionAgent = meta(getmetatable(ReviewAgent))
+local new, SessionAgent = cluster.genus(ReviewAgent)
+cluster.extendbuilder(new, true)
 #/lua
 
 
@@ -103,5 +107,5 @@ end
 
 
 #!lua
-return core.cluster.constructor(SessionAgent)
+return new
 #/lua

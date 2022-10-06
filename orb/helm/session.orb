@@ -40,13 +40,17 @@ no matter how many times the session is reset or run.
 **** imports
 
 #!lua
+local core = require "qor:core"
 local table = core.table
+
+local Round = require "helm:round"
+local Premise = require "helm:premise"
 #/lua
 
 
 #!lua
 local helm_db = require "helm:helm-db"
-local Session = meta {}
+local Session = core.cluster.meta {}
 local new
 #/lua
 
@@ -84,51 +88,19 @@ function Session.passCount(session)
 end
 #/lua
 
-*** Session:evaluate(isolated, historian)
-
-(Re-)Evaluates the session and determines pass/fail state for all its premises.
-If =isolated= is set, avoids mutating _G by creating a temporary wrapper environment.
-
-If a Historian is provided, appends the results of the re-evaluation to it.
-
-#!lua
-local tabulate = assert(require "repr:persist-tabulate" . tabulate)
-function Session.evaluate(session, valiant, historian)
-   for _, premise in ipairs(session) do
-      local ok, result = valiant(premise.line)
-      -- #todo handle errors here
-
-      -- Avoid empty results
-      if result and result.n > 0 then
-         premise.live_result = result
-         -- #todo have the Historian handle this!
-         premise.new_result = tabulate(result, aG)
-      end
-      if premise.old_result and premise.new_result
-         and #premise.old_result == #premise.new_result then
-         premise.same = true
-         for i = 1, #premise.old_result do
-            if premise.old_result[i] ~= premise.new_result[i] then
-               premise.same = false
-               break
-            end
-         end
-      elseif (not premise.old_result) and (not premise.new_result) then
-         premise.same = true
-      else
-         premise.same = false
-      end
-   end
-end
-#/lua
-
 
 *** Session:loadPremises()
 
 Loads the session from the database, retrieving its lines and results.
 Does not re-run the lines.
 
+#todo There seems to be some mixup of responsibility here, as evidenced by
+needing to send() a message in just this one place. We aren't an actor, but
+for now we can pretend to be, just this once.
+
 #!lua
+
+local send = assert(require "actor:actor" . send)
 
 local function _appendPremise(session, premise)
    session.n = session.n + 1
@@ -142,18 +114,9 @@ function Session.loadPremises(session)
       -- Left join may produce (exactly one) row with no status value,
       -- indicating that we have no premises
       if result.status then
-         local premise = {
-            title = result.title,
-            status = result.status,
-            line = result.line,
-            old_line_id = result.line_id,
-            line_id = result.line_id, -- These will be filled if/when we re-run
-            live_result = nil,
-            old_result = send { to = "hist",
-                                method = "resultsFor",
-                                result.line_id },
-            new_result = nil
-         }
+         local round = Round(result)
+         send(session, { to = 'hist', method = 'loadResponseFor', round })
+         local premise = round:asPremise(result)
          _appendPremise(session, premise)
       end
    end
@@ -166,38 +129,14 @@ end
 Appends the line with the given id as a new premise.
 
 #!lua
-function Session.append(session, line_id, line, results)
+function Session.append(session, round)
    -- Require manual approval of all lines by default,
    -- but do include them in the session, i.e. start with 'ignore' status
-   local premise = {
+   local premise = round:asPremise{
       title = "",
       status = 'ignore',
-      line = line,
-      old_line_id = nil,
-      line_id = line_id,
-      live_result = results,
-      old_result = nil, -- These will be filled in later once generated
-      new_result = nil
    }
    _appendPremise(session, premise)
-end
-#/lua
-
-
-*** Session:resultsAvailable(line_id, results)
-
-Notification from the Historian that an idler has finished stringifying results
-for a particular line_id. If that line_id is part of this session, attach
-the results to the appropriate premise.
-
-#!lua
-function Session.resultsAvailable(session, line_id, results)
-   for _, premise in ipairs(session) do
-      if premise.line_id == line_id then
-         premise.new_result = results
-         break
-      end
-   end
 end
 #/lua
 
@@ -231,6 +170,7 @@ function Session.save(session)
    for i, premise in ipairs(session) do
       session.stmts.insert_premise
             :bindkv{ session_id = session.session_id, ordinal = i }
+            -- Pick up title and status, and line_id (from the round)
             :bindkv(premise)
             :step()
    end

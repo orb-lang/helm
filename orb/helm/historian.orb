@@ -13,6 +13,10 @@ records.
 **** imports
 
 #!lua
+local core = require "qor:core"
+local math = core.math
+local insert = assert(table.insert)
+
 local uv      = require "luv"
 
 local bridge = require "bridge"
@@ -23,16 +27,15 @@ local Session = require "helm:session"
 local persist_tabulate = require "repr:persist-tabulate"
 local helm_db = require "helm:helm-db"
 
-local insert = assert(table.insert)
-
 local Deque = require "deque:deque"
+local Round = require "helm:round"
 #/lua
 
 
 *** Historian metatable
 
 #!lua
-local Historian = meta {}
+local Historian = core.cluster.meta {}
 Historian.HISTORY_LIMIT = 2000
 Historian.helm_db_home = helm_db.helm_db_home
 Historian.project = uv.cwd()
@@ -85,28 +88,24 @@ the results never get used.
 As much of the work as possible is offloaded to a uv idler process.
 
 #!lua
-local math = core.math
 local clamp, inbounds = assert(math.clamp), assert(math.inbounds)
 
 function Historian.load(historian)
    local stmts = historian.stmts
    -- Retrieve project id
-   local proj_val, proj_row = stmts.get_project
+   local project_id = stmts.get_project
                                       : bind(historian.project)
-                                      : resultset 'i'
-   if not proj_val then
-      proj_val, proj_row = stmts.insert_project
-                             : bind(historian.project)
-                             : step()
+                                      : value()
+   if not project_id then
+      stmts.insert_project : bind(historian.project)
+                           : step()
       -- retry
-      proj_val, proj_row = stmts.get_project
-                                      : bind(historian.project)
-                                      : resultset 'i'
-      if not proj_val then
+      project_id = stmts.get_project  : bind(historian.project)
+                                    : value()
+      if not project_id then
          error "Could not create project in .bridge"
       end
    end
-   local project_id = proj_val[1][1]
    historian.project_id = project_id
 
    -- start the latest run
@@ -130,13 +129,12 @@ function Historian.load(historian)
    local counter = number_of_lines
    local idler
    local function load_one()
-      local res = pop_stmt:step()
+      local res = pop_stmt:stepkv()
       if not res then
          if idler then idler:stop() end
          return nil
       end
-      historian[counter] = res[2]
-      historian.line_ids[counter] = res[1]
+      historian[counter] = Round(res)
       -- Results are loaded backwards because that's how they're accessed
       counter = counter - 1
    end
@@ -151,55 +149,62 @@ end
 
 *** Historian:loadPreviousRun()
 
-Loads the previous run, ready to review or re-evaluate, in a format similar to
-a Session. Stores it as historian.previous_run, this will probably change.
+Loads the previous run, ready to review or re-evaluate, as (aspirationally) a
+Deck of Rounds.
+
+#todo This is only for run review right now, and as such, we actually need
+something more like a session, that is, a list of Premises, not just Rounds.
 
 #todo synchronously retrieve the results, could easily be lazy.
 
 #!lua
+local Premise = require "helm:premise"
+local function _loadDeckFromStatement(historian, get_lines)
+   local deck = {}
+   for row in get_lines:rows() do
+      local round = Round(row)
+      historian:loadResponseFor(round)
+      local premise = round:asPremise{ status = "keep" }
+      insert(deck, premise)
+   end
+   return deck
+end
+
 function Historian.loadPreviousRun(historian)
    local prev_run_id = historian.stmts.get_latest_finished_run
                                        :bind(historian.project_id)
                                        :value()
-   local run = {}
-   for _, line_id, line in historian.stmts.get_lines_of_run:bind(prev_run_id):cols() do
-      insert(run, {
-         status = "keep",
-         line = line,
-         line_id = line_id,
-         old_result = historian:resultsFor(line_id)
-      })
-   end
-   historian.previous_run = run
+   local get_lines = historian.stmts.get_lines_of_run:bind(prev_run_id)
+   historian.previous_run = _loadDeckFromStatement(historian, get_lines)
 end
 #/lua
 
 
 *** Historian:loadRecentLines(num_lines)
 
-Loads =num_lines= recent lines from the history and returns them as a =deque=.
+Loads =num_lines= recent lines from the history and returns them in a format
+similar to a Session, as above.
+
 
 #!lua
+local reverse = assert(core.table.reverse)
 function Historian.loadRecentLines(historian, num_lines)
-   local deque = require "deque:deque" ()
    -- we could duplicate this information off the historian array, if we
    -- had the patience to wait around for it to populate.
    --
    -- We probably should do it that way, actually, but there's too much
    -- handwaving about how runs interact with history already, and this
    -- works, as blocking code tends to, with minimum fuss.
-   if num_lines > historian.lines_retrieved then
-      s:warn("Requested %d lines to rerun, only %d lines available")
-      num_lines = historian.lines_retrieved
-   end
    local get_lines = historian.stmts.get_recent
                 : bindkv { project = historian.project_id,
                            num_lines = num_lines }
-   for _, __, line in get_lines:cols() do
-      deque:push(line)
+   local deck = _loadDeckFromStatement(historian, get_lines)
+   if num_lines > #deck then
+      s:warn("Requested %d lines to rerun, only %d lines available", num_lines, #deck)
    end
-   deque:reverse()
-   return deque
+   -- Statement is optimized for loading history in newest-to-oldest order,
+   -- but for this we need the original execution order, i.e. oldest-to-newest
+   return reverse(deck)
 end
 #/lua
 
@@ -221,11 +226,11 @@ end
 #/lua
 
 
-*** Historian:resultsFor(line_id)
+*** Historian:loadResponseFor(round)
 
-Returns results for the line identified by =line_id=, retrieving them from the
-database if needed and preferring "live" results over persisted ones when
-available.
+Ensures that results are available for the provided =round=, retrieving them
+from the database if needed and preferring "live" results over persisted ones
+when available.
 
 #!lua
 local db_result_M = assert(persist_tabulate.db_result_M)
@@ -240,20 +245,18 @@ local function _wrapResults(results_tostring)
    return wrapped
 end
 
-function Historian.resultsFor(historian, line_id)
-   if historian.result_buffer[line_id] then
-      return historian.result_buffer[line_id]
+function Historian.loadResponseFor(historian, round)
+   if round:result() or not round.line_id then
+      return
    end
    local stmt = historian.get_results
-   stmt:bindkv {line_id = line_id}
+   stmt:bindkv(round)
    local results = stmt :resultset 'i'
    if results then
       results = _wrapResults(results[1])
    end
+   round.db_response = results
    stmt:reset()
-   -- may as well memoize the database call, while we're here
-   historian.result_buffer[line_id] = results
-   return results
 end
 #/lua
 
@@ -266,11 +269,10 @@ Persists a line and results to store.
 local tabulate_some = assert(persist_tabulate.tabulate_some)
 local sha = assert(require "util:sha" . shorthash)
 local blob = assert(assert(sql, "sql must be in bridge _G").blob)
-function Historian.persist(historian, line, results)
-   if type(results) ~= "table" or results.n == 0 then
-      results = nil
-   end
-   if line == "" then
+
+
+function Historian.persist(historian, round)
+   if round:isBlank() then
       -- A blank line can have no results and is uninteresting.
       return false
    end
@@ -278,55 +280,45 @@ function Historian.persist(historian, line, results)
    -- Persist the line of input itself
    sql_insert_errcheck(
       historian.insert_line:bindkv { project = historian.project_id,
-                                     line    = blob(line) })
-   local line_id = historian.stmts.lastRowId()
-   historian.result_buffer[line_id] = results
+                                     line    = blob(round.line) })
+   round.line_id = historian.stmts.lastRowId()
 
    -- Then the run action indicating it was just evaluated
    local run_action = { run_id  = historian.run.run_id,
                         ordinal = #historian.run.actions + 1,
-                        input   = line_id }
+                        input   = round.line_id }
    insert(historian.run.actions, run_action)
    sql_insert_errcheck(historian.stmts.insert_run_input:bindkv(run_action))
 
    -- If there are no results, nothing more to persist,
    -- release our savepoint and don't bother starting the idler
-   if not results then
-      return line_id
+   if not round:hasResults() then
+      return
    end
 
    local queue = historian.result_queue
-   local persist_cb = tabulate_some(results)
+   local persist_cb = tabulate_some(round:result())
    historian.idler = historian.idler or uv.new_idle()
    local empty = #queue == 0
-   queue:push(pack(persist_cb, line_id, results.n))
+   queue:push(pack(round, persist_cb))
    if empty then
       historian.idler:start(function()
-         local cb, line_id, n = unpack(queue:peek())
+         local round, cb = unpack(queue:peek())
          local done, results_tostring = cb()
          if not done then return nil end
          queue:pop()
          -- now persist
-         for i = 1, n do
+         for i = 1, round:result().n do
             local hash = sha(results_tostring[i])
             sql_insert_errcheck(historian.insert_repr:bind(hash, results_tostring[i]))
-            sql_insert_errcheck(historian.insert_result_hash:bind(line_id, hash))
+            sql_insert_errcheck(historian.insert_result_hash:bind(round.line_id, hash))
          end
-         -- inform the Session that persisted results are available
-         -- #todo this *so badly* needs to be an Action
-         -- Should probably also be called 'resultsPersisted' since the
-         -- live results are available immediately. We might also want to
-         -- cache the stringified/persisted results alongside the live ones
-         if historian.session then
-            historian.session:resultsAvailable(line_id,
-               _wrapResults(results_tostring))
-         end
+         round.db_response = _wrapResults(results_tostring)
          if #queue == 0 then
             historian.idler:stop()
          end
       end)
    end
-   return line_id
 end
 #/lua
 
@@ -346,87 +338,52 @@ end
 #/lua
 
 
-*** Historian:append(line, results, success)
+*** Historian:append(line, round)
 
-As :persist(), but also appends to the history and the current session.
+Append the (just-evaluated) provided round to the history and current session.
+If this round was previously on the desk (which it usually will have been, but
+in case of rerun it might have come from outside), place a new blank round on
+the desk to continue working with.
 
-Doesn't adjust the cursor, but does store the results in the result_buffer.
+#todo This should be on the Deck.
+
+Note we do not adjust the cursor.
 
 #!lua
-function Historian.append(historian, line, results, success)
-   if line == "" then
-      -- don't bother
+function Historian.append(historian, round)
+   if round:isBlank() then
       return false
    end
-   if not success then results = nil end
-   local line_id = historian:persist(line, results)
+   historian:persist(round)
    historian.n = historian.n + 1
-   historian[historian.n] = line
-   historian.line_ids[historian.n] = line_id
+   historian[historian.n] = round
    -- #todo this should be an Action--actually we should be in a handler for
    -- one action (e.g. 'evalCompleted') and issue another (e.g. 'lineStored')
    if historian.session then
-      historian.session:append(line_id, line, results)
+      historian.session:append(round)
+   end
+   if round == historian.desk then
+      historian.desk = Round()
    end
    return true
 end
 #/lua
 
 
-*** Historian:appendNow(line, results, success)
+*** Historian:stashLine(line)
 
-A blocking append, to be used in rerunning sessions (and perhaps in general).
+Stashes any changes in the provided =line= to the round on the desk.
+
+#todo For now, we check against the round under the cursor and, if unchanged,
+do nothing, but this will become obsolete with card mode. (Indeed this method
+will become part of the Deck, with altered behavior.)
+
 
 #!lua
-local tabulate = persist_tabulate.tabulate
-
-function Historian.appendNow(historian, line, results, success)
-   if line == "" then
-      -- don't bother
-      return false
-   end
-   if (not success) or results.n == 0 then
-      -- we /should/ handle errors here
-      results = nil
-   end
-
-   -- Persist the line of input itself
-   sql_insert_errcheck(
-      historian.insert_line:bindkv { project = historian.project_id,
-                                     line    = blob(line) })
-   local line_id = historian.stmts.lastRowId()
-   historian.result_buffer[line_id] = results
-
-   -- Then the run action indicating it was just evaluated
-   local run_action = { run_id  = historian.run.run_id,
-                        ordinal = #historian.run.actions + 1,
-                        input   = line_id }
-   insert(historian.run.actions, run_action)
-   sql_insert_errcheck(historian.stmts.insert_run_input:bindkv(run_action))
-
-   -- If there are no results, nothing more to persist,
-   -- release our savepoint and don't bother starting the idler
-   if not results then
-      return line_id
-   end
-
-   local results_tostring = tabulate(results)
-   for i = 1, results.n do
-      local hash = sha(results_tostring[i])
-      sql_insert_errcheck(historian.insert_repr:bind(hash, results_tostring[i]))
-      sql_insert_errcheck(historian.insert_result_hash:bind(line_id, hash))
-   end
-   -- inform the Session that persisted results are available
-   -- #todo this *so badly* needs to be an Action
-   -- Should probably also be called 'resultsPersisted' since the
-   -- live results are available immediately. We might also want to
-   -- cache the stringified/persisted results alongside the live ones
-   if historian.session then
-      historian.session:resultsAvailable(line_id,
-         _wrapResults(results_tostring))
-   end
-
-   return line_id
+function Historian.stashLine(historian, line)
+   local round = historian[historian.cursor]
+   if round and line == round.line then return end
+   historian.desk.line = line
 end
 #/lua
 
@@ -470,7 +427,7 @@ function Historian.search(historian, frag)
       local patt = fuzz_patt(result.frag)
       local dup = {}
       for i = historian.n, 1, -1 do
-         local item_str = tostring(historian[i])
+         local item_str = tostring(historian[i].line)
          if not dup[item_str] and patt:match(item_str) then
             dup[item_str] = true
             insert(result, item_str)
@@ -492,24 +449,6 @@ end
 ** History navigation
 
 
-*** _setCursor(cursor)
-
-Sets the cursor and returns the line and results for that index. Unlike
-=:index()= this is allowed to be out-of-bounds, in which we return =nil=.
-
-#!lua
-local function _setCursor(historian, cursor)
-   historian.cursor = cursor
-   local line = historian[cursor]
-   if not line then
-      return nil, nil
-   end
-   local line_id = historian.line_ids[cursor]
-   return line, historian:resultsFor(line_id)
-end
-#/lua
-
-
 *** Historian:delta(), :prev(), :next()
 
 Moves the cursor by the given delta, returning the line
@@ -517,8 +456,7 @@ and result (if any) at the new cursor position.
 
 #!lua
 function Historian.delta(historian, delta)
-   return _setCursor(historian,
-                     clamp(historian.cursor + delta, 1, historian.n + 1))
+   return historian:index(clamp(historian.cursor + delta, 1, historian.n + 1))
 end
 
 function Historian.prev(historian)
@@ -532,29 +470,34 @@ end
 
 *** Historian:index(cursor)
 
-  Loads the history to an exact index. The index must be one that actually
-exists, i.e. 1 <= index <= historian.n--historian.n + 1 is not allowed.
+  Loads the history to an exact index. This index may be historian.n + 1,
+which is a pseudo-index corresponding to the =desk=.
 
 #!lua
 function Historian.index(historian, cursor)
-   assert(inbounds(cursor, 1, historian.n))
-   return _setCursor(historian, cursor)
+   assert(inbounds(cursor, 1, historian.n + 1))
+   historian.cursor = cursor
+   if cursor == historian.n + 1 then
+      return historian.desk
+   else
+      local round = historian[cursor]
+      historian:loadResponseFor(round)
+      return round
+   end
 end
 #/lua
 
 
-*** Historian:atEnd(), :toEnd()
+*** Historian:toEnd()
 
-Answer whether the cursor is at the end of the history (really off the end, ready for the next line), or move it there.
-Note this is outside the bounds of what is allowed via =:index()=.
+Move the cursor to the end of the history--off the end, in fact. This
+is usually a new blank round, ready for the next line, and if one doesn't
+exist, we will create it.
 
 #!lua
-function Historian.atEnd(historian)
-   return historian.cursor > historian.n
-end
-
 function Historian.toEnd(historian)
    historian.cursor = historian.n + 1
+   return historian.desk
 end
 #/lua
 
@@ -567,7 +510,11 @@ Currently, it just saves the end of the run.
 
 #!lua
 function Historian.close(historian)
-   historian.stmts.insert_run_finish :bind(historian.run.run_id) :step()
+   if #historian.run.actions > 0 then
+      historian.stmts.insert_run_finish :bind(historian.run.run_id) :step()
+   else
+      -- #todo this is wrong anyway but let's skip this crap
+   end
    if historian.idler then
       historian.idler:close()
    end
@@ -581,28 +528,16 @@ Creates a new =historian=.
 
 =helm_db= is an optional string parameter to load a non-standard helm database.
 
-
-***** Metatable for result buffer
-
-We need this so that attempts to __repr the result buffer don't produce an
-infinite loop.
-
 #!lua
-local __result_buffer_M = meta {}
-function __result_buffer_M.__repr(buf, window, c)
-   return c.alert "cowardly refusing to print result_buffer to avoid infinite appending"
-end
-
 local function new(helm_db)
    s.verbose = true
    local historian = setmetatable({}, Historian)
-   historian.line_ids = {}
    historian.cursor = 0
    historian.cursor_start = 0
    historian.n = 0
    historian.lines_available = 0
    historian.result_queue = Deque()
-   historian.result_buffer = setmetatable({}, __result_buffer_M)
+   historian.desk = Round()
 
    historian:createPreparedStatements(helm_db)
    historian:load()

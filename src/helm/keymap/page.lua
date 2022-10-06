@@ -6,6 +6,7 @@ local parts = require "helm:keymap/parts"
 
 
 
+local core = require "qor:core"
 local clone = assert(core.table.clone)
 local our_bindings = clone(parts.cursor_scrolling)
 for cmd, shortcuts in pairs{

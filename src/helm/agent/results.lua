@@ -5,8 +5,18 @@
 
 
 
+
+
+local cluster = require "cluster:cluster"
 local Agent = require "helm:agent/agent"
-local ResultsAgent = meta(getmetatable(Agent))
+
+
+
+
+
+
+local new, ResultsAgent = cluster.genus(Agent)
+cluster.extendbuilder(new, true)
 
 
 
@@ -16,6 +26,7 @@ local ResultsAgent = meta(getmetatable(Agent))
 function ResultsAgent.update(agent, result)
    agent.result = result
    agent:contentsChanged()
+   agent:scrollToTop()
 end
 
 function ResultsAgent.clear(agent)
@@ -49,5 +60,5 @@ end
 
 
 
-return core.cluster.constructor(ResultsAgent)
+return new
 

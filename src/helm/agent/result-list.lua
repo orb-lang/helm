@@ -7,13 +7,18 @@
 
 
 
+local cluster = require "cluster:cluster"
+local Agent = require "helm:agent/agent"
+
 local SelectionList = require "helm:selection_list"
 
 
 
 
-local Agent = require "helm:agent/agent"
-local ResultListAgent = meta(getmetatable(Agent))
+
+
+local new, ResultListAgent = cluster.genus(Agent)
+cluster.extendbuilder(new, true)
 
 
 
@@ -87,5 +92,5 @@ end
 
 
 
-return core.cluster.constructor(ResultListAgent)
+return new
 

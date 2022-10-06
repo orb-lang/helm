@@ -7,13 +7,18 @@ list of results of some kind\.
 #### imports
 
 ```lua
+local cluster = require "cluster:cluster"
+local Agent = require "helm:agent/agent"
+
 local SelectionList = require "helm:selection_list"
 ```
 
 
+### ResultListAgent\(\)
+
 ```lua
-local Agent = require "helm:agent/agent"
-local ResultListAgent = meta(getmetatable(Agent))
+local new, ResultListAgent = cluster.genus(Agent)
+cluster.extendbuilder(new, true)
 ```
 
 
@@ -87,5 +92,5 @@ end
 
 
 ```lua
-return core.cluster.constructor(ResultListAgent)
+return new
 ```

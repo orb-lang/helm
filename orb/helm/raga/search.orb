@@ -2,12 +2,13 @@
 
 
 #!lua
-local table = core.table
-local clone, splice = assert(table.clone), assert(table.splice)
+local core = require "qor:core"
+local clone = assert(core.table.clone)
 local EditBase = require "helm/raga/edit"
 local Resbuf = require "helm:buf/resbuf"
 
 local Search = clone(EditBase, 2)
+local send = Search.send
 
 Search.name = "search"
 Search.prompt_char = "⁉️"

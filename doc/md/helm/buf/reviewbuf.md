@@ -28,13 +28,14 @@ our use of sub\-buffers\. In addition to the usual \.bufferValue\(\), we need:
     displaying the results of the selected premise\.
 
 ```lua
+local core = require "qor:core"
+local math = core.math
+
 local Rainbuf = require "helm:buf/rainbuf"
 local Resbuf  = require "helm:buf/resbuf"
 local Txtbuf  = require "helm:buf/txtbuf"
 
-local Reviewbuf = meta(getmetatable(Rainbuf))
-
-local math = core.math
+local Reviewbuf = core.cluster.meta(getmetatable(Rainbuf))
 ```
 
 
@@ -179,12 +180,10 @@ end
 Returns the line number at which display of the `index`th premise begins\.
 
 ```lua
-local gsub = assert(string.gsub)
 function Reviewbuf.positionOf(buf, index)
    local position = 1
    for i = 1, index - 1 do
-      local num_lines = select(2, gsub(buf:value()[i].line, '\n', '\n')) + 1
-      num_lines = clamp(num_lines, 1, buf.ROWS_PER_LINE)
+      local num_lines = clamp(buf:value()[i]:lineCount(), 1, buf.ROWS_PER_LINE)
       position = position + num_lines + 1
       if i == buf.source.selected_index then
          position = position + buf:rowsForSelectedResult() + 1

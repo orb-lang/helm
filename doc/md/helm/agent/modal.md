@@ -2,9 +2,15 @@
 
 Agent that powers our modal dialog\.
 
+
+#### imports
+
 ```lua
+local core = require "qor:core"
+local a = require "anterm:anterm"
+
+local cluster = require "cluster:cluster"
 local Agent = require "helm:agent/agent"
-local ModalAgent = meta(getmetatable(Agent))
 ```
 
 
@@ -14,7 +20,7 @@ Basically just a holder for the text, button style, and result,
 with an \_\_repr to generate the contents of the dialog\.
 
 ```lua
-local DialogModel = meta {}
+local DialogModel = core.cluster.meta {}
 
 local concat, insert = assert(table.concat), assert(table.insert)
 local ceil = assert(math.ceil)
@@ -93,6 +99,14 @@ function DialogModel.requiredExtent(model)
    -- Add two lines for a blank line and the button row
    return Point(text_height + 2, max(text_width, button_row_width))
 end
+```
+
+
+### ModalAgent\(\)
+
+```lua
+local new, ModalAgent = cluster.genus(Agent)
+cluster.extendbuilder(new, true)
 ```
 
 
@@ -201,5 +215,5 @@ end
 ```
 
 ```lua
-return core.cluster.constructor(ModalAgent)
+return new
 ```

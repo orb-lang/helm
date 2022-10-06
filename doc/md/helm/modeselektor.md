@@ -18,6 +18,9 @@ environment it set up\.  Everything between happens from Modeselektor\.
 
 
 ```lua
+local core = require "qor:core"
+local a = require "anterm:anterm"
+
 local Historian  = require "helm:historian"
 local Maestro    = require "helm:maestro"
 local Zoneherd   = require "helm:zone"
@@ -28,6 +31,8 @@ local Txtbuf    = require "helm:buf/txtbuf"
 
 local Actor   = require "actor:actor"
 local Valiant = require "valiant:valiant"
+
+local Deque = require "deque:deque"
 
 local bridge = require "bridge"
 ```
@@ -56,7 +61,9 @@ A mechanism for doing this natively in cluster will exist, but currently
 does not\.
 
 ```lua
-local _stat_M; -- we shouldn't need this anyway #todo remove
+-- Only needed by eval_env
+local uv = require "luv"
+local kit = require "valiant:replkit"
 
 cluster.extendbuilder(new, function(_new, modeS, max_extent, writer, db)
    -- Some miscellany to copy and initialize
@@ -64,13 +71,20 @@ cluster.extendbuilder(new, function(_new, modeS, max_extent, writer, db)
    modeS.write = writer
    modeS.repl_top = ModeS.REPL_LINE
 
-   -- Create Actors (status isn't, but should be)
-   modeS.valiant = Valiant(__G)
+   -- Eval environment. Provide easy access to libraries and
+   -- helm internals without polluting the actual global namespace.
+   local eval_env = setmetatable({
+      core = core,
+      kit = kit,
+      a = a,
+      uv = uv,
+      modeS = modeS
+   }, { __index = _G })
+   -- Unroll `core`, replacing `string`, `table` etc.
+   core(eval_env)
+   -- Create Actors
+   modeS.valiant = Valiant(eval_env)
    modeS.hist  = Historian(db)
-   ---[[ This isn't how we should handle status,
-   modeS.status = setmetatable({}, _stat_M)
-   rawset(__G, "stat", modeS.status)
-   -- so lets make this easy to knock out ]]
    modeS.zones = Zoneherd(modeS, writer)
    modeS.maestro = Maestro()
 
@@ -131,12 +145,16 @@ function ModeS.setup(modeS)
       modeS:_agent'session':update(modeS.hist.session)
    end
 
-   if bridge.args.restart or bridge.args.run then
-      modeS.hist:loadPreviousRun()
+   if bridge.args.back or bridge.args.run then
+      local deck
       if bridge.args.run then
-         modeS:_agent'run_review':update(modeS.hist.previous_run)
-         initial_raga = 'run_review'
+         modeS.hist:loadPreviousRun()
+         deck = modeS.hist.previous_run
+      elseif bridge.args.back then
+         deck = modeS.hist:loadRecentLines(bridge.args.back)
       end
+      modeS:_agent'run_review':update(deck)
+      initial_raga = 'run_review'
    end
 
    -- Set up common Agent -> Zone bindings
@@ -156,13 +174,10 @@ function ModeS.setup(modeS)
    modeS :task() :_pushMode(initial_raga)
 
    if bridge.args.restart then
-      local deque = require "deque:deque" ()
-      for _, premise in ipairs(modeS.hist.previous_run) do
-         deque:push(premise.line)
-      end
+      modeS.hist:loadPreviousRun()
+      local deque = Deque()
+      deque:pushN(unpack(modeS.hist.previous_run))
       modeS:rerun(deque)
-   elseif bridge.args.back then
-      modeS:rerun(modeS.hist:loadRecentLines(bridge.args.back))
    end
 
    modeS.action_complete = true
@@ -253,7 +268,7 @@ local create, resume, status = assert(coroutine.create),
 function ModeS.delegator(modeS, msg)
    if msg.method == "pushMode" or msg.method == "popMode" or
       (msg.to and (msg.to == "raga" or msg.to:find("^agents%."))) then
-      s:chat("sending a message to maestro: %s", ts(msg))
+      -- s:chat("sending a message to maestro: %s", ts(msg))
       return modeS.maestro(msg)
    else
       -- This is effectively modeS:super'delegate'(msg)
@@ -395,11 +410,12 @@ end
 
 ### ModeS:rerun\(deque\)
 
-Re\-run the statements in the provided `deque`, displaying the results of the
+Re\-run the rounds in the provided `deque`, displaying the results of the
 last one executed\. Does not reset `_G`, though the caller may do that if they
 choose\.
 
 ```lua
+local Round = require "helm:round"
 function ModeS.rerunner(modeS, deque)
    -- #todo this should probably be on a RunAgent/Runner and invoked
    -- via some queued-Message mechanism, which would also take care of
@@ -407,10 +423,12 @@ function ModeS.rerunner(modeS, deque)
    modeS:_agent'edit':clear()
    modeS.hist.stmts.savepoint_restart_session()
    local success, results
-   for line in deque:popAll() do
-      success, results = modeS:eval(line)
+   for old_round in deque:popAll() do
+      local new_round = old_round:newFromLine()
+      success, results = modeS:eval(new_round.line)
       assert(results ~= "advance", "Incomplete line when restarting session")
-      modeS.hist:appendNow(line, results, success)
+      new_round.response[1] = results
+      modeS.hist:append(new_round)
    end
    modeS.hist.stmts.release_restart_session()
    modeS.hist:toEnd()
@@ -468,28 +486,28 @@ is single\-line or we're at the end of the last line\.
 
 ```lua
 function ModeS.userEval(modeS)
-   local line = send { to = "agents.edit",
+   local line = modeS:send { to = "agents.edit",
                        method = 'contents' }
+   local round = modeS.hist.desk
+   round.line = line
    local success, results = modeS:eval(line)
    s:chat("we return from evaluation, success: %s", success)
    if not success and results == 'advance' then
-      send { to = "agents.edit", method = 'endOfText'}
+      modeS:send { to = "agents.edit", method = 'endOfText'}
+      round.response[1] = 'advance'
       return false -- Fall through to EditAgent nl binding
    else
-      send { to = 'hist',
-             method = 'append',
-             line, results, success }
-
-      send { to = 'hist', method = 'toEnd' }
+      round.response[1] = results
+      modeS:send { to = 'hist', method = 'append', round }
       -- Do this first because it clears the results area
       -- #todo this clearly means edit:clear() is doing too much, decouple
-      send { to = "agents.edit", method = 'clear' }
-      send { to = "agents.results", method = 'update', results }
+      modeS:send { to = "agents.edit", method = 'clear' }
+      modeS:send { to = "agents.results", method = 'update', results }
    end
 end
 
 function ModeS.conditionalEval(modeS)
-   if send { to = "agents.edit",
+   if modeS:send { to = "agents.edit",
              method = 'shouldEvaluate'} then
       return modeS:userEval()
    else
@@ -503,13 +521,12 @@ end
 
 ```lua
 function ModeS.evalFromCursor(modeS)
-   local top = modeS.hist.n
-   local cursor = modeS.hist.cursor
-   for i = cursor, top do
-      local line = send { to = "hist", method = "index", i }
-      send { to = "agents.edit", method = "update", line }
-      modeS:userEval()
+   local to_run = Deque()
+   for i = modeS.hist.cursor, modeS.hist.n do
+      local round = modeS:send { to = "hist", method = "index", i }
+      to_run:push(round)
    end
+   modeS:rerun(to_run)
 end
 ```
 
@@ -517,29 +534,26 @@ end
 ### History navigation
 
 ```lua
-function ModeS.historyBack()
-   -- If we're at the end of the history (the user was typing a new
-   -- expression), save it before moving
-   if send { to = 'hist', method = 'atEnd' } then
-      local linestash = send { to = "agents.edit", method = "contents" }
-      send { to = "hist", method = "append", linestash }
+function ModeS.historyBack(modeS)
+   -- Stash the edit-in-progress.
+   -- #todo all of this will basically get rewritten with Card mode
+   local linestash = modeS:send { to = "agents.edit", method = "contents" }
+   modeS:send { to = 'hist', method = 'stashLine', linestash }
+   local prev_round = modeS:send { to = "hist", method = "prev" }
+   if prev_round then
+      modeS:send { to = "agents.edit", method = "update", prev_round.line }
+      modeS:send { to = "agents.results", method = "update", prev_round:result() }
    end
-   local prev_line, prev_result = send { to = "hist", method = "prev" }
-   send { to = "agents.edit", method = "update", prev_line }
-   send { to = "agents.results", method = "update", prev_result }
 end
 
-function ModeS.historyForward()
-   local new_line, next_result = send { to = "hist", method = "next" }
-   if not new_line then
-      local old_line = send { to = "agents.edit", method = "contents" }
-      local added = send { to = "hist", method = "append", old_line }
-      if added then
-         send { to = "hist", method = "toEnd" }
-      end
+function ModeS.historyForward(modeS)
+   local linestash = modeS:send { to = "agents.edit", method = "contents" }
+   modeS:send { to = 'hist', method = 'stashLine', linestash }
+   local next_round = modeS:send { to = "hist", method = "next" }
+   if next_round then
+      modeS:send { to = "agents.edit", method = "update", next_round.line }
+      modeS:send { to = "agents.results", method = "update", next_round:result() }
    end
-   send { to = "agents.edit", method = "update", new_line }
-   send { to = "agents.results", method = "update", next_result }
 end
 ```
 

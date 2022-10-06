@@ -6,16 +6,20 @@
 
 
 
-local table = core.table
-
+local core = require "qor:core"
 local math = core.math
 local table = core.table
 
-
-
-
+local cluster = require "cluster:cluster"
 local ReviewAgent = require "helm:agent/review"
-local SessionAgent = meta(getmetatable(ReviewAgent))
+
+
+
+
+
+
+local new, SessionAgent = cluster.genus(ReviewAgent)
+cluster.extendbuilder(new, true)
 
 
 
@@ -103,5 +107,5 @@ end
 
 
 
-return core.cluster.constructor(SessionAgent)
+return new
 

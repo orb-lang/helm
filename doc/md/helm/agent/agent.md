@@ -9,30 +9,30 @@ providing a [Window](https://gitlab.com/special-circumstance/helm/-/blob/trunk/d
 #### imports
 
 ```lua
+local core = require "qor:core"
+local table = core.table
+
+local cluster = require "cluster:cluster"
+local Actor = require "actor:actor"
+
 local Window = require "window:window"
 local Deque = require "deque:deque"
 local Message = require "actor:message"
-
-local table = core.table
 ```
 
 
-```lua
-local Agent = meta {}
-```
+### Agent\(\)
 
-
-#### Agent:send\(msg\)
-
-Sends a message to the Agent's boss\.
+Agents are generally constructed with no parameters, as part of initializing
+Maestro, with actual data supplied in a subsequent \`:update\(\)\`\.
 
 ```lua
-local coro = assert(core.thread.nest 'actor')
-local yield = assert(coro.yield)
+local new, Agent, Agent_M = cluster.genus(Actor)
 
-function Agent.send(agent, msg)
-   return yield(Message(msg))
-end
+cluster.extendbuilder(new, function(_new, agent)
+   agent.buffer_commands = Deque()
+   return agent
+end)
 ```
 
 
@@ -158,27 +158,6 @@ end
 ```
 
 
-### Agent\(\)
-
-At the moment, Agents are generally constructed with no parameters, and any
-needed values are filled in later\. Some do need to set up some initial state,
-so we provide an `_init` method\. \#todo should we in fact have some arguments
-to the constructor?
-
 ```lua
-function Agent._init(agent)
-   agent.buffer_commands = Deque()
-end
-
-function Agent.__call(agent_class)
-   local agent_M = getmetatable(agent_class)
-   local agent = setmetatable({}, agent_M)
-   agent:_init()
-   return agent
-end
-```
-
-
-```lua
-return core.cluster.constructor(Agent)
+return new
 ```

@@ -919,7 +919,7 @@ VALUES (:run_id, :ordinal, :input);
 ##### Selections
 
 ```sql
-SELECT CAST (line_id AS REAL), line FROM input
+SELECT CAST (line_id AS REAL) AS line_id, line FROM input
    WHERE project = :project
    ORDER BY line_id DESC
    LIMIT :num_lines;
@@ -944,7 +944,7 @@ ORDER BY result.result_id;
 ```
 
 ```sql
-SELECT run_action.input, input.line FROM run
+SELECT CAST(input.line_id AS REAL) AS line_id, input.line FROM run
 INNER JOIN run_action on run_action.run = run.run_id
 INNER JOIN input on input.line_id = run_action.input
 WHERE run.run_id = :run_id

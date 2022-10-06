@@ -85,11 +85,12 @@
 
 
 
+local core = require "qor:core"
+local clone = assert(core.table.clone)
+
 local cluster = require "cluster:cluster"
 local input_event = require "anterm:input-event"
 local Message = require "actor:message"
-
-local clone = assert(core.table.clone)
 
 
 

@@ -3,12 +3,15 @@
 Raga specialized for reviewing a Run, i\.e\. performing an interactive restart\.
 
 ```lua
+local core = require "qor:core"
 local clone = assert(core.table.clone)
 local Review = require "helm:raga/review"
 ```
 
 ```lua
 local RunReview = clone(Review, 2)
+local send = RunReview.send
+
 RunReview.name = "run_review"
 RunReview.prompt_char = "🟡"
 RunReview.keymap = require "helm:keymap/run-review"

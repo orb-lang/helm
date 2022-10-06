@@ -58,6 +58,7 @@
 
 
 
+local core = require "qor:core"
 local string = core.string
 local math = core.math
 local lineGen = assert(require "repr:repr" . lineGen)
@@ -67,7 +68,7 @@ local lineGen = assert(require "repr:repr" . lineGen)
 
 
 
-local Rainbuf = meta {}
+local Rainbuf = core.cluster.meta {}
 
 
 
@@ -312,6 +313,8 @@ end
 
 
 
+
+local a = require "anterm:anterm"
 
 function Rainbuf.lineGen(rainbuf)
    rainbuf:initComposition()

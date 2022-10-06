@@ -30,24 +30,10 @@ end
 #/lua
 
 
-**** Intercept _G
-
-We don't want to put =helm= into the environment of the codebase under
-examination, so we replace the global environment with a table which falls
-back to =_G=. We make it available as a global anywhere in `helm`, without
-exposing it to others who are still using the normal _G global environment.
-
-Man.  I really like having first-class environments.
-
-#!lua
-local __G = setmetatable({}, {__index = _G})
-__G.__G = __G
-#/lua
-
 *** _helm
 
-The entire module is setup as a function, to allow our new fenv
-to be passed in.
+The entire module is setup as a function, which seems like a good pattern for
+modules providing a bridge verb.
 
 #!lua
 local function _helm(_ENV)
@@ -56,17 +42,13 @@ local function _helm(_ENV)
 No sense wasting a level of indent on a wrapper imho
 
 #!lua
-setfenv(0, __G)
-
-meta = assert(require "core:cluster" . Meta)
-core = require "qor:core"
+local core = require "qor:core"
 -- Keep this local, other modules will do the same as-needed
 -- We need it below for `compact`
 local table = core.table
-kit = require "valiant:replkit"
 jit.vmdef = require "helm:helm/vmdef"
 jit.p = require "helm:helm/ljprof"
-sql = assert(sql, "sql must be in _G")
+assert(sql, "sql must be in _G")
 #/lua
 
 Happily, status now prints to log files in its data directory, so we can
@@ -78,41 +60,16 @@ local s = require "status:status" ()
 s.chatty = true
 s.verbose = true
 s.boring = false
-ts = require "repr:repr" . ts_color
 #/lua
 
-
-** send(tab)
-
-Turns =tab= into a message and =yield= s it.
-
-We do a lot of message passing in =helm=, and we'll be doing more, so this is
-a useful global to have.
-
-Putting all the weird stuff in an import block so that =yield= is only
-redefined here.
-
-#!lua
-send = nil;
-do
-   local Message = require "actor:message"
-   local nest = core.thread.nest "actor"
-   local yield = assert(nest.yield)
-
-   send = function (tab)
-      return yield(Message(tab))
-   end
-end
-#/lua
 
 ** Boot sequence
 
 This boot sequence builds on Tim Caswell and the Luvit Author's repl example.
 
 #!lua
-uv = require "luv"
-local usecolors
-stdout = ""
+local uv = require "luv"
+local usecolors, stdout
 #/lua
 
 
@@ -133,27 +90,13 @@ else
 end
 #/lua
 
-Not-blocking =write= and =print=:
+Non-blocking =write=:
 
 #!lua
 local function write(...)
    uv.write(stdout, {...})
 end
 #/lua
-
-#!lua
-local concat = assert(table.concat)
-
-function print(...)
-   local n = select('#', ...)
-   local arguments = {...}
-   for i = 1, n do
-      arguments[i] = tostring(arguments[i])
-   end
-   uv.write(stdout, concat(arguments, "\t") .. "\n")
-end
-#/lua
-
 
 *** tty setup
 
@@ -165,13 +108,6 @@ if uv.guess_handle(0) ~= 'tty' or
 end
 
 local stdin = uv.new_tty(0, true)
-#/lua
-
-Primitives for terminal manipulation.
-
-#!lua
-a = require "anterm:anterm"
-local Point = require "anterm:point"
 #/lua
 
 
@@ -190,9 +126,11 @@ local autothread = require "cluster:autothread"
 Lives in the global namespace for convenient repl access.
 
 #!lua
+local Point = require "anterm:point"
+
 local max_col, max_row = stdin:get_winsize()
 local max_extent = Point(max_row, max_col)
-modeS = require "helm/modeselektor" (max_extent, write)
+local modeS = require "helm/modeselektor" (max_extent, write)
 
 autothread(function() modeS:task():setup() end)
 #/lua
@@ -455,18 +393,29 @@ end)
 #/lua
 
 
+**** Preload names
+
+Get names for as many values as possible into the colorizer. Treat package
+names as existing in the global namespace rather than having a
+"package.loaded." prefix.
+
+#todo not everything is actually loaded at this point, but also, loading of
+names should probably be done by valiant anyway.
+
 #!lua
--- Get names for as many values as possible
--- into the colorizer
--- Treat package names as existing in the global namespace
--- rather than having a "package.loaded." prefix
 local names = require "repr:repr/names"
 names.loadNames(package.loaded)
 names.loadNames(_G)
-names.loadNames(__G)
+#/lua
 
--- assuming we survived that, set up our repling environment:
 
+** Main event loop
+
+With everything set up, we can configure the terminal, kick off the event
+loop, then reset the terminal when it's done.
+
+#!lua
+local a = require "anterm:anterm"
 -- raw mode
 uv.tty_set_mode(stdin, 2)
 
@@ -524,13 +473,7 @@ if (onseq_err) then
    io.stderr:write(onseq_err)
 end
 
--- Restore the global environment
-setfenv(0, _G)
 end -- of _helm
-#/lua
 
-**** Call helm
-
-#!lua
-return setfenv(_helm, __G)
+return _helm
 #/lua

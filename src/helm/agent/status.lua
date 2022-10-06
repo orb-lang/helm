@@ -4,8 +4,26 @@
 
 
 
+
+
+local cluster = require "cluster:cluster"
 local Agent = require "helm:agent/agent"
-local StatusAgent = meta(getmetatable(Agent))
+
+
+
+
+
+
+local new, StatusAgent = cluster.genus(Agent)
+
+cluster.extendbuilder(new, function(_new, agent)
+   agent.status_name = 'default'
+   agent.format_args = { n = 0 }
+   return agent
+end)
+
+
+
 
 
 
@@ -48,16 +66,5 @@ end
 
 
 
-
-
-function StatusAgent._init(agent)
-   Agent._init(agent)
-   agent.status_name = 'default'
-   agent.format_args = { n = 0 }
-end
-
-
-
-
-return core.cluster.constructor(StatusAgent)
+return new
 

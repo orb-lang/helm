@@ -4,9 +4,19 @@ Agent supplying the prompt\. The prompt character is supplied by the raga,
 we're just a dumb value holder for that, but we do retrieve the number of
 continuation lines by sending a Message to the EditAgent\.
 
+#### imports
+
 ```lua
+local cluster = require "cluster:cluster"
 local Agent = require "helm:agent/agent"
-local PromptAgent = meta(getmetatable(Agent))
+```
+
+
+### PromptAgent\(\)
+
+```lua
+local new, PromptAgent = cluster.genus(Agent)
+cluster.extendbuilder(new, true)
 ```
 
 
@@ -50,5 +60,5 @@ end
 
 
 ```lua
-return core.cluster.constructor(PromptAgent)
+return new
 ```

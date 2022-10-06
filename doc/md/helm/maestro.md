@@ -14,6 +14,13 @@ stack\.
 #### imports
 
 ```lua
+local core = require "qor:core"
+local assert = assert(core.fn.assertfmt)
+local table = core.table
+
+local cluster = require "cluster:cluster"
+local Actor = require "actor:actor"
+
 local EditAgent      = require "helm:agent/edit"
 local InputEchoAgent = require "helm:agent/input-echo"
 local ModalAgent     = require "helm:agent/modal"
@@ -26,9 +33,6 @@ local SessionAgent   = require "helm:agent/session"
 local StatusAgent    = require "helm:agent/status"
 local SuggestAgent   = require "helm:agent/suggest"
 
-local assert = assert(core.fn.assertfmt)
-local table = core.table
-
 local available_ragas = {
    nerf           = require "helm:raga/nerf",
    search         = require "helm:raga/search",
@@ -40,19 +44,12 @@ local available_ragas = {
    edit_title     = require "helm:raga/edit-title",
    edit_line      = require "helm:raga/edit-line"
 }
-
-local cluster = require "cluster:cluster"
-local Actor = require "actor:actor"
-
-local assert = assert(core.fn.assertfmt)
-local table = core.table
 ```
 
 
 ## Maestro
 
 ```lua
-
 local new, Maestro, Maestro_M = cluster.genus(Actor)
 ```
 
@@ -159,7 +156,7 @@ local function _dispatchOnly(maestro, event)
       -- #todo also, this is assuming that all traversal is done in `to`,
       -- without nested messages--bad assumption, in general
       insert(tried, handler.method or handler.call)
-      if send(handler) ~= false then
+      if maestro:send(handler) ~= false then
          break
       end
    end

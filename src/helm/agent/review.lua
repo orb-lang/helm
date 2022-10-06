@@ -7,17 +7,42 @@
 
 
 
-local EditAgent = require "helm:agent/edit"
-local ResultsAgent = require "helm:agent/results"
-
+local core = require "qor:core"
 local math = core.math
 local assert = assert(core.fn.assertfmt)
 
-
-
-
+local cluster = require "cluster:cluster"
 local Agent = require "helm:agent/agent"
-local ReviewAgent = meta(getmetatable(Agent))
+
+local EditAgent = require "helm:agent/edit"
+local ResultsAgent = require "helm:agent/results"
+
+
+
+
+
+
+local new, ReviewAgent = cluster.genus(Agent)
+
+cluster.extendbuilder(new, function(_new, agent)
+   agent.selected_index = 0
+   agent.edit_agents = {}
+   agent.results_agent = ResultsAgent()
+   agent.status_cycle_map = {}
+   agent.status_reverse_map = {}
+   local stats = _new.valid_statuses
+   for i, this_status in ipairs(stats) do
+      local prev_status = i == 1
+         and stats[#stats]
+         or stats[i - 1]
+      local next_status = i == #stats
+         and stats[1]
+         or stats[i + 1]
+      agent.status_cycle_map[this_status] = next_status
+      agent.status_reverse_map[this_status] = prev_status
+   end
+   return agent
+end)
 
 
 
@@ -58,7 +83,7 @@ function ReviewAgent._updateResultsAgent(agent)
    local results_agent = agent.results_agent
    if results_agent then
       local premise = agent:selectedPremise()
-      local result = premise and (premise.new_result or premise.old_result)
+      local result = premise and premise:result()
       results_agent:update(result)
       -- #todo scroll offset of the Resbuf needs to be reset at this point
       -- we have some serious thinking to do about how changes are
@@ -284,30 +309,5 @@ end
 
 
 
-
-
-
-function ReviewAgent._init(agent)
-   Agent._init(agent)
-   agent.selected_index = 0
-   agent.edit_agents = {}
-   agent.results_agent = ResultsAgent()
-   agent.status_cycle_map = {}
-   agent.status_reverse_map = {}
-   for i, this_status in ipairs(agent.valid_statuses) do
-      local prev_status = i == 1
-         and agent.valid_statuses[#agent.valid_statuses]
-         or agent.valid_statuses[i - 1]
-      local next_status = i == #agent.valid_statuses
-         and agent.valid_statuses[1]
-         or agent.valid_statuses[i + 1]
-      agent.status_cycle_map[this_status] = next_status
-      agent.status_reverse_map[this_status] = prev_status
-   end
-end
-
-
-
-
-return core.cluster.constructor(ReviewAgent)
+return new
 

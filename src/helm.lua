@@ -36,37 +36,19 @@ end
 
 
 
-
-
-
-
-local __G = setmetatable({}, {__index = _G})
-__G.__G = __G
-
-
-
-
-
-
-
-
 local function _helm(_ENV)
 
 
 
 
 
-setfenv(0, __G)
-
-meta = assert(require "core:cluster" . Meta)
-core = require "qor:core"
+local core = require "qor:core"
 -- Keep this local, other modules will do the same as-needed
 -- We need it below for `compact`
 local table = core.table
-kit = require "valiant:replkit"
 jit.vmdef = require "helm:helm/vmdef"
 jit.p = require "helm:helm/ljprof"
-sql = assert(sql, "sql must be in _G")
+assert(sql, "sql must be in _G")
 
 
 
@@ -78,7 +60,6 @@ local s = require "status:status" ()
 s.chatty = true
 s.verbose = true
 s.boring = false
-ts = require "repr:repr" . ts_color
 
 
 
@@ -87,32 +68,8 @@ ts = require "repr:repr" . ts_color
 
 
 
-
-
-
-
-
-
-send = nil;
-do
-   local Message = require "actor:message"
-   local nest = core.thread.nest "actor"
-   local yield = assert(nest.yield)
-
-   send = function (tab)
-      return yield(Message(tab))
-   end
-end
-
-
-
-
-
-
-
-uv = require "luv"
-local usecolors
-stdout = ""
+local uv = require "luv"
+local usecolors, stdout
 
 
 
@@ -142,20 +99,6 @@ end
 
 
 
-local concat = assert(table.concat)
-
-function print(...)
-   local n = select('#', ...)
-   local arguments = {...}
-   for i = 1, n do
-      arguments[i] = tostring(arguments[i])
-   end
-   uv.write(stdout, concat(arguments, "\t") .. "\n")
-end
-
-
-
-
 
 
 if uv.guess_handle(0) ~= 'tty' or
@@ -165,13 +108,6 @@ if uv.guess_handle(0) ~= 'tty' or
 end
 
 local stdin = uv.new_tty(0, true)
-
-
-
-
-
-a = require "anterm:anterm"
-local Point = require "anterm:point"
 
 
 
@@ -190,9 +126,11 @@ local autothread = require "cluster:autothread"
 
 
 
+local Point = require "anterm:point"
+
 local max_col, max_row = stdin:get_winsize()
 local max_extent = Point(max_row, max_col)
-modeS = require "helm/modeselektor" (max_extent, write)
+local modeS = require "helm/modeselektor" (max_extent, write)
 
 autothread(function() modeS:task():setup() end)
 
@@ -456,17 +394,28 @@ end)
 
 
 
--- Get names for as many values as possible
--- into the colorizer
--- Treat package names as existing in the global namespace
--- rather than having a "package.loaded." prefix
+
+
+
+
+
+
+
+
+
 local names = require "repr:repr/names"
 names.loadNames(package.loaded)
 names.loadNames(_G)
-names.loadNames(__G)
 
--- assuming we survived that, set up our repling environment:
 
+
+
+
+
+
+
+
+local a = require "anterm:anterm"
 -- raw mode
 uv.tty_set_mode(stdin, 2)
 
@@ -524,13 +473,7 @@ if (onseq_err) then
    io.stderr:write(onseq_err)
 end
 
--- Restore the global environment
-setfenv(0, _G)
 end -- of _helm
 
-
-
-
-
-return setfenv(_helm, __G)
+return _helm
 
