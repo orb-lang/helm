@@ -145,12 +145,16 @@ function ModeS.setup(modeS)
       modeS:_agent'session':update(modeS.hist.session)
    end
 
-   if bridge.args.restart or bridge.args.run then
-      modeS.hist:loadPreviousRun()
+   if bridge.args.back or bridge.args.run then
+      local deck
       if bridge.args.run then
-         modeS:_agent'run_review':update(modeS.hist.previous_run)
-         initial_raga = 'run_review'
+         modeS.hist:loadPreviousRun()
+         deck = modeS.hist.previous_run
+      elseif bridge.args.back then
+         deck = modeS.hist:loadRecentLines(bridge.args.back)
       end
+      modeS:_agent'run_review':update(deck)
+      initial_raga = 'run_review'
    end
 
    -- Set up common Agent -> Zone bindings
@@ -170,11 +174,10 @@ function ModeS.setup(modeS)
    modeS :task() :_pushMode(initial_raga)
 
    if bridge.args.restart then
+      modeS.hist:loadPreviousRun()
       local deque = Deque()
       deque:pushN(unpack(modeS.hist.previous_run))
       modeS:rerun(deque)
-   elseif bridge.args.back then
-      modeS:rerun(modeS.hist:loadRecentLines(bridge.args.back))
    end
 
    modeS.action_complete = true

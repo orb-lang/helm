@@ -149,54 +149,62 @@ end
 
 *** Historian:loadPreviousRun()
 
-Loads the previous run, ready to review or re-evaluate, in a format similar to
-a Session. Stores it as historian.previous_run, this will probably change.
+Loads the previous run, ready to review or re-evaluate, as (aspirationally) a
+Deck of Rounds.
+
+#todo This is only for run review right now, and as such, we actually need
+something more like a session, that is, a list of Premises, not just Rounds.
 
 #todo synchronously retrieve the results, could easily be lazy.
 
 #!lua
 local Premise = require "helm:premise"
+local function _loadDeckFromStatement(historian, get_lines)
+   local deck = {}
+   for row in get_lines:rows() do
+      local round = Round(row)
+      historian:loadResponseFor(round)
+      local premise = round:asPremise{ status = "keep" }
+      insert(deck, premise)
+   end
+   return deck
+end
+
 function Historian.loadPreviousRun(historian)
    local prev_run_id = historian.stmts.get_latest_finished_run
                                        :bind(historian.project_id)
                                        :value()
-   local run = {}
-   for row in historian.stmts.get_lines_of_run:bind(prev_run_id):rows() do
-      local round = Round(row)
-      historian:loadResponseFor(round)
-      local premise = round:asPremise{ status = "keep" }
-      insert(run, premise)
-   end
-   historian.previous_run = run
+   local get_lines = historian.stmts.get_lines_of_run:bind(prev_run_id)
+   historian.previous_run = _loadDeckFromStatement(historian, get_lines)
 end
 #/lua
 
 
 *** Historian:loadRecentLines(num_lines)
 
-Loads =num_lines= recent lines from the history and returns them as a =deque=.
+Loads =num_lines= recent lines from the history and returns them in a format
+similar to a Session, as above.
+
 
 #!lua
+local reverse = assert(core.table.reverse)
 function Historian.loadRecentLines(historian, num_lines)
-   local deque = require "deque:deque" ()
    -- we could duplicate this information off the historian array, if we
    -- had the patience to wait around for it to populate.
    --
    -- We probably should do it that way, actually, but there's too much
    -- handwaving about how runs interact with history already, and this
    -- works, as blocking code tends to, with minimum fuss.
-   if num_lines > historian.lines_retrieved then
-      s:warn("Requested %d lines to rerun, only %d lines available")
-      num_lines = historian.lines_retrieved
-   end
    local get_lines = historian.stmts.get_recent
                 : bindkv { project = historian.project_id,
                            num_lines = num_lines }
-   for row in get_lines:rows() do
-      deque:push(Round(row))
+   local deck = _loadDeckFromStatement(historian, get_lines)
+   if num_lines > #deck then
+      s:warn("Requested %d lines to rerun, only %d lines available", num_lines, #deck)
    end
-   deque:reverse()
-   return deque
+   -- Statement is optimized for loading history in newest-to-oldest order,
+   -- but for this we need the original execution order, i.e. oldest-to-newest
+   return reverse(deck)
 end
 #/lua
 
