@@ -82,6 +82,8 @@ cluster.extendbuilder(new, function(_new, modeS, max_extent, writer, db)
    }, { __index = _G })
    -- Unroll `core`, replacing `string`, `table` etc.
    core(eval_env)
+   -- shim to replace core.uv with stock uv (ugly, fix)
+   eval_env.uv = uv
    -- Create Actors
    modeS.valiant = Valiant(eval_env)
    modeS.hist  = Historian(db)
