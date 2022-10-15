@@ -850,8 +850,12 @@ end
 
 
 
+local ts = require "repr:repr" .ts
 function EditAgent.update(agent, str)
    str = str or ""
+   if type(str) == 'table' then
+      str = assert(str.line, "'str' is not a round")
+   end
    local i = 1
    for line in lines(str) do
       agent[i] = line

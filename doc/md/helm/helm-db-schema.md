@@ -1,4 +1,4 @@
-k\* Helm DB Schema
+# Helm DB Schema
 
 
   It's gotten intractable to tell the current schema from the latest table
@@ -79,7 +79,7 @@ CREATE TABLE run (
 CREATE TABLE run_attr (
    run_attr_id INTEGER PRIMARY KEY,
    run INTEGER,
-   "key" TEXT,
+   key TEXT,
    value BLOB,
    FOREIGN KEY (run)
       REFERENCES run (run_id)
@@ -100,7 +100,7 @@ CREATE TABLE run_action (
 CREATE TABLE action_attr (
    action_attr_id PRIMARY KEY,
    run_action INTEGER,
-   "key" TEXT,
+   key TEXT,
    value BLOB,
    FOREIGN KEY (run_action)
       REFERENCES run_action (run_action_id)
