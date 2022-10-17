@@ -858,6 +858,11 @@ array of lines\.
 \#todo
 best name for it?
 
+  @sam:  This should probably be `replace`, which is what it's doing\.
+         Also, we want the array of lines to be on the `.topic` field here,
+         and in general with Agents, for various reasons\.
+
+
 ```lua
 local ts = require "repr:repr" .ts
 function EditAgent.update(agent, str)

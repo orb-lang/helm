@@ -80,7 +80,7 @@ local function _updateAgentsAfterSelected(agent)
 end
 
 function RunReviewAgent.insertLine(agent)
-   insert(agent.subject, agent.selected_index, Round():asPremise{ status = "insert"})
+   insert(agent.subject, agent.selected_index, (Round():asPremise{ status = "insert"}))
    _updateAgentsAfterSelected(agent)
 end
 
