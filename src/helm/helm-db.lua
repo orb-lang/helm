@@ -835,6 +835,8 @@ insert(migration_6, create_error_string_idx)
 
 
 
+
+
 local create_line_table_7 = [[
 CREATE TABLE line (
    line_id INTEGER PRIMARY KEY,
@@ -845,8 +847,6 @@ CREATE TABLE line (
 CREATE INDEX line_text_id ON line (string);
 CREATE INDEX line_hash_id ON line (hash);
 ]]
-
-
 
 
 
@@ -916,12 +916,12 @@ CREATE TABLE round(
 
 
 
+
 local create_input_table_7 = [[
 CREATE TABLE input_copy(
    input_id INTEGER PRIMARY KEY,
    project INTEGER,
    round INTEGER NOT NULL,
-   time DATETIME DEFAULT (strftime('%Y-%m-%dT%H:%M:%f', 'now')),
    FOREIGN KEY (project)
       REFERENCES project (project_id)
       ON DELETE SET NULL
@@ -1099,19 +1099,23 @@ CREATE TABLE run_copy (
 
 
 
+
+
+
 local create_run_action_table_7 = [[
 CREATE TABLE run_action_copy (
    ordinal INTEGER NOT NULL,
    class TEXT CHECK (length(class) <= 3),
-   input INTEGER,
+   time DATETIME DEFAULT (strftime('%Y-%m-%dT%H:%M:%f', 'now')),
+   riff_round INTEGER,
    run INTEGER NOT NULL,
    fact LUATEXT,
    PRIMARY KEY (run, ordinal) -- ON CONFLICT ABORT?
    FOREIGN KEY (run)
       REFERENCES run (run_id)
       ON DELETE CASCADE
-   FOREIGN KEY (input_round)
-      REFERENCES input_round (input_round_id)
+   FOREIGN KEY (riff_round)
+      REFERENCES riff_round (riff_round_id)
 );
 ]]
 

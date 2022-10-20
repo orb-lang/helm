@@ -30,7 +30,7 @@ local Stringbuf = require "helm:buf/stringbuf"
 local Txtbuf    = require "helm:buf/txtbuf"
 
 local Actor   = require "actor:actor"
-local Valiant = require "valiant:valiant"
+local Valiant = require "valiant:valjr"
 
 local Deque = require "deque:deque"
 

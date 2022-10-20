@@ -823,17 +823,19 @@ order wise.
 
 Meanwhile, let's write that new schema.
 
+- #Todo:
 
-*** project
+  - [ ]  Some of these tables should be strict.  Perhaps all?  Decide.
 
-Eh, we should store the ino, not just the directory string.
+  - [ ]  Initial values:
 
-But it's basically fine.
+    - [ ]  Add null line =""= with hash.
+
 
 
 **** lines
 
-A unique text table. Should probably be strict.
+A line is any unique string entered by a user at some point in time.
 
 #!sql @create_line_table_7 #asLua
 CREATE TABLE line (
@@ -845,8 +847,6 @@ CREATE TABLE line (
 CREATE INDEX line_text_id ON line (string);
 CREATE INDEX line_hash_id ON line (hash);
 #/sql
-
-Add null line =""= with hash.
 
 
 ***** A Note on the Hash Field
@@ -875,14 +875,14 @@ when interested in the subset of lines which meet those criteria.
 
 **** round
 
-A line is now an interned string, which can be retrieved by key or identity,
-and sometimes by hash.
+  Some lines, but not all, constitute an action: the canonical example is
+entering some Lua into helm, producing, typically, some results.
 
-An *instance* of a line is identified by a round.
+A line with associated responses is called a round.
 
-This is the pivot table to make all our aggregates agree with one another.
-
-What should this look like?
+Migration 7 will have three sorts of responses which a line can have, and this
+may not be a complete set, but it will always be the case that there is /one/
+response, and one line, per round.
 
 #!sql @create_round_table_7 #asLua
 CREATE TABLE round(
@@ -897,16 +897,17 @@ CREATE TABLE round(
 #/sql
 
 It would be possible for =round= to just point to =line=, and let =response=
-point to =round=, but this gives us non-to-many responses, and in the database,
-we have but one canonical response.
+point to =round=, but this gives us none-to-many responses, while our data
+model permits exactly one.
 
 Instead we insist that the line exist, and the response is created, before we
 can commit a round.
 
 Many things can point at a response, things which are logically mutually
 exclusive.  It should be possible to engineer the database to prohibit more
-than one of these from existing, so that we don't have a round with both an
-error and a result, which is also ='pending'=.
+than one of these from existing, with some sort of post-hook, so that we
+don't have a round with both an error and a result, which is also
+='pending'=.
 
 It's okay to leave things up to transactional and application logic, though.
 
@@ -921,7 +922,6 @@ CREATE TABLE input_copy(
    input_id INTEGER PRIMARY KEY,
    project INTEGER,
    round INTEGER NOT NULL,
-   time DATETIME DEFAULT (strftime('%Y-%m-%dT%H:%M:%f', 'now')),
    FOREIGN KEY (project)
       REFERENCES project (project_id)
       ON DELETE SET NULL
@@ -1088,9 +1088,12 @@ SIGKILL from clean exits.
 
 **** run action
 
-Mostly a copypasta, the primary key strategy here is better than nothing but
-really we should calculate order on inserts, updates are in-place and that's
-fine.
+Run actions are every important thing which happens within a run.
+
+If the action is a round of input, the action points to the riff round of that
+input, and .class is =IN=.  Actions of any other class have a null
+=riff_round=, while serving as pointers into the run for other tables, notably
+the =run_riff= table.
 
 Note the =fact= field, which can contain a serpent-serialized Lua table with
 anything we need to know about a run action.  =LUATEXT= gives text 'affinity',
@@ -1103,15 +1106,16 @@ as we figure out which facts are relevant.
 CREATE TABLE run_action_copy (
    ordinal INTEGER NOT NULL,
    class TEXT CHECK (length(class) <= 3),
-   input INTEGER,
+   time DATETIME DEFAULT (strftime('%Y-%m-%dT%H:%M:%f', 'now')),
+   riff_round INTEGER,
    run INTEGER NOT NULL,
    fact LUATEXT,
    PRIMARY KEY (run, ordinal) -- ON CONFLICT ABORT?
    FOREIGN KEY (run)
       REFERENCES run (run_id)
       ON DELETE CASCADE
-   FOREIGN KEY (input_round)
-      REFERENCES input_round (input_round_id)
+   FOREIGN KEY (riff_round)
+      REFERENCES riff_round (riff_round_id)
 );
 #/sql
 
