@@ -831,6 +831,9 @@ Meanwhile, let's write that new schema.
 
     - [ ]  Add null line =""= with hash.
 
+    - [ ]  A 'no result' result.  There's an obvious shorthand for this in the
+           current persistant repr format, and
+
 
 
 **** lines
