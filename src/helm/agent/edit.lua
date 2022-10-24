@@ -323,7 +323,7 @@ end
 
 local slice = assert(table.slice)
 function EditAgent.nl(agent)
-   line, cur_col, cur_row = agent:currentPosition()
+   local line, cur_col, cur_row = agent:currentPosition()
    -- split the line
    local first = slice(line, 1, cur_col - 1)
    local second = slice(line, cur_col)
