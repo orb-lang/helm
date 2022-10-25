@@ -159,8 +159,6 @@ local function check_winsize()
    end
 end
 
-local winsize_watch = uv.new_timer()
--- winsize_watch:start(500, 500, check_winsize)
 local winsize_signal = uv.new_signal()
 winsize_signal:start("sigwinch", check_winsize)
 
@@ -248,8 +246,6 @@ local stoppable = Set { 'idle',
 local function shutDown(modeS)
    _ditch = true
    uv.read_stop(stdin)
-   winsize_watch:stop()
-   winsize_watch:close()
    winsize_signal:stop()
    winsize_signal:close()
    input_timer:stop()

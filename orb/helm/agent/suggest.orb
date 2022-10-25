@@ -125,14 +125,26 @@ local function _candidates_from(complete_against)
          if type(k) == 'string' and isidentifier(k) then
             count = count + 1
             candidate_symbols[k] = true
-         if count > 500 then
+            if count > 500 then
                return candidate_symbols
             end
          end
       end
       local index_table = hasmetamethod("__index", complete_against)
-      -- Ignore __index functions, no way to know what they might handle
-      complete_against = type(index_table) == "table" and index_table or nil
+      if type(index_table) == "table" then
+         complete_against = index_table
+      -- Check __meta.keys when encountering an __index function
+      elseif type(index_table) == "function" then
+         local metameta = hasmetamethod("__meta", complete_against)
+         local meta_keys = metameta and metameta.keys
+         -- __meta.keys may be able to be a function, but this is NYI
+         complete_against = type(meta_keys) == "table" and meta_keys or nil
+      -- Most likely a `false` return from hasmetamethod, indicating
+      -- no __index at all, but if someone screwed up, just doing nothing
+      -- is reasonable here
+      else
+         complete_against = nil
+      end
    until complete_against == nil
    return candidate_symbols
 end

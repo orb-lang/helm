@@ -9,7 +9,7 @@ provide at least a reasonable level of confidence that everything works.
 ** Basic operation
 
 - [ ] Evaluate some basic expressions
-- [ ] Evaluate some expressions that depend on stuff not in regular _G
+- [ ] Evaluate some expressions that depend on stuff not in regular _G (core, kit, uv, reflective access to modeS)
 - [ ] Use scrollback to review results from previous sessions and evaluate some lines
 - [ ] Resize the window
 - [ ] Open the "help" (hah!), scroll around, and close out of it
@@ -48,12 +48,17 @@ provide at least a reasonable level of confidence that everything works.
 
 ** Interactive restart
 
-- [ ] Start helm with =-r= after a previous run
+- [ ] Start helm with =-R= after a previous run
    - [ ] Verify tab order behavior
    - [ ] Insert a line--at the beginning, middle, end
    - [ ] Start to insert a line and cancel out of it
    - [ ] Trash a line
    - [ ] Evaluate and verify correct history
+- [ ] Make sure everything still works right after the restart
+      (e.g. suggest pane has gone missing in the past)
+- [ ] Start helm with =-r= and verify correct evaluation and history
+- [ ] Start helm with =-b= and verify correct number of statements appear
+      (*should* be identical to =-R= from here on out)
 - [ ] Review an empty run (note, this is likely to become a separate option as
   we will want to ignore empty runs most of the time)
    - [ ] Starts with an "insert" line

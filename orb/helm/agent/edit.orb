@@ -545,7 +545,8 @@ end
 
 function EditAgent.right(agent, disp)
    disp = disp or 1
-   local line, new_col, new_row = agent:currentPosition()
+   -- Declare _ as a local so we can use it to peel off a value below
+   local line, new_col, new_row, _ = agent:currentPosition()
    new_col = new_col + disp
    local _;
    while new_col > #line + 1 do

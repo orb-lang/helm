@@ -72,6 +72,7 @@ results zone\.
 local Resbuf = require "helm:buf/resbuf"
 function Nerf.onShift()
    EditBase.onShift()
+   send { to = "zones.suggest", method = "show" }
    -- #todo only if not already a Resbuf?
    send { method = "bindZone",
       "results", "results", Resbuf, { scrollable = true }}
