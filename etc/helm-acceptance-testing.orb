@@ -30,6 +30,7 @@ provide at least a reasonable level of confidence that everything works.
 - [ ] Scroll around with arrow keys, including wrapping around
 - [ ] Accept a result with Return
 - [ ] Accept a result with M-<n>
+  - [ ] Try to accept an out-of-bounds result with M-<n>
 
 
 

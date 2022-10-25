@@ -86,7 +86,12 @@ end
 
 ```lua
 function SearchAgent.acceptFromNumberKey(agent, evt)
-   agent:acceptAtIndex(tonumber(evt.key))
+   local index = tonumber(evt.key)
+   if index > #agent.topic then
+      -- #todo maybe BEL here?
+      return
+   end
+   agent:acceptAtIndex(index)
 end
 ```
 
