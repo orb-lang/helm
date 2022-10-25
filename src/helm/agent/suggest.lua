@@ -150,7 +150,7 @@ local function _candidates_from(complete_against)
 end
 
 local function _set_suggestions(suggest, suggestions)
-   suggest.last_collection = suggestions
+   suggest.topic = suggestions
    suggest:contentsChanged()
 end
 
@@ -158,7 +158,7 @@ end
 function SuggestAgent.update(suggest)
    local context, path = suggest:cursorContext()
    if context == nil then
-      return _set_suggestions(suggest, nil)
+      return _set_suggestions(suggest, SelectionList(''))
    end
 
    -- First, build a list of candidate symbols--those that would be valid
@@ -186,9 +186,6 @@ function SuggestAgent.update(suggest)
       if score then
          insert(matches, { score = score, sym = sym })
       end
-   end
-   if #matches == 0 then
-      return _set_suggestions(suggest, nil)
    end
    sort(matches, _suggest_sort)
    for _, match in ipairs(matches) do
@@ -237,7 +234,7 @@ SuggestAgent.userCancel = SuggestAgent.quit
 
 
 function SuggestAgent.activateCompletion(agent)
-   if agent.last_collection then
+   if agent:hasResults() then
       agent:selectFirst()
       agent :send { method = "pushMode", "complete" }
       return true

@@ -420,10 +420,12 @@ local SelectionList = require "helm/selection_list"
 local fuzz_patt = require "helm:helm/fuzz_patt"
 
 function Historian.search(historian, frag)
-   if frag == "" then
-      return nil
-   end
    local result = SelectionList(frag, { show_shortcuts = true, cursors = {}})
+   -- Empty string means no results, not everything,
+   -- so just don't bother searching
+   if frag == "" then
+      return result
+   end
    local function try_search()
       local patt = fuzz_patt(result.frag)
       local dup = {}

@@ -169,7 +169,7 @@ end
 
 function SelectionList.__repr(list, window, c)
    assert(c, "must provide a color table")
-   if #list == 0 then
+   if #list == 0 and list.frag and list.frag ~= '' then
       return c.alert "No results found"
    end
    local i = 1

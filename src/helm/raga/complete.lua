@@ -28,7 +28,7 @@ Complete.lex = require "helm:lex" . lua_thor
 
 function Complete.onTxtbufChanged()
    send { to = 'agents.suggest', method = 'update' }
-   if send { to = 'agents.suggest', field = 'last_collection' } then
+   if send { to = 'agents.suggest', method = 'hasResults' } then
       send { to = 'agents.suggest', method = "selectFirst" }
    else
       send { method = "popMode" }
@@ -62,8 +62,8 @@ local Point = require "anterm:point"
 function Complete.getCursorPosition()
    local point = EditBase.getCursorPosition()
    local suggestion = send { to = 'agents.suggest', method = 'selectedItem' }
-   local tokens = send { to = 'agents.edit', method = 'tokens' }
    if suggestion then
+      local tokens = send { to = 'agents.edit', method = 'tokens' }
       for _, tok in ipairs(tokens) do
          if tok.cursor_offset then
             point = point + Point(0, #suggestion - tok.cursor_offset)
