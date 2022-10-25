@@ -24,7 +24,7 @@ cluster.extendbuilder(new, true)
 
 #!lua
 function PromptAgent.update(agent, prompt_char)
-   agent.prompt_char = prompt_char
+   agent.topic = prompt_char
    agent:contentsChanged()
 end
 #/lua
@@ -54,7 +54,7 @@ end
 function PromptAgent.bufferValue(agent)
    local continuation_lines = agent :send { to = "agents.edit",
                                           method = "continuationLines" }
-   return agent.prompt_char .. " " .. ("\n..."):rep(continuation_lines)
+   return agent.topic .. " " .. ("\n..."):rep(continuation_lines)
 end
 #/lua
 

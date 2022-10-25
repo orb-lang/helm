@@ -30,7 +30,7 @@ cluster.extendbuilder(new, true)
 
 local insert = assert(table.insert)
 function SessionAgent.setInitialSelection(agent)
-   agent.selected_index = #agent.subject == 0 and 0 or 1
+   agent.selected_index = #agent.topic == 0 and 0 or 1
 end
 
 
@@ -98,7 +98,7 @@ end
 
 
 function SessionAgent.promptSaveChanges(agent)
-   local sesh_title = agent.subject.session_title
+   local sesh_title = agent.topic.session_title
    agent :send { to = "agents.modal", method = "show",
       'Save changes to the session "' .. sesh_title .. '"?',
       "yes_no_cancel" }

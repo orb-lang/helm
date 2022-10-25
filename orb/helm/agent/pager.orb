@@ -22,7 +22,7 @@ cluster.extendbuilder(new, true)
 
 #!lua
 function PagerAgent.update(agent, str)
-   agent.str = str
+   agent.topic = str
    agent:contentsChanged()
 end
 
@@ -52,7 +52,7 @@ end
 function PagerAgent.bufferValue(agent)
    -- #todo we should work with a Rainbuf that does word-aware wrapping
    -- and accepts a string directly, rather than abusing Resbuf
-   return { n = 1, agent.str }
+   return { n = 1, agent.topic }
 end
 #/lua
 

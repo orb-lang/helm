@@ -28,14 +28,14 @@ cluster.extendbuilder(new, true)
 
 *** RunReviewAgent:setInitialSelection()
 
-We never operate on an empty subject--if we don't have anything, add a blank
+We never operate on an empty topic--if we don't have anything, add a blank
 "insert" premise so we have somewhere to start.
 
 #!lua
 local insert = assert(table.insert)
 function RunReviewAgent.setInitialSelection(agent)
-   if #agent.subject == 0 then
-      insert(agent.subject, { line = "", status = "insert" })
+   if #agent.topic == 0 then
+      insert(agent.topic, { line = "", status = "insert" })
    end
    agent.selected_index = 1
 end
@@ -73,7 +73,7 @@ thus selecting it.
 
 #!lua
 local function _updateAgentsAfterSelected(agent)
-   for i = agent.selected_index, #agent.subject do
+   for i = agent.selected_index, #agent.topic do
       agent:_updateEditAgent(i)
    end
    agent:_updateResultsAgent()
@@ -81,7 +81,7 @@ end
 
 function RunReviewAgent.insertLine(agent)
    local premise = Round():asPremise{ status = "insert" }
-   insert(agent.subject, agent.selected_index, premise)
+   insert(agent.topic, agent.selected_index, premise)
    _updateAgentsAfterSelected(agent)
 end
 #/lua
@@ -99,15 +99,15 @@ local remove = assert(table.remove)
 function RunReviewAgent.cancelInsertion(agent)
    if agent:selectedPremise().status ~= "insert"
       -- Don't remove an "insert" premise if it's the very last one
-      or #agent.subject == 1 then
+      or #agent.topic == 1 then
          return
    end
 
-   remove(agent.subject, agent.selected_index)
+   remove(agent.topic, agent.selected_index)
    -- Remove the *last* EditAgent iff there is one,
    -- then update the others to preserve bindings
-   agent.edit_agents[#agent.subject + 1] = nil
-   agent:bufferCommand("editAgentRemoved", #agent.subject + 1)
+   agent.edit_agents[#agent.topic + 1] = nil
+   agent:bufferCommand("editAgentRemoved", #agent.topic + 1)
    _updateAgentsAfterSelected(agent)
    agent.was_inserting = true
 end
@@ -257,7 +257,7 @@ function RunReviewAgent.evalAndResume(agent)
    -- Clear out any insertion-in-progress
    agent:cancelInsertion()
    local to_run = Deque()
-   for _, premise in ipairs(agent.subject) do
+   for _, premise in ipairs(agent.topic) do
       if premise.status == "keep" then
          to_run:push(premise:asRound())
       end
