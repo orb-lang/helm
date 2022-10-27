@@ -1554,6 +1554,23 @@ ORDER BY premise.ordinal
 ;
 #/sql
 
+
+#!sql @session_sql.get_premises #asLua
+SELECT
+   status,
+   title,
+   ordinal,
+   input.line as line,
+   input.time as time,
+   input.line_id as line_id
+FROM  premise
+WHERE
+   premise.session = :session_id
+LEFT JOIN input ON input.line_id = premise.line
+ORDER BY  premise.ordinal
+;
+#/sql
+
 Because the results have a many-to-one relationship with the lines, we're
 better off retrieving them separately:
 

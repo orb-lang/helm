@@ -1555,6 +1555,23 @@ ORDER BY premise.ordinal
 ]]
 
 
+session_sql.get_premises = [[
+SELECT
+   status,
+   title,
+   ordinal,
+   input.line as line,
+   input.time as time,
+   input.line_id as line_id
+FROM  premise
+WHERE
+   premise.session = :session_id
+LEFT JOIN input ON input.line_id = premise.line
+ORDER BY  premise.ordinal
+;
+]]
+
+
 
 
 session_sql.get_results = [[
