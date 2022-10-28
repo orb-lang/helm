@@ -1200,9 +1200,12 @@ the form of results, so we have to know to make a new Round even if we have
 an existing round with a response of status pending, so we can update the
 response pointer.
 
-#!sql @create_other_response_table_7 #asLua
-CREATE TABLE other_response(
-   other_response_id INTEGER PRIMARY KEY,
+This implies that this table will be somewhat shallow: we certainly don't
+need multiple responses per response status,
+
+#!sql @create_status_response_table_7 #asLua
+CREATE TABLE status_response(
+   status_response_id INTEGER PRIMARY KEY,
    response INTEGER NOT NULL,
    category TEXT NOT NULL,
    FOREIGN KEY response
@@ -1229,6 +1232,8 @@ document, but not using this database.
 as runs.  In this case, we might have a map of require strings to their latest
 hash, so we can retrieve and run any sessions if those modules change.
 
+The =accepted= column is now called =active=.
+
 #!sql @create_session_table_7 #asLua
 CREATE TABLE session_copy (
    session_id INTEGER PRIMARY KEY,
@@ -1236,7 +1241,7 @@ CREATE TABLE session_copy (
    doc INTEGER,
    doc_hash TEXT,
    project INTEGER,
-   accepted INTEGER NOT NULL DEFAULT 0 CHECK (accepted = 0 or accepted = 1),
+   active INTEGER NOT NULL DEFAULT 0 CHECK (active = 0 or active = 1),
    riff INTEGER NOT NULL,
    fact LUATEXT,
    FOREIGN KEY (project)
@@ -1253,9 +1258,16 @@ This is now a pointer into a riff *round*, with additional metadata.
 
 The riff round enforces order in the riff, which premise need not duplicate.
 
-Note that the premise table also has a premise column, which used to be called
-the title.
+To keep everything shipshape, the tuple =(premise_id, riff_round)= is kept
+unique.
 
+Note that the premise table also has a premise column, which used to be called
+the title.  This is part of why we call the rowid of =thing= =thing_id=: it
+means we can have =thing.thing=, and always refer to =thing.thing_id= as just
+=thing_id=, since =other.thing= will always be the name for the thing *id* on
+another table.
+
+We rename the 'reject' status to 'watch', to properly reflect the intention.
 
 #!sql @create_premise_table_7 #asLua
 CREATE TABLE premise_copy (
@@ -1264,7 +1276,7 @@ CREATE TABLE premise_copy (
    riff_round INTEGER NOT NULL,
    premise INTEGER NOT NULL,
    status STRING NOT NULL CHECK (
-      status = 'accept' or status = 'reject' or status = 'ignore' ),
+      status = 'accept' or status = 'watch' or status = 'ignore' ),
    FOREIGN KEY (session)
       REFERENCES session (session_id)
    FOREIGN KEY (riff_round)
@@ -1274,32 +1286,49 @@ CREATE TABLE premise_copy (
 );
 #/sql
 
-This is the right level of indirection.
-
 
 *** Migration 7: the migration.
 
 This will be gnarly, but breaks down into stages.
 
 
-***** consistent hashing: affects repr, result
+**** Refactor helm-db
+
+  I'll move all the historical migrations into their own file, start one for
+migration-7, and rebuild helm-db in terms of the arcive.
+
+May as well collapse the history into a schema snapshot, since I'm quite
+confident they'll never be applied again.
+
+
+***** re-hash: affects repr, result
 
   I used a hybrid of hashing and raw comparison for uniques in various places,
 the tradeoff being less storage (meh) and allocation (that was the one) for
 an inconsistent representation.
 
-This becomes a problem when we start wanting to put hashes into Orb documents,
-where we benefit from using only alphanumerics.  The control sequences and
-space marks are equally annoying in the same way: if we leave the shorthashes
-laying around then we have to turn hashes into strings.  Not great.
+This was too clever by half.  We were also truncating full SHA-512 hashes,
+instead of using the preferred SHA-512/256 form for truncation.  This doesn't
+harm the security properties, but there's no advantage to using a nonstandard
+hash here.
 
 
-***** turn input into input_rounds
+***** dissolve input table
 
-This is the bulk of it.
+This is where ~all the logic lives.
 
-Schema 6 is mainly keyed off input, which is what we're fixing, but also makes
-it easy to pull everything out, =round= it, and put this in the new tables.
+We need to take inputs and responses to them, synthesize them into rounds,
+make up some runs from the era before those existed, and turn the inputs into
+run actions, the rounds into riffs, and so on.
+
+The advantage of how data is currently arranged is that we can do mega-queries
+which give us everything associated with a row, and use that to put things
+where they belong.
+
+
+**** mutate premise status
+
+Swaps 'reject' for 'ignore'.
 
 
 
