@@ -1225,6 +1225,10 @@ CREATE TABLE other_response(
 
 
 
+
+
+
+
 local create_session_table_7 = [[
 CREATE TABLE session_copy (
    session_id INTEGER PRIMARY KEY,
@@ -1234,6 +1238,7 @@ CREATE TABLE session_copy (
    project INTEGER,
    accepted INTEGER NOT NULL DEFAULT 0 CHECK (accepted = 0 or accepted = 1),
    riff INTEGER NOT NULL,
+   fact LUATEXT,
    FOREIGN KEY (project)
       REFERENCES project (project_id)
    FOREIGN KEY (riff)

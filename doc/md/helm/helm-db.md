@@ -1225,6 +1225,10 @@ The idea is that we will export mature sessions as Orb documents, and the
 session machinery will keep track of the state of the important parts of that
 document, but not using this database\.
 
+`session` also has a `fact` table, for the same open\-ended expansion purposes
+as runs\.  In this case, we might have a map of require strings to their latest
+hash, so we can retrieve and run any sessions if those modules change\.
+
 ```sql
 CREATE TABLE session_copy (
    session_id INTEGER PRIMARY KEY,
@@ -1234,6 +1238,7 @@ CREATE TABLE session_copy (
    project INTEGER,
    accepted INTEGER NOT NULL DEFAULT 0 CHECK (accepted = 0 or accepted = 1),
    riff INTEGER NOT NULL,
+   fact LUATEXT,
    FOREIGN KEY (project)
       REFERENCES project (project_id)
    FOREIGN KEY (riff)
