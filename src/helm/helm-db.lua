@@ -884,6 +884,27 @@ CREATE INDEX line_hash_id ON line (hash);
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local create_round_table_7 = [[
 CREATE TABLE round(
    round_id INTEGER PRIMARY KEY,
@@ -916,21 +937,9 @@ CREATE TABLE round(
 
 
 
-local create_input_table_7 = [[
-CREATE TABLE input_copy(
-   input_id INTEGER PRIMARY KEY,
-   project INTEGER,
-   round INTEGER NOT NULL,
-   time DATETIME DEFAULT (strftime('%Y-%m-%dT%H:%M:%f', 'now')),
-   FOREIGN KEY (project)
-      REFERENCES project (project_id)
-      ON DELETE SET NULL
-   FOREIGN KEY (round)
-      REFERENCES round (round_id)
-)
--- realistically we should rename this first yeah?
-CREATE INDEX idx_input_time ON input_copy (time) DESC;
-]]
+
+
+
 
 
 
@@ -971,11 +980,17 @@ CREATE TABLE response(
 
 
 
+
+
+
+
 local create_result_table_7 = [[
 CREATE TABLE IF NOT EXISTS result_copy (
-   result_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   result_id INTEGER PRIMARY KEY,
    response INTEGER NOT NULL,
+   ordinal INTEGER NOT NULL CHECK (order > 0),
    hash TEXT NOT NULL,
+   UNIQUE(response, ordinal)
    FOREIGN KEY (response)
       REFERENCES response (response_id)
       ON DELETE CASCADE
@@ -983,6 +998,7 @@ CREATE TABLE IF NOT EXISTS result_copy (
       REFERENCES repr (hash)
 );
 ]]
+
 
 
 
@@ -1019,6 +1035,8 @@ CREATE TABLE repr_copy (
 
 
 
+
+
 local create_riff_table_7 = [[
 CREATE TABLE riff (
    riff_id INTEGER PRIMARY KEY,
@@ -1035,14 +1053,13 @@ CREATE TABLE riff (
 
 
 
-
-
 local create_riff_round_table_7 = [[
 CREATE TABLE riff_round(
    riff_round_id INTEGER PRIMARY KEY,
    riff INTEGER NOT NULL,
-   order INTEGER NOT NULL CHECK (order > 0),
+   ordinal INTEGER NOT NULL CHECK (order > 0),
    round INTEGER NOT NULL
+   UNIQUE (riff, ordinal)
    FOREIGN KEY (riff)
       REFERENCES riff (riff_id)
    FOREIGN KEY (round)
@@ -1068,15 +1085,11 @@ CREATE TABLE run_copy (
    project INTEGER NOT NULL,
    start_time DATETIME DEFAULT (strftime('%Y-%m-%dT%H:%M:%f', 'now')),
    finish_time DATETIME,
-   -- these are the same unless we are in this run or the run crashed
-   current_riff INTEGER,
-   riff INTEGER,
+   latest_riff INTEGER,
    FOREIGN KEY (project)
       REFERENCES project (project_id)
       ON DELETE CASCADE
-   FOREIGN KEY (riff)
-      REFERENCES riff (riff_id)
-   FOREIGN KEY (current_riff)
+   FOREIGN KEY (latest_riff)
       REFERENCES riff (riff_id)
 );
 ]]
@@ -1099,19 +1112,30 @@ CREATE TABLE run_copy (
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 local create_run_action_table_7 = [[
 CREATE TABLE run_action_copy (
-   ordinal INTEGER NOT NULL,
+   run_action_id INTEGER PRIMARY KEY AUTOINCREMENT,
    class TEXT CHECK (length(class) <= 3),
-   input INTEGER,
+   time DATETIME DEFAULT (strftime('%Y-%m-%dT%H:%M:%f', 'now')),
+   round INTEGER,
    run INTEGER NOT NULL,
    fact LUATEXT,
-   PRIMARY KEY (run, ordinal) -- ON CONFLICT ABORT?
    FOREIGN KEY (run)
       REFERENCES run (run_id)
       ON DELETE CASCADE
-   FOREIGN KEY (input_round)
-      REFERENCES input_round (input_round_id)
+   FOREIGN KEY (round)
+      REFERENCES round (round_id)
 );
 ]]
 
@@ -1168,6 +1192,14 @@ CREATE TABLE error(
 
 
 
+
+
+
+
+
+
+
+
 local create_other_response_table_7 = [[
 CREATE TABLE other_response(
    other_response_id INTEGER PRIMARY KEY,
@@ -1177,7 +1209,6 @@ CREATE TABLE other_response(
       REFERENCES response (response_id)
 );
 ]]
-
 
 
 
@@ -1221,10 +1252,9 @@ CREATE TABLE session_copy (
 
 
 
-
 local create_premise_table_7 = [[
 CREATE TABLE premise_copy (
-   session_round_id INTEGER PRIMARY KEY,
+   premise_id INTEGER PRIMARY KEY,
    session INTEGER NOT NULL,
    riff_round INTEGER NOT NULL,
    premise INTEGER NOT NULL,
@@ -1564,9 +1594,9 @@ SELECT
    input.time as time,
    input.line_id as line_id
 FROM  premise
+LEFT JOIN input ON input.line_id = premise.line
 WHERE
    premise.session = :session_id
-LEFT JOIN input ON input.line_id = premise.line
 ORDER BY  premise.ordinal
 ;
 ]]
