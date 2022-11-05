@@ -67,6 +67,7 @@ switch the REPL to a 'reflow mode' that just draws characters to a screen,
 then add a popup.
 
 #!lua
+local uv = require "luv"
 local core = require "qor:core"
 local string = core.string
 local instanceof = assert(core.meta.instanceof)
@@ -425,31 +426,13 @@ end
 #/lua
 
 
-*** Zoneherd:paint(modeS)
+*** Zoneherd:paint()
 
-Once again we pass a reference to the =modeselektor= to get access to things
-like the lexer.
+Paints the screen.
 
 #!lua
-
-function Zoneherd.paint(zoneherd, modeS)
-   local write = zoneherd.write
-   write(a.cursor.hide(), a.clear())
-   for i, zone in ipairs(zoneherd) do
-      -- Process queued commands from the `source` of our Rainbufs
-      if zone.contents.is_rainbuf then
-         if zone.contents:processQueuedMessages() then
-            zone:beTouched()
-         end
-         -- #deprecated
-         if zone.contents:checkTouched() then
-            zone:beTouched()
-         end
-      end
-   end
-   for i, zone in ipairs(zoneherd) do
-      zone:paint(write)
-   end
+function Zoneherd.paint(zoneherd)
+   zoneherd.paint_ev:start(zoneherd.zonePainter)
    return zoneherd
 end
 #/lua
@@ -479,6 +462,30 @@ local function new(modeS, writer)
    zoneherd:newZone("modal", 2, "?")
    zoneherd.modal.visible = false
    zoneherd.modal.border = "light"
+
+   zoneherd.paint_ev = uv.new_prepare()
+
+   function zoneherd.zonePainter()
+      local write = zoneherd.write
+      write(a.cursor.hide(), a.clear())
+      for i, zone in ipairs(zoneherd) do
+         -- Process queued commands from the `source` of our Rainbufs
+         if zone.contents.is_rainbuf then
+            if zone.contents:processQueuedMessages() then
+               zone:beTouched()
+            end
+            -- #deprecated
+            if zone.contents:checkTouched() then
+               zone:beTouched()
+            end
+         end
+      end
+      for i, zone in ipairs(zoneherd) do
+         zone:paint(write)
+      end
+      zoneherd.paint_ev:stop()
+   end
+
 
    return zoneherd
 end
