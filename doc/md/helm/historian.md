@@ -97,8 +97,7 @@ function Historian.load(historian)
                                       : bind(historian.project)
                                       : value()
    if not project_id then
-      stmts.insert_project : bind(historian.project)
-                           : step()
+      sql_insert_errcheck(stmts.insert_project : bind(historian.project))
       -- retry
       project_id = stmts.get_project  : bind(historian.project)
                                     : value()
@@ -109,27 +108,28 @@ function Historian.load(historian)
    historian.project_id = project_id
 
    -- start the latest run
-   stmts.insert_run_start :bind(project_id) :step()
+   sql_insert_errcheck(stmts.insert_run_start :bind(project_id))
    historian.run = { run_id = stmts.lastRowId(), actions = {} }
 
    -- Retrieve history
-   local number_of_lines = stmts.get_number_of_lines
-                             :bind(project_id):step()[1]
+   local number_of_lines = stmts.get_number_of_lines : bind(project_id)
+                                                     : value()
    if number_of_lines == 0 then
       return nil
    end
    number_of_lines = clamp(number_of_lines, nil, historian.HISTORY_LIMIT)
    historian.lines_available = number_of_lines
-   local pop_stmt = stmts.get_recent
+   local round_iter = stmts.get_recent
                       : bindkv { project = project_id,
                                  num_lines = number_of_lines }
+                      : rows()
    historian.cursor = number_of_lines + 1
    historian.cursor_start = number_of_lines + 1
    historian.n = number_of_lines
    local counter = number_of_lines
    local idler
    local function load_one()
-      local res = pop_stmt:stepkv()
+      local res = round_iter()
       if not res then
          if idler then idler:stop() end
          return nil
@@ -251,12 +251,11 @@ function Historian.loadResponseFor(historian, round)
    end
    local stmt = historian.get_results
    stmt:bindkv(round)
-   local results = stmt :resultset 'i'
-   if results then
-      results = _wrapResults(results[1])
+   local results = {}
+   for i, res in stmt:cols() do
+      results[i] = res
    end
-   round.db_response = results
-   stmt:reset()
+   round.db_response = _wrapResults(results)
 end
 ```
 
@@ -512,7 +511,8 @@ Currently, it just saves the end of the run\.
 ```lua
 function Historian.close(historian)
    if #historian.run.actions > 0 then
-      historian.stmts.insert_run_finish :bind(historian.run.run_id) :step()
+      sql_insert_errcheck(historian.stmts.insert_run_finish
+                             :bind(historian.run.run_id))
    else
       -- #todo this is wrong anyway but let's skip this crap
    end
