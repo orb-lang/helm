@@ -415,7 +415,7 @@ function Zoneherd.reflow(zoneherd, modeS)
    -- required, we must account for the borders--seems like a good
    -- division of responsibility.
    if zoneherd.modal.visible then
-      local modal_extent = modeS:agent'modal'.subject:requiredExtent() + Point(2, 4)
+      local modal_extent = modeS:agent'modal'.topic:requiredExtent() + Point(2, 4)
       local margins = ((modeS.max_extent - modal_extent) / 2):floor()
       zoneherd.modal:setBounds(margins.row, margins.col,
                                (margins + modal_extent - 1):rowcol())

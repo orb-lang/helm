@@ -24,7 +24,7 @@ cluster.extendbuilder(new, true)
 
 
 function ResultsAgent.update(agent, result)
-   agent.result = result
+   agent.topic = result
    agent:contentsChanged()
    agent:scrollToTop()
 end
@@ -39,7 +39,7 @@ end
 
 
 function ResultsAgent.bufferValue(agent)
-   return agent.result or { n = 0 }
+   return agent.topic or { n = 0 }
 end
 
 

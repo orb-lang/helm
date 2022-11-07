@@ -18,7 +18,10 @@ local SelectionList = require "helm:selection_list"
 
 ```lua
 local new, ResultListAgent = cluster.genus(Agent)
-cluster.extendbuilder(new, true)
+cluster.extendbuilder(new, function(_new, agent)
+   agent.topic = SelectionList('')
+   return agent
+end)
 ```
 
 
@@ -32,20 +35,27 @@ for _, method_name in ipairs{"selectNext", "selectPrevious",
                     "selectNextWrap", "selectPreviousWrap",
                     "selectFirst", "selectIndex", "selectNone"} do
    ResultListAgent[method_name] = function(agent, ...)
-      if agent.last_collection then
-         agent.last_collection[method_name](agent.last_collection, ...)
-         agent:contentsChanged()
-         agent:bufferCommand("ensureVisible", agent.last_collection.selected_index)
-      end
+      agent.topic[method_name](agent.topic, ...)
+      agent:contentsChanged()
+      agent:bufferCommand("ensureVisible", agent.topic.selected_index)
    end
 end
 ```
 
-It's also handy to have a nil\-safe way to retrieve what is currently selected\.
+And a forwarder for :selectedItem\(\)
 
 ```lua
 function ResultListAgent.selectedItem(agent)
-   return agent.last_collection and agent.last_collection:selectedItem()
+   return agent.topic:selectedItem()
+end
+```
+
+
+### ResultListAgent:hasResults\(\)
+
+```lua
+function ResultListAgent.hasResults(agent)
+   return #agent.topic > 0
 end
 ```
 
@@ -66,7 +76,7 @@ end
 
 ```lua
 function ResultListAgent.bufferValue(agent)
-   return agent.last_collection and { n = 1, agent.last_collection }
+   return { n = 1, agent.topic }
 end
 ```
 
@@ -74,17 +84,16 @@ end
 ### ResultListAgent:windowConfiguration\(\)
 
 ```lua
-local function _toLastCollection(agent, window, field, ...)
-   local lc = agent.last_collection
-   return lc and lc[field](lc, ...) -- i.e. lc:<field>(...)
+local function _toTopic(agent, window, field, ...)
+   return agent.topic[field](agent.topic, ...) -- i.e. topic:<field>(...)
 end
 
 function ResultListAgent.windowConfiguration(agent)
    -- #todo super is hella broken, grab explicitly from the right superclass
    return agent.mergeWindowConfig(Agent.windowConfiguration(agent), {
       closure = {
-         selectedItem = _toLastCollection,
-         highlight = _toLastCollection
+         selectedItem = _toTopic,
+         highlight = _toTopic
       }
    })
 end

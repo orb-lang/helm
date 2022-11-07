@@ -132,7 +132,7 @@ function ModalAgent.update(agent, text, button_style)
       button_style = button_styles[button_style]
    end
    model.buttons = button_style
-   agent.subject = model
+   agent.topic = model
    agent:contentsChanged()
 end
 
@@ -156,7 +156,7 @@ end
 
 
 function ModalAgent.close(agent, value)
-   agent.subject.value = value
+   agent.topic.value = value
    agent :send { method = "popMode" }
 end
 
@@ -168,7 +168,7 @@ end
 
 
 function ModalAgent.answer(agent)
-   return agent.subject and agent.subject.value
+   return agent.topic and agent.topic.value
 end
 
 
@@ -177,7 +177,7 @@ end
 
 
 function ModalAgent.bufferValue(agent)
-   return agent.subject and { n = 1, agent.subject } or { n = 0 }
+   return agent.topic and { n = 1, agent.topic } or { n = 0 }
 end
 
 
@@ -191,7 +191,7 @@ local function _shortcutFrom(button)
 end
 
 local function _acceptButtonWhere(agent, fn)
-   for _, button in ipairs(agent.subject.buttons) do
+   for _, button in ipairs(agent.topic.buttons) do
       if fn(button) then
          return agent:close(button.value)
       end

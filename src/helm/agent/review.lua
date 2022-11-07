@@ -54,7 +54,7 @@ end)
 
 
 function ReviewAgent.update(agent, run)
-   agent.subject = run
+   agent.topic = run
    agent:setInitialSelection()
    agent:_updateResultsAgent()
    -- Update any EditAgents we have without creating any more
@@ -75,7 +75,7 @@ end
 function ReviewAgent._updateEditAgent(agent, index)
    local edit_agent = agent.edit_agents[index]
    if edit_agent then
-      edit_agent:update(agent.subject[index].line)
+      edit_agent:update(agent.topic[index].line)
    end
 end
 
@@ -118,9 +118,9 @@ end
 
 local clamp = assert(math.clamp)
 function ReviewAgent.selectIndex(agent, index)
-   index = #agent.subject == 0
+   index = #agent.topic == 0
       and 0
-      or clamp(index, 1, #agent.subject)
+      or clamp(index, 1, #agent.topic)
    if index ~= agent.selected_index then
       agent.selected_index = index
       agent:selectionChanged()
@@ -136,7 +136,7 @@ end
 
 
 function ReviewAgent.selectNextWrap(agent)
-   local new_idx = agent.selected_index < #agent.subject
+   local new_idx = agent.selected_index < #agent.topic
       and agent.selected_index + 1
       or 1
    return agent:selectIndex(new_idx)
@@ -144,7 +144,7 @@ end
 function ReviewAgent.selectPreviousWrap(agent)
    local new_idx = agent.selected_index > 1
       and agent.selected_index - 1
-      or #agent.subject
+      or #agent.topic
    return agent:selectIndex(new_idx)
 end
 
@@ -154,7 +154,7 @@ end
 
 
 function ReviewAgent.selectedPremise(agent)
-   return agent.subject[agent.selected_index]
+   return agent.topic[agent.selected_index]
 end
 
 
@@ -211,14 +211,14 @@ end
 
 
 local function _swap_premises(agent, index_a, index_b)
-   local premise_a = agent.subject[index_a]
-   local premise_b = agent.subject[index_b]
+   local premise_a = agent.topic[index_a]
+   local premise_b = agent.topic[index_b]
 
-   agent.subject[index_a] = premise_b
+   agent.topic[index_a] = premise_b
    premise_b.ordinal = index_a
    agent:_updateEditAgent(index_a)
 
-   agent.subject[index_b] = premise_a
+   agent.topic[index_b] = premise_a
    premise_a.ordinal = index_b
    agent:_updateEditAgent(index_b)
 
@@ -237,7 +237,7 @@ function ReviewAgent.movePremiseUp(agent)
 end
 
 function ReviewAgent.movePremiseDown(agent)
-   if agent.selected_index == #agent.subject then
+   if agent.selected_index == #agent.topic then
       return false
    end
    _swap_premises(agent, agent.selected_index, agent.selected_index + 1)
@@ -254,7 +254,7 @@ end
 
 
 function ReviewAgent.bufferValue(agent)
-   return agent.subject
+   return agent.topic
 end
 
 
@@ -284,7 +284,7 @@ end
 local inbounds = assert(math.inbounds)
 local lua_thor = assert(require "helm:lex" . lua_thor)
 function ReviewAgent.editWindow(agent, index)
-   assert(inbounds(index, 1, #agent.subject))
+   assert(inbounds(index, 1, #agent.topic))
    if not agent.edit_agents[index] then
       agent.edit_agents[index] = EditAgent()
       agent.edit_agents[index].lex = lua_thor

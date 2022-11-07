@@ -70,6 +70,9 @@ Resbuf.null_value = { n = 0 }
 
 function Resbuf._init(resbuf)
    Rainbuf._init(resbuf)
+   if type(resbuf:value()) ~= "table" then
+      (require "status:status")():chat("Expected result table, got " .. (require "repr:repr").ts(resbuf:value()))
+   end
    resbuf.frozen = resbuf:value().error
 end
 ```

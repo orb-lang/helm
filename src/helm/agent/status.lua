@@ -17,8 +17,7 @@ local Agent = require "helm:agent/agent"
 local new, StatusAgent = cluster.genus(Agent)
 
 cluster.extendbuilder(new, function(_new, agent)
-   agent.status_name = 'default'
-   agent.format_args = { n = 0 }
+   agent.topic = { name = 'default', n = 0 }
    return agent
 end)
 
@@ -49,8 +48,8 @@ status_lines.new_session = status_lines.default .. ' (recording "%s")'
 
 
 function StatusAgent.update(stat, status_name, ...)
-   stat.status_name = status_name
-   stat.format_args = pack(...)
+   stat.topic = pack(...)
+   stat.topic.name = status_name
    stat:contentsChanged()
 end
 
@@ -60,7 +59,7 @@ end
 
 
 function StatusAgent.bufferValue(stat)
-   return status_lines[stat.status_name]:format(unpack(stat.format_args))
+   return status_lines[stat.topic.name]:format(unpack(stat.topic))
 end
 
 
