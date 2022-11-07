@@ -43,6 +43,8 @@
 local core = require "qor:core"
 local table = core.table
 
+local cluster = require "cluster:cluster"
+
 local Round = require "helm:round"
 local Premise = require "helm:premise"
 
@@ -52,6 +54,57 @@ local Premise = require "helm:premise"
 local helm_db = require "helm:helm-db"
 local Session = core.cluster.meta {}
 local new
+
+
+
+
+
+
+
+
+
+
+
+local collect = assert(table.collect)
+local new, Session = cluster.order()
+cluster.construct(new, function(_new, session, db, project_id, title_or_index, cfg)
+   session.stmts = helm_db.session(db)
+   session.project_id = project_id
+   session.n = 0
+   if type(title_or_index) == "number" then
+      local stmt = session.stmts.get_sessions_for_project
+      stmt:bind(session.project_id)
+      -- Pass the index to stop retrieving once we reach the session we want
+      local results = collect(stmt.rows, stmt, title_or_index)
+      stmt:clearbind():reset()
+      -- An index can only be used when intending to load
+      -- so out-of-bounds is an immediate error
+      if #results < title_or_index then
+         error(('Cannot load session #%d, only %d available.')
+                  :format(title_or_index, #results))
+      end
+      local result = results[title_or_index]
+      session.session_id = result.session_id
+      session.session_title = result.session_title
+      session.accepted = result.accepted ~= 0
+   else
+      session.session_title = title_or_index
+      local result = session.stmts.get_session_by_project_and_title
+                        :bind(session.project_id, session.session_title)
+                        :stepkv()
+      if result then
+         session.session_id = result.session_id
+         session.accepted = result.accepted ~= 0
+      end
+   end
+   if cfg then
+      for k, v in pairs(cfg) do
+         session[k] = v
+      end
+   end
+   return session
+end)
+
 
 
 
@@ -180,55 +233,5 @@ end
 
 
 
-
-
-
-
-
-
-
-
-local collect = assert(table.collect)
-new = function(db, project_id, title_or_index, cfg)
-   local session = setmetatable({}, Session)
-   session.stmts = helm_db.session(db)
-   session.project_id = project_id
-   session.n = 0
-   if type(title_or_index) == "number" then
-      local stmt = session.stmts.get_sessions_for_project
-      stmt:bind(session.project_id)
-      local results = collect(stmt.rows, stmt)
-      stmt:clearbind():reset()
-      -- An index can only be used when intending to load
-      -- so out-of-bounds is an immediate error
-      if #results < title_or_index then
-         error(('Cannot load session #%d, only %d available.')
-                  :format(title_or_index, #results))
-      end
-      local result = results[title_or_index]
-      session.session_id = result.session_id
-      session.session_title = result.session_title
-      session.accepted = result.accepted ~= 0
-   else
-      session.session_title = title_or_index
-      local result = session.stmts.get_session_by_project_and_title
-                        :bind(session.project_id, session.session_title)
-                        :stepkv()
-      if result then
-         session.session_id = result.session_id
-         session.accepted = result.accepted ~= 0
-      end
-   end
-   if cfg then
-      for k, v in pairs(cfg) do
-         session[k] = v
-      end
-   end
-   return session
-end
-
-
-
-Session.idEst = new
 return new
 
