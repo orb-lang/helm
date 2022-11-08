@@ -9,9 +9,9 @@ local parts = require "helm:keymap/parts"
 #!lua
 return Keymap(
 parts.set_targets("agents.run_review", {
-   RETURN = "acceptInsertion",
-   ESC = "cancelInsertEditing",
-   ["C-q"] = "cancelInsertEditing"
+   RETURN = "acceptLineEdit",
+   ESC = "cancelLineEdit",
+   ["C-q"] = "cancelLineEdit"
 }),
 parts.set_targets("agents.suggest", {
    TAB = "activateCompletion",

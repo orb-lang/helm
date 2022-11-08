@@ -52,7 +52,6 @@ end)
 
 
 
-
 function ReviewAgent.update(agent, run)
    agent.topic = run
    agent:setInitialSelection()
@@ -82,8 +81,8 @@ end
 function ReviewAgent._updateResultsAgent(agent)
    local results_agent = agent.results_agent
    if results_agent then
-      local premise = agent:selectedPremise()
-      local result = premise and premise:result()
+      local round = agent:selectedRound()
+      local result = round and round:result()
       results_agent:update(result)
       -- #todo scroll offset of the Resbuf needs to be reset at this point
       -- we have some serious thinking to do about how changes are
@@ -153,7 +152,7 @@ end
 
 
 
-function ReviewAgent.selectedPremise(agent)
+function ReviewAgent.selectedRound(agent)
    return agent.topic[agent.selected_index]
 end
 
@@ -174,12 +173,12 @@ end
 
 
 function ReviewAgent.toggleSelectedState(agent)
-   local new_status = agent.status_cycle_map[agent:selectedPremise().status]
+   local new_status = agent.status_cycle_map[agent:selectedRound().status]
    return agent:setSelectedState(new_status)
 end
 
 function ReviewAgent.reverseToggleSelectedState(agent)
-   local new_status = agent.status_reverse_map[agent:selectedPremise().status]
+   local new_status = agent.status_reverse_map[agent:selectedRound().status]
    return agent:setSelectedState(new_status)
 end
 
@@ -191,10 +190,10 @@ end
 
 
 function ReviewAgent.setSelectedState(agent, state)
-   local premise = agent:selectedPremise()
-   if premise.status == state then return end
+   local round = agent:selectedRound()
+   if round.status == state then return end
    assert(agent.status_cycle_map[state], "Cannot change to invalid status %s", state)
-   premise.status = state
+   round.status = state
    agent:contentsChanged()
    return true
 end
@@ -210,37 +209,37 @@ end
 
 
 
-local function _swap_premises(agent, index_a, index_b)
-   local premise_a = agent.topic[index_a]
-   local premise_b = agent.topic[index_b]
+local function _swap_rounds(agent, index_a, index_b)
+   local round_a = agent.topic[index_a]
+   local round_b = agent.topic[index_b]
 
-   agent.topic[index_a] = premise_b
-   premise_b.ordinal = index_a
+   agent.topic[index_a] = round_b
+   round_b.ordinal = index_a
    agent:_updateEditAgent(index_a)
 
-   agent.topic[index_b] = premise_a
-   premise_a.ordinal = index_b
+   agent.topic[index_b] = round_a
+   round_a.ordinal = index_b
    agent:_updateEditAgent(index_b)
 
    agent:contentsChanged()
 end
 
-function ReviewAgent.movePremiseUp(agent)
+function ReviewAgent.moveRoundUp(agent)
    if agent.selected_index == 1 then
       return false
    end
-   _swap_premises(agent, agent.selected_index, agent.selected_index - 1)
-   -- Maintain selection of the same premise after the move
-   -- Will never wrap because we disallowed moving the first premise up
+   _swap_rounds(agent, agent.selected_index, agent.selected_index - 1)
+   -- Maintain selection of the same round after the move
+   -- Will never wrap because we disallowed moving the first round up
    agent:selectPreviousWrap()
    return true
 end
 
-function ReviewAgent.movePremiseDown(agent)
+function ReviewAgent.moveRoundDown(agent)
    if agent.selected_index == #agent.topic then
       return false
    end
-   _swap_premises(agent, agent.selected_index, agent.selected_index + 1)
+   _swap_rounds(agent, agent.selected_index, agent.selected_index + 1)
    agent:selectNextWrap()
    return true
 end
@@ -268,7 +267,7 @@ end
 function ReviewAgent.windowConfiguration(agent)
    return agent.mergeWindowConfig(Agent.windowConfiguration(), {
       field = { selected_index = true },
-      closure = { selectedPremise = true,
+      closure = { selectedRound = true,
                   editWindow = true,
                   resultsWindow = true }
    })

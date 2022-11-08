@@ -98,8 +98,8 @@ parts.review_common = {
    DOWN = "selectNextWrap",
    TAB = "toggleSelectedState",
    ["S-TAB"] = "reverseToggleSelectedState",
-   ["M-UP"] = "movePremiseUp",
-   ["M-DOWN"] = "movePremiseDown"
+   ["M-UP"] = "moveRoundUp",
+   ["M-DOWN"] = "moveRoundDown"
 }
 #/lua
 

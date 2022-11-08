@@ -152,8 +152,9 @@ end
 Loads the previous run, ready to review or re-evaluate, as (aspirationally) a
 Deck of Rounds.
 
-#todo This is only for run review right now, and as such, we actually need
-something more like a session, that is, a list of Premises, not just Rounds.
+#todo Should be some other sort of Riff with appropriate sorts of Round, not
+specifically a Session, but we do need the status behavior, so Premises work
+for now.
 
 #todo synchronously retrieve the results, could easily be lazy.
 

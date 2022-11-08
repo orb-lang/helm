@@ -42,7 +42,7 @@ end
 
 function SessionAgent.selectIndex(agent, i)
    ReviewAgent.selectIndex(agent, i)
-   local premise = agent:selectedPremise()
+   local premise = agent:selectedRound()
    agent :send { to = "agents.edit",
                  method = "update",
                  premise and premise.title }
@@ -87,7 +87,7 @@ end
 
 function SessionAgent.acceptTitleUpdate(agent)
    local new_title = agent :send { to = "agents.edit", method = "contents" }
-   agent:selectedPremise().title = new_title
+   agent:selectedRound().title = new_title
    agent:selectNextWrap()
    agent:cancelTitleEditing()
 end

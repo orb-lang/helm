@@ -42,7 +42,7 @@ Transfer the newly\-selected premise title to the EditAgent after selection\.
 ```lua
 function SessionAgent.selectIndex(agent, i)
    ReviewAgent.selectIndex(agent, i)
-   local premise = agent:selectedPremise()
+   local premise = agent:selectedRound()
    agent :send { to = "agents.edit",
                  method = "update",
                  premise and premise.title }
@@ -87,7 +87,7 @@ User is done editing a premise title, update it in the session data structure\.
 ```lua
 function SessionAgent.acceptTitleUpdate(agent)
    local new_title = agent :send { to = "agents.edit", method = "contents" }
-   agent:selectedPremise().title = new_title
+   agent:selectedRound().title = new_title
    agent:selectNextWrap()
    agent:cancelTitleEditing()
 end

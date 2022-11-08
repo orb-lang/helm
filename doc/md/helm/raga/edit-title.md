@@ -1,8 +1,8 @@
 # Edit premise title
 
-A simple, single\-purpose raga for editing the title of a session premise\.
-This is ugly and really should be able to be generalized, but without a
-proper raga stack it's the best we can do\.
+A simple, single\-purpose raga for editing a string of non\-Lua text\. Currently
+only used for the title of a session premise, and may need more work to
+generalize properly\.
 
 
 ```lua

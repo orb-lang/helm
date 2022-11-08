@@ -12,7 +12,7 @@ return Keymap(parts.review_common,
    k = { method = "setSelectedState", "keep"},
    n = { method = "setSelectedState", "insert"},
    t = { method = "setSelectedState", "trash"},
-   RETURN = "editInsertedLine",
+   RETURN = "editLine",
    ["C-RETURN"] = "evalAndResume",
    ["M-e"] = "evalAndResume"
 },

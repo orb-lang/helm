@@ -1,8 +1,7 @@
-* Edit premise line
+* Edit line
 
-Analagous to EditTitle but for inserted premises in interactive-restart.
-Should be able to be generalized, but it turns out we need more than just
-the raga stack to do this...
+Analagous to EditTitle, but editing a line of Lua outside the normal REPL context,
+e.g. the line of a round/premise during session review or interactive-restart.
 
 
 #!lua

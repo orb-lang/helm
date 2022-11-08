@@ -41,10 +41,10 @@ function SessionReview.onShift()
       return
    end
 
-   local premise = send { to = "agents.session", method = "selectedPremise" }
+   local premise = send { to = "agents.session", method = "selectedRound" }
    if not premise then
       send { to = "agents.session", method = "selectIndex", 1 }
-      premise = send { to = "agents.session", method = "selectedPremise" }
+      premise = send { to = "agents.session", method = "selectedRound" }
    end
    send { to = "agents.edit", method = "update", premise and premise.title}
 

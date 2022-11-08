@@ -14,7 +14,6 @@ local cluster = require "cluster:cluster"
 local ReviewAgent = require "helm:agent/review"
 
 local Round = require "helm:round"
-local Premise = require "helm:premise"
 
 
 
@@ -35,7 +34,8 @@ cluster.extendbuilder(new, true)
 local insert = assert(table.insert)
 function RunReviewAgent.setInitialSelection(agent)
    if #agent.topic == 0 then
-      insert(agent.topic, { line = "", status = "insert" })
+      -- #todo this shouldn't be a Premise but some other Round specialization
+      insert(agent.topic, Round():asPremise{ status = "insert" })
    end
    agent.selected_index = 1
 end
@@ -72,9 +72,9 @@ RunReviewAgent.was_inserting = false
 
 
 
-function RunReviewAgent.insertLine(agent)
-   local premise = Round():asPremise{ status = "insert" }
-   insert(agent.topic, agent.selected_index, premise)
+function RunReviewAgent.insertRound(agent)
+   local round = Round():asPremise{ status = "insert" }
+   insert(agent.topic, agent.selected_index, round)
    -- These agents are lazy-initialized, so we can
    -- just make room (with table stuffing)...
    insert(agent.edit_agents, agent.selected_index, false)
@@ -95,8 +95,8 @@ end
 
 local remove = assert(table.remove)
 function RunReviewAgent.cancelInsertion(agent)
-   if agent:selectedPremise().status ~= "insert"
-      -- Don't remove an "insert" premise if it's the very last one
+   if agent:selectedRound().status ~= "insert"
+      -- Don't remove an "insert" round if it's the very last one
       or #agent.topic == 1 then
          return
    end
@@ -116,8 +116,8 @@ end
 
 
 function RunReviewAgent.setSelectedState(agent, state)
-   local premise = agent:selectedPremise()
-   if premise.status == state then return end
+   local round = agent:selectedRound()
+   if round.status == state then return end
    -- Any status change clears the `was_inserting` flag, *except* canceling
    -- out of insertion, which sets it instead. Save it locally and clear it
    -- before deciding what to do, that way it can just be *re*-set in the
@@ -131,16 +131,16 @@ function RunReviewAgent.setSelectedState(agent, state)
          -- cycle direction, so this would need to become an assertion failure
          -- and we would have to handle this in overrides of
          -- :[reverse]ToggleSelectedState
-         state = premise.status == "keep" and "trash" or "keep"
+         state = round.status == "keep" and "trash" or "keep"
          ReviewAgent.setSelectedState(agent, state)
       else
-         agent:insertLine()
+         agent:insertRound()
       end
    else
       -- Need to explicitly check here because we don't want to change another
-      -- premise's status when canceling out of insertion. Setting the flag
+      -- round's status when canceling out of insertion. Setting the flag
       -- means the change will occur the *next* time tab is pressed
-      if premise.status == "insert" then
+      if round.status == "insert" then
          agent:cancelInsertion()
       else
          ReviewAgent.setSelectedState(agent, state)
@@ -196,10 +196,9 @@ end
 
 
 
-function RunReviewAgent.editInsertedLine(agent)
-   if agent:selectedPremise().status ~= "insert" then
-      return false
-   end
+function RunReviewAgent.editLine(agent)
+   local line = agent:selectedRound().line
+   agent :send { to = "agents.edit", method = "update", line }
    agent :send { method = "pushMode", "edit_line"}
 end
 
@@ -210,7 +209,7 @@ end
 
 
 
-function RunReviewAgent.cancelInsertEditing(agent)
+function RunReviewAgent.cancelLineEdit(agent)
    agent:cancelInsertion()
    agent :send { to = "agents.edit", method = "clear" }
    agent :send { method = "popMode" }
@@ -223,20 +222,27 @@ end
 
 
 
-function RunReviewAgent.acceptInsertion(agent)
+
+
+
+function RunReviewAgent.acceptLineEdit(agent)
    local line = agent :send { to = "agents.edit", method = "contents" }
-   if line:find("^%s*$") then
-      agent:cancelInsertEditing()
-      return
-   end
    agent :send { to = "agents.edit", method = "clear" }
-   local premise = agent:selectedPremise()
-   premise.line = line
-   -- Switch out the status without going through the usual channels
-   -- so that we don't remove the newly-added premise in the process
-   premise.status = "keep"
-   agent:_updateEditAgent(agent.selected_index)
-   agent:selectNextWrap()
+   local round = agent:selectedRound()
+   if line:find("^%s*$") then
+      if round.status ~= "insert" then
+         round.status = "trash"
+      end
+   else
+      round.line = line
+      -- Switch out the status without going through the usual channels
+      -- so that we don't remove the newly-added round in the process
+      if round.status == "insert" then
+         round.status = "keep"
+      end
+      agent:_updateEditAgent(agent.selected_index)
+      agent:selectNextWrap()
+   end
    agent :send { method = "popMode" }
 end
 
@@ -252,9 +258,9 @@ function RunReviewAgent.evalAndResume(agent)
    -- Clear out any insertion-in-progress
    agent:cancelInsertion()
    local to_run = Deque()
-   for _, premise in ipairs(agent.topic) do
-      if premise.status == "keep" then
-         to_run:push(premise:asRound())
+   for _, round in ipairs(agent.topic) do
+      if round.status == "keep" then
+         to_run:push(round:asRound())
       end
    end
    agent :send { to = "agents.status", method = "update", "default" }

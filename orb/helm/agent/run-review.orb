@@ -14,7 +14,6 @@ local cluster = require "cluster:cluster"
 local ReviewAgent = require "helm:agent/review"
 
 local Round = require "helm:round"
-local Premise = require "helm:premise"
 #/lua
 
 
@@ -29,13 +28,14 @@ cluster.extendbuilder(new, true)
 *** RunReviewAgent:setInitialSelection()
 
 We never operate on an empty topic--if we don't have anything, add a blank
-"insert" premise so we have somewhere to start.
+"insert" round so we have somewhere to start.
 
 #!lua
 local insert = assert(table.insert)
 function RunReviewAgent.setInitialSelection(agent)
    if #agent.topic == 0 then
-      insert(agent.topic, { line = "", status = "insert" })
+      -- #todo this shouldn't be a Premise but some other Round specialization
+      insert(agent.topic, Round():asPremise{ status = "insert" })
    end
    agent.selected_index = 1
 end
@@ -49,9 +49,9 @@ end
 
 This is the cycle order when pressing Tab/Shift-Tab, but there is a
 complication, because "insert" is not really a legal state for
-already-existing lines. Instead, attempting to switch to it inserts a *new*
-blank line with that state, and leaving it removes that line, *without*
-changing the state of the now-re-selected following line. This would leave us
+already-existing rounds. Instead, attempting to switch to it inserts a *new*
+blank round with that state, and leaving it removes that round, *without*
+changing the state of the now-re-selected following round. This would leave us
 stuck in a loop between "keep" and "insert" (or "trash" and "insert" when
 cycling backwards), so we also maintain a flag indicating whether we just left
 "insert". If this is set and we *would* switch to "insert", we skip over it
@@ -63,18 +63,18 @@ RunReviewAgent.was_inserting = false
 #/lua
 
 
-*** Line insertion
+*** Insertion and editing
 
 
-**** RunReviewAgent:insertLine()
+**** RunReviewAgent:insertRound()
 
-Insert a blank line with "insert" status before the currently-selected premise,
+Insert a blank round with "insert" status before the currently-selected round,
 thus selecting it.
 
 #!lua
-function RunReviewAgent.insertLine(agent)
-   local premise = Round():asPremise{ status = "insert" }
-   insert(agent.topic, agent.selected_index, premise)
+function RunReviewAgent.insertRound(agent)
+   local round = Round():asPremise{ status = "insert" }
+   insert(agent.topic, agent.selected_index, round)
    -- These agents are lazy-initialized, so we can
    -- just make room (with table stuffing)...
    insert(agent.edit_agents, agent.selected_index, false)
@@ -87,16 +87,16 @@ end
 
 **** RunReviewAgent:cancelInsertion()
 
-If the selected line is a blank "insert" line, remove it and set the
+If the selected round is blank, with "insert" status, remove it and set the
 =was_inserting= flag. Intended as an unconditional guard sent before any
-attempted selection change, so we just do nothing if the selected premise
+attempted selection change, so we just do nothing if the selected round
 isn't in "insert" state.
 
 #!lua
 local remove = assert(table.remove)
 function RunReviewAgent.cancelInsertion(agent)
-   if agent:selectedPremise().status ~= "insert"
-      -- Don't remove an "insert" premise if it's the very last one
+   if agent:selectedRound().status ~= "insert"
+      -- Don't remove an "insert" round if it's the very last one
       or #agent.topic == 1 then
          return
    end
@@ -111,13 +111,13 @@ end
 
 **** RunReviewAgent:setSelectedState(state)
 
-We need to perform additional bookkeeping to add or remove a blank line when
+We need to perform additional bookkeeping to add or remove a blank round when
 changing to/from insert status.
 
 #!lua
 function RunReviewAgent.setSelectedState(agent, state)
-   local premise = agent:selectedPremise()
-   if premise.status == state then return end
+   local round = agent:selectedRound()
+   if round.status == state then return end
    -- Any status change clears the `was_inserting` flag, *except* canceling
    -- out of insertion, which sets it instead. Save it locally and clear it
    -- before deciding what to do, that way it can just be *re*-set in the
@@ -131,16 +131,16 @@ function RunReviewAgent.setSelectedState(agent, state)
          -- cycle direction, so this would need to become an assertion failure
          -- and we would have to handle this in overrides of
          -- :[reverse]ToggleSelectedState
-         state = premise.status == "keep" and "trash" or "keep"
+         state = round.status == "keep" and "trash" or "keep"
          ReviewAgent.setSelectedState(agent, state)
       else
-         agent:insertLine()
+         agent:insertRound()
       end
    else
       -- Need to explicitly check here because we don't want to change another
-      -- premise's status when canceling out of insertion. Setting the flag
+      -- round's status when canceling out of insertion. Setting the flag
       -- means the change will occur the *next* time tab is pressed
-      if premise.status == "insert" then
+      if round.status == "insert" then
          agent:cancelInsertion()
       else
          ReviewAgent.setSelectedState(agent, state)
@@ -153,7 +153,7 @@ end
 **** RunReviewAgent:selectionChanged()
 
 Any selection change clears the =was_inserting= flag. It may have been set
-earlier in the same operation when pressing up/down with an "insert" premise
+earlier in the same operation when pressing up/down with an "insert" round
 selected--this is correct behavior, the only time the flag matters is when
 repeatedly pressing [Shift-]Tab.
 
@@ -167,7 +167,7 @@ end
 
 **** RunReviewAgent:selectIndex(i), :select{Next|Previous}Wrap()
 
-Cancel/remove any "insert" premise before changing selection. We guard against
+Cancel/remove any "insert" round before changing selection. We guard against
 any selection change, but in practice all selection changes right now go
 through =:select{Next|Previous}Wrap=--which is good, because
 :cancelInsertion() may shift part of the list by one, throwing off the meaning
@@ -191,26 +191,25 @@ end
 #/lua
 
 
-**** RunReviewAgent:editInsertedLine()
+**** RunReviewAgent:editLine()
 
-Switch to editing a blank, newly-inserted line/premise, iff there is one.
+Begin editing the line of the selected round.
 
 #!lua
-function RunReviewAgent.editInsertedLine(agent)
-   if agent:selectedPremise().status ~= "insert" then
-      return false
-   end
+function RunReviewAgent.editLine(agent)
+   local line = agent:selectedRound().line
+   agent :send { to = "agents.edit", method = "update", line }
    agent :send { method = "pushMode", "edit_line"}
 end
 #/lua
 
 
-**** RunReviewAgent:cancelInsertEditing()
+**** RunReviewAgent:cancelLineEdit()
 
-Cancel out of editing the line-to-be-inserted, leaving it in place.
+Cancel out of line editing, discarding changes.
 
 #!lua
-function RunReviewAgent.cancelInsertEditing(agent)
+function RunReviewAgent.cancelLineEdit(agent)
    agent:cancelInsertion()
    agent :send { to = "agents.edit", method = "clear" }
    agent :send { method = "popMode" }
@@ -218,25 +217,32 @@ end
 #/lua
 
 
-**** RunReviewAgent:acceptInsertion()
+**** RunReviewAgent:acceptLineEdit()
 
-Accept the line in the edit buffer as a new premise.
+Accept the line in the edit buffer and update the selected round, changing it
+from "insert" to "accept" if needed and moving to the next round. An empty
+string is not a valid/interesting line, so we either stay in "insert" state or
+change to "trash" and the selection remains in place.
 
 #!lua
-function RunReviewAgent.acceptInsertion(agent)
+function RunReviewAgent.acceptLineEdit(agent)
    local line = agent :send { to = "agents.edit", method = "contents" }
-   if line:find("^%s*$") then
-      agent:cancelInsertEditing()
-      return
-   end
    agent :send { to = "agents.edit", method = "clear" }
-   local premise = agent:selectedPremise()
-   premise.line = line
-   -- Switch out the status without going through the usual channels
-   -- so that we don't remove the newly-added premise in the process
-   premise.status = "keep"
-   agent:_updateEditAgent(agent.selected_index)
-   agent:selectNextWrap()
+   local round = agent:selectedRound()
+   if line:find("^%s*$") then
+      if round.status ~= "insert" then
+         round.status = "trash"
+      end
+   else
+      round.line = line
+      -- Switch out the status without going through the usual channels
+      -- so that we don't remove the newly-added round in the process
+      if round.status == "insert" then
+         round.status = "keep"
+      end
+      agent:_updateEditAgent(agent.selected_index)
+      agent:selectNextWrap()
+   end
    agent :send { method = "popMode" }
 end
 #/lua
@@ -244,7 +250,7 @@ end
 
 *** RunReviewAgent:evalAndResume()
 
-Finishes the review process, evaluating all non-trashed lines.
+Finishes the review process, evaluating all non-trashed rounds.
 
 #!lua
 local Deque = require "deque:deque"
@@ -252,9 +258,9 @@ function RunReviewAgent.evalAndResume(agent)
    -- Clear out any insertion-in-progress
    agent:cancelInsertion()
    local to_run = Deque()
-   for _, premise in ipairs(agent.topic) do
-      if premise.status == "keep" then
-         to_run:push(premise:asRound())
+   for _, round in ipairs(agent.topic) do
+      if round.status == "keep" then
+         to_run:push(round:asRound())
       end
    end
    agent :send { to = "agents.status", method = "update", "default" }

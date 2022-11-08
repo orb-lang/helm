@@ -305,19 +305,19 @@ function Reviewbuf._composeAll(buf)
    local function box_line(line_type)
       return box_light[line_type .. "Line"](box_light, buf:contentCols())
    end
-   for i, premise in ipairs(buf:value()) do
+   for i, round in ipairs(buf:value()) do
       yield(box_line(i == 1 and "top" or "spanning"))
       -- Render the line (which could actually be multiple physical lines)
-      local line_prefix = status_icons[premise.status] .. ' '
+      local line_prefix = status_icons[round.status] .. ' '
       for line in _txtbuf(buf, i):lineGen() do
-         -- Selected premise gets a highlight
+         -- Selected round gets a highlight
          if i == buf.source.selected_index then
             line = c.highlight(line)
          end
          yield(box_line"content" .. line_prefix .. line)
          line_prefix = '   '
       end
-      -- Selected premise also displays results
+      -- Selected round also displays results
       if i == buf.source.selected_index then
          yield(box_line"spanning")
          for line in _resbuf(buf):lineGen() do
@@ -327,7 +327,7 @@ function Reviewbuf._composeAll(buf)
    end
    if #buf:value() == 0 then
       yield(box_line"top")
-      yield(box_line"content" .. "No premises to display")
+      yield(box_line"content" .. "No rounds to display")
    end
    yield(box_line"bottom")
    buf._composeOneLine = nil

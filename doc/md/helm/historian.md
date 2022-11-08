@@ -153,7 +153,8 @@ Loads the previous run, ready to review or re\-evaluate, as \(aspirationally\) a
 Deck of Rounds\.
 
 \#todo
-something more like a session, that is, a list of Premises, not just Rounds\.
+specifically a Session, but we do need the status behavior, so Premises work
+for now\.
 
 \#todo
 
