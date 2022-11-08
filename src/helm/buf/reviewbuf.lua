@@ -87,10 +87,14 @@ local function _resbuf(buf)
    return buf.resbuf
 end
 
-local lua_thor = assert(require "helm:lex" . lua_thor)
 local function _txtbuf(buf, index)
    if not buf.txtbufs[index] then
-      buf.txtbufs[index] = Txtbuf(buf.source.editWindow(index), { lex = lua_thor })
+      -- Stuff any uninitialized slots with `false`
+      -- to maintain correct insert/remove behavior
+      for i = #buf.txtbufs + 1, index - 1 do
+         buf.txtbufs[i] = false
+      end
+      buf.txtbufs[index] = Txtbuf(buf.source.editWindow(index))
       _set_txtbuf_extent(buf, index)
    end
    return buf.txtbufs[index]
@@ -104,8 +108,16 @@ end
 
 
 
-function Reviewbuf.editAgentRemoved(buf, index)
-   buf.txtbufs[index] = nil
+
+local insert, remove = assert(table.insert), assert(table.remove)
+function Reviewbuf.roundInserted(buf, index)
+   -- Similar to the agent, we lazy-init so just need to make space,
+   -- but do need a non-nil value to hold the slot
+   insert(buf.txtbufs, index, false)
+end
+
+function Reviewbuf.roundRemoved(buf, index)
+   remove(buf.txtbufs, index)
 end
 
 
@@ -119,9 +131,7 @@ end
 function Reviewbuf.setSubExtents(buf)
    if not (buf.rows and buf.cols) then return end
    _set_resbuf_extent(buf)
-   -- There'll probably never be holes in the txtbufs array, but it doesn't
-   -- really matter what order we do this in, so better safe than sorry.
-   for index in pairs(buf.txtbufs) do
+   for index in ipairs(buf.txtbufs) do
       _set_txtbuf_extent(buf, index)
    end
 end
@@ -145,7 +155,8 @@ function Reviewbuf.checkTouched(buf)
       buf:beTouched()
    end
    for _, txtbuf in pairs(buf.txtbufs) do
-      if txtbuf:checkTouched() then
+      -- Could have `false` stuffing
+      if txtbuf and txtbuf:checkTouched() then
          buf:beTouched()
       end
    end
@@ -217,7 +228,8 @@ function Reviewbuf.processQueuedMessages(buf)
       had_any = true
    end
    for _, txtbuf in pairs(buf.txtbufs) do
-      if txtbuf:processQueuedMessages() then
+      -- Could have `false` stuffing
+      if txtbuf and txtbuf:processQueuedMessages() then
          had_any = true
       end
    end

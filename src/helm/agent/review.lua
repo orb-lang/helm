@@ -286,6 +286,11 @@ local lua_thor = assert(require "helm:lex" . lua_thor)
 function ReviewAgent.editWindow(agent, index)
    assert(inbounds(index, 1, #agent.topic))
    if not agent.edit_agents[index] then
+      -- Stuff not-yet-initialized slots with `false`
+      -- to maintain correct insert/remove/etc behavior
+      for i = #agent.edit_agents + 1, index - 1 do
+         agent.edit_agents[i] = false
+      end
       agent.edit_agents[index] = EditAgent()
       agent.edit_agents[index].lex = lua_thor
       agent:_updateEditAgent(index)

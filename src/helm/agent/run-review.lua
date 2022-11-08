@@ -72,17 +72,15 @@ RunReviewAgent.was_inserting = false
 
 
 
-local function _updateAgentsAfterSelected(agent)
-   for i = agent.selected_index, #agent.topic do
-      agent:_updateEditAgent(i)
-   end
-   agent:_updateResultsAgent()
-end
-
 function RunReviewAgent.insertLine(agent)
    local premise = Round():asPremise{ status = "insert" }
    insert(agent.topic, agent.selected_index, premise)
-   _updateAgentsAfterSelected(agent)
+   -- These agents are lazy-initialized, so we can
+   -- just make room (with table stuffing)...
+   insert(agent.edit_agents, agent.selected_index, false)
+   -- ...and inform the buffer
+   agent:bufferCommand("roundInserted", agent.selected_index)
+   agent:_updateResultsAgent()
 end
 
 
@@ -102,13 +100,10 @@ function RunReviewAgent.cancelInsertion(agent)
       or #agent.topic == 1 then
          return
    end
-
    remove(agent.topic, agent.selected_index)
-   -- Remove the *last* EditAgent iff there is one,
-   -- then update the others to preserve bindings
-   agent.edit_agents[#agent.topic + 1] = nil
-   agent:bufferCommand("editAgentRemoved", #agent.topic + 1)
-   _updateAgentsAfterSelected(agent)
+   remove(agent.edit_agents, agent.selected_index)
+   agent:bufferCommand("roundRemoved", agent.selected_index)
+   agent:_updateResultsAgent()
    agent.was_inserting = true
 end
 

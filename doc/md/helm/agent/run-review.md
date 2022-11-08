@@ -72,17 +72,15 @@ Insert a blank line with "insert" status before the currently\-selected premise,
 thus selecting it\.
 
 ```lua
-local function _updateAgentsAfterSelected(agent)
-   for i = agent.selected_index, #agent.topic do
-      agent:_updateEditAgent(i)
-   end
-   agent:_updateResultsAgent()
-end
-
 function RunReviewAgent.insertLine(agent)
    local premise = Round():asPremise{ status = "insert" }
    insert(agent.topic, agent.selected_index, premise)
-   _updateAgentsAfterSelected(agent)
+   -- These agents are lazy-initialized, so we can
+   -- just make room (with table stuffing)...
+   insert(agent.edit_agents, agent.selected_index, false)
+   -- ...and inform the buffer
+   agent:bufferCommand("roundInserted", agent.selected_index)
+   agent:_updateResultsAgent()
 end
 ```
 
@@ -102,13 +100,10 @@ function RunReviewAgent.cancelInsertion(agent)
       or #agent.topic == 1 then
          return
    end
-
    remove(agent.topic, agent.selected_index)
-   -- Remove the *last* EditAgent iff there is one,
-   -- then update the others to preserve bindings
-   agent.edit_agents[#agent.topic + 1] = nil
-   agent:bufferCommand("editAgentRemoved", #agent.topic + 1)
-   _updateAgentsAfterSelected(agent)
+   remove(agent.edit_agents, agent.selected_index)
+   agent:bufferCommand("roundRemoved", agent.selected_index)
+   agent:_updateResultsAgent()
    agent.was_inserting = true
 end
 ```
@@ -174,9 +169,9 @@ end
 
 Cancel/remove any "insert" premise before changing selection\. We guard against
 any selection change, but in practice all selection changes right now go
-through `:select{Next|Previous}Wrap`\-\-which is good, because
-:cancelInsertion\(\) may shift part of the list by one, throwing off the meaning
-of the index if it was computed first\. Thus we separately override
+through `:select{Next|Previous}Wrap`\-\-which is good, becausecancelInsertion\(\) may shift part of the list by one, throwing off the meaning
+of
+: the index if it was computed first\. Thus we separately override
 `:select{Next|Previous}Wrap()` to perform any such shuffling before computing
 what index to select\.
 

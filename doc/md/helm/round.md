@@ -135,7 +135,7 @@ end
 ```
 
 
-### Round\(\[line\[, response\]\), Round\(data\)
+### Round\(\[line\[, response\]\]\), Round\(data\)
 
 Construct a Round from the provided line and optional response; or from a
 table containing \(at least\) the field `line`\. The response should be supplied
