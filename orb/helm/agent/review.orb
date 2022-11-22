@@ -74,7 +74,7 @@ update them if-and-only-if they exist.
 function ReviewAgent._updateEditAgent(agent, index)
    local edit_agent = agent.edit_agents[index]
    if edit_agent then
-      edit_agent:update(agent.topic[index].line)
+      edit_agent:update(agent.topic[index]:getLine())
    end
 end
 

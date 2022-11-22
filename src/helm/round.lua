@@ -41,8 +41,27 @@ local new, Round = cluster.order()
 
 
 
+
+
+
+
+
+function Round.getLine(round)
+  return round.line
+end
+
+function Round.setLine(round, new_line)
+  round.line = new_line
+  -- round.id = nil
+end
+
+
+
+
+
+
 function Round.isBlank(round)
-  return round.line == ""
+  return round:getLine() == ""
 end
 
 
@@ -56,7 +75,30 @@ end
 
 local count = assert(core.string.count)
 function Round.lineCount(round)
-  return count(round.line, '\n') + 1
+  return count(round:getLine(), '\n') + 1
+end
+
+
+
+
+
+
+function Round.getResponse(round)
+  return round.response[1]
+end
+
+function Round.setResponse(round, new_response)
+  round.response[1] = new_response
+  -- round.id = nil
+end
+
+function Round.setDBResponse(round, db_response)
+  round.db_response = db_response
+  local existing = round:getResponse()
+  -- Don't overwrite live result with DB result
+  if type(existing) ~= "table" then
+    round:setResponse(db_response)
+  end
 end
 
 
@@ -76,14 +118,9 @@ end
 
 
 function Round.result(round)
-  local response
-  if type(round.response[1]) == "table" then
-    response = round.response[1]
-  elseif round.db_response then
-    response = round.db_response
-  end
-  if response and response.error then
-    -- Error is not a result
+  local response = round:getResponse()
+  if not response or type(response) ~= "table" or response.error then
+    -- Error or status string ('new', 'unloaded', etc) is not a result
     return nil
   else
     return response
@@ -99,7 +136,20 @@ end
 
 
 function Round.hasResults(round)
-  return round:result() and round:result().n > 0
+  local result = round:result()
+  return result and result.n > 0
+end
+
+
+
+
+
+
+
+
+function Round.isError(round)
+  local response = round:getResponse()
+  return response and type(response) == "table" and response.error
 end
 
 
@@ -111,7 +161,24 @@ end
 
 
 function Round.newFromLine(round)
-  return new(round.line)
+  return new(round:getLine())
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function Round.asRound(round)
+  return round
 end
 
 

@@ -256,7 +256,7 @@ function Historian.loadResponseFor(historian, round)
    for i, res in stmt:cols() do
       results[i] = res
    end
-   round.db_response = _wrapResults(results)
+   round:setDBResponse(_wrapResults(results))
 end
 ```
 
@@ -280,7 +280,7 @@ function Historian.persist(historian, round)
    -- Persist the line of input itself
    sql_insert_errcheck(
       historian.insert_line:bindkv { project = historian.project_id,
-                                     line    = blob(round.line) })
+                                     line    = blob(round:getLine()) })
    round.line_id = historian.stmts.lastRowId()
 
    -- Then the run action indicating it was just evaluated
@@ -382,8 +382,8 @@ will become part of the Deck, with altered behavior\.\)
 ```lua
 function Historian.stashLine(historian, line)
    local round = historian[historian.cursor]
-   if round and line == round.line then return end
-   historian.desk.line = line
+   if round and line == round:getLine() then return end
+   historian.desk:setLine(line)
 end
 ```
 
@@ -430,7 +430,7 @@ function Historian.search(historian, frag)
       local patt = fuzz_patt(result.frag)
       local dup = {}
       for i = historian.n, 1, -1 do
-         local item_str = tostring(historian[i].line)
+         local item_str = tostring(historian[i]:getLine())
          if not dup[item_str] and patt:match(item_str) then
             dup[item_str] = true
             insert(result, item_str)

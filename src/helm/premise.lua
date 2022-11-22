@@ -54,7 +54,7 @@ end)
 local Round
 function Premise.asRound(premise)
    Round = Round or require "helm:round"
-   return Round(premise.line)
+   return Round(premise:getLine())
 end
 
 

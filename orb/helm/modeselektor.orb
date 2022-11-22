@@ -427,7 +427,7 @@ function ModeS.rerunner(modeS, deque)
    local success, results
    for old_round in deque:popAll() do
       local new_round = old_round:newFromLine()
-      success, results = modeS:eval(new_round.line)
+      success, results = modeS:eval(new_round:getLine())
       assert(results ~= "advance", "Incomplete line when restarting session")
       new_round.response[1] = results
       modeS.hist:append(new_round)
@@ -491,15 +491,15 @@ function ModeS.userEval(modeS)
    local line = modeS:send { to = "agents.edit",
                        method = 'contents' }
    local round = modeS.hist.desk
-   round.line = line
+   round:setLine(line)
    local success, results = modeS:eval(line)
    s:chat("we return from evaluation, success: %s", success)
    if not success and results == 'advance' then
       modeS:send { to = "agents.edit", method = 'endOfText'}
-      round.response[1] = 'advance'
+      round:setResponse('advance')
       return false -- Fall through to EditAgent nl binding
    else
-      round.response[1] = results
+      round:setResponse(results)
       modeS:send { to = 'hist', method = 'append', round }
       -- Do this first because it clears the results area
       -- #todo this clearly means edit:clear() is doing too much, decouple
@@ -543,7 +543,7 @@ function ModeS.historyBack(modeS)
    modeS:send { to = 'hist', method = 'stashLine', linestash }
    local prev_round = modeS:send { to = "hist", method = "prev" }
    if prev_round then
-      modeS:send { to = "agents.edit", method = "update", prev_round.line }
+      modeS:send { to = "agents.edit", method = "update", prev_round:getLine() }
       modeS:send { to = "agents.results", method = "update", prev_round:result() }
    end
 end
@@ -553,7 +553,7 @@ function ModeS.historyForward(modeS)
    modeS:send { to = 'hist', method = 'stashLine', linestash }
    local next_round = modeS:send { to = "hist", method = "next" }
    if next_round then
-      modeS:send { to = "agents.edit", method = "update", next_round.line }
+      modeS:send { to = "agents.edit", method = "update", next_round:getLine() }
       modeS:send { to = "agents.results", method = "update", next_round:result() }
    end
 end

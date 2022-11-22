@@ -197,7 +197,7 @@ Begin editing the line of the selected round\.
 
 ```lua
 function RunReviewAgent.editLine(agent)
-   local line = agent:selectedRound().line
+   local line = agent:selectedRound():getLine()
    agent :send { to = "agents.edit", method = "update", line }
    agent :send { method = "pushMode", "edit_line"}
 end
@@ -234,7 +234,7 @@ function RunReviewAgent.acceptLineEdit(agent)
          round.status = "trash"
       end
    else
-      round.line = line
+      round:setLine(line)
       -- Switch out the status without going through the usual channels
       -- so that we don't remove the newly-added round in the process
       if round.status == "insert" then

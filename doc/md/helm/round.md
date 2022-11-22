@@ -43,11 +43,30 @@ local new, Round = cluster.order()
 ```
 
 
+### Round:getLine\(\), :setLine\(new\_line\)
+
+We're headed towards needing to clear our DB ID when updated, and some
+specializations may need further behavior, so we route changes through
+accessors\. For now the actual value remains at \.line, but this is not
+guaranteed and should not be accessed directly\.
+
+```lua
+function Round.getLine(round)
+  return round.line
+end
+
+function Round.setLine(round, new_line)
+  round.line = new_line
+  -- round.id = nil
+end
+```
+
+
 ### Round:isBlank\(\)
 
 ```lua
 function Round.isBlank(round)
-  return round.line == ""
+  return round:getLine() == ""
 end
 ```
 
@@ -61,7 +80,30 @@ the number of newlines plus one\.
 ```lua
 local count = assert(core.string.count)
 function Round.lineCount(round)
-  return count(round.line, '\n') + 1
+  return count(round:getLine(), '\n') + 1
+end
+```
+
+
+### Round:getResponse\(\), :setResponse\(\)
+
+```lua
+function Round.getResponse(round)
+  return round.response[1]
+end
+
+function Round.setResponse(round, new_response)
+  round.response[1] = new_response
+  -- round.id = nil
+end
+
+function Round.setDBResponse(round, db_response)
+  round.db_response = db_response
+  local existing = round:getResponse()
+  -- Don't overwrite live result with DB result
+  if type(existing) ~= "table" then
+    round:setResponse(db_response)
+  end
 end
 ```
 
@@ -81,14 +123,9 @@ separate responsibility with Historian and/or the Deck\.
 
 ```lua
 function Round.result(round)
-  local response
-  if type(round.response[1]) == "table" then
-    response = round.response[1]
-  elseif round.db_response then
-    response = round.db_response
-  end
-  if response and response.error then
-    -- Error is not a result
+  local response = round:getResponse()
+  if not response or type(response) ~= "table" or response.error then
+    -- Error or status string ('new', 'unloaded', etc) is not a result
     return nil
   else
     return response
@@ -104,7 +141,20 @@ above\-\-this is an additional condition beyond just `:result() ~= nil`\.
 
 ```lua
 function Round.hasResults(round)
-  return round:result() and round:result().n > 0
+  local result = round:result()
+  return result and result.n > 0
+end
+```
+
+
+### Round:isError\(\)
+
+Answer whether the response indicates an error\.
+
+```lua
+function Round.isError(round)
+  local response = round:getResponse()
+  return response and type(response) == "table" and response.error
 end
 ```
 
@@ -116,7 +166,24 @@ the DB, etc\.
 
 ```lua
 function Round.newFromLine(round)
-  return new(round.line)
+  return new(round:getLine())
+end
+```
+
+
+## Specialization conversion
+
+Rounds have many specializations/augmentations/views \(\#todo terminology\), and
+we provide methods to produce whichever the caller needs at the time\.
+
+
+### Round:asRound\(\)
+
+No\-op, but other specializations have something to do\.
+
+```lua
+function Round.asRound(round)
+  return round
 end
 ```
 
