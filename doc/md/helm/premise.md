@@ -8,10 +8,11 @@ and a title\), but we'll start with leaving that behavior in the relevant
 Agent\.
 
 This means that the premise behaves as though it has the round itself in
-\`\_\_index\`, in addition to its own cassette of methods\. Assignments to fields
-of the premise shadow the values from the round rather than modifying them,
-but we provide methods to modify the round if needed\. This is related to
-`Self`\-style prototype inheritance, though the analogy is probably not exact\.
+\`\_\_index\`, in addition to its own cassette of methods\. \(This is related to
+`Self`\-style prototype inheritance, though the analogy is probably not exact\.\)
+Assignments to fields of the premise shadow the values from the round rather
+than modifying them\. This is intentional\-\-if a Round is needed, we provide
+`:asRound` to convert back to one\.
 
 #### imports
 
@@ -40,6 +41,85 @@ cluster.construct(new, function(_new, premise, round, data)
    premise.title = data.title
    return premise
 end)
+```
+
+
+### Premise:compareToNewEvaluation\(new\_round\)
+
+Examine `round`, which is a newer evaluation of the premise \(always the same
+line as premise\.line, may or may not be the same as the underlying round's
+line\), and determine whether the response differs \(this is cached\) in order to
+update the status and valid statuses\.
+
+```lua
+local function _isSame(old_response, new_response)
+   -- Was an error, now a result or vice-versa
+   if old_response.error ~= new_response.error
+   -- Results are different lengths
+   or old_response.n ~= new_response.n then
+      return false
+   end
+   for i, old_res in ipairs(old_response) do
+      local new_res = new_response[i]
+      if old_res ~= new_res then
+         return false
+      end
+   end
+   return true
+end
+
+function Premise.compareToNewEvaluation(premise, new_round)
+   premise.new_round = new_round
+   -- Comparison operates on the DB/stringified responses
+   premise.same = _isSame(premise.db_response, new_round.db_response)
+   if not premise.same then
+      if premise.status == "accept" then
+         premise.status = "fail"
+      elseif premise.status == "watch" then
+         premise.status = "report"
+      end
+   end
+   -- An error on an ignored premise counts as a failure
+   -- Usually this will lead to knock-on failures down the line,
+   -- but those aren't the real problem--this makes it easier to diagnose
+   if premise.status == "ignore" and new_round.response.error then
+      premise.status = "warn"
+   end
+
+   -- Copy the live response for viewing as well as the DB response
+   premise.response = new_round.response
+   premise.db_response = new_round.db_response
+end
+```
+
+
+### Premise:validStatuses\(\)
+
+Answers the list of statuses this premise could be in\. This consists of a
+fixed list in most cases, but empty lines must always be "insert", and if
+results differ, we may introduce a special status to display this\.
+
+```lua
+local insert, remove = assert(table.insert), assert(table.remove)
+function Premise.validStatuses(premise)
+   if premise:getLine() == "" then
+      return { "insert" }
+   end
+   local answer = { "ignore", "accept", "watch", "trash" }
+   -- "ignore" not valid for error responses
+   if premise:isError() then
+      remove(answer, 1)
+   end
+   -- premise.same will be nil until we have a result to compare
+   if premise.new_round and not premise.same then
+      if premise.status == "accept" then
+         insert(answer, 3, "fail")
+      elseif premise.status == "watch" then
+         insert(answer, 4, "report")
+      end
+   end
+   return answer
+end
 ```
 
 

@@ -1,0 +1,15 @@
+Agent needs to :contentsChanged() after toggling happens
+
+For Toggle--I'm familiar from Dolphin Smalltalk with a system for change events where basically every change fires two events. First an #onSomethingChanging event, which fires *before* the change, includes the desired state in the event, and has the ability to intervene and disallow the change. Then the change occurs if not prevented. Then an #onSomethingChanged event, which often doesn't even include the old state (though it would often be nice if it did--not relevant here though I don't think), and is just a notification.
+
+core:table.indexof ?
+	Actually make it indicesof and have multiple return values of all the positions, not just the first
+
+PremiseAgent, probably instead of an EditAgent per premise
+
+
+How are RiffRound and Premise related? Inheritance or (nested) augmentation? Can we get the augmentation thing into cluster proper?
+Need a post-metatable initializer in cluster, it's *way* too common to need methods during initialization and having the seed there isn't a solution when they may call each other
+Round conversion API needs clarification. Do I really want a =:asThing= for every kind of Thing that augments Round? I mean I guess...?
+
+Some generic mechanism for alerts would be great--BEL is a start and we probably should have implemented it already, but a way to change the status line, display a message on the right, etc. *then change it back automatically* on the next input event or after a delay would be a really good addition.

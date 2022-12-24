@@ -96,6 +96,8 @@ function Round.setDBResponse(round, db_response)
   round.db_response = db_response
   local existing = round:getResponse()
   -- Don't overwrite live result with DB result
+  -- #todo might be better to lazy-fallback and leave a special marker
+  -- like "db-response" in the normal response field
   if type(existing) ~= "table" then
     round:setResponse(db_response)
   end
@@ -179,6 +181,17 @@ No-op, but other specializations have something to do.
 #!lua
 function Round.asRound(round)
   return round
+end
+#/lua
+
+
+*** Round:asRiffRound()
+
+#!lua
+local RiffRound
+function Round.asRiffRound(round)
+  RiffRound = RiffRound or require "helm:riff-round"
+  return RiffRound(round)
 end
 #/lua
 

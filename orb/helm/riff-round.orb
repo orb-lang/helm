@@ -1,0 +1,92 @@
+* Riff round
+
+View over a Round, giving it its place in a Riff, and--for the convenience of
+run review/interactive restart--adding a simple status flag
+(keep/trash/insert).
+
+**** imports
+
+#!lua
+local cluster = require "cluster:cluster"
+
+local Toggle = require "gadget:toggle"
+#/lua
+
+#!lua
+local new, RiffRound, RiffRound_M = cluster.order()
+#/lua
+
+
+*** RiffRound(round)
+
+Constructs a RiffRound wrapping =round=.
+
+#todo currently no additional information is retrieved--we always start with
+=keep= status--but we'll want to grab our =riff_round_id= and possibly a
+backpointer to the =riff= as well once those exist.
+
+This is essentially private, with the public API being
+=Premise:asRound(data)=.
+
+#!lua
+cluster.construct(new, function(_new, riff_round, round)
+   -- Store the round in this special slot to keep it out of the way
+   -- of any possible string-keyed fields
+   riff_round[riff_round] = round
+   if round:isBlank() then
+      riff_round.status = Toggle{ "insert" }
+   else
+      riff_round.status = Toggle{ "keep", "trash" }
+   return riff_round
+end)
+#/lua
+
+
+*** RiffRound:asRound()
+
+#todo copied from Premise. Not sure if Premise should itself be an
+augmentation of RiffRound, or a subgenre, or if this is the best we can do.
+
+#!lua
+local Round
+function RiffRound.asRound(premise)
+   Round = Round or require "helm:round"
+   return Round(premise:getLine())
+end
+#/lua
+
+
+*** RiffRound:validStatuses()
+
+The list of statuses valid for this RiffRound. Used to set up the Toggle that holds our actual status.
+
+#!lua
+function RiffRound.validStatuses(riff_round)
+   if riff_round:isBlank() then
+      return { "insert" }
+   else
+      return { "keep" , "trash" }
+   end
+end
+#/lua
+
+
+*** RiffRound.__index
+
+#todo this will eventually be a core cluster feature.
+
+#!lua
+function RiffRound_M.__index(riff_round, key)
+   if RiffRound[key] ~= nil then
+      return RiffRound[key]
+   else
+      return riff_round[riff_round][key]
+   end
+end
+#/lua
+
+
+
+#/lua
+
+

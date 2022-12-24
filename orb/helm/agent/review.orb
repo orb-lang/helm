@@ -28,19 +28,7 @@ cluster.extendbuilder(new, function(_new, agent)
    agent.selected_index = 0
    agent.edit_agents = {}
    agent.results_agent = ResultsAgent()
-   agent.status_cycle_map = {}
-   agent.status_reverse_map = {}
-   local stats = _new.valid_statuses
-   for i, this_status in ipairs(stats) do
-      local prev_status = i == 1
-         and stats[#stats]
-         or stats[i - 1]
-      local next_status = i == #stats
-         and stats[1]
-         or stats[i + 1]
-      agent.status_cycle_map[this_status] = next_status
-      agent.status_reverse_map[this_status] = prev_status
-   end
+   agent.was_inserting = false
    return agent
 end)
 #/lua
@@ -101,11 +89,17 @@ Notification that the selected item in the list has changed. Update the
 results display and scroll the selection into view. Our displayed contents
 change as well because of the selection highlight.
 
+Any selection change clears the =was_inserting= flag. It may have been set
+earlier in the same operation when pressing up/down with an "insert" round
+selected--this is correct behavior, the only time the flag matters is when
+repeatedly pressing [Shift-]Tab.
+
 #!lua
 function ReviewAgent.selectionChanged(agent)
-      agent:_updateResultsAgent()
-      agent:contentsChanged()
-      agent:bufferCommand("ensureSelectedVisible")
+   agent.was_inserting = false
+   agent:_updateResultsAgent()
+   agent:contentsChanged()
+   agent:bufferCommand("ensureSelectedVisible")
 end
 #/lua
 
@@ -114,9 +108,16 @@ end
 
 Select the round at =index= in the session for possible editing.
 
+#todo we cancel any pending insertion at the start because it's definitely bad
+to leave an "insert" round hanging around unselected. But this throws off the
+meaning of the index, so really we should be more careful, and it's not clear
+what the behavior should be. Fortunately this method is never actually hit
+directly, so it's not a problem right now.
+
 #!lua
 local clamp = assert(math.clamp)
 function ReviewAgent.selectIndex(agent, index)
+   agent:cancelInsertion()
    index = #agent.topic == 0
       and 0
       or clamp(index, 1, #agent.topic)
@@ -130,17 +131,20 @@ end
 
 **** ReviewAgent:selectNextWrap(), :selectPreviousWrap()
 
-Selects the next/previous round, wrapping around to the beginning/end
-if we're at the end/beginning, respectively.
+Selects the next/previous round, wrapping around to the beginning/end if we're
+at the end/beginning, respectively. Cancel any pending insertion first so we
+start from the right place when computing the new index to select.
 
 #!lua
 function ReviewAgent.selectNextWrap(agent)
+   agent:cancelInsertion()
    local new_idx = agent.selected_index < #agent.topic
       and agent.selected_index + 1
       or 1
    return agent:selectIndex(new_idx)
 end
 function ReviewAgent.selectPreviousWrap(agent)
+   agent:cancelInsertion()
    local new_idx = agent.selected_index > 1
       and agent.selected_index - 1
       or #agent.topic
@@ -158,13 +162,29 @@ end
 #/lua
 
 
-*** Editing
+*** Status editing and insertion
 
 
-**** Status list and cycle maps
+**** When to switch to "insert"
 
-Concrete implementations must supply a list of possible round statuses,
-in the order they should cycle when pressing "tab".
+The rounds are expected to know their list of valid statuses, but there is a
+complication, because "insert" is *not* a legal state for already-existing
+rounds. It occupies a sort of "virtual" place in the list of valid statuses,
+and attempting to switch to it inserts a *new* blank round (for which insert
+is the only valid status), and leaving it removes that round, *without*
+changing the state of the now-re-selected following round. Doing this naively
+would leave us stuck in a loop between "keep" and "insert" (or "trash" and
+"insert" when cycling backwards), so we also maintain a flag indicating
+whether we just left "insert". If this is set and we *would* switch to
+"insert", we skip over it and go to whatever's next/previous in the order.
+
+We use a property insert_after_status to indicate where in the order we should
+pretend "insert" exists. The reverse-toggle behavior must be computed on the
+fly because the list of valid statuses is not static.
+
+#!lua
+ReviewAgent.insert_after_status = nil
+#/lua
 
 
 **** ReviewAgent:[reverse]toggleSelectedState()
@@ -173,34 +193,160 @@ Toggles the state of the selected round, cycling through the valid statuses.
 
 #!lua
 function ReviewAgent.toggleSelectedState(agent)
-   local new_status = agent.status_cycle_map[agent:selectedRound().status]
-   return agent:setSelectedState(new_status)
+   local round = agent:selectedRound()
+   if not agent.was_inserting
+   and round.status() == agent.insert_after_status then
+      agent:insertRound()
+   elseif round.status() == "insert" then
+      agent:cancelInsertion()
+   else
+      agent.was_inserting = false
+      agent:selectedRound().status.next()
+      agent:contentsChanged()
+   end
 end
 
 function ReviewAgent.reverseToggleSelectedState(agent)
-   local new_status = agent.status_reverse_map[agent:selectedRound().status]
-   return agent:setSelectedState(new_status)
+   local round = agent:selectedRound()
+   if not agent.was_inserting
+   and round.status:peekPrev() == agent.insert_after_status then
+      agent:insertRound()
+   elseif round.status() == "insert" then
+      agent:cancelInsertion()
+   else
+      agent.was_inserting = false
+      agent:selectedRound().status.prev()
+      agent:contentsChanged()
+   end
 end
 #/lua
 
 
 **** ReviewAgent:setSelectedState(state)
 
-Directly set the state of the selected round (must be one of the valid states).
+Directly set the state of the selected round. If the requested status is not valid for the round,
+do nothing.
+
+#todo should BEL or provide some other indicator of failure. For now pretending NYI will have to do.
 
 #!lua
 function ReviewAgent.setSelectedState(agent, state)
-   local round = agent:selectedRound()
-   if round.status == state then return end
-   assert(agent.status_cycle_map[state], "Cannot change to invalid status %s", state)
-   round.status = state
-   agent:contentsChanged()
-   return true
+   if agent:selectedRound().status.set(state) then
+      agent:contentsChanged()
+      return true
+   else
+      -- #todo Must not be valid at this time, should BEL here
+      return false
+   end
 end
 #/lua
 
 
-**** ReviewAgent:moveRound{Up|Down}()
+**** ReviewAgent:insertRound()
+
+Insert a blank round with "insert" status before the currently-selected round,
+thus selecting it.
+
+#!lua
+function ReviewAgent.insertRound(agent)
+   -- #todo Need to use RiffRound or Premise as appropriate here
+   local round = Round():asPremise{ status = "insert" }
+   insert(agent.topic, agent.selected_index, round)
+   -- These agents are lazy-initialized, so we can
+   -- just make room (with table stuffing)...
+   insert(agent.edit_agents, agent.selected_index, false)
+   -- ...and inform the buffer
+   agent:bufferCommand("roundInserted", agent.selected_index)
+   agent:_updateResultsAgent()
+end
+#/lua
+
+
+**** ReviewAgent:cancelInsertion()
+
+If the selected round is blank, with "insert" status, remove it and set the
+=was_inserting= flag. Intended as an unconditional guard sent before any
+attempted selection change, so we just do nothing if the selected round
+isn't in "insert" state.
+
+#!lua
+local remove = assert(table.remove)
+function ReviewAgent.cancelInsertion(agent)
+   if agent:selectedRound().status ~= "insert"
+      -- Don't remove an "insert" round if it's the very last one
+      or #agent.topic == 1 then
+         return
+   end
+   remove(agent.topic, agent.selected_index)
+   remove(agent.edit_agents, agent.selected_index)
+   agent:bufferCommand("roundRemoved", agent.selected_index)
+   agent:_updateResultsAgent()
+   agent.was_inserting = true
+end
+#/lua
+
+
+*** Line editing
+
+
+**** ReviewAgent:editLine()
+
+Begin editing the line of the selected round.
+
+#!lua
+function ReviewAgent.editLine(agent)
+   local line = agent:selectedRound():getLine()
+   agent :send { to = "agents.edit", method = "update", line }
+   agent :send { method = "pushMode", "edit_line"}
+end
+#/lua
+
+
+**** ReviewAgent:cancelLineEdit()
+
+Cancel out of line editing, discarding changes.
+
+#!lua
+function ReviewAgent.cancelLineEdit(agent)
+   agent:cancelInsertion()
+   agent :send { to = "agents.edit", method = "clear" }
+   agent :send { method = "popMode" }
+end
+#/lua
+
+
+**** ReviewAgent:acceptLineEdit()
+
+Accept the line in the edit buffer and update the selected round, changing it
+from "insert" to "accept" if needed and moving to the next round. An empty
+string is not a valid/interesting line, so we either stay in "insert" state or
+change to "trash" and the selection remains in place.
+
+#!lua
+function ReviewAgent.acceptLineEdit(agent)
+   local line = agent :send { to = "agents.edit", method = "contents" }
+   agent :send { to = "agents.edit", method = "clear" }
+   local round = agent:selectedRound()
+   round:setLine(line)
+   if line:find("^%s*$") then
+      -- Deleting the whole line is equivalent to trashing the round
+      -- "Insert" rounds will ignore this as "trash" is not a valid state for them
+      round.status:set("trash")
+   else
+      -- Switch out the status without going through the usual channels
+      -- so that we don't remove the newly-added round in the process
+      if round.status() == "insert" then
+         round.status:set("keep")
+      end
+      agent:_updateEditAgent(agent.selected_index)
+      agent:selectNextWrap()
+   end
+   agent :send { method = "popMode" }
+end
+#/lua
+
+
+*** ReviewAgent:moveRound{Up|Down}()
 
 Moves the selected round up/back or down/forward in the riff.
 

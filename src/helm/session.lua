@@ -221,6 +221,13 @@ function Session.save(session)
    -- Now insert all of our premises--anything that is already there
    -- will be replaced thanks to ON CONFLICT REPLACE
    for i, premise in ipairs(session) do
+      -- Results differ and user chose not to update, but might have changed the title
+      -- Unset the new response from the premise (still there on .new_round)
+      -- #todo if the user changed the *line*, this is no longer so sensible--
+      -- should probably disallow "leave the results alone" in that case
+      if premise.status == "fail" or premise.status == "report" then
+         premise.response = nil
+      end
       session.stmts.insert_premise
             :bindkv{ session_id = session.session_id, ordinal = i }
             -- Pick up title and status, and line_id (from the round)
