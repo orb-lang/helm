@@ -27,6 +27,7 @@
 
 
 
+
 local create_project_table_7 = [[
 CREATE TABLE project_copy(
    project_id INTEGER PRIMARY KEY,
@@ -189,7 +190,6 @@ CREATE TABLE response(
 
 
 
-
 local create_result_table_7 = [[
 CREATE TABLE IF NOT EXISTS result_copy (
    result_id INTEGER PRIMARY KEY,
@@ -248,7 +248,6 @@ CREATE TABLE riff (
    riff_id INTEGER PRIMARY KEY,
 );
 ]]
-
 
 
 

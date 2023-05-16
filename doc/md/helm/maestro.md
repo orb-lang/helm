@@ -133,7 +133,6 @@ handler to ensure that it is no longer **in** that list and won't be executed
 again\. Hard to say what the right thing to do here is\.\.\.
 
 ```lua
-
 local clone, concat, insert = assert(table.clone),
                               assert(table.concat),
                               assert(table.insert)

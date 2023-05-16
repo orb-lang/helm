@@ -1,6 +1,7 @@
 * Migration 7: The Great Normalization.
 
-We're making a lot of changes here.
+
+  We're making a lot of changes here.
 
 The overarching goal is to have a fully-normal database.
 
@@ -96,8 +97,8 @@ when interested in the subset of lines which meet those criteria.
 
 *** input
 
-Input is no longer a table, but rather a particular sort of =run_action= which
-points at a round.
+  Input is no longer a table, but rather a particular sort of =run_action=
+which points at a round.
 
 
 *** round
@@ -189,7 +190,6 @@ given results.
 change structure, as it happens.
 
 
-
 #!sql @create_result_table_7 #asLua
 CREATE TABLE IF NOT EXISTS result_copy (
    result_id INTEGER PRIMARY KEY,
@@ -257,7 +257,6 @@ a particular riff.
 
   This is the 'pure' identity of a round within a riff, which includes its
 order within the riff.
-
 
 #!sql @create_riff_round_table_7 #asLua
 CREATE TABLE riff_round(

@@ -1,10 +1,12 @@
 * Modeselektor
 
+
   =helm= itself sets up and launches Modeselektor, which is the master and
 commander of =helm=.
 
 Modeselektor is an Actor, the point of entry for input, and ultimate
 coordinator of the responses to those actions.
+
 
 ** Design
 
@@ -16,6 +18,9 @@ environment it set up.  Everything between happens from Modeselektor.
 
 **** imports
 
+!
+
+  «Important!»
 
 #!lua
 local core = require "qor:core"
@@ -30,7 +35,7 @@ local Stringbuf = require "helm:buf/stringbuf"
 local Txtbuf    = require "helm:buf/txtbuf"
 
 local Actor   = require "actor:actor"
-local Valiant = require "valiant:valjr"
+local Valiant = require "valiant:valjr" -- #todo valeta integration
 
 local Deque = require "deque:deque"
 
@@ -119,8 +124,8 @@ should mock it.
 
 #!lua
 function ModeS.setup(modeS)
-   local initial_raga = "nerf"
-   modeS:_agent'status':update("default")
+   local initial_raga = 'nerf'
+   modeS :_agent 'status' :update 'default'
    -- Session-related setup
    local session_title = bridge.args.new_session or
                          bridge.args.session
@@ -234,6 +239,7 @@ function ModeS.placeCursor(modeS)
    return modeS
 end
 #/lua
+
 
 *** ModeS:paint()
 
@@ -418,6 +424,7 @@ choose.
 
 #!lua
 local Round = require "helm:round"
+
 function ModeS.rerunner(modeS, deque)
    -- #todo this should probably be on a RunAgent/Runner and invoked
    -- via some queued-Message mechanism, which would also take care of

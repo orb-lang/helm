@@ -133,7 +133,6 @@ end
 
 
 
-
 local clone, concat, insert = assert(table.clone),
                               assert(table.concat),
                               assert(table.insert)

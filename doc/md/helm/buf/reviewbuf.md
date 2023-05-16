@@ -283,7 +283,7 @@ and we assign the wrapped result dynamically to `_composeOneLine`\.
 local status_icons = {
    ignore = "🟡",
    accept = "✅",
-   reject = "🚫",
+   reject = "👁 ",
    -- iTerm displays the trash-can emoji double-wide,
    -- but only advances the cursor one cell
    trash  = "🗑 ",

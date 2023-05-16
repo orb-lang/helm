@@ -18,6 +18,11 @@
 
 
 
+
+
+
+
+
 local core = require "qor:core"
 local a = require "anterm:anterm"
 
@@ -30,7 +35,7 @@ local Stringbuf = require "helm:buf/stringbuf"
 local Txtbuf    = require "helm:buf/txtbuf"
 
 local Actor   = require "actor:actor"
-local Valiant = require "valiant:valjr"
+local Valiant = require "valiant:valjr" -- #todo valeta integration
 
 local Deque = require "deque:deque"
 
@@ -119,8 +124,8 @@ end
 
 
 function ModeS.setup(modeS)
-   local initial_raga = "nerf"
-   modeS:_agent'status':update("default")
+   local initial_raga = 'nerf'
+   modeS :_agent 'status' :update 'default'
    -- Session-related setup
    local session_title = bridge.args.new_session or
                          bridge.args.session
@@ -233,6 +238,7 @@ function ModeS.placeCursor(modeS)
    end
    return modeS
 end
+
 
 
 
@@ -418,6 +424,7 @@ end
 
 
 local Round = require "helm:round"
+
 function ModeS.rerunner(modeS, deque)
    -- #todo this should probably be on a RunAgent/Runner and invoked
    -- via some queued-Message mechanism, which would also take care of
