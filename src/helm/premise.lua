@@ -13,10 +13,6 @@
 
 
 
-
-
-
-
 local cluster = require "cluster:cluster"
 
 
@@ -51,6 +47,52 @@ end)
 
 
 
+local insert = assert(table.insert)
+function Premise.validStatuses(premise)
+   if premise:isBlank() then
+      return { "insert" }
+   end
+   local answer = { "ignore", "accept", "watch", "trash" }
+   -- premise.same will be nil until we have a result to compare
+   if premise.new_round and not premise.same then
+      if premise.status() == "accept" then
+         insert(answer, 2, "fail") -- before 'accept'
+      elseif premise.status() == "watch" then
+         insert(answer, 3, "report") -- before 'watch'
+      end
+   end
+   -- "ignore" replaced by "warn" for error responses
+   if premise:isError() then
+      answer[1] = "warn"
+   end
+   return answer
+end
+
+
+
+
+
+
+
+
+
+
+
+local Round
+function Premise.asRound(premise)
+   Round = Round or require "helm:round"
+   return Round(premise:getLine())
+end
+
+
+
+
+
+
+
+
+
+
 
 local function _isSame(old_response, new_response)
    -- Was an error, now a result or vice-versa
@@ -73,7 +115,7 @@ function Premise.compareToNewEvaluation(premise, new_round)
    -- Comparison operates on the DB/stringified responses
    premise.same = _isSame(premise.db_response, new_round.db_response)
    if not premise.same then
-      if premise.status == "accept" then
+      if premise.status() == "accept" then
          premise.status = "fail"
       elseif premise.status == "watch" then
          premise.status = "report"
@@ -89,52 +131,6 @@ function Premise.compareToNewEvaluation(premise, new_round)
    -- Copy the live response for viewing as well as the DB response
    premise.response = new_round.response
    premise.db_response = new_round.db_response
-end
-
-
-
-
-
-
-
-
-
-
-local insert, remove = assert(table.insert), assert(table.remove)
-function Premise.validStatuses(premise)
-   if premise:getLine() == "" then
-      return { "insert" }
-   end
-   local answer = { "ignore", "accept", "watch", "trash" }
-   -- "ignore" not valid for error responses
-   if premise:isError() then
-      remove(answer, 1)
-   end
-   -- premise.same will be nil until we have a result to compare
-   if premise.new_round and not premise.same then
-      if premise.status == "accept" then
-         insert(answer, 3, "fail")
-      elseif premise.status == "watch" then
-         insert(answer, 4, "report")
-      end
-   end
-   return answer
-end
-
-
-
-
-
-
-
-
-
-
-
-local Round
-function Premise.asRound(premise)
-   Round = Round or require "helm:round"
-   return Round(premise:getLine())
 end
 
 

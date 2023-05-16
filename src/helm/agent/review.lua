@@ -28,19 +28,7 @@ cluster.extendbuilder(new, function(_new, agent)
    agent.selected_index = 0
    agent.edit_agents = {}
    agent.results_agent = ResultsAgent()
-   agent.status_cycle_map = {}
-   agent.status_reverse_map = {}
-   local stats = _new.valid_statuses
-   for i, this_status in ipairs(stats) do
-      local prev_status = i == 1
-         and stats[#stats]
-         or stats[i - 1]
-      local next_status = i == #stats
-         and stats[1]
-         or stats[i + 1]
-      agent.status_cycle_map[this_status] = next_status
-      agent.status_reverse_map[this_status] = prev_status
-   end
+   agent.was_inserting = false
    return agent
 end)
 
@@ -102,11 +90,23 @@ end
 
 
 
+
+
+
+
+
 function ReviewAgent.selectionChanged(agent)
-      agent:_updateResultsAgent()
-      agent:contentsChanged()
-      agent:bufferCommand("ensureSelectedVisible")
+   agent.was_inserting = false
+   agent:_updateResultsAgent()
+   agent:contentsChanged()
+   agent:bufferCommand("ensureSelectedVisible")
 end
+
+
+
+
+
+
 
 
 
@@ -117,6 +117,7 @@ end
 
 local clamp = assert(math.clamp)
 function ReviewAgent.selectIndex(agent, index)
+   agent:cancelInsertion()
    index = #agent.topic == 0
       and 0
       or clamp(index, 1, #agent.topic)
@@ -134,13 +135,16 @@ end
 
 
 
+
 function ReviewAgent.selectNextWrap(agent)
+   agent:cancelInsertion()
    local new_idx = agent.selected_index < #agent.topic
       and agent.selected_index + 1
       or 1
    return agent:selectIndex(new_idx)
 end
 function ReviewAgent.selectPreviousWrap(agent)
+   agent:cancelInsertion()
    local new_idx = agent.selected_index > 1
       and agent.selected_index - 1
       or #agent.topic
@@ -172,15 +176,52 @@ end
 
 
 
+
+
+
+
+
+
+
+ReviewAgent.insert_after_status = nil
+
+
+
+
+
+
+
+
 function ReviewAgent.toggleSelectedState(agent)
-   local new_status = agent.status_cycle_map[agent:selectedRound().status]
-   return agent:setSelectedState(new_status)
+   local round = agent:selectedRound()
+   if not agent.was_inserting
+   and round.status() == agent.insert_after_status then
+      agent:insertRound()
+   elseif round.status() == "insert" then
+      agent:cancelInsertion()
+   else
+      agent.was_inserting = false
+      agent:selectedRound().status.next()
+      agent:contentsChanged()
+   end
 end
 
 function ReviewAgent.reverseToggleSelectedState(agent)
-   local new_status = agent.status_reverse_map[agent:selectedRound().status]
-   return agent:setSelectedState(new_status)
+   local round = agent:selectedRound()
+   if not agent.was_inserting
+   and round.status:peekPrev() == agent.insert_after_status then
+      agent:insertRound()
+   elseif round.status() == "insert" then
+      agent:cancelInsertion()
+   else
+      agent.was_inserting = false
+      agent:selectedRound().status.prev()
+      agent:contentsChanged()
+   end
 end
+
+
+
 
 
 
@@ -190,12 +231,117 @@ end
 
 
 function ReviewAgent.setSelectedState(agent, state)
+   if agent:selectedRound().status.set(state) then
+      agent:contentsChanged()
+      return true
+   else
+      -- #todo Must not be valid at this time, should BEL here
+      return false
+   end
+end
+
+
+
+
+
+
+
+
+
+function ReviewAgent.insertRound(agent)
+   -- #todo Need to use RiffRound or Premise as appropriate here
+   local round = Round():asPremise{ status = "insert" }
+   insert(agent.topic, agent.selected_index, round)
+   -- These agents are lazy-initialized, so we can
+   -- just make room (with table stuffing)...
+   insert(agent.edit_agents, agent.selected_index, false)
+   -- ...and inform the buffer
+   agent:bufferCommand("roundInserted", agent.selected_index)
+   agent:_updateResultsAgent()
+end
+
+
+
+
+
+
+
+
+
+
+
+local remove = assert(table.remove)
+function ReviewAgent.cancelInsertion(agent)
+   if agent:selectedRound().status ~= "insert"
+      -- Don't remove an "insert" round if it's the very last one
+      or #agent.topic == 1 then
+         return
+   end
+   remove(agent.topic, agent.selected_index)
+   remove(agent.edit_agents, agent.selected_index)
+   agent:bufferCommand("roundRemoved", agent.selected_index)
+   agent:_updateResultsAgent()
+   agent.was_inserting = true
+end
+
+
+
+
+
+
+
+
+
+
+
+function ReviewAgent.editLine(agent)
+   local line = agent:selectedRound():getLine()
+   agent :send { to = "agents.edit", method = "update", line }
+   agent :send { method = "pushMode", "edit_line"}
+end
+
+
+
+
+
+
+
+
+function ReviewAgent.cancelLineEdit(agent)
+   agent:cancelInsertion()
+   agent :send { to = "agents.edit", method = "clear" }
+   agent :send { method = "popMode" }
+end
+
+
+
+
+
+
+
+
+
+
+
+function ReviewAgent.acceptLineEdit(agent)
+   local line = agent :send { to = "agents.edit", method = "contents" }
+   agent :send { to = "agents.edit", method = "clear" }
    local round = agent:selectedRound()
-   if round.status == state then return end
-   assert(agent.status_cycle_map[state], "Cannot change to invalid status %s", state)
-   round.status = state
-   agent:contentsChanged()
-   return true
+   round:setLine(line)
+   if line:find("^%s*$") then
+      -- Deleting the whole line is equivalent to trashing the round
+      -- "Insert" rounds will ignore this as "trash" is not a valid state for them
+      round.status:set("trash")
+   else
+      -- Switch out the status without going through the usual channels
+      -- so that we don't remove the newly-added round in the process
+      if round.status() == "insert" then
+         round.status:set("keep")
+      end
+      agent:_updateEditAgent(agent.selected_index)
+      agent:selectNextWrap()
+   end
+   agent :send { method = "popMode" }
 end
 
 

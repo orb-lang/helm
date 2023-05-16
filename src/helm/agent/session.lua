@@ -28,7 +28,6 @@ cluster.extendbuilder(new, true)
 
 
 
-local insert = assert(table.insert)
 function SessionAgent.setInitialSelection(agent)
    agent.selected_index = #agent.topic == 0 and 0 or 1
 end
@@ -51,14 +50,7 @@ end
 
 
 
-
-
-
-
-
-SessionAgent.valid_statuses = {
-   "ignore", "accept", "reject", "trash"
-}
+SessionAgent.insert_after_status = "accept"
 
 
 
@@ -88,8 +80,8 @@ end
 function SessionAgent.acceptTitleUpdate(agent)
    local new_title = agent :send { to = "agents.edit", method = "contents" }
    agent:selectedRound().title = new_title
-   agent:selectNextWrap()
    agent:cancelTitleEditing()
+   agent:selectNextWrap()
 end
 
 

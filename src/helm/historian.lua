@@ -155,20 +155,15 @@ end
 
 
 
-
-
-
-
-local Premise = require "helm:premise"
-local function _loadDeckFromStatement(historian, get_lines)
-   local deck = {}
+local function _loadRiffFromStatement(historian, get_lines)
+   local riff = {}
    for row in get_lines:rows() do
       local round = Round(row)
       historian:loadResponseFor(round)
-      local premise = round:asPremise{ status = "keep" }
-      insert(deck, premise)
+      local premise = round:asRiffRound()
+      insert(riff, premise)
    end
-   return deck
+   return riff
 end
 
 function Historian.loadPreviousRun(historian)
@@ -176,7 +171,7 @@ function Historian.loadPreviousRun(historian)
                                        :bind(historian.project_id)
                                        :value()
    local get_lines = historian.stmts.get_lines_of_run:bind(prev_run_id)
-   historian.previous_run = _loadDeckFromStatement(historian, get_lines)
+   historian.previous_run = _loadRiffFromStatement(historian, get_lines)
 end
 
 
@@ -199,13 +194,13 @@ function Historian.loadRecentLines(historian, num_lines)
    local get_lines = historian.stmts.get_recent
                 : bindkv { project = historian.project_id,
                            num_lines = num_lines }
-   local deck = _loadDeckFromStatement(historian, get_lines)
-   if num_lines > #deck then
-      s:warn("Requested %d lines to rerun, only %d lines available", num_lines, #deck)
+   local riff = _loadRiffFromStatement(historian, get_lines)
+   if num_lines > #riff then
+      s:warn("Requested %d lines to rerun, only %d lines available", num_lines, #riff)
    end
    -- Statement is optimized for loading history in newest-to-oldest order,
    -- but for this we need the original execution order, i.e. oldest-to-newest
-   return reverse(deck)
+   return reverse(riff)
 end
 
 

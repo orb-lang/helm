@@ -28,7 +28,6 @@ cluster.extendbuilder(new, true)
 Sessions may be empty, start with the first premise selected iff there is one\.
 
 ```lua
-local insert = assert(table.insert)
 function SessionAgent.setInitialSelection(agent)
    agent.selected_index = #agent.topic == 0 and 0 or 1
 end
@@ -50,22 +49,15 @@ end
 ```
 
 
-### Editing
-
-
-#### Status list
-
 ```lua
-SessionAgent.valid_statuses = {
-   "ignore", "accept", "reject", "trash"
-}
+SessionAgent.insert_after_status = "accept"
 ```
 
 
-#### Title editing
+### Title editing
 
 
-##### SessionAgent:editSelectedTitle\(\), :cancelTitleEditing\(\)
+#### SessionAgent:editSelectedTitle\(\), :cancelTitleEditing\(\)
 
 Switches in and out of special mode to edit the title of the selected premise\.
 
@@ -80,7 +72,7 @@ end
 ```
 
 
-##### SessionAgent:acceptTitleUpdate\(\)
+#### SessionAgent:acceptTitleUpdate\(\)
 
 User is done editing a premise title, update it in the session data structure\.
 
@@ -88,8 +80,8 @@ User is done editing a premise title, update it in the session data structure\.
 function SessionAgent.acceptTitleUpdate(agent)
    local new_title = agent :send { to = "agents.edit", method = "contents" }
    agent:selectedRound().title = new_title
-   agent:selectNextWrap()
    agent:cancelTitleEditing()
+   agent:selectNextWrap()
 end
 ```
 

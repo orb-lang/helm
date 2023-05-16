@@ -1,11 +1,7 @@
 # Premise
 
 A Premise is a view over a round, with the addition of a status \(accept,
-reject, ignore, etc, exact valid values vary by context\) and possibly a title\.
-It may be worth separating run\-review premises \(with one set of valid status
-values and no title\) from session premises \(with a different set of statuses
-and a title\), but we'll start with leaving that behavior in the relevant
-Agent\.
+watch, ignore, etc, exact valid values vary by context\) and possibly a title\.
 
 This means that the premise behaves as though it has the round itself in
 \`\_\_index\`, in addition to its own cassette of methods\. \(This is related to
@@ -30,7 +26,7 @@ local new, Premise, Premise_M = cluster.order()
 Constructs a premise wrapping `round`, with title and status from `data`\.
 
 This is essentially private, with the public API being
-`Premise:asRound(data)`\.
+`Round:asPremise(data)`\.
 
 ```lua
 cluster.construct(new, function(_new, premise, round, data)
@@ -41,6 +37,52 @@ cluster.construct(new, function(_new, premise, round, data)
    premise.title = data.title
    return premise
 end)
+```
+
+
+### Premise:validStatuses\(\)
+
+Answers the list of statuses this premise could be in\. This consists of a
+fixed list in most cases, but empty lines must always be "insert", and if
+results differ, we introduce a corresponding special status to display this\.
+
+```lua
+local insert = assert(table.insert)
+function Premise.validStatuses(premise)
+   if premise:isBlank() then
+      return { "insert" }
+   end
+   local answer = { "ignore", "accept", "watch", "trash" }
+   -- premise.same will be nil until we have a result to compare
+   if premise.new_round and not premise.same then
+      if premise.status() == "accept" then
+         insert(answer, 2, "fail") -- before 'accept'
+      elseif premise.status() == "watch" then
+         insert(answer, 3, "report") -- before 'watch'
+      end
+   end
+   -- "ignore" replaced by "warn" for error responses
+   if premise:isError() then
+      answer[1] = "warn"
+   end
+   return answer
+end
+```
+
+
+### Premise:asRound\(\)
+
+Convert the premise back to a round, which shares no state with the premise or
+the round it is viewing/wrapping\. In practice this means starting from scratch
+with just the line, but note that we copy the line from ourselves, not our
+underlying round, in case it has been shadowed\.
+
+```lua
+local Round
+function Premise.asRound(premise)
+   Round = Round or require "helm:round"
+   return Round(premise:getLine())
+end
 ```
 
 
@@ -73,7 +115,7 @@ function Premise.compareToNewEvaluation(premise, new_round)
    -- Comparison operates on the DB/stringified responses
    premise.same = _isSame(premise.db_response, new_round.db_response)
    if not premise.same then
-      if premise.status == "accept" then
+      if premise.status() == "accept" then
          premise.status = "fail"
       elseif premise.status == "watch" then
          premise.status = "report"
@@ -89,52 +131,6 @@ function Premise.compareToNewEvaluation(premise, new_round)
    -- Copy the live response for viewing as well as the DB response
    premise.response = new_round.response
    premise.db_response = new_round.db_response
-end
-```
-
-
-### Premise:validStatuses\(\)
-
-Answers the list of statuses this premise could be in\. This consists of a
-fixed list in most cases, but empty lines must always be "insert", and if
-results differ, we may introduce a special status to display this\.
-
-```lua
-local insert, remove = assert(table.insert), assert(table.remove)
-function Premise.validStatuses(premise)
-   if premise:getLine() == "" then
-      return { "insert" }
-   end
-   local answer = { "ignore", "accept", "watch", "trash" }
-   -- "ignore" not valid for error responses
-   if premise:isError() then
-      remove(answer, 1)
-   end
-   -- premise.same will be nil until we have a result to compare
-   if premise.new_round and not premise.same then
-      if premise.status == "accept" then
-         insert(answer, 3, "fail")
-      elseif premise.status == "watch" then
-         insert(answer, 4, "report")
-      end
-   end
-   return answer
-end
-```
-
-
-### Premise:asRound\(\)
-
-Convert the premise back to a round, which shares no state with the premise or
-the round it is viewing/wrapping\. In practice this means starting from scratch
-with just the line, but note that we copy the line from ourselves, not our
-underlying round, in case it has been shadowed\.
-
-```lua
-local Round
-function Premise.asRound(premise)
-   Round = Round or require "helm:round"
-   return Round(premise:getLine())
 end
 ```
 
