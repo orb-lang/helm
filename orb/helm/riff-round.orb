@@ -37,6 +37,7 @@ cluster.construct(new, function(_new, riff_round, round)
       riff_round.status = Toggle{ "insert" }
    else
       riff_round.status = Toggle{ "keep", "trash" }
+   end
    return riff_round
 end)
 #/lua
@@ -48,7 +49,8 @@ end)
 augmentation of RiffRound, or a subgenre, or if this is the best we can do.
 
 #!lua
-local Round
+local Round;
+
 function RiffRound.asRound(premise)
    Round = Round or require "helm:round"
    return Round(premise:getLine())
@@ -58,7 +60,8 @@ end
 
 *** RiffRound:validStatuses()
 
-The list of statuses valid for this RiffRound. Used to set up the Toggle that holds our actual status.
+The list of statuses valid for this RiffRound. Used to set up the Toggle that
+holds our actual status.
 
 #!lua
 function RiffRound.validStatuses(riff_round)
@@ -85,8 +88,8 @@ function RiffRound_M.__index(riff_round, key)
 end
 #/lua
 
-
-
+#!lua
+return new
 #/lua
 
 

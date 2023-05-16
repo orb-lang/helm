@@ -16,6 +16,9 @@ local Agent = require "helm:agent/agent"
 
 local EditAgent = require "helm:agent/edit"
 local ResultsAgent = require "helm:agent/results"
+
+
+local Round   = use "helm:round"
 ```
 
 
@@ -173,9 +176,9 @@ rounds\. It occupies a sort of "virtual" place in the list of valid statuses,
 and attempting to switch to it inserts a **new** blank round \(for which insert
 is the only valid status\), and leaving it removes that round, **without**
 changing the state of the now\-re\-selected following round\. Doing this naively
-would leave us stuck in a loop between "keep" and "insert" \(or "trash" and
-"insert" when cycling backwards\), so we also maintain a flag indicating
-whether we just left "insert"\. If this is set and we **would** switch toinsert", we skip over it and go to whatever's next/previous in the order\.
+would leave us stuck in a loop between "keep" and "insert" \(or "trash" andinsert" when cycling backwards\), so we also maintain a flag indicating
+whether
+" we just left "insert"\. If this is set and we **would** switch toinsert", we skip over it and go to whatever's next/previous in the order\.
 
 "
 We use a property insert\_after\_status to indicate where in the order we should

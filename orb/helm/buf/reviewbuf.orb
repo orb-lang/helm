@@ -312,7 +312,7 @@ function Reviewbuf._composeAll(buf)
    for i, round in ipairs(buf:value()) do
       yield(box_line(i == 1 and "top" or "spanning"))
       -- Render the line (which could actually be multiple physical lines)
-      local line_prefix = status_icons[round.status] .. ' '
+      local line_prefix = status_icons[round.status] or '' .. ' '
       for line in _txtbuf(buf, i):lineGen() do
          -- Selected round gets a highlight
          if i == buf.source.selected_index then
